@@ -133,8 +133,10 @@
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 12540,
-      "deterministic_pre_gate": 2,
+      "designer_draft": 40591,
+      "deterministic_pre_gate": 1,
+      "designer_pre_gate_repair_1": 2140,
+      "deterministic_pre_gate_after_repair_1": 0,
       "deterministic_department_evidence": 1
     },
     "phaseBudgetMs": {
@@ -150,8 +152,8 @@
       "designer_revision_gate": 180000,
       "five_lead_reviews": 180000
     },
-    "totalModelCalls": 1,
-    "totalModelCallMs": 12538,
+    "totalModelCalls": 2,
+    "totalModelCallMs": 42691,
     "modelPhaseConcurrency": 2,
     "phaseConcurrency": {
       "five_lead_reviews": 2
@@ -160,19 +162,19 @@
     "modelKeepAlive": "GEMINI_API",
     "modelHealth": {
       "gemini:gemini-3.5-flash-lite": {
-        "calls": 1,
-        "successes": 1,
+        "calls": 2,
+        "successes": 2,
         "failures": 0,
         "timeouts": 0,
         "jsonFailures": 0,
-        "totalMs": 12538,
-        "lastMs": 12538,
+        "totalMs": 42691,
+        "lastMs": 2138,
         "lastError": null,
-        "updatedAt": "2026-09-19T16:25:50.720Z"
+        "updatedAt": "2026-09-19T16:26:23.277Z"
       }
     },
     "preGate": {
-      "attempts": 0,
+      "attempts": 1,
       "totalScore": 80,
       "hardFailures": [],
       "postRevisionScore": 80,
@@ -182,7 +184,7 @@
       "contractVersion": 3,
       "engineDigest": "216fe199cb50b83e0fb93bf5fec846a7d56db7433adfa0455da195e1ac8717c0",
       "reused": false,
-      "completedPhases": 3,
+      "completedPhases": 5,
       "cachedTasks": 0
     },
     "simplifiedLeadOnlyReview": false,
@@ -250,7 +252,7 @@
         "authority": "DETERMINISTIC_EVIDENCE",
         "pass": true,
         "path": "design/fantasy-survival/2026-09-20/design-checkpoint.json",
-        "phase": "deterministic_pre_gate",
+        "phase": "deterministic_pre_gate_after_repair_1",
         "totalScore": 80,
         "passMinimum": 80,
         "hardFailures": [],
@@ -322,7 +324,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T16:25:54.563Z"
+    "checkedAt": "2026-09-19T16:26:31.622Z"
   },
   "artbookUi": {
     "status": "WAITING",

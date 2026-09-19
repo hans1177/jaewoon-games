@@ -2,7 +2,7 @@
   "version": 3,
   "gameId": "fantasy-survival",
   "date": "2026-09-20",
-  "attempt": 0,
+  "attempt": 1,
   "pass": true,
   "repairPacket": {
     "source": "DETERMINISTIC_PRE_GATE_V2",
@@ -72,5 +72,21 @@
     "revalidated": false,
     "thirtyMinuteHardGateApplied": false,
     "materialContractOk": true
-  }
+  },
+  "history": [
+    {
+      "totalScore": 78,
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ]
+    },
+    {
+      "totalScore": 80,
+      "hardFailures": [],
+      "criticalAxisFailures": []
+    }
+  ]
 }
