@@ -41,6 +41,9 @@ jobs:
       - name: Verify Roblox development contracts
         run: |
           set -euo pipefail
+          node --check tools/company-shared-context.mjs
+          node --test qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-plan.json
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/company-development-roblox-package.mjs
@@ -279,6 +282,9 @@ jobs:
 
       - name: Fetch current company runtime
         run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Revalidate shared worker context before Roblox persistence
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-persist.json
 
       - name: Persist Roblox source-bind state to company runtime
         if: needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0'
