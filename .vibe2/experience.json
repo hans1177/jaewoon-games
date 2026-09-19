@@ -729,7 +729,7 @@
     {
       "version": 3,
       "id": "exp_security_b72c29be3a79e4c5a56017dd",
-      "fingerprint": "security_b72c29be3a79e4c5a56017dd",
+      "fingerprint": "fp_vws2gd",
       "gameId": null,
       "engine": "system",
       "departments": [
@@ -778,13 +778,11 @@
       ],
       "verified": true,
       "reusable": true,
-      "independentlyVerified": true,
-      "authority": "VERIFIED_SECURITY_IMMUNE_LEARNING",
-      "rawSecretStored": false,
-      "rawMalwareStored": false,
-      "sourceSecurityIncidentId": "sec_4bb9cfed0e7d5e59b727f1fe",
+      "confirmations": 1,
+      "confidence": 0.5,
       "createdAt": "2026-09-19T06:21:37.388Z",
-      "lastVerifiedAt": "2026-09-19T06:21:37.388Z"
+      "lastVerifiedAt": "2026-09-19T06:21:37.388Z",
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }

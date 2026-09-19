@@ -1,21 +1,11 @@
 {
   "version": 3,
-  "currentMax": 12,
+  "currentMax": 256,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "DOWN",
-  "lastReason": "FAILURE_RATE+RUNNER_CAPACITY+RUNNER_QUEUE_WAIT",
-  "lastRunId": "35426375642",
-  "lastUpdatedAt": "2026-09-19T06:26:40.858Z",
-  "lastTelemetry": {
-    "runId": "35426375642",
-    "workerCount": 35,
-    "totalWorkerCount": 41,
-    "effectiveMax": 30,
-    "actualPeakConcurrency": 12,
-    "effectivePeakUtilizationPct": 40,
-    "failureRatePct": 100,
-    "pressureLevel": "SEVERE",
-    "bottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION"
-  }
+  "lastDecision": "RESET",
+  "lastReason": "SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET",
+  "lastRunId": null,
+  "lastUpdatedAt": "2026-09-19T06:27:14.947Z",
+  "lastTelemetry": null
 }
