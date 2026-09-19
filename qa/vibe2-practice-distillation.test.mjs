@@ -76,3 +76,32 @@ test('practice store dedupes by domain and only strengthens verified advisory si
   assert.equal(second.store.entries[0].directProductionPass,false);
   assert.equal(second.store.entries[0].directTrainingSample,false);
 });
+
+
+test('narrative practice distills technique domains without storing candidate prose',()=>{
+  const narrativeResult={
+    ...result,
+    taskId:'LEARNING-PRACTICE-story-quest-l1',
+    diagnosis:'Narrative structure needs clear foreshadowing payoff and quest causality.',
+    strategy:'Track character motivation, quest prerequisite, reveal order, dialogue subtext and payoff.',
+    tests:['quest prerequisite causes next state','foreshadowing has payoff','dialogue respects character knowledge'],
+    reusablePatterns:['cause and effect narrative structure','character arc motivation consistency'],
+    avoidPatterns:['knowledge leak','fake choice without consequence']
+  };
+  const narrativeOrder={originalGoal:'[VIBE_LEARNING_PRACTICE]\nkind=NARRATIVE_STRUCTURE_DRILL\ndomains=STORYTELLING,NARRATIVE_STRUCTURE,QUEST_DESIGN,CHARACTER_ARC,DIALOGUE'};
+  const narrativeExperience={records:[
+    {id:'n1',gameId:'story-game-a',taskType:'storytelling',verified:true,reusable:true,problem:'story pacing',goal:'quest causality and foreshadowing',change:'character arc and dialogue consistency',reusablePatterns:['narrative structure quest dialogue character arc foreshadow payoff']},
+    {id:'n2',gameId:'story-game-b',taskType:'storytelling',verified:true,reusable:true,problem:'narrative payoff',goal:'story quest consequence',change:'character motivation and dialogue subtext',reusablePatterns:['storytelling narrative structure quest design character arc dialogue']}
+  ]};
+  const distilled=distillPracticeResult({result:narrativeResult,order:narrativeOrder,experienceInput:narrativeExperience});
+  const domains=distilled.accepted.map(row=>row.domain);
+  assert.ok(domains.includes('STORYTELLING'));
+  assert.ok(domains.includes('NARRATIVE_STRUCTURE'));
+  assert.ok(domains.includes('QUEST_DESIGN'));
+  assert.ok(domains.includes('CHARACTER_ARC'));
+  assert.ok(domains.includes('DIALOGUE'));
+  assert.equal(distilled.accepted.every(row=>row.rawModelOutputStored===false&&row.candidateTextStored===false),true);
+  const serialized=JSON.stringify(distilled);
+  assert.doesNotMatch(serialized,/cause and effect narrative structure/);
+  assert.doesNotMatch(serialized,/fake choice without consequence/);
+});
