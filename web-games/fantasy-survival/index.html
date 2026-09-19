@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=22,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=23,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -567,7 +567,7 @@ const LAB_RECORDER_LINES=[
  '3일차. 녹음 상태가 좋지 않다. 저것들은 불 속에서도 죽지 않는다. 문 앞에 피가...',
  '4일차. ...잡음... 녹음 파일 손상... 더 이상 기록을 확인할 수 없다.'
 ];
-let recorderUtterance=null,recorderStopTimer=0,recorderResumeTimer=0,recorderToken=0;
+let recorderUtterance=null,recorderAudio=null,recorderStopTimer=0,recorderResumeTimer=0,recorderToken=0;
 function setRecorderOverlay(text,stateText='재생 중'){
  ui.recorderCaption.textContent=text;ui.recorderState.textContent=stateText;ui.recorderOverlay.classList.add('on')
 }
@@ -580,8 +580,44 @@ function duckBgmForRecorder(on){
 }
 function stopRecorderVoice(){
  recorderToken++;clearInterval(recorderResumeTimer);recorderResumeTimer=0;
+ if(recorderAudio){try{recorderAudio.pause();recorderAudio.src=''}catch{}recorderAudio=null}
  if(window.speechSynthesis){try{window.speechSynthesis.cancel();window.speechSynthesis.resume()}catch{}}
  recorderUtterance=null;duckBgmForRecorder(false)
+}
+function recorderAudioUrls(text){
+ const q=encodeURIComponent(text);
+ return[
+  'https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=ko&q='+q,
+  'https://translate.google.com/translate_tts?client=tw-ob&ie=UTF-8&tl=ko&q='+q
+ ]
+}
+function playRecorderAudioChunks(chunks,index,token,urlIndex=0){
+ if(token!==recorderToken)return;
+ if(index>=chunks.length){
+  recorderAudio=null;duckBgmForRecorder(false);ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500);return
+ }
+ const urls=recorderAudioUrls(chunks[index]);
+ if(urlIndex>=urls.length){fallbackRecorderSpeech(chunks,index,token);return}
+ const a=new Audio();recorderAudio=a;a.preload='auto';a.volume=1;a.src=urls[urlIndex];
+ ui.recorderState.textContent='▶ 녹음 음성 재생 중 · '+(index+1)+'/'+chunks.length+' · 다시 두 번 누르면 처음부터';
+ let finished=false;
+ const next=()=>{if(finished||token!==recorderToken)return;finished=true;recorderAudio=null;setTimeout(()=>playRecorderAudioChunks(chunks,index+1,token,0),100)};
+ a.onended=next;
+ a.onerror=()=>{if(finished||token!==recorderToken)return;finished=true;recorderAudio=null;setTimeout(()=>playRecorderAudioChunks(chunks,index,token,urlIndex+1),80)};
+ const p=a.play();
+ if(p&&typeof p.catch==='function')p.catch(()=>{if(finished||token!==recorderToken)return;finished=true;recorderAudio=null;setTimeout(()=>playRecorderAudioChunks(chunks,index,token,urlIndex+1),80)})
+}
+function fallbackRecorderSpeech(chunks,index,token){
+ if(token!==recorderToken)return;
+ if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){
+  ui.recorderState.textContent='음성 서버 재생 실패 · 자막 표시 중';closeRecorderOverlay(10000);duckBgmForRecorder(false);return
+ }
+ const voice=koreanRecorderVoice(),u=new SpeechSynthesisUtterance(chunks[index]);recorderUtterance=u;u.lang='ko-KR';u.rate=.84;u.pitch=.82;u.volume=1;if(voice)u.voice=voice;
+ ui.recorderState.textContent='▶ 보조 음성 재생 중 · '+(index+1)+'/'+chunks.length;
+ let moved=false;
+ const next=()=>{if(moved||token!==recorderToken)return;moved=true;setTimeout(()=>playRecorderAudioChunks(chunks,index+1,token,0),100)};
+ u.onend=next;u.onerror=next;
+ try{window.speechSynthesis.cancel();window.speechSynthesis.resume();window.speechSynthesis.speak(u)}catch{next()}
 }
 function koreanRecorderVoice(){
  if(!window.speechSynthesis)return null;
@@ -618,27 +654,11 @@ function speakRecorderChunk(chunks,index,token,voice){
  try{window.speechSynthesis.speak(u)}catch{next()}
 }
 function beginRecorderSpeech(){
- if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){
-  setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'이 브라우저는 음성 재생을 지원하지 않아 자막으로 표시 중');
-  closeRecorderOverlay(15000);return
- }
  stopRecorderVoice();const token=++recorderToken,chunks=recorderChunks();
- setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'한국어 음성 준비 중...');
+ setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'실제 녹음 음성 불러오는 중...');
  duckBgmForRecorder(true);
- const start=()=>{
-  if(token!==recorderToken)return;
-  const voice=koreanRecorderVoice();
-  try{window.speechSynthesis.cancel();window.speechSynthesis.resume()}catch{}
-  clearInterval(recorderResumeTimer);
-  recorderResumeTimer=setInterval(()=>{if(token!==recorderToken){clearInterval(recorderResumeTimer);return}try{if(window.speechSynthesis.paused)window.speechSynthesis.resume()}catch{}},350);
-  speakRecorderChunk(chunks,0,token,voice)
- };
- const v=koreanRecorderVoice();
- if(v){start();return}
- let fired=false;
- const onVoices=()=>{if(fired)return;fired=true;window.speechSynthesis.removeEventListener?.('voiceschanged',onVoices);start()};
- window.speechSynthesis.addEventListener?.('voiceschanged',onVoices,{once:true});
- setTimeout(onVoices,650)
+ // HTMLAudioElement 기반 MP3 스트림이라 기기 TTS 지원 여부와 무관하게 재생한다.
+ playRecorderAudioChunks(chunks,0,token,0)
 }
 function playLabRecorder(){
  unlockRecord('lab');clearTimeout(recorderStopTimer);beginRecorderSpeech();showNotice('연구소 녹음기 음성 재생')
