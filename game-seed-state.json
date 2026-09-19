@@ -4782,11 +4782,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -4843,6 +4843,35 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/crystal-defense/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "ROBLOX",
+        "targetSourcePath": "roblox-games/crystal-defense",
+        "webSourcePath": "web-games/crystal-defense",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/crystal-defense/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/crystal-defense/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/crystal-defense/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T06:28:11.511Z"
       }
     },
     {
@@ -5681,7 +5710,16 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:28:19.694Z"
     },
     {
       "version": 1,
@@ -6028,11 +6066,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-EGG-HEIST-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6100,7 +6138,36 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:27:56.910Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:27:56.910Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/egg-heist/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "ROBLOX",
+        "targetSourcePath": "roblox-games/egg-heist",
+        "webSourcePath": "web-games/egg-heist",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/egg-heist/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/egg-heist/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/egg-heist/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T06:28:11.511Z"
+      }
     },
     {
       "version": 1,
@@ -6455,11 +6522,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-CHESS-BATTLE-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6527,7 +6594,36 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:27:43.423Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:27:43.423Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/chess-battle/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "ROBLOX",
+        "targetSourcePath": "roblox-games/chess-battle",
+        "webSourcePath": "web-games/chess-battle",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/chess-battle/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/chess-battle/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/chess-battle/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T06:28:11.511Z"
+      }
     },
     {
       "version": 1,
@@ -6858,11 +6954,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-SURVIVAL2-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6921,6 +7017,35 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/survival2/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "ROBLOX",
+        "targetSourcePath": "roblox-games/survival2",
+        "webSourcePath": "web-games/survival2",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/survival2/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/survival2/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/survival2/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T06:28:11.511Z"
       }
     },
     {
@@ -7315,16 +7440,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Tower Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:28:11.219Z"
+      }
     },
     {
       "version": 2,
@@ -17959,8 +18075,8 @@
         "recordedAt": "2026-09-19T06:27:56.910Z"
       },
       {
-        "gameId": "territory-war",
-        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+        "gameId": "island-village",
+        "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
@@ -17995,7 +18111,7 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T06:28:11.219Z"
+        "recordedAt": "2026-09-19T06:28:19.694Z"
       }
     ],
     "causeCounts": {
@@ -18021,7 +18137,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T06:28:11.220Z"
+    "updatedAt": "2026-09-19T06:28:19.695Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
@@ -18035,7 +18151,7 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-19T06:26:43.485Z",
+  "updatedAt": "2026-09-19T06:28:11.511Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
