@@ -1,5 +1,5 @@
 {
-  "version": 62,
+  "version": 63,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2636,14 +2636,11 @@
     }
   },
   "changeRecord": {
-    "id": "WEB_REPAIR_PLANNER_AND_QA_CONTRACT_SYNC_2026-09-19",
+    "id": "EVOLUTION_QA_LEARNING_RECOVERY_CANONICAL_SYNC_2026-09-19",
     "documentIsCode": true,
-    "reason": "CLOSE_EXPLICIT_RUNTIME_TO_VIBE_REPAIR_HANDOFF_AND_REMOVE_STALE_QA_EXPECTATIONS_WITHOUT_WEAKENING_GATES",
+    "reason": "REMOVE_DELETED_TEST_PATHS_AND_BIND_EVOLUTION_GATE_TO_CURRENT_VERIFIED_LEARNING_AND_RECOVERY_CONTRACTS",
     "files": [
-      "tools/vibe2-auto-planner.mjs",
-      "qa/vibe2-auto-planner.test.mjs",
       ".github/workflows/company-evolution-qa.yml",
-      "qa/company-system-ai-supervision-loop.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ]
   }
