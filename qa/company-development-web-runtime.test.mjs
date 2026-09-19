@@ -357,7 +357,7 @@ test('presentation runtime observation rejects frozen presentation despite healt
 });
 
 test('final presentation marker turns runtime presentation evidence into a gate',()=>{
-  const base={before:{},after:{},reloadAfter:{},footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},runtimeFeatureEvidence:{},featureRequirements:{},movementProbe:{},presentationRuntime:{pass:false,frameTiming:{pass:true},livingMotionObserved:false}};
+  const base={before:{presentationQualityVersion:1},after:{presentationQualityVersion:1},reloadAfter:{presentationQualityVersion:1},footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},runtimeFeatureEvidence:{},featureRequirements:{},movementProbe:{},presentationRuntime:{pass:false,frameTiming:{pass:true},livingMotionObserved:false}};
   const failed=buildRuntimeValidationEvidence(base);
   assert.equal(failed.presentation.required,true);
   assert.equal(failed.presentation.pass,false);
@@ -366,4 +366,18 @@ test('final presentation marker turns runtime presentation evidence into a gate'
   assert.equal(passed.presentation.required,true);
   assert.equal(passed.presentation.pass,true);
   assert.equal(passed.presentation.status,'PASS');
+});
+
+
+test('presentation runtime marker must be exposed by the live DOM',()=>{
+  const evidence=buildRuntimeValidationEvidence({
+    before:{presentationQualityVersion:0},after:{presentationQualityVersion:0},reloadAfter:{presentationQualityVersion:0},
+    footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},
+    runtimeFeatureEvidence:{},featureRequirements:{},movementProbe:{},
+    presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true}
+  });
+  assert.equal(evidence.presentation.required,true);
+  assert.equal(evidence.presentation.contractExposed,false);
+  assert.equal(evidence.presentation.pass,false);
+  assert.equal(evidence.presentation.status,'FAIL');
 });
