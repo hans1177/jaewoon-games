@@ -542,8 +542,8 @@ test('practice-only PASS settles done without candidate QA promotion', () => {
 
 test('source generation infrastructure repair requeues exhausted web development task once', () => {
   const queue=createVibeContinuousQueue({tasks:[{
-    id:'source-infra-failed',gameId:'game',target:'web',department:'development',type:'implementation',
-    sourceRoot:'web-games/game',goal:'implementation',status:'failed',retries:3,maxRetries:2,
+    id:'game-web-runtime-repair-v1',gameId:'game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/game',goal:'[VIBE_WEB_REPAIR] exact runtime repair',status:'failed',retries:3,maxRetries:2,
     blocker:'source-candidate-generation-failed',reservationId:null
   }]});
   const first=recoverFixedSourceCandidateGenerationFailures(queue);
@@ -567,6 +567,18 @@ test('source generation infrastructure repair does not reopen QA failures', () =
     id:'qa-failed',gameId:'game',target:'web',department:'development',type:'implementation',
     sourceRoot:'web-games/game',goal:'implementation',status:'failed',retries:3,maxRetries:2,
     blocker:'web-qa-or-promotion-failed'
+  }]});
+  const recovered=recoverFixedSourceCandidateGenerationFailures(queue);
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'failed');
+});
+
+
+test('generic Web source failure stays superseded instead of reopening', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'game-existing-web-assessment-v1',gameId:'game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/game',goal:'[EXISTING_WEB_ASSESS_AND_IMPLEMENT]',status:'failed',retries:3,maxRetries:2,
+    blocker:'source-candidate-generation-failed'
   }]});
   const recovered=recoverFixedSourceCandidateGenerationFailures(queue);
   assert.equal(recovered.recovered,0);
