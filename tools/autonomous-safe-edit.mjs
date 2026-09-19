@@ -42,12 +42,13 @@ export function normalizeExactEdits(raw=[],assertPath=v=>posix(v)){
   });
 }
 
-export function applyExactEdits(root,edits=[]){
+export function applyExactEdits(root,edits=[],{dryRun=false}={}){
   const changed=new Set();
+  const simulated=new Map();
   for(const edit of edits){
     const target=path.join(root,edit.path);
     if(!fs.existsSync(target)||!fs.statSync(target).isFile())throw new Error(`edit 대상 없음: ${edit.path}`);
-    const before=fs.readFileSync(target,'utf8');
+    const before=simulated.has(edit.path)?simulated.get(edit.path):fs.readFileSync(target,'utf8');
     let first=before.indexOf(edit.find);
     let end=first<0?-1:first+edit.find.length;
     if(first>=0&&before.indexOf(edit.find,end)>=0)throw new Error(`edit find 다중일치: ${edit.path}`);
@@ -78,11 +79,12 @@ export function applyExactEdits(root,edits=[]){
       if(matches.length>1)throw new Error(`edit find 다중일치: ${edit.path}`);
       if(matches.length===0)throw new Error(`edit find 불일치: ${edit.path}`);
       ({first,end}=matches[0]);
-      console.log(`VIBE2_EDIT_MATCH=TRIMMED_LINES:${edit.path}`);
+      if(!dryRun)console.log(`VIBE2_EDIT_MATCH=TRIMMED_LINES:${edit.path}`);
     }
 
     const after=before.slice(0,first)+edit.replace+before.slice(end);
-    fs.writeFileSync(target,after,'utf8');
+    simulated.set(edit.path,after);
+    if(!dryRun)fs.writeFileSync(target,after,'utf8');
     changed.add(edit.path);
   }
   return [...changed];
