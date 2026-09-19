@@ -1,5 +1,5 @@
 {
-  "version": 148,
+  "version": 149,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -2029,7 +2029,12 @@
             "currentRun35453739103": {
               "pinnedContractSha": "c6853fe008d149a34089b20e7a905eff9cc455a1",
               "includesFocusedExactAnchorFix": false
-            }
+            },
+            "focusedExactFindFullSourceCommits": [
+              "e4db3b01c3f1106f851ed8cb8103071312e5c71a",
+              "1e77f2c6afdb5ecf5054785da9786596c31848ac"
+            ],
+            "focusedExactFindFullSourceEffectiveFromNextRefill": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3580,79 +3585,40 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FOCUSED_EXACT_FIND_ANCHORS_2026-09-20",
+    "id": "VIBE2_FOCUSED_EXACT_FIND_ANCHORS_FULL_SOURCE_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_FINAL_ADDITIVE_ACCUMULATION_2026-09-19",
-    "reason": "LATEST_COMPLETED_WAVE_35452958416_SHIFTED_THE_DOMINANT_FAILURE_MIX_FROM_TIMEOUT_ONLY_TO_EDIT_MATCH_AND_NO_OP:EDIT_MATCH_6,NO_OP_2,TIMEOUT_6,FULL_REWRITE_SIZE_3,MALFORMED_OUTPUT_1. REPRESENTATIVE_FOCUSED_RETRIES_ENDED_WITH_~100_BYTE_JSON_PATCHES_WHOSE_FIND_TEXT_DID_NOT_MATCH_OR_WITH_EMPTY_EDITS. REMOVE_FIND_GUESSING_BY_DERIVING_SHORT_SOURCE_LINES_THAT_OCCUR_EXACTLY_ONCE_IN_WRITABLE_CONTEXT_AND_PUBLISHING_THEM_AS_VERBATIM_EXACT_FIND_ANCHOR_OPTIONS.",
+    "previousChangeRecordId": "VIBE2_FOCUSED_EXACT_FIND_ANCHORS_2026-09-20",
+    "reason": "EXACT_FIND_ANCHORS_MUST_MATCH_THE_SAME_GLOBAL_UNIQUENESS_RULE_ENFORCED_BY_APPLY_EXACT_EDITS. AN_ANCHOR_THAT_IS_UNIQUE_INSIDE_ONE_EXCERPT_CAN_STILL_APPEAR_MULTIPLE_TIMES_ELSEWHERE_IN_THE_RESPONSIBLE_FILE_AND_TRIGGER_EDIT_MATCH_MULTIPLE_OR_MISMATCH. VERIFY_CANDIDATE_ANCHORS_AGAINST_THE_COMPLETE_RESPONSIBLE_SOURCE_BEFORE_PUBLISHING_THEM_TO_THE_MODEL.",
     "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_NEXT_REFILL_EFFECT_PENDING",
     "evidence": {
-      "completedWave": {
+      "sourceRule": "applyExactEdits rejects multiple exact occurrences and falls back to trimmed-line matching only when exact text is absent",
+      "baselineWave": {
         "runId": 35452958416,
-        "fanInJobId": 105925196307,
-        "fanInRegression": "PASS",
-        "workerCount": 20,
         "pass": 2,
         "fail": 18,
-        "passRatePct": 10,
-        "failureRatePct": 90,
         "failureDistribution": {
           "TIMEOUT": 6,
           "NO_OP": 2,
           "EDIT_MATCH": 6,
           "FULL_REWRITE_SIZE": 3,
           "MALFORMED_OUTPUT": 1
-        },
-        "actualPeakConcurrency": 20,
-        "cacheHitRatePct": 100,
-        "preparationRatioPct": 1.88,
-        "packageCycleAvgMs": 520534.36,
-        "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-      },
-      "representativeFocusedFailures": [
-        {
-          "jobId": 105923309390,
-          "sequence": [
-            "MALFORMED_OUTPUT",
-            "MALFORMED_OUTPUT",
-            "EDIT_MATCH"
-          ],
-          "finalOutputBytes": 104
-        },
-        {
-          "jobId": 105923309533,
-          "sequence": [
-            "TIMEOUT",
-            "EDIT_MATCH"
-          ],
-          "finalOutputBytes": 102
-        },
-        {
-          "jobId": 105923309426,
-          "sequence": [
-            "MALFORMED_OUTPUT",
-            "NO_OP"
-          ],
-          "finalOutputBytes": 51
         }
-      ],
+      },
       "currentRun": {
         "runId": 35453739103,
         "pinnedContractSha": "c6853fe008d149a34089b20e7a905eff9cc455a1",
-        "hierarchicalFanOut": 20,
-        "includesExactAnchorFix": false,
-        "use": "DIAGNOSTIC_ONLY_FOR_THIS_FIX"
+        "completedWorkersObserved": 3,
+        "inProgressWorkersObserved": 17,
+        "includesFullSourceAnchorVerification": false
       }
     },
     "contract": {
-      "exactAnchorSource": "WRITABLE_EDITABLE_SOURCE_ONLY",
-      "exactAnchorOccurrenceRequirement": 1,
-      "maxAnchorOptions": 3,
-      "maxAnchorLengthChars": 180,
-      "repeatedLinesRejected": true,
-      "structuralOnlyLinesRejected": true,
-      "htmlDocumentBoundaryLinesRejected": true,
-      "anchorValueMustBeCopiedVerbatim": true,
+      "anchorCandidateMustAppearExactlyOnceInFullResponsibleSource": true,
+      "excerptOnlyUniquenessInsufficient": true,
+      "pathTraversalOutsideSourceRootForbidden": true,
+      "repeatedFullSourceAnchorRejected": true,
+      "fallbackToExcerptUniquenessOnlyWhenFullSourceUnavailable": true,
       "exactEditDryRunStillRequired": true,
       "semanticCandidateValidatorStillRequired": true,
       "writableScopeUnchanged": true,
@@ -3660,24 +3626,28 @@
       "authorityExpansion": false
     },
     "implementationCommits": {
-      "source": "523f68d5346461279e078cdfc106ddb8d821573d",
-      "regressionTest": "dcfc7acd7303fe75703141838bf504bb85aee45a",
-      "regressionCleanup": "934dcea674c0702660080ee999c0fd1977818e4c"
+      "source": "e4db3b01c3f1106f851ed8cb8103071312e5c71a",
+      "regressionTest": "1e77f2c6afdb5ecf5054785da9786596c31848ac"
     },
+    "relatedExactAnchorCommits": [
+      "523f68d5346461279e078cdfc106ddb8d821573d",
+      "dcfc7acd7303fe75703141838bf504bb85aee45a",
+      "934dcea674c0702660080ee999c0fd1977818e4c"
+    ],
     "pending": [
       "CURRENT_35453739103_COMPLETE_FOR_DIAGNOSTIC_ONLY",
-      "NEXT_REFILL_PIN_523F68D5_AND_934DCEA6_OR_LATER",
+      "NEXT_REFILL_PIN_E4DB3B01_AND_1E77F2C6_OR_LATER",
       "MEASURE_EDIT_MATCH_RATE_AGAINST_6_OF_20_BASELINE",
       "MEASURE_NO_OP_RATE_AGAINST_2_OF_20_BASELINE",
-      "COMPARE_FOCUSED_RETRY_SUCCESS_RATE",
+      "MEASURE_EXACT_ANCHOR_USAGE_AND_SUCCESS",
       "VERIFY_FAN_IN_REGRESSION"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
-      "qualityGatesNotWeakened": true,
       "exactEditRequired": true,
       "semanticBudgetRequired": true,
+      "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
     }
