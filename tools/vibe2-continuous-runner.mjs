@@ -250,7 +250,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
   const editorConfig = runtime?.engineEditors?.[plan.target] || {};
   const releaseState = clean(task.releaseState) || 'other';
-  const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
+  const supervisionContract=task?.supervisionContract?.required===true?freeze({...task.supervisionContract,approved:task.supervisionApproved===true}):null;
+  const supervisionApproved=supervisionContract?task.supervisionApproved===true:true;
+  const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState)
+    && ['roblox','web','unity'].includes(plan.target)
+    && task.requiresOwnerDecision !== true
+    && task.protectedChange !== true
+    && supervisionApproved;
   const learningGuidance = buildLearningGuidance(plan.learning);
   const unifiedLearning = retrieveUnifiedLearning({
     task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
@@ -313,7 +319,15 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const supervisionGuidance=supervisionContract?[
+    '[SUPERVISED WEB GAME COAUTHORING]',
+    'This is a supervised major Web build. Generate a real implementation candidate, but do not assume it is approved for promotion.',
+    'Preserve: '+(supervisionContract.protectedSemantics||[]).join(', '),
+    'Hard reject conditions: '+(supervisionContract.hardReject||[]).join(', '),
+    'The candidate must be independently playable and reviewable; validation-only patches, placeholder source, and unrelated rewrites are forbidden.',
+    supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
+  ].join('\n'):'';
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
@@ -327,6 +341,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'asset-production-plan-contract',
     'asset-runtime-visual-qa-required',
     ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
+    ...(supervisionContract?['supervised-web-build-contract','supervised-promotion-approval-required']:[]),
     'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
     'telemetry-evidence-after-implementation',
@@ -346,6 +361,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       editorRequiredPatterns:freezeList(adapter.source.editorRequiredPatterns || []), ignoredPaths:freezeList(adapter.source.ignoredPaths), responsibleFiles
     }),
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
+    supervisionContract,
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
