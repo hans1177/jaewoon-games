@@ -681,6 +681,38 @@ test('preservation pilot bypasses generic Web assessment and queues ASSET_ADAPTA
   assert.notEqual(task.id,`${gameId}-existing-web-development-continuation-v1`);
 });
 
+test('preservation presentation task is restored instead of superseded by generic Web repair',()=>{
+  const root=tempRepo();
+  const gameId='preserve-repair-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const cancelled={
+    id:`${gameId}-presentation-asset-adaptation-v1`,
+    gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'asset adaptation',releaseState:'development-confirmed',status:'cancelled',retries:1,
+    blocker:'superseded-by:VIBE_WEB_REPAIR',lastOutcome:'SUPERSEDED_BY_EXACT_WEB_REPAIR',
+    evidence:['presentation-quality-pipeline:v1','presentation-pass:ASSET_ADAPTATION']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Preserve Repair Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Preserve Repair Web',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      ownerPreservationPresentationUpgrade:true,presentationFirstPass:'ASSET_ADAPTATION'
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[cancelled]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const restored=result.queue.tasks.find(row=>row.id===cancelled.id);
+  assert.equal(restored.status,'queued');
+  assert.equal(restored.blocker,null);
+  assert.equal(restored.lastOutcome,'RESTORED_OWNER_PRESERVATION_PRESENTATION');
+  assert.ok(restored.evidence.includes('owner-preservation-presentation-preempts-generic-web-repair'));
+});
+
 test('presentation quality passes are queued in canonical order',()=>{
   const root=tempRepo();
   const gameId='presentation-web';
