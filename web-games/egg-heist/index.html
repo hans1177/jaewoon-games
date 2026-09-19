@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+        }
+        button {
+            padding: 0.5em 1em;
+            font-size: 0.9em;
+            margin: 0 0.5em;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Approved Web Bootstrap</h1>
+        <button onclick="startGame()">Start Game</button>
+    </main>
+    <script>
+        function startGame() {
+            const gameContainer = document.getElementById('game');
+            gameContainer.innerHTML = `
+                <div class="game-area">
+                    <div class="tile" data-type="start">Start</div>
+                    <div class="tile" data-type="end">End</div>
+                    <div class="tile" data-type="progress">Progress</div>
+                    <div class="tile" data-type="score">Score</div>
+                    <div class="tile" data-type="inventory">Inventory</div>
+                    <div class="tile" data-type="health">Health</div>
+                </div>
+                <div class="game-controls">
+                    <button class="control-button" data-type="move">Move</button>
+                    <button class="control-button" data-type="attack">Attack</button>
+                    <button class="control-button" data-type="use">Use</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
