@@ -391,6 +391,9 @@ test('candidate failure telemetry survives a failed source worker step',()=>{
   const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
   const resultStep=workflow.slice(resultStart,resultEnd);
   assert(resultStep.includes('source-generation-failure:${candidateFailureClass}'));
+  assert(resultStep.includes('coding-failure-fingerprint:${clean(manifest.codingMethod.failureFingerprint)}'));
+  assert(resultStep.includes('coding-patch-recipe:${clean(manifest.codingMethod.patchRecipeMode)}'));
+  assert(resultStep.includes('coding-verified-failure-memory-count:${Number(manifest.codingMethod.verifiedFailureLocalMemoryCount)}'));
   assert(resultStep.includes("candidateFailure=candidateOk?null"));
   assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
 });
