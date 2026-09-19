@@ -2,7 +2,29 @@ name: Vibe2 Continuous Core
 
 on:
   workflow_call:
+    inputs:
+      execution_lane:
+        required: false
+        type: string
+        default: game-primary
+      lane_max:
+        required: false
+        type: string
+        default: '256'
   workflow_dispatch:
+    inputs:
+      execution_lane:
+        required: false
+        type: choice
+        default: game-primary
+        options:
+          - game-primary
+          - learning-idle
+          - control-fast
+      lane_max:
+        required: false
+        type: string
+        default: '256'
   repository_dispatch:
     types: [vibe2-fanin-refill]
   push:
@@ -27,6 +49,8 @@ env:
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
+  VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || 'game-primary' }}
+  VIBE2_LANE_MAX: ${{ inputs.lane_max || '256' }}
 
 jobs:
   reserve:
@@ -159,8 +183,9 @@ jobs:
             --experience="$control_root/.vibe2/experience.json" \
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
-          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim());process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
-          echo "VIBE2_ACTIVE_WORKER_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
+          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
+          echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
+          echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           if [ "${active_worker_reservations:-0}" -gt 0 ]; then
@@ -168,18 +193,20 @@ jobs:
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
-          const requested=Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256);
-          const effective=Math.max(1,Number(control.currentMax||20));
+          const lane=String(process.env.VIBE2_EXECUTION_LANE||'game-primary');
+          const requested=Math.max(1,Number(process.env.VIBE2_LANE_MAX||256));
+          const effective=lane==='game-primary'?Math.max(1,Number(control.currentMax||20)):requested;
           const out={
             version:1,
             createdAt:process.env.VIBE2_GUARD_RESERVED_AT||new Date().toISOString(),
             matrix:[],
             scheduler:{
+              lane,
               requestedMaxConcurrentTasks:requested,
               effectiveMaxConcurrentTasks:effective,
               reservedTaskCount:0,
               workerCount:0,
-              guard:'ACTIVE_WORKER_RESERVATION_PRESENT'
+              guard:'ACTIVE_LANE_RESERVATION_PRESENT'
             }
           };
           fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(out,null,2)+'\n');
@@ -187,11 +214,14 @@ jobs:
             : > /tmp/vibe2-reserve.log
             echo 'VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'
           else
+            lane_min='1'
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_OWNER_MINIMUM_WAVE"; fi
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
-              --max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
-              --min="$VIBE2_OWNER_MINIMUM_WAVE" \
+              --lane="$VIBE2_EXECUTION_LANE" \
+              --max="$VIBE2_LANE_MAX" \
+              --min="$lane_min" \
               --reservation-id="$reservation_id" \
               --reservation-run="$GITHUB_RUN_ID" \
               --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
@@ -922,15 +952,19 @@ jobs:
           test -n "$contract_sha"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
 
+          lane_min='1'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_OWNER_MINIMUM_WAVE"; fi
           node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
-            --min="$VIBE2_OWNER_MINIMUM_WAVE" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --min="$lane_min" \
             --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
-          # Per-candidate test/performance roles already ran. Candidate regression runs once at fan-in against the exact reserved main contract. Controller/orchestration contract stays on latest-main Vibe2 Core QA so infrastructure drift cannot requeue game candidates.
-          set +e
-          (cd "$contract_root" && node --test --test-concurrency=4 \
+          # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            set +e
+            (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
@@ -968,17 +1002,26 @@ jobs:
             echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
             exit "$regression_rc"
           fi
-          echo 'VIBE2_REGRESSION_ROLE=PASS'
-          echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+            echo 'VIBE2_REGRESSION_ROLE=PASS'
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+          else
+            echo "VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+          fi
 
           node "$contract_root/tools/vibe2-practice-distillation.mjs" \
             --fanin=/tmp/vibe2-fan-in.json \
             --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
 
-          node "$contract_root/tools/vibe2-fan-in-review.mjs" \
-            --queue="$control_root/.vibe2/queue.json" \
-            --input=/tmp/vibe2-fan-in.json \
-            --output=/tmp/vibe2-package-review.json | tee /tmp/vibe2-package-review.log
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            node "$contract_root/tools/vibe2-fan-in-review.mjs" \
+              --queue="$control_root/.vibe2/queue.json" \
+              --input=/tmp/vibe2-fan-in.json \
+              --output=/tmp/vibe2-package-review.json | tee /tmp/vibe2-package-review.log
+          else
+            printf '%s\n' '{"version":1,"releaseCandidates":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
+            echo "VIBE2_REVIEW_ROLE=AUXILIARY_NO_RELEASE:$VIBE2_EXECUTION_LANE" | tee /tmp/vibe2-package-review.log
+          fi
           echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
 
           if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json; then
@@ -1008,10 +1051,15 @@ jobs:
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
-          if [ "${continue_required:-NO}" = 'YES' ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
-          echo 'VIBE2_HIERARCHICAL_FAN_IN=PASS'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${continue_required:-NO}" = 'YES' ]; then
+            echo 'refill=1' >> "$GITHUB_OUTPUT"
+          else
+            echo 'refill=0' >> "$GITHUB_OUTPUT"
+          fi
+          echo "VIBE2_HIERARCHICAL_FAN_IN=PASS:$VIBE2_EXECUTION_LANE"
 
       - name: Dispatch reviewed winner candidates to release gate
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
