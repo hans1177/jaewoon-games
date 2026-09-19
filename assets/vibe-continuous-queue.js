@@ -21,11 +21,11 @@ const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '')
 export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'done', 'failed', 'cancelled']);
 export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
 export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
-export const DEFAULT_MAX_CONCURRENT_TASKS = 20;
+export const DEFAULT_MAX_CONCURRENT_TASKS = 30;
 
 const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
 const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
-const BASE_SHARD_SLOTS = freeze({ unity: 3, web: 7, verification: 5, support: 5 });
+const BASE_SHARD_SLOTS = freeze({ unity: 5, web: 11, verification: 7, support: 7 });
 
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
@@ -132,6 +132,9 @@ function normalizeTask(input = {}, index = 0) {
     historicalDeploymentRecovery: input.historicalDeploymentRecovery === true,
     focusCycle: clampInt(input.focusCycle || 0, 0, 1000000),
     focusPolicyRef: clean(input.focusPolicyRef) || null,
+    recoveryGeneration: clampInt(input.recoveryGeneration || 0, 0, 1000000),
+    systemSteward: input.systemSteward === true,
+    ownerFocusedCaretaker: input.ownerFocusedCaretaker === true,
     packageContext: normalizePackageContext(input.packageContext),
     completionCriteria: freezeList(input.completionCriteria || [])
   };
@@ -141,7 +144,7 @@ function normalizeTask(input = {}, index = 0) {
 
 export function createVibeContinuousQueue(seed = {}) {
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
-  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : clampInt(seed?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
+  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : clampInt(seed?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 30);
   const tasks = source.map(normalizeTask);
   return freeze({
     version: 5,
@@ -158,6 +161,9 @@ export function createVibeContinuousQueue(seed = {}) {
       responsibleFileExclusive: true,
       unityReleaseFocusSlots: 1,
       postReleaseFocusedSlots: 1,
+      postReleaseCaretakerMode: 'per-game-persistent',
+      systemStewardProtectedSlots: 1,
+      systemStewardSlotBorrowableWhenIdle: true,
       longWorkProtectedSlots: 1,
       roleSeparation: true,
       baseShardSlots: BASE_SHARD_SLOTS,
@@ -192,7 +198,9 @@ function scoreTask(task, index) {
     + (PRIORITY_SCORE[task.priority] || 0)
     + Math.min(6, Number(task.packageWorkUnits || task.taskWorkUnits || 0))
     + (task.packageLongWorkProtected ? 3 : 0)
-    + (task.postReleaseFocused ? 8 : 0)
+    + (task.systemSteward ? 8000 : 0)
+    + (task.postReleaseFocused ? 1200 : 0)
+    + (task.ownerFocusedCaretaker ? 900 : 0)
     - index / 1000;
 }
 function fileLocks(task) {
@@ -230,8 +238,11 @@ function isReleasedWorkerSlotTask(task) {
 function isExternalQuotaWaitingTask(task) {
   return task?.status === 'running' && /WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(clean(task?.blocker));
 }
+function isExternalRuntimeWaitingTask(task) {
+  return task?.status === 'running' && /roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME|external.*runner.*wait/i.test(clean(task?.blocker));
+}
 function releasesWorkerCapacity(task) {
-  return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task) || isExternalQuotaWaitingTask(task);
+  return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task) || isExternalQuotaWaitingTask(task) || isExternalRuntimeWaitingTask(task);
 }
 function isProtectedLongOwner(task) {
   return task?.packageLongWorkProtected === true && clean(task?.packageRole) === 'implementation-owner';
@@ -250,10 +261,10 @@ function isPostReleaseFocused(task) {
     && !['inspect','research','qa'].includes(clean(task?.type).toLowerCase());
 }
 function dynamicConcurrency(queue, requested = null) {
-  const persistentMax = clampInt(queue?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
+  const persistentMax = clampInt(queue?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 30);
   const requestedMax = requested === null || requested === undefined || clean(requested) === ''
     ? persistentMax
-    : clampInt(requested, 1, 20);
+    : clampInt(requested, 1, 30);
   const hardMax = Math.min(persistentMax, requestedMax);
   const running = queue.tasks.filter((task) => task.status === 'running');
   const awaitingQa = running.filter(isAwaitingQaTask).length;
@@ -263,15 +274,9 @@ function dynamicConcurrency(queue, requested = null) {
     task.retries > 0 &&
     task.retries <= task.maxRetries
   ).length;
-  let limit = hardMax;
-  const applyPressure = (count) => {
-    if (count >= 8) limit = Math.min(limit, 4);
-    else if (count >= 6) limit = Math.min(limit, 8);
-    else if (count >= 4) limit = Math.min(limit, 12);
-    else if (count >= 2) limit = Math.min(limit, 16);
-  };
-  applyPressure(awaitingQa);
-  applyPressure(retryPressure);
+  // Queue-local pressure is observed but must not collapse unrelated lanes.
+  // Persistent adaptive control reacts to verified runner/system pressure; waiting QA/quota/runtime work already releases capacity.
+  const limit = hardMax;
   return freeze({
     persistentMaxConcurrentTasks: persistentMax,
     requestedMaxConcurrentTasks: requestedMax,
@@ -365,6 +370,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
     capacityRunning: freeze(capacityRunning),
     awaitingQa: freeze(running.filter(isAwaitingQaTask)),
     quotaWaiting: freeze(running.filter(isExternalQuotaWaitingTask)),
+    externalRuntimeWaiting: freeze(running.filter(isExternalRuntimeWaitingTask)),
     releasedWorkerSlots: freeze(running.filter(isReleasedWorkerSlotTask)),
     hasEligibleWork: selected.length > 0,
     blocked: freeze(blocked),
