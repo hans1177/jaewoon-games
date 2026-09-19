@@ -685,10 +685,18 @@ jobs:
           cache="$(sed -n 's/^VIBE2_INCREMENTAL_QA_CACHE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_status="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_executed="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_EXECUTED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_status="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_risk="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_RISK=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_score="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SCORE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_signals="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SIGNALS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
           echo "cache=$cache" >> "$GITHUB_OUTPUT"
           echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
           echo "causal_replay_executed=$replay_executed" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_status=$drift_status" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_risk=$drift_risk" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_score=$drift_score" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_signals=$drift_signals" >> "$GITHUB_OUTPUT"
           qa_finished="$(date +%s%3N)"
           echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_TEST_ROLE=PASS'
@@ -739,6 +747,10 @@ jobs:
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
           IQA_CAUSAL_REPLAY_STATUS: ${{ steps.incremental_qa.outputs.causal_replay_status }}
           IQA_CAUSAL_REPLAY_EXECUTED: ${{ steps.incremental_qa.outputs.causal_replay_executed }}
+          IQA_ARCHITECTURE_DRIFT_STATUS: ${{ steps.incremental_qa.outputs.architecture_drift_status }}
+          IQA_ARCHITECTURE_DRIFT_RISK: ${{ steps.incremental_qa.outputs.architecture_drift_risk }}
+          IQA_ARCHITECTURE_DRIFT_SCORE: ${{ steps.incremental_qa.outputs.architecture_drift_score }}
+          IQA_ARCHITECTURE_DRIFT_SIGNALS: ${{ steps.incremental_qa.outputs.architecture_drift_signals }}
           PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
           PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -824,6 +836,11 @@ jobs:
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_STATUS)&&`causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)&&`architecture-drift-status:${clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)&&`architecture-drift-risk:${clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)&&`architecture-drift-score:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)&&`architecture-drift-signals:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)}`,
+            ['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())?'architecture-drift-focused-review-required:YES':'',
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
             clean(baseCodingMethod?.strategy)&&`coding-strategy:${clean(baseCodingMethod.strategy)}`,
@@ -897,6 +914,14 @@ jobs:
             reviewVerified:false,
             causalReplayStatus:clean(process.env.IQA_CAUSAL_REPLAY_STATUS)||clean(baseCodingMethod?.causalReplay?.status)||'NOT_REQUIRED',
             causalReplayExecuted:clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES',
+            architectureDrift:{
+              status:clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)||'NOT_AVAILABLE',
+              riskLevel:clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)||'LOW',
+              score:Number(process.env.IQA_ARCHITECTURE_DRIFT_SCORE||0),
+              signals:clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS).split(',').map(clean).filter(value=>value&&value!=='NONE'),
+              hardReject:false,
+              focusedReviewRequired:['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())
+            },
             telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
           const result={version:8,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
