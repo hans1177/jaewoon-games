@@ -683,8 +683,12 @@ jobs:
             --output=/tmp/vibe2-incremental-qa.json | tee /tmp/vibe2-incremental-qa.log
           hash="$(sed -n 's/^VIBE2_INCREMENTAL_QA_HASH=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           cache="$(sed -n 's/^VIBE2_INCREMENTAL_QA_CACHE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_status="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_executed="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_EXECUTED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
           echo "cache=$cache" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_executed=$replay_executed" >> "$GITHUB_OUTPUT"
           qa_finished="$(date +%s%3N)"
           echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_TEST_ROLE=PASS'
@@ -733,6 +737,8 @@ jobs:
           IQA_OUTCOME: ${{ steps.incremental_qa.outcome }}
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
+          IQA_CAUSAL_REPLAY_STATUS: ${{ steps.incremental_qa.outputs.causal_replay_status }}
+          IQA_CAUSAL_REPLAY_EXECUTED: ${{ steps.incremental_qa.outputs.causal_replay_executed }}
           PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
           PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -791,6 +797,7 @@ jobs:
             ownedState:Array.isArray(exploration?.editContract?.ownedState)?exploration.editContract.ownedState.slice(0,24):[],
             semanticDiffBudget:exploration?.editContract?.semanticDiffBudget||null,
             semanticDiffEnforcement:null,
+            causalReplay:exploration?.editContract?.causalReplay||null,
             failureFingerprint:clean(workOrder?.unifiedLearning?.failureFingerprint)||null,
             patchRecipeMode:clean(exploration?.editContract?.patchRecipe?.mode)||null,
             verifiedFailureLocalMemoryCount:Number(exploration?.editContract?.patchRecipe?.verifiedMemoryCount||0),
@@ -815,6 +822,8 @@ jobs:
             clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
             clean(process.env.IQA_HASH)&&`incremental-qa-hash:${clean(process.env.IQA_HASH)}`,
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_STATUS)&&`causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
             clean(baseCodingMethod?.strategy)&&`coding-strategy:${clean(baseCodingMethod.strategy)}`,
@@ -886,6 +895,8 @@ jobs:
             firstCandidatePass:Boolean(candidateOk&&testOk&&performanceOk&&baseCodingMethod.candidateProducedFirstAttempt===true),
             fullRegressionVerified:false,
             reviewVerified:false,
+            causalReplayStatus:clean(process.env.IQA_CAUSAL_REPLAY_STATUS)||clean(baseCodingMethod?.causalReplay?.status)||'NOT_REQUIRED',
+            causalReplayExecuted:clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES',
             telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
           const result={version:8,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
