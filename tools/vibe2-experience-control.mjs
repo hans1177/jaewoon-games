@@ -225,6 +225,60 @@ export function buildVibeExperienceReviewFromRevote({ request = {}, departmentVo
   });
 }
 
+export function buildSupervisedWebExperienceReview({ task = {}, candidateResult = {}, supervisionReview = {} } = {}) {
+  const decision=normalizeDecision(supervisionReview.decision);
+  const verified=supervisionReview.verified===true;
+  const rationale=clean(supervisionReview.rationale||supervisionReview.reason);
+  const candidateBranch=clean(candidateResult.candidateBranch||supervisionReview.candidateBranch);
+  const resultOutcome=normalizeOutcome(candidateResult.outcome);
+  const evidence=unique([
+    ...(Array.isArray(supervisionReview.evidence)?supervisionReview.evidence:[]),
+    candidateBranch?`candidate-branch:${candidateBranch}`:'',
+    clean(candidateResult.baseMainSha)?`candidate-base-main:${clean(candidateResult.baseMainSha)}`:'',
+    verified?`supervised-review:${clean(task.id)}:${decision}`:'',
+    candidateResult?.candidateIdentity?.manifestPath?`candidate-manifest:${clean(candidateResult.candidateIdentity.manifestPath)}`:''
+  ]);
+  const pass=decision==='PASS'&&resultOutcome==='PASS';
+  const reusable=unique(supervisionReview.reusablePatterns||[]);
+  const avoid=unique([
+    ...(Array.isArray(supervisionReview.avoidPatterns)?supervisionReview.avoidPatterns:[]),
+    ...(!pass&&rationale?[rationale]:[])
+  ]);
+  return Object.freeze({
+    id:`supervised_${clean(task.id)||'unknown'}_${clean(candidateBranch).replace(/[^A-Za-z0-9._-]+/g,'_').slice(-80)||'candidate'}`,
+    gameId:clean(task.gameId),
+    engine:clean(task.target)||'web',
+    departments:Object.freeze(['planning','development','qa']),
+    taskType:'supervised-web-coauthoring',
+    problem:clean(supervisionReview.problem)||rationale||clean(task.goal),
+    goal:clean(task.goal),
+    change:[
+      candidateBranch?`candidate ${candidateBranch}`:'',
+      `supervised decision ${decision}`,
+      rationale
+    ].filter(Boolean).join(' | '),
+    outcome:pass?'PASS':'FAIL',
+    failureCause:pass?'':(rationale||`SUPERVISED_${decision}`),
+    qa:Object.freeze(unique([
+      'supervised-diff-review',
+      'supervised-playability-review',
+      'mobile-runtime-review',
+      ...(Array.isArray(supervisionReview.qa)?supervisionReview.qa:[])
+    ])),
+    build:clean(supervisionReview.build),
+    evidence:Object.freeze(evidence),
+    reusablePatterns:Object.freeze(reusable),
+    avoidPatterns:Object.freeze(avoid),
+    engineQaVerified:pass&&resultOutcome==='PASS',
+    reviewVerified:verified,
+    reviewDecision:verified?'PASS':'REVISE',
+    designIntelligenceRequired:false,
+    authorityExpanded:false,
+    supervisionDecision:decision,
+    supervisionRationale:rationale,
+    candidateBranch:candidateBranch||null
+  });
+}
 export function runExperiencePromotion({
   memoryFile = '.vibe2/experience.json',
   reviewFile = '',
