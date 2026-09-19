@@ -117,21 +117,22 @@ test('low workload never teaches the controller to reduce capacity',()=>{
   assert.equal(next.lastReason,'LOW_LOAD');
 });
 
-test('two healthy saturated runs restore one adaptive step',()=>{
+test('healthy saturated runs fast-ramp one adaptive step per run',()=>{
   const healthy1=computeParallelismTelemetry({results:Array.from({length:12},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'204'})),requestedMax:12,effectiveMax:12,taskCount:12});
-  const healthy2=computeParallelismTelemetry({results:Array.from({length:12},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'205'})),requestedMax:12,effectiveMax:12,taskCount:12});
+  const healthy2=computeParallelismTelemetry({results:Array.from({length:16},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'205'})),requestedMax:16,effectiveMax:16,taskCount:16});
   const first=decideAdaptiveBackpressure(createParallelismControl({currentMax:12}),healthy1,{now:'2026-09-15T10:03:00.000Z'});
-  assert.equal(first.currentMax,12);
-  assert.equal(first.healthyStreak,1);
+  assert.equal(first.currentMax,16);
+  assert.equal(first.healthyStreak,0);
+  assert.equal(first.lastDecision,'UP');
   const second=decideAdaptiveBackpressure(first,healthy2,{now:'2026-09-15T10:04:00.000Z'});
-  assert.equal(second.currentMax,16);
+  assert.equal(second.currentMax,20);
   assert.equal(second.lastDecision,'UP');
   assert.equal(second.lastRunId,'205');
 });
 
 test('version 1 control state migrates without losing its cap',()=>{
   const migrated=createParallelismControl({version:1,currentMax:16,healthyStreak:1});
-  assert.equal(migrated.version,2);
+  assert.equal(migrated.version,3);
   assert.equal(migrated.currentMax,16);
   assert.equal(migrated.healthyStreak,1);
   assert.equal(migrated.lastRunId,null);
