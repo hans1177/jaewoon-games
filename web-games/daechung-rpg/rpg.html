@@ -185,7 +185,11 @@ function startBgm(){ if(AUDIO.timer)return; const normal=[220,277,330,440,330,27
 }
 function setAggro(v,boss=false){
 function setAggro(v,boss=false){
+function setAggro(v,boss=false){
+
  if(!AUDIO.ctx)return;
+
+ const now=AUDIO.ctx.currentTime; /no_think
 
  const now=AUDIO.ctx.currentTime;
  AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);
