@@ -21,6 +21,12 @@ test('Web bootstrap expected signals route to exact Vibe work instead of a gener
   assert.match(confirmed,/WEB_VIBE_IMPLEMENTATION_SIGNAL/);
   assert.match(scheduler,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(confirmed,/web-gameplay-music/);
+  assert.match(bootstrap,/failureSignature/);
+  assert.match(bootstrap,/vibeWebRequestedStage/);
+  assert.match(confirmed,/bootstrapFailure\?\.failureSignature/);
+  assert.match(confirmed,/WEB_GAMEPLAY_VALIDATION_FAILED/);
+  assert.match(planner,/COMPANY_RUNTIME_FAILURE_EVIDENCE/);
+  assert.match(planner,/queueVibeWebImplementationReason/);
 });
 
 test('planner and source worker preserve candidate-only missing-source bootstrap safety',()=>{
