@@ -11,7 +11,7 @@ import {
   productionClassOf,
 } from './production-classification.mjs';
 import { WEB_VALIDATION_SCHEMA_VERSION } from './company-web-validation-evidence-contract.mjs';
-import { normalizeCatalog, validateNormalizedCatalog } from './game-catalog-normalization.mjs';
+import { ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog } from './game-catalog-normalization.mjs';
 
 const companyPath='company-status.json';
 const supervisionPath='director-supervision-status.json';
@@ -21,6 +21,7 @@ const artbooksPath='game-artbooks.json';
 const developmentQueuePath=process.env.COMPANY_DEVELOPMENT_QUEUE_PATH||'development-queue.json';
 const seedStatePath=process.env.COMPANY_SEED_STATE_PATH||'game-seed-state.json';
 const centralPolicyPath='company-learning/platform-release-roadmap.json';
+const ownerWebGameIdsPath=process.env.COMPANY_OWNER_WEB_GAME_IDS_PATH||'';
 const PLATFORM_PRIORITY=['ROBLOX','UNITY','FORTNITE_UEFN'];
 const CENTRAL_POLICY_REQUIRED_STAGES=[
   'WEB_BASE_IMPLEMENTATION',
@@ -459,6 +460,11 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const artbooks=JSON.parse(filesystem.readFileSync(artbooksPath,'utf8'));
   const developmentQueue=optionalJson(filesystem,developmentQueuePath,{items:[]});
   const seedState=optionalJson(filesystem,seedStatePath,{seeds:[]});
+  const ownerWebGameIds=ownerWebGameIdsPath&&filesystem.existsSync?.(ownerWebGameIdsPath)
+    ?filesystem.readFileSync(ownerWebGameIdsPath,'utf8').split(/\r?\n/).map(clean).filter(Boolean)
+    :[];
+  const ownerWebIngest=ingestOwnerWebGameIds(catalog,ownerWebGameIds,{filesystem});
+  catalog.runtimeCounts={...(catalog.runtimeCounts||{}),ownerWebAdded:ownerWebIngest.added.length,ownerWebUpdated:ownerWebIngest.updated.length,ownerWebDisabled:ownerWebIngest.disabled.length};
 
   synchronizeCompanyStatusPolicy(company,{filesystem});
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem});
@@ -536,6 +542,9 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log(`COMPANY_HOMEPAGE_RUNTIME_INFO=${catalog.runtimeCounts?.homepageInfo||0}/${catalog.games?.length||0}`);
   console.log(`COMPANY_HOMEPAGE_RUNTIME_AUTHORITY=${catalog.runtimeInfoAuthority||'none'}`);
   console.log(`COMPANY_CATALOG_NORMALIZED=${catalog.runtimeCounts?.normalizedGames||0}/${catalog.games?.length||0}`);
+  console.log(`COMPANY_OWNER_WEB_ADDED=${ownerWebIngest.added.join(',')||'NONE'}`);
+  console.log(`COMPANY_OWNER_WEB_UPDATED=${ownerWebIngest.updated.join(',')||'NONE'}`);
+  console.log(`COMPANY_OWNER_WEB_DISABLED=${ownerWebIngest.disabled.join(',')||'NONE'}`);
   console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
