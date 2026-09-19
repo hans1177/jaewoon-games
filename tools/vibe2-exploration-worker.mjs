@@ -86,6 +86,47 @@ function taskFailureEvidence(order={}){
   ];
   return unique(values).slice(0,16);
 }
+
+function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSymbols=[],ownedState=[],requiredFocusedChecks=[],preserveSemantics=[]}={}){
+  const failureFingerprint=clean(order?.unifiedLearning?.failureFingerprint)||null;
+  const verifiedMemory=(order?.unifiedLearning?.failureLocalMemory||[])
+    .filter(row=>row?.verified===true&&row?.reusable===true)
+    .slice(0,5);
+  const reusePatterns=unique(verifiedMemory.flatMap(row=>row?.reusablePatterns||[])).slice(0,12);
+  const avoidPatterns=unique(verifiedMemory.flatMap(row=>[...(row?.avoidPatterns||[]),row?.failureCause])).slice(0,12);
+  const memoryIds=unique(verifiedMemory.map(row=>row?.id)).slice(0,8);
+  const mode=memoryIds.length?'VERIFIED_FAILURE_LOCAL_RECIPE':failures.length?'DETERMINISTIC_CAUSAL_RECIPE':'REQUIREMENT_RECIPE';
+  const steps=unique([
+    failures.length?'CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE':'CONFIRM_REQUIREMENT_AGAINST_CURRENT_SOURCE',
+    primaryTargets.length?'PATCH_PRIMARY_RESPONSIBILITY_FIRST':'IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE',
+    dependentSymbols.length?'PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED':'DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES',
+    ownedState.length?'VERIFY_OWNED_STATE_CHANGE':'VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE',
+    reusePatterns.length?'APPLY_VERIFIED_REUSABLE_PATTERN_WHEN_IT_FITS_CURRENT_SOURCE':'USE_CURRENT_SOURCE_CAUSAL_STRUCTURE',
+    avoidPatterns.length?'AVOID_VERIFIED_FAILURE_PATTERN':'AVOID_UNRELATED_OR_SPECULATIVE_REWRITE',
+    preserveSemantics.length?'VERIFY_PRESERVE_SEMANTICS':'PRESERVE_EXISTING_WORKING_BEHAVIOR',
+    requiredFocusedChecks.length?'RUN_COMPILED_FOCUSED_CHECKS':'RUN_TASK_LOCAL_INCREMENTAL_QA'
+  ]);
+  return{
+    version:1,
+    mode,
+    failureFingerprint,
+    verifiedMemoryIds:memoryIds,
+    verifiedMemoryCount:memoryIds.length,
+    reusePatterns,
+    avoidPatterns,
+    steps,
+    primaryTargets:primaryTargets.slice(0,8),
+    dependentSymbolsOrSystems:dependentSymbols.slice(0,24),
+    ownedState:ownedState.slice(0,24),
+    focusedChecks:requiredFocusedChecks.slice(0,24),
+    protectedSemantics:preserveSemantics.slice(0,32),
+    verifiedMemoryOnly:true,
+    scopeExpansionAllowed:false,
+    qaBypassAllowed:false,
+    authorityExpanded:false
+  };
+}
+
 function compileEditContract({order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[]}={}){
   const sourceAnalysis=analyzeExistingGameSource(sourceText);
   const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
@@ -131,6 +172,8 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     :'ARCHITECTURE_FIRST_GREENFIELD';
   const confidence=primaryTargets.length&&graph.nodeCount>0?'HIGH':graph.nodeCount>0?'MEDIUM':'LOW';
   const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
+  const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...dependentSystems]).slice(0,24);
+  const patchRecipe=compilePatchRecipe({order,failures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
   return{
     version:1,
     mode:'COMPILED_EDIT_CONTRACT',
@@ -138,7 +181,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     responsibilityConfidence:confidence,
     primaryTargets,
     allowedResponsibleFiles:responsibleFiles,
-    allowedDependentSymbolsOrSystems:unique([...directDependentSymbols,...dependentSystems]).slice(0,24),
+    allowedDependentSymbolsOrSystems,
     primarySystems,
     dependentSystems,
     ownedState,
@@ -154,6 +197,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       saveKeysMustRemainCompatible:sourceAnalysis.storageKeys||[]
     },
     requiredFocusedChecks,
+    patchRecipe,
     codingArchitecture:{
       developmentMode:codingArchitecture?.developmentMode||null,
       stateOwnershipSystems:(codingArchitecture?.stateOwnership||[]).map(row=>row.system),
@@ -189,6 +233,7 @@ function bootstrapEditContract(order={},responsibleFiles=[]){
     requiredObservableResult:clean(order?.originalGoal||order?.goal)||'IMPLEMENT_COMPLETE_PLAYABLE_BASELINE',
     semanticDiffBudget:{allowedSystems:[],preferredPrimarySymbols:[],maxSystemCount:0,unrelatedSystemMutationForbidden:false,saveKeysMustRemainCompatible:[]},
     requiredFocusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],
+    patchRecipe:{version:1,mode:'REQUIREMENT_RECIPE',failureFingerprint:null,verifiedMemoryIds:[],verifiedMemoryCount:0,reusePatterns:[],avoidPatterns:[],steps:['CONFIRM_REQUIREMENT_AGAINST_CURRENT_SOURCE','IMPLEMENT_COMPLETE_PLAYABLE_BASELINE','RUN_TASK_LOCAL_INCREMENTAL_QA'],primaryTargets:[],dependentSymbolsOrSystems:[],ownedState:[],focusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],protectedSemantics:['APPROVED_GAMEPLAY_VALUES','SAVE_MEANING'],verifiedMemoryOnly:true,scopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false},
     codingArchitecture:{developmentMode:'GREENFIELD',stateOwnershipSystems:[],apiNames:[],invariantIds:[],impactRule:'ARCHITECTURE_FIRST_THEN_IMPLEMENT'},
     responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
     failureEvidence:taskFailureEvidence(order),writableScopeExpansionAllowed:false,learningAuthorityExpanded:false
