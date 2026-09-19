@@ -104,7 +104,8 @@ function computeWorkload(rows,tasks=[]){
 
 export function computeParallelismTelemetry(input={}){
   const rows=Array.isArray(input.results)?input.results:[];
-  const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||30)||30),1,30);
+  const externalWaveMax=256;
+  const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||externalWaveMax)||externalWaveMax),1,externalWaveMax);
   const effectiveMax=clamp(Math.floor(num(input.effectiveMax||rows[0]?.metrics?.effectiveMax||requestedMax)||requestedMax),1,requestedMax);
   const taskCount=Math.max(0,Math.floor(num(input.taskCount||0)));
   const workerCount=rows.length;
