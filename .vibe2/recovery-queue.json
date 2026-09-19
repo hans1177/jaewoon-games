@@ -282,7 +282,15 @@
         "recovery-exact-stage:SYSTEM_AI_IMPLEMENTATION",
         "actions-run:35424573382",
         "recovery-escalated-from:system-ai",
-        "recovery-route:SYSTEM_AI"
+        "recovery-route:SYSTEM_AI",
+        "owner-development-bottleneck-requeue:2026-09-19",
+        "system-ai-empty-change-retry-repaired:tools/company-system-ai-worker.mjs",
+        "recovery-queue:recovery-e36314e23ac645b9df25",
+        "recovery-exact-stage:system-ai-implementation-failed",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "recovery-queue:recovery-453ef0814800056c05b6",
+        "actions-run:35426574813"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -298,7 +306,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T06:11:36.649Z"
+      "updatedAt": "2026-09-19T06:36:37.000Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -667,7 +675,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:27:15.601Z",
-      "updatedAt": "2026-09-19T06:35:17.166Z"
+      "updatedAt": "2026-09-19T06:36:37.000Z"
     },
     {
       "id": "recovery-453ef0814800056c05b6",
