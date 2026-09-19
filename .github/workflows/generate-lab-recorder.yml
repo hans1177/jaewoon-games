@@ -46,7 +46,7 @@ jobs:
             --write-media /tmp/lab-recorder-raw.mp3
           ffmpeg -y -i /tmp/lab-recorder-raw.mp3 \
             -af "highpass=f=90,lowpass=f=9500,acompressor=threshold=-18dB:ratio=2.2:attack=12:release=150,volume=1.15" \
-            -codec:a libmp3lame -b:a 96k \
+            -codec:a libmp3lame -b:a 96k -f mp3 \
             /tmp/lab-recorder-final.mpga
           test -s /tmp/lab-recorder-final.mpga
           ls -lh /tmp/lab-recorder-final.mpga
