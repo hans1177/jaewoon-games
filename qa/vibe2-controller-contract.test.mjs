@@ -96,6 +96,10 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
   assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
   assert(workflow.includes("variant:\`speculative-\${i}\`"));
+  assert(workflow.includes('--variant="$VARIANT"'));
+  assert(continuousRunnerSource.includes("strategy:'PRIMARY_RESPONSIBILITY_MINIMAL'"));
+  assert(continuousRunnerSource.includes("strategy:'DEPENDENCY_SAFE_COHERENT_PATCH'"));
+  assert(continuousRunnerSource.includes("strategy:clean(preference?.strategy)||'CAUSAL_TRACE_CROSSCHECK'"));
 });
 
 test('24h planner uses latest main contract and tools while control branch stores state only',()=>{
@@ -163,6 +167,8 @@ test('candidate release gate isolates candidates and requires the affected Web d
   assert(webReleaseBlock.includes('VIBE2_WEB_ALREADY_PROMOTED=YES'));
   assert(webReleaseBlock.includes('git reset --hard origin/vibe2-unreal-core'));
   assert(!webReleaseBlock.includes('git pull --rebase origin vibe2-unreal-core'));
+  assert.equal(candidateReleaseWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
+  assert.ok((candidateReleaseWorkflow.match(/git reset --hard origin\/vibe2-unreal-core/g)||[]).length>=4);
 });
 
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
@@ -356,7 +362,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:7'));
+  assert(resultStep.includes('version:8'));
 });
 
 test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
