@@ -345,6 +345,10 @@ test('DESIGN_ONLY stops at design baseline; artbook is post-Web strict review on
   assert.match(pipeline,/terminalDesignFailure=.*DESIGN_PRE_GATE_BLOCKED/);
   assert.match(pipeline,/if\(terminalDesignFailure\)return false/);
   assert.match(gate,/designOnlyVibe2Forbidden:true/);
+  assert.match(gate,/DETERMINISTIC_DEPARTMENT_EVIDENCE/);
+  assert.match(gate,/deterministicDepartmentEvidenceCompleted===true/);
+  assert.match(gate,/runtimeMetrics\?\.deterministicDepartmentEvidence===true/);
+  assert.match(gate,/deterministic-design-recovery-provenance-required/);
   assert.match(artbook,/postWebStrictReview:true/);
   assert.match(artbook,/POST_WEB_ARTBOOK_REQUIRES_WEB_STRICT_80_NO_HARD_FAILURE/);
   assert.match(artbook,/ARTBOOK_MODEL_CALL_TIMEOUT_MS/);
