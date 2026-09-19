@@ -537,6 +537,29 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('focused Web timeout recovery compacts the second retry before the final retry',()=>{
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>',
+    '',
+    '=== FILE config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.CONFIG={x:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{
+    allowFullRewrite:false,
+    error:new Error('Ollama 오류: prediction aborted, token repeat limit reached'),
+    responsibleFiles:['index.html'],
+    attempt:2,
+    compactTimeoutRecovery:true
+  });
+  assert.match(retry,/exceeded the time budget/);
+  assert.doesNotMatch(retry,/config\.js/);
+  assert.match(retry,/ONLY writable path is "index\.html"/);
+  assert.doesNotMatch(retry,/FINAL FOCUSED RETRY/);
+});
+
 test('timeout final retry prompt strips read-only context and asks for one compact real edit',()=>{
   const base=[
     'Allowed edit paths: index.html',
@@ -631,6 +654,7 @@ test('Ollama transport uses streaming instead of one giant non-streaming respons
   assert.doesNotMatch(workerSource, /stream:false/);
   assert.match(workerSource, /node:http/);
   assert.match(workerSource, /vibe2PartialOutput=output/);
+  assert.match(workerSource, /output&&!error\.vibe2PartialOutput\)error\.vibe2PartialOutput=output/);
   assert.match(workerSource, /error\?\.vibe2PartialOutput/);
   assert.match(workerSource, /\['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'\]/);
 });
