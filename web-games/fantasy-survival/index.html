@@ -302,6 +302,10 @@ function useItem(id){
  state.dirty=true;updateHud();renderPanel()
 }
 function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.cookingStation,state.incubator].filter(Boolean)}
+function resolveStructureOverlaps(){
+ const keys=['bench','furnace','ironBench','goldBench','cookingStation','incubator'],placed=[];
+ for(const key of keys){let s=state[key];if(!s)continue;if(placed.some(p=>dist(s.x,s.y,p.x,p.y)<88)){let fixed=null;for(let ring=1;ring<=4&&!fixed;ring++)for(let i=0;i<12;i++){const a=i*Math.PI/6,pos={x:clamp(s.x+Math.cos(a)*95*ring,45,WORLD.w-45),y:clamp(s.y+Math.sin(a)*95*ring,45,WORLD.h-45)};if(placed.every(p=>dist(pos.x,pos.y,p.x,p.y)>=88)){fixed=pos;break}}if(fixed){state[key]=s=fixed;state.dirty=true}}placed.push(s)}
+}
 function findStructurePlacement(){
  const p=state.player,offs=[[65,25],[90,-55],[20,95],[-70,65],[-95,-30],[-35,-100],[90,75],[-100,95],[130,0],[0,130],[-130,0],[0,-130]];
  for(const [ox,oy] of offs){const pos={x:clamp(p.x+ox,45,WORLD.w-45),y:clamp(p.y+oy,45,WORLD.h-45)};if(structurePositions().every(s=>dist(pos.x,pos.y,s.x,s.y)>=88))return pos}
@@ -614,7 +618,7 @@ function hostApplyRemoteAttack(a){
   if(a.bind&&Math.random()<a.bind)e.stunnedUntil=now+2000;
   if(e.hp<=0){
    e.hp=0;
-   if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});
+   if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});
    multiSend('kill-reward',{targetId:a.attackerId,typeId:e.type.id});
   }
  }
@@ -687,7 +691,7 @@ function dismountPet(show=true){
  if(!state.pet.mounted)return;state.pet.mounted=false;state.pet.x=state.player.x+state.player.faceX*48;state.pet.y=state.player.y+state.player.faceY*48;state.dirty=true;updateHud();if(show)showNotice('그림자 늑대에서 내렸어')
 }
 function killPet(){
- const pet=state.pet;if(!pet.hatched||!pet.alive)return;const wasMounted=pet.mounted;pet.hp=0;pet.alive=false;pet.mounted=false;pet.targetId=null;pet.respawnAt=Date.now()+180000;state.dirty=true;
+ const pet=state.pet;if(!pet.hatched||!pet.alive)return;const wasMounted=pet.mounted;pet.hp=0;pet.alive=false;pet.mounted=false;pet.targetId=null;pet.respawnAt=Date.now()+180000;if(state.player.torchEquipped&&isTwoHandedWeapon(state.player.weapon))state.player.torchEquipped=false;state.dirty=true;
  if(wasMounted){state.player.stunnedUntil=performance.now()+3000;showNotice('그림자 늑대가 쓰러짐 · 강제 하차 + 3초 기절')}else showNotice('그림자 늑대가 쓰러짐 · 3분 뒤 부활');
  updateHud();saveGame(false)
 }
@@ -696,8 +700,8 @@ function damagePet(n,attacker=null){
 }
 function finishPetEnemyKill(e,ownerId=multiplayer.playerId){
  e.hp=0;
- if(ownerId===multiplayer.playerId){state.player.kills++;awardLoot(e);if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});updateHud()}
- else{if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})}
+ if(ownerId===multiplayer.playerId){state.player.kills++;awardLoot(e);if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});updateHud()}
+ else{if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})}
  state.pet.targetId=null;state.dirty=true
 }
 function hostApplyPetAttack(a){
@@ -851,9 +855,9 @@ function spawnQuestCaveEnemies(){
  if(state.questCaveInit&&state.enemies.some(e=>e.area==='questcave'&&e.hp>0))return;
  state.questCaveInit=true;
  const leaderSpots=[{x:1800,y:900},{x:3500,y:2100}];
- for(const p of leaderSpots){const e=spawnAt(creatures.shadowwolfleader,p.x,p.y,null);e.area='questcave';e.spawnX=p.x;e.spawnY=p.y;state.enemies.push(e)}
+ for(const p of leaderSpots){const e=spawnAt(creatures.shadowwolfleader,p.x,p.y,null);e.area='questcave';e.spawnX=p.x;e.spawnY=p.y;e.noRespawn=true;state.enemies.push(e)}
  const groups=2+Math.floor(Math.random()*2);
- for(let g=0;g<groups;g++){const base={x:2300+g*850,y:g%2?2050:850};for(let i=0;i<2;i++){const e=spawnAt(creatures.vampirebat,base.x+i*55,base.y+i*35,700+g);e.area='questcave';e.spawnX=e.x;e.spawnY=e.y;state.enemies.push(e)}}
+ for(let g=0;g<groups;g++){const base={x:2300+g*850,y:g%2?2050:850};for(let i=0;i<2;i++){const e=spawnAt(creatures.vampirebat,base.x+i*55,base.y+i*35,700+g);e.area='questcave';e.spawnX=e.x;e.spawnY=e.y;e.noRespawn=true;state.enemies.push(e)}}
 }
 function summonLeaderWolves(e){
  for(let i=0;i<2;i++){const a=(i?1:-1)*.9,px=clamp(e.x+Math.cos(a)*65,120,QUEST_CAVE.w-120),py=clamp(e.y+Math.sin(a)*65,120,QUEST_CAVE.h-120);const w=spawnAt(creatures.shadowwolf,px,py,null);w.area='questcave';w.noRespawn=true;w.hostile=true;state.enemies.push(w)}
@@ -918,7 +922,7 @@ function damageMonster(target,amount,attacker,now){
   if(target.hp<=0){
     target.hp=0;
     target.enemyTarget=null;
-    if(!target.type.summoned&&!target.type.sealSpawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+12000});
+    if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+12000});
   }
 }
 function chaseMonster(e,target,now,speedMult=1,damageMult=1){
@@ -1077,7 +1081,7 @@ function update(dt,now){
       if(e.type.boss){const b=updateBoss(e,p,now);vx=b.vx;vy=b.vy;monsterFight=true}
       if(!e.type.boss&&now<(e.stunnedUntil||0)){vx=0;vy=0;monsterFight=true}
   
-      if(!monsterFight&&e.type.caveLeader){
+      if(!monsterFight&&e.type.caveLeader&&playerD<(e.type.detect||760)){
         if(now>=(e.nextSpecialAt||0)){e.nextSpecialAt=now+1000;if(Math.random()<.25)summonLeaderWolves(e)}
       }
       if(!monsterFight&&e.type.vampireBat&&playerD<e.type.r+27&&now>=(e.nextSpecialAt||0)){
@@ -1320,9 +1324,9 @@ function loadGame(){
   const px=(Number.isFinite(ox)?ox:(legacyScale?1200:6000))*scale+(oldSurface?shiftX:0),py=(Number.isFinite(oy)?oy:(legacyScale?800:4000))*scale+(oldSurface?shiftY:0);
   p.x=clamp(px,25,WORLD.w-25);p.y=clamp(py,25,WORLD.h-25);
   p.wood=Math.max(0,Number(o.wood)||0);p.stone=Math.max(0,Number(o.stone)||0);p.fiber=Math.max(0,Number(o.fiber)||0);p.ironOre=Math.max(0,Number(o.ironOre)||0);p.ironIngot=Math.max(0,Number(o.ironIngot)||0);p.goldOre=Math.max(0,Number(o.goldOre)||0);p.goldIngot=Math.max(0,Number(o.goldIngot)||0);p.essence=Math.max(0,Number(o.essence)||0);p.hunger=clamp(Number.isFinite(Number(o.hunger))?Number(o.hunger):100,0,100);p.hungerNext=performance.now()+20000;p.wolfHide=Math.max(0,Number(o.wolfHide)||0);p.walkerClaw=Math.max(0,Number(o.walkerClaw)||0);p.bearClaw=Math.max(0,Number(o.bearClaw)||0);p.bearHide=Math.max(0,Number(o.bearHide)||0);p.bearFang=Math.max(0,Number(o.bearFang)||0);p.loot=o.loot&&typeof o.loot==='object'?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.loot[k])||0);p.kills=Math.max(0,Number(o.kills)||0);
-  p.inventory=o.inventory&&typeof o.inventory==='object'?{...o.inventory}:{};p.weapon=item(o.weapon)?.kind==='weapon'?o.weapon:(o.weapon==='wood-sword'?'wood-spear':null);p.tool=item(o.tool)?.kind==='tool'?o.tool:(item(o.axe)?.kind==='tool'?o.axe:(item(o.pick)?.kind==='tool'?o.pick:null));p.armor=item(o.armor)?.kind==='armor'?o.armor:(o.shield==='stone-shield'?'rune-shield':null);p.torch=!!o.torch;p.torchDurability=p.torch?clamp(Number.isFinite(Number(o.torchDurability))?Number(o.torchDurability):300000,0,300000):0;p.torchEquipped=!!o.torchEquipped&&p.torch&&p.torchDurability>0;p.map=!!o.map;p.root=Math.max(0,Number(o.root)||0);p.maxHp=100+(item(p.armor)?.maxHp||0)+(item(p.weapon)?.maxHp||0);p.hp=clamp(Number(o.hp)||p.maxHp,1,p.maxHp);if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;ensureEquippedInInventory();
+  p.inventory=o.inventory&&typeof o.inventory==='object'?{...o.inventory}:{};p.weapon=item(o.weapon)?.kind==='weapon'?o.weapon:(o.weapon==='wood-sword'?'wood-spear':null);p.tool=item(o.tool)?.kind==='tool'?o.tool:(item(o.axe)?.kind==='tool'?o.axe:(item(o.pick)?.kind==='tool'?o.pick:null));p.armor=item(o.armor)?.kind==='armor'?o.armor:(o.shield==='stone-shield'?'rune-shield':null);p.torch=!!o.torch;p.torchDurability=p.torch?clamp(Number.isFinite(Number(o.torchDurability))?Number(o.torchDurability):300000,0,300000):0;p.torchEquipped=!!o.torchEquipped&&p.torch&&p.torchDurability>0;p.map=!!o.map;p.root=Math.max(0,Number(o.root)||0);p.maxHp=100+(item(p.armor)?.maxHp||0)+(item(p.weapon)?.maxHp||0);p.hp=clamp(Number(o.hp)||p.maxHp,1,p.maxHp);ensureEquippedInInventory();
   const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(obj.y)*scale+shiftY,35,WORLD.h-35)}};
-  state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}
+  state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug'].includes(x)):[]}}
   state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal};
   if(s.explored&&typeof s.explored==='object'){
