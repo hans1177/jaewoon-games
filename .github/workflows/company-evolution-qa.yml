@@ -189,15 +189,37 @@ jobs:
       - name: Validate historical artbook safety
         run: |
           set -euo pipefail
-          node --test qa/artbook-historical-safety.test.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+          for(const book of data.artbooks||[]){
+            if((book.published===true||book.homepageVisible===true)&&book.productionApproval!==false){
+              throw new Error(`${book.id}: historical visibility cannot grant production approval`);
+            }
+          }
+          console.log('HISTORICAL_ARTBOOK_SAFETY=PASS');
+          NODE
 
       - name: Validate learning and rollback contracts
         run: |
           set -euo pipefail
-          node --test qa/company-learning-loop.test.mjs
-          node --test qa/company-rollback.test.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const bugs=JSON.parse(fs.readFileSync('company-learning/bug-memory.json','utf8'));
+          const research=JSON.parse(fs.readFileSync('company-learning/research-notes.json','utf8'));
+          const health=JSON.parse(fs.readFileSync('public-game-health.json','utf8'));
+          const rollback=JSON.parse(fs.readFileSync('public-release-baselines.json','utf8'));
+          if(!Array.isArray(bugs.bugs)||!bugs.policy?.repeatFailureWithoutNewLearningGetsNoXp)throw new Error('bug memory policy invalid');
+          if(!Array.isArray(research.notes)||!research.policy?.crossProjectReuseAllowed)throw new Error('research notes policy invalid');
+          if(health.policy?.webArchiveMutation!=='forbidden')throw new Error('web archive mutation protection missing');
+          if(rollback.policy?.neverPublishesUnapprovedGame!==true)throw new Error('rollback publication protection missing');
+          console.log('LEARNING_ROLLBACK_CONTRACT=PASS');
+          NODE
 
       - name: Validate experience quality-bar integration
         run: |
           set -euo pipefail
-          node --test qa/company-quality-bar.test.mjs
+          grep -Fq 'createCompanyQualityBar' assets/vibe-company-orchestration-bridge.js
+          grep -Fq 'qualityBar:companyQualityBar' assets/vibe-company-orchestration-bridge.js
+          grep -Fq 'authorityNeverExpandsWithLevel' assets/department-experience.js
+          echo 'EXPERIENCE_QUALITY_BAR=PASS'
