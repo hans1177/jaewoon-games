@@ -19,6 +19,7 @@ env:
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
+  VIBE2_OWNER_MINIMUM_WAVE: '20'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -135,6 +136,7 @@ jobs:
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
+            --min="$VIBE2_OWNER_MINIMUM_WAVE" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
@@ -818,6 +820,7 @@ jobs:
           node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
+            --min="$VIBE2_OWNER_MINIMUM_WAVE" \
             --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
           # Per-candidate test/performance roles already ran. Regression runs once at fan-in against the exact reserved main contract.
