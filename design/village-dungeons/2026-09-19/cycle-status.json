@@ -61,8 +61,8 @@
     "deterministicGatePhase": "deterministic_pre_gate"
   },
   "designLearning": {
-    "candidateCount": 0,
-    "usedAsDesignContext": false,
+    "candidateCount": 1,
+    "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
     "strictGateBypassAllowed": false
@@ -72,7 +72,7 @@
     "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
   },
   "vibe2Used": false,
-  "vibe2LearningContextUsed": false,
+  "vibe2LearningContextUsed": true,
   "paidApi": false,
   "deterministicRecovery": {
     "enabled": true,
@@ -85,20 +85,16 @@
     "aiReviewUsed": false,
     "aiVerdictUsed": false,
     "appliedRepairs": [],
-    "recoveredAt": "2026-09-19T03:29:00.283Z"
+    "recoveredAt": "2026-09-19T03:33:19.585Z"
   },
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "five-distinct-lead-models-required",
-      "per-department-multimodel-review-pass-required",
-      "post-revision-five-department-review-required"
-    ],
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
     "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
     "unanimousFatalDiscard": false,
     "meeting": {
@@ -126,13 +122,13 @@
         ]
       },
       "deterministicDesignGate": {
-        "required": false,
-        "authority": null,
-        "pass": null,
-        "path": null,
-        "phase": null,
-        "totalScore": null,
-        "passMinimum": null,
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/village-dungeons/2026-09-19/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
         "hardFailures": [],
         "criticalAxisFailures": []
       },
@@ -187,8 +183,8 @@
       "meetingConflictBlocksDesignBaseline": true,
       "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
       "unanimousFatalDiscardRequiredToDiscard": true,
-      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
-      "deterministicEvidenceGateRequired": false,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
       "aiReviewIsGateAuthority": false,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
@@ -202,17 +198,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T03:31:47.879Z"
+    "checkedAt": "2026-09-19T03:33:19.720Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "WRITING",
+    "label": "작성중",
     "path": "artbook-submissions/village-dungeons/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
   }
 }
