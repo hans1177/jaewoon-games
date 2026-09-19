@@ -283,6 +283,27 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
   const bySlug=new Map(catalog.games.map(game=>[game.id,game]));
   const runtimeQueueById=latestById(developmentQueue?.items,'gameId');
   const runtimeSeedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
+  const projectSlugs=new Set(portfolio.projects.map(project=>clean(project?.slug)).filter(Boolean));
+  for(const [gameId,seed] of runtimeSeedById.entries()){
+    const seedClass=clean(seed?.productionClass).toUpperCase();
+    if(![PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,PRODUCTION_CLASSES.RELEASE_CONFIRMED].includes(seedClass))continue;
+    if(projectSlugs.has(gameId)||!bySlug.has(gameId))continue;
+    const game=bySlug.get(gameId);
+    const webSource=clean(seed?.sourcePath)||clean(game?.webPath).replace(/^\/+|\/+$/g,'')||`web-games/${gameId}`;
+    portfolio.projects.push({
+      id:`RUNTIME-${gameId}`,
+      slug:gameId,
+      name:clean(seed?.gameName)||clean(game?.name)||gameId,
+      sourcePath:webSource,
+      productionClass:seedClass,
+      productionClassSource:'COMPANY_RUNTIME_PROMOTED_SEED',
+      profileStatus:seedClass,
+      selectedPlatform:normalizeSelectedPlatform(seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.productionTarget),
+      developmentFocus:{total:0},
+      runtimeSynthesized:true
+    });
+    projectSlugs.add(gameId);
+  }
   const runtimeClassFor=(gameId)=>{
     const queue=runtimeQueueById.get(gameId)||null;
     const seed=runtimeSeedById.get(gameId)||null;
