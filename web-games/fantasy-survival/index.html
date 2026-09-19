@@ -11,7 +11,7 @@
 </head>
 <body>
 <canvas id="game"></canvas>
-<div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="multi" class="multiBtn">멀티</button></div><a class="home" href="/">홈</a></div>
+<div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="multi" class="multiBtn">멀티</button><button id="bgmToggle" class="multiBtn">BGM ON</button></div><a class="home" href="/">홈</a></div>
 <div id="notice" class="notice"></div><div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick"><div id="knob" class="knob"></div></div>
 <div class="actions"><button id="craft" class="act craft">제작</button><div class="utilityStack"><button id="dismount" class="act dismount">내리기</button><button id="gather" class="act gather">채집</button><button id="inventory" class="act inventory">가방</button></div><div class="combatStack"><button id="map" class="act map">지도</button><button id="attack" class="act attack">공격</button></div></div>
 <div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=19,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=20,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -187,6 +187,67 @@ function randomVolcanoPoint(zone='volcano'){
  let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
 function regionAt(x,y){if(pointInCrystalRegion(x,y))return'crystal';if(pointInWorldTree(x,y))return'worldtree';if(pointInPoly(x,y,CANYON_POLY))return'canyon';if(pointInVolcano(x,y))return'volcano';return'forest'}
+
+const MUSIC_THEMES={
+ forest:{beat:.38,wave:'triangle',lead:[261.63,329.63,392,329.63,293.66,349.23,440,349.23],bass:[130.81,146.83,174.61,146.83],gain:.036},
+ canyon:{beat:.34,wave:'square',lead:[196,246.94,293.66,329.63,293.66,246.94,220,246.94],bass:[98,110,123.47,110],gain:.029},
+ worldtree:{beat:.44,wave:'sine',lead:[220,277.18,329.63,415.3,329.63,277.18,246.94,329.63],bass:[110,123.47,138.59,123.47],gain:.042},
+ volcano:{beat:.29,wave:'sawtooth',lead:[196,233.08,261.63,311.13,293.66,261.63,233.08,220],bass:[98,98,116.54,110],gain:.025},
+ crystal:{beat:.36,wave:'triangle',lead:[277.18,349.23,415.3,523.25,466.16,415.3,349.23,311.13],bass:[138.59,155.56,174.61,155.56],gain:.038},
+ underground:{beat:.48,wave:'sine',lead:[164.81,196,233.08,196,174.61,207.65,246.94,207.65],bass:[82.41,87.31,98,87.31],gain:.033},
+ questcave:{beat:.52,wave:'triangle',lead:[146.83,174.61,207.65,185,164.81,146.83,138.59,164.81],bass:[73.42,82.41,92.5,82.41],gain:.028},
+ battle:{beat:.22,wave:'square',lead:[220,261.63,293.66,329.63,293.66,349.23,329.63,261.63],bass:[110,130.81,110,146.83],gain:.034},
+ boss:{beat:.18,wave:'sawtooth',lead:[130.81,155.56,185,220,196,185,155.56,146.83],bass:[65.41,73.42,77.78,65.41],gain:.04}
+};
+const music={ctx:null,master:null,started:false,enabled:true,theme:null,step:0,nextAt:0};
+function ensureMusicStarted(){
+ if(!music.enabled)return;
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ if(!music.ctx){music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=.16;music.master.connect(music.ctx.destination)}
+ if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});
+ music.started=true;if(!music.nextAt)music.nextAt=music.ctx.currentTime
+}
+function musicTone(freq,at,dur,wave,gain){
+ if(!music.ctx||!freq)return;
+ const o=music.ctx.createOscillator(),g=music.ctx.createGain();o.type=wave;o.frequency.setValueAtTime(freq,at);
+ g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(Math.max(.001,gain),at+.025);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+ o.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.03)
+}
+function desiredMusicTheme(){
+ const p=state.player;
+ const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.boss);
+ if(boss)return'boss';
+ const battle=state.enemies.some(e=>{
+  if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;
+  const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,e.type.detect||430));
+  return (e.hostile||e.enemyTarget||state.pet.targetId===e.netId)&&d<range
+ });
+ if(battle)return'battle';
+ if(state.area==='questcave')return'questcave';
+ if(state.area==='underground')return'underground';
+ return regionAt(p.x,p.y)
+}
+function musicTick(){
+ if(!music.started||!music.enabled||!music.ctx)return;
+ const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest;
+ if(music.theme!==key){music.theme=key;music.step=0;music.nextAt=music.ctx.currentTime+.02}
+ const now=music.ctx.currentTime;
+ while(music.nextAt<now+.16){
+  const i=music.step%t.lead.length,lead=t.lead[i],bass=t.bass[Math.floor(music.step/2)%t.bass.length];
+  musicTone(lead,music.nextAt,t.beat*.78,t.wave,t.gain);
+  if(music.step%2===0)musicTone(bass,music.nextAt,t.beat*1.65,key==='boss'||key==='battle'?'square':'sine',t.gain*.72);
+  if((key==='crystal'||key==='worldtree')&&music.step%4===0)musicTone(lead*2,music.nextAt+.04,t.beat*.45,'sine',t.gain*.32);
+  music.step++;music.nextAt+=t.beat
+ }
+}
+function toggleBgm(){
+ music.enabled=!music.enabled;
+ const b=document.getElementById('bgmToggle');if(b)b.textContent=music.enabled?'BGM ON':'BGM OFF';
+ if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}
+ else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}
+ if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(.16,music.ctx.currentTime)
+}
+
 function markExplored(){
   const p=state.player,gx=Math.floor(p.x/MAP_CELL),gy=Math.floor(p.y/MAP_CELL);
   for(let ox=-1;ox<=1;ox++)for(let oy=-1;oy<=1;oy++){
@@ -1178,6 +1239,7 @@ function update(dt,now){
     state.enemies=state.enemies.filter(e=>e.hp>0);
   }
   multiTick(now);
+  musicTick();
   finishSmeltIfReady();
   if(ui.smeltPanel.classList.contains('open')){if(!nearFurnace())ui.smeltPanel.classList.remove('open');else updateSmeltUi()}
   const camW=state.area==='questcave'?QUEST_CAVE.w:state.area==='underground'?6000:WORLD.w,camH=state.area==='questcave'?QUEST_CAVE.h:state.area==='underground'?4000:WORLD.h;state.camera.x=clamp(p.x-innerWidth/2,0,Math.max(0,camW-innerWidth));
@@ -1346,8 +1408,8 @@ function loadGame(){
   if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
  }catch(e){}
 }
-window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));ui.bestiaryBtn.addEventListener('click',openBestiary);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
-const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);window.addEventListener('pagehide',()=>{saveGame(false);if(multiplayer.channel)multiplayer.channel.unsubscribe()});
+window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));document.getElementById('bgmToggle').addEventListener('click',toggleBgm);ui.bestiaryBtn.addEventListener('click',openBestiary);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
+const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{once:true,capture:true});window.addEventListener('keydown',ensureMusicStarted,{once:true,capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{saveGame(false);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}initWorld();loadGame();markExplored();discoverRegion();resize();updateHud();requestAnimationFrame(loop);const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('가방이 생겼어 · 동쪽 철 협곡에서 철을 찾아봐');
 })();
 </script>
