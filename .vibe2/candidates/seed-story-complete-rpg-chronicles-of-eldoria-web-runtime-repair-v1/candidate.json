@@ -1,0 +1,21 @@
+{
+  "summary": "index.html 수정",
+  "expectedEffect": "게임 구성 요소를 업데이트하여 기존 설계 범위 내에서 필요한 변경을 적용",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.',progression:'전투·휴식·장비 강화를 선택하는 완결형 RPG.'}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG_id_should_be_eldoria",
+    "GAME_CONFIG_name_should_be_엘도리아_연대기",
+    "GAME_CONFIG_mode_should_be_eldoria",
+    "GAME_CONFIG_hp_should_be_100",
+    "GAME_CONFIG_desc_should_contain_전투_휴식_장비_강화",
+    "GAME_CONFIG_story_should_contain_다섯_장의_이야기"
+  ]
+}
