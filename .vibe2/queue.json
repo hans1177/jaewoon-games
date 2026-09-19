@@ -11393,7 +11393,7 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-19T12:54:59.692Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-19T12:58:14.851Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
       ],
@@ -12606,7 +12606,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: 숲의 생존자들\n승인 설계와 scope를 기준으로 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.\n[TRANSFORMATIVE_RECOMBINATION_CONTEXT]\nrecipe=recombine_45e010eb6bd96532\nsource_projects=block-blast,sgtpuzzles\nfeature_blend=board-grid-placement,score-combo-reward,input-drag-touch,progression-difficulty,save-state-persistence,ads-monetization,qa\ntransformation=change-risk-reward-relationship\nUse these as abstract design/implementation references only.\nCreate a new project-specific mechanic/constraint and new code/asset expression.\nDo not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.\nPreserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.",
       "responsibleFiles": [
         "web-games/survival2/index.html"
@@ -12614,14 +12614,14 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 2,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -12845,13 +12845,14 @@
         "release-dispatch-recovery-at:1789822011613",
         "release-dispatch-recovery-at:1789822200014",
         "release-dispatch-recovery-at:1789822334656",
-        "release-dispatch-recovery-at:1789822519555"
+        "release-dispatch-recovery-at:1789822519555",
+        "system-steward:stale-running-reservation-recovered"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
-      "reservationId": "35442308252:1",
-      "reservationRunId": "35442308252",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-19T12:15:35Z",
+      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "companyContext": null,
       "sourceRoot": "web-games/survival2",
       "speculativeEligible": true,
