@@ -129,6 +129,7 @@ function reconcileConfirmedSeedQueue({queue,seed,design,stamp,forceFreshBaseline
   const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
   const webSourcePath=webSourcePathOf(gameId);
   const artbookSource=`artbook-submissions/${gameId}/current.json`;
+  const ownerPreservationPresentationUpgrade=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&String(seed?.OWNER_REBUILD_MODE||'').toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
   let item=queue.items.find(row=>row?.gameId===gameId);
   if(item){
     item.productionClass='DEVELOPMENT_CONFIRMED';
@@ -147,6 +148,8 @@ function reconcileConfirmedSeedQueue({queue,seed,design,stamp,forceFreshBaseline
     if(item.postWebArtbookRequired===undefined)item.postWebArtbookRequired=true;
     if(item.webValidationRequired===undefined)item.webValidationRequired=true;
     if(item.musicValidationRequired===undefined)item.musicValidationRequired=true;
+    item.ownerPreservationPresentationUpgrade=ownerPreservationPresentationUpgrade;
+    item.presentationFirstPass=ownerPreservationPresentationUpgrade?'ASSET_ADAPTATION':(item.presentationFirstPass||null);
     if(forceFreshBaseline){
       item.strictDesignScore=Number(design?.review?.totalScore||seed?.strictDesignReview?.totalScore||0)||null;
       item.webValidationPassedAt=null;
@@ -177,7 +180,9 @@ function reconcileConfirmedSeedQueue({queue,seed,design,stamp,forceFreshBaseline
     postWebArtbookRequired:true,
     strictDesignScore:Number(seed?.strictDesignReview?.totalScore||seed?.promotion?.strictDesignScore||0)||null,
     enqueuedAt:stamp,
-    queueSource:'ACTIVE_DEVELOPMENT_CONFIRMED_SEED'
+    queueSource:'ACTIVE_DEVELOPMENT_CONFIRMED_SEED',
+    ownerPreservationPresentationUpgrade,
+    presentationFirstPass:ownerPreservationPresentationUpgrade?'ASSET_ADAPTATION':null
   };
   bindRequiredWebStage(item,{gameId,stamp});
   queue.items.push(item);
@@ -283,7 +288,8 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     delete game.homepageArtbookPath;
 
     let item=queue.items.find(row=>row?.gameId===gameId);
-    if(!item){item={gameId,seedId:seed.seedId||null,gameName:seed.gameName||gameId,productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,webSourcePath,designBaselineSource:design.designSource,designDate:design.date,artbookSource,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',postPromotionArtbookRequired:false,postWebArtbookRequired:true,strictDesignScore:Number(strict.review.totalScore),enqueuedAt:stamp};queue.items.push(item);}else{item.productionClass='DEVELOPMENT_CONFIRMED';item.selectedPlatform=selectedPlatform;item.targetPlatform=selectedPlatform;item.targetSourcePath=targetSourcePath;item.webSourcePath=item.webSourcePath||webSourcePath;item.designBaselineSource=design.designSource;item.designDate=design.date;item.artbookSource=artbookSource;item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';item.postPromotionArtbookRequired=false;item.postWebArtbookRequired=true;item.strictDesignScore=Number(strict.review.totalScore);}
+    const ownerPreservationPresentationUpgrade=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&String(seed?.OWNER_REBUILD_MODE||'').toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+    if(!item){item={gameId,seedId:seed.seedId||null,gameName:seed.gameName||gameId,productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,webSourcePath,designBaselineSource:design.designSource,designDate:design.date,artbookSource,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',postPromotionArtbookRequired:false,postWebArtbookRequired:true,strictDesignScore:Number(strict.review.totalScore),enqueuedAt:stamp,ownerPreservationPresentationUpgrade,presentationFirstPass:ownerPreservationPresentationUpgrade?'ASSET_ADAPTATION':null};queue.items.push(item);}else{item.productionClass='DEVELOPMENT_CONFIRMED';item.selectedPlatform=selectedPlatform;item.targetPlatform=selectedPlatform;item.targetSourcePath=targetSourcePath;item.webSourcePath=item.webSourcePath||webSourcePath;item.designBaselineSource=design.designSource;item.designDate=design.date;item.artbookSource=artbookSource;item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';item.postPromotionArtbookRequired=false;item.postWebArtbookRequired=true;item.strictDesignScore=Number(strict.review.totalScore);item.ownerPreservationPresentationUpgrade=ownerPreservationPresentationUpgrade;item.presentationFirstPass=ownerPreservationPresentationUpgrade?'ASSET_ADAPTATION':(item.presentationFirstPass||null);}
     bindRequiredWebStage(item,{gameId,stamp});
     promoted.push(gameId);
   }
