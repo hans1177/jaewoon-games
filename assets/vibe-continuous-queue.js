@@ -42,8 +42,8 @@ function inferExecutionLane(input = {}) {
   const evidence=(input.evidence||[]).map(clean);
   if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
   if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
-  if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
   if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
+  if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
   if(department==='system-supervision'||department==='system-ai'||['inspect','research','qa'].includes(type))return 'CONTROL_FAST';
   const explicit=clean(input.executionLane).toUpperCase();
   return VIBE_EXECUTION_LANES.includes(explicit)?explicit:'CONTROL_FAST';
