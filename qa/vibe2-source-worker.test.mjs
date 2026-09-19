@@ -755,6 +755,27 @@ test('final full web attempt synthesizes the accumulated seed instead of staying
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
 });
 
+test('first timeout escalates attempt two directly to compact focused retry',()=>{
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>',
+    '',
+    '=== FILE config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.CONFIG={x:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{allowFullRewrite:false,error:new Error('Ollama 응답 시간 초과: 240000ms'),responsibleFiles:['index.html'],attempt:2});
+  assert.match(retry,/exceeded the time budget/);
+  assert.match(retry,/FINAL FOCUSED RETRY/);
+  assert.doesNotMatch(retry,/config\.js/);
+  assert.match(retry,/Recovery context intentionally contains only writable FILE blocks/);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT'/);
+  assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_MAX_PREDICT/);
+  assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_TIMEOUT_MS/);
+});
+
 test('timeout final retry prompt strips read-only context and asks for one compact real edit',()=>{
   const base=[
     'Allowed edit paths: index.html',
