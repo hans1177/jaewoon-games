@@ -1,0 +1,188 @@
+name: Company Security Immune System
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'tools/**'
+      - 'qa/**'
+      - 'company-learning/**'
+      - 'assets/**'
+      - 'web-games/**'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'unreal-games/**'
+      - 'godot-games/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '13,33,53 * * * *'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    outputs:
+      verdict: ${{ steps.scan.outputs.verdict }}
+      highest: ${{ steps.scan.outputs.highest }}
+      findings: ${{ steps.scan.outputs.findings }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify immune-system contracts
+        run: |
+          set -euo pipefail
+          node --check tools/company-security-steward.mjs
+          node --check tools/company-security-incident.mjs
+          node --check tools/company-security-learning.mjs
+          node --test qa/company-security-steward.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/security-shared-context.json
+
+      - name: Resolve security scan range
+        id: range
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          head_sha="${PR_HEAD:-${CURRENT_SHA}}"
+          if [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
+            base_sha="$PR_BASE"
+          elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
+            base_sha="$PUSH_BEFORE"
+          else
+            base_sha="$(git rev-parse "$head_sha^" 2>/dev/null || git rev-parse "$head_sha")"
+          fi
+          git cat-file -e "$base_sha^{commit}"
+          git cat-file -e "$head_sha^{commit}"
+          echo "base=$base_sha" >> "$GITHUB_OUTPUT"
+          echo "head=$head_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Scan changed attack surface
+        id: scan
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.range.outputs.base }}
+          HEAD_SHA: ${{ steps.range.outputs.head }}
+        run: |
+          set -euo pipefail
+          git diff --unified=0 --no-color "$BASE_SHA...$HEAD_SHA" > /tmp/security.patch || git diff --unified=0 --no-color "$BASE_SHA" "$HEAD_SHA" > /tmp/security.patch
+          git diff --name-only "$BASE_SHA...$HEAD_SHA" > /tmp/security-files.txt || git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/security-files.txt
+
+          set +e
+          node tools/company-security-steward.mjs             --patch=/tmp/security.patch             --files=/tmp/security-files.txt             --output=/tmp/security-report.json | tee /tmp/security-scan.log
+          scan_code=$?
+          set -e
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('/tmp/security-report.json','utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`verdict=${r.verdict}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`highest=${r.highestSeverity}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`findings=${(r.findings||[]).length}\n`);
+          console.log('SECURITY_REPORT='+JSON.stringify({verdict:r.verdict,highestSeverity:r.highestSeverity,findings:(r.findings||[]).length}));
+          NODE
+
+          case "$scan_code" in
+            0|2) ;;
+            *) exit "$scan_code" ;;
+          esac
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-security-report-${{ github.run_id }}
+          path: |
+            /tmp/security-report.json
+            /tmp/security-scan.log
+            /tmp/security-shared-context.json
+          if-no-files-found: error
+          retention-days: 14
+
+  record_incident:
+    needs: scan
+    if: ${{ always() && needs.scan.outputs.verdict == 'QUARANTINE' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: company-security-report-${{ github.run_id }}
+          path: /tmp/security-report
+
+      - name: Persist quarantined incident and security recovery task
+        env:
+          HIGHEST: ${{ needs.scan.outputs.highest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-unreal-core --quiet
+          rm -rf /tmp/security-control
+          git worktree prune
+          git worktree add /tmp/security-control origin/vibe2-unreal-core
+
+          node tools/company-security-incident.mjs             --command=record             --store=/tmp/security-control/.vibe2/security-incidents.json             --report=/tmp/security-report/security-report.json
+
+          node tools/company-recovery-queue.mjs             --command=enqueue             --queue=/tmp/security-control/.vibe2/recovery-queue.json             --priority=critical             --source-queue=security             --source-task="security-run-${GITHUB_RUN_ID}"             --stage=SECURITY_IMMUNE_SCAN             --signature="security-quarantine-${HIGHEST:-UNKNOWN}"             --blast-radius=affected-change             --evidence="security-run:${GITHUB_RUN_ID},security-report:artifact-${GITHUB_RUN_ID}"             --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW             --verify=RERUN_SECURITY_SCAN,VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW             --owner=SYSTEM_AI
+
+          cd /tmp/security-control
+          git config user.name 'jaewoon-security-steward'
+          git config user.email 'security-steward@users.noreply.github.com'
+          git add .vibe2/security-incidents.json .vibe2/recovery-queue.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'security: quarantine incident and recovery task [skip ci]'
+            for attempt in 1 2 3; do
+              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then exit 0; fi
+              git rebase --abort 2>/dev/null || true
+              sleep $((attempt * 2))
+            done
+            exit 1
+          fi
+
+  enforce:
+    needs: [scan, record_incident]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - name: Enforce quarantine verdict
+        env:
+          VERDICT: ${{ needs.scan.outputs.verdict }}
+          HIGHEST: ${{ needs.scan.outputs.highest }}
+        run: |
+          set -euo pipefail
+          echo "VIBE_SECURITY_FINAL=$VERDICT"
+          echo "VIBE_SECURITY_HIGHEST=$HIGHEST"
+          if [ "$VERDICT" = 'QUARANTINE' ]; then
+            echo 'VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE'
+            exit 1
+          fi
+          echo 'VIBE_SECURITY_ACTION=ALLOW'
