@@ -17784,14 +17784,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "cancelled",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "superseded-by:VIBE_WEB_REPAIR",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -17811,9 +17811,11 @@
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
         "superseded-by:VIBE_WEB_REPAIR",
-        "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED"
+        "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+        "owner-preservation-presentation-preempts-generic-web-repair",
+        "restored-from:superseded-by:VIBE_WEB_REPAIR"
       ],
-      "lastOutcome": "SUPERSEDED_BY_EXACT_WEB_REPAIR",
+      "lastOutcome": "RESTORED_OWNER_PRESERVATION_PRESENTATION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -18537,5 +18539,6 @@
       ],
       "shard": "web"
     }
-  ]
+  ],
+  "updatedAt": "2026-09-19T23:14:43.958Z"
 }
