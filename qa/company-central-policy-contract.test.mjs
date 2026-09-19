@@ -395,3 +395,30 @@ test('Director supervisor consumes canonical machine policy and treats COMPANY_F
   assert.doesNotMatch(directorSupervisor,/directive\.policyDocument!=='COMPANY_FLOW\.md'/);
   assert.doesNotMatch(directorSupervisor,/policy authority: COMPANY_FLOW\.md only/);
 });
+
+test('24h learning is Gemini-free and provider failure cannot stop the portfolio',()=>{
+  const quota=roadmap.developmentLifecycleMachine.modelQuotaContinuity;
+  const learning=quota.learningProviderIsolation;
+  const fallback=quota.providerFailureSubstitution;
+  assert.equal(learning.enabled,true);
+  assert.equal(learning.continuous24hLearningProvider,'VIBE_LOCAL_OLLAMA');
+  assert.equal(learning.localModel,'qwen3:1.7b');
+  assert.equal(learning.geminiAllowedFor24hLearning,false);
+  assert.equal(learning.paidExternalApiAllowedFor24hLearning,false);
+  assert.equal(learning.providerOutageMayStopLearning,false);
+  assert.deepEqual(learning.fallbackChain,[
+    'VIBE_LOCAL_OLLAMA',
+    'DETERMINISTIC_VERIFIED_EVIDENCE_MINING',
+    'STATIC_CODE_PATTERN_AND_FAILURE_REGRESSION_DISTILLATION',
+    'NON_MODEL_MUTATION_QA_AND_TEST_GENERATION',
+  ]);
+  assert.equal(fallback.enabled,true);
+  assert.equal(fallback.substituteBeforePortfolioWait,true);
+  assert.equal(fallback.designAuthoringAndRepairFallback,'VIBE_LOCAL_OLLAMA');
+  assert.equal(fallback.gateDecisionAuthority,'DETERMINISTIC_EVIDENCE_ONLY');
+  assert.equal(fallback.learningFallback,'NON_MODEL_VERIFIED_EVIDENCE_PIPELINE');
+  assert.equal(fallback.blockedProviderConsumesDevelopmentSlot,false);
+  assert.equal(fallback.noPortfolioWideStop,true);
+  assert.equal(fallback.preserveCheckpoint,true);
+  assert.equal(fallback.resumeExactFailedWork,true);
+});
