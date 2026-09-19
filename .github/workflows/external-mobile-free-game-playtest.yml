@@ -65,6 +65,35 @@ jobs:
                 "https://api.github.com/repos/${REPOSITORY}/actions/runs/${stale_id}/cancel" || true
             done <<<"${stale_revision_ids}"
           fi
+
+          queue_api="https://api.github.com/repos/${REPOSITORY}/contents/.vibe2/queue.json?ref=vibe2-unreal-core"
+          if ! queue_response="$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "${queue_api}")"; then
+            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
+            echo 'EXTERNAL_MOBILE_GATE=DEFER_GAME_PRIMARY_QUEUE_UNAVAILABLE'
+            exit 0
+          fi
+          queue_b64="$(jq -r '.content // empty' <<<"${queue_response}" | tr -d '\n')"
+          queue_json="$(printf '%s' "${queue_b64}" | base64 -d 2>/dev/null || true)"
+          if [ -z "${queue_json}" ] || ! jq -e . >/dev/null 2>&1 <<<"${queue_json}"; then
+            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
+            echo 'EXTERNAL_MOBILE_GATE=DEFER_GAME_PRIMARY_QUEUE_INVALID'
+            exit 0
+          fi
+          active_game_work="$(jq '[.tasks[]? | select(
+            (((.status // "") | ascii_downcase) == "queued" or ((.status // "") | ascii_downcase) == "running")
+            and (((.department // "") | ascii_downcase) == "development")
+            and (((.type // "") | ascii_downcase) == "implementation")
+          )] | length' <<<"${queue_json}")"
+          echo "EXTERNAL_MOBILE_ACTIVE_GAME_WORK=${active_game_work}"
+          if [ "${active_game_work}" -gt 0 ]; then
+            echo 'should_run=NO' >> "$GITHUB_OUTPUT"
+            echo 'EXTERNAL_MOBILE_GATE=DEFER_TO_GAME_PRIMARY'
+            exit 0
+          fi
           running_other="$(jq --arg current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '[.workflow_runs[] | select((.status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current) and (.head_sha==$head))] | length' <<<"${runs_json}")"
           newer_pending="$(jq --argjson current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '[.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id > $current) and (.head_sha==$head))] | length' <<<"${runs_json}")"
           older_pending_ids="$(jq -r --argjson current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id < $current) and (.head_sha==$head)) | .id' <<<"${runs_json}")"
