@@ -91,10 +91,10 @@ test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes ar
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.deepEqual(design.requiredFlow,[
     'GAME_SEED','GAME_DESIGNER_DRAFT','DETERMINISTIC_PRE_GATE','FAILED_AXIS_DESIGNER_REPAIR_MAX_2',
-    'FIVE_DISTINCT_DEPARTMENT_LEAD_PARALLEL_REVIEW','GAME_DESIGNER_REVISION_FROM_DIRECT_LEAD_FEEDBACK',
+    'DETERMINISTIC_DEPARTMENT_EVIDENCE','DETERMINISTIC_REVALIDATION',
     'STRICT_DESIGN_REVIEW','DESIGN_BASELINE_GATE'
   ]);
-  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED','STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'])assert.ok(design.baselineReadyRequires.includes(token));
+  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED','STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'])assert.ok(design.baselineReadyRequires.includes(token));
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.equal(design.sourceCodeAutoDevelopment,false);
   assert.equal(design.artbookBeforePromotionForbidden,true);
@@ -119,8 +119,9 @@ test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes ar
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
   assert.match(designCycle,/GAME_SEED_REQUIRED/);
-  assert.match(designCycle,/sameModelAsDraft:true/);
-  assert.match(designCycle,/fiveDepartmentLeadReviewCompleted/);
+  assert.match(designCycle,/sameModelAsDraft:false/);
+  assert.match(designCycle,/fiveDepartmentLeadReviewCompleted:false/);
+  assert.match(designCycle,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);
   assert.match(designCycle,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
   assert.doesNotMatch(designCycle,/VIBE2_VALIDATION_LEARNING|vibe2-validator/);
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
@@ -157,14 +158,14 @@ test('semantic production classes are canonical and fixed numeric quotas are not
   assert.match(flow,/fixedPortfolioSize: false/);
 });
 
-test('DESIGN_ONLY keeps five distinct lead models and one Game Designer without AI meetings',()=>{
+test('DESIGN_ONLY retains model policy metadata while deterministic department evidence replaces AI lead review',()=>{
   assert.equal(directive.ai.minDistinctModelsPerDepartment,1);
   assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,5);
   assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
   assert.equal(new Set(Object.values(directive.ai.departmentLeadModels)).size,5);
   assert.equal(directive.ai.gameDesigner.authorsInitialDetailedDesign,true);
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle,true);
-  assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterLeadReview,true);
+  assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterLeadReview,false);
   assert.match(multimodelWorkflow,/productionClassOf/);
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
