@@ -353,12 +353,12 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     'The fragment must add real gameplay systems, mechanics, state transitions, mobile pointer/touch interaction, progression, outcomes, save-compatible state, or game-specific spatial behavior required by the work order.',
     'Do not add filler text, validator-only labels, fake counters, test harness controls, monkey patches, function overrides, or duplicated whole-document markup.',
     'Do not emit <html>, </html>, <body>, or </body>. Prefer unique data attributes/classes. Any script must be directly integrated source and should use a scoped IIFE or unique names instead of overwriting existing functions.',
-    'Required output format:',
-    'VIBE2_WEB_EXPANSION',
-    '---VIBE2_EXPANSION_CONTENT---',
-    '<section class="game-specific-system">...</section>',
-    '<script>(()=>{ /* real additive gameplay implementation */ })();</script>',
-    '---VIBE2_EXPANSION_END---',
+    `Minimum accepted fragment size: 1200 UTF-8 bytes. Aim for roughly ${stageByteTarget} bytes; tiny template-like fragments will be rejected.`,
+    'Required output framing:',
+    'First line exactly: VIBE2_WEB_EXPANSION',
+    'Second line exactly: ---VIBE2_EXPANSION_CONTENT---',
+    'Then immediately emit the real additive HTML/CSS/JavaScript implementation. Do not copy an example, ellipsis, placeholder comment, or fake skeleton.',
+    'Final line exactly: ---VIBE2_EXPANSION_END---',
     '',
     'CURRENT PLAYABLE HTML TO EXTEND:',
     content
@@ -596,7 +596,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation);
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1&&attempt<maxAttempts;
-    const remainingStages=Math.max(1,maxAttempts-attempt+1);
+    const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode?accumulatedFullWeb.content:lastRaw;
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
@@ -630,9 +630,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           const composed=insertFullWebExpansion(accumulatedFullWeb.content,fragment);
           const afterBytes=Buffer.byteLength(composed,'utf8');
           const growth=afterBytes-beforeBytes;
-          if(growth<120||composed===accumulatedFullWeb.content){
+          if(growth<1200||composed===accumulatedFullWeb.content){
             repeatedIntermediateOutputs+=1;
-            throw new Error('FULL_WEB_EXPANSION_NO_GROWTH');
+            throw new Error(`FULL_WEB_EXPANSION_TOO_SMALL:${growth}:min=1200`);
           }
           intermediateGrowthBytes.push(growth);
           accumulatedFullWeb={...accumulatedFullWeb,content:composed};
@@ -712,7 +712,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
-      const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_NO_GROWTH/.test(clean(error?.message)));
+      const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const hasAnother=ordinaryRetry||focusedRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
