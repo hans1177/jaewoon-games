@@ -796,8 +796,9 @@ jobs:
           if(fs.existsSync('/tmp/vibe2-work-order.json'))workOrder=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const explorationFile=clean(process.env.EXPLORATION_FILE);
           const exploration=manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)?JSON.parse(fs.readFileSync(explorationFile,'utf8')):null);
-          const candidateFailureClass=clean(process.env.CANDIDATE_FAILURE_CLASS)||null;
-          const candidateFailureMessage=clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null;
+          const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker';
+          const candidateFailureClass=sourceGenerationAttempted&&!candidateOk?(clean(process.env.CANDIDATE_FAILURE_CLASS)||null):null;
+          const candidateFailureMessage=sourceGenerationAttempted&&!candidateOk?(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null):null;
           const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
             version:2,
             strategy:clean(workOrder.candidateStrategyRole.strategy),
@@ -910,7 +911,7 @@ jobs:
             baseMainSha:clean(manifest.baseMainSha)||null,
             manifestPath:candidateManifest||null
           }:null;
-          const candidateFailure=candidateOk?null:{class:candidateFailureClass||'OTHER',message:candidateFailureMessage};
+          const candidateFailure=sourceGenerationAttempted&&!candidateOk?{class:candidateFailureClass||'OTHER',message:candidateFailureMessage}:null;
           const codingMethod=baseCodingMethod?{
             ...baseCodingMethod,
             implementationPass:candidateOk,
