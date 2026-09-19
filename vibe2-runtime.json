@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 11,
+      "runtime": 12,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -92,7 +92,7 @@
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
     "ownerDirectivePreemptsAutonomy": true,
-    "maxConcurrentGameTasks": null,
+    "maxConcurrentGameTasks": 256,
     "unityReleaseFocusSlots": 1,
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
@@ -143,7 +143,8 @@
     "parallelismPolicy": "UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY",
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
-    "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL"
+    "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL",
+    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP"
   },
   "adaptiveBackpressure": {
     "enabled": true,
