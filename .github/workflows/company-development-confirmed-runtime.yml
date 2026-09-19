@@ -487,6 +487,9 @@ jobs:
             }
           }catch(error){
             const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+            const vibeImplementationSignal=/^VIBE_WEB_IMPLEMENTATION_REQUIRED:(WEB_BASE_IMPLEMENTATION|WEB_REPAIR):(.+)$/.exec(signature);
+            const vibeRequestedStage=vibeImplementationSignal?.[1]||null;
+            const vibeRequestedReason=vibeImplementationSignal?.[2]||null;
             if(finalStage){
               if(fs.existsSync(gameplayEvidence)){
                 const evidenceOut=path.join(persistRoot,finalEvidenceRelative);
@@ -518,8 +521,13 @@ jobs:
             }else{
               const rework=item.webInitialCyclePassed===true||item.existingWebValidated===true;
               const repairState='WEB_VIBE_REPAIR_REQUIRED';
+              const requestedStep=vibeRequestedStage==='WEB_REPAIR'?'VIBE_WEB_REPAIR':vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'?'VIBE_WEB_BASE_IMPLEMENTATION':rework?'VIBE_WEB_REPAIR':'VIBE_WEB_BASE_IMPLEMENTATION';
+              const sourceRootBootstrapRequired=vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'&&String(vibeRequestedReason||'').includes('SOURCE_MISSING');
+              const routingBlocker=vibeImplementationSignal
+                ?`vibe-web-implementation-required:${vibeRequestedStage}:${vibeRequestedReason}`
+                :`${rework?'web-content-development-rework':'web-gameplay-music'}:${signature}`;
               result={gameId:item.gameId,pass:false,update:{
-                status:'ACTIVE',currentStep:rework?'VIBE_WEB_REPAIR':'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:repairState,
+                status:'ACTIVE',currentStep:requestedStep,canonicalState:repairState,
                 sourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webSourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
                 webInitialCyclePassed:rework,webInitialCyclePassedAt:rework?item.webInitialCyclePassedAt:'',
                 webInitialCycleEvidencePath:rework?item.webInitialCycleEvidencePath:'',webInitialCycleSourcePath:rework?(item.webInitialCycleSourcePath||item.webSourcePath):'',
@@ -530,10 +538,15 @@ jobs:
                 webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,
                 homepageTestVerdict:repairState,
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
-                routingBlockers:[`${rework?'web-content-development-rework':'web-gameplay-music'}:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
+                vibeWebImplementationRequired:Boolean(vibeImplementationSignal),vibeWebRequestedStage:vibeRequestedStage,vibeWebImplementationReason:vibeRequestedReason,sourceRootBootstrapRequired,
+                routingBlockers:[routingBlocker],webValidationLastAttemptAt:stamp,updatedAt:stamp,
               }};
               console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
-               console.log('WEB_RETURN_TO_VIBE=YES');
+              if(vibeImplementationSignal){
+                console.log(`WEB_VIBE_IMPLEMENTATION_SIGNAL=${vibeRequestedStage}:${vibeRequestedReason}`);
+                console.log(`WEB_SOURCE_ROOT_BOOTSTRAP_REQUIRED=${sourceRootBootstrapRequired?'YES':'NO'}`);
+              }
+              console.log('WEB_RETURN_TO_VIBE=YES');
               if(rework)console.log('WEB_CONTENT_REWORK_RETRY_PRESERVED=YES');
               console.log('WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO');
             }

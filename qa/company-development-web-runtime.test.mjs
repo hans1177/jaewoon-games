@@ -218,6 +218,16 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(source,/webValidationEvidencePath:null,homepageTestScore:null/);
   assert.match(failureBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
+  // B2: expected bootstrap signals are structured for Vibe; unexpected errors retain generic traceable routing.
+  assert.match(failureBlock,/VIBE_WEB_IMPLEMENTATION_REQUIRED:\(WEB_BASE_IMPLEMENTATION\|WEB_REPAIR\)/);
+  assert.match(failureBlock,/vibeRequestedStage==='WEB_REPAIR'\?'VIBE_WEB_REPAIR'/);
+  assert.match(failureBlock,/vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'\?'VIBE_WEB_BASE_IMPLEMENTATION'/);
+  assert.match(failureBlock,/vibe-web-implementation-required:\$\{vibeRequestedStage\}:\$\{vibeRequestedReason\}/);
+  assert.match(failureBlock,/sourceRootBootstrapRequired=vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'/);
+  assert.match(failureBlock,/web-gameplay-music/);
+  assert.match(failureBlock,/vibeWebImplementationRequired:Boolean\(vibeImplementationSignal\)/);
+  assert.match(failureBlock,/WEB_VIBE_IMPLEMENTATION_SIGNAL/);
+
   // C: final run consumes exact persisted source/evidence and verifies hashes.
   assert.match(source,/canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'\?'final-content-depth':'initial-cycle'/);
   assert.match(finalBlock,/materialize\(item\.webInitialCycleEvidencePath\)/);
