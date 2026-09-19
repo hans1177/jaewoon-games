@@ -446,7 +446,9 @@ test('candidate failure telemetry survives a failed source worker step',()=>{
   assert(resultStep.includes('coding-failure-fingerprint:${clean(baseCodingMethod.failureFingerprint)}'));
   assert(resultStep.includes('coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}'));
   assert(resultStep.includes('coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}'));
-  assert(resultStep.includes("candidateFailure=candidateOk?null"));
+  assert(resultStep.includes("const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker'"));
+  assert(resultStep.includes("candidateFailure=sourceGenerationAttempted&&!candidateOk?"));
+  assert(resultStep.includes("candidateFailureClass=sourceGenerationAttempted&&!candidateOk?"));
   assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
   assert(resultStep.includes("const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod"));
   assert(resultStep.includes("strategy:clean(workOrder.candidateStrategyRole.strategy)"));
