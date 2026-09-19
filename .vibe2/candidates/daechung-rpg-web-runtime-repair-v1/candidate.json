@@ -1,0 +1,17 @@
+{
+  "summary": "index.html 파일에서 로딩 실패 시 처리 로직을 수정하여 로딩 오류를 방지하고, 필요한 패치를 로딩 시에 처리하도록 재구성",
+  "expectedEffect": "index.html 파일에서 로딩 실패 시 처리 로직을 수정하여 로딩 오류를 방지하고, 필요한 패치를 로딩 시에 처리하도록 재구성",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "if(!d||!d.body||!d.getElementById('game'))return;",
+      "replace": "if(!d||!d.body||!d.getElementById('game')){load.textContent='RPG 로딩 오류';return;}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "RPG 로딩 오류 방지 테스트",
+    "필요 패치 로딩 시 처리 테스트"
+  ]
+}
