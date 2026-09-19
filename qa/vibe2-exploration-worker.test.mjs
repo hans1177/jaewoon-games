@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { exploreVibe2WorkOrder } from '../tools/vibe2-exploration-worker.mjs';
+import { exploreVibe2WorkOrder, explorationGuidance } from '../tools/vibe2-exploration-worker.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch, beginVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
@@ -105,6 +105,41 @@ test('existing Web exploration emits a preservation strategy before implementati
   assert.equal(result.existingWebAssessment.evidence.validationScore,84);
   assert.ok(result.existingWebAssessment.reasons.includes('CURRENT_APPROVED_SCOPE_GAPS_REMAIN'));
   assert.equal(fs.readFileSync(web,'utf8'),before);
+});
+
+test('exploration compiles responsibility graph coding architecture and semantic edit contract for source worker',()=>{
+  const cwd=tempRoot();
+  const web=path.join(cwd,'web-games/contract-demo/index.html');
+  write(web,'<!doctype html><html><body><canvas id="game"></canvas><script>\n'+
+    'let selectedSlot=null, placedEntities=[], gold=100;\n'+
+    'function saveGame(){ localStorage.setItem("contract-demo-save",JSON.stringify({gold,placedEntities})); }\n'+
+    'function renderPlacement(){ document.body.dataset.placed=String(placedEntities.length); }\n'+
+    'function placeTower(slot){ if(!slot||gold<10)return false; gold-=10; placedEntities.push({slot}); saveGame(); renderPlacement(); return true; }\n'+
+    'function handlePointer(event){ selectedSlot={x:event.clientX,y:event.clientY}; return placeTower(selectedSlot); }\n'+
+    'addEventListener("pointerdown",handlePointer);\n'+
+    '</script></body></html>');
+  const order={
+    run:true,taskId:'contract-task',gameId:'contract-demo',target:'web',
+    originalGoal:'모바일 pointer 입력으로 위치를 선택해 tower placement가 실제 world state에 반영되도록 고친다',
+    goal:'모바일 pointer placement input failure를 수정한다',
+    source:{root:'web-games/contract-demo',responsibleFiles:['web-games/contract-demo/index.html'],ignoredPaths:[]},
+    selectedTask:{evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'},
+    workPackage:{id:'contract-wp',sharedContext:{diagnosticEvidence:['MOBILE_PLACEMENT_INPUT_MISSING']}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.editContract.mode,'COMPILED_EDIT_CONTRACT');
+  assert.equal(result.editContract.strategyHint,'CAUSAL_TRACE_FIRST');
+  assert.ok(result.editContract.primaryTargets.length>=1);
+  assert.ok(result.editContract.responsibilityGraph.nodeCount>=4);
+  assert.deepEqual(result.editContract.allowedResponsibleFiles,['index.html']);
+  assert.ok(result.editContract.preserveSemantics.includes('SAVE_KEY:contract-demo-save'));
+  assert.equal(result.editContract.semanticDiffBudget.unrelatedSystemMutationForbidden,true);
+  assert.ok(result.editContract.codingArchitecture.invariantIds.includes('INPUT_TO_STATE_CAUSALITY'));
+  assert.equal(result.editContract.writableScopeExpansionAllowed,false);
+  const guidance=explorationGuidance(result);
+  assert.ok(guidance.includes('[COMPILED EDIT CONTRACT]'));
+  assert.ok(guidance.includes('주 책임 심볼='));
+  assert.ok(guidance.includes('Semantic diff 허용 시스템='));
 });
 
 test('performance sanity is read only and requires exploration evidence',()=>{
