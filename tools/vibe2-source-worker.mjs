@@ -468,7 +468,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const previousFullWebBytes=previousFullWeb?Buffer.byteLength(previousFullWeb,'utf8'):0;
   const previousFullWebExcerpt=previousFullWeb?boundedLargeExcerpt(previousFullWeb,Math.min(12000,Math.max(4000,fullWebTargetMin))).content:'';
   let retryBase=rawPrompt;
-  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||(attempt>=3&&timeoutFailure))){
+  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||(attempt>=2&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
@@ -486,7 +486,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           .replace(/\s+===$/,'')
           .trim();
         if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
-          if(attempt>=3){
+          if(attempt>=3||timeoutFailure){
             const body=section.split('\n').slice(1).join('\n');
             const excerpt=boundedLargeExcerpt(body,5000);
             section=header+'\n'+excerpt.content;
@@ -517,9 +517,9 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
         zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one short, unique find snippet copied character-for-character from the EDITABLE FILE block. Prefer one distinctive line or the smallest adjacent line group that occurs once. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
-        zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
+        zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
       ].filter(Boolean).join('\n');
-  const focusedFinal=attempt>=3&&!allowFullRewrite;
+  const focusedFinal=!allowFullRewrite&&(attempt>=3||(attempt>=2&&timeoutFailure));
   const fullWebFinal=attempt>=3&&allowFullRewrite;
   const finalInstruction=focusedFinal
     ?'FINAL FOCUSED RETRY: return exactly one edits[] entry on the exact writable path. Use the shortest unique find text visible in the compact EDITABLE excerpt, and make replace materially different. Do not return empty arrays or repeat the original text.'
@@ -558,7 +558,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const maxAttempts=allowFullRewrite?FULL_WEB_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
   for(let attempt=1;attempt<=maxAttempts;attempt++){
     const retry=attempt>1;
-    const focusedFinal=!allowFullRewrite&&attempt>=3;
+    const priorFailureClass=generationFailureClass(lastError);
+    const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
+    const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation);
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1&&attempt<maxAttempts;
     const remainingStages=Math.max(1,maxAttempts-attempt+1);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode?accumulatedFullWeb.content:lastRaw;
