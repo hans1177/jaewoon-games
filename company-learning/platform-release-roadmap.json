@@ -1,5 +1,5 @@
 {
-  "version": 70,
+  "version": 71,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1491,19 +1491,36 @@
           "companyStatusRuntimeStateMerge": "FIXED",
           "missingSourceExactBaseRecovery": "FIXED",
           "currentLiveWave": {
-            "runId": "35428898216",
-            "contractSha": "e7bf91038776e38f95092f930fae092991f4a44e",
+            "runId": "35429909037",
+            "contractSha": "a347b24a7d6ecb5a47cdba44bc87727ca3b3bdd8",
             "ownerMinimumWave": 20,
-            "reservedTasks": 11,
-            "matrixFanOut": 13,
+            "reservedTasks": 20,
+            "matrixFanOut": 20,
+            "activeWorkersObserved": 19,
+            "queuedWorkersObserved": 1,
             "status": "RUNNING",
-            "note": "PINNED_BEFORE_LATEST_PLANNER_AND_SOURCE_WORKER_REPAIRS"
+            "machineState": "CONSISTENT",
+            "adaptiveMax": 20,
+            "exploration": "TASK_LOCAL",
+            "refill": "FAN_IN_ONLY",
+            "note": "FULL_20_TASK_WAVE_RESERVED; ONE_WORKER_WAITING_ON_EXTERNAL_GITHUB_RUNNER_CAPACITY; CONTRACT_INCLUDES_NO_OP_AND_240S_RETRY_REPAIRS_BUT_PRECEDES_FINAL_EXACT_MANIFEST_WORKFLOW_FIX"
           },
           "fanInDiagnosis": "RUN_35429351974_FAILED_ON_4_STALE_REGRESSION_EXPECTATIONS",
           "exactManifestQaBinding": "FIXED_PENDING_LIVE_WAVE_VERIFICATION",
           "noOpRetry": "FIXED",
           "jsonRetryTimeoutMs": 240000,
-          "latestRepairHead": "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c"
+          "latestRepairHead": "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c",
+          "nextVerificationRun": {
+            "runId": "35430088606",
+            "triggerHead": "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd",
+            "expectedContract": "LATEST_MAIN_AT_RESERVE_TIME",
+            "mustInclude": [
+              "ef6437c9f53a9476c06cb33d1e9c5cc7e988cb0a",
+              "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c",
+              "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd"
+            ],
+            "status": "PENDING_BEHIND_CURRENT_20_WAVE"
+          }
         },
         "incidentHistory": [
           {
@@ -2870,9 +2887,9 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FANIN_AND_WORKER_BOTTLENECK_REPAIR_2026-09-19",
+    "id": "VIBE2_LIVE_20_WAVE_SYNC_2026-09-19",
     "documentIsCode": true,
-    "reason": "REMOVE_REAL_FAN_IN_REGRESSION_FAILURE_AND_PRE_FAN_IN_WORKER_FAILURES_WITHOUT_WEAKENING_GAME_QA_OR_20_WAVE_PRIMARY_POLICY",
+    "reason": "SYNC_CENTRAL_ROADMAP_TO_ACTUAL_20_TASK_LIVE_WAVE_AND_EXTERNAL_RUNNER_QUEUE_STATE",
     "files": [
       "tools/vibe2-source-worker.mjs",
       ".github/workflows/vibe2-continuous-core.yml",
@@ -2900,16 +2917,17 @@
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "systemAiNonblocking": true,
-      "fullRegressionNotWeakened": true,
-      "exactCandidateManifestRequired": true
+      "externalRunnerQueueDoesNotReduceOwnerWave": true
     },
     "liveEvidence": {
-      "fanInFailureRun": "35429351974",
-      "fanInFailingRegressionTests": 4,
-      "preFanInWorkerRun": "35429381430",
-      "preFanInWorkerFailures": 13,
-      "controlCurrentMax": 20
+      "runId": "35429909037",
+      "contractSha": "a347b24a7d6ecb5a47cdba44bc87727ca3b3bdd8",
+      "reservedTasks": 20,
+      "matrixFanOut": 20,
+      "activeWorkersObserved": 19,
+      "queuedWorkersObserved": 1,
+      "adaptiveMax": 20,
+      "machineState": "CONSISTENT"
     }
   }
 }
