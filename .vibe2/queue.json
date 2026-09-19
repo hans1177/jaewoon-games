@@ -6665,7 +6665,10 @@
         "workload:cycle-ms:502644",
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CMALFORMED_OUTPUT%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35452958416%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "speculative-result:speculative-1:FAIL",
-        "speculative-variants:2"
+        "speculative-variants:2",
+        "release-dispatch-recovery-requested:vibe2/candidate/territory-war-web-base-implementation-v1-primary-35452958416-1",
+        "release-dispatch-recovery-at:1789835126660",
+        "release-dispatch-recovery-candidate-sha:7c18ce62fce51cfe63221ad1d4f51e5d12a9db4a"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35452958416:1",
@@ -15547,7 +15550,10 @@
         "role-result:regression:PASS",
         "role-result:review:PASS",
         "package-review:all-required-roles-pass",
-        "candidate-identity:PASS"
+        "candidate-identity:PASS",
+        "release-dispatch-recovery-requested:vibe2/candidate/chess-battle-web-runtime-repair-v1-primary-35452958416-1",
+        "release-dispatch-recovery-at:1789835126660",
+        "release-dispatch-recovery-candidate-sha:d0e8aa972f70fccc8288492eff47cccd09e33c88"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35452958416:1",
