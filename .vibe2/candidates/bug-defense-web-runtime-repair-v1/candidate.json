@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "document.getElementById(\"scope-control-1\").addEventListener('click',scopeHandler1);",
+      "replace": "async function scopeHandler1(){await ensureAudio();const button=document.getElementById(\"scope-control-1\");button.dataset.scopeCovered=\"true\";state.turn++;state.objective++;state.score+=7;state.progress+=9;state.position=(state.position+1)%8;advance(\"scope-corefun-f9eac87035\");}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
