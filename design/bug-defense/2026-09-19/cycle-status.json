@@ -94,9 +94,13 @@
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_READY",
-    "ready": true,
-    "blockers": [],
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "five-distinct-lead-models-required",
+      "per-department-multimodel-review-pass-required",
+      "post-revision-five-department-review-required"
+    ],
     "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
     "unanimousFatalDiscard": false,
     "meeting": {
@@ -124,13 +128,13 @@
         ]
       },
       "deterministicDesignGate": {
-        "required": true,
-        "authority": "DETERMINISTIC_EVIDENCE",
-        "pass": true,
-        "path": "design/bug-defense/2026-09-19/design-checkpoint.json",
-        "phase": "deterministic_pre_gate_after_repair_1",
-        "totalScore": 80,
-        "passMinimum": 80,
+        "required": false,
+        "authority": null,
+        "pass": null,
+        "path": null,
+        "phase": null,
+        "totalScore": null,
+        "passMinimum": null,
         "hardFailures": [],
         "criticalAxisFailures": []
       },
@@ -185,8 +189,8 @@
       "meetingConflictBlocksDesignBaseline": true,
       "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
       "unanimousFatalDiscardRequiredToDiscard": true,
-      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
-      "deterministicEvidenceGateRequired": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "deterministicEvidenceGateRequired": false,
       "aiReviewIsGateAuthority": false,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
@@ -200,17 +204,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T03:38:05.826Z"
+    "checkedAt": "2026-09-19T03:38:43.118Z"
   },
   "artbookUi": {
-    "status": "WRITING",
-    "label": "작성중",
+    "status": "WAITING",
+    "label": "대기중",
     "path": "artbook-submissions/bug-defense/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "reason": "awaiting-post-baseline-artbook-editor"
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
   }
 }
