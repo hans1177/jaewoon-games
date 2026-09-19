@@ -9,7 +9,9 @@ import {
   validateVibeExperiencePromotion,
   promoteVibeReviewedExperience,
   buildVibeExperienceReviewFromRevote,
-  runExperiencePromotion
+  buildSupervisedWebExperienceReview,
+  runExperiencePromotion,
+  runExperiencePromotionBatch
 } from '../tools/vibe2-experience-control.mjs';
 
 function successfulReview(overrides = {}) {
@@ -33,6 +35,45 @@ function successfulReview(overrides = {}) {
   };
 }
 
+test('verified supervised PASS and REVISE decisions become reusable positive and negative learning',()=>{
+  const task={id:'web-supervised-1',gameId:'demo-web',target:'web',goal:'기존 게임을 보존하며 모바일 핵심 루프를 완성한다'};
+  const candidateResult={
+    outcome:'PASS',candidateBranch:'vibe2/candidate/web-supervised-1/primary',baseMainSha:'abc123',
+    candidateIdentity:{manifestPath:'.vibe2/candidates/web-supervised-1/manifest.json'}
+  };
+  const positive=buildSupervisedWebExperienceReview({
+    task,candidateResult,
+    supervisionReview:{verified:true,decision:'PASS',rationale:'세이브·입력·핵심 루프 보존 확인',reusablePatterns:['보존 불변조건을 먼저 고정하고 책임 함수만 수정'],evidence:['diff-review:PASS','mobile-runtime:PASS']}
+  });
+  const positiveGate=validateVibeExperiencePromotion(positive);
+  assert.equal(positiveGate.valid,true);
+  assert.equal(positive.outcome,'PASS');
+  assert.ok(positive.reusablePatterns.includes('보존 불변조건을 먼저 고정하고 책임 함수만 수정'));
+
+  const negative=buildSupervisedWebExperienceReview({
+    task,candidateResult,
+    supervisionReview:{verified:true,decision:'REVISE',rationale:'검증 버튼만 추가하고 실제 모바일 입력은 연결하지 않음',avoidPatterns:['검증 UI로 실제 게임플레이 부족을 가리는 패턴'],evidence:['diff-review:REVISE','mobile-runtime:FAIL']}
+  });
+  const negativeGate=validateVibeExperiencePromotion(negative);
+  assert.equal(negativeGate.valid,true);
+  assert.equal(negative.outcome,'FAIL');
+  assert.match(negative.failureCause,/실제 모바일 입력/);
+  assert.ok(negative.avoidPatterns.some(value=>/검증 UI/.test(value)));
+});
+
+test('supervised review batch writes both verified success and verified failure into experience memory',()=>{
+  const writes=[];
+  const reviews=[
+    successfulReview({id:'supervised-pass',gameId:'demo-web',engine:'web',taskType:'supervised-web-coauthoring'}),
+    successfulReview({id:'supervised-fail',gameId:'demo-web',engine:'web',taskType:'supervised-web-coauthoring',outcome:'FAIL',failureCause:'placeholder source was proposed',engineQaVerified:false,avoidPatterns:['placeholder source']})
+  ];
+  const result=runExperiencePromotionBatch({reviews,memoryFile:'',writeMemory:(_file,value)=>writes.push(value)});
+  assert.equal(result.total,2);
+  assert.equal(result.promotedCount,2);
+  assert.equal(writes.length,1);
+  assert.equal(writes[0].records.length,2);
+  assert.ok(writes[0].records.some(record=>record.outcome==='FAIL'&&record.avoidPatterns.includes('placeholder source')));
+});
 function revoteFixture({ buildConclusion = 'success', buildError = '', buildStage = 'Unity Android build', directorDecision = 'PASS' } = {}) {
   const request = {
     version: 1,
