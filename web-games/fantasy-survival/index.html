@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=24,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=25,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -576,22 +576,24 @@ function closeRecorderOverlay(delay=0){
 }
 function duckBgmForRecorder(on){
  if(!music.master||!music.ctx)return;
- const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.02:(music.enabled?.12:.0001),now,.08)
+ const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.008:(music.enabled?.12:.0001),now,.08)
 }
 function ensureRecorderAudio(){
- const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
- if(!recorderCtx||recorderCtx.state==='closed'){
-  recorderCtx=new AC();recorderMaster=recorderCtx.createGain();recorderMaster.gain.value=.38;recorderMaster.connect(recorderCtx.destination);
-  const n=Math.floor(recorderCtx.sampleRate*.5),b=recorderCtx.createBuffer(1,n,recorderCtx.sampleRate),d=b.getChannelData(0);
+ ensureMusicStarted();
+ const ctx=music.ctx;if(!ctx)return null;
+ try{if(ctx.state==='suspended')ctx.resume()}catch{}
+ recorderCtx=ctx;
+ if(!recorderMaster||recorderMaster.context!==ctx){
+  recorderMaster=ctx.createGain();recorderMaster.gain.value=.92;recorderMaster.connect(ctx.destination);
+  const n=Math.floor(ctx.sampleRate*.5),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);
   for(let i=0;i<n;i++)d[i]=Math.random()*2-1;recorderNoise=b
  }
- try{if(recorderCtx.state==='suspended')recorderCtx.resume()}catch{}
- return recorderCtx
+ return ctx
 }
 function stopRecorderVoice(){
  recorderToken++;clearTimeout(recorderEndTimer);
  for(const n of recorderNodes){try{n.stop?.()}catch{}try{n.disconnect?.()}catch{}}recorderNodes=[];
- if(recorderMaster&&recorderCtx&&recorderCtx.state!=='closed'){const t=recorderCtx.currentTime;recorderMaster.gain.cancelScheduledValues(t);recorderMaster.gain.setValueAtTime(.38,t)}
+ if(recorderMaster&&recorderCtx&&recorderCtx.state!=='closed'){const t=recorderCtx.currentTime;recorderMaster.gain.cancelScheduledValues(t);recorderMaster.gain.setValueAtTime(.92,t)}
  duckBgmForRecorder(false)
 }
 const REC_VOWELS=[
@@ -650,11 +652,16 @@ function synthRecorderText(text,token){
  }
  return Math.max(.2,t-start)
 }
+function recorderStartCue(ctx){
+ const now=ctx.currentTime+.02;
+ recorderNoiseBurst(ctx,now,.13,'mid',.13);
+ for(let i=0;i<2;i++){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(i?720:540,now+i*.13);g.gain.setValueAtTime(.0001,now+i*.13);g.gain.linearRampToValueAtTime(.12,now+i*.13+.01);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.1);o.connect(g);g.connect(recorderMaster);o.start(now+i*.13);o.stop(now+i*.13+.11);recorderNodes.push(o)}
+}
 function beginRecorderSpeech(){
  stopRecorderVoice();const token=++recorderToken,ctx=ensureRecorderAudio();
- setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'▶ 내장 한국어 음성 재생 중 · 다시 두 번 누르면 처음부터');
+ setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'▶ 녹음 재생 중 · 시작 신호음 뒤 음성이 나옴 · 다시 두 번 누르면 처음부터');
  if(!ctx){ui.recorderState.textContent='이 기기에서는 게임 오디오 자체를 재생할 수 없어';closeRecorderOverlay(8000);return}
- duckBgmForRecorder(true);
+ duckBgmForRecorder(true);recorderStartCue(ctx);
  const duration=synthRecorderText(LAB_RECORDER_LINES.join(' ... '),token);
  recorderEndTimer=setTimeout(()=>{if(token!==recorderToken)return;recorderNodes=[];duckBgmForRecorder(false);ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500)},duration*1000+250)
 }
