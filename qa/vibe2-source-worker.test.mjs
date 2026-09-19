@@ -979,6 +979,45 @@ test('full web bounded fallback keeps largest partial telemetry in the coding me
   assert.match(workerSource,/\['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'\]\.includes\(generationFailureClass\(error\)\)/);
 });
 
+test('full web retry compacts oversized guidance and reuses the largest prior partial',()=>{
+  const previous=[
+    'VIBE2_FULL_FILE',
+    'PATH:index.html',
+    '---VIBE2_FILE_CONTENT---',
+    '<!doctype html><html><body><script>'+ 'let score=0;'.repeat(650)
+  ].join('\n');
+  const base=[
+    'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
+    'Engine: web',
+    'Goal: FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축',
+    'VERIFIED_MEMORY_BLOB:'+ 'x'.repeat(24000),
+    'Allowed edit paths: index.html',
+    'Full Web generation target: 12000-24000 UTF-8 bytes.',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<!doctype html><html><body>prototype</body></html>',
+    '',
+    '=== FILE config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.CONFIG={large:true};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{allowFullRewrite:true,error:new Error('Ollama 응답 시간 초과: 360000ms'),responsibleFiles:['index.html'],attempt:2,previousOutput:previous});
+  assert.match(retry,/Engine: web/);
+  assert.match(retry,/Goal: FULL_WEB_GAME_REBUILD/);
+  assert.match(retry,/Full Web generation target: 12000-24000 UTF-8 bytes/);
+  assert.match(retry,/BEGIN_PREVIOUS_FULL_WEB_CANDIDATE/);
+  assert.doesNotMatch(retry,/VERIFIED_MEMORY_BLOB/);
+  assert.doesNotMatch(retry,/config\.js/);
+  assert.ok(Buffer.byteLength(retry,'utf8')<20000);
+});
+
+test('full web retry prompt compaction is observable in source telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/VIBE2_FULL_WEB_RETRY_PROMPT_BYTES/);
+  assert.match(workerSource,/fullWebRetryPromptCompacted:generation\.fullWebRetryPromptCompacted===true/);
+  assert.match(workflowSource,/coding-full-web-retry-prompt-compacted:YES/);
+});
+
 test('full web recovery carries the previous undersized candidate forward for expansion', () => {
   const previous = [
     'VIBE2_FULL_FILE',
