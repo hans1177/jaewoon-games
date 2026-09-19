@@ -9,40 +9,46 @@ import { buildTransformativeRecombination } from './vibe3-transformative-recombi
 const TASK_TYPES=Object.freeze(['coding','bugfix','qa','unity','roblox','graphics','planning','general']);
 const PORTABLE_WEB_QUERY='webgame touch input mobile ui save load resume performance responsive regression core loop';
 const clean=v=>String(v??'').trim();
+const lower=v=>clean(v).toLowerCase();
+const tokens=value=>new Set(lower(value).split(/[^\p{L}\p{N}_./-]+/u).filter(token=>token.length>1));
 function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}}
 function listJson(dir){if(!fs.existsSync(dir))return[];return fs.readdirSync(dir).filter(name=>name.endsWith('.json')).sort().map(name=>({file:path.join(dir,name),record:readJson(path.join(dir,name))})).filter(item=>item.record);}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`);}
 function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);args[key]=inline??argv[++i];}return args;}
 function taskForFailure(entry){const type=clean(entry.taskType).toLowerCase();return TASK_TYPES.includes(type)?type:'general';}
+function overlapScore(left,right){const a=tokens(left),b=tokens(right);if(!a.size||!b.size)return 0;let hit=0;for(const token of a)if(b.has(token))hit+=1;return hit/Math.max(1,a.size);}
+function sharedSources(a,b){const right=new Set(b.sourcePaths||[]);return [...new Set((a.sourcePaths||[]).filter(sourcePath=>right.has(sourcePath)))].sort();}
+function causalPairScore(success,failure){const sources=sharedSources(success,failure),requestScore=overlapScore(success.request,failure.request);if(!sources.length&&requestScore<.34)return null;const score=Math.min(1,(sources.length?0.55:0)+requestScore*.3+(success.project===failure.project?0.1:0)+(success.taskType===failure.taskType?0.05:0));return{sources,requestScore:Number(requestScore.toFixed(4)),score:Number(score.toFixed(4))};}
 
 export function buildCausalCodingLessons(index){
   if(index?.authority!=='verified-rag-memory-index')throw new Error('verified memory index required');
-  const groups=new Map();
-  const ensure=(taskType,project)=>{const key=`${taskType}|${project}`;if(!groups.has(key))groups.set(key,{taskType,project,successes:[],failures:[]});return groups.get(key);};
-  for(const entry of index.positive){const taskType=TASK_TYPES.includes(entry.taskType)?entry.taskType:'general',project=clean(entry.project)||'shared';ensure(taskType,project).successes.push(entry);}
-  for(const entry of index.failureWarnings){const taskType=taskForFailure(entry),project=clean(entry.project)||'shared';ensure(taskType,project).failures.push(entry);}
   const lessons=[];
-  for(const group of groups.values()){
-    if(!group.successes.length||!group.failures.length)continue;
-    const failureClasses=[...new Set(group.failures.map(item=>clean(item.failureClass)||'UNKNOWN'))].sort();
-    const sourcePaths=[...new Set([...group.successes,...group.failures].flatMap(item=>item.sourcePaths||[]).map(clean).filter(Boolean))].sort();
-    const evidenceCount=group.successes.length+group.failures.length;
-    lessons.push(Object.freeze({
-      id:`causal-${group.taskType}-${group.project}`.replace(/[^A-Za-z0-9._-]+/g,'-'),
-      taskType:group.taskType,
-      project:group.project,
-      verifiedSuccessRefs:Object.freeze(group.successes.map(item=>item.id).sort()),
-      observedFailureRefs:Object.freeze(group.failures.map(item=>item.id).sort()),
-      failureClasses:Object.freeze(failureClasses),
-      sourcePaths:Object.freeze(sourcePaths),
-      confidence:Number(Math.min(.95,.5+Math.min(9,evidenceCount)*.05).toFixed(2)),
-      inference:'VERIFIED_SUCCESS_WITH_OBSERVED_FAILURE_CONTRAST',
-      useRule:'prefer-verified-success-patterns-and-avoid-observed-failure-classes',
-      positiveTrainingAllowed:false,
-      authority:'causal-coding-retrieval-context-only'
-    }));
+  for(const success of index.positive){
+    const taskType=TASK_TYPES.includes(success.taskType)?success.taskType:'general',project=clean(success.project)||'shared';
+    for(const failure of index.failureWarnings){
+      if(taskForFailure(failure)!==taskType||(clean(failure.project)||'shared')!==project)continue;
+      const pair=causalPairScore(success,failure);if(!pair)continue;
+      const failureClass=clean(failure.failureClass)||'UNKNOWN';
+      lessons.push(Object.freeze({
+        id:`causal-${success.id}-${failure.id}`.replace(/[^A-Za-z0-9._-]+/g,'-'),
+        taskType,
+        project,
+        verifiedSuccessRefs:Object.freeze([success.id]),
+        observedFailureRefs:Object.freeze([failure.id]),
+        failureClasses:Object.freeze([failureClass]),
+        sourcePaths:Object.freeze(pair.sources.length?pair.sources:[...new Set([...(success.sourcePaths||[]),...(failure.sourcePaths||[])])].sort()),
+        requestSimilarity:pair.requestScore,
+        contrastScore:pair.score,
+        confidence:Number(Math.min(.95,.55+pair.score*.4).toFixed(2)),
+        inference:'VERIFIED_SUCCESS_WITH_OBSERVED_FAILURE_CONTRAST',
+        useRule:'prefer-verified-success-patterns-and-avoid-observed-failure-classes',
+        positiveTrainingAllowed:false,
+        authority:'causal-coding-retrieval-context-only'
+      }));
+    }
   }
-  return Object.freeze(lessons.sort((a,b)=>b.confidence-a.confidence||a.id.localeCompare(b.id)));
+  const dedup=new Map();for(const lesson of lessons)if(!dedup.has(lesson.id))dedup.set(lesson.id,lesson);
+  return Object.freeze([...dedup.values()].sort((a,b)=>b.confidence-a.confidence||b.contrastScore-a.contrastScore||a.id.localeCompare(b.id)));
 }
 
 export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchmarks=64,maxRecombinationRecipes=64}={}){
