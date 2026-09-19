@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1166,7 +1166,15 @@
         "supervisorExplorationMayNotBlockGameWorkerStart": true,
         "perWorkerRefillDispatchForbidden": true,
         "refillAfterFanInOnly": true,
-        "currentWaveMustCompleteBeforeNextWaveRefill": true
+        "currentWaveMustCompleteBeforeNextWaveRefill": true,
+        "ownerPreferredWaveIsCurrentMinimum": true,
+        "adaptiveBackpressureMayNotDropBelowOwnerPreferredWave": true,
+        "ownerPreferredWaveFloorBindings": [
+          "tools/vibe2-adaptive-backpressure.mjs",
+          "tools/vibe2-queue-control.mjs",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "vibe2-runtime.json"
+        ]
       },
       "invariants": {
         "noGateBypass": true,
@@ -1385,41 +1393,57 @@
           "RELEASE_SAFETY_GATES"
         ],
         "currentIncident": {
-          "signature": "PER_WORKER_REFILL_DISPATCH_STORM",
-          "symptom": "SUCCESSFUL_WORKERS_EMITTED_REPOSITORY_DISPATCH_RUNS_THAT_RESERVED_ZERO_NEW_WORKERS_AND_CONSUMED_ACTIONS_SLOTS",
+          "signature": "VIBE2_SOURCE_CANDIDATE_INVALID_OUTPUT_BEFORE_FAN_IN",
+          "symptom": "RUN_35428014822_WORKER_RESULTS_FAILED_BEFORE_FAN_IN_SO_FAN_IN_REVIEW_SKIPPED_ALL_ACTIONABLE_GAME_CANDIDATES",
           "status": "REPAIR_APPLIED_PENDING_NEXT_WAVE_VERIFICATION",
-          "rootCause": "EACH_SINGLE_VARIANT_WORKER_COMPLETION_LAUNCHED_A_FULL_CONTINUOUS_CORE_REFILL_WORKFLOW",
-          "repair": "REMOVE_SLOT_REFILL_DISPATCH_AND_REFILL_ONLY_ONCE_AFTER_FAN_IN",
-          "verifiedEvidence": [
-            "RUN_35427804233_REFILL_RESERVED_TASK_COUNT=0",
-            "RUN_35427804233_HIERARCHICAL_FAN_OUT=0",
-            "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_OR_CANCELLED_WITHOUT_GAME_WORKERS",
-            "RUN_35427458752_WORKER_SUCCESS_COUNT=19_BEFORE_FINAL_WORKER"
-          ],
+          "rootCause": "LOCAL_MODEL_RETURNED_ZERO_OR_INVALID_CHANGE_SETS_JSON_PARSE_FAILURES_AND_INVALID_EDIT_PATH_PLACEHOLDERS_BEFORE_INCREMENTAL_QA",
+          "failureDistribution": {
+            "runId": "35428014822",
+            "workerCount": 16,
+            "zeroOrInvalidChangeSet": 10,
+            "jsonParseFailure": 3,
+            "invalidAllowedPath": 3,
+            "fanInRegression": "PASS",
+            "fanInReleaseCandidates": 0
+          },
+          "repair": "BOUNDED_CAUSAL_REGENERATION_FOR_ZERO_CHANGE_JSON_AND_INVALID_PATH_OUTPUTS_PLUS_OWNER_WAVE_FLOOR_20",
           "codeBindings": [
+            "tools/vibe2-source-worker.mjs",
+            "tools/vibe2-adaptive-backpressure.mjs",
+            "tools/vibe2-queue-control.mjs",
             ".github/workflows/vibe2-continuous-core.yml",
             "vibe2-runtime.json",
-            "qa/vibe2-controller-contract.test.mjs",
-            "qa/vibe2-exploration-worker.test.mjs"
+            "qa/vibe2-source-worker.test.mjs",
+            "qa/vibe2-adaptive-backpressure.test.mjs",
+            "qa/vibe2-controller-contract.test.mjs"
+          ],
+          "repairCommits": [
+            "bf0cd9eb6d05019f456e6435e54e98cb2bb32985",
+            "4bcee5e739e8214437162abf048d470ffd433cbf",
+            "abe45c2e4e5c838cb534a08ce42e41aec27f824c",
+            "eb2358e8dbe69a4dec07d6bd4d6179fc221431e7",
+            "012196171d9037a6b9b8167f82a16814303bfeb7"
           ],
           "nextVerification": [
-            "NO_VIBE2_SLOT_REFILL_DISPATCH_AFTER_WORKER_COMPLETION",
-            "FAN_IN_DISPATCHES_AT_MOST_ONE_NEXT_WAVE_REFILL",
-            "NEXT_WAVE_WORKERS_START_WITH_TASK_LOCAL_EXPLORATION",
-            "20_WAVE_LIMIT_REMAINS_ACTIVE",
-            "GAME_IMPLEMENTATION_PRIORITY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
+            "NEXT_WAVE_EFFECTIVE_MAX_AT_LEAST_20",
+            "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
+            "NO_PER_WORKER_REFILL_DISPATCH",
+            "FAN_IN_REFILLS_AT_MOST_ONCE",
+            "INVALID_PATH_OUTPUT_GETS_ONE_BOUNDED_CAUSAL_RETRY",
+            "ZERO_CHANGE_OUTPUT_GETS_ONE_BOUNDED_CAUSAL_RETRY",
+            "GAME_IMPLEMENTATION_REMAINS_PRIMARY_AHEAD_OF_NONBLOCKING_SUPERVISION"
           ],
           "ownerWaveOverride": 20
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
-          "gameDevelopment": "VIBE2_VIBE3_RUNNING_PRIMARY_FIRST_CAPACITY_RECOVERY",
+          "gameDevelopment": "VIBE2_VIBE3_RUNNING_PRIMARY_FIRST",
           "systemBottleneckWorkers": "SYSTEM_AI_ROOT_TASKS_RUNNING_WITH_NEXT_WAVE_RETRY_FIX_READY",
           "nonCriticalIdleWork": "PREEMPTED_WHILE_ACTIONABLE_DEVELOPMENT_WORK_EXISTS",
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
-          "currentLargestBottleneck": "PER_WORKER_REFILL_DISPATCH_STORM",
+          "currentLargestBottleneck": "SOURCE_CANDIDATE_INVALID_OUTPUT_BEFORE_FAN_IN",
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
           "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY",
@@ -1429,7 +1453,9 @@
           "waveContractPolicy": "ONE_RESERVE_TIME_MAIN_SHA_PER_WAVE",
           "controlBranchRole": "STATE_ONLY",
           "explorationPolicy": "TASK_LOCAL_NONBLOCKING",
-          "refillPolicy": "FAN_IN_ONLY"
+          "refillPolicy": "FAN_IN_ONLY",
+          "ownerWaveFloor": 20,
+          "ownerWaveFloorPolicy": "ADAPTIVE_MAY_NOT_DROP_BELOW_OWNER_DIRECTIVE"
         },
         "incidentHistory": [
           {
@@ -1536,6 +1562,37 @@
               "GAME_WORKERS_START_WITHOUT_WAITING_FOR_SUPERVISOR_EXPLORATION",
               "FAN_IN_STILL_USES_RESERVED_CONTRACT_SHA",
               "20_WAVE_LIMIT_AND_PRIMARY_GAME_PRIORITY_REMAIN_ACTIVE"
+            ],
+            "ownerWaveOverride": 20
+          },
+          {
+            "signature": "PER_WORKER_REFILL_DISPATCH_STORM",
+            "symptom": "SUCCESSFUL_WORKERS_EMITTED_REPOSITORY_DISPATCH_RUNS_THAT_RESERVED_ZERO_NEW_WORKERS_AND_CONSUMED_ACTIONS_SLOTS",
+            "status": "VERIFIED_RESOLVED_RUN_35428014822",
+            "rootCause": "EACH_SINGLE_VARIANT_WORKER_COMPLETION_LAUNCHED_A_FULL_CONTINUOUS_CORE_REFILL_WORKFLOW",
+            "repair": "REMOVE_SLOT_REFILL_DISPATCH_AND_REFILL_ONLY_ONCE_AFTER_FAN_IN",
+            "verifiedEvidence": [
+              "RUN_35427804233_REFILL_RESERVED_TASK_COUNT=0",
+              "RUN_35427804233_HIERARCHICAL_FAN_OUT=0",
+              "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_OR_CANCELLED_WITHOUT_GAME_WORKERS",
+              "RUN_35427458752_WORKER_SUCCESS_COUNT=19_BEFORE_FINAL_WORKER",
+              "RUN_35428014822_FAN_IN_REGRESSION=PASS",
+              "RUN_35428014822_HIERARCHICAL_FAN_IN=PASS",
+              "RUN_35428014822_FAN_IN_REFILL_DISPATCH_COUNT=1",
+              "RUN_35428014822_PER_WORKER_REFILL_DISPATCH=0"
+            ],
+            "codeBindings": [
+              ".github/workflows/vibe2-continuous-core.yml",
+              "vibe2-runtime.json",
+              "qa/vibe2-controller-contract.test.mjs",
+              "qa/vibe2-exploration-worker.test.mjs"
+            ],
+            "nextVerification": [
+              "NO_VIBE2_SLOT_REFILL_DISPATCH_AFTER_WORKER_COMPLETION",
+              "FAN_IN_DISPATCHES_AT_MOST_ONE_NEXT_WAVE_REFILL",
+              "NEXT_WAVE_WORKERS_START_WITH_TASK_LOCAL_EXPLORATION",
+              "20_WAVE_LIMIT_REMAINS_ACTIVE",
+              "GAME_IMPLEMENTATION_PRIORITY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
             ],
             "ownerWaveOverride": 20
           }
