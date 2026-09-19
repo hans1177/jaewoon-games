@@ -226,13 +226,16 @@ jobs:
           fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch origin main --quiet
+          rm -rf /tmp/vibe2-main-contract
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           if [ "$result" = PASS ]; then
-            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
           else
-            node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
           fi
           git add .vibe2/queue.json
           git commit -m "vibe2: settle Unity task ${TASK_ID} ${result} [skip ci]"
