@@ -57,6 +57,8 @@ const FULL_WEB_EXPANSION_TIMEOUT_MS=240000;
 const FULL_WEB_EXPANSION_MAX_PREDICT=4096;
 const FULL_WEB_EXPANSION_CONTEXT_WINDOW=24576;
 const FULL_WEB_MAX_GENERATION_ATTEMPTS=4;
+const FULL_WEB_MAX_ADDITIVE_ATTEMPTS=6;
+const SPECULATIVE_FULL_WEB_MAX_ADDITIVE_ATTEMPTS=4;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=1536;
 const FOCUSED_WEB_REPAIR_MAX_PREDICT=1024;
@@ -755,8 +757,26 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const intermediateGrowthBytes=[];
   const expansionStageTargets=[];
   let lastCandidateValidation=null;
-  const maxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
+  const baseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
+  let maxAttempts=baseMaxAttempts;
+  let additiveAttemptCreditUsed=false;
+  let additiveAttemptCreditLogged=false;
+  const speculativeVariant=/^speculative-/i.test(clean(candidateVariant));
+  const fakeResponseCount=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean).length:0;
   for(let attempt=1;attempt<=maxAttempts;attempt++){
+    if(allowFullRewrite&&accumulatedFullWeb){
+      const accumulatedBytes=Buffer.byteLength(accumulatedFullWeb.content,'utf8');
+      const additiveLimit=speculativeVariant?SPECULATIVE_FULL_WEB_MAX_ADDITIVE_ATTEMPTS:FULL_WEB_MAX_ADDITIVE_ATTEMPTS;
+      const fakeCanSupplyCredit=fakeResponseCount===0||fakeResponseCount>=additiveLimit;
+      if(accumulatedBytes<minFullRewriteBytes&&fakeCanSupplyCredit&&additiveLimit>maxAttempts){
+        maxAttempts=additiveLimit;
+        additiveAttemptCreditUsed=true;
+        if(!additiveAttemptCreditLogged){
+          console.log(`VIBE2_FULL_WEB_ADDITIVE_ATTEMPT_BUDGET=${baseMaxAttempts}->${maxAttempts}:${candidateVariant}`);
+          additiveAttemptCreditLogged=true;
+        }
+      }
+    }
     const retry=attempt>1;
     const priorFailureClass=generationFailureClass(lastError);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
@@ -808,7 +828,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           const growth=afterBytes-beforeBytes;
           if(growth<800||composed===accumulatedFullWeb.content){
             repeatedIntermediateOutputs+=1;
-            throw new Error(`FULL_WEB_EXPANSION_TOO_SMALL:${growth}:min=1200`);
+            throw new Error(`FULL_WEB_EXPANSION_TOO_SMALL:${growth}:min=800`);
           }
           intermediateGrowthBytes.push(growth);
           accumulatedFullWeb={...accumulatedFullWeb,content:composed};
@@ -828,7 +848,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -1019,6 +1039,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     fullWebExpansionDocumentSeedRecoveries:Number(generation.fullWebExpansionDocumentSeedRecoveries||0),
     fullWebClosedHtmlEarlyStop:generation.fullWebClosedHtmlEarlyStop===true,
     fullWebFinalAdditiveExpansion:generation.fullWebFinalAdditiveExpansion===true,
+    fullWebAdditiveAttemptCreditUsed:generation.fullWebAdditiveAttemptCreditUsed===true,
+    baseAttemptBudget:Number(generation.baseAttemptBudget||generation.attemptBudget||0),
+    effectiveAttemptBudget:Number(generation.effectiveAttemptBudget||generation.attemptBudget||0),
     fullWebRetryPromptCompacted:generation.fullWebRetryPromptCompacted===true,
     fullWebRetryPromptBytes:Number(generation.fullWebRetryPromptBytes||0),
     fullWebFallbackBestPartialBytes:Number(generation.fullWebFallbackBestPartialBytes||0),
