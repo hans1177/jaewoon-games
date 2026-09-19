@@ -875,15 +875,15 @@ test('full web expansion prompt does not contain copyable placeholder implementa
   assert.doesNotMatch(workerSource,/<section class="game-specific-system">\.\.\.<\/section>/);
   assert.doesNotMatch(workerSource,/\/\* real additive gameplay implementation \*\//);
   assert.match(workerSource,/const remainingStages=Math\.max\(1,maxAttempts-attempt\);/);
-  assert.match(workerSource,/growth<1200/);
+  assert.match(workerSource,/growth<800/);
 });
 
-test('final full web attempt synthesizes the accumulated seed instead of staying in expansion mode', async () => {
+test('final full web attempt keeps additive expansion until the accumulated candidate reaches validator scale', async () => {
   const cwd=tempRoot();
   const seedFile=path.join(cwd,'seed-final.txt');
   const expansion1=path.join(cwd,'expansion-final-1.txt');
   const expansion2=path.join(cwd,'expansion-final-2.txt');
-  const finalFile=path.join(cwd,'final-full.txt');
+  const finalFile=path.join(cwd,'final-expansion.txt');
   const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-web-final-synthesis'});
   workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed=true;
@@ -894,17 +894,17 @@ test('final full web attempt synthesizes the accumulated seed instead of staying
   const seed='<!doctype html><html><body><main id="game"><button id="start">Start</button><canvas></canvas></main><script>let state={score:0,hp:10,wave:1};function tick(){state.score+=1}</script></body></html>';
   const fragment1=`<section data-gameplay-system="combat"></section><script>(()=>{${Array.from({length:35},(_,i)=>`function combat${i}(s){s.score+=${(i%3)+1};s.hp=Math.max(0,s.hp-1);return s}`).join('')}window.addEventListener("pointerdown",()=>{combat1(state)});})();</script>`;
   const fragment2=`<section data-gameplay-system="progression"></section><script>(()=>{${Array.from({length:35},(_,i)=>`function progress${i}(s){s.wave+=1;s.gold=(s.gold||0)+${i%5};return s}`).join('')}window.addEventListener("touchstart",()=>{progress1(state);localStorage.setItem("vibe2-final-test",JSON.stringify(state))},{passive:true});})();</script>`;
-  const finalBody=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}canvas{touch-action:none;width:100%}</style></head><body><button id="start">Start</button><canvas id="game"></canvas><script>let state={score:0,hp:100,wave:1,gold:0,result:"playing"};${'function gameplayStep(){state.score+=1;state.gold+=1;if(state.score>500)state.result="win";if(state.hp<=0)state.result="loss";}'.repeat(220)}function reset(){state={score:0,hp:100,wave:1,gold:0,result:"playing"}}window.addEventListener("pointerdown",()=>gameplayStep());window.addEventListener("touchstart",()=>gameplayStep(),{passive:true});localStorage.setItem("vibe2-final-test",JSON.stringify(state));</script></body></html>`;
+  const finalFragment=`<section data-gameplay-system="result-save-mobile"></section><script>(()=>{${Array.from({length:120},(_,i)=>`function finalStage${i}(s){s.score+=${(i%7)+1};s.gold=(s.gold||0)+1;if(s.score>500)s.result="win";if(s.hp<=0)s.result="loss";return s}`).join('')}function resetFinal(){state.score=0;state.hp=100;state.wave=1;state.gold=0;state.result="playing";localStorage.setItem("vibe2-final-test",JSON.stringify(state))}window.addEventListener("keydown",e=>{if(e.key==="r")resetFinal()});})();</script>`;
   write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
   write(expansion1,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment1,'---VIBE2_EXPANSION_END---'].join('\n'));
   write(expansion2,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment2,'---VIBE2_EXPANSION_END---'].join('\n'));
-  write(finalFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:final synthesis','EXPECTED_EFFECT:playable','TEST:mobile','---VIBE2_FILE_CONTENT---',finalBody,'---VIBE2_FILE_END---'].join('\n'));
+  write(finalFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',finalFragment,'---VIBE2_EXPANSION_END---'].join('\n'));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,expansion1,expansion2,finalFile]});
   assert.equal(result.generation.attempts,4);
-  assert.equal(result.generation.fullWebExpansionStages,2);
-  assert.equal(result.generation.completionMode,'FULL_WEB');
-  assert.equal(result.generation.maxPredict,6144);
-  assert.equal(result.generation.timeoutMs,300000);
+  assert.equal(result.generation.fullWebExpansionStages,3);
+  assert.equal(result.generation.completionMode,'FULL_WEB_EXPANSION');
+  assert.equal(result.generation.maxPredict,4096);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.deepEqual(result.changedFiles,['index.html']);
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-final-synthesis/files/index.html'),'utf8');
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
