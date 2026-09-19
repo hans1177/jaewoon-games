@@ -225,6 +225,8 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   assert.match(task.goal,/requested-stage=WEB_REPAIR/);
   assert.match(task.goal,/implementation-reason=MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
   assert.match(task.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
+  assert.match(task.goal,/\[WEB_REPAIR_IMPLEMENTATION_HINTS\]/);
+  assert.match(task.goal,/모바일 touch\/pointer 입력을 실제 게임 액션 함수와 상태 변화에 직접 연결/);
   assert.match(task.goal,/no-op 수정은 금지/);
   for(const staleId of [staleAssessment.id,staleDiagnostic.id]){
     const stale=result.queue.tasks.find(row=>row.id===staleId);
@@ -267,6 +269,8 @@ test('existing queued exact Web repair refreshes its goal from latest company ru
   assert.match(refreshed.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
   assert.match(refreshed.goal,/implementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW/);
   assert.match(refreshed.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5/);
+  assert.match(refreshed.goal,/\[WEB_REPAIR_IMPLEMENTATION_HINTS\]/);
+  assert.match(refreshed.goal,/누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현/);
   assert.match(refreshed.goal,/last-validation-at=2026-09-19T07:50:00.000Z/);
   assert.ok(refreshed.evidence.includes('company-runtime-failure-evidence:refreshed'));
 });
