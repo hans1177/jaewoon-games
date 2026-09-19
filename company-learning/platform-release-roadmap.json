@@ -1,5 +1,5 @@
 {
-  "version": 91,
+  "version": 92,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -159,7 +159,81 @@
       "qualityOrEvidenceGateWeakeningForbidden": true
     },
     "freeAiCapacityMustBeMaximized": true,
-    "internalArtificialConcurrencyCapsForbidden": true
+    "internalArtificialConcurrencyCapsForbidden": true,
+    "sourceGenerationTimeoutRecovery": {
+      "version": 1,
+      "authority": "MEASURED_GAME_PRIMARY_BOTTLENECK_RUN_35435747316",
+      "measuredAt": "2026-09-19",
+      "sampledCompletedWorkers": 20,
+      "sampledFailureCounts": {
+        "PASS": 1,
+        "TIMEOUT": 10,
+        "FULL_REWRITE_SIZE": 7,
+        "NO_OP": 1,
+        "MALFORMED_OUTPUT": 1,
+        "EDIT_MATCH": 0
+      },
+      "dominantFailureClass": "TIMEOUT",
+      "contractShaObserved": "3c027e08e6a41e96a2df2e65f9db8897b81ede5e",
+      "observedContractIncluded": {
+        "additiveFullWebExpansion": true,
+        "timeoutPartialOutputPreservation": false,
+        "editApplicabilityDryRun": true,
+        "focusedFinalRetry150Seconds": true
+      },
+      "correction": {
+        "focusedWebRepairSecondRetryCompactionAfterTimeout": true,
+        "secondRetryTimeoutMs": 150000,
+        "secondRetryMaxPredict": 768,
+        "secondRetryContextWindow": 16384,
+        "readOnlyImpactContextDroppedOnTimeoutRecovery": true,
+        "exactResponsibleFileBoundaryPreserved": true,
+        "preservePartialOutputAcrossTimerTimeout": true,
+        "preservePartialOutputAcrossPredictionAbortAndStreamErrors": true
+      },
+      "invariants": {
+        "gamePrimaryPriorityPreserved": true,
+        "ownerMinimumWave": 20,
+        "taskLocalExplorationPreserved": true,
+        "fanInOnlyRefillPreserved": true,
+        "qualityGateWeakening": false,
+        "directMainGameSourceWrite": false
+      }
+    },
+    "candidateReleaseControlSettlement": {
+      "version": 1,
+      "authority": "CORE_QA_RELEASE_CONTROL_REGRESSION_2026-09-19",
+      "latestControlFetchBeforeMutation": true,
+      "hardResetToLatestControlBeforeQueueMutation": true,
+      "reapplyQueueControlMutationAfterEachPushConflict": true,
+      "controlJsonRebaseForbidden": true,
+      "maxPushAttempts": 3,
+      "idempotentNoDiffIsSettled": true,
+      "appliesTo": [
+        "WEB_SETTLEMENT",
+        "UNITY_DISPATCH_FAILURE",
+        "ROBLOX_SETTLEMENT",
+        "CANDIDATE_REJECTION"
+      ],
+      "candidateBranchConcurrencyPreserved": true,
+      "cancelInProgress": false,
+      "qualityGateWeakening": false,
+      "releaseDispatchRecoveryUsesLatestResetReplay": true,
+      "releaseDispatchRecoveryCooldownMs": 120000,
+      "releaseDispatchRecoveryControlRebaseForbidden": true
+    },
+    "parallelismContractValidation": {
+      "version": 1,
+      "authority": "CENTRAL_QUEUE_MAX_WAVE_CAP_SEPARATION",
+      "persistentQueueMax": 256,
+      "externalMatrixBatchMax": 256,
+      "ownerMinimumWave": 20,
+      "currentAdaptiveWaveStateSource": "vibe2-unreal-core:.vibe2/parallelism-control.json",
+      "fanInOnlyRefillRequired": true,
+      "taskLocalExplorationRequired": true,
+      "test": "qa/vibe2-parallelism-main-contract.test.mjs",
+      "staleGlobalThirtySlotExpectationRemoved": true
+    }
   },
   "phases": [
     {

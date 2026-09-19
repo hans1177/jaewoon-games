@@ -400,19 +400,127 @@ jobs:
           [ "${count:-0}" -gt 0 ] || exit 0
 
           stamp="$(date +%s%3N)"
-          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
-            node tools/vibe2-queue-control.mjs await \
-              --id="$task_id" \
-              --blocker=candidate-awaiting-qa-and-deployment \
-              --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
-          done < /tmp/vibe2-release-recovery-verified.tsv
-
-          git add .vibe2/queue.json
-          git commit -m 'vibe2: mark reviewed winner release recovery [skip ci]'
           pushed=0
           for attempt in 1 2 3; do
-            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
-            git rebase --abort 2>/dev/null || true
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+              node tools/vibe2-queue-control.mjs await --id="$task_id" --blocker=candidate-awaiting-qa-and-deployment --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
+            done < /tmp/vibe2-release-recovery-verified.tsv
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              pushed=1
+              break
+            fi
+            git commit -m 'vibe2: mark reviewed winner release recovery [skip ci]'
+            if git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_RECOVERY_DISPATCHED=$task_id:$candidate_branch:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+            /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-web-experience-ingest.log
+            /tmp/vibe2-code-pattern-ingest.log
+            /tmp/vibe2-learning-motor.log
+            /tmp/vibe2-system-steward.log
+            /tmp/vibe2-recovery-escalation.log
+            /tmp/vibe2-recovery-dispatch.log
+            /tmp/vibe2-recovery-learning.log
+            /tmp/vibe2-recovery-code-distillation.log
+            /tmp/vibe2-security-learning.log
+            /tmp/vibe2-recovery-learning-motor.log
+            /tmp/vibe2-post-release-focus.log
+            /tmp/vibe2-plan-summary.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    if: ${{ needs.plan.outputs.continue_required == 'YES' && needs.plan.outputs.wave_ready == 'YES' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write
+
+  game_study:
+    needs: [plan, continuous]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.continue_required != 'YES' }}
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
+    permissions:
+      contents: write
+      actions: write
+
+  refill:
+    needs: [plan, continuous, game_study]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.continue_required == 'YES' && needs.continuous.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Dispatch next cycle when work remains
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          body='{"ref":"main"}'
+          for attempt in 1 2 3; do
+            code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+              --data "$body" || true)"
+            if [ "$code" = '204' ]; then
+              echo 'VIBE2_24H_REFILL=DISPATCHED'
+              exit 0
+            fi
+            echo "VIBE2_24H_REFILL_ATTEMPT=$attempt HTTP=$code"
+            cat /tmp/vibe2-refill-body.txt || true
+            sleep $((attempt * 2))
+          done
+          echo 'VIBE2_24H_REFILL=FAILED' >&2
+          exit 1
+\t' read -r task_id candidate_branch candidate_sha; do
+              node tools/vibe2-queue-control.mjs await \
+                --id="$task_id" \
+                --blocker=candidate-awaiting-qa-and-deployment \
+                --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
+            done < /tmp/vibe2-release-recovery-verified.tsv
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              pushed=1
+              break
+            fi
+            git commit -m 'vibe2: mark reviewed winner release recovery [skip ci]'
+            if git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
             sleep $((attempt * 2))
           done
           test "$pushed" = 1
