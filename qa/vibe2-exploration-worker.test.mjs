@@ -138,6 +138,12 @@ test('exploration compiles responsibility graph coding architecture and semantic
   assert.deepEqual(result.editContract.allowedResponsibleFiles,['index.html']);
   assert.ok(result.editContract.preserveSemantics.includes('SAVE_KEY:contract-demo-save'));
   assert.equal(result.editContract.semanticDiffBudget.unrelatedSystemMutationForbidden,true);
+  assert.equal(result.editContract.semanticDiffBudget.impactPredictionDoesNotGrantWriteAuthority,true);
+  for(const system of result.editContract.readOnlyImpactSystems||[]) {
+    if(!(result.editContract.primarySystems||[]).includes(system) && !(result.editContract.directDependentSystems||[]).includes(system)) {
+      assert.equal((result.editContract.semanticDiffBudget.allowedSystems||[]).includes(system),false);
+    }
+  }
   assert.equal(result.editContract.patchRecipe.mode,'VERIFIED_FAILURE_LOCAL_RECIPE');
   assert.equal(result.editContract.patchRecipe.verifiedMemoryCount,1);
   assert.deepEqual(result.editContract.patchRecipe.verifiedMemoryIds,['verified-local']);
