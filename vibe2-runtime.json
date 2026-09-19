@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 9,
+      "runtime": 10,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -64,6 +64,13 @@
       "company-learning/platform-release-roadmap.json",
       "company-learning/company-log-map.json",
       "company-learning/company-architecture-map.json"
+    ],
+    "systemWorkReviewLoop": [
+      "PRIMARY_AI_PLAN_AND_ASSIGN",
+      "EXTERNAL_AI_EXECUTE",
+      "DETERMINISTIC_QA_AND_EVIDENCE",
+      "PRIMARY_AI_REVIEW",
+      "REWORK_OR_ACCEPT"
     ]
   },
   "continuous": {
@@ -251,7 +258,19 @@
     "stateWritesSerialized": true,
     "workerBranchesIsolated": true,
     "sharedPreparationSinglePass": true,
-    "longWorkProtectedSlots": 1
+    "longWorkProtectedSlots": 1,
+    "primaryAiOrchestration": {
+      "orchestrator": "CHATGPT_PRIMARY_AI",
+      "scope": "SYSTEM_ROADMAP_BOTTLENECK_WORK",
+      "externalAiRole": "ASSIGNED_TASK_EXECUTOR_ONLY",
+      "primaryAiFinalSystemAcceptanceRequired": true,
+      "deterministicQaEvidenceRequiredBeforePrimaryReview": true,
+      "reworkUntilAcceptedOrStopCondition": true,
+      "gameSourceImplementationOwner": [
+        "VIBE2",
+        "VIBE3"
+      ]
+    }
   },
   "qaOptimization": {
     "incrementalFirst": true,
