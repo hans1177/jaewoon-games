@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function sphere(r,c){",
+      "replace": "function sphere(r,c){\n  return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),mat(c));\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
