@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -41,6 +42,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const reviewed=[];
   const skipped=[];
   const releaseCandidates=[];
+  const experienceReviews=[];
   const tasks=(Array.isArray(queue.tasks)?queue.tasks:[]).map(task=>{
     if(!ids.has(clean(task.id)))return task;
     if(!reviewReady(task)){skipped.push({taskId:task.id,status:clean(task.status),blocker:clean(task.blocker)||null});return task;}
@@ -48,12 +50,13 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     evidence.add('role-result:regression:PASS');
     const missing=REQUIRED_ROLES.filter(role=>!rolePass(evidence,role));
     const candidateBranch=releaseCandidateFromEvidence(evidence);
+    let selectedResult=null;
     if(!candidateBranch)missing.push('candidate-branch');
     else{
       const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));
-      const selected=rows.find(row=>resultCandidateBranch(row)===candidateBranch)||rows.find(row=>clean(row?.outcome).toUpperCase()==='PASS')||null;
-      if(!selected)missing.push('candidate-identity-result');
-      else missing.push(...candidateIdentityFailures(task,selected,candidateBranch));
+      selectedResult=rows.find(row=>resultCandidateBranch(row)===candidateBranch)||rows.find(row=>clean(row?.outcome).toUpperCase()==='PASS')||null;
+      if(!selectedResult)missing.push('candidate-identity-result');
+      else missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
     }
     const uniqueMissing=[...new Set(missing)];
     if(uniqueMissing.length){
@@ -65,11 +68,18 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
       const supervised=task?.supervisionContract?.required===true;
-      const supervisionApproved=!supervised||task?.supervisionApproved===true;
+      const supervisionReview=task?.supervisionReview&&typeof task.supervisionReview==='object'?task.supervisionReview:null;
+      const supervisionDecision=clean(supervisionReview?.decision).toUpperCase();
+      const supervisionVerified=supervisionReview?.verified===true;
+      if(supervised&&supervisionVerified&&selectedResult){
+        experienceReviews.push(buildSupervisedWebExperienceReview({task,candidateResult:selectedResult,supervisionReview}));
+      }
+      const supervisionApproved=!supervised||(task?.supervisionApproved===true&&supervisionVerified&&supervisionDecision==='PASS');
       if(supervised&&!supervisionApproved){
         evidence.add('supervised-promotion:BLOCKED');
-        evidence.add('supervised-review:REQUIRED');
-        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker:'SUPERVISED_APPROVAL_REQUIRED'});
+        evidence.add(supervisionVerified?`supervised-review:${supervisionDecision||'REVISE'}`:'supervised-review:REQUIRED');
+        const releaseBlocker=supervisionVerified&&supervisionDecision&&supervisionDecision!=='PASS'?`SUPERVISED_${supervisionDecision}`:'SUPERVISED_APPROVAL_REQUIRED';
+        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker});
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
@@ -78,7 +88,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     }
     return{...task,evidence:[...evidence]};
   });
-  return{queue:{...queue,tasks},reviewed,skipped,releaseCandidates,pass:reviewed.every(row=>row.pass)};
+  return{queue:{...queue,tasks},reviewed,skipped,releaseCandidates,experienceReviews,pass:reviewed.every(row=>row.pass)};
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile=''}={}){
@@ -88,7 +98,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   const results=resultsFromPayload(payload);
   const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload)});
   writeJson(queueFile,result.queue);
-  if(clean(outputFile))writeJson(outputFile,{version:2,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:3,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,pass:result.pass});
   return result;
 }
 
