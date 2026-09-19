@@ -169,7 +169,7 @@ test('controller serializes only shared queue state writes while worker branches
   assert(workflow.includes('concurrency:\n      group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('actions/upload-artifact@v4'));
   assert(workflow.includes('actions/download-artifact@v4'));
-  assert(workflow.includes('vibe2-queue-control.mjs fan-in'));
+  assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
   assert(!workflow.includes('vibe2-remote-work-lock.mjs'));
 });
 
