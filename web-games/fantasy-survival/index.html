@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=28,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=29,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -45,6 +45,16 @@ const COLOSSEUM={x:6800,y:2120,w:3600,h:900},CONSTRUCTION={x:6800,y:4380,w:3600,
 const OASIS={x:4300,y:3650,r:470},LAB={x:8600,y:2900},LAB_RECORDER={x:8600,y:2845},CONSTRUCTION_DIARY={x:8600,y:4710};
 const ROOT_NODE={x:12900,y:6750},TREE_HOLE={x:9000,y:9890},CAVE_ENTRY={x:3000,y:3200},CAVE_EXIT={x:3000,y:3380},BOSS_ALTAR={x:3000,y:1900};
 const SURVIVOR={x:16200,y:520,r:25},WASTELAND_CAVE={x:2730,y:3600,r:72},QUEST_CAVE={w:5200,h:3000,entry:{x:520,y:1500},exit:{x:420,y:1500},radio:{x:4700,y:1500}};
+const LAB_STORY_ENTRANCE={x:6320,y:9650,r:72};
+const STORY_LAB_1={w:6200,h:3400,entry:{x:330,y:2920},exit:{x:220,y:2920},chest:{x:1330,y:2850},ladder:{x:5800,y:320}};
+const STORY_LAB_1_WALLS=[
+ {x:950,y:0,w:120,h:2450},
+ {x:1900,y:850,w:120,h:2550},
+ {x:2850,y:0,w:120,h:2450},
+ {x:3800,y:850,w:120,h:2550},
+ {x:4750,y:0,w:120,h:2450}
+];
+const STORY_LAB_2={w:6200,h:3400,ladder:{x:420,y:1700},boss:{x:3150,y:1700},shutter:{x:5100,y:0,w:150,h:3400},sensor:{x:5660,y:1220},corpse:{x:5650,y:1700},report:{x:5660,y:2200}};
 const LAVA_POOLS=[{x:7400,y:3450,r:120},{x:7950,y:4050,r:140},{x:8650,y:3320,r:105},{x:9300,y:3950,r:145},{x:9850,y:3500,r:115},{x:10650,y:4350,r:135},{x:11400,y:3650,r:125},{x:12700,y:4350,r:150}];
 const recipes=[
 {id:'bench',name:'제작대',where:'hand',cost:{wood:10,stone:6,fiber:4},desc:'상위 제작을 위한 기본 제작대',kind:'structure'},
@@ -140,7 +150,7 @@ const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor']);
 function itemTier(id){return ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe']);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:1500,dmg:50,speed:62,r:40,color:'#3a1728',detect:700,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -160,6 +170,7 @@ crystalbear:{id:'crystalbear',name:'수정 곰',mood:'aggressive',hp:650,dmg:46,
 crystalfiresnake:{id:'crystalfiresnake',name:'수정 화염 뱀',mood:'aggressive',hp:430,dmg:38,speed:112,r:24,color:'#9b68d4',detect:570,attackCooldown:900,crystalVariant:true,sealSpawn:true},
 crystalibex:{id:'crystalibex',name:'수정 산양',mood:'aggressive',hp:360,dmg:36,speed:80,r:24,color:'#a58ddd',detect:520,attackCooldown:950,crystalVariant:true,sealSpawn:true},
 shadowwolfleader:{id:'shadowwolfleader',name:'그림자 늑대 우두머리',mood:'aggressive',hp:250,dmg:30,speed:96,r:25,color:'#363b52',detect:760,attackCooldown:1000,caveLeader:true},
+crystalfiregolem:{id:'crystalfiregolem',name:'수정 화염골렘',mood:'aggressive',hp:560,dmg:30,speed:54,r:38,color:'#8b4fc2',detect:1100,attackCooldown:1200,labBoss:true},
 vampirebat:{id:'vampirebat',name:'거대 흡혈 박쥐',mood:'aggressive',hp:190,dmg:35,speed:118,r:21,color:'#5c314d',detect:720,attackCooldown:1000,vampireBat:true}};
 const DROP_MATERIAL_NAMES={
  mossTusk:'이끼멧돼지 엄니',stoneCore:'돌정령 핵',goblinCharm:'고블린 부적',wolfHide:'늑대가죽',
@@ -170,7 +181,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},bookCategory:'neutral',dirty:false};
 let noticeTimer=0,autosave=0,lastWorldTap={target:null,at:0};
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 function pointInPoly(x,y,poly=CANYON_POLY){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y,hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(hit)inside=!inside}return inside}
@@ -249,7 +260,7 @@ function cymbal(at,gain=.018){
 }
 function desiredMusicTheme(){
  const p=state.player;
- const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.boss);
+ const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
  if(boss)return'boss';
  const battle=state.enemies.some(e=>{
   if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;
@@ -257,6 +268,7 @@ function desiredMusicTheme(){
   return (e.hostile||e.enemyTarget||state.pet.targetId===e.netId)&&d<range
  });
  if(battle)return'battle';
+ if(state.area==='storylab1'||state.area==='storylab2')return'underground';
  if(state.area==='questcave')return'questcave';
  if(state.area==='underground')return'underground';
  return regionAt(p.x,p.y)
@@ -641,7 +653,15 @@ function questObjective(){
  if(q.stage==='talk')return'죽기 직전의 생존자와 이야기하세요';
  if(q.stage==='go-cave')return'동굴로 가기위해 화산 황무지로 가세요';
  if(q.stage==='find-radio')return'동굴 맨 끝에서 무전기 부품을 찾으세요';
- if(q.stage==='return-survivor')return'수정 북쪽 끝의 생존자에게 돌아가세요';
+ if(q.stage==='return-survivor'||q.stage==='sensor-briefing'||q.stage==='sensor-choice')return'무전기 부품을 생존자에게 전하세요';
+ if(q.stage==='find-lab')return'거대한 나무 서쪽 끝의 연구소 입구를 찾으세요';
+ if(q.stage==='lab-maze')return'연구소 1층 미로의 출구를 찾으세요';
+ if(q.stage==='lab-floor2')return'2층의 수정 화염골렘을 처치하세요';
+ if(q.stage==='lab-loot')return'셔터 안에서 부품센서와 보고서를 찾으세요';
+ if(q.stage==='return-survivor-lab'||q.stage==='crystal-report')return'부품센서와 보고서를 생존자에게 전하세요';
+ if(q.stage==='ask-crystal')return'생존자와 한 번 더 이야기하세요';
+ if(q.stage==='touch-crystal')return'이곳 가운데의 큰 수정을 만져보세요';
+ if(q.stage==='return-after-crystal')return'생존자에게 돌아가세요';
  return''
 }
 function setStoryDialog(text,choices=[]){state.storyDialog={text,choices};state.panelMode='story';ui.sheet.classList.add('open');renderStory()}
@@ -651,14 +671,27 @@ function renderStory(){
  ui.sheetBody.querySelectorAll('[data-story]').forEach(b=>b.addEventListener('click',()=>{const ch=d.choices[Number(b.dataset.story)];if(ch)storyChoice(ch.id)}))
 }
 function storyChoice(id){
- if(id==='just'){state.story.path='just';setStoryDialog('정말 고마워 모르는거 있으면 말해',[{id:'escape-just',label:'이 곳을 빠져나가려면 어떡하나요?'}]);return}
- if(id==='where'){state.story.path='where';setStoryDialog('나도 잘 모르는데',[{id:'escape-where',label:'저는 여기서 어떻게 나가죠?'}]);return}
- if(id==='escape-just'||id==='escape-where'){state.story.stage='go-cave';state.storyDialog=null;closeSheet();showNotice('일단 동굴로 들어가봐 그곳에는 이 곳을 빠져나갈 방법이 있을거야');state.dirty=true;updateHud();saveGame(false);return}
+ const q=state.story;
+ if(id==='just'){q.path='just';setStoryDialog('정말 고마워 모르는거 있으면 말해',[{id:'escape-just',label:'이 곳을 빠져나가려면 어떡하나요?'}]);return}
+ if(id==='where'){q.path='where';setStoryDialog('나도 잘 모르는데',[{id:'escape-where',label:'저는 여기서 어떻게 나가죠?'}]);return}
+ if(id==='escape-just'||id==='escape-where'){q.stage='go-cave';state.storyDialog=null;closeSheet();showNotice('일단 동굴로 들어가봐 그곳에는 이 곳을 빠져나갈 방법이 있을거야');state.dirty=true;updateHud();saveGame(false);return}
+ if(id==='sensor-confirm'){
+  q.labUnlocked=true;q.stage='find-lab';state.dirty=true;
+  setStoryDialog('내가 문 비밀번호를 알려줄게 잠깐만..     그 거대한 나무 서쪽 끝에 연구소 입구가 있어');
+  updateHud();saveGame(false);return
+ }
+ if(id==='crystal-beast'){
+  setStoryDialog('그럼 괴물의 정체는 밝혀졌는데. 그 온몸에 수정이 박힌이유가 있지 않을까?',[{id:'agree-crystal',label:'그러니까요..'}]);return
+ }
+ if(id==='agree-crystal'){
+  q.stage='ask-crystal';state.dirty=true;
+  setStoryDialog('혹시 아주 혹시나 이곳 가운데의 수정이 만든거 아닐까 원래 저 수정은 저런거를 만들어 내더라고. 그게 연구소를 침략한거 같아.');
+  updateHud();saveGame(false);return
+ }
  if(id==='ok'){state.storyDialog=null;closeSheet()}
 }
 function survivorInteract(){
  const q=state.story;
- if(q.radioPart&&!q.completed){q.completed=true;q.stage='done';setStoryDialog('무전기 부품을 가지고 왔네 나는 죽은줄 알았는데 고마워',[{id:'ok',label:'알겠어요'}]);state.dirty=true;updateHud();saveGame(false);return}
  if(!q.treated){
   let bandage=invCount('bandage')>0?'bandage':invCount('good-bandage')>0?'good-bandage':null;
   if(!bandage){showNotice('생존자를 치료하려면 붕대나 좋은 붕대가 필요해');return}
@@ -666,8 +699,32 @@ function survivorInteract(){
  }
  if(q.stage==='talk'){setStoryDialog('고마워 근데 어떻게 왔어?',[{id:'just',label:'그냥 왔어요'},{id:'where',label:'여기 어디예요'}]);return}
  if(q.stage==='go-cave'||q.stage==='find-radio'){showNotice('일단 황무지 서쪽 동굴로 가봐');return}
- if(q.stage==='return-survivor'){q.radioPart=true;survivorInteract();return}
- if(q.completed)showNotice('정말 고마워')
+ if(q.stage==='return-survivor'||q.stage==='sensor-briefing'||q.stage==='sensor-choice'){
+  if(!q.radioPart){showNotice('무전기 부품을 먼저 찾아와');return}
+  q.stage='sensor-choice';state.dirty=true;
+  setStoryDialog('부품센서를 찾아야 하는데 부품센서는 그 연구소 안에 들어가야해 아마 너가 타는 그거는 못들어갈걸?',[{id:'sensor-confirm',label:'저는 그래서 그걸 찾으면 돼는거죠?'}]);
+  updateHud();saveGame(false);return
+ }
+ if(q.stage==='find-lab'){showNotice('그 거대한 나무 서쪽 끝에 연구소 입구가 있어');return}
+ if(q.stage==='lab-maze'||q.stage==='lab-floor2'||q.stage==='lab-loot'){showNotice('연구소 안을 더 조사해봐');return}
+ if(q.stage==='return-survivor-lab'||q.stage==='crystal-report'){
+  if(!q.sensorTaken||!q.reportTaken){showNotice('부품센서와 보고서를 둘 다 찾아와');return}
+  q.stage='crystal-report';state.dirty=true;
+  setStoryDialog('이게 뭐지? 보고서인데 괴물이 뭔지도 모르겠고.. 너가 저기서 상대한 이상한게 있어?',[{id:'crystal-beast',label:'네 온몸에 수정이 박혀있는 괴물이랑 싸웠어요'}]);
+  updateHud();saveGame(false);return
+ }
+ if(q.stage==='ask-crystal'){
+  q.stage='touch-crystal';state.dirty=true;
+  setStoryDialog('그럼 이런놈들이 더 생길것 같기도 하고  그 큰 수정을 만져볼래?');
+  updateHud();saveGame(false);return
+ }
+ if(q.stage==='touch-crystal'){showNotice('이곳 가운데의 큰 수정을 만져봐');return}
+ if(q.stage==='return-after-crystal'){
+  q.completed=true;q.stage='done';state.dirty=true;
+  setStoryDialog('더 심각해졌는데.. 일단 저 녀석들이 누군가가 의도적으로 만든거 같은데 더 확인해 봐야겠어.');
+  updateHud();saveGame(false);return
+ }
+ if(q.completed)showNotice('조금 더 확인해 봐야겠어')
 }
 
 function renderPanel(){if(!ui.sheet.classList.contains('open'))return;if(state.panelMode==='inventory')renderInventory();else if(state.panelMode==='map')renderMap();else if(state.panelMode==='bestiary')renderBestiary();else if(state.panelMode==='cooking')renderCooking();else if(state.panelMode==='story')renderStory();else renderCraft()}function openCraft(mode=state.craftMode){state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.classList.remove('open')}
@@ -766,7 +823,7 @@ function hostApplyRemoteAttack(a){
  if(!multiIsHost()||!a||!a.attackerId)return;
  const now=performance.now();
  for(const e of state.enemies){
-  if(e.hp<=0||e.area!==a.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;
+  if(e.hp<=0||e.area!==a.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;
   const dx=e.x-a.x,dy=e.y-a.y,d=Math.hypot(dx,dy);if(d>(a.range||0)+e.type.r)continue;
   const dot=(dx*(a.faceX||1)+dy*(a.faceY||0))/(d||1);if(dot<-.18)continue;
   let dmg=Number(a.damage)||0;if(a.neutralDouble&&e.type.mood==='neutral')dmg*=2;
@@ -775,7 +832,8 @@ function hostApplyRemoteAttack(a){
   if(a.bind&&Math.random()<a.bind)e.stunnedUntil=now+2000;
   if(e.hp<=0){
    e.hp=0;
-   if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});
+   if(e.type.labBoss)finishStoryLabBoss(e);
+   else if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});
    multiSend('kill-reward',{targetId:a.attackerId,typeId:e.type.id});
   }
  }
@@ -884,6 +942,7 @@ function petMountedAttack(){
 function updatePet(dt,now){
  const pet=state.pet,p=state.player;
  if(state.incubation.eggPlaced&&!pet.hatched&&Date.now()>=state.incubation.hatchAt)hatchShadowWolf();
+ if(state.area==='storylab1'||state.area==='storylab2')return;
  if(pet.hatched&&!pet.alive&&pet.respawnAt&&Date.now()>=pet.respawnAt){pet.alive=true;pet.hp=pet.maxHp;pet.respawnAt=0;pet.reviveClickUntil=0;pet.x=p.x+55;pet.y=p.y+25;pet.targetId=null;state.dirty=true;showNotice('그림자 늑대가 부활했어')}
  if(!petAlive())return;
  if(pet.mounted){pet.x=p.x;pet.y=p.y;return}
@@ -909,7 +968,7 @@ function attack(){
  }
  let hit=false;
  for(const e of state.enemies){
-   if(e.area!==state.area||e.hp<=0||(e.type.mood==='harmless'&&!e.type.huntable))continue;
+   if(e.area!==state.area||e.hp<=0||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;
    const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy);if(d>currentRange()+e.type.r)continue;
    const dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot<-.18)continue;
    if(e.type.burrower)e.provokedByPlayer=true;
@@ -923,9 +982,9 @@ function attack(){
    e.hp-=dmg;e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral')e.hostile=true;
    if(w?.bindChance&&Math.random()<w.bindChance){e.stunnedUntil=now+2000;showNotice(e.type.name+' 속박 · 2초')}
    if(e.hp<=0){
-     p.kills++;awardLoot(e);
-     if(e.type.boss){rewardBoss()}
-     else{if(!e.type.summoned&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});showNotice(e.type.name+' 처치')}
+     p.kills++;
+     if(e.type.labBoss){finishStoryLabBoss(e)}
+     else{awardLoot(e);if(e.type.boss){rewardBoss()}else{if(!e.type.summoned&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});showNotice(e.type.name+' 처치')}}
    }
  }
  if(hit)state.dirty=true;updateHud()
@@ -1038,14 +1097,104 @@ function takeRadioPart(){
  if(state.story.radioPart){showNotice('무전기 부품은 이미 챙겼어');return}
  state.story.radioPart=true;state.story.stage='return-survivor';state.dirty=true;updateHud();showNotice('무전기 부품 1개 획득');saveGame(false)
 }
+
+function storyLabBlocked(x,y){
+ const pad=22,q=state.story;
+ const walls=state.area==='storylab1'?STORY_LAB_1_WALLS:(state.area==='storylab2'&&!q.labBossDefeated?[STORY_LAB_2.shutter]:[]);
+ return walls.some(r=>x+pad>r.x&&x-pad<r.x+r.w&&y+pad>r.y&&y-pad<r.y+r.h)
+}
+function moveStoryLabPlayer(dx,dy){
+ const p=state.player,spec=state.area==='storylab1'?STORY_LAB_1:STORY_LAB_2;
+ const nx=clamp(p.x+dx,55,spec.w-55);if(!storyLabBlocked(nx,p.y))p.x=nx;
+ const ny=clamp(p.y+dy,55,spec.h-55);if(!storyLabBlocked(p.x,ny))p.y=ny
+}
+function enterStoryLab(){
+ const q=state.story;
+ if(!q.labUnlocked||!['find-lab','lab-maze','lab-floor2','lab-loot','return-survivor-lab','crystal-report','ask-crystal','touch-crystal','return-after-crystal','done'].includes(q.stage)){showNotice('아직 연구소 문 비밀번호를 몰라');return}
+ if(state.pet.mounted){showNotice('타고 있는 그림자 늑대는 연구소에 들어갈 수 없어');return}
+ state.surfacePos={x:state.player.x,y:state.player.y};state.area='storylab1';state.player.x=STORY_LAB_1.entry.x;state.player.y=STORY_LAB_1.entry.y;
+ if(q.stage==='find-lab')q.stage='lab-maze';
+ state.dirty=true;updateHud();showNotice('연구소 1층 · 미로의 출구를 찾아')
+}
+function leaveStoryLab(){
+ state.area='surface';state.player.x=state.surfacePos?.x||LAB_STORY_ENTRANCE.x;state.player.y=(state.surfacePos?.y||LAB_STORY_ENTRANCE.y)-95;
+ if(petAlive()){state.pet.x=state.player.x+55;state.pet.y=state.player.y+25;state.pet.targetId=null}
+ state.dirty=true;updateHud();showNotice('연구소 밖으로 나왔다')
+}
+function spawnStoryLabBoss(){
+ const q=state.story;if(q.labBossDefeated||state.enemies.some(e=>e.type.labBoss&&e.hp>0))return;
+ const e=spawnAt(creatures.crystalfiregolem,STORY_LAB_2.boss.x,STORY_LAB_2.boss.y,null);
+ e.area='storylab2';e.noRespawn=true;e.hostile=true;e.labBossState={mode:'idle',nextBurrowCheck:performance.now()+3000,nextRoarAt:performance.now()+3000,emergeAt:0,strikeAt:0};state.enemies.push(e)
+}
+function enterStoryLabFloor2(){
+ state.area='storylab2';state.player.x=STORY_LAB_2.ladder.x+110;state.player.y=STORY_LAB_2.ladder.y;
+ if(!state.story.labBossDefeated){state.story.stage='lab-floor2';spawnStoryLabBoss()}else if(!state.story.sensorTaken||!state.story.reportTaken)state.story.stage='lab-loot';
+ state.dirty=true;updateHud();showNotice(state.story.labBossDefeated?'2층 셔터가 열려 있어':'2층 · 뒤쪽 셔터가 잠겨 있어')
+}
+function returnStoryLabFloor1(){
+ state.area='storylab1';state.player.x=STORY_LAB_1.ladder.x-110;state.player.y=STORY_LAB_1.ladder.y+80;state.dirty=true;updateHud()
+}
+function takeLabChest(){
+ const q=state.story;if(q.labChestLooted){showNotice('빈 상자야');return}
+ q.labChestLooted=true;addInv('good-bandage',3);state.dirty=true;showNotice('상자 · 좋은 붕대 3개 획득');updateHud();saveGame(false)
+}
+function updateLabLootStage(){
+ const q=state.story;if(q.sensorTaken&&q.reportTaken)q.stage='return-survivor-lab';else q.stage='lab-loot';state.dirty=true;updateHud();saveGame(false)
+}
+function takeLabSensor(){
+ const q=state.story;if(q.sensorTaken){showNotice('부품센서는 이미 챙겼어');return}
+ q.sensorTaken=true;showNotice('부품센서 획득');updateLabLootStage()
+}
+function takeLabReport(){
+ const q=state.story;if(!q.reportTaken){q.reportTaken=true;updateLabLootStage()}
+ setStoryDialog('나 빼고 다 죽었어 빨리 나가야 하는데 셔터를 잠구는 바람에.. 다 그 미친 괴물 때문이야. 내가 꼭ㅈㅜㅡ:_____ㄱㅇ ____')
+}
+function inspectLabCorpse(){setStoryDialog('연구원으로 보이는 시체가 셔터 안쪽에 쓰러져 있다.')}
+function touchStoryCrystal(){
+ const q=state.story;if(q.stage!=='touch-crystal'||q.crystalTouched){return}
+ q.crystalTouched=true;q.stage='return-after-crystal';state.dirty=true;showNotice('큰 수정에 손을 댔다');updateHud();saveGame(false)
+}
+function finishStoryLabBoss(e){
+ if(state.story.labBossDefeated)return;
+ e.hp=0;state.story.labBossDefeated=true;state.story.stage='lab-loot';state.dirty=true;setBossBanner('');showNotice('수정 화염골렘 격파 · 뒤쪽 셔터가 열렸다');updateHud();saveGame(false)
+}
+function updateStoryLabBoss(e,p,now){
+ const s=e.labBossState||(e.labBossState={mode:'idle',nextBurrowCheck:now+3000,nextRoarAt:now+3000,emergeAt:0,strikeAt:0});
+ const d=dist(e.x,e.y,p.x,p.y);
+ if(s.mode==='submerged'){
+  e.submergedUntil=s.emergeAt;setBossBanner('수정 화염골렘 · 용암 잠수');
+  if(now<s.emergeAt)return{vx:0,vy:0};
+  e.submergedUntil=0;e.x=clamp(p.x+p.faceX*105,100,STORY_LAB_2.w-100);e.y=clamp(p.y+p.faceY*105,100,STORY_LAB_2.h-100);
+  s.mode='telegraph';s.strikeAt=now+1000;showNotice('수정 화염골렘이 앞에서 튀어나왔다 · 1초 준비');return{vx:0,vy:0}
+ }
+ if(s.mode==='telegraph'){
+  setBossBanner('용암 잠수 공격 준비 · 1초');
+  if(now<s.strikeAt)return{vx:0,vy:0};
+  if(dist(e.x,e.y,p.x,p.y)<175)enemyDamageTarget(e,50,true);
+  s.mode='idle';s.nextBurrowCheck=now+3000;setBossBanner('');return{vx:0,vy:0}
+ }
+ if(now>=s.nextRoarAt){
+  s.nextRoarAt=now+3000;
+  if(Math.random()<.20&&d<1000){e.roarUntil=now+900;showNotice('수정 화염골렘의 포효');setBossBanner('수정 화염골렘 · 포효')}
+ }
+ if(now>=s.nextBurrowCheck){
+  s.nextBurrowCheck=now+3000;
+  if(Math.random()<.30){s.mode='submerged';s.emergeAt=now+3000;e.submergedUntil=s.emergeAt;showNotice('수정 화염골렘 · 용암 잠수 3초');return{vx:0,vy:0}}
+ }
+ if(now>=(e.roarUntil||0))setBossBanner('');
+ if(d>e.type.r+30)return{vx:(p.x-e.x)/(d||1)*e.type.speed,vy:(p.y-e.y)/(d||1)*e.type.speed};
+ if(now-e.attackAt>(e.type.attackCooldown||1200)){e.attackAt=now;enemyDamageTarget(e,30,false)}
+ return{vx:0,vy:0}
+}
+
 function handleWorldTap(e){
  const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y,now=performance.now();
- if(state.pet.hatched&&!state.pet.alive&&dist(wx,wy,state.pet.x,state.pet.y)<60){
+ if(state.area!=='storylab1'&&state.area!=='storylab2'&&state.pet.hatched&&!state.pet.alive&&dist(wx,wy,state.pet.x,state.pet.y)<60){
   if(Date.now()<=(state.pet.reviveClickUntil||0)){doubleTapTarget('shadow-pet-revive',now,revivePetByClick)}
   else showNotice('그림자 늑대 자동 부활 대기 중');
   return
  }
- if(petAlive()&&dist(wx,wy,state.pet.x,state.pet.y)<55){doubleTapTarget('shadow-pet',now,mountPet);return}
+ if(state.area!=='storylab1'&&state.area!=='storylab2'&&petAlive()&&dist(wx,wy,state.pet.x,state.pet.y)<55){doubleTapTarget('shadow-pet',now,mountPet);return}
  if(state.area==='surface'&&!state.shadowEggTaken&&dist(wx,wy,SHADOW_WOLF_EGG.x,SHADOW_WOLF_EGG.y)<55){
   doubleTapTarget('shadow-wolf-egg',now,()=>{if(state.shadowEggTaken)return;state.shadowEggTaken=true;addInv('shadow-wolf-egg',1);state.dirty=true;showNotice('그림자 늑대 알 획득 · 플레이어당 1개');saveGame(false)});return
  }
@@ -1056,8 +1205,9 @@ function handleWorldTap(e){
  if(closest){doubleTapTarget('monster:'+closest.type.id,now,()=>unlockBestiary(closest.type.id));return}
  if(state.area==='surface'){
    if(dist(wx,wy,SURVIVOR.x,SURVIVOR.y)<65){if(!doubleTapTarget('survivor',now,survivorInteract))showNotice(state.story.treated?'생존자를 한 번 더 눌러 대화':'생존자를 한 번 더 눌러 치료');return}
+   if(state.story.labUnlocked&&dist(wx,wy,LAB_STORY_ENTRANCE.x,LAB_STORY_ENTRANCE.y)<90){if(!doubleTapTarget('story-lab-entry',now,enterStoryLab))showNotice('연구소 입구를 한 번 더 눌러 들어가기');return}
    if(dist(wx,wy,WASTELAND_CAVE.x,WASTELAND_CAVE.y)<90){if(!doubleTapTarget('wasteland-cave',now,enterQuestCave))showNotice('동굴 입구를 한 번 더 눌러 들어가기');return}
-   if(dist(wx,wy,CRYSTAL_HEART.x,CRYSTAL_HEART.y)<CRYSTAL_HEART.r+35){activateCrystalSeal(now);return}
+   if(dist(wx,wy,CRYSTAL_HEART.x,CRYSTAL_HEART.y)<CRYSTAL_HEART.r+35){if(state.story.stage==='touch-crystal'&&!state.story.crystalTouched){if(!doubleTapTarget('story-crystal-touch',now,touchStoryCrystal))showNotice('큰 수정을 한 번 더 눌러 만지기')}else activateCrystalSeal(now);return}
    if(dist(wx,wy,LAB_RECORDER.x,LAB_RECORDER.y)<75){primeLabRecorderAudio();if(!doubleTapTarget('lab-record',now,playLabRecorder))showNotice('녹음기를 한 번 더 눌러 재생');return}
    if(dist(wx,wy,CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y)<75){doubleTapTarget('construction-diary',now,()=>unlockRecord('construction'));return}
    if(!state.rootTaken&&dist(wx,wy,ROOT_NODE.x,ROOT_NODE.y)<70){doubleTapTarget('root',now,()=>{state.rootTaken=true;state.player.root++;state.dirty=true;showNotice('협곡의 고대 뿌리 획득')});return}
@@ -1069,6 +1219,17 @@ function handleWorldTap(e){
  }else if(state.area==='questcave'){
    if(dist(wx,wy,QUEST_CAVE.exit.x,QUEST_CAVE.exit.y)<85){if(!doubleTapTarget('quest-cave-exit',now,leaveQuestCave))showNotice('출구를 한 번 더 눌러 나가기');return}
    if(!state.story.radioPart&&dist(wx,wy,QUEST_CAVE.radio.x,QUEST_CAVE.radio.y)<80){if(!doubleTapTarget('radio-part',now,takeRadioPart))showNotice('무전기 부품을 한 번 더 눌러 획득');return}
+ }else if(state.area==='storylab1'){
+   if(dist(wx,wy,STORY_LAB_1.exit.x,STORY_LAB_1.exit.y)<85){if(!doubleTapTarget('story-lab-exit',now,leaveStoryLab))showNotice('연구소 출구를 한 번 더 눌러 나가기');return}
+   if(dist(wx,wy,STORY_LAB_1.chest.x,STORY_LAB_1.chest.y)<75){takeLabChest();return}
+   if(dist(wx,wy,STORY_LAB_1.ladder.x,STORY_LAB_1.ladder.y)<90){if(!doubleTapTarget('story-lab-ladder-up',now,enterStoryLabFloor2))showNotice('2층 사다리를 한 번 더 눌러 올라가기');return}
+ }else if(state.area==='storylab2'){
+   if(dist(wx,wy,STORY_LAB_2.ladder.x,STORY_LAB_2.ladder.y)<90){if(!doubleTapTarget('story-lab-ladder-down',now,returnStoryLabFloor1))showNotice('사다리를 한 번 더 눌러 1층으로 내려가기');return}
+   if(state.story.labBossDefeated){
+    if(dist(wx,wy,STORY_LAB_2.sensor.x,STORY_LAB_2.sensor.y)<75){takeLabSensor();return}
+    if(dist(wx,wy,STORY_LAB_2.report.x,STORY_LAB_2.report.y)<75){takeLabReport();return}
+    if(dist(wx,wy,STORY_LAB_2.corpse.x,STORY_LAB_2.corpse.y)<75){inspectLabCorpse();return}
+   }
  }
  lastWorldTap={target:null,at:0}
 }
@@ -1225,7 +1386,7 @@ function update(dt,now){
       m=Math.hypot(mx,my);
   if(m>.01&&now>=(p.stunnedUntil||0)){
     mx/=Math.max(1,m);my/=Math.max(1,m);
-    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else{p.x=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24);p.y=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24)}
+    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else{p.x=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24);p.y=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24)}
     p.faceX=mx;p.faceY=my
   }
   if(state.area==='surface'){
@@ -1247,6 +1408,7 @@ function update(dt,now){
       let vx=0,vy=0,monsterFight=false;
       if(e.type.boss){const b=updateBoss(e,p,now);vx=b.vx;vy=b.vy;monsterFight=true}
       if(!e.type.boss&&now<(e.stunnedUntil||0)){vx=0;vy=0;monsterFight=true}
+      if(!monsterFight&&e.type.labBoss){const b=updateStoryLabBoss(e,p,now);vx=b.vx;vy=b.vy;monsterFight=true}
   
       if(!monsterFight&&e.type.caveLeader&&playerD<(e.type.detect||760)){
         if(now>=(e.nextSpecialAt||0)){e.nextSpecialAt=now+1000;if(Math.random()<.25)summonLeaderWolves(e)}
@@ -1326,8 +1488,9 @@ function update(dt,now){
           vx+=(e.spawnX-e.x)/(sd||1)*e.type.speed*.8;vy+=(e.spawnY-e.y)/(sd||1)*e.type.speed*.8
         }
       }
-      e.x=clamp(e.x+vx*dt,35,WORLD.w-35);
-      e.y=clamp(e.y+vy*dt,35,WORLD.h-35)
+      const enemyW=e.area==='storylab1'?STORY_LAB_1.w:e.area==='storylab2'?STORY_LAB_2.w:e.area==='questcave'?QUEST_CAVE.w:WORLD.w,enemyH=e.area==='storylab1'?STORY_LAB_1.h:e.area==='storylab2'?STORY_LAB_2.h:e.area==='questcave'?QUEST_CAVE.h:WORLD.h;
+      e.x=clamp(e.x+vx*dt,35,enemyW-35);
+      e.y=clamp(e.y+vy*dt,35,enemyH-35)
     }
     updateProjectiles(dt,now);
     for(let i=state.respawns.length-1;i>=0;i--)if(now>=state.respawns[i].at){
@@ -1348,7 +1511,7 @@ function update(dt,now){
   musicTick();
   finishSmeltIfReady();
   if(ui.smeltPanel.classList.contains('open')){if(!nearFurnace())ui.smeltPanel.classList.remove('open');else updateSmeltUi()}
-  const camW=state.area==='questcave'?QUEST_CAVE.w:state.area==='underground'?6000:WORLD.w,camH=state.area==='questcave'?QUEST_CAVE.h:state.area==='underground'?4000:WORLD.h;state.camera.x=clamp(p.x-innerWidth/2,0,Math.max(0,camW-innerWidth));
+  const camW=state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:WORLD.w,camH=state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:WORLD.h;state.camera.x=clamp(p.x-innerWidth/2,0,Math.max(0,camW-innerWidth));
   state.camera.y=clamp(p.y-innerHeight/2,0,Math.max(0,camH-innerHeight));
   autosave+=dt;
   if(autosave>10&&state.dirty){autosave=0;saveGame(false)}
@@ -1364,7 +1527,7 @@ function drawBackground(cx,cy,w,h){
  ctx.strokeStyle='#8d79d6';ctx.lineWidth=20;ctx.strokeRect(CRYSTAL_REGION.x+10,CRYSTAL_REGION.y+10,CRYSTAL_REGION.w-20,CRYSTAL_REGION.h-20);
  ctx.fillStyle='#c8baff';ctx.font='bold 26px system-ui';ctx.textAlign='center';ctx.fillText('수정 지대',CRYSTAL_REGION.x+CRYSTAL_REGION.w/2,520);
  for(let i=0;i<22;i++){const x=CRYSTAL_REGION.x+180+(i*157)%3200,y=900+(i*487)%10000;ctx.fillStyle=i%2?'#765fc4':'#a38ce8';ctx.beginPath();ctx.moveTo(x,y-30);ctx.lineTo(x+18,y);ctx.lineTo(x,y+36);ctx.lineTo(x-17,y);ctx.closePath();ctx.fill()}
- ctx.save();ctx.translate(CRYSTAL_HEART.x,CRYSTAL_HEART.y);ctx.fillStyle='#4f3a93';ctx.strokeStyle='#d7ccff';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(0,-150);ctx.lineTo(105,-35);ctx.lineTo(70,115);ctx.lineTo(0,155);ctx.lineTo(-75,110);ctx.lineTo(-110,-35);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#eee8ff';ctx.font='bold 18px system-ui';ctx.fillText('수정 돌 · 봉인 핵',0,205);ctx.font='bold 11px system-ui';ctx.fillText(state.crystalSealReleased?'봉인 해제됨':'3번 클릭하면 봉인 해제',0,227);ctx.restore();
+ ctx.save();ctx.translate(CRYSTAL_HEART.x,CRYSTAL_HEART.y);ctx.fillStyle='#4f3a93';ctx.strokeStyle='#d7ccff';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(0,-150);ctx.lineTo(105,-35);ctx.lineTo(70,115);ctx.lineTo(0,155);ctx.lineTo(-75,110);ctx.lineTo(-110,-35);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#eee8ff';ctx.font='bold 18px system-ui';ctx.fillText(state.story.stage==='touch-crystal'?'큰 수정 · 만지기':'수정 돌 · 봉인 핵',0,205);ctx.font='bold 11px system-ui';ctx.fillText(state.story.stage==='touch-crystal'?'두 번 눌러 만지기':state.crystalSealReleased?'봉인 해제됨':'3번 클릭하면 봉인 해제',0,227);ctx.restore();
  // 화산 전체 2/5
  ctx.fillStyle='#51231f';ctx.fillRect(2400,2000,12000,3200);
  // 서쪽: 오래된 황무지와 오아시스
@@ -1399,6 +1562,10 @@ function drawBackground(cx,cy,w,h){
  ctx.beginPath();ctx.moveTo(WORLD_TREE_POLY[0].x,WORLD_TREE_POLY[0].y);for(let i=1;i<WORLD_TREE_POLY.length;i++)ctx.lineTo(WORLD_TREE_POLY[i].x,WORLD_TREE_POLY[i].y);ctx.closePath();ctx.fillStyle='#163820';ctx.fill();ctx.strokeStyle='#315d39';ctx.lineWidth=18;ctx.stroke();
  ctx.fillStyle='#8fc78e';ctx.fillText('세계수',WORLD_TREE.x,WORLD_TREE.y-250);ctx.fillStyle='#6b4930';ctx.fillRect(WORLD_TREE.x-60,WORLD_TREE.y-70,120,300);ctx.fillStyle='#24572f';ctx.beginPath();ctx.arc(WORLD_TREE.x,WORLD_TREE.y-150,240,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2f6b39';ctx.beginPath();ctx.arc(WORLD_TREE.x-155,WORLD_TREE.y-70,165,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(WORLD_TREE.x+165,WORLD_TREE.y-60,175,0,Math.PI*2);ctx.fill();
  ctx.fillStyle='#080604';ctx.beginPath();ctx.ellipse(TREE_HOLE.x,TREE_HOLE.y,58,32,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d6efc6';ctx.font='bold 10px system-ui';ctx.fillText('닿으면 지하 진입',TREE_HOLE.x,TREE_HOLE.y+55);
+ if(state.story.labUnlocked){
+  ctx.fillStyle='#252b2c';ctx.fillRect(LAB_STORY_ENTRANCE.x-52,LAB_STORY_ENTRANCE.y-42,104,84);ctx.strokeStyle='#86a6a8';ctx.lineWidth=7;ctx.strokeRect(LAB_STORY_ENTRANCE.x-52,LAB_STORY_ENTRANCE.y-42,104,84);
+  ctx.fillStyle='#cfe8e8';ctx.font='bold 10px system-ui';ctx.fillText('연구소 입구 · 두 번 누르기',LAB_STORY_ENTRANCE.x,LAB_STORY_ENTRANCE.y+66)
+ }
  if(!state.rootTaken){ctx.strokeStyle='#d6c5a0';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(ROOT_NODE.x-38,ROOT_NODE.y+20);ctx.quadraticCurveTo(ROOT_NODE.x,ROOT_NODE.y-55,ROOT_NODE.x+42,ROOT_NODE.y+22);ctx.stroke();ctx.fillStyle='#f1dfb9';ctx.fillText('고대 뿌리 · 두 번 누르기',ROOT_NODE.x,ROOT_NODE.y+58)}
  ctx.restore();
  ctx.strokeStyle='#8ec69a10';ctx.lineWidth=1;const s=80;for(let x=-(cx%s);x<w;x+=s){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=-(cy%s);y<h;y+=s){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
@@ -1421,6 +1588,29 @@ function drawQuestCave(cx,cy,w,h){
  if(!state.story.radioPart){ctx.fillStyle='#72808b';ctx.fillRect(QUEST_CAVE.radio.x-18,QUEST_CAVE.radio.y-13,36,26);ctx.strokeStyle='#c5d1d7';ctx.lineWidth=3;ctx.strokeRect(QUEST_CAVE.radio.x-18,QUEST_CAVE.radio.y-13,36,26);ctx.fillStyle='#eee';ctx.fillText('무전기 부품 · 두 번 누르기',QUEST_CAVE.radio.x,QUEST_CAVE.radio.y+45)}
  ctx.restore()
 }
+
+function drawStoryLab1(cx,cy,w,h){
+ ctx.fillStyle='#0d1215';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ ctx.fillStyle='#222a2d';ctx.fillRect(35,35,STORY_LAB_1.w-70,STORY_LAB_1.h-70);ctx.strokeStyle='#647278';ctx.lineWidth=36;ctx.strokeRect(35,35,STORY_LAB_1.w-70,STORY_LAB_1.h-70);
+ ctx.fillStyle='#5b686d';for(const r of STORY_LAB_1_WALLS){ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle='#8a969a';ctx.lineWidth=4;ctx.strokeRect(r.x,r.y,r.w,r.h)}
+ ctx.fillStyle='#11181a';ctx.beginPath();ctx.ellipse(STORY_LAB_1.exit.x,STORY_LAB_1.exit.y,65,45,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e1ecee';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('연구소 출구 · 두 번 누르기',STORY_LAB_1.exit.x,STORY_LAB_1.exit.y+65);
+ ctx.fillStyle='#7d5a36';ctx.fillRect(STORY_LAB_1.chest.x-30,STORY_LAB_1.chest.y-22,60,44);ctx.strokeStyle='#d3b273';ctx.lineWidth=5;ctx.strokeRect(STORY_LAB_1.chest.x-30,STORY_LAB_1.chest.y-22,60,44);ctx.fillStyle='#ffe6a6';ctx.fillText(state.story.labChestLooted?'빈 상자':'상자 · 클릭',STORY_LAB_1.chest.x,STORY_LAB_1.chest.y+42);
+ ctx.strokeStyle='#c5d2d6';ctx.lineWidth=9;for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(STORY_LAB_1.ladder.x-24,STORY_LAB_1.ladder.y-35+i*14);ctx.lineTo(STORY_LAB_1.ladder.x+24,STORY_LAB_1.ladder.y-35+i*14);ctx.stroke()}ctx.beginPath();ctx.moveTo(STORY_LAB_1.ladder.x-28,STORY_LAB_1.ladder.y-55);ctx.lineTo(STORY_LAB_1.ladder.x-28,STORY_LAB_1.ladder.y+45);ctx.moveTo(STORY_LAB_1.ladder.x+28,STORY_LAB_1.ladder.y-55);ctx.lineTo(STORY_LAB_1.ladder.x+28,STORY_LAB_1.ladder.y+45);ctx.stroke();ctx.fillStyle='#f0f5f6';ctx.fillText('2층 사다리 · 두 번 누르기',STORY_LAB_1.ladder.x,STORY_LAB_1.ladder.y+75);
+ ctx.fillStyle='#a9bac0';ctx.font='bold 18px system-ui';ctx.fillText('연구소 1층 · 미로',STORY_LAB_1.w/2,90);ctx.restore()
+}
+function drawStoryLab2(cx,cy,w,h){
+ ctx.fillStyle='#101116';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ ctx.fillStyle='#272832';ctx.fillRect(35,35,STORY_LAB_2.w-70,STORY_LAB_2.h-70);ctx.strokeStyle='#696b79';ctx.lineWidth=36;ctx.strokeRect(35,35,STORY_LAB_2.w-70,STORY_LAB_2.h-70);
+ ctx.strokeStyle='#9aa3ad';ctx.lineWidth=9;for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(STORY_LAB_2.ladder.x-24,STORY_LAB_2.ladder.y-35+i*14);ctx.lineTo(STORY_LAB_2.ladder.x+24,STORY_LAB_2.ladder.y-35+i*14);ctx.stroke()}ctx.fillStyle='#e3e8ec';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('1층으로 · 두 번 누르기',STORY_LAB_2.ladder.x,STORY_LAB_2.ladder.y+75);
+ if(!state.story.labBossDefeated){const r=STORY_LAB_2.shutter;ctx.fillStyle='#3f454c';ctx.fillRect(r.x,r.y,r.w,r.h);ctx.strokeStyle='#8e979f';ctx.lineWidth=7;for(let y=80;y<r.h;y+=90){ctx.beginPath();ctx.moveTo(r.x+10,y);ctx.lineTo(r.x+r.w-10,y);ctx.stroke()}ctx.fillStyle='#f0b2b2';ctx.font='bold 13px system-ui';ctx.fillText('잠긴 셔터',r.x-80,1700)}
+ else{
+  ctx.fillStyle='#758fa0';ctx.fillRect(STORY_LAB_2.sensor.x-24,STORY_LAB_2.sensor.y-18,48,36);ctx.fillStyle='#e5f5ff';ctx.font='bold 10px system-ui';ctx.fillText(state.story.sensorTaken?'부품센서 · 획득함':'부품센서 · 클릭',STORY_LAB_2.sensor.x,STORY_LAB_2.sensor.y+45);
+  ctx.fillStyle='#5b4a45';ctx.beginPath();ctx.ellipse(STORY_LAB_2.corpse.x,STORY_LAB_2.corpse.y,36,16,.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d8c5bd';ctx.fillText('시체 · 클릭',STORY_LAB_2.corpse.x,STORY_LAB_2.corpse.y+38);
+  ctx.fillStyle='#d7c9a0';ctx.fillRect(STORY_LAB_2.report.x-24,STORY_LAB_2.report.y-18,48,36);ctx.fillStyle='#fff2c7';ctx.fillText(state.story.reportTaken?'보고서 · 다시 읽기':'보고서 · 클릭',STORY_LAB_2.report.x,STORY_LAB_2.report.y+42)
+ }
+ ctx.fillStyle='#bfc2d8';ctx.font='bold 18px system-ui';ctx.fillText('연구소 2층 · 대형 실험구역',STORY_LAB_2.w/2,90);ctx.restore()
+}
+
 function drawQuestDarkness(){
  if(state.area!=='questcave')return;const p=state.player,x=p.x-state.camera.x,y=p.y-state.camera.y,lit=p.torchEquipped&&p.torch&&p.torchDurability>0,r=lit?230:55;
  const g=ctx.createRadialGradient(x,y,Math.max(8,r*.18),x,y,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.55,lit?'rgba(0,0,0,.15)':'rgba(0,0,0,.65)');g.addColorStop(1,'rgba(0,0,0,.96)');ctx.fillStyle=g;ctx.fillRect(0,0,innerWidth,innerHeight)
@@ -1444,7 +1634,7 @@ function drawStructure(s,cx,cy,type){
  else if(type==='goldbench'){ctx.fillStyle='#8a6b1e';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#f0cf57';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#fff1a2';ctx.font='bold 9px system-ui';ctx.fillText('금 제작대',x,y+29)}
  else{ctx.fillStyle='#59666b';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#aebdc2';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#dce8ec';ctx.font='bold 9px system-ui';ctx.fillText('철 제작대',x,y+29)}
 }
-function drawCreature(e,cx,cy){const x=e.x-cx,y=e.y-cy;if(x<-55||y<-55||x>innerWidth+55||y>innerHeight+55)return;if(e.type.burrower&&!e.emerged){ctx.fillStyle='#6f5134';ctx.beginPath();ctx.ellipse(x,y+10,34,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a67b4b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-25,y+6);ctx.lineTo(x+23,y+13);ctx.stroke();return}ctx.save();if(performance.now()<e.hitAt)ctx.globalAlpha=.5;ctx.fillStyle=e.type.color;ctx.strokeStyle='#18221a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r,0,Math.PI*2);ctx.fill();ctx.stroke();if(e.type.id==='fairy'){ctx.strokeStyle='#fffbd0';ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='ironspirit'){ctx.strokeStyle='#d9e6eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,e.type.r-6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='worldtreebear'){ctx.fillStyle='#8b6747';ctx.beginPath();ctx.arc(x-19,y-22,9,0,Math.PI*2);ctx.arc(x+19,y-22,9,0,Math.PI*2);ctx.fill()}if(e.type.id==='firewolf'||e.type.id==='firesnake'){ctx.strokeStyle='#ff9b45';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+5,0,Math.PI*2);ctx.stroke()}if(e.type.id.includes('firegolem')){ctx.fillStyle='#ff6f35';ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fill()}if(e.type.id==='sandwalker'){ctx.strokeStyle='#d8b06a';ctx.lineWidth=4;for(let a=0;a<6;a++){const ang=a*Math.PI/3;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*20,y+Math.sin(ang)*20);ctx.lineTo(x+Math.cos(ang)*42,y+Math.sin(ang)*42);ctx.stroke()}}if(e.type.guardian){ctx.strokeStyle='#efe8ff';ctx.lineWidth=5;ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,rr=i%2?e.type.r+12:e.type.r+20,px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py)}ctx.closePath();ctx.stroke();if(performance.now()<(e.rageUntil||0)){ctx.strokeStyle='#ff6f8f';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+15,0,Math.PI*2);ctx.stroke()}}if(e.type.crystalVariant){ctx.strokeStyle='#cfbfff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='crystalboar'||e.type.id==='crystalboarjunior'){ctx.strokeStyle='#d6c9ff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-12,y-e.type.r+3);ctx.lineTo(x,y-e.type.r-14);ctx.lineTo(x+12,y-e.type.r+3);ctx.stroke()}if(e.type.boss){const s=e.bossState;if(s?.mode?.startsWith('telegraph')){ctx.globalAlpha=.22;ctx.fillStyle=s.mode==='telegraph-triple'?'#ff466f':'#9cffb0';for(let i=1;i<=3;i++){ctx.beginPath();ctx.arc(x-i*18,y+i*7,e.type.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;ctx.strokeStyle=s.mode==='telegraph-triple'?'#ff6689':'#a8ffc0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+16,0,Math.PI*2);ctx.stroke()}}ctx.restore();if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-21,y-e.type.r-13,42,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-21,y-e.type.r-13,42*Math.max(0,e.hp/e.maxHp),4)}ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.name,x,y+e.type.r+14)}
+function drawCreature(e,cx,cy){const x=e.x-cx,y=e.y-cy;if(x<-55||y<-55||x>innerWidth+55||y>innerHeight+55)return;if(e.type.labBoss&&performance.now()<(e.submergedUntil||0)){ctx.fillStyle='#ff5a30';ctx.beginPath();ctx.ellipse(x,y,52,18,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c5a2ff';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#f7e7ff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('용암 잠수',x,y+34);return}if(e.type.burrower&&!e.emerged){ctx.fillStyle='#6f5134';ctx.beginPath();ctx.ellipse(x,y+10,34,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a67b4b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-25,y+6);ctx.lineTo(x+23,y+13);ctx.stroke();return}ctx.save();if(performance.now()<e.hitAt)ctx.globalAlpha=.5;ctx.fillStyle=e.type.color;ctx.strokeStyle='#18221a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r,0,Math.PI*2);ctx.fill();ctx.stroke();if(e.type.id==='fairy'){ctx.strokeStyle='#fffbd0';ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='ironspirit'){ctx.strokeStyle='#d9e6eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,e.type.r-6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='worldtreebear'){ctx.fillStyle='#8b6747';ctx.beginPath();ctx.arc(x-19,y-22,9,0,Math.PI*2);ctx.arc(x+19,y-22,9,0,Math.PI*2);ctx.fill()}if(e.type.id==='firewolf'||e.type.id==='firesnake'){ctx.strokeStyle='#ff9b45';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+5,0,Math.PI*2);ctx.stroke()}if(e.type.id.includes('firegolem')){ctx.fillStyle='#ff6f35';ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fill()}if(e.type.labBoss){ctx.strokeStyle='#c8a7ff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+9,0,Math.PI*2);ctx.stroke();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;ctx.fillStyle='#b08be5';ctx.beginPath();ctx.moveTo(x+Math.cos(a)*(e.type.r+4),y+Math.sin(a)*(e.type.r+4));ctx.lineTo(x+Math.cos(a-.18)*(e.type.r+25),y+Math.sin(a-.18)*(e.type.r+25));ctx.lineTo(x+Math.cos(a+.18)*(e.type.r+25),y+Math.sin(a+.18)*(e.type.r+25));ctx.closePath();ctx.fill()}if(performance.now()<(e.roarUntil||0)){ctx.strokeStyle='#f6d4ff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+28,0,Math.PI*2);ctx.stroke()}}if(e.type.id==='sandwalker'){ctx.strokeStyle='#d8b06a';ctx.lineWidth=4;for(let a=0;a<6;a++){const ang=a*Math.PI/3;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*20,y+Math.sin(ang)*20);ctx.lineTo(x+Math.cos(ang)*42,y+Math.sin(ang)*42);ctx.stroke()}}if(e.type.guardian){ctx.strokeStyle='#efe8ff';ctx.lineWidth=5;ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,rr=i%2?e.type.r+12:e.type.r+20,px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py)}ctx.closePath();ctx.stroke();if(performance.now()<(e.rageUntil||0)){ctx.strokeStyle='#ff6f8f';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+15,0,Math.PI*2);ctx.stroke()}}if(e.type.crystalVariant){ctx.strokeStyle='#cfbfff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='crystalboar'||e.type.id==='crystalboarjunior'){ctx.strokeStyle='#d6c9ff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-12,y-e.type.r+3);ctx.lineTo(x,y-e.type.r-14);ctx.lineTo(x+12,y-e.type.r+3);ctx.stroke()}if(e.type.boss){const s=e.bossState;if(s?.mode?.startsWith('telegraph')){ctx.globalAlpha=.22;ctx.fillStyle=s.mode==='telegraph-triple'?'#ff466f':'#9cffb0';for(let i=1;i<=3;i++){ctx.beginPath();ctx.arc(x-i*18,y+i*7,e.type.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;ctx.strokeStyle=s.mode==='telegraph-triple'?'#ff6689':'#a8ffc0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+16,0,Math.PI*2);ctx.stroke()}}ctx.restore();if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-21,y-e.type.r-13,42,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-21,y-e.type.r-13,42*Math.max(0,e.hp/e.maxHp),4)}ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.name,x,y+e.type.r+14)}
 function drawProjectiles(cx,cy){
  for(const q of state.projectiles){if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
 }
@@ -1454,6 +1644,7 @@ function drawShadowEgg(cx,cy){
  ctx.save();ctx.fillStyle='#242033';ctx.strokeStyle='#796796';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(x,y,19,26,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.strokeStyle='#a18bbf';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-10,y-5);ctx.lineTo(x+4,y+2);ctx.lineTo(x-5,y+13);ctx.stroke();ctx.fillStyle='#ded4ef';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('그림자 늑대 알 · 두 번 누르기',x,y+42);ctx.restore()
 }
 function drawPet(cx,cy){
+ if(state.area==='storylab1'||state.area==='storylab2')return;
  const pet=state.pet;if(!pet.hatched)return;const now=Date.now();
  if(!pet.alive){const x=pet.x-cx,y=pet.y-cy,quick=Math.max(0,(pet.reviveClickUntil||0)-now);ctx.save();ctx.fillStyle='#3a334d';ctx.beginPath();ctx.ellipse(x,y,27,14,-.18,0,Math.PI*2);ctx.fill();ctx.fillStyle='#c9bfd9';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(quick>0?'쓰러짐 · '+Math.ceil(quick/1000)+'초 안에 두 번 눌러 부활':'그림자 늑대 · '+Math.max(0,Math.ceil((pet.respawnAt-now)/60000))+'분 뒤 자동 부활',x,y+28);ctx.restore();return}
  const x=pet.x-cx,y=pet.y-cy;if(x<-60||y<-60||x>innerWidth+60||y>innerHeight+60)return;
@@ -1471,7 +1662,7 @@ function drawRemotePlayers(cx,cy){
   if(r.pet&&!r.pet.mounted){ctx.fillStyle='#5d5278';ctx.beginPath();ctx.arc(r.pet.x-cx,r.pet.y-cy,14,0,Math.PI*2);ctx.fill()}if(r.weapon){ctx.strokeStyle='#bcdcff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+(r.faceX||1)*25,y+4+(r.faceY||0)*25);ctx.stroke()}ctx.restore()
  }
 }
-function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawQuestDarkness()}
+function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawQuestDarkness()}
 function resize(){const d=Math.min(2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;update(dt,now);draw();requestAnimationFrame(loop)}
 function resetGameSave(){
  try{localStorage.removeItem(SAVE_KEY)}catch{}
@@ -1507,9 +1698,9 @@ function loadGame(){
      state.explored[Math.floor(wx/MAP_CELL)+','+Math.floor(wy/MAP_CELL)]=1
    }
   }else state.explored={};
-  state.area=s.area==='underground'?'underground':s.area==='questcave'?'questcave':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
-  state.rootTaken=!!s.rootTaken;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false};state.questCaveInit=!!s.questCaveInit;
-  if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);
+  state.area=s.area==='underground'?'underground':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
+  state.rootTaken=!!s.rootTaken;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}state.questCaveInit=!!s.questCaveInit;
+  if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);
   if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+1000,telegraphUntil:0,hitIndex:0,nextHitAt:0};state.enemies.push(boss)}
   if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
  }catch(e){}
