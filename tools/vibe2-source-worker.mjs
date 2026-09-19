@@ -307,11 +307,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return generationFailureClass(error)==='FULL_REWRITE_SIZE';}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|SEMANTIC_DIFF_BUDGET_VIOLATION|prediction aborted|token repeat limit/i.test(message);
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput=''}={}){
   const rawPrompt=String(prompt??'');
@@ -327,7 +327,8 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
-  const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':reason;
+  const semanticDiffViolation=/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(reason);
+  const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':semanticDiffViolation?'candidate crossed the compiled semantic edit budget; keep only primary responsibility and required direct dependencies':reason;
   const fullWebTargetLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Full Web generation target:'))||`Full Web generation target: ${FULL_WEB_GENERATION_TARGET_MIN_BYTES}-${FULL_WEB_GENERATION_TARGET_MAX_BYTES} UTF-8 bytes.`;
   const fullWebTargetMatch=fullWebTargetLine.match(/(\d+)-(\d+)\s+UTF-8 bytes/i);
   const fullWebTargetMin=Math.max(MIN_FULL_REWRITE_BYTES,Number(fullWebTargetMatch?.[1]||FULL_WEB_GENERATION_TARGET_MIN_BYTES));
@@ -336,7 +337,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const previousFullWebBytes=previousFullWeb?Buffer.byteLength(previousFullWeb,'utf8'):0;
   const previousFullWebExcerpt=previousFullWeb?boundedLargeExcerpt(previousFullWeb,4000).content:'';
   let retryBase=rawPrompt;
-  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||(attempt>=3&&timeoutFailure))){
+  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||(attempt>=3&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
@@ -380,12 +381,12 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
-        zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one short, unique find snippet copied character-for-character from the EDITABLE FILE block. Prefer one distinctive line or the smallest adjacent line group that occurs once. Do not paraphrase, normalize, reconstruct, or guess source text.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
-        zeroChange||noChangeEdit||invalidPath||editMatchFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
+        zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one short, unique find snippet copied character-for-character from the EDITABLE FILE block. Prefer one distinctive line or the smallest adjacent line group that occurs once. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
+        zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=attempt>=3&&!allowFullRewrite;
   const fullWebFinal=attempt>=3&&allowFullRewrite;
@@ -414,11 +415,12 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null}={}){
   let lastError=null;
   let lastRaw='';
   let accumulatedFullWeb=null;
   let expansionStages=0;
+  let lastCandidateValidation=null;
   const maxAttempts=allowFullRewrite?FULL_WEB_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
   for(let attempt=1;attempt<=maxAttempts;attempt++){
     const retry=attempt>1;
@@ -468,7 +470,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
-      return {candidate,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -538,15 +541,19 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap});
-  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES});
+  const editContract=exploration?.editContract||{};
+  const candidateValidator=candidate=>{
+    const result=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
+    if(!result.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+result.violations.join('|'));
+    return result;
+  };
+  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator});
   const candidate=generated.candidate;
+  const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
-  const editContract=exploration?.editContract||{};
-  const semanticDiffEnforcement=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
-  if(!semanticDiffEnforcement.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+semanticDiffEnforcement.violations.join('|'));
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
   const candidateManifestPath=posix(path.relative(cwd,path.join(candidateRoot,'manifest.json')));
