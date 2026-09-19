@@ -741,6 +741,10 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.fullWebExpansionStages,2);
   assert.equal(result.generation.mode,'FULL_WEB');
+  assert.equal(result.generation.fullWebInitialSeedStrategy,true);
+  assert.deepEqual(result.generation.fullWebInitialSeedTargetBytes,[4200,6500]);
+  assert.equal(result.codingMethod.fullWebInitialSeedStrategy,true);
+  assert.deepEqual(result.codingMethod.fullWebInitialSeedTargetBytes,[4200,6500]);
   assert.equal(result.generation.temperature,0.22);
   assert.equal(result.generation.repeatedIntermediateOutputs,0);
   assert.deepEqual(result.generation.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
@@ -811,6 +815,16 @@ test('full web expansion that redefines html body is classified and retried from
   assert.deepEqual(result.changedFiles,['index.html']);
   assert.equal(generationFailureClass(new Error('Web expansion은 html/body 전체 구조를 재정의할 수 없음')),'MALFORMED_OUTPUT');
   assert.equal(shouldRetryGenerationError(new Error('Web expansion은 html/body 전체 구조를 재정의할 수 없음')),true);
+});
+
+test('full web initial generation asks for a complete bounded seed before staged expansion',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES=4200/);
+  assert.match(workerSource,/FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES=6500/);
+  assert.match(workerSource,/const FULL_WEB_TIMEOUT_MS=360000/);
+  assert.match(workerSource,/const FULL_WEB_MAX_PREDICT=4096/);
+  assert.match(workerSource,/INITIAL SEED STRATEGY: on this first response, prioritize a COMPLETE CLOSED playable seed/);
+  assert.match(workerSource,/final acceptance still requires at least \$\{fullWebTarget\.minBytes\} bytes/);
 });
 
 test('full web expansion prompt does not contain copyable placeholder implementation and counts only remaining expansion attempts',()=>{
