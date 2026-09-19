@@ -4784,11 +4784,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
       "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -4851,8 +4851,7 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/crystal-defense/2026-09-19/strict-design-review.json",
-        "passThreshold": 80,
-        "excellent": true
+        "passThreshold": 80
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:56:36.513Z",
       "productionTier": 2,
@@ -6123,11 +6122,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
       "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6192,8 +6191,7 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/egg-heist/2026-09-19/strict-design-review.json",
-        "passThreshold": 80,
-        "excellent": true
+        "passThreshold": 80
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:56:36.513Z",
       "productionTier": 2,
@@ -7099,7 +7097,7 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:53:21.392Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T04:07:24.583Z",
       "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "strictDesignReview": {
@@ -7471,11 +7469,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
       "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "lifecycleState": "ACTIVE",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7540,8 +7538,7 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/territory-war/2026-09-19/strict-design-review.json",
-        "passThreshold": 80,
-        "excellent": true
+        "passThreshold": 80
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:56:36.514Z",
       "productionTier": 2,
@@ -7576,16 +7573,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-19T04:06:54.313Z",
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Tower Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T04:07:23.402Z"
+      "updatedAt": "2026-09-19T04:06:54.313Z"
     },
     {
       "version": 2,
@@ -17752,14 +17740,14 @@
         "recordedAt": "2026-09-19T03:53:21.392Z"
       },
       {
-        "gameId": "territory-war",
-        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+        "gameId": "survival2",
+        "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
         "totalScore": 91.80000000000001,
-        "previousScore": null,
-        "scoreDelta": null,
+        "previousScore": 91.80000000000001,
+        "scoreDelta": 0,
         "hardFailures": [],
         "resolvedHardFailures": [],
         "addedHardFailures": [],
@@ -17788,7 +17776,7 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T04:07:23.402Z"
+        "recordedAt": "2026-09-19T04:07:24.583Z"
       }
     ],
     "causeCounts": {
@@ -17814,7 +17802,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T04:07:23.403Z"
+    "updatedAt": "2026-09-19T04:07:24.584Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
@@ -17828,7 +17816,7 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-19T04:07:42.597Z",
+  "updatedAt": "2026-09-19T03:57:39.987Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
