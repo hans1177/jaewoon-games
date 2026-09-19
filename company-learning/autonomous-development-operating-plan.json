@@ -1,0 +1,405 @@
+{
+  "version": 1,
+  "kind": "AUTONOMOUS_DEVELOPMENT_OPERATING_PLAN",
+  "status": "PLANNED_DOCUMENT_ONLY_NO_RUNTIME_BINDINGS_YET",
+  "authority": "OWNER_DISCUSSION_2026-09-19",
+  "createdAt": "2026-09-19",
+  "objective": "30-lane autonomous development that never stops portfolio-wide on a single model, runner, game, or provider failure; prioritizes released and focused games; preserves owner edits; and continuously removes small bottlenecks.",
+  "implementationRule": {
+    "discussAndFreezePlanBeforeCode": true,
+    "codeWorkStartsOnlyAfterOwnerApproval": true,
+    "noGateWeakening": true,
+    "noThresholdLowering": true,
+    "noFabricatedPass": true,
+    "preserveVerifiedEvidence": true,
+    "preserveValidCheckpoints": true
+  },
+  "operatingModel": {
+    "globalAdaptiveParallelMax": 30,
+    "adaptiveSteps": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      30
+    ],
+    "fixedPartitioning": false,
+    "softReservations": true,
+    "workStealing": true,
+    "waitingWorkConsumesSlot": false,
+    "portfolioWideStopFromSingleDependencyForbidden": true,
+    "independentGameProgression": true
+  },
+  "priorityScheduler": {
+    "order": [
+      {
+        "priority": "P0",
+        "name": "CRITICAL_PRODUCTION_AND_PLATFORM_INCIDENT",
+        "examples": [
+          "released-game outage",
+          "save/data integrity failure",
+          "critical gameplay failure",
+          "release pipeline failure",
+          "security or destructive regression"
+        ],
+        "preemptLowerPriority": true,
+        "burstWorkers": "AS_NEEDED_WITHIN_SAFE_GLOBAL_CAP"
+      },
+      {
+        "priority": "P1",
+        "name": "RELEASED_GAME_CARETAKER",
+        "policy": "ONE_PERSISTENT_CARETAKER_PER_RELEASED_GAME_WHILE_ELIGIBLE",
+        "stickyOwnership": true,
+        "burstWorkers": "2_TO_4_WHEN_HIGH_VALUE_PARALLEL_WORK_EXISTS"
+      },
+      {
+        "priority": "P2",
+        "name": "OWNER_FOCUSED_GAME",
+        "policy": "ONE_PERSISTENT_CARETAKER_PER_OWNER_FOCUSED_GAME",
+        "stickyOwnership": true,
+        "burstWorkers": "2_TO_4_WHEN_HIGH_VALUE_PARALLEL_WORK_EXISTS"
+      },
+      {
+        "priority": "P3",
+        "name": "RELEASE_CANDIDATE",
+        "policy": "PUSH_RUNTIME_QA_REGRESSION_RELEASE_TO_COMPLETION_WITHOUT_SKIPPING_GATES"
+      },
+      {
+        "priority": "P4",
+        "name": "GENERAL_DEVELOPMENT",
+        "policy": "FILL_REMAINING_RUNNABLE_CAPACITY"
+      },
+      {
+        "priority": "P5",
+        "name": "LEARNING_RESEARCH_PRACTICE",
+        "policy": "USE_IDLE_CAPACITY_ONLY_AND_PREEMPT_FOR_PRODUCTION"
+      }
+    ],
+    "samePriorityTieBreak": [
+      "OWNER_RECENT_DIRECTIVE",
+      "NEAREST_SAFE_COMPLETION",
+      "HIGHEST_BLOCKER_RELIEF_VALUE",
+      "OLDEST_WAITING_RUNNABLE_WORK"
+    ]
+  },
+  "persistentCaretaker": {
+    "enabledPlanned": true,
+    "releasedGameDefault": true,
+    "ownerFocusedGameDefault": true,
+    "responsibilities": [
+      "LOAD_LATEST_SOURCE_AND_VERIFIED_HISTORY",
+      "SELECT_HIGHEST_VALUE_SAFE_NEXT_GAP",
+      "IMPLEMENT_OR_COORDINATE_BURST_WORKERS",
+      "RUN_INCREMENTAL_QA",
+      "RUN_RELEVANT_REGRESSION",
+      "PRESERVE_OWNER_EDITS",
+      "CREATE_NEXT_FOCUS_ITEM",
+      "HANDOFF_CHECKPOINT_ON_WORKER_REPLACEMENT"
+    ],
+    "idleBehavior": "RETURN_UNUSED_CAPACITY_BUT_RETAIN_LOGICAL_OWNERSHIP",
+    "workerFailureBehavior": "REPLACE_WORKER_AND_RESUME_FROM_EXACT_CHECKPOINT"
+  },
+  "systemSteward": {
+    "enabledPlanned": true,
+    "name": "SYSTEM_STEWARD",
+    "purpose": "Resident machine mechanic that continuously removes small errors, friction, stale state, and bottlenecks one issue at a time.",
+    "architecture": {
+      "detector": "LIGHTWEIGHT_DETERMINISTIC_WATCHDOG_NO_DEDICATED_HEAVY_SLOT",
+      "repairer": "ONE_PROTECTED_STEWARD_SLOT_WHEN_ACTIONABLE_MAINTENANCE_EXISTS",
+      "fallback": "BORROW_IDLE_CAPACITY_FOR_PARALLEL_DIAGNOSTICS_ONLY_WHEN_SAFE"
+    },
+    "priority": "P0.5_SYSTEM_RELIABILITY",
+    "preempts": [
+      "P4_GENERAL_DEVELOPMENT",
+      "P5_LEARNING_RESEARCH_PRACTICE"
+    ],
+    "doesNotPreempt": [
+      "P0_CRITICAL_INCIDENT"
+    ],
+    "watches": [
+      "STALE_QUEUE_RESERVATIONS",
+      "DEAD_OR_EXHAUSTED_RETRY_TASKS",
+      "QUEUE_STARVATION_OR_ZERO_RUNNABLE_WORK",
+      "STALE_BACKPRESSURE_TELEMETRY",
+      "RUNNER_STARTUP_AND_QUEUE_WAIT",
+      "CACHE_MISS_OR_CACHE_CORRUPTION",
+      "DUPLICATED_QA_OR_DUPLICATED_MODEL_WORK",
+      "FLAKY_TESTS",
+      "LONG_RUNNING_OR_STUCK_WORKFLOWS",
+      "FAILED_REFILL_OR_EVENT_CHAIN",
+      "CHECKPOINT_DRIFT",
+      "SOURCE_FINGERPRINT_MISMATCH",
+      "REPEATED_FAILURE_SIGNATURES",
+      "UNNECESSARY_FULL_REVALIDATION",
+      "PROVIDER_QUOTA_OR_OUTAGE",
+      "RELEASE_DISPATCH_STRANDING",
+      "OWNER_EDIT_OVERWRITE_RISK"
+    ],
+    "repairLoop": [
+      "DETECT_ONE_ACTIONABLE_ISSUE",
+      "CLASSIFY_CAUSE_AND_BLAST_RADIUS",
+      "CAPTURE_EVIDENCE",
+      "CHOOSE_LOWEST_RISK_FIX",
+      "APPLY_CANARY_OR_SCOPED_REPAIR",
+      "RERUN_EXACT_FAILED_OR_HEALTH_CHECK",
+      "PERSIST_FAILURE_SIGNATURE_AND_FIX_PATTERN",
+      "CONTINUE_TO_NEXT_ISSUE"
+    ],
+    "permissions": {
+      "mayRepairOrchestration": true,
+      "mayRepairQueueState": true,
+      "mayResetStaleTelemetry": true,
+      "mayRequeueOrRegenerateDeadTasks": true,
+      "mayTuneLaneSpecificParallelism": true,
+      "mayRepairSafeCiContracts": true,
+      "mayCreateRegressionTests": true,
+      "mayChangeGameRulesWithoutOwnerOrApprovedDesign": false,
+      "mayLowerGates": false,
+      "mayInventRuntimeEvidence": false,
+      "mayDeleteVerifiedLearning": false
+    }
+  },
+  "selfHealing": {
+    "layers": [
+      {
+        "layer": "TASK_RECOVERY",
+        "rules": [
+          "retry exact transient failure",
+          "after repeated same failure change repair strategy",
+          "regenerate exhausted failed task with same intent and new generation id",
+          "never leave retry-exhausted work as permanent silent graveyard"
+        ]
+      },
+      {
+        "layer": "MODEL_PROVIDER_RECOVERY",
+        "rules": [
+          "Gemini failure cannot stop portfolio",
+          "fallback authoring/repair to Vibe Local where compatible",
+          "all-model outage continues deterministic work",
+          "blocked provider wait releases slot"
+        ]
+      },
+      {
+        "layer": "RUNNER_RECOVERY",
+        "rules": [
+          "failed runner does not stop unrelated lanes",
+          "self-heal where authenticated runner is required",
+          "runtime-only wait releases shared development capacity"
+        ]
+      },
+      {
+        "layer": "PARALLELISM_RECOVERY",
+        "rules": [
+          "lane-specific pressure not global collapse",
+          "stale telemetry TTL",
+          "fast ramp toward 30 after healthy evidence",
+          "step down only impacted capacity"
+        ]
+      },
+      {
+        "layer": "QUEUE_SUPPLY_RECOVERY",
+        "rules": [
+          "zero runnable queue triggers safe task generation",
+          "production gaps before practice",
+          "failed useful intent can be regenerated",
+          "idle capacity receives verified learning/regression/mutation work"
+        ]
+      },
+      {
+        "layer": "GATE_RECOVERY",
+        "rules": [
+          "fail captures exact evidence",
+          "repair causal scope only",
+          "rerun same failed gate",
+          "repeat until pass or explicit stop condition"
+        ]
+      },
+      {
+        "layer": "RELEASE_RECOVERY",
+        "rules": [
+          "recover stranded reviewed candidates",
+          "preserve immutable release artifact identity",
+          "retry transient publication faults",
+          "never claim release without evidence"
+        ]
+      }
+    ],
+    "explicitStopConditions": [
+      "OWNER_HOLD",
+      "OWNER_KILL",
+      "IRRECOVERABLE_STATE_INTEGRITY_VIOLATION",
+      "REQUIRED_HUMAN_AUTHENTICATION_MISSING",
+      "UNROUTABLE_PLATFORM_POLICY_BLOCK"
+    ]
+  },
+  "speedOptimization": {
+    "principle": "DO_NOT_REPEAT_VERIFIED_WORK_WITH_UNCHANGED_INPUTS",
+    "fingerprints": [
+      "SOURCE_SHA",
+      "APPROVED_DESIGN_SHA",
+      "DEPENDENCY_SHA",
+      "TEST_CONTRACT_SHA",
+      "BUILD_ARTIFACT_SHA",
+      "RUNTIME_EVIDENCE_SHA"
+    ],
+    "executionOrder": [
+      "CHEAP_STATIC_PRECHECK",
+      "IMPACT_ANALYSIS",
+      "AFFECTED_INCREMENTAL_TESTS",
+      "BUILD_ONCE_PER_RELEVANT_FINGERPRINT",
+      "RUNTIME_ONLY_WHEN_REQUIRED",
+      "AFFECTED_REGRESSION",
+      "RELEASE_OR_NEXT_STAGE"
+    ],
+    "selectiveRevalidation": true,
+    "unchangedVerifiedEvidenceReusable": true,
+    "relevantChangeInvalidatesAffectedEvidenceOnly": true,
+    "duplicateWorkForbidden": true,
+    "repairEscalation": [
+      "TARGETED_REPAIR",
+      "ALTERNATE_REPAIR_STRATEGY",
+      "DEEPER_CAUSAL_DIAGNOSIS",
+      "MODULE_LEVEL_REWORK_WHEN_EVIDENCE_SUPPORTS"
+    ]
+  },
+  "judgingAndQuality": {
+    "targetDirection": "DETERMINISTIC_EVIDENCE_GATES",
+    "aiMayDecidePassFail": false,
+    "aiRoles": [
+      "AUTHOR",
+      "REPAIR",
+      "TEST_IDEA_GENERATOR",
+      "DIAGNOSE",
+      "ADVISORY_REVIEW"
+    ],
+    "passEvidence": [
+      "STATIC_CONTRACTS",
+      "BUILD",
+      "RUNTIME_WHEN_REQUIRED",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "MUTATION_TEST_WHEN_APPLICABLE"
+    ],
+    "mutationTestingPurpose": "VERIFY_THAT_GATES_FAIL_WHEN_BEHAVIOR_IS_INTENTIONALLY_BROKEN",
+    "failureToRegressionMemory": true,
+    "discoveredBugBecomesRegressionCandidate": true
+  },
+  "learning": {
+    "continuous24h": true,
+    "geminiAllowed": false,
+    "robloxStudioLearningAllowed": false,
+    "primary": "VIBE_LOCAL_OLLAMA",
+    "fallback": [
+      "DETERMINISTIC_VERIFIED_EVIDENCE_MINING",
+      "STATIC_CODE_PATTERN_MINING",
+      "FAILURE_TO_REGRESSION_DISTILLATION",
+      "NON_MODEL_MUTATION_AND_TEST_GENERATION"
+    ],
+    "canonicalLearningRequiresVerifiedEvidence": true,
+    "practiceNeverCreatesProductionPass": true
+  },
+  "roblox": {
+    "studioRole": "RUNTIME_VERIFICATION_ONLY",
+    "studioForbiddenFor": [
+      "24H_LEARNING",
+      "GENERAL_PRACTICE",
+      "QUOTA_FILLING"
+    ],
+    "studioAllowedFor": [
+      "REPLICATION_RUNTIME",
+      "DATASTORE_RUNTIME",
+      "REMOTEEVENT_OR_REMOTEFUNCTION_RUNTIME",
+      "MULTIPLAYER_RUNTIME",
+      "PHYSICS_OR_ENGINE_RUNTIME",
+      "OTHER_STUDIO_ONLY_EVIDENCE"
+    ],
+    "studioOfflineBehavior": "WAIT_ONLY_THE_REQUIRED_RUNTIME_GATE_AND_RELEASE_CAPACITY",
+    "publication": "OPEN_CLOUD",
+    "publicationSeparatedFromStudioRunner": true
+  },
+  "ownerWebEdits": {
+    "enabledPlanned": true,
+    "precedence": [
+      "OWNER_DIRECT_EDIT_OR_EXPLICIT_DIRECTIVE",
+      "LATEST_APPROVED_GAME_BASELINE",
+      "VERIFIED_AUTOMATION_OUTPUT",
+      "VERIFIED_LEARNING_PATTERN",
+      "OLD_AUTOMATED_ASSUMPTION"
+    ],
+    "workflow": [
+      "DETECT_OWNER_WEB_EDIT",
+      "PROTECT_CHANGED_INTENT_FROM_AUTOMATIC_REVERT",
+      "CLASSIFY_SEMANTIC_CHANGE",
+      "UPDATE_AFFECTED_TESTS",
+      "RUN_WEB_QA",
+      "UPDATE_GAME_BEHAVIOR_BASELINE",
+      "PROPAGATE_SEMANTIC_INTENT_TO_SELECTED_TARGET_PLATFORMS",
+      "PLATFORM_SPECIFIC_REIMPLEMENTATION",
+      "REVALIDATE_AFFECTED_GATES",
+      "CARETAKER_CONTINUES_FROM_NEW_BASELINE"
+    ],
+    "propagationRule": "PROPAGATE_GAME_INTENT_NOT_LITERAL_WEB_CODE",
+    "ambiguousExpansionPolicy": "PRESERVE_OWNER_CHANGE_AND_DO_NOT_INVENT_NEW_GAME_RULES",
+    "autoExpansionExamples": [
+      "equipment indicator change may imply inventory/save consistency checks",
+      "aggro range change may imply same semantic rule on target platform",
+      "new mechanic may imply related regression and persistence coverage"
+    ]
+  },
+  "modelContinuity": {
+    "gemini24hLearningUse": false,
+    "geminiDesignFailureFallbackPlanned": "VIBE_LOCAL_OLLAMA",
+    "allModelProvidersUnavailableBehavior": [
+      "CONTINUE_DETERMINISTIC_QA",
+      "CONTINUE_REGRESSION",
+      "CONTINUE_MUTATION_TESTING",
+      "CONTINUE_EVIDENCE_DISTILLATION",
+      "CONTINUE_NON_GENERATIVE_REPAIR",
+      "CHECKPOINT_ONLY_TRULY_GENERATIVE_BLOCKED_TASKS"
+    ]
+  },
+  "queueHealth": {
+    "deadTaskResurrectionPlanned": true,
+    "runnableQueueAutoRefillPlanned": true,
+    "blockedWaitReleasesSlot": true,
+    "practiceOnlyWhenProductionQueueCannotUseCapacity": true,
+    "noSilentPermanentFailedTaskAccumulation": true
+  },
+  "implementationSequence": [
+    "FREEZE_THIS_PLAN",
+    "CENTRALIZE_PRIORITY_AND_30_LANE_POLICY",
+    "ADD_SYSTEM_STEWARD_WATCHDOG_AND_REPAIRER",
+    "ADD_DEAD_TASK_REGENERATION_AND_QUEUE_SELF_REFILL",
+    "ADD_STALE_BACKPRESSURE_TTL_AND_30_LANE_RAMP",
+    "REMOVE_GEMINI_AND_ROBLOX_STUDIO_FROM_24H_LEARNING",
+    "ADD_DESIGN_AUTHORING_FAILOVER_TO_VIBE_LOCAL",
+    "MAKE_JUDGING_DETERMINISTIC_EVIDENCE_FIRST",
+    "RESTRICT_ROBLOX_STUDIO_TO_RUNTIME_EVIDENCE",
+    "ADD_RELEASED_AND_FOCUSED_GAME_PERSISTENT_CARETAKERS",
+    "ADD_OWNER_WEB_EDIT_SEMANTIC_PROPAGATION",
+    "ADD_FINGERPRINT_SELECTIVE_REVALIDATION",
+    "ADD_MUTATION_AND_FAILURE_TO_REGRESSION_MEMORY",
+    "RUN_CENTRAL_CONTRACT_QA",
+    "RUN_VIBE_QA",
+    "RUN_EVOLUTION_QA",
+    "CANARY",
+    "GRADUAL_30_LANE_ENABLEMENT"
+  ],
+  "acceptanceCriteria": [
+    "single provider outage does not stop portfolio",
+    "single runner outage does not stop unrelated work",
+    "no Gemini calls in 24h learning",
+    "no Roblox Studio use for learning",
+    "released and owner-focused games retain logical caretaker ownership",
+    "owner web edits cannot be silently reverted by older automation",
+    "retry-exhausted useful work is regenerated or explicitly classified rather than abandoned",
+    "stale failure telemetry cannot pin concurrency indefinitely",
+    "runnable work refills automatically when safe work exists",
+    "gate failure always produces causal evidence and same-gate revalidation",
+    "verified unchanged stages are not repeated",
+    "global adaptive ceiling is 30 with lane-specific backpressure",
+    "system steward continuously clears small friction without changing game intent"
+  ]
+}
