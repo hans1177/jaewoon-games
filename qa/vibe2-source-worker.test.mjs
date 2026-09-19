@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -753,6 +753,28 @@ test('final full web attempt synthesizes the accumulated seed instead of staying
   assert.deepEqual(result.changedFiles,['index.html']);
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-final-synthesis/files/index.html'),'utf8');
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
+});
+
+test('timeout partial JSON recovers only a complete edit object',()=>{
+  const complete='{"summary":"repair","edits":[{"path":"index.html","find":">Play<","replace":">Continue<"}],"tests":["unfinished"';
+  const recovered=recoverPartialJsonEdit(complete);
+  assert.deepEqual(recovered.edits,[{path:'index.html',find:'>Play<',replace:'>Continue<'}]);
+  assert.deepEqual(recovered.newFiles,[]);
+  assert.deepEqual(recovered.replaceFiles,[]);
+
+  const truncated='{"edits":[{"path":"index.html","find":">Play<","replace":">Cont';
+  assert.equal(recoverPartialJsonEdit(truncated),null);
+
+  const noEdits='{"summary":"still thinking","tests":[';
+  assert.equal(recoverPartialJsonEdit(noEdits),null);
+});
+
+test('timeout partial recovery stays behind existing exact-match and semantic validation',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/recoverPartialJsonEdit\(partialOutput\)/);
+  assert.match(workerSource,/applyExactEdits\(sourceRoot,candidate\.edits,\{dryRun:true\}\)/);
+  assert.match(workerSource,/candidateValidator==='function'\?candidateValidator\(candidate\):null/);
+  assert.match(workerSource,/VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED/);
 });
 
 test('first timeout escalates attempt two directly to compact focused retry',()=>{
