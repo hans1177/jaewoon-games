@@ -1,0 +1,20 @@
+{
+  "summary": "index.html 수정",
+  "expectedEffect": "게임 설정 파일의 내용을 수정하여 기존 게임 메커니즘을 보존하면서 새로운 기능을 추가",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.',maxLevel:10,progression:1}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG_id_should_be_100",
+    "GAME_CONFIG_name_should_be_수정의_개화",
+    "GAME_CONFIG_mode_should_be_crystal-idle",
+    "GAME_CONFIG_hp_should_be_100",
+    "GAME_CONFIG_desc_should_be_전투로_골드를_얻고_장비를_강화하며_수정_군주_10단계를_돌파하는_방치_성장_RPG."
+  ]
+}
