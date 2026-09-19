@@ -174,12 +174,13 @@ test('review feedback repair is a no-op after a real strict PASS',()=>{
   assert.equal(result.reason,'STRICT_ALREADY_PASS');
 });
 
-test('design generator uses grounded required-field repair only for designer draft and revision',()=>{
+test('design generator limits grounded required-field repair to draft while targeted pre-gate repair stays explicit',()=>{
   const source=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
   assert.match(source,/repairDesignRequiredFields/);
   assert.match(source,/phase:'DRAFT'/);
-  assert.match(source,/phase:'REVISION'/);
   const uses=source.match(/repairRequired:value=>repairDesignRequiredFields/g)||[];
-  assert.equal(uses.length,2);
+  assert.equal(uses.length,1);
+  assert.match(source,/designer_pre_gate_repair_\$\{repairAttempt\}/);
+  assert.match(source,/mergeTargetedPatch\(designDraft,patch/);
   assert.doesNotMatch(source,/repairRequired:value=>repairDesignRequiredFields\(value,\{seed,factPack,phase:'STRICT/);
 });
