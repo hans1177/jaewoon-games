@@ -75,6 +75,12 @@ function normalizeCodingStrategyMemory(input={}){
     const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
     const games={};for(const [k,v] of Object.entries(row.games||{}))games[clean(k)]=Math.max(0,Number(v)||0);
     const targets={};for(const [k,v] of Object.entries(row.targets||{}))targets[clean(k)]=Math.max(0,Number(v)||0);
+    const contextModes={};
+    for(const [mode,modeRaw] of Object.entries(row.contextModes||{})){
+      const m=modeRaw&&typeof modeRaw==='object'?modeRaw:{};
+      const applications=Math.max(0,Number(m.verifiedApplications)||0);
+      contextModes[clean(mode)]={verifiedApplications:applications,firstCandidatePasses:Math.max(0,Math.min(applications,Number(m.firstCandidatePasses)||0)),totalGenerationAttempts:Math.max(0,Number(m.totalGenerationAttempts)||0),totalContextBytes:Math.max(0,Number(m.totalContextBytes)||0),lastEvidence:clean(m.lastEvidence)||null,lastUpdatedAt:clean(m.lastUpdatedAt)||null};
+    }
     const failureFingerprints={};
     for(const [fingerprint,contextRaw] of Object.entries(row.failureFingerprints||{})){
       const context=contextRaw&&typeof contextRaw==='object'?contextRaw:{};
@@ -106,7 +112,7 @@ function normalizeCodingStrategyMemory(input={}){
       firstCandidatePasses:firstPasses,
       totalGenerationAttempts:Math.max(0,Number(row.totalGenerationAttempts)||0),
       verifiedFailures:Math.max(0,Number(row.verifiedFailures)||0),
-      games,targets,failureFingerprints,
+      games,targets,contextModes,failureFingerprints,
       state:clean(row.state)||'CANDIDATE',
       lastEvidence:clean(row.lastEvidence)||null,
       lastFailureEvidence:clean(row.lastFailureEvidence)||null,
@@ -369,12 +375,23 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
     const firstAttempt=lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES';
     const attempts=Math.max(1,Number(lastEvidenceMarker(evidence,'coding-generation-attempts:'))||1);
     const failureFingerprint=clean(lastEvidenceMarker(evidence,'coding-failure-fingerprint:'));
+    const contextMode=clean(lastEvidenceMarker(evidence,'coding-context-mode:'))||'UNKNOWN';
+    const contextBytes=Math.max(0,Number(lastEvidenceMarker(evidence,'coding-context-bytes:'))||0);
     const row=memory.strategies[strategy]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,verifiedFailures:0,games:{},targets:{},failureFingerprints:{},state:'CANDIDATE',lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
     row.verifiedApplications+=1;
     if(firstAttempt)row.firstCandidatePasses+=1;
     row.totalGenerationAttempts+=attempts;
     row.games[gameId]=(row.games[gameId]||0)+1;
     row.targets[target]=(row.targets[target]||0)+1;
+    row.contextModes=row.contextModes||{};
+    const modeRow=row.contextModes[contextMode]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,totalContextBytes:0,lastEvidence:null,lastUpdatedAt:null};
+    modeRow.verifiedApplications+=1;
+    if(firstAttempt)modeRow.firstCandidatePasses+=1;
+    modeRow.totalGenerationAttempts+=attempts;
+    modeRow.totalContextBytes+=contextBytes;
+    modeRow.lastEvidence=id;
+    modeRow.lastUpdatedAt=new Date().toISOString();
+    row.contextModes[contextMode]=modeRow;
     row.failureFingerprints=row.failureFingerprints||{};
     if(failureFingerprint){
       const contextual=row.failureFingerprints[failureFingerprint]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,verifiedFailures:0,games:{},targets:{},failureGames:{},failureTargets:{},failureClasses:{},lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
