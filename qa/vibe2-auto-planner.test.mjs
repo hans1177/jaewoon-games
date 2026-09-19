@@ -148,6 +148,26 @@ test('canonical development queue bootstraps missing Web source roots instead of
   assert.equal(fs.existsSync(path.join(root,'web-games',gameId,'index.html')),false);
 });
 
+test('company status Web rows retain exact repair state from company runtime queue',()=>{
+  const root=tempRepo();
+  const gameId='status-and-runtime-repair';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing</main></body></html>','utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,projectPath:`web-games/${gameId}`,selectedPlatform:'web',ownerDecision:'PASS'}]},
+    catalog:{games:[{id:gameId,name:'Status Runtime Repair',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{gameId,gameName:'Status Runtime Repair',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20
+  });
+  assert.equal(result.planned,true);
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.equal(task.id,`${gameId}-web-runtime-repair-v1`);
+  assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
+  assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
+});
+
 test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
   const root=tempRepo();
   const gameId='repair-web-runtime';
