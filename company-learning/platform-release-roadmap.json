@@ -1,5 +1,5 @@
 {
-  "version": 108,
+  "version": 109,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,46 +3069,39 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_CONTROL_DATA_MAIN_TOOLING_CONTRACT_2026-09-19",
+    "id": "VIBE2_BLOCKED_WORKER_FAILURE_ATTRIBUTION_CONTRACT_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_IMPLEMENTED_2026-09-19",
-    "reason": "PREVENT_CONTROL_BRANCH_OLD_TOOLING_FROM_DOWNGRADING_QUEUE_SCHEMA_AND_MAX_SEMANTICS_DURING_RELEASE_RECOVERY_AND_RESULT_SETTLEMENT",
+    "previousChangeRecordId": "VIBE2_CONTROL_DATA_MAIN_TOOLING_CONTRACT_2026-09-19",
+    "reason": "STOP_MACHINE_STATE_BLOCKS_FROM_BEING_MISATTRIBUTED_AS_SOURCE_GENERATION_FAILURES_AND_CORRUPTING_FAILURE_CLASS_LEARNING",
     "implementationState": "DOCUMENTED_CODE_PENDING",
     "evidence": {
-      "failingRunId": 35441991315,
-      "fanInJobId": 105894568613,
-      "failure": "MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
-      "queueMaxBeforeReleaseRecovery": 256,
-      "queueMaxAfterReleaseRecovery": 30,
-      "regressionTests": "222_PASS_0_FAIL"
+      "affectedRunId": 35441991315,
+      "immutableResultObserved": "BLOCKED",
+      "orderReason": "MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
+      "falseCandidateFailureClass": "OTHER",
+      "falseSourceGenerationCount": 20
     },
     "contract": {
-      "controlBranchRole": "STATE_DATA_ONLY_FOR_QUEUE_MUTATIONS",
-      "queueMutationToolSource": "LATEST_MAIN_PINNED_OR_FETCHED_CONTRACT",
-      "persistentQueueMaxMeaning": "EXTERNAL_MATRIX_PROVIDER_BOUND",
-      "persistentQueueMax": 256,
-      "adaptiveCurrentMaxMeaning": "CURRENT_GAME_PRIMARY_WAVE_BOUND",
-      "ownerMinimumWave": 20,
-      "schemaDowngradeForbidden": true,
-      "executionLanePreservationRequired": true,
-      "reservationFieldsPreservationRequired": true
+      "candidateFailureRequiresActualTextSourceGenerationAttempt": true,
+      "blockedWorkOrderCandidateFailureMustBeNull": true,
+      "telemetrySourceFailureRequiresFailOutcome": true,
+      "machineStateBlockedIsNotSourceGenerationFailure": true,
+      "verifiedFailureLearningMustNotConsumeInfrastructureBlockAsCodingFailure": true
     },
     "pending": [
-      "PATCH_24H_RELEASE_RECOVERY_MAIN_QUEUE_TOOL",
-      "PATCH_CANDIDATE_RELEASE_MAIN_QUEUE_TOOL",
-      "PATCH_ROBLOX_RESULT_MAIN_QUEUE_TOOL",
-      "PATCH_UNITY_RESULT_MAIN_QUEUE_TOOL",
+      "PATCH_IMMUTABLE_WORKER_RESULT_ATTRIBUTION",
+      "PATCH_PARALLELISM_TELEMETRY_ATTRIBUTION",
+      "REGRESSION_TESTS",
       "CORE_QA",
       "LIVE_20_WAVE_REVALIDATION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
-      "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "directMainGameSourceWriteForbidden": true,
-      "qualityGatesNotWeakened": true
+      "qualityGatesNotWeakened": true,
+      "directMainGameSourceWriteForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
