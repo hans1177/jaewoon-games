@@ -21,11 +21,17 @@ const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '')
 export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'done', 'failed', 'cancelled']);
 export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
 export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
-export const DEFAULT_MAX_CONCURRENT_TASKS = 30;
+export const DEFAULT_MAX_CONCURRENT_TASKS = Number.MAX_SAFE_INTEGER;
+export const EXTERNAL_MATRIX_BATCH_MAX = 256;
 
 const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
 const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
 const BASE_SHARD_SLOTS = freeze({ unity: 5, web: 11, verification: 7, support: 7 });
+function normalizeConcurrencyLimit(value, fallback = DEFAULT_MAX_CONCURRENT_TASKS) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw) || raw <= 0) return fallback;
+  return Math.max(1, Math.floor(raw));
+}
 
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
@@ -144,7 +150,7 @@ function normalizeTask(input = {}, index = 0) {
 
 export function createVibeContinuousQueue(seed = {}) {
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
-  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : clampInt(seed?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 30);
+  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : normalizeConcurrencyLimit(seed?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
   const tasks = source.map(normalizeTask);
   return freeze({
     version: 5,
@@ -261,10 +267,10 @@ function isPostReleaseFocused(task) {
     && !['inspect','research','qa'].includes(clean(task?.type).toLowerCase());
 }
 function dynamicConcurrency(queue, requested = null) {
-  const persistentMax = clampInt(queue?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 30);
+  const persistentMax = normalizeConcurrencyLimit(queue?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
   const requestedMax = requested === null || requested === undefined || clean(requested) === ''
     ? persistentMax
-    : clampInt(requested, 1, 30);
+    : normalizeConcurrencyLimit(requested, persistentMax);
   const hardMax = Math.min(persistentMax, requestedMax);
   const running = queue.tasks.filter((task) => task.status === 'running');
   const awaitingQa = running.filter(isAwaitingQaTask).length;
