@@ -1,5 +1,5 @@
 {
-  "version": 115,
+  "version": 116,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,35 +3069,58 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FOCUSED_CONTEXT_AND_SOURCE_RECOVERY_VERIFIED_2026-09-19",
+    "id": "VIBE2_TIMEOUT_FAST_ESCALATION_2026-09-19",
     "documentIsCode": true,
-    "documentationFirst": false,
-    "previousChangeRecordId": "VIBE2_FOCUSED_WEB_REPAIR_CONTEXT_BUDGET_2026-09-19",
-    "reason": "SYNC_VERIFIED_SOURCE_GENERATION_RECOVERY_AND_FOCUSED_WEB_REPAIR_CONTEXT_BUDGET",
-    "implementationState": "VERIFIED_MAIN",
-    "verification": {
-      "coreQaRunId": 35443182320,
-      "coreQa": "PASS",
-      "vibeQaRunId": 35443182338,
-      "vibeQa": "PASS",
-      "integratedRegressionRunId": 35443182319,
-      "integratedRegression": "PASS"
+    "documentationFirst": true,
+    "previousChangeRecordId": "VIBE2_FOCUSED_CONTEXT_AND_SOURCE_RECOVERY_VERIFIED_2026-09-19",
+    "reason": "LIVE_F496_REVALIDATION_SHOWS_FOCUSED_WEB_REPAIR_REPEATING_TIMEOUT_TO_NO_OP_TO_TIMEOUT;ESCALATE_IMMEDIATELY_TO_COMPACT_EXACT_EDIT_AFTER_FIRST_TIMEOUT",
+    "implementationState": "DOCUMENTED_CODE_PENDING",
+    "evidence": {
+      "validationRunId": 35443243108,
+      "pinnedContractSha": "f496a0e182fb6a65f3e1e1069be2cf01ac5237cf",
+      "liveSamples": [
+        {
+          "task": "bug-defense-web-runtime-repair-v1",
+          "pattern": [
+            "TIMEOUT",
+            "NO_OP",
+            "TIMEOUT"
+          ],
+          "final": "FAIL"
+        },
+        {
+          "task": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "pattern": [
+            "TIMEOUT",
+            "NO_OP",
+            "TIMEOUT"
+          ],
+          "final": "FAIL"
+        }
+      ],
+      "previousFocusedRepairBaseline": {
+        "workers": 8,
+        "failures": 8,
+        "timeoutFailures": 7,
+        "otherFailures": 1
+      }
     },
-    "implemented": [
-      "FINAL_FULL_WEB_ATTEMPT_COMPLETE_SYNTHESIS",
-      "ACCUMULATED_FULL_WEB_SEED_CARRIED_TO_FINAL_RETRY",
-      "BLOCKED_WORK_NOT_SOURCE_FAILURE",
-      "STRUCTURAL_DUPLICATE_OPERATION_MALFORMED_CLASSIFICATION",
-      "FOCUSED_WEB_REPAIR_CONTEXT_FILES_2",
-      "FOCUSED_WEB_REPAIR_SOURCE_BUDGET_28000_BYTES",
-      "FOCUSED_WEB_REPAIR_CONTEXT_WINDOW_12288",
-      "PRIMARY_SYMBOL_WINDOWS_CAPPED_TO_FOCUSED_BUDGET"
-    ],
-    "next": [
-      "FINISH_ACTIVE_OLD_CONTRACT_WAVE",
-      "FAN_IN_WITH_QUEUE_MAX_256_ADAPTIVE_20",
-      "START_LATEST_MAIN_PINNED_20_WAVE",
-      "COMPARE_FULL_REWRITE_SIZE_AND_TIMEOUT_RATES"
+    "contract": {
+      "focusedRepairFirstTimeoutTriggersCompactRetry": true,
+      "compactRetryStartsAtAttempt": 2,
+      "compactRetryEditableContextOnly": true,
+      "compactRetryMaxPredict": 768,
+      "compactRetryTimeoutMs": 150000,
+      "maxGenerationAttemptsUnchanged": 3,
+      "writableScopeUnchanged": true,
+      "semanticDiffGateUnchanged": true,
+      "qaGateUnchanged": true
+    },
+    "pending": [
+      "PATCH_TIMEOUT_FAST_ESCALATION",
+      "ADD_ATTEMPT2_TIMEOUT_COMPACT_RETRY_TEST",
+      "CORE_QA",
+      "NEXT_LIVE_WAVE_REVALIDATION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
