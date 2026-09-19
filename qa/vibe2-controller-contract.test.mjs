@@ -46,10 +46,12 @@ test('fan-in controller contract directly verifies design intelligence stages an
   assert.equal(design.authorityExpanded,false);
 });
 
-test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
+test('runtime enables DAG sharding work stealing with policy-unbounded external-capacity waves',()=>{
   assert.equal(runtime.version,8);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
-  assert.equal(runtime.continuous.maxConcurrentGameTasks,30);
+  assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
+  assert.equal(runtime.continuous.parallelismPolicy,'UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY');
+  assert.equal(runtime.continuous.externalMatrixBatchMax,256);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
@@ -81,7 +83,8 @@ test('work order exposes Web source bootstrap authority only from explicit task 
 test('controller reserves a batch and fans workers out with a bounded matrix',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
-  assert(workflow.includes('max-parallel: 30'));
+  assert.equal(workflow.includes('max-parallel: 30'),false);
+  assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
   assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
@@ -253,8 +256,8 @@ test('explicit work-order output path overrides runtime default path',()=>{
   fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
-  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:30,tasks:[]}), 'utf8');
-  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:30}), 'utf8');
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:256,tasks:[]}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:256}), 'utf8');
   fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
   fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
 
