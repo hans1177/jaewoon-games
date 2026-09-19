@@ -1,5 +1,5 @@
 {
-  "version": 131,
+  "version": 132,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -5105,6 +5105,114 @@
       "centralMachinePolicyMustBeReadBeforeWork": true,
       "currentSourceAndExistingAudioSystemMustBeInspectedFirst": true,
       "gameStyleAndDesignBaselineMustBeReadFirst": true,
+      "documentationMustStaySynchronizedWithCentralMachinePolicy": true
+    }
+  },
+  "narrativeStorytellingContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "objective": "BUILD_VERIFIED_GAME_STORYTELLING_QUEST_CHARACTER_AND_DIALOGUE_SKILL_WITHOUT_RAW_COPYING_OR_SEPARATE_SHADOW_TRAINING",
+    "appliesTo": [
+      "DESIGN_AUTHORING",
+      "DESIGN_REPAIR",
+      "WEB_BASE_IMPLEMENTATION",
+      "TARGET_PLATFORM_SOURCE_BIND",
+      "POST_RELEASE_FOCUSED_DEVELOPMENT",
+      "IDLE_VERIFIED_PRACTICE"
+    ],
+    "masteryDomains": [
+      "STORYTELLING",
+      "NARRATIVE_STRUCTURE",
+      "QUEST_DESIGN",
+      "CHARACTER_ARC",
+      "DIALOGUE"
+    ],
+    "storyEngine": {
+      "requiredWhenNarrativeIsMaterial": true,
+      "pipeline": [
+        "WORLD_RULES_AND_THEME",
+        "CHARACTER_WANT_NEED_AND_CONFLICT",
+        "INCITING_EVENT",
+        "CAUSE_AND_EFFECT_MAIN_PLOT",
+        "SUBPLOT_OR_OPTIONAL_THREAD",
+        "QUEST_CHAIN_AND_STATE_CONDITIONS",
+        "REVEAL_FORESHADOWING_AND_PAYOFF",
+        "CHARACTER_CHANGE",
+        "ENDING_AND_NEXT_PLAY_MOTIVATION"
+      ],
+      "gameplayMustDriveStoryWhenPossible": true,
+      "expositionOnlyProgressionDiscouraged": true,
+      "questMustHaveStateCauseAndConsequence": true,
+      "dialogueMustReflectCharacterGoalContextAndKnownInformation": true,
+      "characterKnowledgeLeakForbidden": true,
+      "unresolvedMysteryAndForeshadowingNeedTrackedPayoff": true,
+      "branchingChoiceMustHaveMeaningfulStateOrNarrativeConsequenceWhenPresentedAsMeaningful": true
+    },
+    "learning": {
+      "useExistingCanonicalLearningMotor": true,
+      "shadowTrainerForbidden": true,
+      "verifiedOutcomeRequiredForPositiveMastery": true,
+      "verifiedFailureMayTeachAvoidPattern": true,
+      "rawPracticeOutputDirectRetrievalForbidden": true,
+      "rawReferenceTextPersistentStorageForbiddenByDefault": true,
+      "distillTechniqueNotExpression": true,
+      "learnableTechniques": [
+        "CAUSE_AND_EFFECT",
+        "PACING_AND_TENSION",
+        "FORESHADOWING",
+        "REVEAL_ORDER",
+        "CHARACTER_WANT_NEED_CONFLICT",
+        "CHARACTER_ARC",
+        "QUEST_DEPENDENCY",
+        "CHOICE_CONSEQUENCE",
+        "DIALOGUE_SUBTEXT",
+        "SCENE_OBJECTIVE_AND_TURN",
+        "MYSTERY_INFORMATION_CONTROL",
+        "EMOTIONAL_PAYOFF",
+        "ENDING_AND_HOOK"
+      ],
+      "safeSourcePolicy": {
+        "allowed": [
+          "VERIFIED_INTERNAL_GAME_STORY_OUTCOMES",
+          "USER_PROVIDED_OR_USER_OWNED_TEXT",
+          "PUBLIC_DOMAIN_TEXT",
+          "CLEARLY_LICENSED_TEXT_ALLOWING_REQUIRED_USE",
+          "VERIFIED_ABSTRACTED_NARRATIVE_ANALYSIS"
+        ],
+        "unlicensedCopyrightedFullTextPersistentIngestionForbidden": true,
+        "verbatimStyleImitationAsLearningTargetForbidden": true,
+        "rawPassageReuseForbidden": true,
+        "sourceRightsOrPublicDomainStatusMustBeTraceable": true
+      },
+      "retrievalPriority": [
+        "SAME_GAME_VERIFIED_NARRATIVE",
+        "SAME_GENRE_VERIFIED_NARRATIVE",
+        "CROSS_GAME_VERIFIED_NARRATIVE",
+        "VERIFIED_DISTILLED_NARRATIVE_TECHNIQUE",
+        "GENERAL_NARRATIVE_PLAYBOOK"
+      ]
+    },
+    "qa": {
+      "mustCheck": [
+        "WORLD_RULE_CONSISTENCY",
+        "CHARACTER_MOTIVATION_CONSISTENCY",
+        "EVENT_CAUSALITY",
+        "QUEST_PREREQUISITE_AND_COMPLETION_STATE",
+        "DIALOGUE_KNOWLEDGE_CONSISTENCY",
+        "FORESHADOWING_PAYOFF",
+        "CHOICE_CONSEQUENCE_WHEN_PROMISED",
+        "NO_SOFTLOCK_FROM_STORY_STATE",
+        "SAVE_LOAD_PRESERVES_STORY_AND_QUEST_STATE",
+        "GAMEPLAY_PACING_NOT_BLOCKED_BY_EXCESS_EXPOSITION"
+      ],
+      "storyQualityCannotOverrideGameplayRuntimeOrSaveFailure": true
+    },
+    "implementationReadiness": {
+      "centralMachinePolicyReadFirst": true,
+      "approvedDesignAndExistingStoryStateReadFirst": true,
+      "existingQuestDialogueStateSystemsReusedBeforeAddingDuplicates": true,
+      "narrativeChangesMustPreserveLockedWorldAndStoryFacts": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true
     }
   }
