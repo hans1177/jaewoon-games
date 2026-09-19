@@ -130,6 +130,13 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert.equal(workflow.includes('\n  exploration:\n'),false);
   assert(workflow.includes('Generate isolated candidate from pinned main contract'));
   assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
+  assert(workflow.includes('VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'));
+  assert(workflow.includes('VIBE2_RESERVE_STEWARD=PASS'));
+  const reserveStart=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  const reserveEnd=workflow.indexOf('  model_cache:');
+  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
+  assert(reserveBlock.indexOf('tools/vibe2-system-steward.mjs') < reserveBlock.indexOf('tools/vibe2-handoff.mjs --check'));
+  assert(reserveBlock.includes('git add .vibe2/queue.json .vibe2/parallelism-control.json'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
   assert(workflow.includes('Regression runs once at fan-in against the exact reserved main contract.'));
   assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
