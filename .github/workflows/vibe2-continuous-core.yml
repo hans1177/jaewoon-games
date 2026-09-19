@@ -572,6 +572,9 @@ jobs:
           node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           git diff --check
+          node --check tools/company-security-steward.mjs
+          node tools/company-security-steward.mjs --output="/tmp/vibe2-security-${SAFE_TASK}-${VARIANT}.json"
+          echo 'VIBE2_SECURITY_IMMUNE_SCAN=PASS'
 
           git add "$SOURCE_ROOT" .vibe2/candidates
           git diff --cached --quiet && { echo 'candidate has no source diff' >&2; exit 1; }
