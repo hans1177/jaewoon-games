@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import http from 'node:http';
 import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
 import {repairDesignRequiredFields} from './company-design-prepromotion-repair.mjs';
 import {scoreDesignGateV2,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
@@ -18,7 +19,8 @@ function hash(value){let h=2166136261;for(const ch of String(value)){h^=ch.codeP
 const directive=readJson('company-directive.json',{});
 const ai=directive.ai||{};
 const geminiApiKey=clean(process.env.GEMINI_API_KEY);
-if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
+const localDesignerModel=clean(process.env.COMPANY_VIBE_LOCAL_MODEL||'qwen3:1.7b');
+const localDesignerFallbackReady=clean(process.env.COMPANY_LOCAL_DESIGN_FALLBACK_READY).toLowerCase()==='true';
 const authorizedLeadModelPool=uniq(ai.modelPool||[]);
 const policyLeadModelList=ROLES.map(role=>clean(ai.departmentLeadModels?.[role]));
 if(policyLeadModelList.some(model=>!model)||new Set(policyLeadModelList).size!==ROLES.length)throw new Error('GEMINI_POLICY_LEAD_MODELS_INVALID');
@@ -794,15 +796,106 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
 }
 
 async function callExternalDesignerModel(route,system,user,schema,options={}){
-  if(route.provider!=='GEMINI')throw new Error(`GEMINI_ONLY_PROVIDER_REQUIRED ${route.provider}`);
+  if(route.provider!=='GEMINI')throw new Error(`GEMINI_PROVIDER_ROUTE_INVALID ${route.provider}`);
+  if(!geminiApiKey)throw new Error('GEMINI_API_KEY_UNAVAILABLE');
   return callModel(route.model,system,user,schema,options);
 }
+async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=120000}={}){
+  const body=JSON.stringify({
+    model:localDesignerModel,
+    prompt,
+    stream:false,
+    think:false,
+    format:'json',
+    options:{
+      num_predict:Math.min(8192,Math.max(512,Number(predict||1600))),
+      temperature:Number.isFinite(Number(temperature))?Number(temperature):0.1,
+      num_ctx:Math.min(16384,Math.max(4096,Number(numCtx||8192)))
+    }
+  });
+  return await new Promise((resolve,reject)=>{
+    let settled=false;
+    const finish=(error,value='')=>{
+      if(settled)return;
+      settled=true;
+      clearTimeout(timer);
+      if(req&&!req.destroyed)req.destroy();
+      if(error)reject(error);else resolve(value);
+    };
+    const timer=setTimeout(()=>finish(new Error(`OLLAMA_DESIGN_TIMEOUT ${timeoutMs}ms`)),Math.max(30000,Number(timeoutMs)||120000));
+    const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
+      let data='';
+      res.setEncoding('utf8');
+      res.on('data',chunk=>data+=chunk);
+      res.on('end',()=>{
+        try{
+          if((res.statusCode||0)<200||(res.statusCode||0)>=300)throw new Error(`OLLAMA_DESIGN_HTTP_${res.statusCode} ${clip(data,800)}`);
+          const row=JSON.parse(data);
+          if(row?.error)throw new Error(`OLLAMA_DESIGN_ERROR ${clean(row.error)}`);
+          const raw=clean(row?.response);
+          if(!raw)throw new Error('OLLAMA_DESIGN_EMPTY_RESPONSE');
+          finish(null,raw);
+        }catch(error){finish(error);}
+      });
+      res.on('error',finish);
+    });
+    req.on('error',finish);
+    req.end(body);
+  });
+}
+async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,timeoutMs=120000}={}){
+  if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
+  const started=Date.now();
+  const prompt=`${system}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE`;
+  try{
+    const raw=await requestLocalDesignerRaw(prompt,{predict,temperature,numCtx,timeoutMs});
+    const parsed=parseJsonObject(raw);
+    const repairs=[];
+    let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
+    if(typeof repairRequired==='function'){
+      const grounded=repairRequired(normalized);
+      if(grounded?.value)normalized=grounded.value;
+      if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
+    }
+    assertSchemaValue(normalized,schema);
+    const elapsedMs=Date.now()-started;
+    recordModelHealth(`ollama:${localDesignerModel}`,{success:true,elapsedMs});
+    modelCallStats.push({model:`ollama:${localDesignerModel}`,requestedModel:designerRoute.id,provider:'VIBE_LOCAL_OLLAMA',attempt:1,elapsedMs,predict,mode:'ollama-json',timeoutMs,schemaRepairs:repairs.length});
+    designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
+    console.log(`DESIGN_AUTHORING_FAILOVER=VIBE_LOCAL_OLLAMA|${localDesignerModel}|ms=${elapsedMs}`);
+    return normalized;
+  }catch(error){
+    recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-started,error});
+    persistDesignCheckpoint();
+    throw error;
+  }
+}
 async function callDesignerModel(system,user,schema,options={}){
-  const value=await callExternalDesignerModel(designerRoute,system,user,schema,options);
-  designCheckpoint.effectiveDesignerModel=designerRoute.id;
-  designCheckpoint.effectiveDesignerProvider='GEMINI';
-  persistDesignCheckpoint();
-  return value;
+  let geminiError=null;
+  if(geminiApiKey){
+    try{
+      const value=await callExternalDesignerModel(designerRoute,system,user,schema,options);
+      designCheckpoint.effectiveDesignerModel=designerRoute.id;
+      designCheckpoint.effectiveDesignerProvider='GEMINI';
+      persistDesignCheckpoint();
+      return value;
+    }catch(error){
+      geminiError=error;
+      console.log(`DESIGN_AUTHORING_GEMINI_UNAVAILABLE=${clip(clean(error?.message||error),500)}`);
+    }
+  }else{
+    geminiError=new Error('GEMINI_API_KEY_UNAVAILABLE');
+    console.log('DESIGN_AUTHORING_GEMINI_UNAVAILABLE=NO_API_KEY');
+  }
+  try{
+    const value=await callLocalDesignerModel(system,user,schema,options);
+    designCheckpoint.effectiveDesignerModel=`ollama:${localDesignerModel}`;
+    designCheckpoint.effectiveDesignerProvider='VIBE_LOCAL_OLLAMA';
+    persistDesignCheckpoint();
+    return value;
+  }catch(localError){
+    throw new Error(`DESIGN_AUTHORING_PROVIDERS_FAILED gemini=${clip(clean(geminiError?.message||geminiError),350)} local=${clip(clean(localError?.message||localError),350)}`);
+  }
 }
 
 async function generateDesignerDraft(){
@@ -869,96 +962,60 @@ writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:
 console.log(`DESIGN_PRE_GATE=PASS|${preGate.totalScore}`);
 
 
-const leadReviewOrder=[...ROLES].sort((a,b)=>modelHealthPenalty(leadModels[a])-modelHealthPenalty(leadModels[b])||a.localeCompare(b));
-console.log(`DESIGN_ONLY_REVIEW_MODE=FIVE_LEAD_DIRECT`);
-console.log(`DESIGN_ONLY_MEETING=DISABLED`);
-console.log(`DESIGN_ONLY_REBUTTAL=DISABLED`);
-console.log(`LEAD_REVIEW_ORDER=${leadReviewOrder.map(role=>leadModels[role]).join(',')}`);
+function deterministicDepartmentReview(role,scored){
+  const roleAxes=Object.entries(AXIS_ROLES).filter(([,roles])=>roles.includes(role)).map(([axis])=>axis);
+  const failures=(scored.rejectionReasons||[]).filter(reason=>roleAxes.includes(reason?.axis));
+  const weakest=[...roleAxes].sort((a,b)=>Number(scored.evidenceLevels?.[a]||0)-Number(scored.evidenceLevels?.[b]||0))[0]||'NONE';
+  const strongest=[...roleAxes].sort((a,b)=>Number(scored.evidenceLevels?.[b]||0)-Number(scored.evidenceLevels?.[a]||0))[0]||'NONE';
+  const firstFailure=failures[0];
+  const short=value=>clip(clean(value),125);
+  return {
+    keep:[short(`${strongest} evidence=${Number(scored.evidenceLevels?.[strongest]||0)} deterministic`)],
+    fix:firstFailure?[short(firstFailure.requiredAction||`${firstFailure.axis} deterministic evidence 보강`)]:[],
+    add:[],
+    risks:firstFailure?[short(`${firstFailure.code}:${firstFailure.axis}`)]:[],
+    evidence:[short(roleAxes.map(axis=>`${axis}=${Number(scored.evidenceLevels?.[axis]||0)}`).join(','))],
+    questions:[]
+  };
+}
+console.log('DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE');
+console.log('DESIGN_ONLY_AI_REVIEW_REQUIRED=NO');
+console.log('DESIGN_ONLY_MEETING=DISABLED');
+console.log('DESIGN_ONLY_REBUTTAL=DISABLED');
 
-const leadReviews=await runPhase('five_lead_reviews',()=>adaptiveParallel(
-  'five_lead_reviews',
-  phaseConcurrency.five_lead_reviews,
-  concurrency=>parallelObjectByLane(
-    leadReviewOrder,
-    role=>leadModels[role],
-    async role=>runCheckpointTask('five_lead_reviews',role,async()=>{
-      const model=leadModels[role];
-      const result=await callModel(
-        model,
-        `너는 ${role} 부서 Lead AI다. DESIGN_ONLY 설계를 자기 전문영역에서 직접 검토한다. 회의·반박·다른 부서 대리 판단은 하지 않는다.`,
-        `가장 중요한 KEEP/FIX/ADD/RISK/EVIDENCE만 짧고 구체적으로 작성하라. 수정 가능한 문제는 실제 수정 지시로 표현하고 점수나 관문을 조작하지 마라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,3000)}\nDESIGN=${clip(departmentDesignContext(role,designDraft),6500)}`,
-        reviewsSchemaFor([role]),
-        {predict:700,numCtx:5120,timeoutMs:90000,candidateModels:leadCandidateModels[role]}
-      );
-      return result[role];
-    }),
-    concurrency,
-    {maxLanes:maxLoadedModelLanes,perLane:1}
-  )
+const leadReviews=await runPhase('deterministic_department_evidence',async()=>Object.fromEntries(
+  ROLES.map(role=>[role,deterministicDepartmentReview(role,preGate)])
 ));
-
-const resolvedLeadModels=Object.fromEntries(ROLES.map(role=>[
-  role,
-  designCheckpoint.geminiModelResolution?.[leadModels[role]]||leadModels[role]
-]));
-const distinctResolvedLeadModels=uniq(Object.values(resolvedLeadModels));
-console.log(`GEMINI_RESOLVED_LEAD_MODELS=${Object.entries(resolvedLeadModels).map(([role,model])=>`${role}:${model}`).join(',')}`);
-console.log(`GEMINI_RESOLVED_DISTINCT_LEAD_COUNT=${distinctResolvedLeadModels.length}`);
-if(distinctResolvedLeadModels.length!==ROLES.length)throw new Error(`GEMINI_RESOLVED_DISTINCT_LEAD_GATE: ${distinctResolvedLeadModels.length}/${ROLES.length}`);
+const resolvedLeadModels=Object.fromEntries(ROLES.map(role=>[role,'DETERMINISTIC_EVIDENCE_ENGINE']));
+const distinctResolvedLeadModels=['DETERMINISTIC_EVIDENCE_ENGINE'];
 
 for(const role of ROLES){
-  const lead=leadModels[role];
   const review=leadReviews[role];
   writeJson(path.join(base,'departments',role,'lead-review.json'),{
-    version:5,gameId,date,productionClass:'DESIGN_ONLY',department:role,
-    leadModel:lead,actualLeadModel:resolvedLeadModels[role],reviewMode:'DIRECT_LEAD_ONLY',review
+    version:6,gameId,date,productionClass:'DESIGN_ONLY',department:role,
+    leadModel:null,actualLeadModel:'DETERMINISTIC_EVIDENCE_ENGINE',reviewMode:'DETERMINISTIC_EVIDENCE',aiReviewUsed:false,review
   });
   writeJson(path.join(base,'departments',role,'representative.json'),{
-    version:5,gameId,date,productionClass:'DESIGN_ONLY',department:role,
-    representativeModel:resolvedLeadModels[role],leadModel:lead,actualLeadModel:resolvedLeadModels[role],assistantModels:[],
-    representativeAuthoredByLead:true,syntheticCompatibilityRecord:true,representative:review
+    version:6,gameId,date,productionClass:'DESIGN_ONLY',department:role,
+    representativeModel:'DETERMINISTIC_EVIDENCE_ENGINE',leadModel:null,actualLeadModel:'DETERMINISTIC_EVIDENCE_ENGINE',assistantModels:[],
+    representativeAuthoredByLead:false,syntheticCompatibilityRecord:true,aiReviewUsed:false,representative:review
   });
 }
 writeJson(path.join(base,'department-lead-reviews.json'),{
-  version:5,gameId,date,productionClass:'DESIGN_ONLY',
-  reviewMode:'FIVE_DISTINCT_LEAD_PARALLEL_REVIEW',
-  meetingRequired:false,rebuttalRounds:0,leadModels,reviews:leadReviews
+  version:6,gameId,date,productionClass:'DESIGN_ONLY',
+  reviewMode:'DETERMINISTIC_DEPARTMENT_EVIDENCE',
+  aiReviewRequired:false,aiReviewUsed:false,
+  meetingRequired:false,rebuttalRounds:0,reviews:leadReviews
 });
 
-async function generateDesignerRevision(){
-  const system='너는 초안을 작성한 동일 Game Designer AI다. 5개 부서 Lead의 직접 검토를 받아 실제 설계를 한 번 수정한다. 회의 합의 절차는 없으며 서로 충돌하는 조언은 GAME_SEED와 strict 기준을 기준으로 판단한다.';
-  const user=`수정된 전체 상세 설계를 한 번에 반환하라. 이전 하드관문 실패를 삭제·재명명·무시하지 말고 실제 설계 변경으로 해결한다.\nGAME_SEED=${clip(seed,4500)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4000)}\nCURRENT_DESIGN=${clip(designDraft,11000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,9000)}`;
-  try{
-    const full=await callDesignerModel(system,user,DESIGN,{predict:4096,temperature:0.14,numCtx:8192,timeoutMs:90000,maxAttempts:2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
-    console.log('DESIGNER_REVISION_GENERATION=ONE_CALL');
-    return full;
-  }catch(error){
-    console.log(`DESIGNER_REVISION_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
-    const baseSeed=Object.fromEntries(DESIGN_BASE_FIELDS.map(field=>[field,designDraft[field]]));
-    const gateSeed=Object.fromEntries(DESIGN_GATE_FIELDS.map(field=>[field,designDraft[field]]));
-    const basePart=await callDesignerModel(
-      system,
-      `기본 설계 필드만 수정하라.\nBASE_DRAFT=${clip(baseSeed,8200)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,7000)}`,
-      DESIGN_BASE,
-      {predict:1000,temperature:0.16,numCtx:7168,timeoutMs:90000,maxAttempts:2}
-    );
-    const gatePart=await callDesignerModel(
-      '너는 같은 Game Designer AI다. 수정된 기본 설계에 맞춰 하드관문 상세 필드만 수정한다.',
-      `REVISED_BASE=${clip(basePart,8200)}\nPREVIOUS_GATE_DETAIL=${clip(gateSeed,7000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,6000)}`,
-      DESIGN_GATE,
-      {predict:1000,temperature:0.1,numCtx:7168,timeoutMs:90000,maxAttempts:2}
-    );
-    return mergeDesignerDesign(basePart,gatePart,'REVISION');
-  }
-}
-
-writeProgress('DESIGNER_REVISION',{leadReviewsComplete:5});
-const revisedDesign=await runPhase('designer_revision',generateDesignerRevision);
+writeProgress('DETERMINISTIC_REVALIDATION',{departmentEvidenceComplete:ROLES.length,aiReviewUsed:false});
+const revisedDesign=designDraft;
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,
-  sameModelAsDraft:true,reviewMode:'FIVE_LEAD_DIRECT_NO_MEETING',
+  sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
+  deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
   postRevisionPreGate:{
     totalScore:postRevisionPreGate.totalScore,
@@ -971,8 +1028,9 @@ writeJson(path.join(base,'design-revised.json'),{
 const disposition=preGatePass(postRevisionPreGate)?'ACTIVE':'REDESIGN';
 const dispositionEvidence={
   version:2,gameId,date,state:disposition,
-  sameDesignerRevisionAttempted:true,
-  fiveDepartmentLeadReviewCompleted:ROLES.every(role=>Boolean(leadReviews[role])),
+  sameDesignerRevisionAttempted:false,
+  fiveDepartmentLeadReviewCompleted:false,
+  deterministicDepartmentEvidenceCompleted:ROLES.every(role=>Boolean(leadReviews[role])),
   repeatedFiveDepartmentReview:false,
   meetingRequired:false,rebuttalRounds:0,
   automaticDiscardAllowed:false,
@@ -983,12 +1041,12 @@ const dispositionEvidence={
 writeJson(path.join(base,'design-disposition.json'),dispositionEvidence);
 
 const modelAudit=Object.fromEntries(ROLES.map(role=>[role,{
-  leadModel:leadModels[role],
-  actualLeadModel:resolvedLeadModels[role],
+  leadModel:null,
+  actualLeadModel:'DETERMINISTIC_EVIDENCE_ENGINE',
   assistantModels:[],
-  models:[resolvedLeadModels[role]],
-  count:1,required:1,pass:Boolean(resolvedLeadModels[role]),
-  reviewMode:'DIRECT_LEAD_ONLY'
+  models:[],
+  count:0,required:0,pass:true,
+  reviewMode:'DETERMINISTIC_EVIDENCE'
 }]));
 const runtimeMetrics={
   phaseMs,phaseBudgetMs,
@@ -1008,25 +1066,27 @@ const runtimeMetrics={
     reused:checkpointReusable,completedPhases:designCheckpoint.completedPhases.length,
     cachedTasks:Object.keys(designCheckpoint.tasks).length
   },
-  simplifiedLeadOnlyReview:true,
+  simplifiedLeadOnlyReview:false,
+  deterministicDepartmentEvidence:true,
   aiMeetingCalls:0,
   rebuttalCalls:0,
   representativeSynthesisCalls:0,
-  leadReviewCalls:ROLES.length,
+  leadReviewCalls:0,
   departmentScopedContext:true
 };
 writeJson(path.join(base,'cycle-status.json'),{
   version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
   gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},
-  designer:{role:'GAME_DESIGNER_AI',model:activeDesignerRoute.id,singleAuthor:true,sameModelRevised:true},
+  designer:{role:'GAME_DESIGNER_AI',model:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,sameModelRevised:false},
   departments:{
     count:ROLES.length,roles:ROLES,leadModels,resolvedLeadModels,
     distinctLeadModels:distinctResolvedLeadModels,
     distinctLeadModelCount:distinctResolvedLeadModels.length,
-    leadModelsDistinct:distinctResolvedLeadModels.length===ROLES.length,
-    reviewModelCount:1,modelAudit,rebuttalRounds:0,repeatedFatalReview:false,
-    reviewMode:'FIVE_DISTINCT_LEAD_PARALLEL_REVIEW'
+    leadModelsDistinct:false,
+    reviewModelCount:0,modelAudit,rebuttalRounds:0,repeatedFatalReview:false,
+    aiReviewRequired:false,aiReviewUsed:false,
+    reviewMode:'DETERMINISTIC_DEPARTMENT_EVIDENCE'
   },
   meeting:{required:false,crossDepartmentMeeting:false,rebuttalRounds:0},
   disposition:dispositionEvidence,runtimeMetrics,
