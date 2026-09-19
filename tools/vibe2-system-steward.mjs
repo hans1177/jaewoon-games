@@ -1,5 +1,5 @@
 // 파일명: tools/vibe2-system-steward.mjs
-// 역할: 24H 개발 시스템의 자잘한 마찰과 병목을 한 번에 한 종류씩 자동 복구한다.
+// 역할: 24H 개발 시스템의 자잘한 마찰과 관문 전 병목을 causal scope 단위로 자동 복구한다.
 // 원칙: 게임 의도/관문은 변경하지 않고 큐, lease, retry 묘지, stale 병렬 상태만 보수한다.
 
 import fs from 'node:fs';
@@ -16,74 +16,64 @@ const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>
 const safeTask=t=>t?.requiresOwnerDecision!==true&&t?.protectedChange!==true&&t?.paidResourceRequired!==true;
 const activeStatus=s=>['queued','running'].includes(clean(s).toLowerCase());
 const waitBlocker=v=>/WAITING_FOR_GEMINI_QUOTA|external.*model.*quota|roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME/i.test(clean(v));
+const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'retry-exhausted';
+const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});
 
-function staleRunningIndex(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
-  return queue.tasks.findIndex(task=>{
+function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
+  return new Set(queue.tasks.filter(task=>{
     if(clean(task.status).toLowerCase()!=='running'||waitBlocker(task.blocker))return false;
     const at=Date.parse(clean(task.reservedAt));
     return !Number.isFinite(at)||nowMs-at>Math.max(60_000,Number(staleMs)||45*60*1000);
-  });
+  }).map(task=>task.id));
 }
-function exhaustedIndex(queue){
-  return queue.tasks.findIndex(task=>
-    clean(task.status).toLowerCase()==='failed'&&
-    Number(task.retries||0)>Number(task.maxRetries??2)&&
-    safeTask(task)
-  );
+function exhaustedTasks(queue){
+  return queue.tasks.filter(task=>clean(task.status).toLowerCase()==='failed'&&Number(task.retries||0)>Number(task.maxRetries??2)&&safeTask(task));
 }
-function clearReservation(task){return {...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null};}
 
-export function runSystemStewardState({
-  queueInput={},controlInput={},now=new Date().toISOString(),
-  staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS
-}={}){
+export function runSystemStewardState({queueInput={},controlInput={},now=new Date().toISOString(),staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS}={}){
   let queue=createVibeContinuousQueue(queueInput);
   let control=createParallelismControl(controlInput);
-  const nowMs=Date.parse(now)||Date.now();
+  const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
 
-  const staleIndex=staleRunningIndex(queue,{nowMs,staleMs:staleRunningMs});
-  if(staleIndex>=0){
-    const task=queue.tasks[staleIndex];
-    const tasks=queue.tasks.map((row,i)=>i===staleIndex?{
+  const staleIds=staleRunningIds(queue,{nowMs,staleMs:staleRunningMs});
+  if(staleIds.size){
+    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>staleIds.has(row.id)?{
       ...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED',
       evidence:uniq([...(row.evidence||[]),'system-steward:stale-running-reservation-recovered'])
-    }:row);
-    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks});
-    return{action:'RECOVER_STALE_RUNNING_RESERVATION',changedQueue:true,changedControl:false,taskId:task.id,queue,control};
+    }:row)});
+    actions.push('RECOVER_STALE_RUNNING_RESERVATION'); taskIds.push(...staleIds);
   }
 
-  const exhausted=exhaustedIndex(queue);
-  if(exhausted>=0){
-    const task=queue.tasks[exhausted];
-    const generation=Math.max(0,Number(task.recoveryGeneration||0))+1;
-    const tasks=queue.tasks.map((row,i)=>i===exhausted?{
-      ...clearReservation(row),
-      status:'queued',retries:0,blocker:null,lastOutcome:'SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION',
-      recoveryGeneration:generation,estimatedRisk:'high',speculativeEligible:true,
-      evidence:uniq([...(row.evidence||[]),`system-steward:retry-exhausted-regenerated:generation-${generation}`,`repair-mode:CAUSAL_REGENERATION_GENERATION_${generation}`])
-    }:row);
-    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks});
-    return{action:'REGENERATE_RETRY_EXHAUSTED_TASK',changedQueue:true,changedControl:false,taskId:task.id,recoveryGeneration:generation,queue,control};
+  const exhausted=exhaustedTasks(queue);
+  if(exhausted.length){
+    const ids=new Set(exhausted.map(task=>task.id)),signatures=uniq(exhausted.map(failureSignature));
+    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>{
+      if(!ids.has(row.id))return row;
+      const generation=Math.max(0,Number(row.recoveryGeneration||0))+1,signature=failureSignature(row);
+      return {...clearReservation(row),status:'queued',retries:0,blocker:null,lastOutcome:'SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION',
+        recoveryGeneration:generation,estimatedRisk:'high',speculativeEligible:true,
+        evidence:uniq([...(row.evidence||[]),`system-steward:retry-exhausted-regenerated:generation-${generation}`,`repair-mode:CAUSAL_REGENERATION_GENERATION_${generation}`,`system-steward:failure-signature:${signature}`,'system-steward:fix-pattern:retry-exhausted-causal-regeneration'])};
+    })});
+    actions.push('REGENERATE_RETRY_EXHAUSTED_TASK'); taskIds.push(...ids);
+    if(signatures.length)actions.push('PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE');
   }
 
   const lastAt=Date.parse(clean(control.lastUpdatedAt));
-  const staleControl=control.currentMax<DEFAULT_MAX_CONCURRENT_TASKS&&Number.isFinite(lastAt)&&nowMs-lastAt>Math.max(60_000,Number(telemetryTtlMs)||DEFAULT_TELEMETRY_TTL_MS);
-  if(staleControl){
-    control=createParallelismControl({
-      currentMax:DEFAULT_MAX_CONCURRENT_TASKS,healthyStreak:0,pressureStreak:0,
-      lastDecision:'RESET',lastReason:'SYSTEM_STEWARD_STALE_TELEMETRY_RESET',
-      lastRunId:null,lastUpdatedAt:now,lastTelemetry:null
-    });
-    return{action:'RESET_STALE_PARALLELISM_PRESSURE',changedQueue:false,changedControl:true,queue,control};
+  if(control.currentMax<DEFAULT_MAX_CONCURRENT_TASKS&&Number.isFinite(lastAt)&&nowMs-lastAt>Math.max(60_000,Number(telemetryTtlMs)||DEFAULT_TELEMETRY_TTL_MS)){
+    control=createParallelismControl({currentMax:DEFAULT_MAX_CONCURRENT_TASKS,healthyStreak:0,pressureStreak:0,lastDecision:'RESET',lastReason:'SYSTEM_STEWARD_STALE_TELEMETRY_RESET',lastRunId:null,lastUpdatedAt:now,lastTelemetry:null});
+    actions.push('RESET_STALE_PARALLELISM_PRESSURE');
   }
-
   if(queue.maxConcurrentTasks!==DEFAULT_MAX_CONCURRENT_TASKS){
     queue=createVibeContinuousQueue({maxConcurrentTasks:DEFAULT_MAX_CONCURRENT_TASKS,tasks:queue.tasks});
-    return{action:'ALIGN_QUEUE_MAX_TO_GLOBAL_30',changedQueue:true,changedControl:false,queue,control};
+    actions.push('ALIGN_QUEUE_MAX_TO_GLOBAL_30');
   }
 
   const active=queue.tasks.filter(t=>activeStatus(t.status)&&!waitBlocker(t.blocker));
-  return{action:active.length?'HEALTHY_NO_SCOPED_REPAIR':'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL',changedQueue:false,changedControl:false,queue,control};
+  const action=actions[0]||(active.length?'HEALTHY_NO_SCOPED_REPAIR':'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
+  return {action,actions:uniq(actions),
+    changedQueue:actions.some(x=>['RECOVER_STALE_RUNNING_RESERVATION','REGENERATE_RETRY_EXHAUSTED_TASK','ALIGN_QUEUE_MAX_TO_GLOBAL_30'].includes(x)),
+    changedControl:actions.includes('RESET_STALE_PARALLELISM_PRESSURE'),
+    taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control};
 }
 
 export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',now=new Date().toISOString()}={}){
@@ -94,10 +84,11 @@ export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs();
-  const result=runSystemStewardFiles({queueFile:clean(args.queue)||'.vibe2/queue.json',controlFile:clean(args.control)||'.vibe2/parallelism-control.json',now:clean(args.now)||new Date().toISOString()});
+  const args=parseArgs(),result=runSystemStewardFiles({queueFile:clean(args.queue)||'.vibe2/queue.json',controlFile:clean(args.control)||'.vibe2/parallelism-control.json',now:clean(args.now)||new Date().toISOString()});
   console.log('VIBE2_SYSTEM_STEWARD_ACTION='+result.action);
+  console.log('VIBE2_SYSTEM_STEWARD_ACTIONS='+result.actions.join(','));
   console.log('VIBE2_SYSTEM_STEWARD_TASK='+(result.taskId||'NONE'));
+  console.log('VIBE2_SYSTEM_STEWARD_TASK_COUNT='+result.taskIds.length);
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED='+(result.changedQueue?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_CONTROL_CHANGED='+(result.changedControl?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_MAX='+result.queue.maxConcurrentTasks);
