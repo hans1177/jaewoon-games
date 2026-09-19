@@ -1033,6 +1033,40 @@ test('focused replace-only pins exact path and anchor while model emits only rep
   assert.notEqual(normalized.edits[0].replace,focused.spec.find);
 });
 
+test('minified focused repair can pin a worker-owned GAME_CONFIG anchor',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source='<!doctype html><html><body><script>window.GAME_CONFIG={id:"demo",mode:"repair",hp:100,gameplayMechanics:["pointer-input","restart"]}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const prompt=['Allowed edit paths: index.html','','=== FILE index.html [EDITABLE] ===',source].join('\n');
+  const anchors=exactRetryAnchorSuggestions(prompt,{max:3,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(anchors.some(value=>value.includes('window.GAME_CONFIG')));
+  assert.ok(anchors.every(value=>source.includes(value)));
+});
+
+test('focused Web repair uses replace-only fast path on the first attempt',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'focused-first.json');
+  const workOrder=order({
+    target:'web',
+    root:'web-games/demo',
+    responsibleFiles:['web-games/demo/index.html'],
+    taskId:'focused-first-attempt'
+  });
+  workOrder.goal='[WEB_REPAIR] repair the existing play control without changing gameplay balance';
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({replace:'<button id="play" data-ready="true">Play</button>'}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedFirstAttemptFastPath,true);
+  assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
+  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.codingMethod.focusedFirstAttemptFastPath,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/data-ready="true"/);
+});
+
 test('focused no-op retry keeps speculative base budget but grants only targeted credit in worker loop',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
