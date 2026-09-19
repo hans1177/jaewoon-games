@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 10,
+      "runtime": 11,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -66,12 +66,15 @@
       "company-learning/company-architecture-map.json"
     ],
     "systemWorkReviewLoop": [
-      "PRIMARY_AI_PLAN_AND_ASSIGN",
-      "EXTERNAL_AI_EXECUTE",
-      "DETERMINISTIC_QA_AND_EVIDENCE",
-      "PRIMARY_AI_REVIEW",
-      "REWORK_OR_ACCEPT"
-    ]
+      "AUTONOMOUS_WORK_CONTINUES_FROM_CENTRAL_CONTRACT",
+      "PRIMARY_AI_OBSERVES_AND_PRIORITIZES_WHEN_PRESENT",
+      "PRIMARY_AI_ASSIGN_OR_REWORK_HIGH_IMPACT_WORK",
+      "WORKERS_EXECUTE_IN_PARALLEL",
+      "DETERMINISTIC_QA_COMPLETES_OR_REQUEUES",
+      "PRIMARY_AI_ASYNC_REVIEW_AND_REOPEN_IF_NEEDED"
+    ],
+    "autonomous24hWithoutPrimaryAi": true,
+    "primaryAiIsRuntimeGate": false
   },
   "continuous": {
     "enabled": true,
@@ -261,11 +264,15 @@
     "longWorkProtectedSlots": 1,
     "primaryAiOrchestration": {
       "orchestrator": "CHATGPT_PRIMARY_AI",
-      "scope": "SYSTEM_ROADMAP_BOTTLENECK_WORK",
-      "externalAiRole": "ASSIGNED_TASK_EXECUTOR_ONLY",
-      "primaryAiFinalSystemAcceptanceRequired": true,
-      "deterministicQaEvidenceRequiredBeforePrimaryReview": true,
-      "reworkUntilAcceptedOrStopCondition": true,
+      "role": "PRIMARY_AI_NON_BLOCKING_SUPERVISOR",
+      "scope": "ROADMAP_BOTTLENECK_DEVELOPMENT_RELEASE_HOMEPAGE_INFRASTRUCTURE_QUALITY",
+      "presenceRequired": false,
+      "absenceBlocksWorkers": false,
+      "autonomous24hWorkersContinue": true,
+      "primaryAiFinalSystemAcceptanceRequired": false,
+      "deterministicQaMayCompleteWorkWithoutPrimaryAi": true,
+      "primaryAiMayReopenReprioritizeOrIssueRework": true,
+      "longTermRoadmapSupervisor": true,
       "gameSourceImplementationOwner": [
         "VIBE2",
         "VIBE3"
@@ -843,5 +850,37 @@
       "saveMeaningMutationByLifecycleState": false,
       "qaGateBypass": false
     }
+  },
+  "supervision": {
+    "enabled": true,
+    "runtimeBlocking": false,
+    "orchestrator": "CHATGPT_PRIMARY_AI",
+    "domains": [
+      "ROADMAP_IMPLEMENTATION",
+      "PORTFOLIO_BOTTLENECKS",
+      "DEVELOPMENT",
+      "RELEASE",
+      "HOMEPAGE_PUBLIC_SURFACE",
+      "PLATFORM_RUNTIME_BUILD",
+      "QA_REGRESSION",
+      "QUEUE_PLANNER_CI",
+      "LEARNING_FREE_AI",
+      "PERFORMANCE_LOADING"
+    ],
+    "priorityDecisionMode": "DYNAMIC_IMPACT_AND_URGENCY",
+    "defaultEscalationOrder": [
+      "OWNER_OR_SAFETY_CRITICAL",
+      "RELEASE_OR_PUBLIC_PRODUCTION_BLOCKER",
+      "PORTFOLIO_WIDE_COMMON_BOTTLENECK",
+      "HOMEPAGE_PUBLIC_SURFACE_REGRESSION",
+      "DEVELOPMENT_CRITICAL_PATH_BLOCKER",
+      "CI_RUNTIME_QUEUE_INFRASTRUCTURE_BLOCKER",
+      "ROADMAP_MILESTONE_DEPENDENCY",
+      "ROUTINE_QUALITY_AND_OPTIMIZATION"
+    ],
+    "workersDoNotWaitForSupervisor": true,
+    "deterministicGatesOwnCompletion": true,
+    "supervisorMayReopenVerifiedGap": true,
+    "reworkDirectiveRepeatUntilResolvedOrOwnerStop": true
   }
 }
