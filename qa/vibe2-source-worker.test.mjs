@@ -1061,9 +1061,12 @@ test('focused Web repair keeps target selection on the first attempt before caus
   assert.equal(result.generation.attempts,1);
   assert.equal(result.generation.focusedReplaceOnly,false);
   assert.equal(result.generation.focusedFirstAttemptFastPath,false);
-  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.completionMode,'JSON_EDIT_PARTIAL');
+  assert.equal(result.generation.focusedFirstEditEarlyStop,true);
+  assert.equal(result.generation.partialTimeoutRecovery,false);
   assert.equal(result.generation.maxPredict,1024);
   assert.equal(result.codingMethod.focusedFirstAttemptFastPath,false);
+  assert.equal(result.codingMethod.focusedFirstEditEarlyStop,true);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/Continue/);
 });
 
@@ -1410,7 +1413,8 @@ test('focused timeout streaming can stop after one complete edit object',()=>{
   assert.equal(modelResponseComplete('{"edits":[{"path":"index.html","find":">Play<","replace":">Cont','JSON_EDIT_PARTIAL'),false);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
-  assert.match(workerSource,/timeoutFastEscalation\?'JSON_EDIT_PARTIAL':'JSON_EDIT'/);
+  assert.match(workerSource,/timeoutFastEscalation\|\|focusedFirstEditEarlyStop/);
+  assert.match(workerSource,/focusedFirstEditEarlyStop:Boolean\(streamedPartialEdit\)&&focusedFirstEditEarlyStop/);
   assert.match(workerSource,/streamedPartialEditRecovery:Boolean\(streamedPartialEdit\)/);
   assert.match(workflowSource,/coding-streamed-partial-edit-recovery:YES/);
 });
