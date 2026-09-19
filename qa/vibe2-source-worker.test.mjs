@@ -670,6 +670,28 @@ test('undersized full web error reports validator-scale generation minimum witho
   );
 });
 
+test('full web without a recovered seed gets one bounded retry after repeated malformed output', async()=>{
+  const cwd=tempRoot();
+  const bad1=path.join(cwd,'bad-full-1.txt');
+  const bad2=path.join(cwd,'bad-full-2.txt');
+  const good=path.join(cwd,'good-full-3.txt');
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-web-malformed-third-retry'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(bad1,['VIBE2_FULL_FILE','PATH:index.html','---VIBE2_FILE_CONTENT---','<!doctype html><html><body><script>'+ 'let a=1;'.repeat(900)].join('\n'));
+  write(bad2,['VIBE2_FULL_FILE','PATH:index.html','---VIBE2_FILE_CONTENT---','<!doctype html><html><body><script>'+ 'let b=2;'.repeat(120)].join('\n'));
+  const finalBody=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><canvas id="game"></canvas><script>let state={score:0,hp:100,result:"playing"};${'function step(){state.score+=1;if(state.score>400)state.result="win";if(state.hp<=0)state.result="loss";}'.repeat(220)}addEventListener("pointerdown",step);localStorage.setItem("vibe2-bounded-fallback",JSON.stringify(state));</script></body></html>`;
+  write(good,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:recovered','---VIBE2_FILE_CONTENT---',finalBody,'---VIBE2_FILE_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.ok(result.codingMethod.fullWebFallbackBestPartialBytes>Buffer.byteLength(fs.readFileSync(bad2,'utf8'),'utf8')/2);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
 test('undersized full web output keeps a bounded full-file fallback while expansion mode is active', async () => {
   const cwd=tempRoot();
   const small1=path.join(cwd,'small1.txt');
@@ -948,6 +970,13 @@ test('generation recovery remains bounded and keeps strict output contracts', ()
   const json = buildGenerationRetryPrompt('base', { allowFullRewrite:false, error:new Error('JSON') });
   assert.match(json, /strict JSON object only/);
   assert.match(json, /No markdown/);
+});
+
+test('full web bounded fallback keeps largest partial telemetry in the coding method',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/bestFullWebFallbackRaw/);
+  assert.match(workerSource,/fullWebFallbackBestPartialBytes:Number\(generation\.fullWebFallbackBestPartialBytes\|\|0\)/);
+  assert.match(workerSource,/\['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'\]\.includes\(generationFailureClass\(error\)\)/);
 });
 
 test('full web recovery carries the previous undersized candidate forward for expansion', () => {
