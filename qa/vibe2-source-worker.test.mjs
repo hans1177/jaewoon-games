@@ -47,6 +47,35 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
+test('unappliable edit is retried inside generation before candidate write', async () => {
+  const cwd = tempRoot();
+  const bad = path.join(cwd, 'bad-edit.json');
+  const good = path.join(cwd, 'good-edit.json');
+  write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'edit-preflight-retry' }), null, 2));
+  write(bad, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 9;', replace: 'return 2;' }], newFiles: [] }));
+  write(good, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
+  const result = await runVibe2SourceWorker({ cwd, responseFiles: [bad, good] });
+  assert.equal(result.generation.attempts, 2);
+  assert.equal(result.generation.recoveryUsed, true);
+  assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
+  assert.match(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8'), /return 1/);
+  assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/edit-preflight-retry/files/Assets/Player.cs'), 'utf8'), /return 2/);
+});
+
+test('exact edit dry run validates sequential applicability without mutating source', () => {
+  const cwd = tempRoot();
+  const source = path.join(cwd, 'Player.cs');
+  write(source, 'class Player {\n  int Speed() {\n    return 1;\n  }\n}\n');
+  const changed = applyExactEdits(cwd, [
+    { path: 'Player.cs', find: 'int Speed() {\n  return 1;\n}', replace: 'int Speed() {\n    return 2;\n}' },
+    { path: 'Player.cs', find: 'return 2;', replace: 'return 3;' }
+  ], { dryRun: true });
+  assert.deepEqual(changed, ['Player.cs']);
+  assert.match(fs.readFileSync(source, 'utf8'), /return 1;/);
+  assert.doesNotMatch(fs.readFileSync(source, 'utf8'), /return 3;/);
+});
+
 test('candidate manifest persists design intelligence requirements and starts evidence unverified', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
