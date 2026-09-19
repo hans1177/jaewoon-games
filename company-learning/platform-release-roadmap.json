@@ -1,5 +1,5 @@
 {
-  "version": 120,
+  "version": 121,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3074,7 +3074,7 @@
     "documentationFirst": true,
     "previousChangeRecordId": "VIBE2_TIMEOUT_RECOVERY_VERIFIED_LIVE_PENDING_2026-09-19",
     "reason": "F496_LIVE_FULL_WEB_REBUILD_SHOWS_REPEATED_127_BYTE_TEMPLATE_COPY_AND_UNDER_TARGETED_EXPANSION_STAGES;REMOVE_COPYABLE_PLACEHOLDER_AND_EXCLUDE_FINAL_SYNTHESIS_FROM_EXPANSION_STAGE_DIVISOR",
-    "implementationState": "DOCUMENTED_CODE_PENDING",
+    "implementationState": "CODE_AND_REGRESSION_TESTS_COMMITTED_QA_AND_LATEST_MAIN_20_WAVE_PENDING",
     "evidence": {
       "validationRunId": 35443243108,
       "pinnedContractSha": "f496a0e182fb6a65f3e1e1069be2cf01ac5237cf",
@@ -3110,7 +3110,27 @@
           ]
         }
       ],
-      "finalFailurePattern": "FINAL_SYNTHESIS_TIMEOUT_OR_UNDERSIZED"
+      "finalFailurePattern": "FINAL_SYNTHESIS_TIMEOUT_OR_UNDERSIZED",
+      "completedPinnedWave": {
+        "runId": 35443243108,
+        "pinnedContractSha": "f496a0e182fb6a65f3e1e1069be2cf01ac5237cf",
+        "workers": 20,
+        "immutablePass": 0,
+        "immutableFail": 20,
+        "failureRatePct": 100,
+        "finalFailureDistribution": {
+          "TIMEOUT": 19,
+          "FULL_REWRITE_SIZE": 1
+        },
+        "timeoutPartialRecoveryCount": 0,
+        "interpretation": "LEGACY_PINNED_PRE_TIMEOUT_FAST_ESCALATION_AND_PRE_EXPANSION_TARGETING_FIX;NOT_VALID_EVIDENCE_OF_LATEST_MAIN_EFFECTIVENESS"
+      },
+      "baselineComparison": {
+        "previousFailureRatePct": 95,
+        "observedPinnedWaveFailureRatePct": 100,
+        "deltaPctPoints": 5,
+        "conclusion": "NO_IMPROVEMENT_ON_F496_PINNED_WAVE;LATEST_MAIN_REVALIDATION_REQUIRED_BEFORE_EFFECTIVENESS_JUDGMENT"
+      }
     },
     "contract": {
       "copyableExpansionCodeExampleForbidden": true,
@@ -3123,18 +3143,20 @@
       "qaGateUnchanged": true
     },
     "pending": [
-      "PATCH_EXPANSION_PROMPT_FORMAT",
-      "PATCH_EXPANSION_STAGE_TARGET_DIVISOR",
-      "REJECT_TINY_TEMPLATE_EXPANSION",
-      "ADD_REGRESSION_TESTS",
-      "CORE_QA",
-      "LATEST_MAIN_20_WAVE_REVALIDATION"
+      "CORE_QA_FOR_EAF091E_AND_CCFB20D",
+      "LATEST_MAIN_PINNED_20_WAVE_REVALIDATION",
+      "COMPARE_TIMEOUT_PARTIAL_RECOVERY_PASS_RATE",
+      "COMPARE_FOCUSED_REPAIR_AND_FULL_WEB_FAILURE_RATES"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true
+    },
+    "implementationCommits": {
+      "source": "eaf091e2c7fbee0a1e3ac5ba15d89555ee465fcf",
+      "regressionTest": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9"
     }
   },
   "vibeExecutionLaneContract": {
