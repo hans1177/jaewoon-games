@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #game {
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #game canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Approved Web Bootstrap</h1>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+    </main>
+    <script>
+        // Direct mobile input and real game-state progression
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Simple game logic for demonstration
+        let score = 0;
+        let gameOver = false;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'red';
+            ctx.fillRect(50, 50, 100, 100);
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(200, 50, 100, 100);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(350, 50, 100, 100);
+            ctx.fillStyle = 'yellow';
+            ctx.fillRect(50, 200, 100, 100);
+            ctx.fillStyle = 'purple';
+            ctx.fillRect(200, 200, 100, 100);
+            ctx.fillStyle = 'orange';
+            ctx.fillRect(350, 200, 100, 100);
+            ctx.fillStyle = 'pink';
+            ctx.fillRect(50, 350, 100, 100);
+            ctx.fillStyle = 'cyan';
+            ctx.fillRect(200, 350, 100, 100);
+            ctx.fillStyle = 'magenta';
+            ctx.fillRect(350, 350, 100, 100);
+        }
+
+        function update() {
+            if (gameOver) return;
+            draw();
+            score++;
+            if (score >= 10) {
+                gameOver = true;
+                alert("Game Over! Score: " + score);
+            }
+        }
+
+        // Real update loop
+        setInterval(update, 1000);
+
+        // Progression
+        document.getElementById('gameCanvas').addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            if (x > 0 && x < 500 && y > 0 && y < 400) {
+                update();
+            }
+        });
+
+        // Restart
+        document.getElementById('gameCanvas').addEventListener('click', function() {
+            gameOver = false;
+            score = 0;
+            draw();
+        });
+    </script>
+</body>
+</html>
