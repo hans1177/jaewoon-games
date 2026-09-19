@@ -27,12 +27,17 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){return Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));}
 function posix(v){return clean(v).replaceAll('\\','/').replace(/^\.\//,'');}
 function unique(xs=[]){return [...new Set((xs||[]).map(clean).filter(Boolean))];}
-function safePath(file){
+function validateBasePath(file){
   const p=posix(file);
   if(!p||p.startsWith('/')||p.includes('..'))throw new Error(`SYSTEM_AI_PATH_INVALID:${p}`);
   if(FORBIDDEN_PREFIXES.some(prefix=>p.startsWith(prefix)))throw new Error(`SYSTEM_AI_GAME_SOURCE_FORBIDDEN:${p}`);
-  if(FORBIDDEN_FILES.has(p))throw new Error(`SYSTEM_AI_POLICY_WRITE_FORBIDDEN:${p}`);
   if(!ALLOWED_PREFIXES.some(prefix=>p.startsWith(prefix)))throw new Error(`SYSTEM_AI_PATH_OUTSIDE_ALLOWED_SCOPE:${p}`);
+  return p;
+}
+function safeReadPath(file){return validateBasePath(file);}
+function safeWritePath(file){
+  const p=validateBasePath(file);
+  if(FORBIDDEN_FILES.has(p))throw new Error(`SYSTEM_AI_POLICY_WRITE_FORBIDDEN:${p}`);
   return p;
 }
 function excerpt(file,patterns=[]){
@@ -93,9 +98,9 @@ function buildPrompt(task,contexts){
 export async function runSystemAiWorker({taskFile,outputFile='/tmp/company-system-ai-result.json',responseFile=''}={}){
   const task=readJson(taskFile);
   if(clean(task.status)!=='running')throw new Error('SYSTEM_AI_TASK_NOT_RESERVED');
-  const files=unique(task.responsibleFiles).map(safePath);
+  const files=unique(task.responsibleFiles).map(safeWritePath);
   if(!files.length)throw new Error('SYSTEM_AI_RESPONSIBLE_FILES_REQUIRED');
-  const contextFiles=unique([...(task.contextFiles||[]),...files]).map(safePath);
+  const contextFiles=unique([...(task.contextFiles||[]),...files]).map(safeReadPath);
   const focus=task.focusPatterns&&typeof task.focusPatterns==='object'?task.focusPatterns:{};
   const contexts=[];
   for(const file of contextFiles){
@@ -111,7 +116,7 @@ export async function runSystemAiWorker({taskFile,outputFile='/tmp/company-syste
   if(edits.length+newFiles.length>MAX_EDITS)throw new Error('SYSTEM_AI_EDIT_LIMIT');
   const changed=[];
   for(const edit of edits){
-    const p=safePath(edit.path);
+    const p=safeWritePath(edit.path);
     if(!allowed.has(p))throw new Error(`SYSTEM_AI_UNASSIGNED_FILE:${p}`);
     if(!fs.existsSync(p))throw new Error(`SYSTEM_AI_EDIT_FILE_MISSING:${p}`);
     const find=String(edit.find??''),replace=String(edit.replace??'');
@@ -119,7 +124,7 @@ export async function runSystemAiWorker({taskFile,outputFile='/tmp/company-syste
     applyExactEdit(p,find,replace);changed.push(p);
   }
   for(const row of newFiles){
-    const p=safePath(row.path);
+    const p=safeWritePath(row.path);
     if(!allowed.has(p))throw new Error(`SYSTEM_AI_UNASSIGNED_NEW_FILE:${p}`);
     if(fs.existsSync(p))throw new Error(`SYSTEM_AI_NEW_FILE_EXISTS:${p}`);
     fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,String(row.content??''),'utf8');changed.push(p);
