@@ -34,6 +34,7 @@ test('Unity text source produces isolated candidate without touching source', as
   write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1 + 1;', replace: 'return 2;' }], newFiles: [] }));
   const result = await runVibe2SourceWorker({ cwd, responseFile });
   assert.equal(result.mode, 'candidate-snapshot-only');
+  assert.equal(result.candidateManifestPath, '.vibe2/candidates/task-1/manifest.json');
   assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
   assert.equal(result.exploration.sourceWrite,false);
   assert.ok(result.exploration.reuseKey.length>=16);
