@@ -26,6 +26,10 @@ on:
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/autonomous-24h-work-planner.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'qa/company-shared-context.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/company-log-map.json'
       - '.github/workflows/company-status-sync.yml'
       - 'company-directive.json'
       - 'director-supervision-status.json'
@@ -102,6 +106,12 @@ jobs:
           fi | awk -F/ '/^web-games\/[^/]+\// {print $2}' | sort -u > "$out"
           echo "COMPANY_OWNER_WEB_GAME_IDS_PATH=$out" >> "$GITHUB_ENV"
           echo "COMPANY_OWNER_WEB_CHANGED_IDS=$(paste -sd, "$out" || true)"
+
+      - name: Validate shared worker context before status sync
+        run: |
+          node --check tools/company-shared-context.mjs
+          node --test qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-status-before.json
 
       - name: Sync company status and semantic production classes
         run: |
@@ -222,6 +232,9 @@ jobs:
           console.log('FULL_WEB_COMPANION_POLICY_SYNC_QA=PASS');
           console.log('SELECTED_PLATFORM_RUNTIME_SYNC_QA=PASS');
           NODE
+
+      - name: Revalidate shared worker context before runtime persistence
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-status-after.json
 
       - name: Persist validated runtime status without main write
         shell: bash
