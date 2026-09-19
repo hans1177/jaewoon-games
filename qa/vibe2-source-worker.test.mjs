@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -595,6 +595,34 @@ test('full web recovery carries the previous undersized candidate forward for ex
   assert.match(retry,/---BEGIN_PREVIOUS_FULL_WEB_CANDIDATE---/);
   assert.match(retry,/<canvas id="game">/);
   assert.match(retry,/---END_PREVIOUS_FULL_WEB_CANDIDATE---/);
+});
+
+test('model response completion stops only at a complete candidate boundary', () => {
+  assert.equal(modelResponseComplete('{"edits":[{"path":"index.html","find":"a","replace":"b"}],"newFiles":[]}', 'JSON_EDIT'), true);
+  assert.equal(modelResponseComplete('{"edits":[{"path":"index.html"', 'JSON_EDIT'), false);
+  assert.equal(modelResponseComplete('VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>x</body></html>', 'FULL_WEB'), false);
+  assert.equal(modelResponseComplete('VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>x</body></html>\n---VIBE2_FILE_END---', 'FULL_WEB'), true);
+  assert.equal(modelResponseComplete('<!doctype html><html><body>x</body></html>', 'FULL_WEB'), true);
+  assert.equal(modelResponseComplete('VIBE2_WEB_EXPANSION\n---VIBE2_EXPANSION_CONTENT---\n<script>(()=>{})();</script>', 'FULL_WEB_EXPANSION'), false);
+  assert.equal(modelResponseComplete('VIBE2_WEB_EXPANSION\n---VIBE2_EXPANSION_CONTENT---\n<script>(()=>{})();</script>\n---VIBE2_EXPANSION_END---', 'FULL_WEB_EXPANSION'), true);
+});
+
+test('second malformed JSON receives the bounded focused third retry', async () => {
+  const cwd=tempRoot();
+  const bad1=path.join(cwd,'bad1.json');
+  const bad2=path.join(cwd,'bad2.json');
+  const good=path.join(cwd,'good3.json');
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'malformed-third-retry'}),null,2));
+  write(bad1,'{"edits":[');
+  write(bad2,'{"edits":[{"path":"index.html"');
+  write(good,JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.focusedFinalRetry,true);
+  assert.equal(result.generation.temperature,0.22);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.deepEqual(result.changedFiles,['index.html']);
 });
 
 test('Ollama transport uses streaming instead of one giant non-streaming response', () => {
