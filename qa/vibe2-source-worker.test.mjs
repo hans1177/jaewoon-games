@@ -971,7 +971,7 @@ test('focused retry derives exact unique find anchors from writable source',()=>
   });
   assert.match(retry,/EXACT FIND ANCHOR OPTIONS/);
   assert.match(retry,/ANCHOR_1:/);
-  assert.match(retry,/use one EXACT FIND ANCHOR OPTION/i);
+  assert.match(retry,/Use exactly one EXACT FIND ANCHOR OPTION/i);
 });
 
 test('exact retry anchors verify uniqueness against the full responsible source',()=>{
