@@ -567,6 +567,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     ownedState:Array.isArray(editContract.ownedState)?editContract.ownedState.slice(0,24):[],
     semanticDiffBudget:editContract.semanticDiffBudget||null,
     semanticDiffEnforcement,
+    causalReplay:editContract.causalReplay||null,
     requiredFocusedChecks:Array.isArray(editContract.requiredFocusedChecks)?editContract.requiredFocusedChecks.slice(0,24):[],
     failureFingerprint:clean(editContract?.patchRecipe?.failureFingerprint)||clean(order?.unifiedLearning?.failureFingerprint)||null,
     patchRecipeMode:clean(editContract?.patchRecipe?.mode)||null,
