@@ -132,6 +132,24 @@ jobs:
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-steward.log
           echo 'VIBE2_RESERVE_STEWARD=PASS'
+
+          if [ "$callback_kind" = 'fanin' ]; then
+            git fetch origin company-runtime --quiet
+            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+              --status=/tmp/vibe2-main/company-status.json \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --development-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+              --root=/tmp/vibe2-main \
+              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-fanin-refill-autoplan.log
+            echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
+          fi
+
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
