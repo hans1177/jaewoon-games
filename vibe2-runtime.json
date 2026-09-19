@@ -1145,7 +1145,29 @@
         "repeatedIntermediateOutputRejected": true,
         "looseSafeFragmentRecoveryAllowed": true,
         "finalMinimumFootprintUnchanged": true,
-        "canonicalQaUnchanged": true
+        "canonicalQaUnchanged": true,
+        "stageTargetPlanner": {
+          "enabled": true,
+          "mode": "MISSING_CAPABILITY_FIRST",
+          "analyzer": "tools/company-vibe2-gameplay-intelligence.mjs#analyzeExistingGameSource",
+          "capabilityOrder": [
+            "REAL_INPUT",
+            "MUTABLE_GAME_STATE",
+            "UPDATE_OR_STATE_TRANSITION_LOOP",
+            "PROGRESSION_OR_RESOURCE_SYSTEM",
+            "WIN_LOSS_OR_RESULT",
+            "RESTART_RESET",
+            "SAVE_COMPATIBILITY",
+            "MOBILE_RESPONSIVE_CONTROLS"
+          ],
+          "distinctMissingCapabilityPerStage": true,
+          "excludeAlreadyPresent": true,
+          "repeatedCapabilityStagePenalized": true,
+          "authorityExpanded": false,
+          "writableScopeExpansionAllowed": false,
+          "finalMinimumFootprintUnchanged": true,
+          "canonicalQaUnchanged": true
+        }
       },
       "telemetry": {
         "symbolContext": true,
