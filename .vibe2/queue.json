@@ -1,7 +1,7 @@
 {
   "version": 5,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 256,
+  "maxConcurrentTasks": 30,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -2188,14 +2188,14 @@
       "dependencies": [],
       "priority": "low",
       "releaseState": "other",
-      "status": "blocked",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "game-study-awaiting-next-cycle",
+      "blocker": null,
       "evidence": [
         "game-study-target:external-tictactoe-flow-a",
         "game-study-engine:web",
@@ -2331,7 +2331,8 @@
         "auto-player-run:web-1789789203630-2140",
         "auto-player-run:web-1789789499235-2458",
         "auto-player-run:web-1789790244226-2083",
-        "auto-player-run:web-1789790772105-2132"
+        "auto-player-run:web-1789790772105-2132",
+        "game-study-reservation-at:2026-09-19T08:19:00.238Z"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -2373,14 +2374,14 @@
       "dependencies": [],
       "priority": "low",
       "releaseState": "other",
-      "status": "blocked",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "game-study-awaiting-next-cycle",
+      "blocker": null,
       "evidence": [
         "game-study-target:external-tictactoe-flow-b",
         "game-study-engine:web",
@@ -2511,7 +2512,8 @@
         "auto-player-run:web-1789789214050-2353",
         "auto-player-run:web-1789789499225-2352",
         "auto-player-run:web-1789790242722-2306",
-        "auto-player-run:web-1789790769896-2268"
+        "auto-player-run:web-1789790769896-2268",
+        "game-study-reservation-at:2026-09-19T08:19:00.238Z"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -2553,14 +2555,14 @@
       "dependencies": [],
       "priority": "low",
       "releaseState": "other",
-      "status": "blocked",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "game-study-awaiting-next-cycle",
+      "blocker": null,
       "evidence": [
         "game-study-target:external-memory-flow-a",
         "game-study-engine:web",
@@ -2687,7 +2689,8 @@
         "auto-player-run:web-1789789209157-2350",
         "auto-player-run:web-1789789497426-2198",
         "auto-player-run:web-1789790242658-2083",
-        "auto-player-run:web-1789790770527-2268"
+        "auto-player-run:web-1789790770527-2268",
+        "game-study-reservation-at:2026-09-19T08:19:00.238Z"
       ],
       "lastOutcome": null,
       "reservationId": null,
