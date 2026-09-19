@@ -393,6 +393,24 @@ test('fan-in preserves verified per-variant coding failure provenance without bl
   assert.equal(task.evidence.some(value=>value.includes('DEPENDENCY_SAFE_COHERENT_PATCH')),false);
 });
 
+test('semantic diff budget failures become contextual negative coding-strategy evidence',()=>{
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
+  queue=add(queue,'semantic-risk','semantic-risk','web',{estimatedRisk:'high',speculativeEligible:true});
+  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2}).queue;
+  const fp='web|PLACEMENT_BROKEN';
+  const merged=applyVibeFanInResults(queue,[
+    {taskId:'semantic-risk',variant:'primary',outcome:'FAIL',durationMs:500,evidence:['actions-run:semantic-negative'],candidateFailure:{class:'SEMANTIC_DIFF_BUDGET'},codingMethod:{strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',failureFingerprint:fp,implementationPass:false,incrementalQaPass:false,performanceSanityPass:false}},
+    {taskId:'semantic-risk',variant:'speculative-1',outcome:'PASS',durationMs:600,evidence:['candidate-ok'],blocker:'candidate-awaiting-qa-and-deployment',codingMethod:{strategy:'DEPENDENCY_SAFE_COHERENT_PATCH',failureFingerprint:fp,implementationPass:true,incrementalQaPass:true,performanceSanityPass:true}}
+  ]);
+  const task=merged.queue.tasks.find(t=>t.id==='semantic-risk');
+  const marker=task.evidence.find(value=>value.startsWith('coding-strategy-negative:'));
+  assert.ok(marker);
+  const payload=JSON.parse(decodeURIComponent(marker.slice('coding-strategy-negative:'.length)));
+  assert.equal(payload.failureClass,'SEMANTIC_DIFF_BUDGET');
+  assert.equal(payload.strategy,'PRIMARY_RESPONSIBILITY_MINIMAL');
+  assert.equal(payload.failureFingerprint,fp);
+  assert.equal(payload.infrastructureFailure,false);
+});
 test('fan-in safely reconciles queued task only when reservation identity matches', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
