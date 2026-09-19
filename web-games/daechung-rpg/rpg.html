@@ -246,6 +246,9 @@ function spawn(s,px,py,z){
  mons.push({n:name,lv:lvv,x:px,y:py,hp:hpv,mhp:hpv,a:av,spd,r,xp:xpv,g:gv,type,baseType,z,hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1,aggroed:false})
 }
 function spawnCave(){
+	for(let i=0;i<4;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
+	for(let i=0;i<2;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
+}
  for(let i=0;i<4;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
  for(let i=0;i<2;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
  spawnCaveMonster(CAVE.giant,CAVE.chest.x-120,CAVE.chest.y)
