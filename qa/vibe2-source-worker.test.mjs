@@ -108,7 +108,7 @@ test('candidate manifest persists design intelligence requirements and starts ev
   assert.equal(result.designIntelligence.evidenceRequirements.autoPlayer, 'verified-runtime-play-evidence-required');
   assert.deepEqual(result.designIntelligence.pipeline, workOrder.designIntelligence.pipeline);
   assert.equal(persisted.exploration.sourceWrite,false);
-  assert.equal(persisted.codingMethod.version,1);
+  assert.equal(persisted.codingMethod.version,2);
   assert.equal(persisted.codingMethod.strategy,result.exploration.editContract.strategyHint);
   assert.equal(persisted.codingMethod.semanticDiffBudget.unrelatedSystemMutationForbidden,true);
   assert.equal(persisted.codingMethod.failureFingerprint,'unity|EDIT_MATCH|DEBUGGING');
