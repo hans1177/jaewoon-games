@@ -442,3 +442,36 @@ test('invalid edit path recovery requires an exact allowed path', () => {
 test('token-repeat abort is retryable infrastructure output failure', () => {
   assert.equal(shouldRetryGenerationError(new Error('Ollama 오류: prediction aborted, token repeat limit reached')),true);
 });
+
+
+test('retry prompt keeps only editable context and pins the single responsible path', () => {
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<main id="game">old</main>',
+    '',
+    '=== FILE scripts/config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.GAME_CONFIG={speed:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{
+    error:new Error('책임 파일 범위 밖 수정 금지: scripts/window.GAME_CONFIG.js'),
+    responsibleFiles:['index.html']
+  });
+  assert.match(retry,/The ONLY writable path is "index\.html"/);
+  assert.match(retry,/=== FILE index\.html \[EDITABLE\] ===/);
+  assert.doesNotMatch(retry,/scripts\/config\.js/);
+  assert.doesNotMatch(retry,/window\.GAME_CONFIG/);
+});
+
+test('single responsible file remaps literal allowed-path placeholder without widening scope', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'model-placeholder.json');
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body><main>old</main></body></html>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'literal-placeholder'
+  }),null,2));
+  write(responseFile,JSON.stringify({edits:[{path:'exact allowed path',find:'<main>old</main>',replace:'<main>new</main>'}],newFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
