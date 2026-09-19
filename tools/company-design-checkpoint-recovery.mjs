@@ -37,6 +37,24 @@ function deterministicRows(checkpoint={}){
 function activeSeed(state={},gameId=''){
   return (Array.isArray(state.seeds)?state.seeds:[]).find(row=>clean(row?.gameId)===gameId&&clean(row?.status).toUpperCase()==='ACTIVE')||null;
 }
+function preservationContractValid(seed={},design={}){
+  const preservationSeed=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+    &&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+  if(!preservationSeed)return true;
+  const contract=design?.preservationContract;
+  const requiredLocked=['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE'];
+  const requiredPasses=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE'];
+  const locked=new Set(Array.isArray(contract?.lockedSemantics)?contract.lockedSemantics:[]);
+  const passes=new Set(Array.isArray(contract?.presentationPasses)?contract.presentationPasses:[]);
+  return contract?.mode==='PRESERVATION_PRESENTATION_UPGRADE'
+    &&contract?.sourceOfTruth==='EXISTING_IMPLEMENTATION_AND_OWNER_SEED'
+    &&contract?.gameplayRule==='NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE'
+    &&Number(contract?.targetSessionMinutes)===Number(seed?.TARGET_SESSION_MINUTES||30)
+    &&clean(design?.multiplayerMode).toUpperCase()===clean(seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase()
+    &&requiredLocked.every(value=>locked.has(value))
+    &&requiredPasses.length===passes.size
+    &&requiredPasses.every(value=>passes.has(value));
+}
 
 export function materializeDeterministicCheckpointCandidate({gameId,date,root='.'}={}){
   gameId=clean(gameId);date=clean(date)||kstDate();
@@ -74,6 +92,11 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
     if(!patch||typeof patch!=='object'||Array.isArray(patch))continue;
     revised=merge(revised,patch);
     appliedRepairs.push(`designer_pre_gate_repair_${n}`);
+  }
+  if(!preservationContractValid(seed,revised)){
+    const err=new Error('DESIGN_CHECKPOINT_RECOVERY_PRESERVATION_CONTRACT_STALE');
+    err.code='PRESERVATION_CONTRACT_STALE';
+    throw err;
   }
 
   const catalog=readJson(path.join(root,'game-catalog.json'),{games:[]});
