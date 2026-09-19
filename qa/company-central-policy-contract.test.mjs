@@ -16,6 +16,7 @@ const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bot
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
 const nativeDatasetGate=readText('tools/vibe2-real-platform-dataset-gate.mjs');
+const directorSupervisor=readText('.github/workflows/director-supervisor.yml');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -381,4 +382,16 @@ test('all automated gates repair and retest the same failed gate until PASS',()=
   assert.equal(loop.externalCapacityWait.preserveCheckpoint,true);
   assert.equal(loop.externalCapacityWait.resumeExactFailedGate,true);
   assert.equal(loop.externalCapacityWait.busyLoopForbidden,true);
+});
+
+
+test('Director supervisor consumes canonical machine policy and treats COMPANY_FLOW as legacy mirror only',()=>{
+  assert.match(directorSupervisor,/company-learning\/platform-release-roadmap\.json/);
+  assert.match(directorSupervisor,/directive\.machineSourceOfTruth!==machineSource/);
+  assert.match(directorSupervisor,/policy\.machineSourceOfTruth!==machineSource/);
+  assert.match(directorSupervisor,/MACHINE_EXECUTION_CONTRACT/);
+  assert.match(directorSupervisor,/authority: LEGACY_POLICY_MIRROR/);
+  assert.match(directorSupervisor,/authoritative: false/);
+  assert.doesNotMatch(directorSupervisor,/directive\.policyDocument!=='COMPANY_FLOW\.md'/);
+  assert.doesNotMatch(directorSupervisor,/policy authority: COMPANY_FLOW\.md only/);
 });
