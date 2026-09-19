@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<div class=\"hud\"> <div class=\"top\">",
+      "replace": "<div class=\"hud\"> <div class=\"top\"> <div class=\"content\"> <div class=\"section\"> <div class=\"row\"> <div class=\"cell\"> <div class=\"text\">Survival: Echoes of the Lost Star</div> </div> </div> </div> </div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
