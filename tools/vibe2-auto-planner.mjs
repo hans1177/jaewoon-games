@@ -80,7 +80,25 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
       return item;
     }
     const currentReleaseState=stateFromCatalog(game);
-    if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
+    const currentTaskStatus=clean(item.status).toLowerCase();
+    const centralAuthorityCancellation=currentTaskStatus==='cancelled'
+      &&clean(item.lastOutcome)==='CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY'
+      &&clean(item.blocker).startsWith('production-authority-inactive:');
+    if(['release-confirmed','development-confirmed'].includes(currentReleaseState)&&centralAuthorityCancellation){
+      const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase();
+      return{
+        ...item,
+        status:'queued',
+        blocker:null,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        lastOutcome:'SYSTEM_STEWARD_PRODUCTION_AUTHORITY_RESTORED',
+        evidence:[...new Set([...(item.evidence||[]),`production-authority-restored:${authority}`,'self-recovery:PRODUCTION_AUTHORITY_RESTORED'])]
+      };
+    }
+    if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(currentTaskStatus)){
       const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
       return{
         ...item,

@@ -1105,15 +1105,15 @@
         "robloxRunnerFailure": "USE_EXISTING_AUTHENTICATED_RUNNER_SELF_HEAL",
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
         "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
-        "staleMachineStateBlockerAfterStateNormalization": "REVALIDATE_RAW_CONTROL_V3_QUEUE30_THEN_CLEAR_STALE_BLOCKER_AND_REQUEUE"
+        "staleMachineStateBlockerAfterStateNormalization": "REVALIDATE_RAW_CONTROL_V3_QUEUE256_THEN_CLEAR_STALE_BLOCKER_AND_REQUEUE"
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
-          30,
-          24,
-          20,
+          256,
+          128,
+          64,
+          32,
           16,
-          12,
           8,
           4
         ],
@@ -1240,16 +1240,16 @@
           "verifiedLearningDeletion": false
         },
         "staleMachineStateRecoveryGuard": {
-          "requiredQueueMax": 30,
+          "requiredQueueMax": 256,
           "requiredParallelismControlVersion": 3,
           "allowedCurrentMaxSteps": [
             4,
             8,
-            12,
             16,
-            20,
-            24,
-            30
+            32,
+            64,
+            128,
+            256
           ],
           "clearOnlyKnownMachineStateInconsistentBlockers": true,
           "actualMachineMismatchMustRemainBlocked": true
@@ -1736,6 +1736,36 @@
         "contentHashQaCacheRequired": true,
         "sharedPreparationSinglePass": true
       }
+    },
+    "productionAuthorityRestoration": {
+      "enabled": true,
+      "planner": "tools/vibe2-auto-planner.mjs",
+      "queue": "vibe2-unreal-core:.vibe2/queue.json",
+      "eligibleCurrentAuthority": [
+        "DEVELOPMENT_CONFIRMED",
+        "RELEASE_CONFIRMED"
+      ],
+      "eligibleCancelledTask": {
+        "status": "cancelled",
+        "lastOutcome": "CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY",
+        "blockerPrefix": "production-authority-inactive:"
+      },
+      "recovery": {
+        "status": "queued",
+        "blocker": null,
+        "clearReservation": true,
+        "lastOutcome": "SYSTEM_STEWARD_PRODUCTION_AUTHORITY_RESTORED",
+        "evidence": [
+          "production-authority-restored:<STATE>",
+          "self-recovery:PRODUCTION_AUTHORITY_RESTORED"
+        ]
+      },
+      "forbiddenRecovery": [
+        "OWNER_CANCELLED",
+        "GENERAL_CANCELLED",
+        "CANCELLED_BY_OWNER_PERMANENT_REMOVAL"
+      ],
+      "rule": "Only cancellations created by central production-authority inactivity may self-recover after the same catalog authority becomes DEVELOPMENT_CONFIRMED or RELEASE_CONFIRMED. Owner cancellations and unrelated cancelled tasks remain cancelled."
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",

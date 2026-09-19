@@ -267,13 +267,16 @@ assert.equal(recovery.bindings.releaseDispatchRecovery,'tools/vibe2-release-disp
 assert.equal(recovery.bindings.robloxRunnerSelfHeal,'.github/workflows/roblox-runner-self-heal.yml');
 assert.equal(recovery.automaticRecovery.externalModelQuota,'CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK');
 assert.equal(recovery.automaticRecovery.waitingForVerifiedSamples,'CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE');
-assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[30,24,20,16,12,8,4]);
+assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[256,128,64,32,16,8,4]);
 assert.equal(recovery.bottleneckPolicy.maxStepChangesPerRun,1);
 assert.equal(recovery.bottleneckPolicy.productionWorkPreemptsPractice,true);
 assert.equal(recovery.bottleneckPolicy.postReleaseProtectedRunnerSlots,1);
 assert.equal(recovery.bottleneckPolicy.longWorkProtectedSlots,1);
 assert.equal(recovery.bottleneckPolicy.disjointWorkMayContinueWhileOneRouteBlocked,true);
 assert.equal(recovery.bottleneckPolicy.doNotConsumeDevelopmentSlotForExternalQuotaWait,true);
+assert.equal(recovery.systemSteward.staleMachineStateRecoveryGuard.requiredQueueMax,256);
+assert.deepEqual(recovery.systemSteward.staleMachineStateRecoveryGuard.allowedCurrentMaxSteps,[4,8,16,32,64,128,256]);
+assert.equal(recovery.automaticRecovery.staleMachineStateBlockerAfterStateNormalization,'REVALIDATE_RAW_CONTROL_V3_QUEUE256_THEN_CLEAR_STALE_BLOCKER_AND_REQUEUE');
 for(const key of ['noGateBypass','noTrainingThresholdReduction','noVerifiedLearningDeletion','noRestartFromBlankWhenValidCheckpointExists','noSilentScopeDrop','noAutomaticPublicRepublish','noRuntimePassFabrication','learningMustContinueDuringRecoverableDevelopmentBlock']){
   assert.equal(recovery.invariants[key],true,key);
 }
