@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -499,6 +499,53 @@
         "checkpointBeforeFallback": true,
         "quarantineExhaustedModelRequired": true,
         "resumeFromExactBlockedTask": true
+      },
+      "learningProviderIsolation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "enabled": true,
+        "continuous24hLearningProvider": "VIBE_LOCAL_OLLAMA",
+        "localModel": "qwen3:1.7b",
+        "geminiAllowedFor24hLearning": false,
+        "paidExternalApiAllowedFor24hLearning": false,
+        "fallbackChain": [
+          "VIBE_LOCAL_OLLAMA",
+          "DETERMINISTIC_VERIFIED_EVIDENCE_MINING",
+          "STATIC_CODE_PATTERN_AND_FAILURE_REGRESSION_DISTILLATION",
+          "NON_MODEL_MUTATION_QA_AND_TEST_GENERATION"
+        ],
+        "providerOutageMayStopLearning": false,
+        "verifiedEvidenceRequiredForCanonicalLearning": true,
+        "unverifiedModelOutputMayPromoteDirectly": false
+      },
+      "providerFailureSubstitution": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "enabled": true,
+        "geminiFailureSignals": [
+          "HTTP_403",
+          "HTTP_404",
+          "HTTP_429",
+          "TIMEOUT",
+          "HTTP_5XX",
+          "NO_AVAILABLE_MODELS"
+        ],
+        "substituteBeforePortfolioWait": true,
+        "designAuthoringAndRepairFallback": "VIBE_LOCAL_OLLAMA",
+        "gateDecisionAuthority": "DETERMINISTIC_EVIDENCE_ONLY",
+        "learningFallback": "NON_MODEL_VERIFIED_EVIDENCE_PIPELINE",
+        "blockedProviderConsumesDevelopmentSlot": false,
+        "noPortfolioWideStop": true,
+        "preserveCheckpoint": true,
+        "resumeExactFailedWork": true,
+        "whenAllModelProvidersUnavailable": [
+          "CONTINUE_DETERMINISTIC_GATE_AND_QA",
+          "CONTINUE_MUTATION_AND_REGRESSION_TEST_GENERATION",
+          "CONTINUE_VERIFIED_EVIDENCE_DISTILLATION",
+          "CONTINUE_CODE_PATTERN_MINING",
+          "CONTINUE_ANY_INDEPENDENT_IMPLEMENTATION_WORK",
+          "CHECKPOINT_ONLY_TASKS_THAT_TRULY_REQUIRE_GENERATIVE_AUTHORING"
+        ]
       }
     },
     "gameDevelopmentAuthority": {
