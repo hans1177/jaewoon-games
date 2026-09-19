@@ -62,6 +62,60 @@ test('active independent work no longer blocks autonomous planning when slots re
   assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=4,true);
 });
 
+test('active 20-worker wave does not block plan-only development backlog expansion',()=>{
+  const root=tempRepo();
+  const running=Array.from({length:20},(_,i)=>({
+    id:`active-wave-${i}`,gameId:`active-${i}`,sourceRoot:`web-games/active-${i}`,responsibleFiles:['index.html'],
+    department:'development',type:'implementation',status:'running',goal:'active game work',target:'web',reservationRunId:'run-active'
+  }));
+  const result=planVibe2AutonomousTasks({
+    status,catalog,queue:{maxConcurrentTasks:256,tasks:running},repoRoot:root,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.planningBacklog.current,20);
+  assert.equal(result.planningBacklog.capacity,40);
+  assert.equal(result.planningBacklog.executionWaveMax,20);
+  assert.equal(result.planningBacklog.persistentQueueMax,256);
+  assert.ok(result.tasks.length>=1);
+  assert.ok(result.tasks.every(task=>task.status==='queued'));
+  assert.ok(result.tasks.every(task=>task.reservationRunId==null));
+  assert.equal(result.queue.maxConcurrentTasks,256);
+});
+
+test('release-wait candidates do not consume runnable development planning backlog capacity',()=>{
+  const root=tempRepo();
+  const waiting=Array.from({length:60},(_,i)=>({
+    id:`release-wait-${i}`,gameId:`wait-${i}`,sourceRoot:`web-games/wait-${i}`,responsibleFiles:['index.html'],
+    department:'development',type:'implementation',status:'running',goal:'await release',target:'web',
+    blocker:'candidate-awaiting-qa-and-deployment'
+  }));
+  const result=planVibe2AutonomousTasks({
+    status,catalog,queue:{maxConcurrentTasks:256,tasks:waiting},repoRoot:root,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.planningBacklog.current,0);
+  assert.equal(result.planningBacklog.releaseWaitExcluded,60);
+  assert.equal(result.planningBacklog.capacity,60);
+});
+
+test('planning backlog target stops plan expansion without changing persistent queue max',()=>{
+  const root=tempRepo();
+  const queued=Array.from({length:60},(_,i)=>({
+    id:`planned-${i}`,gameId:`planned-${i}`,sourceRoot:`web-games/planned-${i}`,responsibleFiles:['index.html'],
+    department:'development',type:'implementation',status:'queued',goal:'planned game work',target:'web'
+  }));
+  const result=planVibe2AutonomousTasks({
+    status,catalog,queue:{maxConcurrentTasks:256,tasks:queued},repoRoot:root,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.planningBacklog.current,60);
+  assert.equal(result.queue.maxConcurrentTasks,256);
+});
+
 test('effective wave cap does not overwrite persistent external queue max',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
