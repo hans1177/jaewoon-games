@@ -163,6 +163,14 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
   assert.match(bootstrap,/assertGameSeed\(seed\)/);
   assert.match(bootstrap,/OWNER_PRESERVATION_ACTIVE_SEED_CONFLICT/);
   assert.match(bootstrap,/ownerPreservationIntake/);
+  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.mayRunDuringGamePrimary,true);
+  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.maxConcurrent,1);
+  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.consumesGamePrimaryWorkerSlot,false);
+  assert.match(seedDesignWorkflow,/preservation_only/);
+  assert.match(seedDesignWorkflow,/RUN_OWNER_PRESERVATION_AUX/);
+  assert.match(seedDesignWorkflow,/PRESERVATION_PRESENTATION_UPGRADE/);
+  assert.match(seedDesignWorkflow,/OWNER_PRESERVATION_DESIGN_LANE=/);
+  assert.match(seedDesignWorkflow,/preservationOnly\?1:designWipMax/);
 });
 
 test('workflow uses canonical trigger for 24h idle unlimited-total production with bounded WIP',()=>{
