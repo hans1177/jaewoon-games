@@ -193,7 +193,7 @@ function weaponPower(){
   var item=WEAPONS.find(function(x){return x.id===state.weapon;});
   return item?item.power:0;
 }
-function armorDef(){
+function armorDef(){var item=ARMORS.find(function(x){return x.id===state.armor;});return item?item.def:0;
   var item=ARMORS.find(function(x){return x.id===state.armor;});
   return item?item.def:0;
 }
