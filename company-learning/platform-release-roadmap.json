@@ -1,5 +1,5 @@
 {
-  "version": 154,
+  "version": 155,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -447,9 +447,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 2,
+      "version": 3,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "MAIN_WIRED_CI_REVALIDATION_RUNNING",
+      "status": "CAUSAL_FAST_PATH_WIRED_PLACEHOLDER_GUARDED_CENTRAL_REVALIDATION_REQUESTED",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -491,6 +491,44 @@
         "vibe2CoreQa": 35476177645,
         "integratedRegression": 35476177597,
         "state": "QUEUED_OR_RUNNING"
+      },
+      "placeholderReplacementRejected": true,
+      "placeholderGuardCommit": "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
+      "placeholderGuardTestCommit": "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1",
+      "corruptedRepairIncident": {
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "firstKnownCorruptCommit": "e175feac7d17000b3badf12fe367e28f8e79f079",
+        "additionalDegradingCommits": [
+          "3d826353515f62292e5eebd695e5616f6d7b779a",
+          "2fc875502f3932a042e0fa09856dc858670bdc8b",
+          "00d45fd928c28db9acc4ade01a96e236d55dc91c",
+          "c2b232edc338e9ac65dd25d9042f3e92ba0f7337"
+        ],
+        "restoredFrom": "e5f8eef340575ffdacee298201e61064dcd17200",
+        "restoreCommit": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
+        "verifiedAfterRestore": {
+          "placeholderAbsent": true,
+          "historicalSaveKeyRestored": true,
+          "actionClickBindingRestored": true,
+          "singleActFunction": true,
+          "gameConfigBindingRestored": true,
+          "singleBaseDeclaration": true
+        }
+      },
+      "latestRelevantQa": {
+        "companyEvolutionQa": {
+          "runId": 35476198189,
+          "conclusion": "success",
+          "head": "0a5d558e2079fb46388f2931c6f6dce02147950c"
+        },
+        "priorIntegratedRegression": {
+          "runId": 35476177597,
+          "conclusion": "success",
+          "head": "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
+        },
+        "centralPolicyContract": {
+          "state": "RETRIGGERED_BY_THIS_DOCUMENT_SYNC_AFTER_GAME_RESTORE"
+        }
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
@@ -2109,6 +2147,14 @@
                 "8903d637486725e6501e1d0231e49fa2ddd87447",
                 "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
               ]
+            },
+            "focusedReplacementCorruptionGuard": {
+              "detectedBy": "COMPANY_CENTRAL_POLICY_CONTRACT_QA",
+              "contaminatedGame": "seed-single-defense-strat-celestial-bastion",
+              "restoredCommit": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
+              "placeholderGuardCommit": "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
+              "placeholderGuardTestCommit": "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1",
+              "repositorySearchRemainingExactPlaceholderHits": 0
             }
           },
           "repairs": [
@@ -3660,52 +3706,47 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_CAUSAL_FOCUSED_RETRY_SAFETY_2026-09-20",
+    "id": "VIBE2_SOURCE_GENERATION_CORRUPTION_GUARD_AND_RESTORE_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "CENTRAL_SYNC_CURRENT_HEAD_AND_PRIMARY_BOTTLENECK_2026-09-20",
-    "reason": "KEEP_FIRST_ATTEMPT_RESPONSIBILITY_SELECTION_INTACT; AFTER A REAL EDIT_MATCH_OR_TIMEOUT, FAST_ESCALATE ATTEMPT_2_TO_WORKER_PINNED_REPLACE_ONLY WITH_90S_384_TOKEN_8K_CONTEXT. THIS REDUCES THE SOURCE_CANDIDATE_GENERATION_TAIL WITHOUT FORCING A POSSIBLY_UNRELATED_GENERIC_ANCHOR BEFORE CAUSAL_FAILURE.",
+    "previousChangeRecordId": "VIBE2_CAUSAL_FOCUSED_RETRY_SAFETY_2026-09-20",
+    "reason": "SOURCE_CANDIDATE_GENERATION BOTTLENECK REPAIR MUST NOT TRADE CORRECTNESS FOR SPEED. RESTORE THE PRE-CORRUPTION CELESTIAL BASTION SOURCE, KEEP FIRST-ATTEMPT TARGET SELECTION, FAST-ESCALATE ONLY AFTER CAUSAL EDIT_MATCH/TIMEOUT, AND REJECT PLACEHOLDER REPLACEMENT SOURCE.",
     "evidence": {
-      "baseline": {
+      "baselineBottleneck": {
         "runId": 35452958416,
         "pass": 2,
         "fail": 18,
         "editMatch": 6,
         "timeout": 6
       },
-      "sourceCommits": [
+      "causalFastPathSource": [
         "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
         "8903d637486725e6501e1d0231e49fa2ddd87447"
       ],
-      "testCommits": [
-        "a8b318df4433036bb0607b79d1802de992338e16",
-        "f628ed3806a958539088f055881390518e376829",
-        "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a",
-        "52b4329d444b42a267954233168d562d636e10c4"
+      "corruptedGameRestore": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
+      "replacementPlaceholderGuard": [
+        "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
+        "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1"
       ],
-      "integratedRegressionPriorHead": {
-        "runId": 35476104737,
+      "companyEvolutionQa": {
+        "runId": 35476198189,
         "conclusion": "success"
-      },
-      "currentCi": {
-        "companyEvolutionQa": 35476177596,
-        "vibe2CoreQa": 35476177645,
-        "integratedRegression": 35476177597,
-        "state": "PENDING"
       }
     },
     "invariants": {
+      "saveKeyMeaningPreserved": true,
+      "gameplayActionBindingPreserved": true,
       "exactEditRequired": true,
       "semanticDiffBudgetRequired": true,
-      "qualityGatesNotWeakened": true,
       "firstAttemptGoalTargetSelectionPreserved": true,
-      "directMainGameSourceWriteForbidden": true
+      "placeholderSourceForbidden": true,
+      "qualityGatesNotWeakened": true
     },
     "pending": [
-      "CURRENT_CI_REVALIDATION_PASS",
-      "NEXT_CLEAN_20_WAVE_MEASURE_EDIT_MATCH_VS_6_BASELINE",
-      "NEXT_CLEAN_20_WAVE_MEASURE_TIMEOUT_VS_6_BASELINE",
-      "MEASURE_PACKAGE_CYCLE_LATENCY"
+      "CENTRAL_POLICY_CONTRACT_QA_REVALIDATION_AFTER_RESTORE",
+      "LATEST_VIBE2_CORE_QA_REVALIDATION",
+      "NEXT_CLEAN_20_WAVE_MEASURE_EDIT_MATCH_AND_TIMEOUT",
+      "CONFIRM_FANTASY_SURVIVAL_RUNTIME_SEED_MATERIALIZATION"
     ]
   },
   "vibeExecutionLaneContract": {
