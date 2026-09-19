@@ -297,6 +297,29 @@ test('malformed JSON candidate gets one bounded strict-JSON recovery retry', asy
   assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
 });
 
+test('single-file Web diagnostic uses the same compact generation profile', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'diagnostic.json');
+  const source=['<!doctype html><html><body>','<button id="play">Play</button>','<script>let timer=setInterval(()=>{},1000);</script>','</body></html>'].join('\n');
+  write(path.join(cwd,'web-games/demo/rpg.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/rpg.html'],taskId:'web-diagnostic-compact'});
+  workOrder.goal='[DIAGNOSTIC_BUNDLE] rpg.html 반복 타이머 생명주기와 중복 실행을 점검하고 필요한 해제 경로를 추가한다.';
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({
+    summary:'cleanup interval lifecycle',
+    expectedEffect:'no duplicate timer',
+    edits:[{path:'rpg.html',find:'<script>let timer=setInterval(()=>{},1000);</script>',replace:'<script>let timer=setInterval(()=>{},1000);addEventListener("pagehide",()=>clearInterval(timer),{once:true});</script>'}],
+    newFiles:[],replaceFiles:[],tests:['interval cleanup']
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.focusedWebRepair,true);
+  assert.equal(result.generation.maxPredict,1024);
+  assert.equal(result.generation.contextWindow,16384);
+  assert.ok(result.generation.contextFiles<=3);
+  assert.ok(result.generation.contextBytes<=48000);
+  assert.deepEqual(result.changedFiles,['rpg.html']);
+});
+
 test('exact Web repair uses compact generation budget without weakening edit boundaries', async () => {
   const cwd=tempRoot();
   const responseFile=path.join(cwd,'model-focused-repair.json');
