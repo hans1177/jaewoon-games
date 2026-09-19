@@ -21,6 +21,20 @@ test('repeated failure is escalated into recovery queue',()=>{
   assert.match(row.recoveryStrategy,/RESUME_EXACT_FAILED_GAME_STAGE/);
 });
 
+test('cancelled or completed tasks never re-enter recovery escalation from stale failure evidence',()=>{
+  const result=escalateRecoveryCandidates({
+    gameQueueInput:{tasks:[
+      {id:'old-design-only',status:'cancelled',target:'unity',sourceRoot:'unity-games/old',recoveryGeneration:2,blocker:'production-authority-inactive:DESIGN_ONLY',evidence:['system-steward:retry-exhausted-regenerated:generation-2']},
+      {id:'already-done',status:'done',target:'web',sourceRoot:'web-games/done',recoveryGeneration:3,blocker:'source-candidate-generation-failed',evidence:['failure-cause:source-candidate-generation-failed']}
+    ]},
+    systemAiQueueInput:{tasks:[
+      {id:'sys-done',status:'done',retries:4,blocker:'system-ai-implementation-failed'}
+    ]}
+  });
+  assert.equal(result.added.length,0);
+  assert.equal(result.queue.tasks.length,0);
+});
+
 test('recovery learning requires deterministic pass and primary AI review',()=>{
   let q=enqueueRecovery({tasks:[]},{
     sourceQueue:'system-ai',sourceTaskId:'s1',failureStage:'MODEL_OUTPUT',

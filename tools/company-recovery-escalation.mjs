@@ -53,13 +53,17 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
   const sysTasks=Array.isArray(systemAiQueueInput.tasks)?systemAiQueueInput.tasks:[];
   const candidates=[];
   for(const task of gameTasks){
+    const status=clean(task.status).toLowerCase();
+    if(['done','completed','cancelled','verified'].includes(status))continue;
     const ev=uniq(task.evidence);
     const repeated=Number(task.recoveryGeneration||0)>0||ev.some(x=>x.startsWith('system-steward:retry-exhausted-regenerated:'))||clean(task.status)==='failed';
     const sig=evidenceSignature(task);
     if(repeated&&sig)candidates.push({sourceQueue:'vibe2',task,signature:sig,stage:failureStage(task)});
   }
   for(const task of sysTasks){
-    const repeated=Number(task.retries||0)>=2||clean(task.status)==='failed';
+    const status=clean(task.status).toLowerCase();
+    if(['done','completed','cancelled','verified'].includes(status))continue;
+    const repeated=Number(task.retries||0)>=2||status==='failed';
     const sig=clean(task.blocker||task.lastOutcome);
     if(repeated&&sig)candidates.push({sourceQueue:'system-ai',task,signature:sig,stage:failureStage(task)});
   }
