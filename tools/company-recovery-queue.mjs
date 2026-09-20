@@ -86,6 +86,80 @@ export function settleRecovery(queueInput,{id,outcome,evidence=[]}={}){
   });
   if(!found)throw new Error('RECOVERY_TASK_NOT_FOUND:'+target);return{...queue,tasks};
 }
+export function applySecurityRecoverySystemAiFanIn(queueInput,systemAiQueueInput,results=[]){
+  const queue=normalizeRecoveryQueue(queueInput);
+  const systemTasks=new Map((systemAiQueueInput.tasks||[]).map(x=>[clean(x.id),x]).filter(([id])=>id));
+  const resultMap=new Map((results||[]).map(x=>[clean(x.taskId),x]).filter(([id])=>id));
+  const stamp=now();
+  let linked=0;
+  const tasks=queue.tasks.map(rec=>{
+    const taskId=clean(rec.sourceTaskId);
+    if(clean(rec.status)!=='dispatched'||clean(rec.sourceQueue).toLowerCase()!=='security'||clean(rec.recoveryOwner).toUpperCase()!=='SYSTEM_AI'||!taskId)return rec;
+    if(!(rec.evidence||[]).includes('primary-ai-security-recovery-assignment:APPROVE'))return rec;
+    if(!(rec.evidence||[]).includes('system-ai-assignment:'+taskId))return rec;
+    const result=resultMap.get(taskId);
+    if(!result)return rec;
+    const task=systemTasks.get(taskId);
+    if(!task)throw new Error('SECURITY_RECOVERY_SYSTEM_AI_TASK_MISSING:'+taskId);
+    if(!(task.evidence||[]).includes('primary-ai-security-recovery-assignment:APPROVE'))throw new Error('SECURITY_RECOVERY_SYSTEM_AI_ASSIGNMENT_EVIDENCE_MISSING:'+taskId);
+    if(!(task.evidence||[]).includes('security-recovery:'+rec.id))throw new Error('SECURITY_RECOVERY_SYSTEM_AI_LINK_MISMATCH:'+taskId+':'+rec.id);
+    const outcome=clean(result.outcome).toUpperCase();
+    if(outcome==='PASS'){
+      if(clean(task.status)!=='awaiting-supervisor')throw new Error('SECURITY_RECOVERY_SYSTEM_AI_SUPERVISOR_STATE_REQUIRED:'+taskId+':'+clean(task.status));
+      const pr=clean(task.pullRequestUrl||result.pullRequestUrl);
+      if(!pr)throw new Error('SECURITY_RECOVERY_SYSTEM_AI_CANDIDATE_PR_REQUIRED:'+taskId);
+      linked++;
+      return{
+        ...rec,
+        status:'awaiting-primary-ai-review',
+        primaryAiReview:'PENDING',
+        deterministicEvidence:uniq([
+          ...(rec.deterministicEvidence||[]),
+          'system-ai-fan-in:'+taskId,
+          'system-ai-outcome:PASS',
+          'system-ai-supervision-state:awaiting-supervisor',
+          'system-ai-candidate-pr:'+pr
+        ]),
+        updatedAt:stamp
+      };
+    }
+    if(outcome==='CURRENT_MAIN_SATISFIED'){
+      if(clean(task.status)!=='done'||clean(task.lastOutcome)!=='DETERMINISTIC_CURRENT_MAIN_SATISFIED')throw new Error('SECURITY_RECOVERY_SYSTEM_AI_CURRENT_MAIN_STATE_REQUIRED:'+taskId);
+      linked++;
+      return{
+        ...rec,
+        status:'awaiting-primary-ai-review',
+        primaryAiReview:'PENDING',
+        deterministicEvidence:uniq([
+          ...(rec.deterministicEvidence||[]),
+          'system-ai-fan-in:'+taskId,
+          'system-ai-outcome:CURRENT_MAIN_SATISFIED',
+          'system-ai-supervision-state:deterministic-current-main-satisfied'
+        ]),
+        updatedAt:stamp
+      };
+    }
+    if(outcome==='FAIL'){
+      linked++;
+      const retries=rec.retries+1,retry=retries<=rec.maxRetries;
+      return{
+        ...rec,
+        status:retry?'queued':'failed',
+        retries,
+        evidence:uniq([
+          ...(rec.evidence||[]),
+          'system-ai-fan-in:'+taskId,
+          'system-ai-recovery-outcome:FAIL',
+          ...(clean(result.blocker)?['system-ai-recovery-blocker:'+clean(result.blocker)]:[])
+        ]),
+        updatedAt:stamp
+      };
+    }
+    throw new Error('SECURITY_RECOVERY_SYSTEM_AI_OUTCOME_UNKNOWN:'+taskId+':'+outcome);
+  });
+  return{queue:{...queue,tasks},linked};
+}
+
 export function reviewRecovery(queueInput,{id,decision,evidence=[]}={}){
   const queue=normalizeRecoveryQueue(queueInput),target=clean(id),review=clean(decision).toUpperCase(),stamp=now();let found=false;
   const tasks=queue.tasks.map(x=>{
@@ -112,6 +186,15 @@ export function runRecoveryQueue(args={}){
     });queue=result.queue;writeJson(file,queue);return{cmd,...result};
   }
   if(cmd==='reserve'){const result=reserveRecovery(queue,{max:args.max});writeJson(file,result.queue);return{cmd,...result};}
+  if(cmd==='fan-in-system-ai'){
+    const systemFile=clean(args['system-ai']);
+    const dir=clean(args.results);
+    if(!systemFile||!dir)throw new Error('RECOVERY_SYSTEM_AI_FANIN_INPUT_REQUIRED');
+    const rows=[];
+    if(fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort())rows.push(readJson(path.join(dir,name),{}));
+    const result=applySecurityRecoverySystemAiFanIn(queue,readJson(systemFile,{tasks:[]}),rows);
+    queue=result.queue;writeJson(file,queue);return{cmd,queue,linked:result.linked};
+  }
   if(cmd==='settle'){queue=settleRecovery(queue,{id:args.id,outcome:args.outcome,evidence:clean(args.evidence).split(',')});writeJson(file,queue);return{cmd,queue};}
   if(cmd==='review'){queue=reviewRecovery(queue,{id:args.id,decision:args.decision,evidence:clean(args.evidence).split(',')});writeJson(file,queue);return{cmd,queue};}
   if(cmd==='summary')return{cmd,queue,counts:queue.tasks.reduce((m,x)=>(m[x.status]=(m[x.status]||0)+1,m),{})};
