@@ -67,7 +67,9 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
-      const supervised=task?.supervisionContract?.required===true;
+      const supervised=task?.supervisionContract?.required===true
+        ||evidence.has('supervised-web-build:required')
+        ||clean(task?.productionMode)==='SUPERVISED_VIBE_COAUTHORING';
       const supervisionReview=task?.supervisionReview&&typeof task.supervisionReview==='object'?task.supervisionReview:null;
       const supervisionDecision=clean(supervisionReview?.decision).toUpperCase();
       const supervisionVerified=supervisionReview?.verified===true;
