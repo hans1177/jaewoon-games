@@ -1,0 +1,2382 @@
+{
+  "version": 6,
+  "taskId": "amusement-tycoon-web-runtime-repair-v1",
+  "gameId": "amusement-tycoon",
+  "target": "web",
+  "sourceRoot": "web-games/amusement-tycoon",
+  "sourceRootBootstrap": false,
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "generation": {
+    "attempts": 2,
+    "recoveryUsed": true,
+    "partialTimeoutRecovery": false,
+    "streamedPartialEditRecovery": false,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": true,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedWebRepair": true,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "baseAttemptBudget": 2,
+    "effectiveAttemptBudget": 2,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "mode": "JSON_EDIT",
+    "maxPredict": 384,
+    "timeoutMs": 90000,
+    "contextWindow": 8192,
+    "temperature": 0.26,
+    "completionMode": "JSON_REPLACE_ONLY",
+    "candidateVariant": "speculative-1",
+    "attemptBudget": 2,
+    "speculativeAttemptBudgetApplied": true,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "contextFiles": 2,
+    "contextBytes": 27638,
+    "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+    "focusedSymbolCount": 16,
+    "exactSourceWindows": true,
+    "fullFileContextFallback": false,
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false
+  },
+  "developmentAuthority": {
+    "owner": "VIBE2_VIBE3",
+    "provider": "LOCAL_OLLAMA",
+    "model": "qwen3:1.7b",
+    "codexRole": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+    "codexGameSourceWrite": "FORBIDDEN",
+    "paidOpenAiApiAllowed": false,
+    "directMainWrite": false
+  },
+  "compiledWorkContract": {
+    "version": 2,
+    "required": true,
+    "validAtCompile": true,
+    "policy": {
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 203,
+      "fingerprint": "b9dcca8a6e1fd4d446cd66d00477aaede0b5de4b830490534fdbe075d5f2f629",
+      "status": "OWNER_DIRECT_LOCKED",
+      "policySource": "company-learning/platform-release-roadmap.json",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED"
+    },
+    "workRequest": {
+      "workKey": "amusement-tycoon-web-runtime-repair-v1",
+      "roadmapVersion": 203,
+      "mainSha": "a805dd219184f35bb2ea88c73463e7aae1366803",
+      "scope": [
+        "web-games/amusement-tycoon/index.html"
+      ],
+      "nextGate": "WEB_REPAIR",
+      "requiredEvidence": [
+        "task-local-exploration-handoff-produced-and-reused",
+        "functional-scope-implemented",
+        "all-package-task-incremental-qa-pass",
+        "performance-sanity-pass",
+        "full-core-regression-once-at-fan-in",
+        "fan-in-package-review-pass",
+        "machine-contract-and-central-doc-synced-when-architecture-changes",
+        "변경 전 원본 일치",
+        "변경 diff 확인",
+        "보호 대상 값/키 변경 검사",
+        "문법/구조 QA",
+        "실행 회귀 QA",
+        "모바일 UI QA",
+        "Web source 구조 확인",
+        "브라우저 런타임",
+        "모바일 레이아웃",
+        "터치 입력",
+        "회귀 확인",
+        "responsible-source-changed",
+        "protected-state-preserved",
+        "regression-checked",
+        "actual-result-observed",
+        "browser-runtime-check",
+        "mobile-layout-check",
+        "touch-input-check",
+        "save-regression-check",
+        "actual-motion-clips",
+        "runtime-transition",
+        "combat-sync",
+        "retarget-if-used",
+        "performance"
+      ],
+      "authorityBoundary": {
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "neuralExecutionAuthority": false,
+        "workerCreationAuthority": false,
+        "queueMutationAuthority": false,
+        "waveReorderAuthority": false,
+        "lockPolicyMutationAuthority": false,
+        "automaticLearningTuningPromotionAuthority": false
+      },
+      "dedupeKey": "369e1f2f75b7426bac70756f6e24ea160d70527e9eb5845cbae069b66e996a8d"
+    },
+    "task": {
+      "id": "amusement-tycoon-web-runtime-repair-v1",
+      "gameId": "amusement-tycoon",
+      "target": "web",
+      "executionRoute": "text-source-worker"
+    },
+    "writableScope": {
+      "exactResponsibleFiles": [
+        "web-games/amusement-tycoon/index.html"
+      ],
+      "automaticExpansionAllowed": false,
+      "directResponsibleSystemModificationPreferred": true
+    },
+    "invariants": {
+      "protectedSemantics": [
+        "GAME_IDENTITY",
+        "SAVE_KEY_AND_SAVE_MEANING",
+        "CORE_LOOP",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "EXISTING_VALID_FEATURES"
+      ],
+      "forbiddenChanges": [
+        "WRAPPER_OR_SHADOW_PIPELINE",
+        "UNRELATED_SYSTEM_MUTATION",
+        "SAVE_RESET_WITHOUT_MIGRATION",
+        "FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH",
+        "RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT"
+      ],
+      "saveMeaningMustRemainCompatible": true,
+      "unrelatedBalanceMutationForbidden": true,
+      "existingValidFeaturesMustRemainFunctional": true
+    },
+    "failureRoute": {
+      "mode": "EXACT_FAILURE_STAGE_REPAIR",
+      "failureStage": "WEB_REPAIR",
+      "lastPassedStage": null,
+      "blocker": null,
+      "lastOutcome": "FAIL",
+      "signatures": [
+        "web-stage:WEB_REPAIR",
+        "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+        "recovery-exact-stage:WEB_REPAIR",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "company-runtime-failure-evidence:refreshed",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2",
+        "system-steward:stale-machine-state-blocker-recovered",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_3",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_4",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_5",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_6",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_7",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_8",
+        "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-primary-35454893941-1",
+        "presentation-static-qa-status:NOT_REQUIRED",
+        "package-review:all-required-roles-pass"
+      ],
+      "responsibleSystem": null,
+      "responsibleFiles": [
+        "web-games/amusement-tycoon/index.html"
+      ],
+      "preserveAlreadyPassedStages": true,
+      "restartFromBeginning": false,
+      "widenScopeAutomatically": false,
+      "revalidateImmediately": true
+    },
+    "passConditions": [
+      "task-local-exploration-handoff-produced-and-reused",
+      "functional-scope-implemented",
+      "all-package-task-incremental-qa-pass",
+      "performance-sanity-pass",
+      "full-core-regression-once-at-fan-in",
+      "fan-in-package-review-pass",
+      "machine-contract-and-central-doc-synced-when-architecture-changes",
+      "변경 전 원본 일치",
+      "변경 diff 확인",
+      "보호 대상 값/키 변경 검사",
+      "문법/구조 QA",
+      "실행 회귀 QA",
+      "모바일 UI QA",
+      "Web source 구조 확인",
+      "브라우저 런타임",
+      "모바일 레이아웃",
+      "터치 입력",
+      "회귀 확인",
+      "responsible-source-changed",
+      "protected-state-preserved",
+      "regression-checked",
+      "actual-result-observed",
+      "browser-runtime-check",
+      "mobile-layout-check",
+      "touch-input-check",
+      "save-regression-check",
+      "actual-motion-clips",
+      "runtime-transition",
+      "combat-sync",
+      "retarget-if-used",
+      "performance"
+    ],
+    "freshness": {
+      "beforeWorkRequired": true,
+      "afterWorkRequired": true,
+      "staleMayNotStart": true,
+      "staleMayNotComplete": true,
+      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "liveMainRequired": true,
+      "liveMainRef": "origin/main",
+      "liveMainRefreshBeforeCheck": true,
+      "compare": "SHA256_LOCAL_AND_LIVE_MAIN"
+    },
+    "learning": {
+      "reusableLearningAllowed": true,
+      "traceOnlyUntilSupervisorPass": false
+    },
+    "promotion": {
+      "automaticMainPromotionAllowed": false,
+      "reason": "CENTRAL_ROADMAP_ASSISTANT_CONTRACT_DOES_NOT_GRANT_PROMOTION_AUTHORITY",
+      "supervisorPassRequired": false,
+      "supervisorApproved": true
+    },
+    "preflightChecks": [
+      "READ_EXISTING_RESPONSIBLE_SYSTEM",
+      "VERIFY_EXACT_WRITABLE_SCOPE",
+      "PRESERVE_PROTECTED_SEMANTICS",
+      "NO_WRAPPER_OR_SHADOW_PIPELINE",
+      "TRACE_FAILURE_TO_RESPONSIBLE_SYSTEM",
+      "PLAN_RUNTIME_VERIFIABLE_RESULT"
+    ],
+    "authorityExpanded": false
+  },
+  "centralPolicyFreshness": {
+    "preflight": {
+      "status": "PASS",
+      "phase": "PRE_SOURCE_GENERATION",
+      "fresh": true,
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 203,
+      "fingerprint": "b9dcca8a6e1fd4d446cd66d00477aaede0b5de4b830490534fdbe075d5f2f629",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "liveMainRef": "origin/main",
+      "liveMainVersion": 203,
+      "liveMainFingerprint": "b9dcca8a6e1fd4d446cd66d00477aaede0b5de4b830490534fdbe075d5f2f629"
+    },
+    "completion": {
+      "status": "PASS",
+      "phase": "PRE_CANDIDATE_WRITE",
+      "fresh": true,
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 203,
+      "fingerprint": "b9dcca8a6e1fd4d446cd66d00477aaede0b5de4b830490534fdbe075d5f2f629",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "liveMainRef": "origin/main",
+      "liveMainVersion": 203,
+      "liveMainFingerprint": "b9dcca8a6e1fd4d446cd66d00477aaede0b5de4b830490534fdbe075d5f2f629"
+    }
+  },
+  "baseMainSha": "a805dd219184f35bb2ea88c73463e7aae1366803",
+  "goal": "[WORK PACKAGE amusement-tycoon-wp-sqheg3]\n놀이공원 타이쿤: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.\n역할=implementation-owner; taskWorkUnits=6; packageWorkUnits=6\n공유 준비 범위=web-games/amusement-tycoon/index.html\n역할 분리=exploration:read-only-exploration-worker | implementation:source-worker-exclusive-write | test:incremental-qa-worker-read-only | performance:performance-sanity-worker-read-only | regression:single-fan-in-regression-worker-read-only | review:fan-in-package-review-worker-read-only\n완료 기준=task-local-exploration-handoff-produced-and-reused | functional-scope-implemented | all-package-task-incremental-qa-pass | performance-sanity-pass | full-core-regression-once-at-fan-in | fan-in-package-review-pass | machine-contract-and-central-doc-synced-when-architecture-changes\n\n[REUSABLE MACHINE HANDOFF - do not rediscover already known facts]\n- task=amusement-tycoon-web-runtime-repair-v1; package=amusement-tycoon-wp-sqheg3; files=web-games/amusement-tycoon/index.html; evidence=role-result:exploration:FAIL | role-result:implementation:FAIL | role-result:test:FAIL | role-result:performance:FAIL | role-result:regression:WAITING_FAN_IN | role-result:review:WAITING_FAN_IN | workload:changed-files:0 | workload:changed-lines:0 | workload:prep-ms:5156 | workload:cycle-ms:449561 | failure-cause:source-candidate-generation-failed | workload:prep-ms:7447 | workload:cycle-ms:456978 | workload:prep-ms:6365 | workload:cycle-ms:524453 | repair-mode:CAUSAL_REGENERATION_GENERATION_1 | workload:prep-ms:13700 | workload:cycle-ms:537382 | workload:prep-ms:11624 | workload:cycle-ms:439948 | role-result:exploration:PASS | workload:prep-ms:6625 | workload:cycle-ms:604944 | exploration-reuse:7fa43329bafb003d8e2c88f1 | exploration-impact:index.html | workload:prep-ms:7478 | workload:cycle-ms:583641 | exploration-reuse:b33b1179e5f953391873e122 | workload:prep-ms:5608 | workload:cycle-ms:671944 | exploration-reuse:08e2b85a6bd11f136d79976f | repair-mode:CAUSAL_REGENERATION_GENERATION_2 | workload:prep-ms:5477 | workload:cycle-ms:26378 | failure-cause:MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED | workload:prep-ms:6556 | workload:cycle-ms:669438 | exploration-reuse:dc2df000498b562f8e9ee08b | workload:prep-ms:6723 | workload:cycle-ms:666557 | exploration-reuse:0f2d984c58e19db04866eb07 | workload:prep-ms:7628 | workload:cycle-ms:669499 | exploration-reuse:7b056b3347ee03420eb40ae6 | repair-mode:CAUSAL_REGENERATION_GENERATION_3 | workload:prep-ms:11380 | workload:cycle-ms:44244 | workload:prep-ms:9132 | workload:cycle-ms:570094 | exploration-reuse:2cdcc4bfa8342435c32cdb05 | workload:prep-ms:10035 | workload:cycle-ms:40968 | workload:prep-ms:5845 | workload:cycle-ms:664368 | exploration-reuse:69189db4e9cf5d2b134f3e38 | workload:prep-ms:6086 | workload:cycle-ms:661718 | exploration-reuse:f4e0124752ea3f8b12d1d853 | repair-mode:CAUSAL_REGENERATION_GENERATION_4 | workload:prep-ms:6514 | workload:cycle-ms:669824 | exploration-reuse:052b90da32664ee6e682f958 | workload:prep-ms:6929 | workload:cycle-ms:33275 | workload:prep-ms:6494 | workload:cycle-ms:665573 | exploration-reuse:29b49cf24d0b916072026533 | workload:prep-ms:9652 | workload:cycle-ms:673134 | exploration-reuse:33b0fe5529887e4298d3f744 | workload:prep-ms:5155 | workload:cycle-ms:661503 | repair-mode:CAUSAL_REGENERATION_GENERATION_5 | workload:prep-ms:6460 | workload:cycle-ms:572775 | exploration-reuse:70b214db1aea578b6ff8ef51 | workload:prep-ms:9960 | workload:cycle-ms:583509 | workload:prep-ms:6161 | workload:cycle-ms:459284 | exploration-reuse:942404bbadfd2958e3ad0982 | workload:prep-ms:7683 | workload:cycle-ms:278841 | exploration-reuse:d38025b2e30d46574d575588 | repair-mode:CAUSAL_REGENERATION_GENERATION_6 | workload:prep-ms:5684 | workload:cycle-ms:475409 | exploration-reuse:9124f7097bde3ddff9982da6 | workload:prep-ms:6960 | workload:cycle-ms:464268 | exploration-reuse:6cb36605c8e12898c10ff584 | workload:prep-ms:11665 | workload:cycle-ms:388277 | workload:prep-ms:5285 | workload:cycle-ms:451231 | exploration-reuse:9e42f693e0c953afb7e53923 | workload:prep-ms:5738 | workload:cycle-ms:431076 | repair-mode:CAUSAL_REGENERATION_GENERATION_7 | workload:prep-ms:5884 | workload:cycle-ms:452026 | exploration-reuse:2b48aacc6a03960b941b2668 | workload:prep-ms:11278 | workload:cycle-ms:380132 | workload:prep-ms:5199 | workload:cycle-ms:450041 | exploration-reuse:230726b773d2566f2df0e2b9 | workload:prep-ms:7570 | workload:cycle-ms:417213 | workload:prep-ms:5275 | workload:cycle-ms:455705 | exploration-reuse:c59c3316437f4f8d7b4e7ea3 | workload:prep-ms:9332 | workload:cycle-ms:409745 | repair-mode:CAUSAL_REGENERATION_GENERATION_8 | workload:prep-ms:11441 | workload:cycle-ms:374980 | exploration-reuse:95bb78eb6cb76d50b5459a19 | workload:prep-ms:9938 | workload:cycle-ms:359357 | workload:prep-ms:5547 | workload:cycle-ms:454178 | exploration-reuse:dd75873662e0c1a80f195b6e | workload:prep-ms:10463 | workload:cycle-ms:410030 | incremental-qa-hash:9dca9cf09fff5f82b687435a55d9929c08bebe3ebefdcb5596a69db958420cf7 | incremental-qa-cache:MISS | role-result:implementation:PASS | role-result:test:PASS | role-result:performance:PASS | workload:changed-files:1 | workload:changed-lines:2 | workload:prep-ms:7028 | workload:cycle-ms:464411 | exploration-reuse:df1edac0fa3b104195e7fe1c | speculative-result:primary:PASS | speculative-result:speculative-1:FAIL | speculative-winner:primary | role-result:regression:PASS | role-result:review:PASS | incremental-qa-hash:90c2624f56a183f6d773bdb76c45cee9dfbfa9154313bb37f65aca16f0acb7ee | workload:prep-ms:6402 | workload:cycle-ms:283933 | exploration-reuse:939fdbf11cd66996ab983d56 | speculative-result:speculative-1:PASS | speculative-result:speculative-2:PASS | workload:prep-ms:6003 | workload:cycle-ms:285315 | exploration-reuse:960957534e0a6aa61f5372ed | speculative-result:primary:FAIL | speculative-result:speculative-2:FAIL | speculative-winner:speculative-1 | incremental-qa-cache:HIT | workload:prep-ms:7779 | workload:cycle-ms:240041 | exploration-reuse:00dfef3d9f76ea72b17021fc | speculative-winner:speculative-2 | incremental-qa-hash:1d509608685cf55dbd31d1c1932276d650122270526c029f94b742775c0e27dc | workload:prep-ms:11813 | workload:cycle-ms:268005 | exploration-reuse:60ec80ecca8be10eb6bcf44a | workload:prep-ms:9413 | workload:cycle-ms:161228 | exploration-reuse:df51ebfc16e268c6630a30d1 | workload:prep-ms:5925 | workload:cycle-ms:269386 | exploration-reuse:1d4e54a87375c4cfe842294f | workload:prep-ms:7371 | workload:cycle-ms:291113 | exploration-reuse:75aaabd77bc5943983aef785 | incremental-qa-hash:98b67d8a23e60b4160a176e26d4895009c0638d376d5d93752ad02187b394463 | workload:prep-ms:6711 | workload:cycle-ms:297377 | exploration-reuse:98fcdc3247f5b3c684fae945 | workload:prep-ms:5721 | workload:cycle-ms:296553 | exploration-reuse:220466cb070b0e00f62ee5b0 | workload:prep-ms:6364 | workload:cycle-ms:310215 | exploration-reuse:6cf96eb5c4bae289b4d0413f | workload:changed-lines:9 | workload:prep-ms:7037 | workload:cycle-ms:304543 | exploration-reuse:113e18507c0d05992fb3fcb6 | repair-mode:CAUSAL_REGENERATION_GENERATION_9 | workload:prep-ms:5634 | workload:cycle-ms:296796 | exploration-reuse:5700702bfce2da1784936ede | workload:prep-ms:12257 | workload:cycle-ms:234568 | exploration-reuse:34e7e15ca672ec38f857183d | incremental-qa-hash:e105ff07119727408a759278d7a45e5ae285f631aa9a5f2054a0a176af6cd179 | workload:prep-ms:5544 | workload:cycle-ms:296451 | exploration-reuse:81e402732ba83962f8356c79 | repair-mode:CAUSAL_REGENERATION_GENERATION_10 | workload:prep-ms:6146 | workload:cycle-ms:291985 | exploration-reuse:68ada0d7fa13e6e83d221513 | workload:prep-ms:5068 | workload:cycle-ms:296816 | exploration-reuse:c93b4c536cef652fde40440d | workload:prep-ms:10677 | workload:cycle-ms:189216 | exploration-reuse:3f05e59d58d528a7f15b19fb | workload:prep-ms:6100 | workload:cycle-ms:296781 | exploration-reuse:a91c3a78f1c19aa09ded2c32 | workload:prep-ms:11503 | workload:cycle-ms:187687 | exploration-reuse:3aa1dab146c6622307a5ce86 | repair-mode:CAUSAL_REGENERATION_GENERATION_11 | workload:prep-ms:6584 | workload:cycle-ms:297647 | exploration-reuse:7016fe1d6bed150ba44dd9f2 | workload:prep-ms:7089 | workload:cycle-ms:278607 | exploration-reuse:f370225c55ed43b89e9a93f0 | workload:prep-ms:6322 | workload:cycle-ms:296217 | exploration-reuse:7a836d621d17ac90312bbf4d | repair-mode:CAUSAL_REGENERATION_GENERATION_12 | workload:prep-ms:10973 | workload:cycle-ms:299150 | exploration-reuse:f6d6dc91884cc90d5341730c | workload:prep-ms:7315 | workload:cycle-ms:309087 | workload:prep-ms:9981 | workload:cycle-ms:302660 | workload:prep-ms:11856 | workload:cycle-ms:193562 | exploration-reuse:c34730667f09f306ad5b4315 | workload:prep-ms:5341 | workload:cycle-ms:31319 | exploration-reuse:74f1c4224598065e2e73c951 | workload:prep-ms:7311 | workload:cycle-ms:39180 | workload:prep-ms:6393 | workload:cycle-ms:32775 | workload:prep-ms:12596 | workload:cycle-ms:306081 | exploration-reuse:d84d59e26e05a6696f0dc7cb; lastOutcome=FAIL\n\n[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREATES_INTERVAL|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T04:29:39.748Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.\n\n[CENTRAL ROADMAP WORK CONTRACT]\npolicy=company-learning/platform-release-roadmap.json; version=203; sha256=b9dcca8a6e1fd4d446cd66d00477aaede0b5de4b830490534fdbe075d5f2f629\nlive-main-ref=origin/main; refresh-before-check=YES\nwork-key=amusement-tycoon-web-runtime-repair-v1; next-gate=WEB_REPAIR; dedupe-key=369e1f2f75b7426bac70756f6e24ea160d70527e9eb5845cbae069b66e996a8d\nexact-writable-files=web-games/amusement-tycoon/index.html\npreserve=GAME_IDENTITY, SAVE_KEY_AND_SAVE_MEANING, CORE_LOOP, PROGRESSION, MOBILE_INPUT, EXISTING_VALID_FEATURES\nforbidden=WRAPPER_OR_SHADOW_PIPELINE, UNRELATED_SYSTEM_MUTATION, SAVE_RESET_WITHOUT_MIGRATION, FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH, RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT\nfailure-stage=WEB_REPAIR; last-passed-stage=UNKNOWN; blocker=NONE\nfailure-evidence=web-stage:WEB_REPAIR | company-runtime-state:WEB_VIBE_REPAIR_REQUIRED | recovery-exact-stage:WEB_REPAIR | repair-mode:CAUSAL_REGENERATION_GENERATION_1 | company-runtime-failure-evidence:refreshed | repair-mode:CAUSAL_REGENERATION_GENERATION_2 | system-steward:stale-machine-state-blocker-recovered | repair-mode:CAUSAL_REGENERATION_GENERATION_3 | repair-mode:CAUSAL_REGENERATION_GENERATION_4 | repair-mode:CAUSAL_REGENERATION_GENERATION_5 | repair-mode:CAUSAL_REGENERATION_GENERATION_6 | repair-mode:CAUSAL_REGENERATION_GENERATION_7 | repair-mode:CAUSAL_REGENERATION_GENERATION_8 | vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-primary-35454893941-1 | presentation-static-qa-status:NOT_REQUIRED | package-review:all-required-roles-pass\nRead and modify the existing responsible system directly. Do not create a wrapper, shadow pipeline, validation-only behavior, or unrelated rewrite.\nPreserve already-passed stages. Repair the exact failure stage, then revalidate it immediately.\nThis contract does not grant worker creation, queue mutation, wave reorder, lock/policy mutation, or automatic learning/promotion authority.\nThe central roadmap fingerprint must still match before source generation and again before candidate output is written.\n\n[NEURAL DIAGNOSIS SHADOW MODE]\nresponsibility=VALIDATOR confidence=0.17\nbottleneck-score=100 advisory-only=YES\nfailure-stage=WEB_REPAIR\ntop-hypothesis=validator-classification-or-contract confidence=0.92\nThis diagnosis is evidence guidance only. Existing task scope, central policy, locks, QA, supervision, and wave scheduling remain authoritative.\nDo not patch a validator problem by faking gameplay, and do not hide a real game defect by weakening validation.\n\n[CANDIDATE STRATEGY ROLE]\nvariant=speculative-1\nstrategy=DEPENDENCY_SAFE_COHERENT_PATCH\nPatch the primary responsibility plus only the directly required dependent symbols. Prefer a coherent dependency-safe change over an ultra-local patch that leaves the behavior chain broken.\nThis role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: ADVISORY. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.\n\n[VERIFIED EXPERIENCE MEMORY - advisory only]\n다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.\n- 경험 capability_ctrace_0ce73fa4ec23024bd474ad30; 결과=PASS; 문제=[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMP; 검증변경=strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant speculative-1 | attempts 2 | context PRIMARY_SYMBOL_WINDOWS | changed-files 1; 재사용=CAPABILITY:CODING_STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH | CAPABILITY:RESPONSIBILITY_LOCALIZATION:PLACEMENT+PRESENTATION+WORLD | CAPABILITY:CONTEXT_SELECTION:PRIMARY_SYMBOL_WINDOWS | CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION | CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND | CAPABILITY_DO\n- 경험 capability_ctrace_7c263aebec46d449821c74a0; 결과=FAIL; 문제=SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT; 검증변경=strategy CAUSAL_TRACE_CROSSCHECK | variant speculative-2 | attempts 0 | changed-files 0; 검증실패원인=SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT; 회피=CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT | CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:MALFORMED_OUTPUT\n- 경험 capability_ctrace_a0534f92f8ff6021da614742; 결과=FAIL; 문제=SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT; 검증변경=strategy PRIMARY_RESPONSIBILITY_MINIMAL | variant primary | attempts 0 | changed-files 0; 검증실패원인=SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT; 회피=CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT | CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:MALFORMED_OUTPUT\n- 경험 exp_4odofx; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-ta; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:verified-play-observation:restart | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:turn\n- 경험 exp_pg739o; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:difficulty-selection | GAME_STUDY:study-tag:turn-feedback | GAME_STUDY:study-tag:player-action | GA\n\n[VERIFIED CAPABILITY MEMORY - advisory only]\nThese are previously verified coding capability lessons. Use them only when applicable to the current responsibility and evidence.\nThey MUST NOT expand writable scope, bypass QA/security/runtime gates, copy raw unrelated source, or change protected gameplay/save semantics.\n- id=capability_ctrace_0ce73fa4ec23024bd474ad30; outcome=PASS; reuse=CAPABILITY:CODING_STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH | CAPABILITY:RESPONSIBILITY_LOCALIZATION:PLACEMENT+PRESENTATION+WORLD | CAPABILITY:CONTEXT_SELECTION:PRIMARY_SYMBOL_WINDOWS | CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION | CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND | CAPABILITY_DOMAIN:TOOL_ORCHESTRATION | CAPABILITY_DOMAIN:RESPONSIBILITY_LOCALIZATION | CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING | CAPAB; confidence=0.5000; relevance=29.00\n- id=capability_ctrace_7c263aebec46d449821c74a0; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT | CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:MALFORMED_OUTPUT; verifiedFailure=SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT; confidence=0.5000; relevance=21.50\n- id=capability_ctrace_a0534f92f8ff6021da614742; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT | CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:MALFORMED_OUTPUT; verifiedFailure=SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT; confidence=0.5000; relevance=21.50\n\n[VIBE VERIFIED LEARNING MOTOR]\n우선순위=same-game+same-failure > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.\n- current-failure-fingerprint=web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT\n- experience=capability_ctrace_0ce73fa4ec23024bd474ad30; game=amusement-tycoon; engine=web; relevance=82; reuse=CAPABILITY:CODING_STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH|CAPABILITY:RESPONSIBILITY_LOCALIZATION:PLACEMENT+PRESENTATION+WORLD|CAPABILITY:CONTEXT_SELECTION:PRIMARY_SYMBOL_WINDOWS|CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION|CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND; avoid=none\n- experience=exp_1oonbi8; game=external-memory-game; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference; avoid=none\n- experience=exp_4odofx; game=external-tictactoe; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:verified-play-observation:restart; avoid=none\n- experience=exp_pg739o; game=external-tictactoe; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference|GAME_STUDY:study-tag:difficulty-selection; avoid=none\n- experience=supervised_bug-defense_35476177742_revise; game=bug-defense; engine=web; relevance=42; reuse=none; avoid=Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics.|Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain.|Do not duplicate handler functions to inflate apparent mechanic coverage.|Do not fake spatial placement with counters or fixed positions; use real pointer/touch coordinates and entity positions.|Do not claim a complete run without reachable playing/win/loss states and retry flow.\n- experience=capability_ctrace_a0534f92f8ff6021da614742; game=seed-single-defense-strat-celestial-bastion; engine=web; relevance=42; reuse=none; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT|CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:MALFORMED_OUTPUT\n- experience=capability_ctrace_7c263aebec46d449821c74a0; game=seed-single-defense-strat-celestial-bastion; engine=web; relevance=42; reuse=none; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT|CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:MALFORMED_OUTPUT\n- experience=exp_i00mwv; game=external-roblox-potion-shop-demo; engine=roblox; relevance=22; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:economy|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:authorized-source-pattern:frame-loop; avoid=none\n- verified-code-pattern=pat_130jf9c; system=AI_INTENT; relevance=42; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1avbmmv; system=AI_INTENT; relevance=42; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1vgfuno; system=AI_INTENT; relevance=42; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_3f780w; system=AI_INTENT; relevance=42; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_9pwgix; system=AI_INTENT; relevance=42; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_m3ipio; system=AI_INTENT; relevance=42; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-practice-distilled=MOBILE_INPUT; confirmations=1; evidence=code-pattern:pat_14v79w7:3aa6a50ad14f3d0620d4b894660645b92137d708|code-pattern:pat_1lx9uhh:669aa231ae5291c89ab60eb528c4d357d5671c68|code-pattern:pat_1xg0er9:a2467c071d3fd3436fadefab7a3919c6e178d5f6\n- verified-practice-distilled=PROGRESSION; confirmations=1; evidence=experience:exp_rg6lvy:block-blast|game-study:external-memory-game:architecture:progression|game-study:external-roblox-potion-shop-demo:architecture:progression\n- mastery=CORE_LOOP:LV4 | STATE_MACHINE:LV4 | PROGRESSION:LV3 | MOBILE_INPUT:LV4 | DEBUGGING:LV4 | AUDIO_FEEL:LV1 | QUEST_DESIGN:LV1 | WEB_RUNTIME:LV3\n\n[RESPONSIBILITY CONFIDENCE CALIBRATION] Prior verified HIGH-confidence work regressed often enough that raw HIGH must be treated as MEDIUM; perform extra read-only exploration before writing.\n\n[VIBE ASSET PRODUCTION - implementation owner decision]\nVibe2/Vibe3가 게임 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 직접 선택한다.\n선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.\nWeb에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.\n이모지/단순 도형/검증용 임시 그래픽을 최종 에셋으로 사용하지 않는다.\nPNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.\n에셋 이유로 게임 규칙, 세이브 의미, 진행, 경제 수치를 바꾸지 않는다.\npreset=set-e-ui-minimal; reuseCandidateTypes=9; directAuthorableTypes=9; missingTypes=none\n- type=character; reuse=oga-adventurer-slime|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=enemy; reuse=oga-animated-monsters|oga-adventurer-slime|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=boss; reuse=oga-animated-monsters|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=background; reuse=survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=item; reuse=survival2-atlas|survival2-mushroom; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=prop; reuse=survival2-atlas|survival2-tree|survival2-rock|survival2-plant; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=effect; reuse=survival2-atlas|oga-basic-pixel-spells; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=ui; reuse=survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=animation; reuse=oga-animated-monsters|oga-adventurer-slime|oga-basic-pixel-spells|oga-unity-slime-12; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST",
+  "generatedAt": "2026-09-20T04:43:54.683Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-1-35489583055-1",
+  "candidateManifestPath": ".vibe2/candidates/amusement-tycoon-web-runtime-repair-v1/manifest.json",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "tests": [],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "amusement-tycoon-web-runtime-repair-v1",
+    "packageId": "amusement-tycoon-wp-sqheg3",
+    "target": "web",
+    "sourceRoot": "web-games/amusement-tycoon",
+    "baseMainSha": "a805dd219184f35bb2ea88c73463e7aae1366803",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [
+      "save",
+      "combat-number",
+      "storage"
+    ],
+    "diagnosticEvidence": [],
+    "existingWebAssessment": {
+      "version": 1,
+      "strategy": "KEEP_AND_CONTINUE",
+      "confidence": "HIGH",
+      "reasons": [
+        "STRONG_EXISTING_GAMEPLAY",
+        "APPROVED_SCOPE_MOSTLY_REPRESENTED",
+        "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+      ],
+      "preserveExistingSource": true,
+      "fullRewriteAllowed": false,
+      "evidence": {
+        "sourceBytes": 37228,
+        "sourceSha256": "402966e9e2d2f6ce926d3019925890f6db8a415e512260df3fe06cdadc0fa329",
+        "validationScore": 0,
+        "approvedDesign": false,
+        "gameplaySignalCount": 8,
+        "gameplaySignals": {
+          "input": true,
+          "runtimeLoop": true,
+          "mutableState": true,
+          "gameplayOutcome": false,
+          "progression": true,
+          "combat": false,
+          "spatial": true,
+          "persistence": true,
+          "mobile": true,
+          "audio": true
+        },
+        "prototypeMarkerCount": 0,
+        "approvedScopeRequiredCount": 0,
+        "approvedScopeBoundCount": 0,
+        "approvedScopeSemanticCount": 0,
+        "approvedScopeCoveragePct": 100
+      },
+      "gameId": "amusement-tycoon",
+      "sourceRoot": "web-games/amusement-tycoon",
+      "sourcePath": "web-games/amusement-tycoon/index.html",
+      "designBaselinePath": null
+    },
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "402966e9e2d2f6ce",
+        "bytes": 37228
+      }
+    ],
+    "editContract": {
+      "version": 1,
+      "mode": "COMPILED_EDIT_CONTRACT",
+      "strategyHint": "CAUSAL_TRACE_FIRST",
+      "responsibilityConfidence": "MEDIUM",
+      "rawResponsibilityConfidence": "HIGH",
+      "responsibilityCalibration": {
+        "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+        "applied": true,
+        "extraReadOnlyExploration": true,
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "regressionHotspotRisk": {
+        "riskLevel": "LOW",
+        "matched": [
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "addTrash",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "chooseTarget",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "serviceComplete",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "createBuildingVisual",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYSTEM",
+            "name": "PLACEMENT",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYSTEM",
+            "name": "PRESENTATION",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "amusement-tycoon",
+            "target": "web",
+            "kind": "SYSTEM",
+            "name": "WORLD",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 4,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_160c1t9",
+            "lastUpdatedAt": "2026-09-20T01:31:37.294Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          }
+        ],
+        "focusedChecksAdded": [
+          "HOTSPOT_RECHECK:SYMBOL:addTrash",
+          "HOTSPOT_RECHECK:SYMBOL:chooseTarget",
+          "HOTSPOT_RECHECK:SYMBOL:serviceComplete",
+          "HOTSPOT_RECHECK:SYMBOL:createBuildingVisual",
+          "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+          "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+          "HOTSPOT_RECHECK:SYSTEM:WORLD",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+        ],
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "primaryTargets": [
+        "createBuildingVisual",
+        "chooseTarget",
+        "serviceComplete",
+        "addTrash",
+        "updateGuests"
+      ],
+      "allowedResponsibleFiles": [
+        "index.html"
+      ],
+      "allowedDependentSymbolsOrSystems": [
+        "worldPos",
+        "box",
+        "cyl",
+        "sphere",
+        "mat",
+        "registerObject",
+        "rebuildWorldFromState",
+        "updateGuests",
+        "place",
+        "buildingConnected",
+        "serviceComplete",
+        "getEntryKeys",
+        "routeToBuilding",
+        "assignTarget",
+        "currentSatisfaction",
+        "addTrash",
+        "WORLD",
+        "PLACEMENT",
+        "PRESENTATION",
+        "CORE_STATE",
+        "INTERACTION",
+        "AI",
+        "SAVE",
+        "COMBAT"
+      ],
+      "primarySystems": [
+        "PLACEMENT",
+        "PRESENTATION",
+        "WORLD",
+        "INTERACTION",
+        "AI",
+        "GOAL_STATE",
+        "CORE_STATE",
+        "SAVE",
+        "COMBAT",
+        "ECONOMY",
+        "PROGRESSION",
+        "INPUT"
+      ],
+      "dependentSystems": [
+        "INPUT",
+        "GOAL_STATE",
+        "SAVE",
+        "PRESENTATION",
+        "PLAYER",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "PLACEMENT",
+        "AI",
+        "PROGRESSION",
+        "ECONOMY"
+      ],
+      "directDependentSystems": [
+        "WORLD",
+        "PLACEMENT",
+        "PRESENTATION",
+        "CORE_STATE",
+        "INTERACTION",
+        "AI",
+        "SAVE",
+        "COMBAT",
+        "ECONOMY",
+        "PROGRESSION",
+        "INPUT",
+        "GOAL_STATE"
+      ],
+      "readOnlyImpactSystems": [
+        "INPUT",
+        "GOAL_STATE",
+        "SAVE",
+        "PRESENTATION",
+        "PLAYER",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "PLACEMENT",
+        "AI",
+        "PROGRESSION",
+        "ECONOMY"
+      ],
+      "ownedState": [
+        "world",
+        "baseColor",
+        "fr",
+        "def",
+        "q",
+        "pm",
+        "roof",
+        "sign",
+        "bm",
+        "lid",
+        "tr",
+        "door",
+        "cr",
+        "broom",
+        "aw",
+        "icon",
+        "base",
+        "pole",
+        "spin",
+        "i",
+        "a",
+        "stand",
+        "frame",
+        "frame2"
+      ],
+      "readState": [
+        "BUILD_DEFS",
+        "world",
+        "visualById",
+        "baseColor",
+        "fr",
+        "def",
+        "q",
+        "pm",
+        "roof",
+        "sign",
+        "bm",
+        "lid",
+        "tr",
+        "door",
+        "cr",
+        "broom",
+        "aw",
+        "icon",
+        "base",
+        "pole",
+        "spin",
+        "i",
+        "a",
+        "stand"
+      ],
+      "preserveSemantics": [
+        "EXISTING_WORKING_BEHAVIOR",
+        "APPROVED_GAMEPLAY_VALUES",
+        "SAVE_MEANING",
+        "PROTECTED_SIGNAL:save",
+        "PROTECTED_SIGNAL:combat-number",
+        "PROTECTED_SIGNAL:storage"
+      ],
+      "failureOrRequirementCausalChain": [
+        "FAILURE_EVIDENCE",
+        "RESPONSIBLE_FUNCTION:createBuildingVisual",
+        "STATE_WRITE:world",
+        "STATE_WRITE:baseColor",
+        "STATE_WRITE:fr",
+        "STATE_WRITE:def",
+        "DOWNSTREAM:worldPos",
+        "DOWNSTREAM:box",
+        "DOWNSTREAM:cyl",
+        "DOWNSTREAM:sphere",
+        "RESPONSIBLE_FUNCTION:chooseTarget",
+        "STATE_WRITE:i",
+        "STATE_WRITE:r",
+        "STATE_WRITE:d",
+        "STATE_WRITE:candidates",
+        "DOWNSTREAM:buildingConnected",
+        "DOWNSTREAM:getEntryKeys",
+        "DOWNSTREAM:routeToBuilding",
+        "RESPONSIBLE_FUNCTION:serviceComplete",
+        "STATE_WRITE:state",
+        "STATE_WRITE:g",
+        "STATE_WRITE:parkSat",
+        "DOWNSTREAM:currentSatisfaction",
+        "DOWNSTREAM:addTrash",
+        "RESPONSIBLE_FUNCTION:addTrash",
+        "STATE_WRITE:m",
+        "STATE_WRITE:a",
+        "INPUT_OR_EVENT_ENTRY",
+        "RESPONSIBLE_FUNCTION:updateGuests",
+        "STATE_WRITE:s",
+        "STATE_WRITE:camera",
+        "STATE_WRITE:cameraAngle"
+      ],
+      "requiredObservableResult": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREATES_INTERVAL|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T04:29:39.748Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "semanticDiffBudget": {
+        "allowedSystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "preferredPrimarySymbols": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "maxSystemCount": 12,
+        "readOnlyImpactSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "impactPredictionDoesNotGrantWriteAuthority": true,
+        "unrelatedSystemMutationForbidden": true,
+        "saveKeysMustRemainCompatible": []
+      },
+      "requiredFocusedChecks": [
+        "OWNER_STATE_INVARIANTS",
+        "MICRO_CORE_STATE",
+        "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+        "MICRO_INPUT",
+        "MICRO_PRESENTATION",
+        "MICRO_WORLD",
+        "MICRO_COMBAT",
+        "MICRO_AI",
+        "MICRO_INTERACTION",
+        "MICRO_ECONOMY",
+        "MICRO_PROGRESSION",
+        "MICRO_PLACEMENT",
+        "MICRO_SAVE",
+        "MICRO_GOAL_STATE",
+        "HOTSPOT_RECHECK:SYMBOL:addTrash",
+        "HOTSPOT_RECHECK:SYMBOL:chooseTarget",
+        "HOTSPOT_RECHECK:SYMBOL:serviceComplete",
+        "HOTSPOT_RECHECK:SYMBOL:createBuildingVisual",
+        "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+        "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+        "HOTSPOT_RECHECK:SYSTEM:WORLD"
+      ],
+      "causalReplay": {
+        "version": 2,
+        "required": true,
+        "prePatchReproduced": false,
+        "nodeTestTargets": [],
+        "executable": false,
+        "mode": "PLAN_ONLY",
+        "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "diagnosticType": null,
+        "diagnosticFile": null,
+        "verifiedResponsibleSystem": null,
+        "diagnosticVerifier": null,
+        "identicalOrEquivalentInputStateRequired": true,
+        "canonicalQaStillRequired": true,
+        "sourceWrite": false,
+        "authorityExpanded": false
+      },
+      "patchRecipe": {
+        "version": 1,
+        "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "verifiedMemoryIds": [],
+        "verifiedMemoryCount": 0,
+        "reusePatterns": [],
+        "avoidPatterns": [],
+        "steps": [
+          "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+          "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+          "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+          "VERIFY_OWNED_STATE_CHANGE",
+          "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+          "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+          "VERIFY_PRESERVE_SEMANTICS",
+          "RUN_COMPILED_FOCUSED_CHECKS"
+        ],
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "dependentSymbolsOrSystems": [
+          "worldPos",
+          "box",
+          "cyl",
+          "sphere",
+          "mat",
+          "registerObject",
+          "rebuildWorldFromState",
+          "updateGuests",
+          "place",
+          "buildingConnected",
+          "serviceComplete",
+          "getEntryKeys",
+          "routeToBuilding",
+          "assignTarget",
+          "currentSatisfaction",
+          "addTrash",
+          "WORLD",
+          "PLACEMENT",
+          "PRESENTATION",
+          "CORE_STATE",
+          "INTERACTION",
+          "AI",
+          "SAVE",
+          "COMBAT"
+        ],
+        "ownedState": [
+          "world",
+          "baseColor",
+          "fr",
+          "def",
+          "q",
+          "pm",
+          "roof",
+          "sign",
+          "bm",
+          "lid",
+          "tr",
+          "door",
+          "cr",
+          "broom",
+          "aw",
+          "icon",
+          "base",
+          "pole",
+          "spin",
+          "i",
+          "a",
+          "stand",
+          "frame",
+          "frame2"
+        ],
+        "focusedChecks": [
+          "OWNER_STATE_INVARIANTS",
+          "MICRO_CORE_STATE",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+          "MICRO_INPUT",
+          "MICRO_PRESENTATION",
+          "MICRO_WORLD",
+          "MICRO_COMBAT",
+          "MICRO_AI",
+          "MICRO_INTERACTION",
+          "MICRO_ECONOMY",
+          "MICRO_PROGRESSION",
+          "MICRO_PLACEMENT",
+          "MICRO_SAVE",
+          "MICRO_GOAL_STATE",
+          "HOTSPOT_RECHECK:SYMBOL:addTrash",
+          "HOTSPOT_RECHECK:SYMBOL:chooseTarget",
+          "HOTSPOT_RECHECK:SYMBOL:serviceComplete",
+          "HOTSPOT_RECHECK:SYMBOL:createBuildingVisual",
+          "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+          "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+          "HOTSPOT_RECHECK:SYSTEM:WORLD"
+        ],
+        "protectedSemantics": [
+          "EXISTING_WORKING_BEHAVIOR",
+          "APPROVED_GAMEPLAY_VALUES",
+          "SAVE_MEANING",
+          "PROTECTED_SIGNAL:save",
+          "PROTECTED_SIGNAL:combat-number",
+          "PROTECTED_SIGNAL:storage"
+        ],
+        "verifiedMemoryOnly": true,
+        "scopeExpansionAllowed": false,
+        "qaBypassAllowed": false,
+        "authorityExpanded": false
+      },
+      "codingArchitecture": {
+        "developmentMode": "PRESERVE_PATCH",
+        "stateOwnershipSystems": [
+          "CORE_STATE",
+          "INPUT",
+          "PRESENTATION",
+          "WORLD",
+          "PLAYER",
+          "COMBAT",
+          "AI",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "PLACEMENT",
+          "SAVE",
+          "GOAL_STATE"
+        ],
+        "apiNames": [
+          "transitionRunState(next,reason)",
+          "submitPlayerIntent(intent)",
+          "queryWorld(position,action)",
+          "applyPlayerDelta(delta,reason)",
+          "resolveCombatAction(action)",
+          "advanceAgentIntent(agentId,context)",
+          "resolveInteraction(targetId,action)",
+          "applyTransaction(transaction)",
+          "advanceObjective(event)",
+          "placeEntity(request)",
+          "saveOrRestore(command)",
+          "evaluateGoalState(context)",
+          "renderFromState(snapshot)"
+        ],
+        "invariantIds": [
+          "STATE_OWNER_ONLY_WRITE",
+          "NO_DUPLICATE_CAUSAL_REWARD",
+          "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+          "GOAL_STATE_EXCLUSIVE",
+          "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+          "INPUT_TO_STATE_CAUSALITY",
+          "SAVE_SCHEMA_VERSIONED",
+          "PLAYER_VITAL_BOUNDS",
+          "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+          "PLACEMENT_OCCUPANCY_CONSISTENT",
+          "PROGRESSION_REWARD_IDEMPOTENT"
+        ],
+        "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+      },
+      "architectureSnapshot": {
+        "version": 1,
+        "nodeCount": 53,
+        "edgeCount": 127,
+        "maxFunctionBodyBytes": 9736,
+        "maxCallsPerFunction": 33,
+        "maxCalledByPerFunction": 10,
+        "maxStateWritesPerFunction": 50,
+        "maxSystemsPerFunction": 12,
+        "multiWriterStateCount": 42,
+        "stateWriterLinkCount": 231,
+        "multiOwnerStorageKeyCount": 0,
+        "storageOwnerLinkCount": 0,
+        "timerFunctionCount": 5,
+        "eventBindingCount": 5,
+        "largeFunctionCount": 1,
+        "broadSystemFunctionCount": 9
+      },
+      "responsibilityGraph": {
+        "nodeCount": 53,
+        "relevantNodes": [
+          {
+            "name": "mat",
+            "systems": [],
+            "calls": [],
+            "calledBy": [
+              "box",
+              "cyl",
+              "sphere",
+              "createBuildingVisual"
+            ],
+            "stateReads": [
+              "c"
+            ],
+            "stateWrites": [],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "box",
+            "systems": [],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "burger",
+              "createBuildingVisual",
+              "addTrash"
+            ],
+            "stateReads": [
+              "m",
+              "c",
+              "d"
+            ],
+            "stateWrites": [
+              "m"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "cyl",
+            "systems": [],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "createBuildingVisual",
+              "makePerson"
+            ],
+            "stateReads": [
+              "m",
+              "c"
+            ],
+            "stateWrites": [
+              "m"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "sphere",
+            "systems": [],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "createBuildingVisual",
+              "makePerson"
+            ],
+            "stateReads": [
+              "c",
+              "r"
+            ],
+            "stateWrites": [],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "worldPos",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [],
+            "calledBy": [
+              "createBuildingVisual",
+              "syncCleanerVisuals",
+              "addTrash",
+              "spawnGuest",
+              "pathPoint",
+              "updateGuests",
+              "cleanTick"
+            ],
+            "stateReads": [
+              "gx"
+            ],
+            "stateWrites": [],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "registerObject",
+            "systems": [
+              "PLACEMENT",
+              "PRESENTATION"
+            ],
+            "calls": [],
+            "calledBy": [
+              "createBuildingVisual"
+            ],
+            "stateReads": [
+              "o"
+            ],
+            "stateWrites": [],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "createBuildingVisual",
+            "systems": [
+              "PLACEMENT",
+              "PRESENTATION",
+              "WORLD",
+              "INTERACTION",
+              "AI",
+              "GOAL_STATE",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "worldPos",
+              "box",
+              "cyl",
+              "sphere",
+              "mat",
+              "registerObject"
+            ],
+            "calledBy": [
+              "rebuildWorldFromState",
+              "updateGuests",
+              "place"
+            ],
+            "stateReads": [
+              "BUILD_DEFS",
+              "world",
+              "visualById",
+              "baseColor",
+              "fr",
+              "def",
+              "q",
+              "pm",
+              "roof",
+              "sign",
+              "bm",
+              "lid",
+              "tr",
+              "door",
+              "cr",
+              "broom",
+              "aw",
+              "icon",
+              "base",
+              "pole",
+              "spin",
+              "i",
+              "a",
+              "stand",
+              "frame",
+              "frame2",
+              "swing",
+              "boat",
+              "arena",
+              "rail",
+              "rail2",
+              "spin2",
+              "j",
+              "car",
+              "baseF",
+              "support1",
+              "support2",
+              "wheel",
+              "ring",
+              "k",
+              "aa",
+              "baseC",
+              "rail1",
+              "turn1",
+              "turn2",
+              "posts",
+              "pp",
+              "carC",
+              "g",
+              "seeds",
+              "b",
+              "p",
+              "x",
+              "gx"
+            ],
+            "stateWrites": [
+              "world",
+              "baseColor",
+              "fr",
+              "def",
+              "q",
+              "pm",
+              "roof",
+              "sign",
+              "bm",
+              "lid",
+              "tr",
+              "door",
+              "cr",
+              "broom",
+              "aw",
+              "icon",
+              "base",
+              "pole",
+              "spin",
+              "i",
+              "a",
+              "stand",
+              "frame",
+              "frame2",
+              "swing",
+              "boat",
+              "arena",
+              "rail",
+              "rail2",
+              "spin2",
+              "j",
+              "car",
+              "baseF",
+              "support1",
+              "support2",
+              "wheel",
+              "ring",
+              "k",
+              "aa",
+              "baseC",
+              "rail1",
+              "turn1",
+              "turn2",
+              "posts",
+              "pp",
+              "carC",
+              "g",
+              "b",
+              "p",
+              "x"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "rebuildWorldFromState",
+            "systems": [
+              "PLACEMENT",
+              "WORLD",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "key",
+              "createBuildingVisual",
+              "syncCleanerVisuals"
+            ],
+            "calledBy": [],
+            "stateReads": [
+              "state",
+              "world",
+              "visualById",
+              "b",
+              "gx"
+            ],
+            "stateWrites": [
+              "visualById",
+              "b"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "buildingConnected",
+            "systems": [
+              "PLACEMENT",
+              "PRESENTATION",
+              "WORLD"
+            ],
+            "calls": [
+              "connectedPathKeys",
+              "adjacentCells",
+              "key"
+            ],
+            "calledBy": [
+              "renderInfo",
+              "addTrash",
+              "chooseTarget",
+              "spawnGuest"
+            ],
+            "stateReads": [
+              "connected",
+              "b",
+              "p",
+              "gx"
+            ],
+            "stateWrites": [
+              "connected",
+              "b"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "getEntryKeys",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "connectedPathKeys",
+              "adjacentCells",
+              "key"
+            ],
+            "calledBy": [
+              "routeToBuilding",
+              "chooseTarget",
+              "updateGuests"
+            ],
+            "stateReads": [
+              "k",
+              "connected",
+              "b",
+              "p",
+              "gx"
+            ],
+            "stateWrites": [
+              "connected"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "routeToBuilding",
+            "systems": [
+              "PLACEMENT",
+              "WORLD",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "getEntryKeys",
+              "findPath"
+            ],
+            "calledBy": [
+              "chooseTarget"
+            ],
+            "stateReads": [
+              "entries",
+              "r",
+              "b"
+            ],
+            "stateWrites": [
+              "entries",
+              "r"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addTrash",
+            "systems": [
+              "PLACEMENT",
+              "WORLD",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "buildingConnected",
+              "worldPos",
+              "box"
+            ],
+            "calledBy": [
+              "serviceComplete"
+            ],
+            "stateReads": [
+              "state",
+              "world",
+              "m",
+              "i",
+              "a",
+              "b",
+              "trash",
+              "bit",
+              "mesh",
+              "p",
+              "x"
+            ],
+            "stateWrites": [
+              "world",
+              "m",
+              "i",
+              "a",
+              "b",
+              "trash",
+              "bit",
+              "p"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "currentSatisfaction",
+            "systems": [
+              "CORE_STATE"
+            ],
+            "calls": [],
+            "calledBy": [
+              "serviceComplete",
+              "updateGuests",
+              "updateHud",
+              "loop"
+            ],
+            "stateReads": [
+              "state",
+              "g",
+              "trash",
+              "guests",
+              "sum",
+              "sat"
+            ],
+            "stateWrites": [
+              "sum"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "chooseTarget",
+            "systems": [
+              "INTERACTION",
+              "PLACEMENT",
+              "WORLD",
+              "AI",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "buildingConnected",
+              "getEntryKeys",
+              "routeToBuilding"
+            ],
+            "calledBy": [
+              "assignTarget"
+            ],
+            "stateReads": [
+              "BUILD_DEFS",
+              "state",
+              "s",
+              "i",
+              "g",
+              "r",
+              "d",
+              "b",
+              "candidates",
+              "weighted",
+              "rt",
+              "route",
+              "total",
+              "x"
+            ],
+            "stateWrites": [
+              "i",
+              "r",
+              "d",
+              "candidates",
+              "weighted",
+              "rt",
+              "route",
+              "total"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "assignTarget",
+            "systems": [
+              "INTERACTION",
+              "WORLD",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "counterEntry",
+              "findPath",
+              "chooseTarget"
+            ],
+            "calledBy": [
+              "spawnGuest",
+              "updateGuests"
+            ],
+            "stateReads": [
+              "state",
+              "g",
+              "r",
+              "b",
+              "route",
+              "ce",
+              "choice",
+              "ce2"
+            ],
+            "stateWrites": [
+              "state",
+              "g",
+              "r",
+              "route",
+              "ce",
+              "choice",
+              "ce2"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "serviceComplete",
+            "systems": [
+              "PLACEMENT",
+              "WORLD",
+              "AI",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "currentSatisfaction",
+              "addTrash"
+            ],
+            "calledBy": [
+              "updateGuests"
+            ],
+            "stateReads": [
+              "BUILD_DEFS",
+              "state",
+              "g",
+              "d",
+              "b",
+              "parkSat",
+              "mult",
+              "earned",
+              "t",
+              "sat"
+            ],
+            "stateWrites": [
+              "state",
+              "g",
+              "d",
+              "parkSat",
+              "mult",
+              "earned",
+              "sat"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "updateGuests",
+            "systems": [
+              "CORE_STATE",
+              "SAVE",
+              "PLACEMENT",
+              "WORLD",
+              "INTERACTION",
+              "COMBAT",
+              "AI",
+              "ECONOMY",
+              "PROGRESSION",
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION"
+            ],
+            "calls": [
+              "pathPoint",
+              "despawnGuest",
+              "assignTarget",
+              "joinQueue",
+              "capacity",
+              "getEntryKeys",
+              "serviceComplete",
+              "cleanTick",
+              "removeTrashAt",
+              "worldPos",
+              "animateRides",
+              "updateHud",
+              "currentSatisfaction",
+              "isCounterBuilt",
+              "counterEntry",
+              "place",
+              "key",
+              "inside",
+              "toast",
+              "canPlacePath",
+              "hasAdjacentPath",
+              "createBuildingVisual",
+              "syncCleanerVisuals",
+              "save",
+              "renderBuildBar",
+              "canvasPick",
+              "renderInfo",
+              "initAudio",
+              "scheduleMusic",
+              "tone",
+              "updateCamera",
+              "loop",
+              "spawnGuest"
+            ],
+            "calledBy": [
+              "loop"
+            ],
+            "stateReads": [
+              "BUILD_DEFS",
+              "state",
+              "s",
+              "renderer",
+              "scene",
+              "camera",
+              "cameraAngle",
+              "dist",
+              "world",
+              "ground",
+              "m",
+              "visualById",
+              "i",
+              "a",
+              "pp",
+              "g",
+              "buildMode",
+              "d",
+              "b",
+              "trash",
+              "guests",
+              "rt",
+              "route",
+              "mesh",
+              "pk",
+              "dx",
+              "inv",
+              "cap",
+              "gid",
+              "wait",
+              "gg",
+              "ep",
+              "qg",
+              "t",
+              "p",
+              "phase",
+              "sat",
+              "title",
+              "raycaster",
+              "rect",
+              "hits",
+              "buildingHit",
+              "gh",
+              "x",
+              "gx",
+              "toastTimer",
+              "el",
+              "audioCtx",
+              "melody",
+              "bass",
+              "o",
+              "f",
+              "last",
+              "dt",
+              "interval"
+            ],
+            "stateWrites": [
+              "state",
+              "s",
+              "camera",
+              "cameraAngle",
+              "dist",
+              "i",
+              "a",
+              "pp",
+              "g",
+              "buildMode",
+              "d",
+              "b",
+              "rt",
+              "mesh",
+              "pk",
+              "dx",
+              "inv",
+              "cap",
+              "gid",
+              "wait",
+              "gg",
+              "ep",
+              "qg",
+              "t",
+              "p",
+              "phase",
+              "sat",
+              "title",
+              "raycaster",
+              "rect",
+              "hits",
+              "buildingHit",
+              "gh",
+              "x",
+              "gx",
+              "toastTimer",
+              "el",
+              "audioCtx",
+              "melody",
+              "bass",
+              "o",
+              "f",
+              "last",
+              "dt",
+              "interval"
+            ],
+            "storageKeys": [],
+            "events": [
+              "pointerdown",
+              "click",
+              "resize"
+            ]
+          },
+          {
+            "name": "place",
+            "systems": [
+              "PLACEMENT",
+              "SAVE",
+              "WORLD",
+              "ECONOMY",
+              "PROGRESSION",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "key",
+              "inside",
+              "toast",
+              "isCounterBuilt",
+              "canPlacePath",
+              "hasAdjacentPath",
+              "createBuildingVisual",
+              "syncCleanerVisuals",
+              "save",
+              "updateHud",
+              "renderBuildBar"
+            ],
+            "calledBy": [
+              "updateGuests"
+            ],
+            "stateReads": [
+              "BUILD_DEFS",
+              "state",
+              "buildMode",
+              "d",
+              "b",
+              "gx"
+            ],
+            "stateWrites": [
+              "state",
+              "buildMode",
+              "d",
+              "b"
+            ],
+            "storageKeys": [],
+            "events": []
+          }
+        ],
+        "relevantEdges": [
+          {
+            "from": "box",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "cyl",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "sphere",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "burger",
+            "to": "box",
+            "type": "CALL"
+          },
+          {
+            "from": "createBuildingVisual",
+            "to": "worldPos",
+            "type": "CALL"
+          },
+          {
+            "from": "createBuildingVisual",
+            "to": "box",
+            "type": "CALL"
+          },
+          {
+            "from": "createBuildingVisual",
+            "to": "cyl",
+            "type": "CALL"
+          },
+          {
+            "from": "createBuildingVisual",
+            "to": "sphere",
+            "type": "CALL"
+          },
+          {
+            "from": "createBuildingVisual",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "createBuildingVisual",
+            "to": "registerObject",
+            "type": "CALL"
+          },
+          {
+            "from": "rebuildWorldFromState",
+            "to": "key",
+            "type": "CALL"
+          },
+          {
+            "from": "rebuildWorldFromState",
+            "to": "createBuildingVisual",
+            "type": "CALL"
+          },
+          {
+            "from": "rebuildWorldFromState",
+            "to": "syncCleanerVisuals",
+            "type": "CALL"
+          },
+          {
+            "from": "makePerson",
+            "to": "cyl",
+            "type": "CALL"
+          },
+          {
+            "from": "makePerson",
+            "to": "sphere",
+            "type": "CALL"
+          },
+          {
+            "from": "syncCleanerVisuals",
+            "to": "worldPos",
+            "type": "CALL"
+          },
+          {
+            "from": "buildingConnected",
+            "to": "connectedPathKeys",
+            "type": "CALL"
+          },
+          {
+            "from": "buildingConnected",
+            "to": "adjacentCells",
+            "type": "CALL"
+          },
+          {
+            "from": "buildingConnected",
+            "to": "key",
+            "type": "CALL"
+          },
+          {
+            "from": "getEntryKeys",
+            "to": "connectedPathKeys",
+            "type": "CALL"
+          },
+          {
+            "from": "getEntryKeys",
+            "to": "adjacentCells",
+            "type": "CALL"
+          },
+          {
+            "from": "getEntryKeys",
+            "to": "key",
+            "type": "CALL"
+          },
+          {
+            "from": "routeToBuilding",
+            "to": "getEntryKeys",
+            "type": "CALL"
+          },
+          {
+            "from": "routeToBuilding",
+            "to": "findPath",
+            "type": "CALL"
+          },
+          {
+            "from": "renderInfo",
+            "to": "buildingConnected",
+            "type": "CALL"
+          },
+          {
+            "from": "addTrash",
+            "to": "buildingConnected",
+            "type": "CALL"
+          },
+          {
+            "from": "addTrash",
+            "to": "worldPos",
+            "type": "CALL"
+          },
+          {
+            "from": "addTrash",
+            "to": "box",
+            "type": "CALL"
+          },
+          {
+            "from": "chooseTarget",
+            "to": "buildingConnected",
+            "type": "CALL"
+          },
+          {
+            "from": "chooseTarget",
+            "to": "getEntryKeys",
+            "type": "CALL"
+          },
+          {
+            "from": "chooseTarget",
+            "to": "routeToBuilding",
+            "type": "CALL"
+          },
+          {
+            "from": "spawnGuest",
+            "to": "buildingConnected",
+            "type": "CALL"
+          },
+          {
+            "from": "spawnGuest",
+            "to": "worldPos",
+            "type": "CALL"
+          },
+          {
+            "from": "spawnGuest",
+            "to": "assignTarget",
+            "type": "CALL"
+          },
+          {
+            "from": "assignTarget",
+            "to": "counterEntry",
+            "type": "CALL"
+          },
+          {
+            "from": "assignTarget",
+            "to": "findPath",
+            "type": "CALL"
+          },
+          {
+            "from": "assignTarget",
+            "to": "chooseTarget",
+            "type": "CALL"
+          },
+          {
+            "from": "serviceComplete",
+            "to": "currentSatisfaction",
+            "type": "CALL"
+          },
+          {
+            "from": "serviceComplete",
+            "to": "addTrash",
+            "type": "CALL"
+          },
+          {
+            "from": "pathPoint",
+            "to": "worldPos",
+            "type": "CALL"
+          }
+        ]
+      },
+      "behaviorChains": [
+        {
+          "id": "CORE_ACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "REAL_INPUT",
+            "RESPONSIBLE_FUNCTION",
+            "OWNED_STATE_CHANGE",
+            "OBSERVABLE_GAME_RESULT"
+          ]
+        },
+        {
+          "id": "PLACEMENT_CHAIN",
+          "required": true,
+          "steps": [
+            "POSITION_SELECTION",
+            "COST_OR_VALIDATION",
+            "ENTITY_MATERIALIZED_AT_POSITION",
+            "WORLD_OR_COMBAT_EFFECT"
+          ]
+        },
+        {
+          "id": "INTERACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "TARGET_SELECTION_OR_APPROACH",
+            "REAL_INPUT",
+            "TARGET_STATE_CHANGE",
+            "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "COMBAT_CHAIN",
+          "required": true,
+          "steps": [
+            "ATTACK_INTENT",
+            "HIT_OR_REJECT_RESULT",
+            "HP_OR_COMBAT_STATE_CHANGE",
+            "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "PROGRESSION_CHAIN",
+          "required": true,
+          "steps": [
+            "OBJECTIVE_EVENT",
+            "PROGRESS_DELTA",
+            "REWARD_OR_UNLOCK",
+            "NEXT_GAMEPLAY_OPTION_CHANGED"
+          ]
+        },
+        {
+          "id": "STRATEGY_DIVERGENCE_CHAIN",
+          "required": true,
+          "steps": [
+            "CHOICE_A_AND_CHOICE_B",
+            "SAME_OR_EQUIVALENT_START_STATE",
+            "DIFFERENT_STATE_TRANSITIONS",
+            "DIFFERENT_OBSERVED_OUTCOME"
+          ]
+        }
+      ],
+      "seniorReview": {
+        "score": 10,
+        "hardBlockers": [
+          "SENIOR_REVIEW_REPEATED_LOOP_CREATES_INTERVAL"
+        ],
+        "issues": [
+          {
+            "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+            "severity": "WARN",
+            "detail": "createBuildingVisual:50"
+          },
+          {
+            "code": "GOD_FUNCTION_MULTI_SYSTEM_RESPONSIBILITY",
+            "severity": "WARN",
+            "detail": "updateGuests:9736:CORE_STATE,SAVE,PLACEMENT,WORLD,INTERACTION,COMBAT,AI,ECONOMY,PROGRESSION,INPUT,GOAL_STATE,PRESENTATION"
+          },
+          {
+            "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+            "severity": "WARN",
+            "detail": "updateGuests:45"
+          },
+          {
+            "code": "REPEATED_LOOP_CREATES_INTERVAL",
+            "severity": "HARD",
+            "detail": "updateGuests"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "state:load,renderInfo,assignTarget,joinQueue,serviceComplete,updateGuests,place"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "i:createBuildingVisual,syncCleanerVisuals,findPath,addTrash,chooseTarget,updateGuests,cleanTick"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "a:createBuildingVisual,connectedPathKeys,findPath,addTrash,pathPoint,updateGuests,animateRides"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "g:burger,createBuildingVisual,makePerson,spawnGuest,assignTarget,joinQueue,serviceComplete,updateGuests,animateRides,tone"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "d:renderBuildBar,capacity,renderInfo,chooseTarget,serviceComplete,updateGuests,place"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "b:createBuildingVisual,rebuildWorldFromState,syncCleanerVisuals,isCounterBuilt,counter,buildingConnected,renderInfo,addTrash,updateGuests,cleanTick,animateRides,place,scheduleMusic"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "p:createBuildingVisual,syncCleanerVisuals,addTrash,pathPoint,updateGuests,cleanTick"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "x:createBuildingVisual,findPath,renderInfo,updateGuests,canvasPick"
+          }
+        ]
+      },
+      "failureEvidence": [
+        "FAIL",
+        "web-stage:WEB_REPAIR",
+        "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+        "recovery-exact-stage:WEB_REPAIR",
+        "role-result:exploration:FAIL",
+        "role-result:implementation:FAIL",
+        "role-result:test:FAIL",
+        "role-result:performance:FAIL",
+        "shared-context-sync:MISSING",
+        "failure-cause:source-candidate-generation-failed",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "system-steward:failure-signature:source-candidate-generation-failed",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE",
+        "recovery-queue:recovery-7f578ec759bfde044675"
+      ],
+      "writableScopeExpansionAllowed": false,
+      "learningAuthorityExpanded": false
+    },
+    "reuseKey": "80647c8fb4164725a784946d",
+    "generatedAt": "2026-09-20T04:39:28.448Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codingMethod": {
+    "version": 2,
+    "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+    "compiledStrategyHint": "CAUSAL_TRACE_FIRST",
+    "candidateVariant": "speculative-1",
+    "generationAttemptBudget": 2,
+    "speculativeAttemptBudgetApplied": true,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "responsibilityConfidence": "MEDIUM",
+    "primaryTargets": [
+      "createBuildingVisual",
+      "chooseTarget",
+      "serviceComplete",
+      "addTrash",
+      "updateGuests"
+    ],
+    "primarySystems": [
+      "PLACEMENT",
+      "PRESENTATION",
+      "WORLD",
+      "INTERACTION",
+      "AI",
+      "GOAL_STATE",
+      "CORE_STATE",
+      "SAVE",
+      "COMBAT",
+      "ECONOMY",
+      "PROGRESSION",
+      "INPUT"
+    ],
+    "dependentSystems": [
+      "INPUT",
+      "GOAL_STATE",
+      "SAVE",
+      "PRESENTATION",
+      "PLAYER",
+      "WORLD",
+      "INTERACTION",
+      "COMBAT",
+      "PLACEMENT",
+      "AI",
+      "PROGRESSION",
+      "ECONOMY"
+    ],
+    "ownedState": [
+      "world",
+      "baseColor",
+      "fr",
+      "def",
+      "q",
+      "pm",
+      "roof",
+      "sign",
+      "bm",
+      "lid",
+      "tr",
+      "door",
+      "cr",
+      "broom",
+      "aw",
+      "icon",
+      "base",
+      "pole",
+      "spin",
+      "i",
+      "a",
+      "stand",
+      "frame",
+      "frame2"
+    ],
+    "semanticDiffBudget": {
+      "allowedSystems": [
+        "PLACEMENT",
+        "PRESENTATION",
+        "WORLD",
+        "INTERACTION",
+        "AI",
+        "GOAL_STATE",
+        "CORE_STATE",
+        "SAVE",
+        "COMBAT",
+        "ECONOMY",
+        "PROGRESSION",
+        "INPUT"
+      ],
+      "preferredPrimarySymbols": [
+        "createBuildingVisual",
+        "chooseTarget",
+        "serviceComplete",
+        "addTrash",
+        "updateGuests"
+      ],
+      "maxSystemCount": 12,
+      "readOnlyImpactSystems": [
+        "INPUT",
+        "GOAL_STATE",
+        "SAVE",
+        "PRESENTATION",
+        "PLAYER",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "PLACEMENT",
+        "AI",
+        "PROGRESSION",
+        "ECONOMY"
+      ],
+      "impactPredictionDoesNotGrantWriteAuthority": true,
+      "unrelatedSystemMutationForbidden": true,
+      "saveKeysMustRemainCompatible": []
+    },
+    "semanticDiffEnforcement": {
+      "version": 1,
+      "mode": "OBSERVE_ONLY",
+      "hardGate": false,
+      "pass": true,
+      "confidence": "MEDIUM",
+      "developmentMode": "PRESERVE_PATCH",
+      "markerCount": 50,
+      "editCount": 1,
+      "touchedSystems": [],
+      "allowedSystems": [
+        "PLACEMENT",
+        "PRESENTATION",
+        "WORLD",
+        "INTERACTION",
+        "AI",
+        "GOAL_STATE",
+        "CORE_STATE",
+        "SAVE",
+        "COMBAT",
+        "ECONOMY",
+        "PROGRESSION",
+        "INPUT"
+      ],
+      "unexpectedSystems": [],
+      "unprovenEditPaths": [],
+      "protectedSaveKeyCount": 0,
+      "saveKeyViolations": [],
+      "violations": [],
+      "ambiguousClassificationObserved": true,
+      "writableScopeExpansionAllowed": false,
+      "authorityExpanded": false
+    },
+    "causalReplay": {
+      "version": 2,
+      "required": true,
+      "prePatchReproduced": false,
+      "nodeTestTargets": [],
+      "executable": false,
+      "mode": "PLAN_ONLY",
+      "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+      "diagnosticType": null,
+      "diagnosticFile": null,
+      "verifiedResponsibleSystem": null,
+      "diagnosticVerifier": null,
+      "identicalOrEquivalentInputStateRequired": true,
+      "canonicalQaStillRequired": true,
+      "sourceWrite": false,
+      "authorityExpanded": false
+    },
+    "requiredFocusedChecks": [
+      "OWNER_STATE_INVARIANTS",
+      "MICRO_CORE_STATE",
+      "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+      "MICRO_INPUT",
+      "MICRO_PRESENTATION",
+      "MICRO_WORLD",
+      "MICRO_COMBAT",
+      "MICRO_AI",
+      "MICRO_INTERACTION",
+      "MICRO_ECONOMY",
+      "MICRO_PROGRESSION",
+      "MICRO_PLACEMENT",
+      "MICRO_SAVE",
+      "MICRO_GOAL_STATE",
+      "HOTSPOT_RECHECK:SYMBOL:addTrash",
+      "HOTSPOT_RECHECK:SYMBOL:chooseTarget",
+      "HOTSPOT_RECHECK:SYMBOL:serviceComplete",
+      "HOTSPOT_RECHECK:SYMBOL:createBuildingVisual",
+      "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+      "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+      "HOTSPOT_RECHECK:SYSTEM:WORLD"
+    ],
+    "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+    "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+    "verifiedFailureLocalMemoryCount": 0,
+    "verifiedFailureLocalMemoryIds": [],
+    "contextFiles": 2,
+    "contextBytes": 27638,
+    "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false,
+    "focusedSymbolCount": 16,
+    "exactSourceWindows": true,
+    "fullFileContextFallback": false,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "baseAttemptBudget": 2,
+    "effectiveAttemptBudget": 2,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "intermediateGrowthTotalBytes": 0,
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "generationAttempts": 2,
+    "generationRecoveryUsed": true,
+    "partialTimeoutRecovery": false,
+    "partialMalformedRecovery": false,
+    "streamedPartialEditRecovery": false,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": true,
+    "focusedReplaceStringRecovery": false,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedMinimalJsonContract": true,
+    "candidateProducedFirstAttempt": false,
+    "writableScopeExpansionAllowed": false,
+    "learningAuthorityExpanded": false
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "presentationQuality": {
+    "required": false,
+    "pass": null,
+    "authorityExpanded": false
+  },
+  "fullFileRewriteAllowed": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
