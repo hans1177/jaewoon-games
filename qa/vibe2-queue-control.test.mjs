@@ -14,6 +14,7 @@ import {
   releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
+  buildNeuralWorkerTransaction,
   recoverFixedFullWebTransportFailures,
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
@@ -411,6 +412,40 @@ test('spare adaptive worker slots are shared across high-risk tasks before a thi
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
 });
 
+test('neural worker sample is evaluated as one immutable atomic transaction', () => {
+  const row={
+    taskId:'atomic-neural',
+    reservationId:'atomic-run:1',
+    variant:'primary',
+    outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'MALFORMED_OUTPUT'},
+    roleResults:{exploration:'PASS',implementation:'FAIL',test:'FAIL',performance:'FAIL'},
+    neuralDiagnosis:{
+      mode:'PHASE1_SHADOW_ADVISORY',
+      responsibility:{system:'SOURCE_GENERATION',confidence:.91},
+      actionRecommendation:{failureStage:'WEB_REPAIR'},
+      bottleneck:{score:81}
+    },
+    evidence:['actions-run:atomic-run']
+  };
+  const tx=buildNeuralWorkerTransaction(row);
+  assert.equal(Object.isFrozen(tx),true);
+  assert.equal(Object.isFrozen(tx.evidence),true);
+  assert.equal(tx.sampleId,'atomic-neural|atomic-run:1|primary');
+  assert.equal(tx.feedback.mode,'PHASE1_SHADOW_FEEDBACK');
+  assert.equal(tx.critic.mode,'PHASE1_SHADOW_CRITIC');
+  assert.ok(tx.rootCause);
+  assert.equal(tx.eventRoute.mode,'PHASE2_SHADOW_EVENT_ROUTER');
+  const atomic=tx.evidence.filter(value=>value.startsWith('neural-atomic-transaction:'));
+  assert.equal(atomic.length,1);
+  const payload=JSON.parse(decodeURIComponent(atomic[0].slice('neural-atomic-transaction:'.length)));
+  assert.equal(payload.sampleId,tx.sampleId);
+  assert.equal(payload.feedback,'MATCH');
+  assert.equal(payload.critic,'PIPELINE_SUPPORTED');
+  assert.equal(payload.route,'REQUEST_EVIDENCE');
+});
+
 test('fan-in persists neural shadow calibration without granting learning or routing authority', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
   queue=add(queue,'neural-feedback','neural-feedback','web',{estimatedRisk:'high',speculativeEligible:true});
@@ -431,6 +466,8 @@ test('fan-in persists neural shadow calibration without granting learning or rou
     evidence:['actions-run:neural-feedback-test']
   }]);
   const task=merged.queue.tasks.find(row=>row.id==='neural-feedback');
+  const atomicMarkers=task.evidence.filter(value=>value.startsWith('neural-atomic-transaction:'));
+  assert.equal(atomicMarkers.length,1);
   const marker=task.evidence.find(value=>value.startsWith('neural-shadow-feedback:'));
   assert.ok(marker);
   const payload=JSON.parse(decodeURIComponent(marker.slice('neural-shadow-feedback:'.length)));
