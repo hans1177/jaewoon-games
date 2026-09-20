@@ -440,7 +440,7 @@ test('verified internal code patterns raise mastery without raw code',()=>{
 });
 
 
-test('duplicate completed practice collapses and the same drill advances to the next generation',()=>{
+test('duplicate completed practice collapses without starving untouched lower generations',()=>{
   const practice=(id,status='failed',retries=1,evidence=[])=>({
     id,status,retries,maxRetries:1,target:'web',department:'learning',type:'research',sourceRoot:'learning-practice:test',
     evidence:['learning-practice-only','production-pass:NO',...evidence]
@@ -457,7 +457,11 @@ test('duplicate completed practice collapses and the same drill advances to the 
   assert.equal(result.added,true);
   assert.equal(result.deduped,1);
   assert.equal(result.queue.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-asset_production-l1-g1').length,1);
-  assert.equal(result.queue.tasks.some(t=>t.id==='LEARNING-PRACTICE-gap-asset_production-l1-g2'&&t.status==='queued'),true);
+  assert.equal(result.task.id,'LEARNING-PRACTICE-gap-economy-l1-g1');
+  assert.equal(result.practiceGeneration,1);
+  const assetOnly=injectIdlePracticeTask({tasks:result.queue.tasks.filter(t=>!t.id.includes('gap-economy-l1'))},{drills:[idle.drills[0]]});
+  assert.equal(assetOnly.task.id,'LEARNING-PRACTICE-gap-asset_production-l1-g2');
+  assert.equal(assetOnly.practiceGeneration,2);
 });
 
 test('idle-practice dedupe never merges unrelated production tasks',()=>{
