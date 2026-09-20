@@ -8175,11 +8175,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_427575df9995670db4bd7e7e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2177",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "aec03640e6f6b81f3414418d41e02e02c1f3d61d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2177,
+        "baseBranch": "main",
+        "headBranch": "assistant/fantasy-survival-roblox-secondary-runtime-v1",
+        "baseSha": "aec03640e6f6b81f3414418d41e02e02c1f3d61d",
+        "headSha": "5d0ec0d970e14bb704c9dceaf5b2216f444e6e96",
+        "mergeCommitSha": "bca89d9a232d8fd2ab46053958b62710750b17f9",
+        "mergedAt": "2026-09-20T16:46:41Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2e98b9ab0a445e8962cb329d6aa4964ab81551c193f6029d7dfdfd726e2ba761",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/fantasy-survival-roblox-secondary-runtime-v1",
+        "candidateSha": "5d0ec0d970e14bb704c9dceaf5b2216f444e6e96"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 454,
+        "deletedLineCount": 146,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "game-catalog.json",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "tools/company-development-roblox-build-preflight.mjs",
+          "tools/company-development-roblox-runtime-persist.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/company-development-roblox-runtime-continuation.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "game-catalog.json",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-runtime-continuation.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "tools/company-development-roblox-build-preflight.mjs",
+          "tools/company-development-roblox-runtime-persist.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2177",
+        "merge-commit:bca89d9a232d8fd2ab46053958b62710750b17f9",
+        "base-main:aec03640e6f6b81f3414418d41e02e02c1f3d61d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 66
+    "total": 67
   }
 }
