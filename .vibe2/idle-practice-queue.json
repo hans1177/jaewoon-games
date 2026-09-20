@@ -16,11 +16,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_0ce73fa4ec23024bd474ad30",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30",
-      "phase4PairId": "phase4-pair-ceqx3l",
+      "phase4PairId": "phase4-pair-mt948z",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "daechung-rpg",
+      "holdoutGameId": "bug-defense",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-dhekzb",
+      "unseenProblemFingerprint": "phase4-unseen-28lqx9",
       "mayPromoteGeneralization": false
     },
     {
@@ -35,11 +35,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_0ce73fa4ec23024bd474ad30",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30",
-      "phase4PairId": "phase4-pair-ceqx3l",
+      "phase4PairId": "phase4-pair-mt948z",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "daechung-rpg",
+      "holdoutGameId": "bug-defense",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-dhekzb",
+      "unseenProblemFingerprint": "phase4-unseen-28lqx9",
       "mayPromoteGeneralization": false
     },
     {
@@ -575,16 +575,6 @@
       ]
     },
     {
-      "id": "gap-economy-l5",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ECONOMY"
-      ]
-    },
-    {
       "id": "gap-save-l5",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -605,13 +595,13 @@
       ]
     },
     {
-      "id": "gap-quest_design-l6",
-      "kind": "QUEST_CAUSALITY_DRILL",
+      "id": "gap-economy-l6",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "QUEST_DESIGN"
+        "ECONOMY"
       ]
     },
     {
@@ -652,6 +642,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "PROGRESSION"
+      ]
+    },
+    {
+      "id": "gap-quest_design-l7",
+      "kind": "QUEST_CAUSALITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "QUEST_DESIGN"
       ]
     },
     {
