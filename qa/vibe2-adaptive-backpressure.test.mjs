@@ -14,9 +14,15 @@ import {
 } from '../tools/vibe2-adaptive-backpressure.mjs';
 import { runQueueCommand } from '../tools/vibe2-queue-control.mjs';
 
-test('adaptive default starts at the external boundary without creating a fixed internal cap',()=>{
-  assert.equal(DEFAULT_ADAPTIVE_TARGET,256);
-  assert.equal(createParallelismControl({}).currentMax,256);
+test('adaptive default starts at 20 and keeps expansion above 20 available',()=>{
+  assert.equal(DEFAULT_ADAPTIVE_TARGET,20);
+  assert.equal(createParallelismControl({}).currentMax,20);
+  const up=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:20}),
+    healthyTelemetry({runId:'default-expand',workerCount:20,effectiveMax:20,actualPeakConcurrency:20})
+  );
+  assert.equal(up.currentMax,32);
+  assert.equal(up.lastDecision,'UP');
 });
 
 const healthyTelemetry = (overrides = {}) => ({
@@ -127,9 +133,9 @@ test('low-load runs never reduce persistent concurrency or count as recovery', (
     createParallelismControl({ currentMax: 8 }),
     healthyTelemetry({ runId: 'low-load-healthy', workerCount: 5, effectiveMax: 8, actualPeakConcurrency: 5 })
   );
-  assert.equal(healthyLowLoad.currentMax, 8);
+  assert.equal(healthyLowLoad.currentMax, 20);
   assert.equal(healthyLowLoad.healthyStreak, 0);
-  assert.equal(healthyLowLoad.lastReason, 'LOW_LOAD');
+  assert.equal(healthyLowLoad.lastReason, 'OWNER_MINIMUM_WAVE_20');
 });
 
 test('one healthy saturated run fast-ramps exactly one external-capacity step', () => {
@@ -144,21 +150,24 @@ test('one healthy saturated run fast-ramps exactly one external-capacity step', 
 });
 
 
-test('20 remains an ordinary intermediate adaptive step', () => {
+test('20 is the GAME_PRIMARY pressure floor and healthy saturation expands above it', () => {
   const control = createParallelismControl({ currentMax: 20 });
   assert.equal(control.currentMax, 20);
   const down = decideAdaptiveBackpressure(control, pressuredTelemetry({ runId:'pressure-20', workerCount:20, effectiveMax:20 }));
-  assert.equal(down.currentMax, 16);
-  const up = decideAdaptiveBackpressure(createParallelismControl({ currentMax:16 }), healthyTelemetry({ runId:'healthy-16-to-20', workerCount:16, effectiveMax:16, actualPeakConcurrency:16 }));
-  assert.equal(up.currentMax, 20);
+  assert.equal(down.currentMax, 20);
+  assert.equal(down.lastDecision, 'HOLD');
+  assert.match(down.lastReason, /^OWNER_MINIMUM_WAVE_20:/);
+  const up = decideAdaptiveBackpressure(control, healthyTelemetry({ runId:'healthy-20-to-32', workerCount:20, effectiveMax:20, actualPeakConcurrency:20 }));
+  assert.equal(up.currentMax, 32);
+  assert.equal(up.lastDecision, 'UP');
 });
 
-test('adaptive operational wave never moves below 4 or above external boundary 256', () => {
+test('adaptive operational wave never moves below 20 or above external boundary 256', () => {
   const atMin = decideAdaptiveBackpressure(
-    createParallelismControl({ currentMax: 4 }),
-    pressuredTelemetry({ runId: 'min-pressure', workerCount: 4, effectiveMax: 4 })
+    createParallelismControl({ currentMax: 20 }),
+    pressuredTelemetry({ runId: 'min-pressure', workerCount: 20, effectiveMax: 20 })
   );
-  assert.equal(atMin.currentMax, 4);
+  assert.equal(atMin.currentMax, 20);
 
   const atMax = decideAdaptiveBackpressure(
     createParallelismControl({ currentMax: 256 }),
@@ -190,18 +199,18 @@ test('adaptive requested max never exceeds persistent control, explicit request,
   assert.equal(adaptiveRequestedMax(createParallelismControl({ currentMax: 256 }), 999), 256);
 });
 
-test('missing or corrupt persistent state safely falls back to the external boundary', () => {
+test('missing or corrupt persistent state safely falls back to baseline 20', () => {
   const files = tempFiles();
   try {
     fs.writeFileSync(files.queue, JSON.stringify({ maxConcurrentTasks: 256, tasks: [] }), 'utf8');
     const missing = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '256', output: files.output });
-    assert.equal(missing.adaptiveControl.currentMax, 256);
-    assert.equal(missing.adaptiveControl.lastReason, 'DEFAULT_ADAPTIVE_TARGET_256');
+    assert.equal(missing.adaptiveControl.currentMax, 20);
+    assert.equal(missing.adaptiveControl.lastReason, 'DEFAULT_ADAPTIVE_TARGET_20');
 
     fs.writeFileSync(files.control, '{broken-json', 'utf8');
     const corrupt = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '64', output: files.output });
-    assert.equal(corrupt.adaptiveControl.currentMax, 256);
-    assert.equal(corrupt.adaptiveControl.lastReason, 'INVALID_STATE_DEFAULT_EXTERNAL_CAPACITY');
+    assert.equal(corrupt.adaptiveControl.currentMax, 20);
+    assert.equal(corrupt.adaptiveControl.lastReason, 'INVALID_STATE_ADAPTIVE_TARGET_20');
   } finally {
     fs.rmSync(files.dir, { recursive: true, force: true });
   }
@@ -254,19 +263,19 @@ test('stale persistent pressure resets to baseline then adapts one step from fre
     healthyTelemetry({ runId:'stale-recovery', workerCount:256, effectiveMax:256, actualPeakConcurrency:256 }),
     { now:'2026-09-19T12:00:00Z' }
   );
-  assert.equal(next.currentMax,256);
-  assert.equal(next.lastReason,'AT_MAX_HEALTHY');
+  assert.equal(next.currentMax,32);
+  assert.equal(next.lastReason,'HEALTHY_FAST_RAMP');
 });
 
 
-test('game-primary may pass through 20 in either direction within external capacity', () => {
+test('game-primary expands above 20 but pressure never drives it below 20', () => {
   const baseline=createParallelismControl({currentMax:20});
   const down=decideAdaptiveBackpressure(
     baseline,
     pressuredTelemetry({runId:'adaptive-down-20',workerCount:20,effectiveMax:20}),
     {minimumMax:4}
   );
-  assert.equal(down.currentMax,16);
+  assert.equal(down.currentMax,20);
 
   const up=decideAdaptiveBackpressure(
     baseline,
@@ -275,6 +284,6 @@ test('game-primary may pass through 20 in either direction within external capac
   );
   assert.equal(up.currentMax,32);
 
-  assert.equal(adaptiveRequestedMax(createParallelismControl({currentMax:4}),256,{minimumMax:4}),4);
+  assert.equal(adaptiveRequestedMax(createParallelismControl({currentMax:4}),256,{minimumMax:4}),20);
   assert.equal(adaptiveRequestedMax(createParallelismControl({currentMax:256}),256,{minimumMax:4}),256);
 });

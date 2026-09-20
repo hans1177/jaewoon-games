@@ -1709,7 +1709,7 @@
           "recoveryAdaptiveStep": 16
         },
         "ownerPreferredCurrentWave": 20,
-        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
+        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-20",
         "gameImplementationPreemptsNonblockingSupervision": true,
         "nonblockingSupervisionUsesSpareCapacityOnly": true,
         "ownerAndSystemStewardProtectionPreserved": true,
@@ -1729,6 +1729,14 @@
           "tools/vibe2-queue-control.mjs",
           ".github/workflows/vibe2-continuous-core.yml",
           "vibe2-runtime.json"
+        ],
+        "selfAdaptiveExpansionAbovePreferredWave": true,
+        "selfAdaptiveExpansionSteps": [
+          20,
+          32,
+          64,
+          128,
+          256
         ]
       },
       "invariants": {
@@ -7843,21 +7851,18 @@
       "phase2NeuralExecutionAuthority": false,
       "externalProviderAndPlanningBound": 256,
       "refillFormula": "MAX(0, CURRENT_ADAPTIVE_GAME_PRIMARY_TARGET - ACTIVE_GAME_WORKERS)",
-      "observedExample": "TARGET_256_ACTIVE_19=>REFILL_237; TARGET_64_ACTIVE_40=>REFILL_24",
-      "adaptiveBackpressureMayLowerBelow20": true,
-      "rationale": "GAME_PRIMARY has no fixed internal concurrency cap. It starts from available external capacity and may downshift only from verified runtime pressure; 20 is only an intermediate adaptive step.",
+      "observedExample": "TARGET_20_ACTIVE_12=>REFILL_8; TARGET_64_ACTIVE_40=>REFILL_24",
+      "adaptiveBackpressureMayLowerBelow20": false,
+      "rationale": "GAME_PRIMARY has no fixed internal concurrency cap. It starts at baseline 20, keeps a pressure floor of 20, and self-expands above 20 only from verified healthy saturation; 256 is the current external provider wave boundary.",
       "gamePrimaryAdaptiveSteps": [
-        4,
-        8,
-        16,
         20,
         32,
         64,
         128,
         256
       ],
-      "gamePrimaryBaselineTarget": 256,
-      "gamePrimaryAdaptiveMinimum": 4,
+      "gamePrimaryBaselineTarget": 20,
+      "gamePrimaryAdaptiveMinimum": 20,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": null,
       "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
