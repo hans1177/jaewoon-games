@@ -1,5 +1,5 @@
 {
-  "version": 178,
+  "version": 179,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6322,7 +6322,9 @@
       "phase2ShadowCannotCreateWorkers": true,
       "phase2ShadowCannotReorderWave": true,
       "phase2ShadowCannotAcquireLocks": true,
-      "phase2ShadowCannotPromoteItself": true
+      "phase2ShadowCannotPromoteItself": true,
+      "phase2ReviewRequiresQualityAndVolume": true,
+      "sampleVolumeAloneCannotQualifyPhase2Review": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6614,7 +6616,25 @@
         "explicitPrimaryReviewRequired": true,
         "securityReviewRequired": true,
         "explicitCentralPolicyPromotionRequired": true,
-        "disagreementReviewRequired": true
+        "disagreementReviewRequired": true,
+        "qualityGates": {
+          "calibrationAccuracyMinimum": 0.7,
+          "rootCausePredictionCoverageMinimum": 0.8,
+          "rootCausePredictionContradictionRateMaximum": 0.3,
+          "sampleVolumeAloneSufficient": false,
+          "disagreementRemainsVisible": true,
+          "qualityGateMayGrantExecutionAuthority": false,
+          "qualityGateMayAutoPromote": false,
+          "rationale": "PHASE2_REVIEW_ELIGIBILITY_REQUIRES_BOTH_SUFFICIENT_SAMPLE_VOLUME_AND_ACCEPTABLE_SHADOW_DIAGNOSTIC_QUALITY"
+        },
+        "supportPatch": {
+          "branch": "assistant/neural-readiness-quality-gates-v1",
+          "commits": {
+            "qualityGate": "40e1fe09fe09b5754747f79ff1b7a302ff41ad85",
+            "regression": "48114936c99e583a06566ebdf04c50a58b69e0fe"
+          },
+          "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY"
+        }
       }
     }
   }
