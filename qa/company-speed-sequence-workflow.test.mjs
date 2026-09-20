@@ -135,9 +135,9 @@ test('DESIGN_ONLY runtime follows central unbounded WIP policy with external mat
   assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
   assert.match(designRuntime,/const roadmap=JSON\.parse\(fs\.readFileSync\('company-learning\/platform-release-roadmap\.json','utf8'\)\)/);
   assert.match(designRuntime,/globalSelectedPlatformDevelopmentWipMax/);
-  assert.match(designRuntime,/slice\(0,designWipMax\)/);
-  assert.match(designRuntime,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
-  assert.match(designRuntime,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?designWipMax:1,targets\.length\|\|1\)\)/);
+  assert.match(designRuntime,/slice\(0,preservationOnly\?1:designWipMax\)/);
+  assert.match(designRuntime,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:2\)/);
+  assert.match(designRuntime,/const parallelMax=Math\.max\(1,Math\.min\(preservationOnly\?1:\(canaryVerified\?designWipMax:1\),targets\.length\|\|1\)\)/);
   assert.match(designRuntime,/parallel_max=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_EXECUTION_LANES=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_GATE_BYPASS=NO/);
