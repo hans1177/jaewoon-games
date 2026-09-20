@@ -77,6 +77,11 @@ test('fan-in regression and review confirm causal repair but do not invent respo
   assert.equal(result.neuralShadowAudit.mode,'PHASE2_SHADOW_VS_WAVE_AUDIT');
   assert.equal(result.neuralShadowAudit.sampleCount,1);
   assert.equal(result.neuralDurableShadowAudit.sampleCount,1);
+  assert.equal(result.neuralWorkGraphSummary.distinctGraphs,1);
+  assert.equal(result.neuralWorkGraphSummary.conflicts,0);
+  assert.equal(result.neuralWorkGraphSummary.unauthorizedAuthorityBitCount,0);
+  assert.equal(result.neuralWorkGraphSummary.safetyInvariantPass,true);
+  assert.ok(task.evidence.some(value=>value.startsWith('neural-work-graph-shadow:')));
   assert.equal(result.neuralShadowAudit.rows[0].actualWaveOutcome,'WAVE_RELEASE_ELIGIBLE');
   assert.equal(result.neuralShadowAudit.rows[0].comparisonClass,'WAVE_PROCEEDS_NEURAL_HOLDS');
   assert.equal(result.neuralShadowAudit.phase2AuthorityReady,false);
