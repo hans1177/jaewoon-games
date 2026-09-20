@@ -1,5 +1,5 @@
 {
-  "version": 186,
+  "version": 187,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6320,7 +6320,8 @@
       "duplicateRootCauseSamplesCannotInflateReadiness": true,
       "conflictingRootCauseSampleEvidenceBlocksReview": true,
       "duplicateReadinessSamplesCannotInflateVolume": true,
-      "conflictingReadinessSampleEvidenceBlocksReview": true
+      "conflictingReadinessSampleEvidenceBlocksReview": true,
+      "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6648,7 +6649,9 @@
           "qualityGateMayAutoPromote": false,
           "rationale": "PHASE2_REVIEW_REQUIRES_SUFFICIENT_DISTINCT_AUDITABLE_SAMPLES_AND_ACCEPTABLE_SHADOW_DIAGNOSTIC_QUALITY",
           "readinessEvidenceDeduplicatedByIdentity": true,
-          "conflictingFeedbackEventOrAuditSampleEvidenceBlocksReview": true
+          "conflictingFeedbackEventOrAuditSampleEvidenceBlocksReview": true,
+          "identifiedVolumeRequiredForReview": true,
+          "legacyUnidentifiedEvidenceCannotSatisfyVolumeThresholds": true
         },
         "sampleIdentity": {
           "source": "neural-root-cause.sampleId",
@@ -6664,7 +6667,13 @@
             "waveAudit": "sampleId"
           },
           "duplicateSameIdentityCountsOnceAcrossReadinessEvidence": true,
-          "conflictingSameIdentityBlocksReview": true
+          "conflictingSameIdentityBlocksReview": true,
+          "identifiedVolumeThresholdSources": {
+            "shadowEvents": "DISTINCT_eventId",
+            "calibrationEligible": "DISTINCT_sampleId_WITH_sampleEligible",
+            "verifiedRootCause": "DISTINCT_sampleId_WITH_rootCauseVerified",
+            "waveAuditSamples": "DISTINCT_sampleId"
+          }
         },
         "hardening": {
           "branch": "assistant/neural-shadow-hardening-main-v1",
@@ -6683,7 +6692,8 @@
           "state": "CANDIDATE_BRANCH",
           "branch": "assistant/neural-shadow-readiness-consolidated-v1",
           "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY",
-          "executionAuthorityChange": "NONE"
+          "executionAuthorityChange": "NONE",
+          "legacyEvidenceRule": "VISIBLE_FOR_AUDIT_BUT_EXCLUDED_FROM_REVIEW_VOLUME_THRESHOLDS"
         }
       },
       "sampleIdentity": {
