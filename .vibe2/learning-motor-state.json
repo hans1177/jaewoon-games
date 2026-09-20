@@ -12,18 +12,18 @@
       "lastEvidence": "capability_ctrace_34ea3c973567e3f12c27991f"
     },
     "STATE_MACHINE": {
-      "xp": 1032,
+      "xp": 1047,
       "level": 11,
       "verifiedSuccesses": 68,
-      "verifiedFailureLessons": 52,
-      "lastEvidence": "capability_ctrace_de660a7f81fe45eb6ec1244f"
+      "verifiedFailureLessons": 55,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6"
     },
     "COMBAT": {
-      "xp": 763,
+      "xp": 778,
       "level": 10,
       "verifiedSuccesses": 59,
-      "verifiedFailureLessons": 11,
-      "lastEvidence": "capability_ctrace_44fd7d6e2f9274367465034b"
+      "verifiedFailureLessons": 14,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6"
     },
     "AI": {
       "xp": 516,
@@ -33,11 +33,11 @@
       "lastEvidence": "capability_ctrace_44fd7d6e2f9274367465034b"
     },
     "PROGRESSION": {
-      "xp": 849,
+      "xp": 864,
       "level": 10,
       "verifiedSuccesses": 57,
-      "verifiedFailureLessons": 33,
-      "lastEvidence": "capability_ctrace_de660a7f81fe45eb6ec1244f"
+      "verifiedFailureLessons": 36,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6"
     },
     "ECONOMY": {
       "xp": 653,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_98ff2306686a32e38f808a33"
     },
     "DEBUGGING": {
-      "xp": 1020,
+      "xp": 1035,
       "level": 11,
       "verifiedSuccesses": 69,
-      "verifiedFailureLessons": 52,
-      "lastEvidence": "capability_ctrace_de660a7f81fe45eb6ec1244f"
+      "verifiedFailureLessons": 55,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6"
     },
     "RECOVERY": {
       "xp": 709,
@@ -159,11 +159,11 @@
       "lastEvidence": null
     },
     "QUEST_DESIGN": {
-      "xp": 760,
+      "xp": 775,
       "level": 10,
       "verifiedSuccesses": 50,
-      "verifiedFailureLessons": 32,
-      "lastEvidence": "capability_ctrace_de660a7f81fe45eb6ec1244f"
+      "verifiedFailureLessons": 35,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6"
     },
     "CHARACTER_ARC": {
       "xp": 0,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 912,
+      "xp": 927,
       "level": 10,
       "verifiedSuccesses": 56,
-      "verifiedFailureLessons": 48,
-      "lastEvidence": "capability_ctrace_de660a7f81fe45eb6ec1244f"
+      "verifiedFailureLessons": 51,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -336,7 +336,10 @@
     "capability_ctrace_0c25d3cd8ea64024889cf42f",
     "capability_ctrace_44fd7d6e2f9274367465034b",
     "capability_ctrace_09449fb5d893a83015500f7d",
-    "capability_ctrace_de660a7f81fe45eb6ec1244f"
+    "capability_ctrace_de660a7f81fe45eb6ec1244f",
+    "capability_ctrace_812f2f50cb5292673f9203c3",
+    "capability_ctrace_2b65182e9775732951f9f505",
+    "capability_ctrace_f45db69cb6d78d39724618a6"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -474,8 +477,8 @@
       ]
     },
     "fail_wu3qnk": {
-      "count": 8,
-      "lastEvidence": "capability_ctrace_a2b005913e4bbc43fa7d8870",
+      "count": 10,
+      "lastEvidence": "capability_ctrace_2b65182e9775732951f9f505",
       "example": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
       "domains": [
         "STATE_MACHINE",
@@ -484,7 +487,8 @@
         "DEBUGGING",
         "QUEST_DESIGN",
         "WEB_RUNTIME",
-        "UI_STATE"
+        "UI_STATE",
+        "COMBAT"
       ]
     },
     "fail_c9xvk3": {
@@ -502,8 +506,8 @@
       ]
     },
     "fail_1agpu1k": {
-      "count": 14,
-      "lastEvidence": "capability_ctrace_de660a7f81fe45eb6ec1244f",
+      "count": 15,
+      "lastEvidence": "capability_ctrace_f45db69cb6d78d39724618a6",
       "example": "SOURCE_CANDIDATE_GENERATION:NO_OP",
       "domains": [
         "STATE_MACHINE",
@@ -6987,7 +6991,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T16:00:54.613Z",
+    "lastBuiltAt": "2026-09-20T16:01:02.561Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9070,5 +9074,5 @@
       "knowledge_1knmw9j"
     ]
   },
-  "updatedAt": "2026-09-20T16:00:54.613Z"
+  "updatedAt": "2026-09-20T16:01:02.561Z"
 }
