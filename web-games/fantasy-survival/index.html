@@ -514,8 +514,8 @@ function playCombatAudio(kind,weight=.5){
 function playRewardAudio(kind='normal'){
  if(!music.enabled||!music.started||!music.ctx||!music.master)return;
  const at=music.ctx.currentTime,boss=kind==='boss';
- smoothVoice(boss?220:330,at,.16,boss?.022:.014,'sine',2600,.008);
- smoothVoice(boss?330:495,at+.045,.22,boss?.020:.012,'triangle',3000,.012);
+ smoothVoice(boss?220:330,at,.16,boss ? .022 : .014,'sine',2600,.008);
+ smoothVoice(boss?330:495,at+.045,.22,boss ? .020 : .012,'triangle',3000,.012);
  if(boss)lowDrum(at,64,.04,.22)
 }
 function pickBattleTheme(){const r=Math.random();return r<.30?'battle1':r<.70?'battle2':'battle3'}
