@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath } from '../tools/vibe2-system-architecture-contract.mjs';
 import { buildVibeContinuousWorkOrder } from '../tools/vibe2-continuous-runner.mjs';
 import { loadCentralPolicySnapshot } from '../tools/vibe2-central-work-contract.mjs';
@@ -81,4 +82,21 @@ test('neural expansion readiness PASS reaches the system work order without expa
   assert.equal(order.workerPolicy.neuralExecutionAuthorityExpansionAllowed,false);
   assert.equal(order.workerPolicy.authorityExpansionAllowed,false);
   assert.equal(order.workerPolicy.gateWeakeningAllowed,false);
+});
+
+
+test('system candidate workflow closes the inline module heredoc at the YAML shell boundary',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const lines=workflow.split('\n');
+  const boundary=lines.findIndex(line=>line.includes('candidate_target="$(node -e'));
+  const opener=lines.findIndex(line=>line.includes("node --input-type=module - \"$candidate_manifest\" <<'NODE' > /tmp/vibe2-system-candidate-files.txt"));
+  assert.notEqual(boundary,-1);
+  assert.notEqual(opener,-1);
+  const shellBoundaryIndent=(lines[boundary].match(/^\s*/)||[''])[0].length;
+  const openerIndent=(lines[opener].match(/^\s*/)||[''])[0].length;
+  const terminator=lines.findIndex((line,index)=>index>opener&&line.trim()==='NODE');
+  assert.notEqual(terminator,-1);
+  const terminatorIndent=(lines[terminator].match(/^\s*/)||[''])[0].length;
+  assert.ok(openerIndent>shellBoundaryIndent);
+  assert.equal(terminatorIndent,shellBoundaryIndent);
 });
