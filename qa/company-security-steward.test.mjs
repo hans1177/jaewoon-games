@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { scanSecurityPatch, scanExternalInstruction } from '../tools/company-security-steward.mjs';
-import { recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
+import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
 
 test('literal secret is quarantined and report stores only redacted evidence',()=>{
@@ -61,6 +61,76 @@ test('central authority mutation requires direct review but is not attack quaran
   assert.equal(store.incidents[0].status,'RESOLVED_VERIFIED');
   assert.equal(store.incidents[0].verificationMode,'AUTHORIZED_POLICY_REVIEW_PASS');
   assert.equal(store.incidents[0].learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
+});
+
+test('policy review findings are grouped per scan and file without auto-resolving review',()=>{
+  const finding=(line,evidenceSha256,file='company-learning/platform-release-roadmap.json')=>({
+    rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',
+    severity:'HIGH',
+    disposition:'REVIEW',
+    category:'policy-integrity',
+    file,
+    line,
+    evidenceSha256,
+    snippet:'redacted policy line'
+  });
+  const first=recordSecurityReport({},{
+    findings:[finding(10,'e1'),finding(11,'e2'),finding(12,'e3')]
+  });
+  assert.equal(first.added,1);
+  assert.equal(first.store.incidents.length,1);
+  assert.equal(first.store.incidents[0].status,'REVIEW_REQUIRED');
+  assert.equal(first.store.incidents[0].primaryAiReview,'PENDING');
+  assert.equal(first.store.incidents[0].reviewFindingCount,3);
+  assert.deepEqual(first.store.incidents[0].reviewLines,[10,11,12]);
+  assert.deepEqual(first.store.incidents[0].reviewEvidenceSha256,['e1','e2','e3']);
+  assert.equal(first.store.incidents[0].line,0);
+  assert.equal(first.store.incidents[0].compactedPolicyReview,true);
+
+  const repeated=recordSecurityReport(first.store,{
+    findings:[finding(10,'e1'),finding(11,'e2'),finding(12,'e3')]
+  });
+  assert.equal(repeated.added,0);
+  assert.equal(repeated.store.incidents.length,1);
+  assert.equal(repeated.store.incidents[0].detections,2);
+  assert.equal(repeated.store.incidents[0].status,'REVIEW_REQUIRED');
+
+  const changed=recordSecurityReport(repeated.store,{
+    findings:[finding(20,'e4'),finding(21,'e5')]
+  });
+  assert.equal(changed.added,1);
+  assert.equal(changed.store.incidents.filter(row=>row.status==='REVIEW_REQUIRED').length,2);
+});
+
+test('legacy pending policy review lines compact by historical scan while quarantine and resolved audit remain separate',()=>{
+  const pending=(id,file,line,evidenceSha256,stamp)=>({
+    id,status:'REVIEW_REQUIRED',disposition:'REVIEW',
+    rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',
+    severity:'HIGH',category:'policy-integrity',file,line,evidenceSha256,
+    snippet:'legacy policy line',detections:1,firstDetectedAt:stamp,lastDetectedAt:stamp,
+    containment:'AFFECTED_CHANGE_HELD_FOR_REVIEW',primaryAiReview:'PENDING',learningPromotion:'PENDING'
+  });
+  const store={incidents:[
+    pending('legacy-1','company-learning/platform-release-roadmap.json',10,'a','2026-09-20T03:55:22.001Z'),
+    pending('legacy-2','company-learning/platform-release-roadmap.json',11,'b','2026-09-20T03:55:22.002Z'),
+    pending('legacy-3','company-learning/company-architecture-map.json',5,'c','2026-09-20T03:55:22.003Z'),
+    {id:'quarantine-1',status:'QUARANTINED',disposition:'QUARANTINE',rule:'REMOTE_PIPE_TO_SHELL',file:'x.sh',evidenceSha256:'q'},
+    {id:'resolved-1',status:'RESOLVED_VERIFIED',disposition:'REVIEW',rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',file:'company-learning/platform-release-roadmap.json',evidenceSha256:'r',primaryAiReview:'PASS'}
+  ]};
+  const result=compactPolicyReviewIncidents(store);
+  assert.equal(result.stats.reviewBefore,3);
+  assert.equal(result.stats.reviewAfter,2);
+  assert.equal(result.stats.compacted,1);
+  assert.equal(result.store.incidents.length,4);
+  const pendingRows=result.store.incidents.filter(row=>row.status==='REVIEW_REQUIRED');
+  assert.equal(pendingRows.length,2);
+  const roadmap=pendingRows.find(row=>row.file==='company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.reviewFindingCount,2);
+  assert.deepEqual(roadmap.reviewLines,[10,11]);
+  assert.ok(roadmap.legacyIncidentIds.includes('legacy-1'));
+  assert.ok(roadmap.legacyIncidentIds.includes('legacy-2'));
+  assert.ok(result.store.incidents.some(row=>row.id==='quarantine-1'));
+  assert.ok(result.store.incidents.some(row=>row.id==='resolved-1'&&row.status==='RESOLVED_VERIFIED'));
 });
 
 test('explicit policy-review learning hold is not auto-promoted',()=>{
