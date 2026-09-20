@@ -134,11 +134,14 @@ export function neuralEventRouteEvidence(route={}){
     actionReason:clean(route?.proposedAction?.reason)||null,
     wouldFireWithoutPhase2Authority:route.wouldFireWithoutPhase2Authority===true,
     inhibitors:uniq(route.inhibitors||[]),
-    fireAllowed:false,
-    workerCreationAllowed:false,
-    queueMutationAllowed:false,
-    waveReorderAllowed:false,
-    authorityPromotionEligible:false
+    fireAllowed:route.fireAllowed===true,
+    workerCreationAllowed:route.workerCreationAllowed===true,
+    queueMutationAllowed:route.queueMutationAllowed===true,
+    waveReorderAllowed:route.waveReorderAllowed===true,
+    lockAcquisitionAllowed:route.lockAcquisitionAllowed===true,
+    policyMutationAllowed:route.policyMutationAllowed===true,
+    learningEligible:route.learningEligible===true,
+    authorityPromotionEligible:route.authorityPromotionEligible===true
   };
   return[
     `neural-event-shadow:${encodeURIComponent(JSON.stringify(payload))}`,
