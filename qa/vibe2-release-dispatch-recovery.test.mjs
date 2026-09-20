@@ -60,6 +60,15 @@ test('24H recovery verifies exact candidate SHA before marking and dispatching',
   assert.equal(section.includes('queue-control.mjs pass'),false);
   assert.equal(section.includes('node tools/vibe2-queue-control.mjs'),false);
   assert.ok(section.includes('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await'));
+  assert.equal(section.includes('git pull --rebase origin vibe2-unreal-core'),false);
+  const retry=section.indexOf('for attempt in 1 2 3; do');
+  const refresh=section.indexOf('git reset --hard origin/vibe2-unreal-core',retry);
+  const reselection=section.indexOf('vibe2-release-dispatch-recovery.mjs',refresh);
+  const semanticMark=section.indexOf('vibe2-queue-control.mjs await',reselection);
+  const directPush=section.indexOf('git push origin HEAD:vibe2-unreal-core',semanticMark);
+  assert.ok(retry>0&&refresh>retry&&reselection>refresh&&semanticMark>reselection&&directPush>semanticMark);
+  assert.ok(section.includes('VIBE2_RELEASE_RECOVERY_OPTIMISTIC_ATTEMPT='));
+  assert.ok(section.includes('VIBE2_RELEASE_RECOVERY_PUSH_RETRY='));
 });
 
 test('24H runner reads and mutates control queue only through latest main tooling',()=>{
