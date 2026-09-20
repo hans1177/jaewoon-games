@@ -1,5 +1,5 @@
 {
-  "version": 228,
+  "version": 229,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4375,7 +4375,12 @@
         "autonomousTreasuryTransferAuthority": false,
         "autonomousContractOrSpendingCommitmentAuthority": false,
         "ownerControlledFinancialActionsRequired": true
-      }
+      },
+      "planningGrowthMarketingBinding": "company-learning/platform-release-roadmap.json#planningGrowthMarketingDepartment",
+      "revenueResearchOwnedBy": "planning",
+      "marketingResearchOwnedBy": "planning",
+      "vibeChoosesApplicationScopeAndTiming": true,
+      "paidExternalSpendRemainsOwnerControlled": true
     }
   },
   "longTermVibeVision": {
@@ -10416,5 +10421,155 @@
       "RULE_4"
     ],
     "orderedImplementationRequired": true
+  },
+  "planningGrowthMarketingDepartment": {
+    "version": 1,
+    "canonicalRoleKey": "planning",
+    "displayName": "PLANNING_GROWTH_MONETIZATION_MARKETING",
+    "koreanName": "기획·성장마케팅",
+    "mergeMode": "EXTEND_EXISTING_PLANNING_DEPARTMENT_NO_PARALLEL_DUPLICATE_DEPARTMENT",
+    "purpose": "CONNECT_GAME_DESIGN_PRODUCT_STRATEGY_MONETIZATION_REVENUE_RESEARCH_AND_MARKETING_IN_ONE_EVIDENCE_DRIVEN_PLANNING FUNCTION",
+    "authority": {
+      "researchAndProposalAllowed": true,
+      "vibeDecidesAcceptPartialDeferReject": true,
+      "implementationRequiresAcceptedScope": true,
+      "paidExternalSpendRequiresOwnerAuthorizedFinancialAction": true,
+      "autonomousFinancialTransactionAuthority": false,
+      "autonomousAdSpendAuthority": false,
+      "gameBalanceOrCoreIdentityMayNotBeSilentlyChanged": true
+    },
+    "researchDomains": {
+      "productAndGamePlanning": [
+        "TARGET_PLAYER_AND_USE_CASE",
+        "CORE_FUN_AND_RETENTION_LOOP",
+        "CONTENT_AND_PROGRESS_STRUCTURE",
+        "ONBOARDING_AND_RETURN_MOTIVATION",
+        "UPDATE_CADENCE_AND_VERSION_STRATEGY"
+      ],
+      "monetizationAndRevenue": [
+        "PAID_ITEMS_AND_COSMETICS",
+        "CONSUMABLE_OR_REPEAT_PURCHASES",
+        "PERMANENT_UPGRADES_OR_ACCESS_PRODUCTS",
+        "SUBSCRIPTION_OR_MEMBERSHIP_WHEN_PLATFORM_SUPPORTED",
+        "IN_GAME_AD_REVENUE_WHEN_PLATFORM_SUPPORTED",
+        "PRICING_AND_BUNDLE_STRUCTURE",
+        "FREE_TO_PAID_CONVERSION_PATH",
+        "REVENUE_PER_PAYER_AND_REVENUE_PER_ACTIVE_USER",
+        "ECONOMY_SINK_SOURCE_AND_INFLATION_RISK",
+        "PURCHASE_VALUE_CLARITY_AND_PLAYER_TRUST"
+      ],
+      "marketingAndGrowth": [
+        "STORE_PAGE_AND_DISCOVERY_POSITIONING",
+        "TITLE_ICON_THUMBNAIL_TRAILER_AND_SCREENSHOT_MESSAGE",
+        "ORGANIC_DISCOVERY_AND_COMMUNITY_PROMOTION",
+        "CREATOR_INFLUENCER_AND_CROSS_PROMOTION_OPTIONS",
+        "PAID_USER_ACQUISITION_RESEARCH",
+        "PLATFORM_ADVERTISING_OPTIONS",
+        "EVENT_UPDATE_AND_REENGAGEMENT_CAMPAIGNS",
+        "LAUNCH_TIMING_AND_UPDATE_TIMING",
+        "AUDIENCE_SEGMENT_AND_CHANNEL_FIT",
+        "ACQUISITION_RETENTION_CONVERSION_AND_RETURN_METRICS"
+      ]
+    },
+    "evidenceInputs": [
+      "CURRENT_GAMEPLAY_AND_DESIGN_BASELINE",
+      "RELEASE_AND_UPDATE_HISTORY",
+      "AVAILABLE_PLATFORM_ANALYTICS",
+      "PLAYER_BEHAVIOR_AND_FUNNEL_METRICS_WHEN_AVAILABLE",
+      "STORE_DISCOVERY_AND_CAMPAIGN_RESULTS_WHEN_AVAILABLE",
+      "REVENUE_AND_PURCHASE_METRICS_WHEN_AVAILABLE",
+      "QA_SECURITY_BALANCE_AND_PLATFORM_POLICY_EVIDENCE",
+      "PUBLIC_MARKET_AND_PLATFORM_RESEARCH"
+    ],
+    "lifecycle": {
+      "preRelease": [
+        "RESEARCH_TARGET_PLAYER_AND_MARKET_POSITION",
+        "REVIEW_MONETIZATION_FIT_WITH_CORE_GAME",
+        "PROPOSE_PAID_ITEM_AD_AND_PRICING OPTIONS",
+        "PLAN_LAUNCH_DISCOVERY_AND_PROMOTION",
+        "VIBE_DECIDES_SCOPE_AND_TIMING",
+        "IMPLEMENT_ACCEPTED_GAME_CHANGES",
+        "QA_BALANCE_SECURITY_AND_PLATFORM_POLICY_REVIEW",
+        "PREPARE_CAMPAIGN_ASSETS_AND_MEASUREMENT"
+      ],
+      "launch": [
+        "VERIFY_STORE_AND_DISCOVERY_PRESENTATION",
+        "VERIFY_MONETIZATION_CONFIGURATION_AND_PURCHASE_FLOW",
+        "ESTABLISH_BASELINE_METRICS",
+        "EXECUTE_ONLY_OWNER_AUTHORIZED_PAID_SPEND",
+        "CAPTURE_LAUNCH_RESULTS"
+      ],
+      "postRelease": [
+        "REVIEW_REVENUE_RETENTION_CONVERSION_AND_DISCOVERY",
+        "IDENTIFY_PRODUCT_MONETIZATION_OR_MARKETING_OPPORTUNITIES",
+        "PRODUCE_NON_BINDING_EVIDENCE_BASED_PROPOSALS",
+        "VIBE_DECIDES_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+        "VIBE_DECIDES_APPLICATION_SCOPE_AND_TIMING",
+        "ROUTE_ACCEPTED_GAME_CHANGES_TO_HOTFIX_MINOR_OR_MAJOR_UPDATE_FLOW",
+        "ROUTE_OWNER_AUTHORIZED_CAMPAIGN_ACTIONS_TO_APPROPRIATE_CHANNEL",
+        "MEASURE_OUTCOME_AND_REASSESS"
+      ]
+    },
+    "applicationDecisionContract": {
+      "requiredForEveryProposal": [
+        "PROBLEM_OR_OPPORTUNITY",
+        "TARGET_PLAYER_SEGMENT",
+        "EXPECTED_PLAYER_VALUE",
+        "EXPECTED_REVENUE_OR_GROWTH_EFFECT",
+        "GAMEPLAY_AND_BALANCE_IMPACT",
+        "IMPLEMENTATION_SCOPE",
+        "BEST_APPLICATION_TIMING",
+        "MEASUREMENT_PLAN",
+        "ROLLBACK_OR_STOP_CONDITION"
+      ],
+      "allowedDecisions": [
+        "ACCEPT",
+        "PARTIAL_ACCEPT",
+        "DEFER",
+        "REJECT"
+      ],
+      "decisionAuthority": "VIBE",
+      "automaticAcceptanceForbidden": true
+    },
+    "timingPolicy": {
+      "immediate": [
+        "BROKEN_PURCHASE_FLOW",
+        "WRONG_PRICE_OR_PRODUCT_CONFIGURATION",
+        "REVENUE_BLOCKING_BUG",
+        "MISLEADING_OR_BROKEN_STORE_PRESENTATION"
+      ],
+      "nearTerm": [
+        "LOW_RISK_PRICING_OR_BUNDLE_EXPERIMENT",
+        "SMALL_DISCOVERY_OR_STORE_PRESENTATION_IMPROVEMENT",
+        "SMALL_REENGAGEMENT_OR_PROMOTION_TEST"
+      ],
+      "majorUpdate": [
+        "NEW_MONETIZATION_SYSTEM",
+        "LARGE_ECONOMY_REDESIGN",
+        "NEW_SUBSCRIPTION_OR_MEMBERSHIP_MODEL",
+        "LARGE_PAID_CONTENT_OR_ACCESS_STRUCTURE",
+        "MAJOR_LAUNCH_OR_RELAUNCH_CAMPAIGN"
+      ],
+      "majorGameChangeUsesPostReleaseMajorPreparationLane": true,
+      "revenueBlockingBugUsesHotfixLane": true
+    },
+    "safeguards": {
+      "monetizationMustNotBypassGameplayQa": true,
+      "economyAndBalanceReviewRequiredWhenGameplayValueChanges": true,
+      "securityReviewRequiredForPurchaseRewardOrCurrencyAuthority": true,
+      "platformPolicyComplianceRequired": true,
+      "deceptiveOrHiddenPurchaseMechanicsForbidden": true,
+      "unverifiedRevenueClaimsForbidden": true,
+      "missingAnalyticsMustBeMarkedUnverified": true,
+      "paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction": true
+    },
+    "learningLoop": {
+      "everyAppliedExperimentCreatesEvidence": true,
+      "compareExpectedVsObserved": true,
+      "successfulPatternRequiresRepeatedVerifiedEvidenceBeforePreference": true,
+      "failedOrHarmfulPatternRecordedAsAvoidEvidence": true,
+      "verifiedOutcomeReturnsToExistingVibeLearning": true,
+      "newShadowTrainerForbidden": true
+    }
   }
 }
