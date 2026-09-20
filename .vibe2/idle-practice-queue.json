@@ -326,6 +326,22 @@
       "sourceFailure": "fail_3e38u6"
     },
     {
+      "id": "review-fail_wu3qnk",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_wu3qnk"
+    },
+    {
       "id": "review-fail_c9xvk3",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -357,22 +373,6 @@
         "CORE_LOOP"
       ],
       "sourceFailure": "fail_1agpu1k"
-    },
-    {
-      "id": "review-fail_wu3qnk",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME"
-      ],
-      "sourceFailure": "fail_wu3qnk"
     },
     {
       "id": "gap-asset_adaptation-l1",
@@ -605,16 +605,6 @@
       ]
     },
     {
-      "id": "gap-mobile_input-l6",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "MOBILE_INPUT"
-      ]
-    },
-    {
       "id": "gap-quest_design-l6",
       "kind": "QUEST_CAUSALITY_DRILL",
       "priority": "low",
@@ -635,16 +625,6 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l6",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "WEB_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-core_loop-l7",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -655,13 +635,13 @@
       ]
     },
     {
-      "id": "gap-debugging-l7",
+      "id": "gap-mobile_input-l7",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "DEBUGGING"
+        "MOBILE_INPUT"
       ]
     },
     {
@@ -675,7 +655,27 @@
       ]
     },
     {
-      "id": "gap-state_machine-l7",
+      "id": "gap-web_runtime-l7",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-debugging-l8",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "DEBUGGING"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l8",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
