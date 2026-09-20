@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE1_SHADOW_DIAGNOSIS_CODE_CONNECTED",
+    "currentState": "PHASE1_SHADOW_DIAGNOSIS_AND_CALIBRATION_CODE_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -284,7 +284,11 @@
       "hypothesesCarryConfidence": true,
       "inhibitorReasonRecorded": true,
       "causalDecisionSummaryRecorded": true,
-      "privateReasoningTranscriptNotRequired": true
+      "privateReasoningTranscriptNotRequired": true,
+      "shadowPredictionAndObservedStageStoredTogether": true,
+      "mismatchMustRemainVisible": true,
+      "unknownMustNotBeForcedIntoMatchOrMismatch": true,
+      "pipelineStageObservationMustNotBeRelabeledAsRootCause": true
     },
     "safetyBoundaries": [
       "OWNER_DIRECTIVE_REMAINS_HIGHEST_AUTHORITY",
@@ -302,7 +306,14 @@
       "actionAuthority": "NONE",
       "workerCreationAuthority": "NONE",
       "waveReorderAuthority": "NONE",
-      "qa": "qa/vibe2-neural-diagnosis.test.mjs"
+      "qa": "qa/vibe2-neural-diagnosis.test.mjs",
+      "feedback": "tools/vibe2-neural-feedback.mjs",
+      "immutableResultBinding": ".github/workflows/vibe2-continuous-core.yml",
+      "fanInCalibrationPersistence": "tools/vibe2-queue-control.mjs",
+      "durableEvidencePrefix": "neural-shadow-feedback:",
+      "calibrationAuthority": "OBSERVE_AND_MEASURE_ONLY",
+      "learningAuthority": "NONE",
+      "eventRoutingAuthority": "NONE"
     }
   }
 }
