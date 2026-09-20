@@ -639,3 +639,25 @@ test('company records use one canonical format, path, retention and runtime-medi
   assert.equal(architecture.recordsGovernance.legacyMigration,'MIGRATE_ON_TOUCH');
   assert.ok(architecture.executionTopology.recordsGovernance.includes('SCHEDULED_HYGIENE_SCAN'));
 });
+
+
+test('owner rule 5 atomizes and neuronizes structures before central-code activation',()=>{
+  const rules=roadmap.ownerCanonicalRules;
+  const rule=rules.rule5;
+  const projection=architecture.rule5ArchitectureNeuronConsistency;
+  assert.deepEqual(rules.implementationOrder,['RULE_1','RULE_2','RULE_3','RULE_4','RULE_5']);
+  assert.equal(rule.id,'RULE_5_ARCHITECTURE_ATOMIZATION_NEURONIZATION_AND_CENTRAL_CODE_CONSISTENCY');
+  assert.equal(rule.atomicArchitectureContract.minimumUnit,'ONE_RESPONSIBILITY_ONE_CAUSAL_PURPOSE');
+  assert.equal(rule.atomicArchitectureContract.atomicNodeMustMapToRealResponsibleSystem,true);
+  assert.equal(rule.neuronizationContract.everyAtomicNodeMustDeclareNeuronType,true);
+  assert.equal(rule.neuronizationContract.neuronizationDoesNotGrantExecutionAuthority,true);
+  assert.equal(rule.consistencyContract.centralPolicy,'company-learning/platform-release-roadmap.json');
+  assert.equal(rule.consistencyContract.architectureMap,'company-learning/company-architecture-map.json');
+  assert.equal(rule.consistencyContract.sourceCodeMayNotSilentlyDivergeFromCentralArchitecture,true);
+  assert.equal(rule.structuralChangeGate.mismatchBlocksAdoption,true);
+  assert.equal(projection.centralRulePath,'company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5');
+  assert.deepEqual(projection.atomicNodeSchema.required,rule.atomicArchitectureContract.requiredFields);
+  assert.deepEqual(projection.neuronSchema.canonicalTypes,rule.neuronizationContract.canonicalNeuronTypes);
+  assert.equal(projection.rule4Relationship.rule5,'FINAL_NON_MUTATING_CONSISTENCY_CLOSURE_BEFORE_ACTIVATION');
+  assert.equal(architecture.synchronization.rule5MismatchAction,'BLOCK_COMPLETION_AND_REQUEUE_EXACT_STRUCTURAL_STAGE');
+});
