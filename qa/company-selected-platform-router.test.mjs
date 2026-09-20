@@ -15,6 +15,9 @@ import {
   selectRepresentativeCanary,
   selectTargetPlatformDevelopmentWindow,
   targetPlatformDevelopmentEligible,
+  releasedNativePlatforms,
+  webRevisionPropagationTargets,
+  expandTargetPlatformDevelopmentCandidates,
   verifiedOwnerReleaseHandoffEligible,
   ownerFocusedSecondaryPlatformEligible,
   canonicalTargetStep,
@@ -98,6 +101,43 @@ test('verified owner Roblox release handoff enters the platform window without w
   assert.deepEqual(selectTargetPlatformDevelopmentWindow([item]).map(x=>x.gameId),[item.gameId]);
   assert.equal(verifiedOwnerReleaseHandoffEligible({...item,robloxVibe2VerifiedHandoff:{...item.robloxVibe2VerifiedHandoff,requestedReleaseState:'development-confirmed'}}),false);
   assert.equal(verifiedOwnerReleaseHandoffEligible({...item,robloxVibe2VerifiedHandoff:{...item.robloxVibe2VerifiedHandoff,sourceTreeSha:'bad'}}),false);
+});
+
+test('released Web revision expands into concurrent native refresh candidates without inventing UEFN execution',()=>{
+  const item={
+    gameId:'released-cross-platform',
+    productionClass:'RELEASE_CONFIRMED',
+    status:'ACTIVE',
+    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+    canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    webValidationPassedAt:'2026-09-20T00:00:00.000Z',
+    musicValidationPassed:true,
+    formalImplementationPassed:true,
+    formalImplementationVerdict:'PASS',
+    webStrictScore:96,
+    strictImplementationHardFailures:[],
+    webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,
+    webPromotionRevalidationPassed:true,
+    webSourceIndexSha256:'new-web-sha',
+    robloxReleaseClaim:true,
+    robloxReleaseEvidence:{published:true,webSourceIndexSha256:'old-web-sha'},
+    unityReleaseClaim:true,
+    unityReleaseEvidence:{released:true,webSourceIndexSha256:'old-web-sha'},
+    uefnReleaseClaim:true,
+    uefnReleaseEvidence:{published:true,webSourceIndexSha256:'old-web-sha'},
+  };
+  assert.deepEqual(releasedNativePlatforms(item),['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(webRevisionPropagationTargets(item),['ROBLOX','UNITY','FORTNITE_UEFN']);
+  const expanded=expandTargetPlatformDevelopmentCandidates([item]);
+  assert.equal(expanded.length,3);
+  assert.equal(expanded.every(row=>row.webNativePropagation===true),true);
+  const runnable=selectTargetPlatformDevelopmentWindow([item],20);
+  assert.deepEqual(runnable.map(row=>row.selectedPlatform).sort(),['ROBLOX','UNITY']);
+  assert.equal(runnable.every(row=>row.webNativePropagationWebSourceIndexSha256==='new-web-sha'),true);
+  assert.deepEqual(webRevisionPropagationTargets({
+    ...item,
+    webNativeRevisionSync:{platforms:{ROBLOX:{completedWebSourceIndexSha256:'new-web-sha'}}}
+  }),['UNITY','FORTNITE_UEFN']);
 });
 
 test('global development window never expands beyond the owner twenty-game maximum',()=>{
