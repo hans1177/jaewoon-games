@@ -1601,15 +1601,17 @@
       "APPROVED_SCOPE",
       "REAL_CONTROL_HANDLER_STATE_SCAN",
       "DETERMINISTIC_MAPPING",
-      "AMBIGUOUS_EXTERNAL_AI_ADVISORY",
+      "DEFER_AMBIGUITY_TO_SEPARATE_EXTERNAL_AI_ADVISORY_LANE",
       "VIBE_MINIMAL_REPAIR",
       "STATIC_QA",
       "RUNTIME_QA",
       "STRICT_REVIEW"
     ],
     "sourceWriteAuthority": "VIBE_EXISTING_WAVE_ONLY",
-    "externalAiAuthority": "ADVISORY_ONLY",
-    "authorityExpansion": false
+    "externalAiAuthority": "ADVISORY_ONLY_SEPARATE_LANE",
+    "authorityExpansion": false,
+    "externalAiInsideWebBootstrapForbidden": true,
+    "externalAiAdvisoryRoute": "SEPARATE_VERIFIED_DISTILLATION_OR_SYSTEM_AI_LANE"
   },
   "learningClosedLoopTopology": {
     "version": 1,
