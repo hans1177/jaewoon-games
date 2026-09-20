@@ -1232,6 +1232,8 @@ test('continuous core keeps pending neuron callbacks out of heavy reserve and re
   assert.match(workflow,/event_type:'vibe2-fanin-refill'/);
   assert.match(workflow,/contract_sha:String\(process\.env\.VIBE2_NEURON_CONTRACT_SHA\|\|''\)/);
   assert.match(workflow,/requested_contract_sha=.*client_payload\?\.contract_sha/);
+  assert.ok(workflow.includes("fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\n');"));
+  assert.ok(!workflow.includes("fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\\\n');"));
   assert.match(workflow,/Fast scheduler preflight\n\s+if: github\.event_name != 'repository_dispatch' \|\| github\.event\.action != 'vibe2-neuron-complete'/);
   assert.doesNotMatch(workflow,/VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS/);
   assert.doesNotMatch(workflow,/\[ "\$callback_kind" = 'fanin' \] \|\| \[ "\$callback_kind" = 'neuron' \]/);
