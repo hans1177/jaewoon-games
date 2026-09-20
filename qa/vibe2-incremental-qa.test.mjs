@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { runIncrementalQa } from '../tools/vibe2-incremental-qa.mjs';
+import { runIncrementalQa, incrementalQaFailureSignature } from '../tools/vibe2-incremental-qa.mjs';
 
 function repo(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-iqa-'));
@@ -191,4 +191,12 @@ test('presentation audio static QA fails closed when controls and unlock path ar
     presentationQuality:{required:true,pass:'AUDIO_FEEL',runtimeChecks:['audio-unlock-runtime'],authorityExpanded:false}
   },null,2));
   assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:presentation-audio'}),/PRESENTATION_STATIC_QA_FAILED:AUDIO_FEEL/);
+});
+
+
+test('incremental QA failure signatures are stable without claiming root cause',()=>{
+  assert.equal(incrementalQaFailureSignature(new Error('SyntaxError in index.js: bad token')),'SYNTAX_ERROR');
+  assert.equal(incrementalQaFailureSignature(new Error('merge conflict marker: index.html')),'MERGE_CONFLICT_MARKER');
+  assert.equal(incrementalQaFailureSignature(new Error('changed file missing: index.html')),'CHANGED_FILE_MISSING');
+  assert.match(incrementalQaFailureSignature(new Error('PRESENTATION_STATIC_QA_FAILED:LIVING_MOTION:IDLE_REQUIRED')),/^PRESENTATION_STATIC_QA_FAILED/);
 });
