@@ -5193,11 +5193,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_975f5f8a317728b91e15c1b1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2038",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7cdbb5239abb8b8d0280bf6a980dbb094754ed94",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2038,
+        "baseBranch": "main",
+        "headBranch": "assistant/vibe2-atomic-neuron-stream-v1",
+        "baseSha": "7cdbb5239abb8b8d0280bf6a980dbb094754ed94",
+        "headSha": "e8dff909a7baf018f1ca177621bd205e9adbd562",
+        "mergeCommitSha": "b999e2e2247094e4f35a0649dc9e3f48c95a1283",
+        "mergedAt": "2026-09-20T09:54:28Z",
+        "authorLogin": "hans1177",
+        "titleHash": "82650a52330c5c32237d7c827efca85f81977495c264a06f6d63200bca1fb2b8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/vibe2-atomic-neuron-stream-v1",
+        "candidateSha": "e8dff909a7baf018f1ca177621bd205e9adbd562"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 314,
+        "deletedLineCount": 84,
+        "changedFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          "assets/vibe-continuous-queue.js",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-parallelism-main-contract.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "vibe2-runtime.json",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          "assets/vibe-continuous-queue.js",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-parallelism-main-contract.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "vibe2-runtime.json",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2038",
+        "merge-commit:b999e2e2247094e4f35a0649dc9e3f48c95a1283",
+        "base-main:7cdbb5239abb8b8d0280bf6a980dbb094754ed94"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 42
+    "total": 43
   }
 }
