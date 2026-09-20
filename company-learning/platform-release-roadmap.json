@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -11173,6 +11173,69 @@
       "security": "SECURITY_FINDING_REMEDIATION_AND_RESCAN_EVIDENCE",
       "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
       "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
+    }
+  },
+  "runtimeGameplayMediaPolicy": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "purpose": "PUBLISH_FRESH_VERIFIED_ACTUAL_GAMEPLAY_MEDIA_AFTER_GRAPHICS_OR_PRESENTATION_UPDATES",
+    "appliesTo": [
+      "WEB",
+      "UNITY",
+      "ROBLOX",
+      "FORTNITE_UEFN"
+    ],
+    "triggers": [
+      "GRAPHICS_ASSET_UPDATE_VERIFIED",
+      "PRESENTATION_OR_MOTION_UPDATE_VERIFIED",
+      "MAJOR_VISUAL_UPDATE_VERIFIED",
+      "NEW_RELEASE_OR_REDEPLOY_VERIFIED"
+    ],
+    "captureRules": {
+      "actualRuntimeOnly": true,
+      "exactVerifiedSourceOrArtifactRequired": true,
+      "syntheticOrMockGameplayScreenshotForbidden": true,
+      "promotionalConceptArtCannotBeLabeledGameplay": true,
+      "sourceRevisionRequired": true,
+      "artifactIdentityRequired": true,
+      "sha256Required": true,
+      "runtimeVerificationPassRequired": true,
+      "canonicalRecordDomain": "runtime-media",
+      "canonicalMediaRoot": "assets/runtime-evidence"
+    },
+    "platformCapture": {
+      "WEB": {
+        "automaticCaptureAllowed": true,
+        "source": "ACTUAL_BROWSER_RUNTIME",
+        "afterRuntimeQaPass": true
+      },
+      "UNITY": {
+        "automaticCaptureAllowed": true,
+        "source": "ACTUAL_ANDROID_RUNTIME_OR_APPROVED_NATIVE_RUNTIME",
+        "afterInstallAndLaunchVerification": true
+      },
+      "ROBLOX": {
+        "automaticUnattendedStudioCaptureAllowed": false,
+        "source": "APPROVED_ACTUAL_ROBLOX_RUNTIME_SESSION",
+        "approvedHumanSessionMayCapture": true,
+        "captureMayComeFromPublishedClientOrApprovedStudioRuntime": true,
+        "afterRuntimeAndIndependentQaEvidence": true
+      },
+      "FORTNITE_UEFN": {
+        "automaticCaptureAllowed": false,
+        "source": "APPROVED_ACTUAL_UEFN_OR_PUBLISHED_RUNTIME_SESSION",
+        "ownerHoldRespected": true
+      }
+    },
+    "homepagePromotion": {
+      "enabled": true,
+      "latestVerifiedGameplayCapturePreferredOverStaticCover": true,
+      "updateAsSoonAsVerifiedRecordAvailable": true,
+      "staleScreenshotSupersededByNewerVerifiedCapture": true,
+      "brokenOrUnverifiedMediaNeverPublished": true,
+      "releaseLinkAndScreenshotMustRemainPlatformAware": true,
+      "generatedIndex": "homepage-runtime-media.json",
+      "syncTool": "tools/homepage-runtime-media-sync.mjs"
     }
   }
 }
