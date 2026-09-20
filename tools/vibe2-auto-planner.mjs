@@ -573,12 +573,12 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
               ||clean(item?.productionMode)==='SUPERVISED_VIBE_COAUTHORING'
               ||(item?.evidence||[]).map(clean).includes('supervised-web-build:required');
             if(supervised){
-              return{...item,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+              return{...item,...(diagnosticCarryover.length?{neuralDiagnosis:null}:{}),evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
             }
-            return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+            return{...item,goal:refreshedGoal,...(diagnosticCarryover.length?{neuralDiagnosis:null}:{}),evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
           }
           if(diagnosticCarryover.length){
-            return{...item,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-diagnostic-bridge:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+            return{...item,neuralDiagnosis:null,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-diagnostic-bridge:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
           }
         }
         return item;
