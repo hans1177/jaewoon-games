@@ -149,3 +149,56 @@ test('player attack feel stays inside the existing attack presentation window an
   assert.match(player,/currentRange\(\)\*\.72/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
+
+test('combat vfx is stateless bounded and keyed to authoritative hit timing',()=>{
+  const enemyVfx=functionBody('drawEnemyCombatVfx');
+  assert.match(enemyVfx,/fantasyEnemyAttackPose\(e,now\)/);
+  assert.match(enemyVfx,/e\.hitAt/);
+  assert.match(enemyVfx,/remaining>110/);
+  assert.match(enemyVfx,/for\(let i=0;i<4;i\+\+\)/);
+  assert.doesNotMatch(enemyVfx,/push\(|splice\(|new Array|\[\]/);
+  const playerVfx=functionBody('drawPlayerCombatVfx');
+  assert.match(playerVfx,/attackActive/);
+  assert.match(playerVfx,/p\.invuln/);
+  assert.match(playerVfx,/currentRange\(\)/);
+  assert.doesNotMatch(playerVfx,/push\(|splice\(|new Array|\[\]/);
+  assert.doesNotMatch(source,/(?:combatFx|impactFx|hitFx)\s*=\s*\[/);
+});
+
+test('combat vfx is bound after actor rendering without changing combat ownership',()=>{
+  assert.match(functionBody('drawCreature'),/drawEnemyCombatVfx\(e,x,y,now\)/);
+  assert.match(functionBody('drawPlayer'),/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.doesNotMatch(functionBody('drawEnemyCombatVfx'),/e\.(?:hp|attackAt|nextAttackAt|hitAt)\s*=/);
+  assert.doesNotMatch(functionBody('drawPlayerCombatVfx'),/p\.(?:hp|attackAt|attackFx|invuln)\s*=/);
+});
+
+test('multiplayer snapshots derive visual hit timing only from authoritative hp decrease',()=>{
+  const snapshot=functionBody('applyWorldSnapshot');
+  assert.match(snapshot,/Number\(n\.hp\)<Number\(old\.hp\)\?now\+110/);
+  assert.match(snapshot,/hitAt/);
+  assert.doesNotMatch(snapshot,/n\.hp\s*=/);
+  assert.doesNotMatch(snapshot,/old\.hp\s*=/);
+});
+
+test('camera presentation smooths follow and caps combat response on mobile without mutating gameplay state',()=>{
+  const camera=functionBody('updateCameraPresentation');
+  assert.match(camera,/camera\.area!==state\.area/);
+  assert.match(camera,/Math\.exp\(-Math\.max\(0,dt\)\*followRate\)/);
+  assert.match(camera,/innerWidth<=900/);
+  assert.match(camera,/shakeCap=mobile\?3\.2:5\.2/);
+  assert.match(camera,/p\.attackAt/);
+  assert.match(camera,/p\.invuln/);
+  assert.match(camera,/camera\.x=clamp/);
+  assert.match(camera,/camera\.y=clamp/);
+  assert.doesNotMatch(camera,/p\.(?:x|y|faceX|faceY|attackAt|attackFx|invuln)\s*=/);
+});
+
+test('camera update replaces hard snap while keeping world tap coordinates aligned to rendered camera',()=>{
+  const update=functionBody('update');
+  assert.match(update,/updateCameraPresentation\(p,dt,now,camW,camH\)/);
+  assert.doesNotMatch(update,/state\.camera\.x=clamp\(p\.x-innerWidth\/2/);
+  assert.doesNotMatch(update,/state\.camera\.y=clamp\(p\.y-innerHeight\/2/);
+  const worldTap=functionBody('handleWorldTap');
+  assert.match(worldTap,/e\.clientX\+state\.camera\.x/);
+  assert.match(worldTap,/e\.clientY\+state\.camera\.y/);
+});
