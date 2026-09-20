@@ -20,7 +20,7 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
   'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE',
-  'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
+  'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','UNITY_RUNTIME','UEFN_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER'
 ]);
 
@@ -51,6 +51,8 @@ const DOMAIN_PATTERNS=freeze({
   CHARACTER_ARC:/character.?arc|character.?growth|want.?need|motivation|캐릭터.?아크|인물.?변화|욕망|동기|갈등|관계.?변화/i,
   DIALOGUE:/dialogue|conversation|대화|대사|subtext|말투|화법|scene.?objective/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
+  UNITY_RUNTIME:/\bunity\b|c#|mono|il2cpp|gameobject|prefab|scene/i,
+  UEFN_RUNTIME:/uefn|fortnite|\bverse\b|unreal editor for fortnite/i,
   ROBLOX_STUDIO:/roblox|studio|luau|rbxl|rbxlx/i,
   ROBLOX_DATASTORE:/datastore|ordered.?data.?store/i,
   ROBLOX_REMOTE_SECURITY:/remoteevent|remotefunction|remote.?security|server.?validate/i,
@@ -71,6 +73,8 @@ function inferDomains(text='',engine=''){
   for(const [domain,re] of Object.entries(DOMAIN_PATTERNS)) if(re.test(source)) out.push(domain);
   const e=lower(engine);
   if(e==='web') out.push('WEB_RUNTIME');
+  if(e==='unity') out.push('UNITY_RUNTIME');
+  if(['fortnite_uefn','uefn','fortnite'].includes(e)) out.push('UEFN_RUNTIME');
   if(e==='roblox') out.push('ROBLOX_STUDIO');
   return uniq(out);
 }
@@ -1059,6 +1063,109 @@ export function enrichQueueForCandidateTournaments(queueInput={},masteryInput={}
   return {queue:{...queueInput,tasks},changed};
 }
 
+
+const PLATFORM_PATTERN_ENGINES=freeze(['web','roblox','unity','fortnite_uefn']);
+function normalizePatternEngine(value=''){
+  const e=lower(value);
+  if(['uefn','fortnite','fortnite-uefn','fortnite_uefn'].includes(e))return'fortnite_uefn';
+  return PLATFORM_PATTERN_ENGINES.includes(e)?e:'';
+}
+function platformPatternRoot(game={},engine=''){
+  const e=normalizePatternEngine(engine);
+  let raw='';
+  if(e==='web')raw=clean(game.webPath||game?.canonical?.sources?.web?.path||game?.canonical?.sources?.web?.sourcePath);
+  if(e==='roblox')raw=clean(game.robloxProjectPath||game?.canonical?.sources?.roblox?.projectPath);
+  if(e==='unity')raw=clean(game.unityProjectPath||game?.canonical?.sources?.unity?.projectPath);
+  if(e==='fortnite_uefn')raw=clean(game.uefnProjectPath||game.fortniteProjectPath||game?.canonical?.sources?.uefn?.projectPath||game?.canonical?.sources?.fortniteUefn?.projectPath);
+  raw=raw.replaceAll('\\','/').replace(/^\.\//,'').replace(/\/index\.html$/,'').replace(/\/+$/,'');
+  const re=e==='web'?/^web-games\/[A-Za-z0-9._-]+$/:e==='roblox'?/^roblox-games\/[A-Za-z0-9._/-]+$/:e==='unity'?/^unity-games\/[A-Za-z0-9._/-]+$/:/^uefn-games\/[A-Za-z0-9._/-]+$/;
+  return raw&&re.test(raw)?raw:null;
+}
+function platformPatternReleaseState(game={}){
+  const cls=upper(game.productionClass);
+  if(cls==='RELEASE_CONFIRMED')return'release-confirmed';
+  if(cls==='DEVELOPMENT_CONFIRMED')return'development-confirmed';
+  return'other';
+}
+function platformPatternSourceRevision(record={}){
+  const direct=clean(record.sourceRevision||record.sourceCommit||record?.provenance?.sourceRevision);
+  if(direct)return direct;
+  const marker=(record.evidence||[]).map(clean).find(value=>value.startsWith('source-revision:'));
+  return marker?clean(marker.slice('source-revision:'.length)):'';
+}
+function verifiedPlatformPropagationSources(codePatternsInput={},experienceInput={}){
+  const groups=new Map();
+  const add=(engine,gameId,revision,pattern,evidenceId)=>{
+    const e=normalizePatternEngine(engine),game=clean(gameId),rev=clean(revision),pat=clean(pattern);
+    if(!e||!game||!rev||!pat)return;
+    const key=e+'|'+game+'|'+rev,row=groups.get(key)||{engine:e,gameId:game,sourceRevision:rev,patterns:[],evidenceIds:[]};
+    row.patterns=uniq([...row.patterns,pat]);
+    row.evidenceIds=uniq([...row.evidenceIds,clean(evidenceId)]);
+    groups.set(key,row);
+  };
+  for(const row of codePatternsInput?.patterns||[]){
+    if(row?.verified!==true||upper(row?.independentQa)!=='PASS')continue;
+    add(row.engine,row.gameId,row.sourceRevision,clean(row.pattern)||clean(row.system),row.id);
+  }
+  for(const row of experienceInput?.records||[]){
+    if(row?.verified!==true||row?.reusable!==true||upper(row?.outcome)!=='PASS')continue;
+    const revision=platformPatternSourceRevision(row);
+    for(const pattern of row.reusablePatterns||[])add(row.engine,row.gameId,revision,pattern,row.id);
+  }
+  return[...groups.values()].sort((a,b)=>a.engine.localeCompare(b.engine)||a.gameId.localeCompare(b.gameId)||a.sourceRevision.localeCompare(b.sourceRevision));
+}
+export function propagateVerifiedPlatformPatterns(queueInput={},codePatternsInput={},experienceInput={},catalogInput={}){
+  const tasks=Array.isArray(queueInput?.tasks)?queueInput.tasks:[],existing=new Set(tasks.map(task=>clean(task?.id)).filter(Boolean));
+  const games=(catalogInput?.games||[]).filter(game=>
+    ['ACTIVE','REBUILD'].includes(upper(game?.lifecycleState||game?.lifecycle?.state||'ACTIVE'))&&
+    ['development-confirmed','release-confirmed'].includes(platformPatternReleaseState(game))
+  );
+  const sources=verifiedPlatformPropagationSources(codePatternsInput,experienceInput),addedTasks=[];
+  let eligibleTargetCount=0;
+  for(const source of sources){
+    const targets=games.map(game=>({
+      gameId:clean(game?.id),sourceRoot:platformPatternRoot(game,source.engine),releaseState:platformPatternReleaseState(game)
+    })).filter(row=>row.gameId&&row.sourceRoot&&row.gameId!==source.gameId);
+    eligibleTargetCount+=targets.length;
+    for(const target of targets){
+      const id=`PLATFORM-PATTERN-PROPAGATE-${source.engine}-${hash(source.gameId+'|'+source.sourceRevision)}-${target.gameId.replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,60)}`;
+      if(existing.has(id))continue;
+      addedTasks.push({
+        id,gameId:target.gameId,target:source.engine,department:'development',type:'implementation',
+        goal:[
+          '[VIBE_VERIFIED_PLATFORM_PATTERN_PROPAGATION]',
+          `sourcePlatform=${source.engine}`,`sourceGame=${source.gameId}`,`sourceRevision=${source.sourceRevision}`,
+          `verifiedPatterns=${source.patterns.slice(0,24).join(' | ')}`,
+          '현재 대상에 패턴이 실제로 적용 가능한지 먼저 증거로 확인한다.',
+          '적용 불가면 source write 없이 VERIFIED_NO_APPLICABILITY로 종료한다.',
+          '적용 가능하면 raw 코드를 복사하지 말고 검증된 메커니즘을 대상 구조에 맞게 재구성한다.',
+          '대상 플랫폼의 fresh native/runtime QA와 regression을 새로 통과해야 한다.',
+          '다른 플랫폼 PASS는 이 대상의 PASS 증거를 대체하지 않는다.'
+        ].join('\n'),
+        responsibleFiles:[target.sourceRoot],dependencies:[],priority:'low',releaseState:target.releaseState,status:'queued',
+        retries:0,maxRetries:null,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',ownerDirective:false,requiresOwnerDecision:false,
+        protectedChange:false,paidResourceRequired:false,sourceRoot:target.sourceRoot,speculativeEligible:false,estimatedRisk:'medium',
+        evidence:[
+          'verified-platform-pattern-propagation','pattern-propagation-total-limit:NONE','pattern-propagation-per-cycle-target-cap:NONE',
+          'future-targets-generate-next-cycle:YES','same-platform-auto-application-only','cross-platform-pass-substitution:NO',
+          'pattern-applicability-required','raw-code-copy:NO','fresh-target-native-qa-required',
+          `pattern-source-platform:${source.engine}`,`pattern-source-game:${source.gameId}`,
+          `pattern-source-revision:${source.sourceRevision}`,`pattern-source-evidence-count:${source.evidenceIds.length}`
+        ],
+        completionCriteria:[
+          'PATTERN_APPLICABILITY_VERIFIED','SMALLEST_RESPONSIBLE_CHANGE_OR_VERIFIED_NO_APPLICABILITY',
+          'FRESH_PLATFORM_NATIVE_OR_RUNTIME_QA_PASS','FRESH_REGRESSION_PASS','PRODUCTION_GATE_UNCHANGED'
+        ]
+      });
+      existing.add(id);
+    }
+  }
+  return{
+    queue:{...queueInput,tasks:[...tasks,...addedTasks]},changed:addedTasks.length>0,added:addedTasks.length,
+    sourceCount:sources.length,eligibleTargetCount,totalPropagationLimit:null,perCycleEligibleTargetCap:null,futureTargetsContinue:true
+  };
+}
+
 function idleDrillKindForDomain(domain=''){
   const d=upper(domain);
   if(d==='ASSET_ADAPTATION')return'ASSET_ADAPTATION_DRILL';
@@ -1547,7 +1654,7 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={},q
   };
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
+export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={},catalogInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
@@ -1560,7 +1667,8 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const benchmark=buildBenchmarkLadder(knowledgeApplied.state,experienceInput,companyQueueInput);
   const idlePractice=buildIdlePracticeQueue(knowledgeApplied.state,benchmark);
   const tournament=enrichQueueForCandidateTournaments(queueInput,knowledgeApplied.state);
-  const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
+  const propagation=propagateVerifiedPlatformPatterns(tournament.queue,codePatternsInput,experienceInput,catalogInput);
+  const practice=injectIdlePracticeTask(propagation.queue,idlePractice);
   return {
     state:knowledgeApplied.state,
     addedExperience:applied.added,
@@ -1579,6 +1687,13 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
+    platformPatternPropagationTasksAdded:propagation.added,
+    platformPatternPropagationSourceCount:propagation.sourceCount,
+    platformPatternPropagationEligibleTargets:propagation.eligibleTargetCount,
+    platformPatternPropagationTotalLimit:null,
+    platformPatternPropagationPerCycleEligibleTargetCap:null,
+    platformPatternPropagationFutureTargetsContinue:true,
+    platformPatternPropagationQueueChanged:propagation.changed,
     idlePracticeTaskAdded:practice.added,
     idlePracticeQueueChanged:practice.changed===true,
     idlePracticeDeduped:practice.deduped||0,
@@ -1596,9 +1711,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const queueFile=clean(a.queue);
   const roadmapFile=clean(a.roadmap)||'company-learning/platform-release-roadmap.json';
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
+  const catalogFile=clean(a.catalog)||'game-catalog.json';
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),catalogInput:readJson(catalogFile,{games:[]})});
   writeJson(stateFile,result.state);
-  if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
+  if(queueFile&&(result.tournamentTasksChanged>0||result.platformPatternPropagationQueueChanged||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
@@ -1620,6 +1736,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PHASE4_GENERALIZATION_PRACTICE_DRILLS=${result.idlePractice.phase4GeneralizationDrills||0}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);
+  console.log(`VIBE2_PLATFORM_PATTERN_PROPAGATION_TASKS_ADDED=${result.platformPatternPropagationTasksAdded||0}`);
+  console.log(`VIBE2_PLATFORM_PATTERN_PROPAGATION_SOURCES=${result.platformPatternPropagationSourceCount||0}`);
+  console.log(`VIBE2_PLATFORM_PATTERN_PROPAGATION_ELIGIBLE_TARGETS=${result.platformPatternPropagationEligibleTargets||0}`);
+  console.log('VIBE2_PLATFORM_PATTERN_PROPAGATION_TOTAL_LIMIT=NONE');
+  console.log('VIBE2_PLATFORM_PATTERN_PROPAGATION_PER_CYCLE_ELIGIBLE_TARGET_CAP=NONE');
+  console.log('VIBE2_PLATFORM_PATTERN_PROPAGATION_FUTURE_TARGETS_CONTINUE=YES');
   console.log(`VIBE2_IDLE_PRACTICE_TASK_ADDED=${result.idlePracticeTaskAdded?'YES':'NO'}`);
   console.log(`VIBE2_IDLE_PRACTICE_QUEUE_CHANGED=${result.idlePracticeQueueChanged?'YES':'NO'}`);
   console.log(`VIBE2_IDLE_PRACTICE_DEDUPED=${result.idlePracticeDeduped||0}`);

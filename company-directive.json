@@ -182,9 +182,9 @@
   },
   "gameSeed": {
     "enabled": true,
-    "stage": "BEFORE_GAME_DESIGNER_DRAFT",
-    "requiredBeforeDesignerDraft": true,
-    "selectionMode": "MIXED_SEED_MATERIAL_COMPOSITION",
+    "stage": "OPTIONAL_PRE_DESIGN_GUIDANCE",
+    "requiredBeforeDesignerDraft": false,
+    "selectionMode": "VIBE_SELF_COMPOSITION_GUIDANCE_ONLY",
     "transformationModes": [
       "HOMAGE",
       "REINTERPRETATION",
@@ -240,7 +240,41 @@
     "unavailableMarketFieldMayBeUnknown": true,
     "marketEvidenceHardPassFailGate": false,
     "directCopyForbidden": true,
-    "requiredFields": [
+    "requiredFields": [],
+    "derivedProductionRequirements": [
+      "MANDATORY_WEB_GAME_COMPANION",
+      "FULL_APPROVED_SCOPE_IMPLEMENTATION"
+    ],
+    "seedMaterialPoolTarget": null,
+    "seedMaterialCombineMin": null,
+    "seedMaterialCombineMax": null,
+    "materialMustBeExistingGame": false,
+    "targetSessionMinutes": null,
+    "gameplaySketchRequired": false,
+    "multiplayerModes": [
+      "SINGLE",
+      "COOP",
+      "COMPETITIVE",
+      "HYBRID"
+    ],
+    "requiredFieldsSource": "tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS",
+    "guidanceOnly": true,
+    "creativeConstraints": "NONE",
+    "vibeSelfCompositionAuthority": true,
+    "vibeMayIgnoreAllSeedGuidance": true,
+    "vibeMayCreateNewMaterials": true,
+    "vibeMayUseZeroOneOrAnyMaterialCount": true,
+    "gameSeedMayBeAbsent": true,
+    "transformationModesAreExamplesOnly": true,
+    "seedMaterialStarterReferenceCount": 100,
+    "seedMaterialPoolGrowthLimit": null,
+    "seedMaterialSuggestedCombineRange": [
+      2,
+      4
+    ],
+    "suggestedTargetSessionMinutes": 30,
+    "multiplayerModesAreExamplesOnly": true,
+    "advisoryFields": [
       "GAME_CATEGORY",
       "REFERENCE_INPUTS",
       "CORE_FUN_TO_LEARN",
@@ -256,23 +290,11 @@
       "MULTIPLAYER_DESIGN_MODE",
       "CROSS_PLATFORM_EXPANSION_VALUE"
     ],
-    "derivedProductionRequirements": [
-      "MANDATORY_WEB_GAME_COMPANION",
-      "FULL_APPROVED_SCOPE_IMPLEMENTATION"
-    ],
-    "seedMaterialPoolTarget": 100,
-    "seedMaterialCombineMin": 2,
-    "seedMaterialCombineMax": 4,
-    "materialMustBeExistingGame": false,
-    "targetSessionMinutes": 30,
-    "gameplaySketchRequired": true,
-    "multiplayerModes": [
-      "SINGLE",
-      "COOP",
-      "COMPETITIVE",
-      "HYBRID"
-    ],
-    "requiredFieldsSource": "tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS"
+    "hardGateScope": [
+      "SECURITY",
+      "LEGAL_COPY_PROTECTION",
+      "EVIDENCE_INTEGRITY"
+    ]
   },
   "discardPolicy": {
     "general": {

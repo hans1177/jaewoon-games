@@ -111,12 +111,13 @@ const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.arg
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
 if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
 const seedState=loadSeedState();
-const seed=activeSeedForGame(seedState,gameId);
-if(!seed)throw new Error(`GAME_SEED_REQUIRED: ${gameId}`);
-const ownerPreservationDesign=seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
-  &&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
 const catalog=readJson('game-catalog.json',{games:[]});
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
+const activeSeed=activeSeedForGame(seedState,gameId);
+const seed=activeSeed||{seedId:`VIBE-SELF-COMPOSE-${gameId}`,gameId,status:'VIBE_SELF_COMPOSITION',gameName:clean(catalogGame?.name)||gameId,GAME_CATEGORY:clean(catalogGame?.genre)||'VIBE_SELF_DEFINED',CORE_LOOP:[],DISTINCT_IDENTITY:clean(catalogGame?.description)||'',INITIAL_TARGET_PLATFORM:clean(catalogGame?.selectedPlatform)||'',INITIAL_PLAY_MODE:'PROJECT_DEFINED',MULTIPLAYER_DESIGN_MODE:'',TARGET_SESSION_MINUTES:null,GAME_SEED_ROLE:'ABSENT_OPTIONAL_GUIDANCE',VIBE_SELF_COMPOSITION_AUTHORITY:true};
+const seedGuidancePresent=Boolean(activeSeed);
+const ownerPreservationDesign=seedGuidancePresent&&seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+  &&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
 if(catalogGame&&clean(catalogGame.productionClass)&&clean(catalogGame.productionClass)!=='DESIGN_ONLY')throw new Error(`DESIGN_ONLY_CLASS_REQUIRED: ${catalogGame.productionClass}`);
 const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
 const designerRoute={provider:'GEMINI',model:geminiDesignerModel,id:`gemini:${geminiDesignerModel}`};
@@ -1187,7 +1188,7 @@ writeProgress('COMPLETE',{preGateScore:preGate.totalScore,postRevisionPreGateSco
 console.log('DESIGN_CHECKPOINT_STATUS=COMPLETE');
 console.log('COMPANY_DESIGN_CYCLE=COMPLETE');
 console.log(`GAME_ID=${gameId}`);
-console.log(`GAME_SEED_ID=${seed.seedId}`);
+console.log(`GAME_SEED_ID=${seedGuidancePresent?seed.seedId:'NONE'}`);console.log('GAME_SEED_REQUIRED=NO');console.log('DESIGN_CREATIVE_AUTHORITY=VIBE_SELF_COMPOSITION');
 console.log('PRODUCTION_CLASS=DESIGN_ONLY');
 console.log('DISTINCT_DEPARTMENT_LEADS=0');
 console.log(`DESIGN_DISPOSITION=${disposition}`);

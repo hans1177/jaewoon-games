@@ -168,8 +168,8 @@ jobs:
         run: |
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
-          grep -q 'SEED_MATERIAL_POOL_TARGET=100' /tmp/game-seed-result.txt
-          grep -q 'TARGET_SESSION_MINUTES=30' /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_GUIDANCE_ONLY=YES' /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_CREATIVE_CONSTRAINTS=NONE' /tmp/game-seed-result.txt
 
       - name: Normalize active GAME_SEED semantics
         env:

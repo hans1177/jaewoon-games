@@ -10,7 +10,8 @@ export const DEFAULT_SEED_CATEGORIES=[
   'IDLE_GROWTH_RPG',
   'STORY_COMPLETE_RPG'
 ];
-export const SEED_MATERIAL_POOL_TARGET=100;
+export const SEED_MATERIAL_STARTER_REFERENCE_COUNT=100;
+export const SEED_MATERIAL_POOL_TARGET=SEED_MATERIAL_STARTER_REFERENCE_COUNT;
 export const SEED_MATERIAL_SOURCE_FAMILIES=Object.freeze([
   'SUCCESSFUL_GAME_STRUCTURE',
   'STORY_OR_NARRATIVE_STRUCTURE',
@@ -85,16 +86,13 @@ export function normalizeSeedState(raw={}){
   state.seedMaterials=state.seedMaterials.map(normalizeMaterial);
   if(!state.seedMaterialPolicy||typeof state.seedMaterialPolicy!=='object'||Array.isArray(state.seedMaterialPolicy))state.seedMaterialPolicy={};
   state.seedMaterialPolicy={
-    targetCount:SEED_MATERIAL_POOL_TARGET,
-    materialIsGame:false,
-    combineMin:2,
-    combineMax:4,
-    compositionMode:'DYNAMIC_CONTEXTUAL_2_TO_4',
-    fixedCompositionCount:false,
-    dynamicSignals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],
-    sourceFamilies:[...SEED_MATERIAL_SOURCE_FAMILIES],
-    actualGameCountUnlimited:true,
-    ...state.seedMaterialPolicy,
+    targetCount:null,starterReferenceCount:SEED_MATERIAL_STARTER_REFERENCE_COUNT,materialIsGame:false,
+    combineMin:null,combineMax:null,suggestedCombineMin:2,suggestedCombineMax:4,
+    compositionMode:'VIBE_SELF_DIRECTED_UNBOUNDED',fixedCompositionCount:false,materialUseOptional:true,
+    mayUseZeroMaterials:true,mayInventMaterials:true,poolGrowthLimit:null,
+    dynamicSignals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],sourceFamilies:[...SEED_MATERIAL_SOURCE_FAMILIES],
+    actualGameCountUnlimited:true,...state.seedMaterialPolicy,
+    targetCount:null,combineMin:null,combineMax:null,poolGrowthLimit:null,
   };
   if(!state.platformSets||typeof state.platformSets!=='object'||Array.isArray(state.platformSets))state.platformSets={};
   if(!Array.isArray(state.portfolioSeedRequests))state.portfolioSeedRequests=[];
@@ -163,7 +161,9 @@ export function resolveSeedMaterialCompositionCount(state,{platform='',category=
 export function composeSeedMaterials(state,{count=null,timestamp=new Date().toISOString(),learningSignals={},platform='',category='',top30GameIds=[]}={}){
   ensureSeedMaterialPool(state,{timestamp});
   const explicit=Number(count);
-  const n=Number.isFinite(explicit)&&explicit>=2&&explicit<=4?Math.trunc(explicit):resolveSeedMaterialCompositionCount(state,{platform,category,top30GameIds,learningSignals});
+  const n=Number.isFinite(explicit)&&explicit>=0?Math.trunc(explicit):resolveSeedMaterialCompositionCount(state,{platform,category,top30GameIds,learningSignals});
+  if(n===0){state.seedMaterialPolicy.lastComposition={count:0,guidanceOnly:true,platform:normalizeSeedPlatform(platform)||null,category:clean(category)||null,selectedMaterialIds:[],updatedAt:timestamp};return[];}
+  ensureSeedMaterialPool(state,{timestamp,target:Math.max(SEED_MATERIAL_STARTER_REFERENCE_COUNT,n)});
   const available=state.seedMaterials.filter(x=>x.status==='AVAILABLE');
   if(available.length<n)throw new Error(`SEED_MATERIAL_POOL_EXHAUSTED ${available.length}/${n}`);
   const preferred=new Set(learningFamilies(learningSignals,'preferFamilies'));

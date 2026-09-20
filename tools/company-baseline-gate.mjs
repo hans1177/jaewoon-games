@@ -3,7 +3,6 @@ import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 import {loadSeedState,saveSeedState,seedForGame,activeSeedForGame,markSeedDiscarded} from './game-seed-state.mjs';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
-import {GAME_SEED_REQUIRED_FIELDS} from './company-game-seed-contract.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -79,9 +78,6 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
     if(seedAny){markSeedDiscarded(seedState,gameId,{reason:'DESIGN_ONLY_FATAL_REVIEW',timestamp:new Date().toISOString()});saveSeedState(seedState);}
     state='DISCARDED';blockers.push('design-discarded-after-revision-and-five-department-rereview');
   }
-  const requiredSeedFields=GAME_SEED_REQUIRED_FIELDS;
-  if(!seedActive)blockers.push('active-game-seed-required');
-  for(const field of requiredSeedFields)if(!hasValue(seedActive?.[field]))blockers.push(`game-seed-field-required:${field}`);
   const revised=readJson(path.join('design',gameId,date,'design-revised.json'),null)?.content||null;
   designMultiplayerMode=clean(revised?.multiplayerMode).toUpperCase()||null;
   designMultiplayerModeValid=MULTIPLAYER_MODES.has(designMultiplayerMode);
@@ -145,7 +141,7 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
 
 const developmentRequired=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED;
 const evidence={
-  gameSeed:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,present:Boolean(seedActive),seedId:seedActive?.seedId||null,source:seedActive?'game-seed-state.json':null},
+  gameSeed:{required:false,present:Boolean(seedActive),seedId:seedActive?.seedId||null,source:seedActive?'game-seed-state.json':null,role:'OPTIONAL_GUIDANCE_ONLY',creativeAuthority:'VIBE_SELF_COMPOSITION'},
   designMultiplayer:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,mode:designMultiplayerMode,valid:designMultiplayerModeValid,decisionStage:'GAME_DESIGN',allowedModes:[...MULTIPLAYER_MODES]},
   deterministicDesignGate:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&deterministicDesignGateEnabled,authority:deterministicDesignGateEnabled?'DETERMINISTIC_EVIDENCE':null,...(deterministicDesignEvidence||{pass:null,path:null,phase:null,totalScore:null,passMinimum:null,hardFailures:[],criticalAxisFailures:[]})},
   webSmoke:{supportingOnly:true,pass:webSmokePass,source:webSmoke?'company-qa-runtime-evidence.json':null},
@@ -158,7 +154,7 @@ if(selectedPlatform==='UNITY'){
   evidence.unityProject={required:developmentRequired,present:targetProjectPresent,path:targetProjectPath||null};
   evidence.unityTechnical={required:developmentRequired,pass:targetTechnical.pass,source:targetTechnical.path};
 }
-status.baselineGate={policyDocument:'COMPANY_FLOW.md',productionClass,tierAlias,tier:tierAlias,state,ready,blockers,advisoryDisposition,unanimousFatalDiscard,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds,allResolved:meetingConflicts===0&&meetingHolds===0},evidence,contracts:{aiMeetingCompletionDoesNotEqualBaselineApproval:true,gameSeedRequiredBeforeDesignBaseline:true,multiplayerModeRequiredAtGameDesign:true,marketEvidenceIsTargetReferenceNotHardGate:true,meetingHoldBlocksDesignBaseline:true,meetingConflictBlocksDesignBaseline:true,minorityLeadRedesignOrDiscardIsAdvisoryOnly:true,unanimousFatalDiscardRequiredToDiscard:true,postRevisionFiveDepartmentReviewRequiredBeforeDiscard:!deterministicDesignGateEnabled,deterministicEvidenceGateRequired:deterministicDesignGateEnabled,aiReviewIsGateAuthority:false,designArtbookOnlyAfterBaselineReady:true,designOnlyVibe2Forbidden:true,webSmokeDoesNotEqualGameplayValidation:true,developmentConfirmedIsGatedDirect:true,developmentConfirmedResumesFromLatestEvidence:true,developmentConfirmedRequiresExplicitWebGameplayValidation:true,developmentConfirmedRequiresFullApprovedWebScope:true,developmentConfirmedRequiresSelectedPlatformTechnicalValidation:true,developmentArtbookOnlyAfterBaselineReady:true,releaseConfirmedBaselineOwnedByReleasePipeline:true,numericTierIsCompatibilityAliasOnly:true},checkedAt:new Date().toISOString()};
+status.baselineGate={policyDocument:'COMPANY_FLOW.md',productionClass,tierAlias,tier:tierAlias,state,ready,blockers,advisoryDisposition,unanimousFatalDiscard,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds,allResolved:meetingConflicts===0&&meetingHolds===0},evidence,contracts:{aiMeetingCompletionDoesNotEqualBaselineApproval:true,gameSeedRequiredBeforeDesignBaseline:false,multiplayerModeRequiredAtGameDesign:true,marketEvidenceIsTargetReferenceNotHardGate:true,meetingHoldBlocksDesignBaseline:true,meetingConflictBlocksDesignBaseline:true,minorityLeadRedesignOrDiscardIsAdvisoryOnly:true,unanimousFatalDiscardRequiredToDiscard:true,postRevisionFiveDepartmentReviewRequiredBeforeDiscard:!deterministicDesignGateEnabled,deterministicEvidenceGateRequired:deterministicDesignGateEnabled,aiReviewIsGateAuthority:false,designArtbookOnlyAfterBaselineReady:true,designOnlyVibe2Forbidden:true,webSmokeDoesNotEqualGameplayValidation:true,developmentConfirmedIsGatedDirect:true,developmentConfirmedResumesFromLatestEvidence:true,developmentConfirmedRequiresExplicitWebGameplayValidation:true,developmentConfirmedRequiresFullApprovedWebScope:true,developmentConfirmedRequiresSelectedPlatformTechnicalValidation:true,developmentArtbookOnlyAfterBaselineReady:true,releaseConfirmedBaselineOwnedByReleasePipeline:true,numericTierIsCompatibilityAliasOnly:true},checkedAt:new Date().toISOString()};
 
 let uiStatus='WAITING';if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&ready)uiStatus='WRITING';else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&ready&&status.artbook)uiStatus='COMPLETE';
 const uiLabel={WRITING:'작성중',WAITING:'대기중',COMPLETE:'완료'}[uiStatus];const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');writeJson(publicStatusPath,{version:3,gameId,gameName:game.name,date,productionClass,tierAlias,tier:tierAlias,uiStatus,uiLabel,baselineGateState:state,baselineReady:ready,selectedPlatform:developmentRequired?selectedPlatform:null,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds},artbookPublished:Boolean(status.artbookPublication?.published),currentPublicationRetained:true,nextAction:status.nextAction||null,updatedAt:new Date().toISOString()});

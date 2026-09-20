@@ -26,7 +26,8 @@ import {
   buildIdlePracticeQueue,
   injectIdlePracticeTask,
   dedupeIdlePracticeTasks,
-  buildWebRobloxHandoffs
+  buildWebRobloxHandoffs,
+  propagateVerifiedPlatformPatterns
 } from '../tools/vibe2-learning-motor.mjs';
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
@@ -876,3 +877,51 @@ test('verified-only strategy memory opens candidate tournament to gather preferr
   assert.equal(policy.gateBypass,false);
 });
 
+
+
+
+
+
+test('verified results propagate to every eligible same-platform target with no total or per-cycle generation cap',()=>{
+  const makeGames=(engine,count)=>Array.from({length:count},(_,i)=>{
+    const id=engine+'-'+String(i+1).padStart(4,'0');
+    const base={id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'};
+    if(engine==='web')return{...base,webPath:'web-games/'+id};
+    if(engine==='roblox')return{...base,robloxProjectPath:'roblox-games/'+id,selectedPlatform:'ROBLOX'};
+    if(engine==='unity')return{...base,unityProjectPath:'unity-games/'+id,selectedPlatform:'UNITY'};
+    return{...base,uefnProjectPath:'uefn-games/'+id,selectedPlatform:'FORTNITE_UEFN'};
+  });
+  for(const engine of ['web','roblox','unity','fortnite_uefn']){
+    const games=makeGames(engine,257);
+    const patterns={patterns:[{
+      id:'pat-'+engine,gameId:games[0].id,engine,taskType:'bugfix',system:'STATE_MACHINE',
+      pattern:'VERIFIED_STATE_MACHINE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION',
+      verified:true,sourceRevision:'rev-'+engine,independentQa:'PASS',browserQa:engine==='web'?'PASS':'NOT_APPLICABLE'
+    }]};
+    const result=propagateVerifiedPlatformPatterns({tasks:[]},patterns,{records:[]},{games});
+    assert.equal(result.sourceCount,1);
+    assert.equal(result.added,256);
+    assert.equal(result.totalPropagationLimit,null);
+    assert.equal(result.perCycleEligibleTargetCap,null);
+    assert.equal(result.futureTargetsContinue,true);
+    assert.ok(result.queue.tasks.every(task=>task.target===engine));
+    assert.ok(result.queue.tasks.every(task=>task.evidence.includes('pattern-propagation-total-limit:NONE')));
+    assert.ok(result.queue.tasks.every(task=>task.evidence.includes('cross-platform-pass-substitution:NO')));
+    assert.ok(result.queue.tasks.every(task=>task.completionCriteria.includes('FRESH_PLATFORM_NATIVE_OR_RUNTIME_QA_PASS')));
+  }
+});
+
+test('new eligible targets added later keep generating new propagation signals',()=>{
+  const source={id:'pat-unbounded',gameId:'g0',engine:'unity',taskType:'unity',system:'STATE_MACHINE',pattern:'VERIFIED_STATE_MACHINE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION',verified:true,sourceRevision:'unity-r1',independentQa:'PASS'};
+  const firstCatalog={games:[
+    {id:'g0',unityProjectPath:'unity-games/g0',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY'},
+    {id:'g1',unityProjectPath:'unity-games/g1',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY'}
+  ]};
+  const first=propagateVerifiedPlatformPatterns({tasks:[]},{patterns:[source]},{records:[]},firstCatalog);
+  assert.equal(first.added,1);
+  const secondCatalog={games:[...firstCatalog.games,{id:'g2',unityProjectPath:'unity-games/g2',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY'}]};
+  const second=propagateVerifiedPlatformPatterns(first.queue,{patterns:[source]},{records:[]},secondCatalog);
+  assert.equal(second.added,1);
+  assert.equal(second.queue.tasks.length,2);
+  assert.equal(second.totalPropagationLimit,null);
+});

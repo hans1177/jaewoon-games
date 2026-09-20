@@ -1020,99 +1020,32 @@ bootstrapGameSeeds:
     expansionOrReductionUsesDepartmentScoresAndEvidence: true
 
 GAME_SEED:
-  stage: BEFORE_GAME_DESIGNER_DRAFT
-  purpose: DEFINE_WHAT_GAME_TO_BUILD
-  selectionMode: FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK
-  transformationModes:
-    - HOMAGE
-    - REINTERPRETATION
-  primaryIntent: SELECT_SUCCESSFUL_REFERENCE_AND_REBUILD_CORE_SUCCESS_PATTERN
-  referenceStrategy:
-    mode: FAMOUS_SUCCESSFUL_RELEASED_GAME_BENCHMARK
-    sourcesAllowed:
-      - FAMOUS_MOBILE_GAMES
-      - RELEASED_STEAM_GAMES
-      - SUCCESSFUL_ROBLOX_EXPERIENCES
-      - SUCCESSFUL_FORTNITE_UEFN_EXPERIENCES
-    selectionPriority:
-      - PROVEN_COMMERCIAL_OR_POPULAR_SUCCESS
-      - CLEAR_PROVEN_CORE_FUN_AND_CORE_LOOP
-      - PRIMARY_OR_SELECTED_PLATFORM_FIT
-      - PRODUCIBLE_AT_COMPANY_SCALE
-      - COMMERCIAL_VIABILITY
-      - CROSS_PLATFORM_EXPANSION_VALUE
-    mayStudy:
-      - CORE_FUN
-      - CORE_LOOP
-      - COMBAT_TEMPO
-      - SESSION_STRUCTURE
-      - PROGRESSION_PATTERN
-      - ECONOMY_PATTERN
-      - UX_PATTERN
-      - MARKET_POSITIONING
-    mayCarryOverAbstractPatternsThroughReimplementation:
-      - GAMEPLAY_RULE_PATTERN
-      - CORE_LOOP_PATTERN
-      - PROGRESSION_STRUCTURE_PATTERN
-      - ECONOMY_STRUCTURE_PATTERN
-      - SESSION_STRUCTURE_PATTERN
-      - UX_PATTERN
-    mustReinterpret:
-      - WORLD_AND_SETTING
-      - VISUAL_IDENTITY
-      - CHARACTERS
-      - SYSTEM_COMBINATION
-      - PROGRESSION_EXPRESSION
-      - PRESENTATION_AND_DIRECTION
-    directCopyForbidden:
-      - SOURCE_CODE
-      - ART_ASSETS
-      - AUDIO
-      - CHARACTERS
-      - NAMES
-      - STORY_TEXT
-      - MAPS
-      - UI_ARTWORK
-      - TRADE_DRESS
-    sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE
-    requirement: HOMAGE_OR_REINTERPRET_REFERENCE_INTO_DISTINCT_GAME_IDENTITY
-  marketEvidence:
-    role: TARGET_DESIGN_REFERENCE
-    targetMarketScope: GLOBAL
-    countrySpecificEvidenceRole: SECONDARY_CONTEXT_ONLY
-    defaultTargetMustNotBeCountrySpecific: true
-    hardPassFailGate: false
-    missingMarketDataDoesNotAutoRejectSeed: true
-    marketDataAloneCannotDiscardGame: true
-    numericClaimRequiresSource: true
-    numericClaimRequiresObservedAt: true
-    unverifiableNumericClaimForbidden: true
-    unavailableFieldMayBeUNKNOWN: true
-  requiredFields:
-    - GAME_CATEGORY
-    - REFERENCE_GAMES
-    - CORE_FUN_TO_LEARN
-    - CORE_LOOP
-    - DISTINCT_IDENTITY
-    - MARKET_EVIDENCE_SUMMARY
-    - TARGET_AUDIENCE
-    - TARGET_SESSION_DIRECTION
-    - INITIAL_TARGET_PLATFORM
-    - INITIAL_PLAY_MODE
-    - CROSS_PLATFORM_EXPANSION_VALUE
-  derivedProductionRequirements:
-    - MANDATORY_WEB_GAME_COMPANION
-    - FULL_APPROVED_SCOPE_IMPLEMENTATION
-  initialTargetPlatform: ROBLOX
-  allowedTargetPlatforms:
-    - ROBLOX
-    - UNITY
-    - FORTNITE_UEFN
-  projectMaySelectAnyAllowedPlatform: true
-  primaryPlatformIsDefaultNotLock: true
-  initialPlayMode: PROJECT_DEFINED
-  commercialRule: INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM
-
+  stage: OPTIONAL_PRE_DESIGN_GUIDANCE
+  role: OPTIONAL_REFERENCE_AND_IDEA_CONTEXT_ONLY
+  requiredBeforeDesignerDraft: false
+  gameSeedMayBeAbsent: true
+  creativeConstraints: NONE
+  creativeAuthority: VIBE_SELF_COMPOSITION
+  selectionMode: VIBE_SELF_COMPOSITION_GUIDANCE_ONLY
+  vibeMayIgnoreAllSeedGuidance: true
+  vibeMayCreateNewMaterials: true
+  vibeMayUseZeroOneOrAnyMaterialCount: true
+  materialPoolLimit: null
+  materialCombinationLimit: null
+  sessionDurationLimit: null
+  multiplayerFormLimitAtSeedStage: null
+  categorySlotLimit: null
+  transformationModeLimit: null
+  starterReferenceMaterialCount: 100
+  suggestedMaterialCombineRange: [2, 4]
+  suggestedSessionMinutes: 30
+  suggestionsAreNeverPassFailGates: true
+  actualGameCountLimit: null
+  hardGateScope:
+    - SECURITY
+    - LEGAL_COPY_PROTECTION
+    - EVIDENCE_INTEGRITY
+  sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE
 discardPolicy:
   general:
     singleFailureDoesNotImmediatelyDiscard: true
