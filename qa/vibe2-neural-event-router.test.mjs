@@ -22,6 +22,9 @@ test('verified root cause proposes exact repair but cannot fire before Phase2 au
   assert.equal(route.workerCreationAllowed,false);
   assert.equal(route.queueMutationAllowed,false);
   assert.equal(route.waveReorderAllowed,false);
+  assert.equal(route.workGraph.mode,'PHASE2_SHADOW_NEURAL_WORK_GRAPH');
+  assert.equal(route.workGraph.summary.actionKind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(route.workGraph.authority.executionAllowed,false);
 });
 
 test('unverified responsible system requests evidence rather than guessing repair scope',()=>{
@@ -97,6 +100,13 @@ test('shadow event evidence records simulated intent without granting authority'
   assert.equal(payload.workerCreationAllowed,false);
   assert.equal(payload.queueMutationAllowed,false);
   assert.equal(payload.authorityPromotionEligible,false);
+  const graphMarker=rows.find(value=>value.startsWith('neural-work-graph-shadow:'));
+  assert.ok(graphMarker);
+  const graphPayload=JSON.parse(decodeURIComponent(graphMarker.slice('neural-work-graph-shadow:'.length)));
+  assert.equal(graphPayload.actionKind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(graphPayload.executionAllowed,false);
+  assert.equal(graphPayload.workerCreationAllowed,false);
+  assert.equal(graphPayload.queueMutationAllowed,false);
 });
 
 
