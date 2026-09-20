@@ -20,7 +20,7 @@
 <div id="multiPanel" class="multiPanel">
  <div class="multiHead"><b>멀티플레이</b><button id="multiClose">×</button></div>
  <div id="multiStatus" class="multiStatus">오프라인</div>
- <input id="multiRoom" class="multiRoom" maxlength="8" placeholder="방 코드 8자리">
+ <input id="multiRoom" class="multiRoom" type="number" min="1" max="10" inputmode="numeric" placeholder="방 번호 1~10">
  <div class="multiRow"><button id="multiCreate">방 만들기</button><button id="multiJoin">방 참가</button></div>
  <div class="multiRow"><button id="multiCopy">초대 링크 복사</button><button id="multiLeave">나가기</button></div>
 </div>
@@ -930,7 +930,7 @@ function multiTick(now){
  if(multiIsHost()&&now>=multiplayer.worldAt){multiplayer.worldAt=now+250;multiSend('world-state',serializeWorld())}
 }
 async function connectMultiplayer(rawRoom){
- const room=String(rawRoom||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);if(room.length<4){showNotice('방 코드를 4~8자리로 입력해');return}
+ const room=String(rawRoom||'').trim(),roomNumber=Number(room);if(!/^([1-9]|10)$/.test(room)||!Number.isInteger(roomNumber)||roomNumber<1||roomNumber>10){showNotice('방 번호는 1~10 중 하나만 입력해');return}
  if(!window.supabase?.createClient){showNotice('멀티 서버 모듈을 불러오지 못했어');return}
  await leaveMultiplayer(false);
  multiplayer.room=room;multiplayer.joinedAt=Date.now();
@@ -959,7 +959,7 @@ async function leaveMultiplayer(clearUrl=true){
  multiplayer.channel=null;multiplayer.client=null;multiplayer.connected=false;multiplayer.room='';multiplayer.hostId=null;multiplayer.remote.clear();multiplayer.presenceIds.clear();updateMultiStatus();
  if(clearUrl){const u=new URL(location.href);u.searchParams.delete('room');history.replaceState(null,'',u)}
 }
-function createMultiplayerRoom(){const room=Math.random().toString(36).slice(2,10).toUpperCase().padEnd(8,'X');ui.multiRoom.value=room;connectMultiplayer(room)}
+function createMultiplayerRoom(){const room=String(1+Math.floor(Math.random()*10));ui.multiRoom.value=room;connectMultiplayer(room)}
 async function copyMultiplayerLink(){
  if(!multiplayer.room){showNotice('먼저 방을 만들거나 참가해');return}
  const u=new URL(location.href);u.searchParams.set('room',multiplayer.room);
