@@ -999,7 +999,8 @@
       "coding_13762nc",
       "coding_1cjs4xm",
       "coding_mar0u2",
-      "coding_1qr0btd"
+      "coding_1qr0btd",
+      "coding_1ahi6ww"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -1857,9 +1858,9 @@
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 34,
+        "verifiedApplications": 35,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 94,
+        "totalGenerationAttempts": 96,
         "verifiedFailures": 311,
         "games": {
           "territory-war": 2,
@@ -1874,10 +1875,10 @@
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
           "village-dungeons": 3,
-          "survival": 1
+          "survival": 2
         },
         "targets": {
-          "web": 34
+          "web": 35
         },
         "contextModes": {
           "UNKNOWN": {
@@ -1901,14 +1902,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 23,
+            "verifiedApplications": 24,
             "verifiedFailures": 159,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 52,
-            "totalContextBytes": 397930,
-            "lastEvidence": "coding_1s9uls9",
+            "totalGenerationAttempts": 54,
+            "totalContextBytes": 405622,
+            "lastEvidence": "coding_1ahi6ww",
             "lastFailureEvidence": "coding_negative_a23x11",
-            "lastUpdatedAt": "2026-09-20T16:01:11.180Z"
+            "lastUpdatedAt": "2026-09-20T16:06:37.730Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 2,
@@ -2517,28 +2518,28 @@
             "lastUpdatedAt": "2026-09-20T14:12:01.167Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
-            "verifiedApplications": 1,
+            "verifiedApplications": 2,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 2,
+            "totalGenerationAttempts": 4,
             "verifiedFailures": 0,
             "games": {
-              "survival": 1
+              "survival": 2
             },
             "targets": {
-              "web": 1
+              "web": 2
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_1tt11oc",
+            "lastEvidence": "coding_1ahi6ww",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T15:46:21.324Z"
+            "lastUpdatedAt": "2026-09-20T16:06:37.730Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1s9uls9",
+        "lastEvidence": "coding_1ahi6ww",
         "lastFailureEvidence": "coding_negative_a23x11",
-        "lastUpdatedAt": "2026-09-20T16:01:11.180Z"
+        "lastUpdatedAt": "2026-09-20T16:06:37.731Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 45,
@@ -6997,7 +6998,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T16:06:30.111Z",
+    "lastBuiltAt": "2026-09-20T16:06:37.757Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9084,5 +9085,5 @@
       "knowledge_51ijba"
     ]
   },
-  "updatedAt": "2026-09-20T16:06:30.111Z"
+  "updatedAt": "2026-09-20T16:06:37.757Z"
 }
