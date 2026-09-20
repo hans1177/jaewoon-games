@@ -35,15 +35,19 @@ export function enqueueRecovery(queueInput,row={},options={}){
   if(!item.sourceQueue||!item.failureStage||!item.failureSignature||!item.recoveryStrategy||!item.verificationPlan.length)throw new Error('RECOVERY_REQUIRED_FIELDS_MISSING');
   const existing=queue.tasks.find(x=>x.id===item.id||(x.sourceQueue===item.sourceQueue&&x.sourceTaskId===item.sourceTaskId&&x.failureStage===item.failureStage&&x.failureSignature===item.failureSignature));
   if(existing){
-    const reactivated=reactivateDispatched&&existing.status==='dispatched';
-    const tasks=queue.tasks.map(x=>x.id!==existing.id?x:{...x,
+    const supersedeMarker=(existing.evidence||[]).map(clean).find(x=>x.startsWith('superseded-by:'));
+    const canonicalId=supersedeMarker?clean(supersedeMarker.slice('superseded-by:'.length)):'';
+    const canonical=canonicalId?queue.tasks.find(x=>x.id===canonicalId):null;
+    const target=reactivateDispatched&&canonical?.status==='dispatched'?canonical:existing;
+    const reactivated=reactivateDispatched&&target.status==='dispatched';
+    const tasks=queue.tasks.map(x=>x.id!==target.id?x:{...x,
       status:reactivated?'queued':x.status,
       priority:item.priority||x.priority,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
       evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
       checkpoint:item.checkpoint||x.checkpoint,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
       verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
     });
-    return{queue:{...queue,tasks},added:false,reactivated,id:existing.id};
+    return{queue:{...queue,tasks},added:false,reactivated,id:target.id};
   }
   return{queue:{...queue,tasks:[...queue.tasks,item]},added:true,reactivated:false,id:item.id};
 }
