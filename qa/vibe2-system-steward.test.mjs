@@ -13,7 +13,7 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
     controlInput:{currentMax:4,lastUpdatedAt:'2026-09-19T09:00:00Z'}
   });
   assert.equal(result.action,'RECOVER_STALE_RUNNING_RESERVATION');
-  assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_STALE_PARALLELISM_PRESSURE','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256']);
+  assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_INVALID_PARALLELISM_STATE','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256']);
   assert.equal(result.queue.maxConcurrentTasks,256);
   assert.equal(result.control.currentMax,20);
   assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');
@@ -37,9 +37,10 @@ test('steward resumes safe development failure with unlimited causal repair with
   assert(task.evidence.includes('repair-mode:UNLIMITED_CAUSAL_REPAIR'));
 });
 
-test('steward expires stale backpressure at the pressure floor while keeping 256 as the external boundary',()=>{
-  const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[]},controlInput:{currentMax:4,lastUpdatedAt:'2026-09-19T09:00:00Z'}});
-  assert.equal(result.action,'RESET_INVALID_PARALLELISM_STATE'); assert.equal(result.control.currentMax,20); assert.equal(result.control.lastDecision,'RESET');
+test('steward expires stale valid backpressure to pressure floor while keeping 256 as external boundary',()=>{
+  const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[]},controlInput:{currentMax:32,lastUpdatedAt:'2026-09-19T09:00:00Z'}});
+  assert.equal(result.action,'RESET_STALE_PARALLELISM_PRESSURE'); assert.equal(result.control.currentMax,20); assert.equal(result.control.lastDecision,'RESET');
+  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_STALE_TELEMETRY_RESET_TO_20');
   assert.equal(result.queue.maxConcurrentTasks,256);
 });
 
@@ -58,7 +59,7 @@ test('steward immediately repairs invalid v3 parallelism and requeues stale mach
   assert.equal(task.status,'queued');
   assert.equal(task.blocker,null);
   assert(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
-  assert(result.actions.includes('ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256'));
+  assert(result.actions.includes('ALIGN_QUEUE_EXTERNAL_BOUNDARY_256'));
   assert(result.actions.includes('RECOVER_STALE_MACHINE_STATE_BLOCKER'));
   assert.equal(result.changedControl,true);
   assert.equal(result.changedQueue,true);
