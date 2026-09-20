@@ -113,7 +113,7 @@ export function buildNeuralWorkGraph({
     const id=`fact:${fact?.id||index+1}`;
     nodes.push(node({
       id,nodeClass:'FACT',neuronType:'FACT',label:fact?.value||fact?.id,
-      inputs:[sensorId],activationScore:1,confidence:fact?.verified===false?.5:1,
+      inputs:[sensorId],activationScore:1,confidence:fact?.verified===false ? 0.5 : 1,
       outputs:['VERIFIED_STATE'],evidence:[fact?.value, fact?.source]
     }));
     edges.push(edge(sensorId,id,'OBSERVED_AS',1));
@@ -171,7 +171,7 @@ export function buildNeuralWorkGraph({
     const inhibitors=dep.required&&dep.satisfied===false?['DEPENDENCY_UNSATISFIED']:(dep.required&&dep.satisfied===null?['DEPENDENCY_UNVERIFIED']:[]);
     nodes.push(node({
       id,nodeClass:'DEPENDENCY',neuronType:'PLANNING',label:`${dep.id}:${dep.state}`,
-      inputs:[sensorId],activationScore:dep.satisfied===true?1:.5,confidence:dep.satisfied===null?.5:1,
+      inputs:[sensorId],activationScore:dep.satisfied===true?1:.5,confidence:dep.satisfied===null ? 0.5 : 1,
       inhibitors,outputs:[dep.satisfied===true?'DEPENDENCY_READY':'DEPENDENCY_NOT_READY'],evidence:dep.evidence
     }));
   }
@@ -211,7 +211,7 @@ export function buildNeuralWorkGraph({
   ].filter(Boolean);
   nodes.push(node({
     id:'action',nodeClass:'ACTION',neuronType:'ACTION',label:actionKind,
-    inputs:actionInputs,activationScore:hypothetical?1:(actionKind==='OBSERVE_ONLY'?.1:.5),
+    inputs:actionInputs,activationScore:hypothetical ? 1 : (actionKind==='OBSERVE_ONLY' ? 0.1 : 0.5),
     confidence:rootVerified?1:Number(diagnosis?.responsibility?.confidence||.5),
     dependencies:normalizedDependencies.map(dep=>dep.id),
     inhibitors,
