@@ -78,7 +78,7 @@
   },
   "continuous": {
     "enabled": true,
-    "strategy": "hierarchical-dag-sharded-work-stealing",
+    "strategy": "atomic-neuron-dag-sharded-work-stealing",
     "singleLongRunningJob": false,
     "wakeMode": "event-driven-plus-hourly-safety-net",
     "wakeCron": "17 * * * *",
@@ -87,7 +87,7 @@
     "maxWorkMinutes": 22,
     "maxModelCallsPerWorker": 1,
     "dispatchNextWhenCapacityOpens": true,
-    "refillMode": "fan-in-repository-dispatch-with-hourly-safety-net",
+    "refillMode": "task-micro-fanin-repository-dispatch-with-hourly-safety-net",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
@@ -132,7 +132,7 @@
     },
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-    "slotRefillTrigger": "disabled",
+    "slotRefillTrigger": "vibe2-neuron-complete",
     "slotRefillBranchPrefix": "vibe2/refill/",
     "slotRefillSingleVariantOnly": false,
     "slotRefillWorkerDirectControlWrite": false,
@@ -145,7 +145,7 @@
     "parallelismPolicy": "UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY",
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
-    "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL",
+    "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_ATOMIC_COMPLETION_REFILL",
     "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_HAS_NO_FIXED_INTERNAL_CAP; BASELINE_AND_PRESSURE_FLOOR_20; VERIFIED_HEALTHY_TELEMETRY_SELF_EXPANDS",
     "developmentFirstScheduling": {
       "enabled": true,
@@ -174,8 +174,8 @@
       "outputPath": "/tmp/vibe2-exploration/vibe2-exploration.json"
     },
     "perWorkerSlotRefillEnabled": false,
-    "fanInRefillTrigger": "repository-dispatch",
-    "refillBatchPolicy": "REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_UP_TO_CURRENT_ADAPTIVE_TARGET",
+    "fanInRefillTrigger": "repository-dispatch-fallback",
+    "refillBatchPolicy": "REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_AFTER_ATOMIC_TASK_MICRO_FANIN",
     "gamePrimaryExecutionWave": {
       "enabled": true,
       "lane": "GAME_PRIMARY",
@@ -185,12 +185,14 @@
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "GAME_PRIMARY has no fixed internal concurrency cap. It starts from baseline 20, never downshifts below 20 under pressure, and self-expands 20→32→64→128→256 when verified healthy saturation allows; 256 is the current external provider wave boundary.",
+      "note": "Legacy capacity envelope only: execution is an atomic neuron stream with no global worker barrier. Task variants micro-fan-in independently, free capacity refills immediately, pressure never lowers GAME_PRIMARY below 20, and healthy saturation expands 20→32→64→128→256; 256 remains the current external provider boundary.",
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
       "baselineTarget": 20,
       "adaptiveMinActiveWorkers": 20,
-      "adaptiveMaxActiveWorkers": 256
+      "adaptiveMaxActiveWorkers": 256,
+      "fixedWaveBarrier": false,
+      "legacyCapacityEnvelopeOnly": true
     },
     "planningBacklog": {
       "enabled": true,
@@ -199,7 +201,7 @@
       "target": 60,
       "persistentPoolHardMax": 256,
       "expandWhileExecutionWaveActive": true,
-      "reservationDeferredUntilFanIn": true,
+      "reservationDeferredUntilFanIn": false,
       "releaseWaitExcluded": true,
       "sameSourceResponsibilityConflictPreserved": true,
       "activeWaveBlocksReserveNotPlanning": false,
@@ -262,6 +264,29 @@
       "productionReleaseAllowed": false,
       "gameRefillDispatchAllowed": false,
       "practiceDistillationAllowed": true
+    },
+    "executionTopology": "ATOMIC_NEURON_STREAM",
+    "perWorkerCompletionSignalEnabled": true,
+    "atomicNeuronStream": {
+      "enabled": true,
+      "fixedWaveBarrier": false,
+      "completionEvent": "vibe2-neuron-complete",
+      "taskMicroFanIn": true,
+      "speculativeVariantsJoinPerTask": true,
+      "refillAfterTaskMicroFanIn": true,
+      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
+      "workerDirectControlWrite": false,
+      "sourceAndFileConflictLocksPreserved": true,
+      "pressureFloor": 20,
+      "autonomousScaleSteps": [
+        20,
+        32,
+        64,
+        128,
+        256
+      ],
+      "internalPolicyCap": null,
+      "externalProviderBoundary": 256
     }
   },
   "adaptiveBackpressure": {

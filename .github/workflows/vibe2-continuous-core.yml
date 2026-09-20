@@ -26,7 +26,7 @@ on:
         type: string
         default: '256'
   repository_dispatch:
-    types: [vibe2-fanin-refill]
+    types: [vibe2-neuron-complete, vibe2-fanin-refill]
   push:
     branches:
       - 'vibe2/refill/fanin/**'
@@ -77,6 +77,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Download atomic neuron completion result
+        if: github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.client_payload.artifact_name }}
+          path: /tmp/vibe2-neuron-result
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.client_payload.source_run }}
 
       - name: Prepare latest main machine contract
         id: contract
@@ -157,7 +166,10 @@ jobs:
           if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ]; then
             dispatch_type="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.action||''))")"
           fi
-          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-fanin-refill' ]; then
+          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-neuron-complete' ]; then
+            callback_kind='neuron'
+            echo 'VIBE2_ATOMIC_NEURON_CALLBACK=YES'
+          elif [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-fanin-refill' ]; then
             callback_kind='fanin'
             echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
           elif [ "${GITHUB_EVENT_NAME:-}" = 'push' ] && [[ "$callback_ref" == vibe2/refill/fanin/* ]]; then
@@ -171,7 +183,19 @@ jobs:
             --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-steward.log
           echo 'VIBE2_RESERVE_STEWARD=PASS'
 
-          if [ "$callback_kind" = 'fanin' ]; then
+          if [ "$callback_kind" = 'neuron' ]; then
+            neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
+            test -n "$neuron_result_file"
+            expected_variants="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(Math.max(1,Math.min(5,Number(e.client_payload?.expected_variants)||1))))")"
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs neuron-complete \
+              --queue="$control_root/.vibe2/queue.json" \
+              --lane="$VIBE2_EXECUTION_LANE" \
+              --expected-variants="$expected_variants" \
+              --input="$neuron_result_file" | tee /tmp/vibe2-neuron-complete.log
+            echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'
+          fi
+
+          if [ "$callback_kind" = 'fanin' ] || [ "$callback_kind" = 'neuron' ]; then
             git fetch origin company-runtime --quiet
             git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
             node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
@@ -185,7 +209,11 @@ jobs:
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-fanin-refill-autoplan.log
-            echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
+            if [ "$callback_kind" = 'fanin' ]; then
+              echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
+            else
+              echo 'VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'
+            fi
           fi
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
@@ -256,7 +284,7 @@ jobs:
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
             const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
-            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)};
+            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
             workers.push({...shared,variant:'primary'});
             for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`});
           }
@@ -1041,6 +1069,40 @@ jobs:
           path: ${{ steps.result.outputs.file }}
           if-no-files-found: error
           retention-days: 1
+
+      - name: Dispatch atomic neuron completion
+        if: steps.result.outputs.file != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIBE2_NEURON_ARTIFACT: vibe2-result-${{ matrix.safeTask }}-${{ matrix.variant }}
+          VIBE2_NEURON_EXPECTED_VARIANTS: ${{ matrix.expectedVariants }}
+          VIBE2_NEURON_TASK_ID: ${{ matrix.taskId }}
+          VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(node <<'NODE'
+          const payload={
+            event_type:'vibe2-neuron-complete',
+            client_payload:{
+              source_run:String(process.env.GITHUB_RUN_ID||''),
+              artifact_name:String(process.env.VIBE2_NEURON_ARTIFACT||''),
+              expected_variants:String(process.env.VIBE2_NEURON_EXPECTED_VARIANTS||'1'),
+              task_id:String(process.env.VIBE2_NEURON_TASK_ID||''),
+              reservation_id:String(process.env.VIBE2_NEURON_RESERVATION_ID||'')
+            }
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          )"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'
 
   fan_in:
     needs: [reserve, worker]

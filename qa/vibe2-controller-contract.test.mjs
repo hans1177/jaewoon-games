@@ -52,7 +52,7 @@ test('fan-in controller contract directly verifies design intelligence stages an
 
 test('runtime enables DAG sharding work stealing with policy-unbounded external-capacity waves',()=>{
   assert(runtime.version>=14);
-  assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
+  assert.equal(runtime.continuous.strategy,'atomic-neuron-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.parallelismPolicy,'UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY');
   assert.equal(runtime.continuous.externalMatrixBatchMax,256);
@@ -236,31 +236,33 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('workers complete the current wave before one fan-in refill dispatch',()=>{
+test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{
+  const reserveStart=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const reserveEnd=workflow.indexOf('  model_cache:',reserveStart);
+  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
   assert(workflow.includes('repository_dispatch:'));
-  assert(workflow.includes('types: [vibe2-fanin-refill]'));
-  assert(workflow.includes("- 'vibe2/refill/fanin/**'"));
-  assert.equal(workflow.includes('Signal immediate slot refill after single-variant worker completion'),false);
-  assert.equal(workflow.includes("event_type:'vibe2-slot-refill'"),false);
-  assert.equal(workflow.includes('VIBE2_EARLY_SLOT_REFILL_SIGNAL=REPOSITORY_DISPATCH'),false);
-  assert.equal(workflow.includes('earlyRefill'),false);
+  assert(workflow.includes('types: [vibe2-neuron-complete, vibe2-fanin-refill]'));
+  assert(workflow.includes('Dispatch atomic neuron completion'));
+  assert(workflow.includes("event_type:'vibe2-neuron-complete'"));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
+  assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'));
+  assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
+  assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
+  assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.speculativeVariantsJoinPerTask,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.cohortFanInRole,'REGRESSION_RELEASE_AUDIT_ONLY');
+  assert.equal(runtime.continuous.atomicNeuronStream.workerDirectControlWrite,false);
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
-  assert.equal(runtime.continuous.refillMode,'fan-in-repository-dispatch-with-hourly-safety-net');
-  assert.equal(runtime.continuous.slotRefillTrigger,'disabled');
-  assert.equal(runtime.continuous.legacySlotRefillBranchCompatibility,false);
-  assert.equal(runtime.continuous.slotRefillSingleVariantOnly,false);
+  assert.equal(runtime.continuous.refillMode,'task-micro-fanin-repository-dispatch-with-hourly-safety-net');
+  assert.equal(runtime.continuous.slotRefillTrigger,'vibe2-neuron-complete');
+  assert.equal(runtime.continuous.perWorkerCompletionSignalEnabled,true);
   assert.equal(runtime.continuous.perWorkerSlotRefillEnabled,false);
-  assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch');
+  assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
-  const reserveStart=workflow.indexOf('- name: Reserve conflict-free DAG batch');
-  const reserveEnd=workflow.indexOf('  model_cache:');
-  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
-  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"));
-  assert(reserveBlock.includes('git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json'));
-  assert(reserveBlock.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
-  assert(reserveBlock.includes('VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'));
-  assert(reserveBlock.indexOf('VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
+  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"));
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'));
+  assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
 });
 
 test('24H safety-net refills free game slots while preserving queue-level conflict protection',()=>{
@@ -349,7 +351,7 @@ test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
 });
 
-test('worker never mutates shared queue state or dispatches refill runs',()=>{
+test('worker never mutates shared queue state and only emits an atomic completion event',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:');
   assert(start>=0 && end>start);
@@ -357,8 +359,10 @@ test('worker never mutates shared queue state or dispatches refill runs',()=>{
   assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
   assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
   assert(!workerPart.includes('HEAD:refs/heads/vibe2/refill/'));
-  assert(!workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
+  assert(workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
   assert(!workerPart.includes("event_type:'vibe2-slot-refill'"));
+  assert(workerPart.includes("event_type:'vibe2-neuron-complete'"));
+  assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
 });
 
 test('worker Ollama cache includes the runtime sidecar and rejects binary-only cache hits',()=>{

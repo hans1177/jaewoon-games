@@ -42,7 +42,7 @@ test('PARALLELISM_CONTRACT_GATE keeps GAME_PRIMARY internally unbounded and bind
   assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.capacityAwareFreeSlotRefill,true);
   assert.equal(runtime.continuous.planningBacklog.activeWaveBlocksReserveNotPlanning,false);
   assert.equal(runtime.continuous.planningBacklog.activeWorkAllowsIndependentFreeSlotReserve,true);
-  assert.equal(runtime.continuous.refillBatchPolicy,'REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_UP_TO_CURRENT_ADAPTIVE_TARGET');
+  assert.equal(runtime.continuous.refillBatchPolicy,'REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_AFTER_ATOMIC_TASK_MICRO_FANIN');
 
   assert.equal(runtime.continuous.dynamicBackpressure,true);
   assert.deepEqual(runtime.adaptiveBackpressure.steps,[4,8,16,20,32,64,128,256]);
@@ -76,7 +76,11 @@ test('PARALLELISM_CONTRACT_GATE keeps GAME_PRIMARY internally unbounded and bind
   assert.ok(core.includes('vibe2-queue-control.mjs reserve-batch'));
   assert.ok(core.includes('fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"'));
   assert.equal(wave.gamePrimaryFixedInternalCap,null);
-  assert.equal(wave.telemetryDenominator,'ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP');
+  assert.equal(wave.telemetryDenominator,'CURRENT_ATOMIC_RESERVATION_CAP');
+  assert.equal(wave.mode,'ATOMIC_NEURON_STREAM');
+  assert.equal(wave.fixedWaveBarrier,false);
+  assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
+  assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.ok(!core.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
 
   assert.deepEqual(runtime.documentation.humanDocuments,[]);

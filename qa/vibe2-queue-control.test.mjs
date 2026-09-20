@@ -14,6 +14,7 @@ import {
   releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
+  recordVibeNeuronResult,
   buildNeuralWorkerTransaction,
   recoverFixedFullWebTransportFailures,
   recoverFixedSourceCandidateGenerationFailures,
@@ -895,4 +896,45 @@ test('continuous reserve keeps preflight cheap and defers full core regression t
   assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
   assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
   assert.equal(runtime.qaOptimization.fullCoreRegressionOnceAtFanIn,true);
+});
+
+test('atomic neuron variants micro-fan-in one task and release capacity without waiting for the cohort',()=>{
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'atomic-a',gameId:'a',target:'web',department:'development',type:'implementation',goal:'repair a',status:'queued',sourceRoot:'web-games/a',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true},
+    {id:'atomic-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'repair b',status:'queued',sourceRoot:'web-games/b',responsibleFiles:['index.html']}
+  ]});
+  const reservation={id:'atomic-run:1',runId:'atomic-run',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary',reservation});
+  const matrixA=reserved.matrix.find(row=>row.taskId==='atomic-a');
+  assert.equal(matrixA.speculativeVariants,2);
+  queue=reserved.queue;
+  const base={taskId:'atomic-a',reservationId:'atomic-run:1',evidence:['actions-run:atomic-run'],metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
+  const first=recordVibeNeuronResult(queue,{...base,variant:'speculative-1',outcome:'FAIL',blocker:'candidate-failed'},{expectedVariants:2});
+  assert.equal(first.ready,false);
+  assert.equal(first.slotReleased,false);
+  assert.equal(first.resultCount,1);
+  assert.equal(first.queue.tasks.find(task=>task.id==='atomic-a').status,'running');
+  const second=recordVibeNeuronResult(first.queue,{...base,variant:'primary',outcome:'PASS',blocker:''},{expectedVariants:2});
+  assert.equal(second.ready,true);
+  assert.equal(second.slotReleased,true);
+  const task=second.queue.tasks.find(item=>item.id==='atomic-a');
+  assert.equal(task.status,'running');
+  assert.match(task.blocker,/candidate-awaiting-qa-and-deployment/);
+  assert.equal(task.neuronExpectedVariants,0);
+  assert.deepEqual(task.neuronResults,[]);
+  const selection=selectVibeQueueBatch(second.queue,{maxConcurrentTasks:3,lane:'game-primary'});
+  assert.ok(selection.freeSlots>=1);
+});
+
+test('atomic neuron completion is idempotent for duplicate variant callbacks',()=>{
+  const reservation={id:'atomic-idem:1',runId:'atomic-idem',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
+  const queue=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'idem',gameId:'idem',target:'web',department:'development',type:'implementation',goal:'idem',status:'queued',sourceRoot:'web-games/idem',responsibleFiles:['index.html']}
+  ]}),{maxConcurrentTasks:1,lane:'game-primary',reservation}).queue;
+  const row={taskId:'idem',variant:'primary',outcome:'PASS',reservationId:'atomic-idem:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
+  const first=recordVibeNeuronResult(queue,row,{expectedVariants:2});
+  const duplicate=recordVibeNeuronResult(first.queue,row,{expectedVariants:2});
+  assert.equal(duplicate.updated,false);
+  assert.equal(duplicate.reason,'DUPLICATE_VARIANT');
+  assert.equal(duplicate.resultCount,1);
 });

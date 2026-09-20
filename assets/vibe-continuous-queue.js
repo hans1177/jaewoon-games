@@ -155,6 +155,13 @@ function normalizeSupervisionReview(input=null){
     candidateBranch:clean(input.candidateBranch)||null
   });
 }
+function normalizeNeuronResults(input = []) {
+  const rows = Array.isArray(input) ? input : [];
+  return freeze(rows.slice(0, 5).map((row) => {
+    try { return freeze(JSON.parse(JSON.stringify(row && typeof row === 'object' ? row : {}))); }
+    catch { return freeze({}); }
+  }));
+}
 function normalizeTask(input = {}, index = 0) {
   const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
@@ -190,6 +197,8 @@ function normalizeTask(input = {}, index = 0) {
     reservationRunId: clean(input.reservationRunId) || null,
     reservationRunAttempt: clampInt(input.reservationRunAttempt || 0, 0, 1000000),
     reservedAt: clean(input.reservedAt) || null,
+    neuronExpectedVariants: clampInt(input.neuronExpectedVariants || 0, 0, 5),
+    neuronResults: normalizeNeuronResults(input.neuronResults),
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
     speculativeEligible: input.speculativeEligible === true,
@@ -243,6 +252,7 @@ export function createVibeContinuousQueue(seed = {}) {
       roleSeparation: true,
       baseShardSlots: BASE_SHARD_SLOTS,
       dynamicBackpressure: true,
+      atomicNeuronCompletion: true,
       speculativeParallelism: 'high-risk-opt-in-only',
       workPackageAware: true,
       longWorkPackagePriority: true,
