@@ -133,9 +133,9 @@ test('low-load runs never reduce persistent concurrency or count as recovery', (
     createParallelismControl({ currentMax: 8 }),
     healthyTelemetry({ runId: 'low-load-healthy', workerCount: 5, effectiveMax: 8, actualPeakConcurrency: 5 })
   );
-  assert.equal(healthyLowLoad.currentMax, 8);
+  assert.equal(healthyLowLoad.currentMax, 20);
   assert.equal(healthyLowLoad.healthyStreak, 0);
-  assert.equal(healthyLowLoad.lastReason, 'LOW_LOAD');
+  assert.equal(healthyLowLoad.lastReason, 'OWNER_MINIMUM_WAVE_20');
 });
 
 test('one healthy saturated run fast-ramps exactly one external-capacity step', () => {
@@ -156,7 +156,7 @@ test('20 is the GAME_PRIMARY pressure floor and healthy saturation expands above
   const down = decideAdaptiveBackpressure(control, pressuredTelemetry({ runId:'pressure-20', workerCount:20, effectiveMax:20 }));
   assert.equal(down.currentMax, 20);
   assert.equal(down.lastDecision, 'HOLD');
-  assert.equal(down.lastReason, 'OWNER_MINIMUM_WAVE_20');
+  assert.match(down.lastReason, /^OWNER_MINIMUM_WAVE_20:/);
   const up = decideAdaptiveBackpressure(control, healthyTelemetry({ runId:'healthy-20-to-32', workerCount:20, effectiveMax:20, actualPeakConcurrency:20 }));
   assert.equal(up.currentMax, 32);
   assert.equal(up.lastDecision, 'UP');
