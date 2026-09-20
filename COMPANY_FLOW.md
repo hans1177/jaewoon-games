@@ -2237,3 +2237,65 @@ platformPresentationAndWeather:
   executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
   authorityExpansion: false
 
+webValidationContractAdapter:
+  version: 1
+  authority: OWNER_DIRECTIVE_2026-09-20
+  centralContract: company-learning/platform-release-roadmap.json#webValidationBottleneckAdapterContract
+  deterministicFirst: true
+  mapActualControlsHandlersAndState: true
+  hiddenOrSyntheticValidationControlsForbidden: true
+  externalAi:
+    providerPriority:
+      - GEMINI
+      - VIBE_LOCAL_OLLAMA
+    ambiguousMappingsOnly: true
+    advisoryOnly: true
+    directSourceWrite: false
+    directPassAuthority: false
+    failureBlocksLocalVibeRepair: false
+  firstPilotGameId: fantasy-survival
+  actualRuntimeInteractionStillRequired: true
+  executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
+  authorityExpansion: false
+
+learningClosedLoop:
+  version: 1
+  authority: OWNER_DIRECTIVE_2026-09-20
+  centralContract: company-learning/platform-release-roadmap.json#learningClosedLoopContract
+  experienceMemory:
+    canonicalStore: .vibe2/experience.json
+    verifiedProjectOutcomeOnly: true
+    candidatePassAloneInsufficient: true
+  externalAi:
+    distilledStore: .vibe2/external-ai-distilled-knowledge.json
+    rawOutputDirectUse: false
+    independentlyVerifiedDistilledOnly: true
+    advisoryOnly: true
+    ranksAfterInternalVerified: true
+  knowledgeAttribution:
+    exactInjectedKnowledgeIds: true
+    freshQaRegressionReviewRequired: true
+    infrastructureFailurePenalty: false
+  productionConfidence:
+    separateFromMasteryXp: true
+    masteryXpRetained: true
+    levels: 5
+    verifiedProjectOutcomeOnly: true
+    holdoutRequiredForStrongGeneralization: true
+  strategyPromotion:
+    thresholdsUnchanged: true
+    preferredVerifiedApplicationsMin: 5
+    preferredDistinctGamesMin: 2
+    preferredFirstCandidatePassRateMin: 0.6
+    controlChallengerEvidence: true
+  commonKnowledgeLifecycle:
+    - CANDIDATE
+    - VERIFIED
+    - PREFERRED
+    - DEMOTED
+    - RETIRED
+  retiredKnowledgeRetrievalForbidden: true
+  gateWeakening: false
+  executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
+  authorityExpansion: false
+
