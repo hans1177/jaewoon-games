@@ -106,3 +106,20 @@ test('preservation adapter binds fantasy survival approved scope only to existin
   assert.equal(adapted.appliedCount,5);
   for(const item of preservedInventory)assert.match(adapted.html,new RegExp('data-scope-id="'+item.id+'"'));
 });
+
+
+test('adapter ignores pseudo-controls embedded inside script strings',()=>{
+  const html=[
+    '<!doctype html><html><body>',
+    '<canvas id="game" data-gameplay-surface="true"></canvas>',
+    '<button id="inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button>',
+    '<script>',
+    "function renderMap(){root.innerHTML='<canvas id=\"mapCanvas\" class=\"mapCanvas\"></canvas>';}",
+    '</script>',
+    '</body></html>'
+  ].join('\n');
+  const candidates=extractWebGameplayCandidates(html);
+  assert.ok(candidates.some(row=>row.id==='game'));
+  assert.ok(candidates.some(row=>row.id==='inventory'));
+  assert.equal(candidates.some(row=>row.id==='mapCanvas'),false);
+});
