@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": ".scope-action,.audio button,.session-phase{min-height:54px;border:0;border-radius:13px;background:#eef4ff;color:#111827;font-weight:760;text-align:left;padding:9px 11px}",
+      "replace": ".arena { touch-action: manipulation;}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
