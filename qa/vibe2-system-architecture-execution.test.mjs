@@ -10,7 +10,7 @@ function task(){
     id:'SYS-ARCH-demo-v1',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
     executionLane:'RECOVERY_FAST',sourceRoot:'.',responsibleFiles:['tools/vibe2-source-worker.mjs','qa/vibe2-source-worker.test.mjs'],
     priority:'high',releaseState:'other',status:'queued',retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,systemSteward:true,
-    goal:'repair repeated structural bottleneck',evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed','architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION','architecture-neural-expansion-readiness:PENDING','architecture-neural-expansion-allowed:NO'],
+    goal:'repair repeated structural bottleneck',evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed','architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION','architecture-neural-expansion-readiness:PENDING','architecture-neural-expansion-allowed:NO','architecture-rule5-atomization-required:YES','architecture-rule5-neuronization-required:YES','architecture-rule5-central-code-sync-required:YES'],
     completionCriteria:['RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED']
   };
 }
@@ -26,6 +26,9 @@ test('system architecture contract restricts exact repo system paths',()=>{
   assert.equal(c.neuralExpansionMode,'EVIDENCE_GATED_SELF_EXPANSION');
   assert.equal(c.neuralExpansionReadiness,'PENDING');
   assert.equal(c.neuralExpansionAllowed,false);
+  assert.equal(c.rule5AtomicArchitectureRequired,true);
+  assert.equal(c.rule5NeuronizationRequired,true);
+  assert.equal(c.rule5CentralCodeSyncRequired,true);
 });
 test('system architecture task bypasses game design pipeline but keeps central work contract',()=>{
   const t=task();
@@ -68,7 +71,10 @@ test('neural expansion readiness PASS reaches the system work order without expa
       'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
       'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
       'architecture-neural-expansion-readiness:PASS',
-      'architecture-neural-expansion-allowed:YES'
+      'architecture-neural-expansion-allowed:YES',
+      'architecture-rule5-atomization-required:YES',
+      'architecture-rule5-neuronization-required:YES',
+      'architecture-rule5-central-code-sync-required:YES'
     ]
   };
   const policy=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
