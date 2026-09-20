@@ -126,14 +126,14 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   let decision = 'HOLD';
   let reason = 'LOW_LOAD';
 
-  if (!workerCount || !loaded) {
-    healthyStreak = 0;
-    pressureStreak = 0;
-    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
-  } else if (localBackpressureActive) {
+  if (localBackpressureActive) {
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
+  } else if (!workerCount || !loaded) {
+    healthyStreak = 0;
+    pressureStreak = 0;
+    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
   } else if (strongPressure) {
     next = stepDown(current);
     healthyStreak = 0;
@@ -174,7 +174,8 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
   } else if (originalCurrent === configuredFloor && next === configuredFloor && strongPressure) {
     decision = 'HOLD';
-    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
+    const pressureReason = reasons.length ? reasons.join('+') : level;
+    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}:${pressureReason}`;
   }
 
   return createParallelismControl({
