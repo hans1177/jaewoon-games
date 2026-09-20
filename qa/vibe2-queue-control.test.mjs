@@ -46,6 +46,42 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
+test('game-primary summary uses current atomic reservation cap instead of external queue boundary',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const batchFile=path.join(dir,'batch.json');
+  const running=Array.from({length:7},(_,i)=>({
+    id:`running-${i}`,gameId:`running-${i}`,target:'web',department:'development',type:'implementation',
+    goal:'running',status:'running',sourceRoot:`web-games/running-${i}`,responsibleFiles:['index.html'],
+    reservationId:'prior:1',reservationRunId:'prior',reservedAt:'2026-09-20T10:00:00Z'
+  }));
+  const queued=Array.from({length:20},(_,i)=>({
+    id:`queued-${i}`,gameId:`queued-${i}`,target:'web',department:'development',type:'implementation',
+    goal:'queued',status:'queued',sourceRoot:`web-games/queued-${i}`,responsibleFiles:['index.html']
+  }));
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
+
+  const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
+  assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
+  assert.equal(summary.summary.requestedMaxConcurrentTasks,20);
+  assert.equal(summary.summary.effectiveMaxConcurrentTasks,20);
+  assert.equal(summary.summary.freeSlots,13);
+
+  const reserved=runQueueCommand({
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
+    'reservation-id':'current:1','reservation-run':'current','reserved-at':'2026-09-20T10:01:00Z',output:batchFile
+  });
+  const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
+  assert.equal(reserved.reservationMaxConcurrentTasks,20);
+  assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
+  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,20);
+  assert.equal(batch.scheduler.freeSlotsBeforeReservation,13);
+  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,20);
+  assert.equal(reserved.summary.freeSlots,0);
+});
+
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-aux-fanin-'));
   const queueFile=path.join(dir,'queue.json');
@@ -911,11 +947,13 @@ test('atomic neuron variants micro-fan-in one task and release capacity without 
   const base={taskId:'atomic-a',reservationId:'atomic-run:1',evidence:['actions-run:atomic-run'],metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
   const first=recordVibeNeuronResult(queue,{...base,variant:'speculative-1',outcome:'FAIL',blocker:'candidate-failed'},{expectedVariants:2});
   assert.equal(first.ready,false);
+  assert.equal(first.reason,'AWAITING_VARIANTS');
   assert.equal(first.slotReleased,false);
   assert.equal(first.resultCount,1);
   assert.equal(first.queue.tasks.find(task=>task.id==='atomic-a').status,'running');
   const second=recordVibeNeuronResult(first.queue,{...base,variant:'primary',outcome:'PASS',blocker:''},{expectedVariants:2});
   assert.equal(second.ready,true);
+  assert.equal(second.reason,'TASK_MICRO_FANIN_COMPLETE');
   assert.equal(second.slotReleased,true);
   const task=second.queue.tasks.find(item=>item.id==='atomic-a');
   assert.equal(task.status,'running');
@@ -1004,4 +1042,12 @@ test('reserve-batch heals downgraded atomic queue schema even when no work is re
   assert.equal(healed.scheduling.atomicNeuronCompletion,true);
   assert.equal(healed.tasks[0].neuronExpectedVariants,0);
   assert.deepEqual(healed.tasks[0].neuronResults,[]);
+});
+
+
+test('continuous core workflow distinguishes pending neuron results from completed micro fan-in',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
+  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
+  assert.doesNotMatch(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS/);
 });
