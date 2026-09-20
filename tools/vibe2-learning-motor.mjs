@@ -21,7 +21,9 @@ export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
   'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE',
   'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
-  'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER'
+  'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER',
+  'UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE',
+  'UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'
 ]);
 
 const DOMAIN_PATTERNS=freeze({
@@ -55,11 +57,19 @@ const DOMAIN_PATTERNS=freeze({
   ROBLOX_DATASTORE:/datastore|ordered.?data.?store/i,
   ROBLOX_REMOTE_SECURITY:/remoteevent|remotefunction|remote.?security|server.?validate/i,
   ROBLOX_REPLICATION:/replication|replicated|server.?client|network.?ownership/i,
-  ROBLOX_MULTIPLAYER:/multiplayer|multi.?client|playeradded|players|matchmaking/i
+  ROBLOX_MULTIPLAYER:/multiplayer|multi.?client|playeradded|players|matchmaking/i,
+  UNITY_RUNTIME:/\bunity\b|unity.?runtime|gameobject|monobehaviour|scene.?manager|prefab|scriptable.?object/i,
+  UNITY_PHYSICS:/unity.*physics|rigidbody|collider|character.?controller|fixedupdate/i,
+  UNITY_NETCODE:/unity.*netcode|netcode.?for.?gameobjects|networkobject|networkbehaviour|clientrpc|serverrpc/i,
+  UEFN_RUNTIME:/uefn|fortnite.?uefn|unreal.?editor.?for.?fortnite|creative.?device/i,
+  UEFN_VERSE:/\bverse\b|verse.?code|verse.?device|fortnite\.com\//i,
+  UEFN_REPLICATION:/uefn.*replication|fortnite.*replication|authority|replicated.?state|multiplayer.?sync/i
 });
 
 const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']);
 const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER']);
+const UNITY_NATIVE_ONLY=new Set(['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE']);
+const UEFN_NATIVE_ONLY=new Set(['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION']);
 const XP_SUCCESS=12;
 const XP_FAILURE=5;
 const LEVEL_THRESHOLDS=[0,30,70,120,180,250,340,450,580,730];
@@ -72,6 +82,8 @@ function inferDomains(text='',engine=''){
   const e=lower(engine);
   if(e==='web') out.push('WEB_RUNTIME');
   if(e==='roblox') out.push('ROBLOX_STUDIO');
+  if(e==='unity') out.push('UNITY_RUNTIME');
+  if(['uefn','fortnite_uefn','fortnite-uefn','fortnite'].includes(e)) out.push('UEFN_RUNTIME','UEFN_VERSE');
   return uniq(out);
 }
 
@@ -1032,7 +1044,7 @@ function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput
 
 export function buildBenchmarkLadder(masteryInput={},experienceInput={},companyQueueInput={}){
   const state=createMasteryState(masteryInput);
-  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
+  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],UNITY_NATIVE:['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE'],FORTNITE_UEFN_NATIVE:['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
   const cases=[];
   for(const [track,domains] of Object.entries(mapping)){
     const avg=domains.reduce((n,d)=>n+(state.domains[d]?.level||1),0)/domains.length;
@@ -1071,6 +1083,8 @@ function idleDrillKindForDomain(domain=''){
   if(d==='QUEST_DESIGN')return'QUEST_CAUSALITY_DRILL';
   if(d==='CHARACTER_ARC')return'CHARACTER_ARC_DRILL';
   if(d==='DIALOGUE')return'DIALOGUE_SCENE_DRILL';
+  if(UNITY_NATIVE_ONLY.has(d))return'UNITY_NATIVE_DRILL';
+  if(UEFN_NATIVE_ONLY.has(d))return'FORTNITE_UEFN_NATIVE_DRILL';
   return'MINI_GAME_SYSTEM_DRILL';
 }
 function practiceInstructionForDrill(drill={}){
@@ -1085,6 +1099,8 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
+  if(kind==='UNITY_NATIVE_DRILL')return'Unity 네이티브 런타임, 물리, 입력, 씬 수명주기, 필요 시 Netcode 경계를 분석한다. Unity runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
+  if(kind==='FORTNITE_UEFN_NATIVE_DRILL')return'Fortnite UEFN의 Verse, device lifecycle, authoritative multiplayer state와 replication 경계를 분석한다. Verse/UEFN 실제 runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
