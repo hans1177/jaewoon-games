@@ -58,6 +58,22 @@ test('QA failure records the stage but leaves responsibility correctness unknown
   assert.equal(feedback.matchState,'UNKNOWN');
 });
 
+test('QA failure signature is preserved as evidence while responsibility remains unknown',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('GAME_RUNTIME',.92),
+    outcome:'FAIL',
+    blocker:'incremental-qa-failed',
+    roleResults:{implementation:'PASS',test:'FAIL',performance:'FAIL'},
+    evidence:['incremental-qa-failure-signature:PRESENTATION_STATIC_QA_FAILED:LIVING_MOTION:IDLE_REQUIRED']
+  });
+  assert.equal(feedback.observed.stage,'INCREMENTAL_QA');
+  assert.equal(feedback.observed.failureSignature,'PRESENTATION_STATIC_QA_FAILED:LIVING_MOTION:IDLE_REQUIRED');
+  assert.equal(feedback.observed.responsibility,null);
+  assert.equal(feedback.matchState,'UNKNOWN');
+  assert.equal(feedback.rootCauseVerified,false);
+  assert.equal(feedback.authorityPromotionEligible,false);
+});
+
 test('worker pass is not treated as proof that the diagnosis root cause was correct',()=>{
   const feedback=evaluateNeuralDiagnosisFeedback({
     diagnosis:diagnosis('VALIDATOR',.7),
