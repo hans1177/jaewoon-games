@@ -107,7 +107,7 @@ function bindVerifiedUnityBuild(row,status){
   };
 }
 function verifiedRuntimeImage(row){
-  const media=row?.runtimeGameplayMedia||homepageOf(row)?.runtimeGameplayMedia||row?.homepageRuntimeMedia||null;
+  const media=row?.runtimeGameplayMedia||runtimeInfo(row)?.runtimeGameplayMedia||homepageOf(row)?.runtimeGameplayMedia||row?.homepageRuntimeMedia||null;
   if(!media||media.verified!==true)return'';
   const url=String(media.url||'').trim(),platform=normalizePlatform(selectedPlatform(row)),type=String(media.captureType||'').toUpperCase();
   if(!/^https:\/\//i.test(url)&&!/^\/assets\/runtime-screenshots\//i.test(url))return'';
