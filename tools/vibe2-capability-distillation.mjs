@@ -416,12 +416,94 @@ export function applyCapabilityPortfolioDecisions(memoryInput={},decisions=[]){
 
 export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5}={}){
   const memory=createVibeExperienceMemory(experienceInput);
-  const records=memory.records.filter(record=>
+  const taskEvidence=safeArray(task.evidence,64);
+  const phase4Role=upper(evidenceValue(taskEvidence,'phase4-benchmark-role:'));
+  const phase4CapabilityId=clean(evidenceValue(taskEvidence,'phase4-capability-id:'));
+  const phase4ScreenOnly=taskEvidence.includes('phase4-generalization-screen-only');
+
+  if(phase4ScreenOnly&&phase4Role==='CONTROL'){
+    return Object.freeze({
+      version:1,
+      kind:'verified-coding-capability-retrieval',
+      records:Object.freeze([]),
+      count:0,
+      verifiedOnly:true,
+      advisoryOnly:true,
+      rawTraceUsed:false,
+      rawCodeUsed:false,
+      crossGameKeywordOverlapRequired:true,
+      sameEngineAloneEligible:false,
+      deprecatedOrSupersededRetrievalEligible:false,
+      generalizedRetrievalStillRequiresProblemRelevance:true,
+      writableScopeExpansionAllowed:false,
+      qaBypassAllowed:false,
+      authorityExpanded:false,
+      phase4BenchmarkScreen:true,
+      phase4BenchmarkRole:'CONTROL',
+      phase4ExactCapabilityIsolation:true
+    });
+  }
+
+  let records=memory.records.filter(record=>
     record?.verified===true
     &&record?.reusable===true
     &&clean(record?.taskType)==='coding-capability-distillation'
     &&record?.capabilityLifecycle?.retrievalEligible!==false
   );
+
+  if(phase4ScreenOnly&&phase4Role==='CHALLENGER'){
+    records=records.filter(record=>
+      clean(record?.id)===phase4CapabilityId
+      &&record?.capabilityLifecycle?.generalizationCandidate===true
+      &&record?.capabilityLifecycle?.strongGeneralizationVerified!==true
+    );
+    const selected=records.slice(0,1).map(record=>Object.freeze({
+      id:record.id,
+      fingerprint:record.fingerprint,
+      gameId:record.gameId,
+      engine:record.engine,
+      outcome:record.outcome,
+      problem:record.problem,
+      change:record.change,
+      failureCause:record.failureCause,
+      reusablePatterns:Object.freeze([...(record.reusablePatterns||[])]),
+      avoidPatterns:Object.freeze([...(record.avoidPatterns||[])]),
+      evidence:Object.freeze([...(record.evidence||[])]),
+      confirmations:Number(record.confirmations||1),
+      confidence:Number(record.capabilityConfidence??record.confidence??0),
+      genericConfidence:Number(record.confidence||0),
+      capabilityLifecycle:record.capabilityLifecycle||null,
+      applicationCount:Number(record.capabilityLifecycle?.applicationCount||0),
+      independentPassCount:Number(record.capabilityLifecycle?.independentPassCount||0),
+      generalizationCandidate:record.capabilityLifecycle?.generalizationCandidate===true,
+      strongGeneralizationVerified:record.capabilityLifecycle?.strongGeneralizationVerified===true,
+      unseenBenchmarkPassCount:Number(record.capabilityLifecycle?.unseenBenchmarkPassCount||0),
+      portfolioState:clean(record.capabilityLifecycle?.portfolioState)||'ACTIVE',
+      relevance:0,
+      reasons:Object.freeze(['phase4-benchmark-exact-target'])
+    }));
+    return Object.freeze({
+      version:1,
+      kind:'verified-coding-capability-retrieval',
+      records:Object.freeze(selected),
+      count:selected.length,
+      verifiedOnly:true,
+      advisoryOnly:true,
+      rawTraceUsed:false,
+      rawCodeUsed:false,
+      crossGameKeywordOverlapRequired:true,
+      sameEngineAloneEligible:false,
+      deprecatedOrSupersededRetrievalEligible:false,
+      generalizedRetrievalStillRequiresProblemRelevance:true,
+      writableScopeExpansionAllowed:false,
+      qaBypassAllowed:false,
+      authorityExpanded:false,
+      phase4BenchmarkScreen:true,
+      phase4BenchmarkRole:'CHALLENGER',
+      phase4ExactCapabilityIsolation:true
+    });
+  }
+
   const capabilityMemory=createVibeExperienceMemory({records});
   const result=searchVibeExperience(capabilityMemory,{
     gameId:clean(task.gameId),
@@ -483,7 +565,10 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     generalizedRetrievalStillRequiresProblemRelevance:true,
     writableScopeExpansionAllowed:false,
     qaBypassAllowed:false,
-    authorityExpanded:false
+    authorityExpanded:false,
+    phase4BenchmarkScreen:false,
+    phase4BenchmarkRole:null,
+    phase4ExactCapabilityIsolation:false
   });
 }
 
