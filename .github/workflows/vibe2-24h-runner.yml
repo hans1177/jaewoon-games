@@ -396,11 +396,11 @@ jobs:
               commit_message='vibe2: persist policy-unbounded adaptive parallel queue state [skip ci]'
             fi
             git commit -m "$commit_message"
-            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+            if git push origin HEAD:vibe2-unreal-core; then
               echo 'VIBE2_AUTOPLAN_WRITE=YES'
               exit 0
             fi
-            git rebase --abort 2>/dev/null || true
+            echo "VIBE2_AUTOPLAN_OPTIMISTIC_RETRY=$attempt"
             sleep $((attempt * 2))
           done
 
