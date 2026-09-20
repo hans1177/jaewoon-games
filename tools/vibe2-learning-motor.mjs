@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -862,7 +863,8 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
 function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput={}){
   const catalogGames=uniq((companyQueueInput?.items||[]).map(row=>clean(row?.gameId)).filter(Boolean)).sort();
   const cases=[];
-  for(const record of experienceInput?.records||[]){
+  const normalizedExperience=createVibeExperienceMemory(experienceInput);
+  for(const record of normalizedExperience.records||[]){
     if(record?.verified!==true||record?.reusable!==true||clean(record?.taskType)!=='coding-capability-distillation')continue;
     const lifecycle=record?.capabilityLifecycle||{};
     if(lifecycle.generalizationCandidate!==true||lifecycle.strongGeneralizationVerified===true||lifecycle.retrievalEligible===false)continue;
