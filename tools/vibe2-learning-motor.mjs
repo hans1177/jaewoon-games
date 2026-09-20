@@ -1141,7 +1141,15 @@ function nextPracticeGeneration(tasks=[],drill={}){
   if(!rows.length)return {baseId,generation:1,previousScore:null};
   const latest=rows[rows.length-1],status=lower(latest.task?.status);
   if(['queued','running','blocked'].includes(status))return null;
-  return {baseId,generation:latest.generation+1,previousScore:practiceArtifactScore(latest.task)};
+  const verifiedScores=rows
+    .filter(row=>{
+      const evidence=(row.task?.evidence||[]).map(clean);
+      return ['verified','done'].includes(lower(row.task?.status))||evidence.includes('practice-artifact-improved:YES');
+    })
+    .map(row=>practiceArtifactScore(row.task))
+    .filter(score=>score!==null);
+  const previousScore=verifiedScores.length?Math.max(...verifiedScores):null;
+  return {baseId,generation:latest.generation+1,previousScore};
 }
 function idlePracticeTaskId(drill={},generation=1){
   return `${idlePracticeBaseId(drill)}-g${Math.max(1,Number(generation)||1)}`;

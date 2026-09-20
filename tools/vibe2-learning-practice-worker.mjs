@@ -131,7 +131,8 @@ export async function runLearningPractice({workOrderFile='.vibe2/work-order.json
       improved:validation.improved,
       validation
     };
-    evaluation.pass=evaluation.pass&&validation.pass;
+    const improvementRequired=validation.previousScore!==null;
+    evaluation.pass=evaluation.pass&&validation.pass&&(!improvementRequired||validation.improved===true);
   }
   const rawModelOutputSha256=sha256(raw);
   const result={

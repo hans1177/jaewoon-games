@@ -59,3 +59,23 @@ test('Web practice creates a runnable isolated artifact and measures improvement
   assert.equal(result.nextPracticeSignal,'ESCALATE_DIFFICULTY');
   assert.equal(fs.existsSync(path.join(artifactDir,'index.html')),true);
 });
+
+
+test('Web practice generation with a previous score fails unless the artifact strictly improves',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-practice-no-improve-'));
+  const order=path.join(root,'order.json');
+  const response=path.join(root,'response.json');
+  const output=path.join(root,'result.json');
+  const artifactDir=path.join(root,'artifact');
+  const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{max-width:720px;margin:auto;padding:16px}button{font-size:20px}@media(max-width:600px){body{padding:8px}}</style></head><body><h1>Practice</h1><p id="score" aria-live="polite">Score 0</p><button id="hit">Hit</button><script>let score=0;const out=document.getElementById("score");document.getElementById("hit").addEventListener("click",()=>{score+=1;out.textContent="Score "+score;document.body.classList.toggle("active");});</script></body></html>'+('<!-- practice -->'.repeat(20));
+  const baseline=evaluateWebPracticeArtifact(html,null).score;
+  fs.writeFileSync(order,JSON.stringify({taskId:'web-no-improve',executionRoute:'learning-web-artifact',goal:`[VIBE_LEARNING_PRACTICE]\npracticeMode=WEB_ARTIFACT\npracticeGeneration=2\npreviousArtifactScore=${baseline}\ndomains=WEB_RUNTIME,CORE_LOOP`}));
+  fs.writeFileSync(response,JSON.stringify({diagnosis:'The previous artifact already satisfies the same static checks.',strategy:'Return the same quality artifact so strict improvement must reject it.',tests:['button mutates state','visible score changes','mobile viewport remains usable'],avoidPatterns:['external network dependency'],reusablePatterns:['local state with direct feedback'],artifactHtml:html}));
+  await assert.rejects(()=>runLearningPractice({workOrderFile:order,outputFile:output,artifactDir,responseFile:response}),/web practice artifact evaluation failed/);
+  const result=JSON.parse(fs.readFileSync(output,'utf8'));
+  assert.equal(result.artifact.previousScore,baseline);
+  assert.equal(result.artifact.score,baseline);
+  assert.equal(result.artifact.improved,false);
+  assert.equal(result.evaluation,'FAIL');
+  assert.equal(result.nextPracticeSignal,'RETRY_CAUSAL_VARIATION');
+});

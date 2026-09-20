@@ -412,6 +412,20 @@ test('verified Web practice result creates the next generation and carries the p
   assert.match(second.task.goal,/practiceGeneration=2/);
 });
 
+test('failed non-improving practice never lowers the next generation baseline',()=>{
+  const idle={drills:[{id:'gap-save-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE'],productionPreemptible:true,countsAsProductionPass:false}]};
+  const first=injectIdlePracticeTask({tasks:[]},idle);
+  const verified={...first.task,status:'verified',evidence:[...first.task.evidence,'practice-artifact-score:82','practice-artifact-improved:YES']};
+  const second=injectIdlePracticeTask({tasks:[verified]},idle);
+  const failed={...second.task,status:'failed',evidence:[...second.task.evidence,'practice-artifact-score:79','practice-artifact-improved:NO']};
+  const third=injectIdlePracticeTask({tasks:[verified,failed]},idle);
+  assert.equal(third.added,true);
+  assert.match(third.task.id,/-g3$/);
+  assert.equal(third.practiceGeneration,3);
+  assert.equal(third.previousArtifactScore,82);
+  assert.match(third.task.goal,/previousArtifactScore=82/);
+});
+
 
 test('verified internal code patterns raise mastery without raw code',()=>{
   const result=applyVerifiedCodePatternsToMastery({}, {patterns:[
