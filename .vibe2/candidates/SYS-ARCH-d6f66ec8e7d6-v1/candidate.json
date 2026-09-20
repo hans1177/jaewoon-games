@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "tools/vibe2-system-steward.mjs",
+      "find": "  if(evolution.changed){",
+      "replace": "  if(evolution.changed){\n    queue=evolution.queue;\n    actions.push('ENQUEUE_SELF_ARCHITECTURE_EVOLUTION');\n    taskIds.push(...evolution.added.map(task=>task.id));\n  }\n"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

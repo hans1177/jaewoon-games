@@ -122,6 +122,11 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
     taskIds.push(...evolution.added.map(task=>task.id));
   }
 
+    queue=evolution.queue;
+    actions.push('ENQUEUE_SELF_ARCHITECTURE_EVOLUTION');
+    taskIds.push(...evolution.added.map(task=>task.id));
+  }
+
   const active=queue.tasks.filter(t=>activeStatus(t.status)&&!waitBlocker(t.blocker));
   const action=actions[0]||(active.length?'HEALTHY_NO_SCOPED_REPAIR':'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
   return {action,actions:uniq(actions),
