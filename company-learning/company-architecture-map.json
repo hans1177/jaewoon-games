@@ -58,6 +58,13 @@
       "INCREMENTAL_QA",
       "PERFORMANCE_SANITY",
       "FAN_IN_REGRESSION"
+    ],
+    "assetProduction": [
+      "ASSET_SPEC_FROM_VALIDATED_GAMEPLAY_AND_APPROVED_DESIGN",
+      "EXISTING_WAVE_ASSIGNED_ASSET_PRODUCTION",
+      "UNITY_ROBLOX_PRESENTATION_BIND",
+      "ACTUAL_GAMEPLAY_VISUAL_RUNTIME_QA",
+      "ASSET_REPAIR_REVALIDATION"
     ]
   },
   "workerRoles": {
@@ -1388,5 +1395,37 @@
     "aiMayAnalyzeAndModelScenarios": true,
     "aiMayAutonomouslyTransact": false,
     "ownerControlledFinancialActions": true
+  },
+  "assetProductionParallelism": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
+    "policyMirror": "COMPANY_FLOW.md#assetProductionParallel",
+    "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "codeAndAssetWorkMayRunConcurrently": true,
+    "isolatedResponsibilitiesRequired": true,
+    "sameResponsibleFileParallelForbidden": true,
+    "logicalLanes": [
+      "ART_DIRECTION",
+      "THREE_D_ASSET",
+      "MATERIAL_TEXTURE",
+      "ANIMATION",
+      "VFX",
+      "UI_ART",
+      "AUDIO"
+    ],
+    "graphicsPassRequires": [
+      "REAL_ASSET",
+      "IN_GAME_BINDING",
+      "ACTUAL_RUNTIME_VISUAL_EVIDENCE"
+    ],
+    "specOnlyGraphicsPassForbidden": true,
+    "placeholderGraphicsPassForbidden": true,
+    "repairState": "ASSET_REPAIR_REQUIRED",
+    "firstAdoptionGameId": "fantasy-survival",
+    "firstAdoptionPlatforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "authorityExpansion": false
   }
 }
