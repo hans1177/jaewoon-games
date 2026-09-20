@@ -3,9 +3,18 @@
   "currentMax": 20,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "RESET",
-  "lastReason": "OWNER_PRESSURE_FLOOR_20_SELF_ADAPTIVE_BASELINE",
-  "lastRunId": null,
-  "lastUpdatedAt": null,
-  "lastTelemetry": null
+  "lastDecision": "HOLD",
+  "lastReason": "LOW_LOAD",
+  "lastRunId": "35502646526",
+  "lastUpdatedAt": "2026-09-20T09:42:15.237Z",
+  "lastTelemetry": {
+    "runId": "35502646526",
+    "workerCount": 3,
+    "effectiveMax": 256,
+    "actualPeakConcurrency": 3,
+    "effectivePeakUtilizationPct": 1.17,
+    "failureRatePct": 66.67,
+    "pressureLevel": "SEVERE",
+    "bottleneck": "SOURCE_CANDIDATE_GENERATION"
+  }
 }
