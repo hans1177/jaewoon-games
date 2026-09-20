@@ -261,7 +261,7 @@ function candidateStrategyRole(variant='primary',preference={}){
   return freeze({variant:normalized,strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'});
 }
 
-export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {}, centralPolicySnapshot = null, centralPolicyLiveRef = '' } = {}) {
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {}, externalAiDistilled = {}, centralPolicySnapshot = null, centralPolicyLiveRef = '' } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
@@ -347,9 +347,27 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     codePatternsInput:codePatterns,
     playbooksInput:playbooks,
     practiceDistilledInput:practiceDistilled,
+    externalAiDistilledInput:externalAiDistilled,
     masteryInput:learningMotorState
   });
   const unifiedLearningGuidance = buildMotorGuidance(unifiedLearning);
+  const knowledgeApplicationContract=freeze({
+    version:1,
+    exactInjectedKnowledgeIds:freezeList([
+      ...(unifiedLearning?.exactKnowledgeIds||[]),
+      ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
+    ]),
+    freshIndependentQaRequired:true,
+    infrastructureFailurePenalizesKnowledge:false,
+    singleSuccessGeneralizationProof:false,
+    rawExternalAiOutputIncluded:false,
+    authorityExpanded:false
+  });
+  const knowledgeApplicationGuidance=knowledgeApplicationContract.exactInjectedKnowledgeIds.length?[
+    '[LEARNING KNOWLEDGE APPLICATION TRACE]',
+    'exactKnowledgeIds='+knowledgeApplicationContract.exactInjectedKnowledgeIds.join(','),
+    'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
+  ].join('\n'):'';
   const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
   const assetGuidance = assetProductionGuidance(assetProduction);
   const presentationQuality = buildPresentationQualityContract(task,plan.target);
@@ -425,7 +443,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
@@ -487,6 +505,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       duplicateInjectionAllowed:false
     }),
     unifiedLearning,
+    knowledgeApplicationContract,
     assetProduction,
     presentationQuality,
     weatherPresentation,
@@ -520,7 +539,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', projectLifecycleFile='', outputFile='', taskId='', variant='primary', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='', centralPolicyLiveRef='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', projectLifecycleFile='', outputFile='', taskId='', variant='primary', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='', externalAiDistilledFile='', centralPolicyLiveRef='' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
   const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
@@ -532,9 +551,11 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
   const resolvedPracticeDistilledFile=clean(practiceDistilledFile)||clean(runtime?.sources?.practiceDistilledKnowledge)||'.vibe2/practice-distilled-knowledge.json';
   const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
+  const resolvedExternalAiDistilledFile=clean(externalAiDistilledFile)||clean(runtime?.sources?.externalAiDistilledKnowledge)||'.vibe2/external-ai-distilled-knowledge.json';
+  const externalAiDistilled=readJson(resolvedExternalAiDistilledFile,{entries:[]});
   const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:true});
   const resolvedCentralPolicyLiveRef=clean(centralPolicyLiveRef)||clean(process.env.VIBE2_CENTRAL_POLICY_LIVE_REF)||'origin/main';
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, externalAiDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -543,7 +564,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const args = parseArgs();
   const order = runVibeContinuousRunner({
     runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), projectLifecycleFile:clean(args['project-lifecycle']), outputFile:clean(args.output), taskId:clean(args['task-id']), variant:clean(args.variant)||'primary',
-    learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks), practiceDistilledFile:clean(args['practice-distilled']), centralPolicyLiveRef:clean(args['central-policy-live-ref'])
+    learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks), practiceDistilledFile:clean(args['practice-distilled']), externalAiDistilledFile:clean(args['external-ai-distilled']), centralPolicyLiveRef:clean(args['central-policy-live-ref'])
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
   console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);
@@ -562,6 +583,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_AUTO_DEPLOY_ELIGIBLE=${order.deployment.automaticEligible?'YES':'NO'}`);
     console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
+    console.log(`VIBE2_KNOWLEDGE_APPLICATION_IDS=${order.knowledgeApplicationContract?.exactInjectedKnowledgeIds?.length||0}`);
+    console.log(`VIBE2_EXTERNAL_AI_DISTILLED_INJECTED=${order.unifiedLearning?.externalAiDistilled?.length||0}`);
     console.log(`VIBE2_INCREMENTAL_QA=YES`);
     console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.incrementalQa.speculativeVariants}`);
     console.log(`VIBE2_CANDIDATE_TOURNAMENT_VARIANTS=${order.candidateTournament?.candidateCount||1}`);
