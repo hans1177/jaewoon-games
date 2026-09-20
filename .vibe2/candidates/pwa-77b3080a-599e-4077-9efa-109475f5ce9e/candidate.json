@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function gainXp(v){player.xp+=v;if(player.xp>=player.nextXp&&!paused)levelUp()}",
+      "replace": "function gainXp(v){player.xp+=v;if(player.xp>=player.nextXp&&!paused)levelUp();if(Math.random() < 0.6) { gainSkill('rotation_sword'); } }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
