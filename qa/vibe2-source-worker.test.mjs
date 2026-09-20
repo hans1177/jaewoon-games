@@ -978,6 +978,14 @@ test('semantic diff invariant allows unrelated source repair when save binding i
   assert.deepEqual(result.saveContractMutations,[]);
 });
 
+test('candidate release gate mirrors variable-backed save contract invariant',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  assert.match(workflow,/const storageContract=raw=>/);
+  assert.match(workflow,/beforeStorage\.variableBindings/);
+  assert.match(workflow,/VIBE2_WEB_SAVE_CONTRACT_MUTATION/);
+  assert.doesNotMatch(workflow,/const historicalSaveKey=/);
+});
+
 test('ambiguous or low confidence semantic classification is observe-only instead of false rejecting',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'const value=1;',replace:'const value=2; gold+=1;'}],newFiles:[],replaceFiles:[]},
