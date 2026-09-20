@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -392,7 +392,10 @@
         "feedbackDeduplicatedBySampleId": true,
         "shadowEventsDeduplicatedByEventId": true,
         "waveAuditDeduplicatedBySampleId": true,
-        "conflictingFeedbackEventOrAuditIdentityBlocksReview": true
+        "conflictingFeedbackEventOrAuditIdentityBlocksReview": true,
+        "rootCausePredictionQualityUsesIdentifiedSamplesOnly": true,
+        "waveAuditVolumeRequiresDistinctSampleIdentity": true,
+        "legacyUnidentifiedEvidenceCannotAffectReadinessQualityPass": true
       },
       "readinessDistinctEvidenceHardening": {
         "state": "CANDIDATE_BRANCH",
