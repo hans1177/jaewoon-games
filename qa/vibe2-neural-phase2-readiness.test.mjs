@@ -1,9 +1,34 @@
 // 파일명: qa/vibe2-neural-phase2-readiness.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { evaluatePhase2Readiness, summarizeNeuralRootCauseEvidence } from '../tools/vibe2-neural-phase2-readiness.mjs';
 
 const enc=(prefix,payload)=>prefix+encodeURIComponent(JSON.stringify(payload));
+const fanInSource=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+
+test('fan-in exposes durable Phase2 readiness metrics without granting authority',()=>{
+  for(const marker of [
+    'VIBE2_NEURAL_PHASE2_REVIEW_ELIGIBLE=',
+    'VIBE2_NEURAL_PHASE2_REASON=',
+    'VIBE2_NEURAL_PHASE2_GATES=',
+    'VIBE2_NEURAL_SHADOW_EVENTS=',
+    'VIBE2_NEURAL_CALIBRATION_ELIGIBLE=',
+    'VIBE2_NEURAL_CALIBRATION_ACCURACY=',
+    'VIBE2_NEURAL_ROOT_VERIFIED=',
+    'VIBE2_NEURAL_ROOT_IDENTITY_COVERAGE=',
+    'VIBE2_NEURAL_ROOT_PREDICTION_COVERAGE=',
+    'VIBE2_NEURAL_ROOT_CONTRADICTION_RATE=',
+    'VIBE2_NEURAL_ROOT_SAMPLE_CONFLICTS=',
+    'VIBE2_NEURAL_WAVE_AUDIT_SAMPLES=',
+    'VIBE2_NEURAL_UNAUTHORIZED_FIRE=',
+    'VIBE2_NEURAL_PHASE2_EXECUTION_AUTHORITY=',
+    'VIBE2_NEURAL_PHASE2_AUTOMATIC_PROMOTION='
+  ])assert.ok(fanInSource.includes(marker),marker);
+  assert.ok(fanInSource.includes("readiness.executionAuthorityGranted?'YES':'NO'"));
+  assert.ok(fanInSource.includes("readiness.automaticPromotionAllowed?'YES':'NO'"));
+});
+
 
 function evidenceSet({events=30,feedback=20,root=10}={}){
   const rows=[];

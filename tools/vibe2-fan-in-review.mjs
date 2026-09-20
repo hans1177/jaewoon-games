@@ -156,4 +156,34 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   return result;
 }
 
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=runVibe2FanInReview({queueFile:clean(args.queue)||'.vibe2/queue.json',inputFile:clean(args.input),outputFile:clean(args.output)});console.log(`VIBE2_FAN_IN_REVIEW=${result.pass?'PASS':'BLOCKED'}`);console.log(`VIBE2_FAN_IN_REVIEW_COUNT=${result.reviewed.length}`);console.log(`VIBE2_FAN_IN_REVIEW_SKIPPED=${result.skipped.length}`);console.log(`VIBE2_FAN_IN_RELEASE_CANDIDATES=${result.releaseCandidates.length}`);console.log('VIBE2_FAN_IN_REVIEW_SOURCE_WRITE=NO');if(!result.pass)process.exitCode=1;}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  const args=parseArgs();
+  const result=runVibe2FanInReview({
+    queueFile:clean(args.queue)||'.vibe2/queue.json',
+    inputFile:clean(args.input),
+    outputFile:clean(args.output)
+  });
+  const readiness=result.neuralPhase2Readiness;
+  const summary=readiness.evidenceSummary;
+  console.log(`VIBE2_FAN_IN_REVIEW=${result.pass?'PASS':'BLOCKED'}`);
+  console.log(`VIBE2_FAN_IN_REVIEW_COUNT=${result.reviewed.length}`);
+  console.log(`VIBE2_FAN_IN_REVIEW_SKIPPED=${result.skipped.length}`);
+  console.log(`VIBE2_FAN_IN_RELEASE_CANDIDATES=${result.releaseCandidates.length}`);
+  console.log(`VIBE2_NEURAL_PHASE2_REVIEW_ELIGIBLE=${readiness.reviewEligible?'YES':'NO'}`);
+  console.log(`VIBE2_NEURAL_PHASE2_REASON=${readiness.reason}`);
+  console.log(`VIBE2_NEURAL_PHASE2_GATES=${JSON.stringify(readiness.gates)}`);
+  console.log(`VIBE2_NEURAL_SHADOW_EVENTS=${summary.events.total}`);
+  console.log(`VIBE2_NEURAL_CALIBRATION_ELIGIBLE=${summary.feedback.calibrationEligible}`);
+  console.log(`VIBE2_NEURAL_CALIBRATION_ACCURACY=${summary.feedback.observedAccuracy??'NA'}`);
+  console.log(`VIBE2_NEURAL_ROOT_VERIFIED=${summary.rootCause.verified}`);
+  console.log(`VIBE2_NEURAL_ROOT_IDENTITY_COVERAGE=${summary.rootCause.verifiedSampleIdentityCoverage}`);
+  console.log(`VIBE2_NEURAL_ROOT_PREDICTION_COVERAGE=${summary.rootCausePredictionCoverage}`);
+  console.log(`VIBE2_NEURAL_ROOT_CONTRADICTION_RATE=${summary.rootCause.predictionContradictionRate??'NA'}`);
+  console.log(`VIBE2_NEURAL_ROOT_SAMPLE_CONFLICTS=${summary.rootCause.sampleConflicts}`);
+  console.log(`VIBE2_NEURAL_WAVE_AUDIT_SAMPLES=${summary.shadowAuditSamples}`);
+  console.log(`VIBE2_NEURAL_UNAUTHORIZED_FIRE=${summary.events.unauthorizedFireCount}`);
+  console.log(`VIBE2_NEURAL_PHASE2_EXECUTION_AUTHORITY=${readiness.executionAuthorityGranted?'YES':'NO'}`);
+  console.log(`VIBE2_NEURAL_PHASE2_AUTOMATIC_PROMOTION=${readiness.automaticPromotionAllowed?'YES':'NO'}`);
+  console.log('VIBE2_FAN_IN_REVIEW_SOURCE_WRITE=NO');
+  if(!result.pass)process.exitCode=1;
+}
