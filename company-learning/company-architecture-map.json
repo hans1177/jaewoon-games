@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -114,6 +114,18 @@
       "RUNTIME_EVIDENCE",
       "REGRESSION",
       "PROMOTION"
+    ],
+    "neuralTarget": [
+      "INGEST_EVENT",
+      "UPDATE_FACT_AND_HYPOTHESIS_GRAPH",
+      "PROPAGATE_CAUSAL_AND_BOTTLENECK_SIGNAL",
+      "APPLY_HARD_INHIBITORS",
+      "FIRE_HIGHEST_VALUE_ELIGIBLE_ACTION_NODES",
+      "COMPILE_TASK_LOCAL_WORK_CONTRACTS",
+      "EXECUTE_INDEPENDENT_NODES_CONCURRENTLY",
+      "CRITIC_VERIFY",
+      "UPDATE_FACTS_AND_VERIFIED_MEMORY",
+      "CONTINUE_FROM_NEW_EVENTS"
     ]
   },
   "externalAiRules": {
@@ -218,5 +230,69 @@
     "speculativeResearchMayNotBePromotedAsVerifiedCapability": true,
     "allStagesRemainBoundToSecurityImmuneSystem": true,
     "humanOwnerControlRequired": true
+  },
+  "neuralWorkGraphTopology": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralPolicyKey": "neuralDevelopmentBrain",
+    "currentState": "WAVE_PRIMARY_NEURAL_TARGET_DOCUMENTED",
+    "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
+    "layers": [
+      "CENTRAL_CONSTITUTION",
+      "EVENT_STREAM",
+      "STATE_GRAPH",
+      "NEURAL_DECISION_GRAPH",
+      "COMPILED_WORK_CONTRACT",
+      "EXECUTION_WORKERS",
+      "DETERMINISTIC_QA_AND_RUNTIME",
+      "CRITIC_FEEDBACK",
+      "VERIFIED_MEMORY"
+    ],
+    "decisionGraph": [
+      "INTENT",
+      "SENSOR",
+      "FACT",
+      "HYPOTHESIS",
+      "CAUSAL",
+      "BOTTLENECK",
+      "RESPONSIBILITY",
+      "PLANNING",
+      "ACTION",
+      "CRITIC",
+      "MEMORY",
+      "SUPERVISOR"
+    ],
+    "executionTransition": [
+      "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
+      "EVENT_DRIVEN_NEURAL_ROUTING_WITH_WAVE_FALLBACK",
+      "ASYNC_NEURAL_WORK_GRAPH_PRIMARY",
+      "WAVE_AS_SPECIAL_SYNCHRONIZATION_PATTERN_ONLY"
+    ],
+    "synchronizationModel": {
+      "defaultFuture": "DEPENDENCY_AND_EVENT_DRIVEN",
+      "waveFutureRole": [
+        "EXPLICIT_BARRIER",
+        "REPRESENTATIVE_CANARY_BATCH",
+        "RESOURCE_CAPACITY_BATCH",
+        "RECOVERY_FALLBACK"
+      ],
+      "globalWaveBarrierForbiddenWhenIndependentNodesCanProgress": true
+    },
+    "auditability": {
+      "everyActionLinksToEvidence": true,
+      "everyFactLinksToVerifier": true,
+      "hypothesesCarryConfidence": true,
+      "inhibitorReasonRecorded": true,
+      "causalDecisionSummaryRecorded": true,
+      "privateReasoningTranscriptNotRequired": true
+    },
+    "safetyBoundaries": [
+      "OWNER_DIRECTIVE_REMAINS_HIGHEST_AUTHORITY",
+      "CENTRAL_POLICY_REMAINS_POLICY_SOURCE",
+      "NEURAL_GRAPH_MAY_NOT_SELF_EXPAND_AUTHORITY",
+      "RUNTIME_STATE_MAY_NOT_CREATE_POLICY",
+      "WORKER_MAY_NOT_SELF_ACCEPT_PROTECTED_PROMOTION",
+      "DETERMINISTIC_AND_RUNTIME_GATES_REMAIN_AUTHORITATIVE"
+    ]
   }
 }
