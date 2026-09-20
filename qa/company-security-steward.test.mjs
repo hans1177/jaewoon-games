@@ -292,3 +292,34 @@ test('security workflow persists the upload artifact id and run id with every re
   assert.match(securityWorkflow,/--security-run="\$\{GITHUB_RUN_ID\}"/);
   assert.match(securityWorkflow,/--security-artifact="\$SECURITY_ARTIFACT_ID"/);
 });
+
+
+test('security steward owns game-level Roblox exploit boundaries without duplicating platform anti-cheat',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const bootstrap=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const game=policy.gameSecurityStewardship;
+  assert.equal(game.role,'VIBE_SECURITY_STEWARD');
+  assert.equal(game.platformResponsibilityBoundary.duplicatePlatformAntiCheatImplementation,false);
+  assert.equal(game.roblox.existingStaticGate,'tools/company-development-roblox-bootstrap.mjs');
+  for(const check of [
+    'SERVER_REMOTE_BOUNDARY_REQUIRED',
+    'SERVER_REMOTE_INPUT_VALIDATION_REQUIRED',
+    'SERVER_REMOTE_RATE_LIMIT_REQUIRED',
+    'SERVER_LOADSTRING_FORBIDDEN',
+    'SERVER_ASSET_REQUIRE_FORBIDDEN'
+  ]) assert.ok(game.roblox.existingStaticChecks.includes(check));
+  assert.ok(game.roblox.existingRuntimeEvidence.includes('robloxServerClientBoundaryPassed'));
+  assert.equal(game.postReleaseFindingRoute.confirmedExploitOrSecurityBug,'HOTFIX');
+  assert.equal(game.postReleaseFindingRoute.releaseBlocking,true);
+  assert.equal(game.postReleaseFindingRoute.preemptsMinorAndMajor,true);
+  assert.match(bootstrap,/SERVER_REMOTE_INPUT_VALIDATION_REQUIRED/);
+  assert.match(bootstrap,/SERVER_REMOTE_RATE_LIMIT_REQUIRED/);
+  assert.match(bootstrap,/LOADSTRING_FORBIDDEN/);
+  assert.match(bootstrap,/ASSET_REQUIRE_FORBIDDEN/);
+  const post=roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment;
+  assert.equal(post.securityStewardIntegration.required,true);
+  assert.equal(post.securityStewardIntegration.reuseExistingSecuritySystem,true);
+  assert.equal(post.securityStewardIntegration.platformAntiCheatDuplicated,false);
+  assert.equal(post.securityStewardIntegration.confirmedSecurityBugRoute,'HOTFIX');
+});
