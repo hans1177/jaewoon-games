@@ -1132,7 +1132,8 @@
       "coding_z67w3q",
       "coding_1felbiq",
       "coding_8ltqsz",
-      "coding_1piand1"
+      "coding_1piand1",
+      "coding_rp645z"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4522,30 +4523,30 @@
         "lastUpdatedAt": "2026-09-20T19:21:58.692Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
-        "verifiedApplications": 44,
+        "verifiedApplications": 45,
         "firstCandidatePasses": 15,
-        "totalGenerationAttempts": 75,
+        "totalGenerationAttempts": 78,
         "verifiedFailures": 24,
         "games": {
           "seed-puzzle-chromatic-cascade": 24,
           "fantasy-survival": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 15,
           "seed-casual-realm-weaver": 2,
-          "village-dungeons": 2
+          "village-dungeons": 3
         },
         "targets": {
-          "web": 44
+          "web": 45
         },
         "contextModes": {
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 41,
+            "verifiedApplications": 42,
             "verifiedFailures": 6,
             "firstCandidatePasses": 15,
-            "totalGenerationAttempts": 69,
-            "totalContextBytes": 852693,
-            "lastEvidence": "coding_1a6lohp",
+            "totalGenerationAttempts": 72,
+            "totalContextBytes": 875772,
+            "lastEvidence": "coding_rp645z",
             "lastFailureEvidence": "coding_negative_62rknb",
-            "lastUpdatedAt": "2026-09-20T19:26:48.635Z"
+            "lastUpdatedAt": "2026-09-20T19:44:34.551Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -4600,23 +4601,23 @@
             "lastUpdatedAt": "2026-09-20T07:24:22.900Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 26,
+            "verifiedApplications": 27,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 54,
+            "totalGenerationAttempts": 57,
             "verifiedFailures": 0,
             "games": {
               "seed-puzzle-chromatic-cascade": 24,
-              "village-dungeons": 2
+              "village-dungeons": 3
             },
             "targets": {
-              "web": 26
+              "web": 27
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_1a6lohp",
+            "lastEvidence": "coding_rp645z",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T19:26:48.635Z"
+            "lastUpdatedAt": "2026-09-20T19:44:34.551Z"
           },
           "web|OTHER": {
             "verifiedApplications": 1,
@@ -4792,9 +4793,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1a6lohp",
+        "lastEvidence": "coding_rp645z",
         "lastFailureEvidence": "coding_negative_62rknb",
-        "lastUpdatedAt": "2026-09-20T19:26:48.635Z"
+        "lastUpdatedAt": "2026-09-20T19:44:34.552Z"
       }
     }
   },
@@ -7329,7 +7330,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T19:43:58.357Z",
+    "lastBuiltAt": "2026-09-20T19:44:34.584Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9740,5 +9741,5 @@
       "knowledge_1berobn"
     ]
   },
-  "updatedAt": "2026-09-20T19:43:58.357Z"
+  "updatedAt": "2026-09-20T19:44:34.584Z"
 }
