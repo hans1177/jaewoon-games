@@ -69,7 +69,7 @@ function hypothesisCandidates(text=''){
   add('runtime-input-binding','GAME_INPUT',0.9,/MOBILE_TOUCH_ACTION_NOT_CONNECTED|TOWER_POSITION_INPUT_REQUIRED|POINTER|TOUCH|INPUT_REQUIRED/i,'입력이 실제 상태 변화 또는 배치 책임 함수에 연결되지 않았을 가능성');
   add('runtime-spatial-state','GAME_RUNTIME',0.88,/REAL_SPATIAL_STATE_REQUIRED|REAL_ENTITY_INTERACTION_REQUIRED|COLLISION_RUNTIME_REQUIRED|PLAYER_XY_MOVEMENT_REQUIRED|VISUAL_MOVEMENT_REQUIRED/i,'실제 런타임 공간 상태/엔티티 상호작용 증거가 부족할 가능성');
   add('audio-runtime-binding','GAME_AUDIO',0.86,/MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|AUDIO/i,'오디오 UI와 실제 오디오 상태 연결 누락 가능성');
-  add('source-generation-path','SOURCE_GENERATION',0.86,/SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED|SOURCE[-_ ]?GENERATION[-_ ]?FAILURE|DIAGNOSTIC[-_ ]?POSTCONDITION|MALFORMED[_ -]?OUTPUT|EDIT[_ -]?MATCH|NO[_ -]?OP|TIMEOUT/i,'모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성');
+  add('source-generation-path','SOURCE_GENERATION',0.86,/SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED|SOURCE[-_ ]?GENERATION[-_ ]?FAILURE|DIAGNOSTIC[-_ ]?POSTCONDITION|MALFORMED_OUTPUT|EDIT_MATCH|NO_OP|TIMEOUT/i,'모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성');
   add('pipeline-or-runner','INFRA',0.82,/WORKFLOW|RUNNER|CHECKOUT|ARTIFACT|CI_FAILURE|INFRA/i,'게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성');
   add('save-compatibility','SAVE_SYSTEM',0.9,/SAVE|LOCALSTORAGE|PERSIST|RESTORE/i,'저장키·저장 의미·복구 경로 호환성 문제 가능성');
   if(!rows.length)rows.push({id:'responsible-system-unknown',system:'UNKNOWN',confidence:0.35,reason:'명시적 실패 시그니처가 충분하지 않아 추가 증거 필요'});
@@ -94,8 +94,14 @@ function responsibility(hypotheses=[]){
 }
 
 function pipelinePrediction({rows=[],task={},responsibility:owner}={}){
-  const text=[clean(task.goal),clean(task.blocker),clean(task.lastOutcome),...rows].join('|').toUpperCase();
-  const sourceGenerationObserved=/SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED|SOURCE[-_ ]?GENERATION[-_ ]?FAILURE|DIAGNOSTIC[-_ ]?POSTCONDITION|MALFORMED[_ -]?OUTPUT|EDIT[_ -]?MATCH|NO[_ -]?OP|GENERATION[_ -]?TIMEOUT/.test(text);
+  const evidence=(Array.isArray(rows)?rows:[]).map(clean).filter(Boolean);
+  const sourceGenerationObserved=evidence.some(value=>{
+    const text=value.toUpperCase();
+    return /^FAILURE-CAUSE:SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED(?:$|:)/.test(text)
+      ||/^SYSTEM-STEWARD:FAILURE-SIGNATURE:SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED(?:$|:)/.test(text)
+      ||/^SOURCE[-_ ]?GENERATION[-_ ]?FAILURE(?::|=)/.test(text)
+      ||/^SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED(?::|=)/.test(text);
+  });
   if(sourceGenerationObserved){
     return{
       nextBlockingSystem:'SOURCE_GENERATION',
