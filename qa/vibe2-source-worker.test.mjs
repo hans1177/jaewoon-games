@@ -374,19 +374,19 @@ test('unappliable edit is retried inside generation before candidate write', asy
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/edit-preflight-retry/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
-test('speculative focused repair gets one bounded retry after edit-match at the base budget edge', async () => {
+test('speculative focused repair gets one bounded retry after focused no-op at the base budget edge', async () => {
   const cwd=tempRoot();
-  const noOp=path.join(cwd,'spec-noop.json');
   const badEdit=path.join(cwd,'spec-bad-edit.json');
+  const focusedNoOp=path.join(cwd,'spec-focused-noop.json');
   const focused=path.join(cwd,'spec-focused.json');
   const workOrder=order({responsibleFiles:['unity-games/demo/Assets/Player.cs'],taskId:'spec-focused-credit'});
   workOrder.candidateStrategyRole={variant:'speculative-1',strategy:'BOUNDED_REPAIR'};
   write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player { int Speed() { return 1; } }\n');
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
-  write(noOp,JSON.stringify({edits:[],newFiles:[]}));
   write(badEdit,JSON.stringify({edits:[{path:'Assets/Player.cs',find:'return 9;',replace:'return 2;'}],newFiles:[]}));
+  write(focusedNoOp,JSON.stringify({replace:'class Player { int Speed() { return 1; } }'}));
   write(focused,JSON.stringify({replace:'class Player { int Speed() { return 2; } }'}));
-  const result=await runVibe2SourceWorker({cwd,responseFiles:[noOp,badEdit,focused]});
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[badEdit,focusedNoOp,focused]});
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.baseAttemptBudget,2);
   assert.equal(result.generation.effectiveAttemptBudget,3);
