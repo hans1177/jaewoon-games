@@ -210,6 +210,81 @@ test('unappliable edit is retried inside generation before candidate write', asy
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/edit-preflight-retry/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
+test('system multi-file focused retry pins a real responsible path and exact source anchor',()=>{
+  const cwd=tempRoot();
+  const first='tools/vibe2-system-steward.mjs';
+  const second='qa/vibe2-system-steward.test.mjs';
+  write(path.join(cwd,first),[
+    'export function runSteward(state){',
+    '  const queueChanged=state.queueChanged===true;',
+    '  return {queueChanged};',
+    '}'
+  ].join('\n')+'\n');
+  write(path.join(cwd,second),[
+    'test("steward",()=>{',
+    '  assert.equal(true,true);',
+    '});'
+  ].join('\n')+'\n');
+  const prompt=[
+    'Goal: repair repeated system architecture routing without widening authority',
+    'Allowed edit paths: '+first+', '+second,
+    '',
+    '=== FILE '+first+' [EDITABLE] ===',
+    'export function runSteward(state){',
+    '  const queueChanged=state.queueChanged===true;',
+    '  return {queueChanged};',
+    '}',
+    '',
+    '=== FILE '+second+' [EDITABLE] ===',
+    'test("steward",()=>{',
+    '  assert.equal(true,true);',
+    '});'
+  ].join('\n');
+  const spec=focusedReplaceOnlySpec(prompt,{sourceRoot:cwd,responsibleFiles:[first,second]});
+  assert.ok(spec);
+  assert.ok([first,second].includes(spec.path));
+  assert.doesNotMatch(spec.path,/EXACT_ALLOWED_PATH/);
+  const source=fs.readFileSync(path.join(cwd,spec.path),'utf8');
+  assert.ok(source.includes(spec.find));
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    sourceRoot:cwd,
+    responsibleFiles:[first,second]
+  });
+  assert.ok(focused);
+  assert.equal(focused.spec.path,spec.path);
+  assert.match(focused.prompt,/Do NOT return path or find/);
+  assert.doesNotMatch(focused.prompt,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
+});
+
+test('system multi-file timeout retry never emits fake path or source placeholders',()=>{
+  const first='tools/vibe2-system-steward.mjs';
+  const second='qa/vibe2-system-steward.test.mjs';
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: system',
+    'Goal: repair repeated system architecture routing',
+    'Allowed edit paths: '+first+', '+second,
+    '',
+    '=== FILE '+first+' [EDITABLE] ===',
+    'const repeatedRecoverySignal=state.failures.length;',
+    '',
+    '=== FILE '+second+' [EDITABLE] ===',
+    'assert.equal(result.queueChanged,false);'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:[first,second],
+    attempt:2
+  });
+  assert.match(retry,/Return exactly one minimal JSON object with only an edits array/);
+  assert.match(retry,/FINAL FOCUSED RETRY/);
+  assert.doesNotMatch(retry,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
+  assert.match(retry,/tools\/vibe2-system-steward\.mjs/);
+  assert.match(retry,/qa\/vibe2-system-steward\.test\.mjs/);
+});
+
 test('focused replace recovery budget is not smaller than final retry budget',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   const finalPredict=Number(source.match(/const JSON_FINAL_RETRY_MAX_PREDICT=(\d+);/)?.[1]||0);
