@@ -4,7 +4,7 @@
 // 원칙: trace 자체는 학습 정답이 아니며, full regression/검증된 실패 원인 전에는 재사용 권한이 없다.
 
 import crypto from 'node:crypto';
-import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication, recordVibeCapabilityBenchmark, recordVibeCapabilityPortfolioDecision } from '../assets/vibe-experience-memory.js';
+import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication, recordVibeCapabilityBenchmark, recordVibeCapabilityBenchmarkNativeCompletion, recordVibeCapabilityPortfolioDecision } from '../assets/vibe-experience-memory.js';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -681,6 +681,37 @@ export function applyCapabilityBenchmarkReviews(memoryInput={},reviews=[]){
     applied,
     duplicates,
     missing,
+    results:Object.freeze(results),
+    authorityExpanded:false,
+    automaticPromotion:false
+  });
+}
+
+export function applyCapabilityBenchmarkNativeCompletions(memoryInput={},completions=[]){
+  let memory=createVibeExperienceMemory(memoryInput);
+  let applied=0,duplicates=0,missing=0,rejected=0;
+  const results=[];
+  for(const completion of Array.isArray(completions)?completions:[]){
+    const result=recordVibeCapabilityBenchmarkNativeCompletion(memory,completion);
+    results.push(Object.freeze({
+      capabilityId:clean(completion?.capabilityId)||null,
+      caseId:clean(completion?.caseId)||null,
+      pairId:clean(completion?.pairId)||null,
+      updated:result.updated===true,
+      duplicate:result.duplicate===true,
+      reason:result.reason
+    }));
+    if(result.updated){applied+=1;memory=result.memory;}
+    else if(result.duplicate)duplicates+=1;
+    else if(result.reason==='capability-not-found'||result.reason==='native-completion-benchmark-not-found')missing+=1;
+    else rejected+=1;
+  }
+  return Object.freeze({
+    memory,
+    applied,
+    duplicates,
+    missing,
+    rejected,
     results:Object.freeze(results),
     authorityExpanded:false,
     automaticPromotion:false
