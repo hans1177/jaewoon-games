@@ -62,7 +62,8 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.match(flow,/materialIsGame: false/);
   assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
   assert.match(flow,/fixedSixCategoryProductionQuotaForbidden: true/);
-  assert.match(flow,/concurrentGameWipMax: 20/);
+  assert.match(flow,/concurrentGameWipMax: null/);
+  assert.match(flow,/externalProviderBoundary: 256/);
   assert.match(flow,/initialImplementationMinimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
   assert.match(flow,/thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
   assert.match(flow,/finalContentDepthMinutesRequired: 30/);
