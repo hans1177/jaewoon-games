@@ -213,36 +213,6 @@
       ]
     },
     {
-      "id": "gap-animation_feel-l2",
-      "kind": "ANIMATION_FEEL_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ANIMATION_FEEL"
-      ]
-    },
-    {
-      "id": "gap-economy-l2",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ECONOMY"
-      ]
-    },
-    {
-      "id": "gap-recovery-l2",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "RECOVERY"
-      ]
-    },
-    {
       "id": "gap-security-l2",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -253,23 +223,33 @@
       ]
     },
     {
-      "id": "gap-combat-l3",
+      "id": "gap-animation_feel-l3",
+      "kind": "ANIMATION_FEEL_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "gap-economy-l3",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "COMBAT"
+        "ECONOMY"
       ]
     },
     {
-      "id": "gap-quest_design-l3",
-      "kind": "QUEST_CAUSALITY_DRILL",
+      "id": "gap-recovery-l3",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "QUEST_DESIGN"
+        "RECOVERY"
       ]
     },
     {
@@ -283,23 +263,23 @@
       ]
     },
     {
-      "id": "gap-core_loop-l4",
+      "id": "gap-combat-l4",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "CORE_LOOP"
+        "COMBAT"
       ]
     },
     {
-      "id": "gap-progression-l4",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-quest_design-l4",
+      "kind": "QUEST_CAUSALITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "PROGRESSION"
+        "QUEST_DESIGN"
       ]
     },
     {
@@ -323,13 +303,13 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l4",
+      "id": "gap-core_loop-l5",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "WEB_RUNTIME"
+        "CORE_LOOP"
       ]
     },
     {
@@ -353,7 +333,27 @@
       ]
     },
     {
-      "id": "gap-state_machine-l5",
+      "id": "gap-progression-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "PROGRESSION"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l6",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
