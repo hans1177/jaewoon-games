@@ -18,10 +18,10 @@ export function assertSystemArchitectureTask(task={}){
   if(clean(task.department).toLowerCase()!=='system-architecture')throw new Error('SYSTEM_ARCHITECTURE_DEPARTMENT_REQUIRED');
   if(task.systemSteward!==true)throw new Error('SYSTEM_ARCHITECTURE_STEWARD_REQUIRED');
   if(!evidence.has('vibe-self-architecture-evolution'))throw new Error('SYSTEM_ARCHITECTURE_EVOLUTION_EVIDENCE_REQUIRED');
-  if(!evidence.includes('architecture-authority-expansion:NO'))throw new Error('SYSTEM_ARCHITECTURE_AUTHORITY_GUARD_REQUIRED');
-  if(!evidence.includes('architecture-gate-weakening:NO'))throw new Error('SYSTEM_ARCHITECTURE_GATE_GUARD_REQUIRED');
-  if(!evidence.includes('architecture-neural-expansion-phase:LAST_STAGE_ONLY'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_PHASE_GUARD_REQUIRED');
-  if(!evidence.includes('architecture-neural-expansion-allowed:NO'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_GUARD_REQUIRED');
+  if(!evidence.has('architecture-authority-expansion:NO'))throw new Error('SYSTEM_ARCHITECTURE_AUTHORITY_GUARD_REQUIRED');
+  if(!evidence.has('architecture-gate-weakening:NO'))throw new Error('SYSTEM_ARCHITECTURE_GATE_GUARD_REQUIRED');
+  if(!evidence.has('architecture-neural-expansion-phase:LAST_STAGE_ONLY'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_PHASE_GUARD_REQUIRED');
+  if(!evidence.has('architecture-neural-expansion-allowed:NO'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_GUARD_REQUIRED');
   const responsible=uniq(task.responsibleFiles||[]);
   if(!responsible.length||responsible.length>4)throw new Error('SYSTEM_ARCHITECTURE_RESPONSIBLE_FILE_COUNT_INVALID');
   for(const file of responsible)if(!isAllowedSystemArchitecturePath(file))throw new Error('SYSTEM_ARCHITECTURE_PATH_FORBIDDEN:'+file);
