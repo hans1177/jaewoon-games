@@ -72,3 +72,42 @@ test('guidance explicitly preserves existing authority and rejects fake-gameplay
   assert.match(text,/wave scheduling remain authoritative/);
   assert.match(text,/Do not patch a validator problem by faking gameplay/);
 });
+
+
+test('current deterministic diagnostic responsibility outranks stale historical hints without becoming verified root cause',()=>{
+  const d=buildNeuralDiagnosis({task:{
+    goal:'반복 타이머 생명주기 문제를 수정한다',
+    evidence:[
+      'diagnostic:INTERVAL_CLEANUP_RISK',
+      'diagnostic-key:INTERVAL_CLEANUP_RISK:index.js',
+      'failure-cause:old-save-restore-timeout',
+      'historical-localStorage-save-path',
+      'source-candidate-generation-failed:TIMEOUT'
+    ]
+  }});
+  assert.equal(d.responsibility.system,'GAME_RUNTIME');
+  assert.equal(d.responsibility.basis,'CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS');
+  assert.equal(d.responsibility.verified,false);
+  assert.equal(d.actionRecommendation.responsibleSystem,'GAME_RUNTIME');
+  assert.equal(d.hypotheses[0].diagnosticType,'INTERVAL_CLEANUP_RISK');
+  assert.equal(d.hypotheses[0].diagnosticFile,'index.js');
+  assert.equal(d.hypotheses[0].verified,false);
+  assert.equal(d.learning.eligible,false);
+  assert.equal(d.waveControl.mayReorderWave,false);
+  assert.equal(d.waveControl.mayCreateWorker,false);
+});
+
+test('ambiguous current diagnostic does not override weighted shadow responsibility',()=>{
+  const d=buildNeuralDiagnosis({task:{
+    goal:'viewport 표시 문제와 저장 복구를 확인한다',
+    evidence:[
+      'diagnostic:MISSING_VIEWPORT',
+      'diagnostic-key:MISSING_VIEWPORT:index.html',
+      'runtime-failure:SAVE_RESTORE_BROKEN'
+    ]
+  }});
+  assert.equal(d.responsibility.system,'SAVE_SYSTEM');
+  assert.equal(d.responsibility.basis,'WEIGHTED_SHADOW_HYPOTHESES');
+  assert.equal(d.responsibility.verified,false);
+  assert.equal(d.hypotheses.some(row=>row.id.startsWith('current-deterministic-diagnostic-')),false);
+});
