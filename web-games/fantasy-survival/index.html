@@ -427,7 +427,10 @@ function craftItem(id){
  const pos=r.kind==='structure'?findStructurePlacement():null;if(r.kind==='structure'&&!pos){showNotice('건축물이 겹치지 않는 설치 공간이 필요해');return}
  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
  pay(r.cost);const p=state.player;
- if(r.kind==='structure'){placeStructure(r.id,pos);rememberItem(r.id)}
+ if(r.kind==='structure'){
+   placeStructure(r.id,pos);rememberItem(r.id);
+   if(multiplayer.connected&&!multiIsHost())multiSend('structure-place',{id:r.id,pos:{x:pos.x,y:pos.y}})
+ }
  else if(r.kind==='weapon'){addInv(r.id);if(!p.weapon)setWeapon(r.id)}
  else if(r.kind==='tool'){addInv(r.id);if(!p.tool)p.tool=r.id}
  else if(r.kind==='armor'){addInv(r.id);if(!p.armor)setArmor(r.id)}
@@ -804,10 +807,71 @@ function remotePlayerState(payload){
  if(!payload||payload.id===multiplayer.playerId)return;
  multiplayer.remote.set(payload.id,{...payload,seenAt:performance.now()})
 }
+function sharedStructurePos(v){
+ if(!v||!Number.isFinite(Number(v.x))||!Number.isFinite(Number(v.y)))return null;
+ return{x:clamp(Number(v.x),45,WORLD.w-45),y:clamp(Number(v.y),45,WORLD.h-45)}
+}
+function sharedStructureSnapshot(){
+ return{
+  bench:state.bench?{...state.bench}:null,
+  furnace:state.furnace?{...state.furnace}:null,
+  ironBench:state.ironBench?{...state.ironBench}:null,
+  goldBench:state.goldBench?{...state.goldBench}:null,
+  cookingStation:state.cookingStation?{...state.cookingStation}:null,
+  incubator:state.incubator?{...state.incubator}:null,
+  flags:state.flags.map(x=>({...x}))
+ }
+}
+function hostApplyStructurePlace(payload){
+ if(!multiIsHost()||!payload)return;
+ const allowed=new Set(['bench','furnace','iron-bench','gold-bench','cooking-station','shadow-wolf-incubator','flag']);
+ const id=String(payload.id||'');if(!allowed.has(id))return;
+ const pos=sharedStructurePos(payload.pos);if(!pos)return;
+ if(id!=='flag'&&structureExists(id))return;
+ if(id==='flag'&&state.flags.some(x=>dist(x.x,x.y,pos.x,pos.y)<24))return;
+ if(structurePositions().some(x=>dist(x.x,x.y,pos.x,pos.y)<88))return;
+ if(!placeStructure(id,pos))return;
+ rememberItem(id);state.dirty=true;multiplayer.worldAt=0;saveGame(false)
+}
+function multiEnemyPlayerTarget(e){
+ const local={id:multiplayer.playerId,player:state.player,local:true,d:e.area===state.area?dist(e.x,e.y,state.player.x,state.player.y):Infinity};
+ if(!multiplayer.connected||!multiIsHost())return local;
+ let best=local;const now=performance.now();
+ for(const [id,r] of multiplayer.remote){
+  if(!r||r.area!==e.area||now-(r.seenAt||0)>1500||(Number(r.hp)||0)<=0)continue;
+  const d=dist(e.x,e.y,Number(r.x)||0,Number(r.y)||0);
+  if(d<best.d)best={id,player:r,local:false,d}
+ }
+ return best
+}
+function applyRemoteEnemyHit(payload){
+ if(!payload||payload.targetId!==multiplayer.playerId)return;
+ const damage=Math.max(0,Number(payload.damage)||0);if(!damage)return;
+ const attacker=state.enemies.find(e=>e.netId===payload.sourceId)||null;
+ damagePlayer(damage,!!payload.force,attacker)
+}
+function applyRemoteEnemyEffect(payload){
+ if(!payload||payload.targetId!==multiplayer.playerId)return;
+ const p=state.player,now=performance.now(),duration=Math.max(0,Number(payload.duration)||0);
+ if(payload.kind==='burn'){p.burnTicks=4;p.burnNext=now+1000;showNotice('화염 상태 · 4초')}
+ else if(payload.kind==='stun'){p.stunnedUntil=Math.max(p.stunnedUntil||0,now+duration);showNotice('기절 · '+Math.max(1,Math.round(duration/1000))+'초')}
+ else if(payload.kind==='weaken'){p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration);showNotice('수정 수호자의 포효 · 공격력/속도 15초 절반')}
+ state.dirty=true;updateHud()
+}
+function applyEnemyEffectTarget(e,p,kind,duration=0){
+ const remoteId=multiplayer.connected&&multiIsHost()&&e?.playerTargetId&&e.playerTargetId!==multiplayer.playerId?e.playerTargetId:null;
+ if(remoteId){multiSend('enemy-effect',{targetId:remoteId,kind,duration,sourceId:e?.netId||null});return}
+ const now=performance.now();
+ if(kind==='burn')applyBurn();
+ else if(kind==='stun')p.stunnedUntil=Math.max(p.stunnedUntil||0,now+duration);
+ else if(kind==='weaken')p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration)
+}
+
 function serializeWorld(){
  return{
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null})),
-  projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area})),
+  projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null})),
+  structures:sharedStructureSnapshot(),
   bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,crystalSealReleased:state.crystalSealReleased
  }
 }
@@ -819,6 +883,15 @@ function applyWorldSnapshot(w){
   return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt:0,hitAt:0,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,netId:n.id}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];
+ if(w.structures&&typeof w.structures==='object'){
+  state.bench=sharedStructurePos(w.structures.bench);
+  state.furnace=sharedStructurePos(w.structures.furnace);
+  state.ironBench=sharedStructurePos(w.structures.ironBench);
+  state.goldBench=sharedStructurePos(w.structures.goldBench);
+  state.cookingStation=sharedStructurePos(w.structures.cookingStation);
+  state.incubator=sharedStructurePos(w.structures.incubator);
+  state.flags=Array.isArray(w.structures.flags)?w.structures.flags.map(sharedStructurePos).filter(Boolean):[]
+ }
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
 }
 function grantRemoteKillReward(payload){
@@ -867,6 +940,9 @@ async function connectMultiplayer(rawRoom){
   .on('presence',{event:'sync'},syncMultiPresence)
   .on('broadcast',{event:'player-state'},({payload})=>remotePlayerState(payload))
   .on('broadcast',{event:'world-state'},({payload})=>applyWorldSnapshot(payload))
+  .on('broadcast',{event:'structure-place'},({payload})=>hostApplyStructurePlace(payload))
+  .on('broadcast',{event:'enemy-hit'},({payload})=>applyRemoteEnemyHit(payload))
+  .on('broadcast',{event:'enemy-effect'},({payload})=>applyRemoteEnemyEffect(payload))
   .on('broadcast',{event:'attack'},({payload})=>hostApplyRemoteAttack(payload))
   .on('broadcast',{event:'pet-attack'},({payload})=>hostApplyPetAttack(payload))
   .on('broadcast',{event:'kill-reward'},({payload})=>grantRemoteKillReward(payload))
@@ -1002,6 +1078,8 @@ function knockoutPlayer(message='쓰러져 숲 중앙에서 부활했어'){
  const p=state.player;if(state.pet.mounted)dismountPet(false);p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=START.x;p.y=START.y;state.area='surface';if(petAlive()){state.pet.x=START.x+55;state.pet.y=START.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;showNotice(message);state.dirty=true;updateHud()
 }
 function enemyDamageTarget(e,n,force=false){
+ const remoteId=multiplayer.connected&&multiIsHost()&&e?.playerTargetId&&e.playerTargetId!==multiplayer.playerId?e.playerTargetId:null;
+ if(remoteId){multiSend('enemy-hit',{targetId:remoteId,damage:n,force:!!force,sourceId:e?.netId||null});return'remote'}
  if(e&&petAlive()&&!state.pet.mounted&&state.pet.targetId===e.netId&&dist(state.pet.x,state.pet.y,e.x,e.y)<150){
    if(e.attackTurn==='pet'){damagePet(n,e);e.attackTurn='player';return'pet'}
    damagePlayer(n,force,e);e.attackTurn='pet';return'player'
@@ -1316,7 +1394,7 @@ function guardianRageState(e,p,now){
  const raging=now<(e.rageUntil||0);
  if(raging&&now>=(e.nextRoarAt||0)){
   e.nextRoarAt=now+3000;
-  if(Math.random()<.20&&dist(e.x,e.y,p.x,p.y)<1000){p.weakenedUntil=Math.max(p.weakenedUntil||0,now+15000);showNotice('수정 수호자의 포효 · 공격력/속도 15초 절반')}
+  if(Math.random()<.20&&dist(e.x,e.y,p.x,p.y)<1000){applyEnemyEffectTarget(e,p,'weaken',15000);if(e.playerTargetId===multiplayer.playerId)showNotice('수정 수호자의 포효 · 공격력/속도 15초 절반')}
  }
  if(e.rageUsed&&e.rageUntil&&now>=e.rageUntil&&e.maxHp!==e.type.hp){e.maxHp=e.type.hp;e.hp=Math.min(e.hp,e.maxHp)}
  return raging?1.5:1
@@ -1331,7 +1409,15 @@ function updateProjectiles(dt,now){
  for(let i=state.projectiles.length-1;i>=0;i--){
   const q=state.projectiles[i];q.x+=q.vx*dt;q.y+=q.vy*dt;
   if(now-q.createdAt>q.life||q.x<0||q.y<0||q.x>WORLD.w||q.y>WORLD.h){state.projectiles.splice(i,1);continue}
-  if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){damagePlayer(q.damage,true,state.enemies.find(e=>e.netId===q.sourceId)||null);state.projectiles.splice(i,1);showNotice('수정 투척 적중 · 78 데미지')}
+  if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){damagePlayer(q.damage,true,state.enemies.find(e=>e.netId===q.sourceId)||null);state.projectiles.splice(i,1);showNotice('수정 투척 적중 · 78 데미지');continue}
+  if(multiplayer.connected&&multiIsHost()){
+   let hitRemote=false;
+   for(const [id,r] of multiplayer.remote){
+    if(!r||r.area!==q.area||now-(r.seenAt||0)>1500||(Number(r.hp)||0)<=0)continue;
+    if(dist(q.x,q.y,Number(r.x)||0,Number(r.y)||0)<25){multiSend('enemy-hit',{targetId:id,damage:q.damage,force:true,sourceId:q.sourceId||null});state.projectiles.splice(i,1);hitRemote=true;break}
+   }
+   if(hitRemote)continue
+  }
  }
 }
 function spawnCrystalSealMonsters(show=true){
@@ -1371,7 +1457,7 @@ function updateCrystalBoarSpecial(e,p,now){
    if(now<s.endAt){
      const d=dist(e.x,e.y,p.x,p.y);
      if(d<e.type.r+27){
-       enemyDamageTarget(e,68,true);if(p.x!==START.x||p.y!==START.y)p.stunnedUntil=now+3000;e.attackAt=now;e.special=null;showNotice('기절 돌진 적중 · 3초 기절');return{vx:0,vy:0,active:true}
+       enemyDamageTarget(e,68,true);if(p.x!==START.x||p.y!==START.y)applyEnemyEffectTarget(e,p,'stun',3000);e.attackAt=now;e.special=null;if(e.playerTargetId===multiplayer.playerId)showNotice('기절 돌진 적중 · 3초 기절');return{vx:0,vy:0,active:true}
      }
      return{vx:(p.x-e.x)/(d||1)*e.type.speed*2.5,vy:(p.y-e.y)/(d||1)*e.type.speed*2.5,active:true}
    }
@@ -1413,11 +1499,11 @@ function update(dt,now){
   if(!multiplayer.connected||multiIsHost()||state.area==='storylab1'||state.area==='storylab2'){
     for(const e of state.enemies){
       if(e.hp<=0||e.area!==state.area)continue;
-      const playerD=dist(e.x,e.y,p.x,p.y);
+      const playerTarget=multiEnemyPlayerTarget(e),targetP=playerTarget.player; e.playerTargetId=playerTarget.id; const playerD=dist(e.x,e.y,targetP.x,targetP.y);
       let vx=0,vy=0,monsterFight=false;
-      if(e.type.boss){const b=updateBoss(e,p,now);vx=b.vx;vy=b.vy;monsterFight=true}
+      if(e.type.boss){const b=updateBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
       if(!e.type.boss&&now<(e.stunnedUntil||0)){vx=0;vy=0;monsterFight=true}
-      if(!monsterFight&&e.type.labBoss){const b=updateStoryLabBoss(e,p,now);vx=b.vx;vy=b.vy;monsterFight=true}
+      if(!monsterFight&&e.type.labBoss){const b=updateStoryLabBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
   
       if(!monsterFight&&e.type.caveLeader&&playerD<(e.type.detect||760)){
         if(now>=(e.nextSpecialAt||0)){e.nextSpecialAt=now+1000;if(Math.random()<.25)summonLeaderWolves(e)}
@@ -1427,15 +1513,15 @@ function update(dt,now){
         if(Math.random()<.30){e.attackAt=now;enemyDamageTarget(e,30,false);e.hp=Math.min(e.maxHp,e.hp+30);showNotice('거대 흡혈 박쥐 · 흡혈');monsterFight=true}
       }
       if(!monsterFight&&e.type.guardian){
-        const rage=guardianRageState(e,p,now),gt=guardianTarget(e);
+        const rage=guardianRageState(e,targetP,now),gt=guardianTarget(e);
         if(gt){
           e.enemyTarget=gt;const chase=chaseMonster(e,gt,now,rage,rage);if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}
         }else{
           e.enemyTarget=null;
           if(playerD<(e.type.detect||1050)){
-            if(playerD>e.type.r+30&&now>=(e.nextThrowAt||0))throwGuardianCrystal(e,p,now);
+            if(playerD>e.type.r+30&&now>=(e.nextThrowAt||0))throwGuardianCrystal(e,targetP,now);
             if(playerD<=e.type.r+30&&now-e.attackAt>(e.type.attackCooldown||1050)){e.attackAt=now;enemyDamageTarget(e,e.type.dmg*rage,false);monsterFight=true}
-            else if(!monsterFight){vx=(p.x-e.x)/(playerD||1)*e.type.speed*rage;vy=(p.y-e.y)/(playerD||1)*e.type.speed*rage;monsterFight=true}
+            else if(!monsterFight){vx=(targetP.x-e.x)/(playerD||1)*e.type.speed*rage;vy=(targetP.y-e.y)/(playerD||1)*e.type.speed*rage;monsterFight=true}
           }
         }
       }
@@ -1457,13 +1543,13 @@ function update(dt,now){
         }
       }
   
-      if(!monsterFight&&e.type.burrower&&p.armor==='sand-armor'&&!e.provokedByPlayer){e.emergeAt=0;vx=0;vy=0;monsterFight=true}
+      if(!monsterFight&&e.type.burrower&&targetP.armor==='sand-armor'&&!e.provokedByPlayer){e.emergeAt=0;vx=0;vy=0;monsterFight=true}
       if(!monsterFight&&e.type.burrower&&!e.emerged){
         if(playerD<(e.type.detect||460)){if(!e.emergeAt)e.emergeAt=now+2000;if(now>=e.emergeAt){e.emerged=true;showNotice('모래 아래에서 거대한 벌레가 튀어나왔다')}}else e.emergeAt=0;
         vx=0;vy=0;monsterFight=true
       }
       if(!monsterFight&&e.type.crystalSpecial){
-        const sp=updateCrystalBoarSpecial(e,p,now);
+        const sp=updateCrystalBoarSpecial(e,targetP,now);
         if(sp){vx=sp.vx;vy=sp.vy;monsterFight=true}
       }
       if(!monsterFight&&e.type.crystalSpecial&&e.hostile&&playerD<(e.type.detect||560)&&playerD<e.type.r+28&&now-e.attackAt>(e.type.attackCooldown||1100)){
@@ -1477,9 +1563,9 @@ function update(dt,now){
         if(e.type.mood==='harmless'){
           if(now>e.wanderAt){e.wanderAt=now+rand(800,1800);e.wander+=rand(-1.6,1.6)}
           vx=Math.cos(e.wander)*e.type.speed*.35;vy=Math.sin(e.wander)*e.type.speed*.35
-        }else if(e.hostile&&!(e.type.burrower&&p.armor==='sand-armor'&&!e.provokedByPlayer)&&playerD<(e.type.detect||430)){
-          vx=(p.x-e.x)/(playerD||1)*e.type.speed;vy=(p.y-e.y)/(playerD||1)*e.type.speed;
-          if(playerD<e.type.r+25&&now-e.attackAt>(e.type.attackCooldown||900)){e.attackAt=now;if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyBurn()}else enemyDamageTarget(e,e.type.dmg,false)}
+        }else if(e.hostile&&!(e.type.burrower&&targetP.armor==='sand-armor'&&!e.provokedByPlayer)&&playerD<(e.type.detect||430)){
+          vx=(targetP.x-e.x)/(playerD||1)*e.type.speed;vy=(targetP.y-e.y)/(playerD||1)*e.type.speed;
+          if(playerD<e.type.r+25&&now-e.attackAt>(e.type.attackCooldown||900)){e.attackAt=now;if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyEnemyEffectTarget(e,targetP,'burn',4000)}else enemyDamageTarget(e,e.type.dmg,false)}
         }else{
           if(now>e.wanderAt){e.wanderAt=now+rand(900,2200);e.wander+=rand(-1.2,1.2)}
           vx=Math.cos(e.wander)*e.type.speed*.28;vy=Math.sin(e.wander)*e.type.speed*.28
