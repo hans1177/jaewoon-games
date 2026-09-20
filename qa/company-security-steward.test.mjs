@@ -292,3 +292,17 @@ test('security workflow persists the upload artifact id and run id with every re
   assert.match(securityWorkflow,/--security-run="\$\{GITHUB_RUN_ID\}"/);
   assert.match(securityWorkflow,/--security-artifact="\$SECURITY_ARTIFACT_ID"/);
 });
+
+
+test('policy REVIEW passes only through exact-head owner Primary-AI approval while quarantine remains blocking',()=>{
+  assert.ok(securityWorkflow.includes('pull-requests: read'));
+  assert.ok(securityWorkflow.includes("review_only: ${{ steps.scan.outputs.review_only }}"));
+  assert.ok(securityWorkflow.includes("['APPROVED','COMMENTED'].includes(String(row.state||'').toUpperCase())"));
+  assert.ok(securityWorkflow.includes("String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS'"));
+  assert.ok(securityWorkflow.includes("String(row.commit_id||'')===head"));
+  assert.ok(securityWorkflow.includes("String(row.user?.login||'').toLowerCase()===owner"));
+  assert.ok(securityWorkflow.includes("test \"$REVIEW_ONLY\" = 'YES'"));
+  assert.ok(securityWorkflow.includes("test \"$DIRECT_REVIEW_PASS\" = 'YES'"));
+  assert.ok(securityWorkflow.includes("VIBE_SECURITY_REVIEW_STATE=EXACT_HEAD_OWNER_PRIMARY_AI_REVIEW_PASS"));
+  assert.ok(securityWorkflow.includes("VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE"));
+});
