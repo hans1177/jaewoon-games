@@ -1,5 +1,5 @@
 {
-  "version": 189,
+  "version": 190,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6323,7 +6323,8 @@
       "conflictingReadinessSampleEvidenceBlocksReview": true,
       "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true,
       "allShadowAuthorityBitsMustRemainObservable": true,
-      "authorityEvidenceMayNotMaskTrueForbiddenBits": true
+      "authorityEvidenceMayNotMaskTrueForbiddenBits": true,
+      "partialSampleIdentityCannotQualifyReadiness": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6678,7 +6679,11 @@
             "calibrationEligible": "DISTINCT_sampleId_WITH_sampleEligible",
             "verifiedRootCause": "DISTINCT_sampleId_WITH_rootCauseVerified",
             "waveAuditSamples": "DISTINCT_sampleId"
-          }
+          },
+          "canonicalShape": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
+          "allFourComponentsRequiredForReadiness": true,
+          "partialIdentityIsLegacy": true,
+          "taskIdOnlyFallbackCannotSatisfyReadiness": true
         },
         "hardening": {
           "branch": "assistant/neural-shadow-hardening-main-v1",
