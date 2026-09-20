@@ -4,7 +4,7 @@
 // 원칙: trace 자체는 학습 정답이 아니며, full regression/검증된 실패 원인 전에는 재사용 권한이 없다.
 
 import crypto from 'node:crypto';
-import { createVibeExperienceMemory, searchVibeExperience } from '../assets/vibe-experience-memory.js';
+import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication } from '../assets/vibe-experience-memory.js';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -280,6 +280,83 @@ export function mergeCodingTraceLedger(ledgerInput={},traces=[]){
 }
 
 
+export function buildCapabilityApplicationReviews({task={},result={},finalReviewPass=false,selected=false}={}){
+  const application=result?.capabilityApplication&&typeof result.capabilityApplication==='object'?result.capabilityApplication:{};
+  const injected=application.injected===true;
+  const capabilityIds=unique(safeArray(application.exactInjectedCapabilityIds,8));
+  if(!injected||!capabilityIds.length)return Object.freeze([]);
+  const taskId=clean(result.taskId||task.id);
+  const reservationId=clean(result.reservationId||result.metrics?.reservationId);
+  const variant=clean(result.variant)||'primary';
+  const candidateBranch=clean(result.candidateBranch);
+  const sampleIdentity=[taskId,reservationId,variant,candidateBranch].filter(Boolean).join('|');
+  const roles=normalizeRoleResults(result.roleResults||{});
+  const freshTaskQaPass=selected===true
+    &&finalReviewPass===true
+    &&upper(result.outcome)==='PASS'
+    &&roles.test==='PASS'
+    &&roles.performance==='PASS';
+  const workKey=clean(task?.compiledWorkContract?.workKey||application.workKey);
+  const evidence=unique([
+    ...(result.evidence||[]).map(clean).filter(value=>/^(actions-run:|reservation-id:|candidate-sha:|base-main:|incremental-qa-hash:|causal-replay-status:|architecture-drift-status:)/.test(value)),
+    finalReviewPass?'fan-in-review:PASS':'',
+    sampleIdentity?'capability-application-sample:'+hashObject(sampleIdentity).slice(0,20):''
+  ]).filter(Boolean);
+  const supportSet=new Set((result.evidence||[]).map(clean).filter(value=>value.startsWith('capability-support:')).map(value=>value.slice('capability-support:'.length)));
+  const contradictionSet=new Set((result.evidence||[]).map(clean).filter(value=>value.startsWith('capability-contradiction:')).map(value=>value.slice('capability-contradiction:'.length)));
+  return Object.freeze(capabilityIds.map(capabilityId=>Object.freeze({
+    version:1,
+    capabilityId,
+    applicationId:'capp_'+hashObject([capabilityId,sampleIdentity||taskId||'unknown'].join('|')).slice(0,24),
+    taskId:taskId||null,
+    workKey:workKey||null,
+    gameId:clean(task.gameId)||null,
+    engine:clean(task.target||task.engine||result?.candidateIdentity?.target).toLowerCase()||null,
+    outcome:freshTaskQaPass?'FRESH_QA_PASS':upper(result.outcome)==='FAIL'?'TASK_FAILED_UNATTRIBUTED':'OBSERVED_NOT_FINAL',
+    selected:selected===true,
+    finalReviewPass:finalReviewPass===true,
+    freshTaskQaPass,
+    independent:Boolean(taskId&&reservationId),
+    capabilitySpecificSupport:supportSet.has(capabilityId),
+    capabilitySpecificContradiction:contradictionSet.has(capabilityId),
+    coAppliedCapabilityIds:Object.freeze([...capabilityIds]),
+    evidence:Object.freeze(evidence),
+    observedAt:null,
+    rawCodeStored:false,
+    rawModelOutputStored:false,
+    hiddenChainOfThoughtStored:false,
+    authorityExpanded:false
+  })));
+}
+
+export function applyCapabilityApplicationReviews(memoryInput={},reviews=[]){
+  let memory=createVibeExperienceMemory(memoryInput);
+  let applied=0,duplicates=0,missing=0;
+  const results=[];
+  for(const review of Array.isArray(reviews)?reviews:[]){
+    const result=recordVibeCapabilityApplication(memory,review);
+    results.push(Object.freeze({
+      capabilityId:clean(review?.capabilityId)||null,
+      applicationId:clean(review?.applicationId)||null,
+      updated:result.updated===true,
+      duplicate:result.duplicate===true,
+      reason:result.reason
+    }));
+    if(result.updated){applied+=1;memory=result.memory;}
+    else if(result.duplicate)duplicates+=1;
+    else missing+=1;
+  }
+  return Object.freeze({
+    memory,
+    applied,
+    duplicates,
+    missing,
+    results:Object.freeze(results),
+    authorityExpanded:false,
+    automaticPromotion:false,
+    automaticDeprecation:false
+  });
+}
 export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5}={}){
   const memory=createVibeExperienceMemory(experienceInput);
   const records=memory.records.filter(record=>
@@ -321,7 +398,11 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     avoidPatterns:Object.freeze([...(record.avoidPatterns||[])]),
     evidence:Object.freeze([...(record.evidence||[])]),
     confirmations:Number(record.confirmations||1),
-    confidence:Number(record.confidence||0),
+    confidence:Number(record.capabilityConfidence??record.confidence??0),
+    genericConfidence:Number(record.confidence||0),
+    capabilityLifecycle:record.capabilityLifecycle||null,
+    applicationCount:Number(record.capabilityLifecycle?.applicationCount||0),
+    independentPassCount:Number(record.capabilityLifecycle?.independentPassCount||0),
     relevance:Number(score||0),
     reasons:Object.freeze([...(reasons||[])])
   }));
@@ -357,6 +438,9 @@ export function verifiedCapabilityGuidance(retrieval={}){
       record.reusablePatterns?.length?`reuse=${record.reusablePatterns.join(' | ').slice(0,420)}`:'',
       record.avoidPatterns?.length?`avoid=${record.avoidPatterns.join(' | ').slice(0,420)}`:'',
       record.failureCause?`verifiedFailure=${clean(record.failureCause).slice(0,240)}`:'',
+      record.capabilityLifecycle?.state?`lifecycle=${clean(record.capabilityLifecycle.state)}`:'',
+      `applications=${Number(record.applicationCount||0)}`,
+      `independentPasses=${Number(record.independentPassCount||0)}`,
       `confidence=${Number(record.confidence||0).toFixed(4)}`,
       `relevance=${Number(record.relevance||0).toFixed(2)}`
     ].filter(Boolean);
