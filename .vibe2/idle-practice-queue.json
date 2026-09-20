@@ -1,12 +1,157 @@
 {
-  "version": 2,
+  "version": 3,
   "kind": "vibe2-idle-practice-queue",
   "productionWorkAlwaysPreemptsPractice": false,
   "productionDefaultPriorityHigherThanPractice": true,
   "practiceSignalGenerationAlwaysOn": true,
   "practiceGenerationLimit": null,
+  "relearningGenerationLimit": null,
+  "hypothesisGenerationLimit": null,
+  "falsificationGenerationLimit": null,
+  "previousResultComparisonRequired": true,
   "phase4GeneralizationDrills": 28,
   "drills": [
+    {
+      "id": "review-fail_1agpu1k",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "CORE_LOOP",
+        "COMBAT"
+      ],
+      "sourceFailure": "fail_1agpu1k"
+    },
+    {
+      "id": "review-fail_3e38u6",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_3e38u6"
+    },
+    {
+      "id": "review-fail_wu3qnk",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "UI_STATE",
+        "COMBAT"
+      ],
+      "sourceFailure": "fail_wu3qnk"
+    },
+    {
+      "id": "review-fail_c9xvk3",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "UI_STATE",
+        "COMBAT"
+      ],
+      "sourceFailure": "fail_c9xvk3"
+    },
+    {
+      "id": "review-fail_lhx93q",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "SAVE",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_lhx93q"
+    },
+    {
+      "id": "relearn-fail_1agpu1k",
+      "kind": "RELEARNING_REPLAY_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "CORE_LOOP",
+        "COMBAT"
+      ],
+      "sourceFailure": "fail_1agpu1k"
+    },
+    {
+      "id": "relearn-fail_3e38u6",
+      "kind": "RELEARNING_REPLAY_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_3e38u6"
+    },
+    {
+      "id": "relearn-fail_wu3qnk",
+      "kind": "RELEARNING_REPLAY_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "UI_STATE",
+        "COMBAT"
+      ],
+      "sourceFailure": "fail_wu3qnk"
+    },
     {
       "id": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30-control",
       "kind": "CAPABILITY_GENERALIZATION_SCREEN",
@@ -540,92 +685,24 @@
       "mayPromoteGeneralization": false
     },
     {
-      "id": "review-fail_1agpu1k",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
+      "id": "hypothesis-asset_adaptation",
+      "kind": "HYPOTHESIS_FALSIFICATION_DRILL",
+      "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "CORE_LOOP",
-        "COMBAT"
-      ],
-      "sourceFailure": "fail_1agpu1k"
+        "ASSET_ADAPTATION"
+      ]
     },
     {
-      "id": "review-fail_3e38u6",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
+      "id": "compare-asset_adaptation",
+      "kind": "PREVIOUS_RESULT_COMPARISON_DRILL",
+      "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME"
-      ],
-      "sourceFailure": "fail_3e38u6"
-    },
-    {
-      "id": "review-fail_wu3qnk",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "UI_STATE",
-        "COMBAT"
-      ],
-      "sourceFailure": "fail_wu3qnk"
-    },
-    {
-      "id": "review-fail_c9xvk3",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "UI_STATE",
-        "COMBAT"
-      ],
-      "sourceFailure": "fail_c9xvk3"
-    },
-    {
-      "id": "review-fail_lhx93q",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "COMBAT",
-        "SAVE",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "WEB_RUNTIME"
-      ],
-      "sourceFailure": "fail_lhx93q"
+        "ASSET_ADAPTATION"
+      ]
     },
     {
       "id": "gap-asset_adaptation-l1",
@@ -765,6 +842,66 @@
       "countsAsProductionPass": false,
       "domains": [
         "STORYTELLING"
+      ]
+    },
+    {
+      "id": "gap-uefn_replication-l1",
+      "kind": "FORTNITE_UEFN_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UEFN_REPLICATION"
+      ]
+    },
+    {
+      "id": "gap-uefn_runtime-l1",
+      "kind": "FORTNITE_UEFN_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UEFN_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-uefn_verse-l1",
+      "kind": "FORTNITE_UEFN_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UEFN_VERSE"
+      ]
+    },
+    {
+      "id": "gap-unity_netcode-l1",
+      "kind": "UNITY_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UNITY_NETCODE"
+      ]
+    },
+    {
+      "id": "gap-unity_physics-l1",
+      "kind": "UNITY_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UNITY_PHYSICS"
+      ]
+    },
+    {
+      "id": "gap-unity_runtime-l1",
+      "kind": "UNITY_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UNITY_RUNTIME"
       ]
     },
     {
