@@ -1,8 +1,8 @@
 {
-  "version": 226,
+  "version": 228,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-20",
+  "recordedAt": "2026-09-21",
   "priority": [
     "UNITY",
     "ROBLOX",
@@ -927,17 +927,27 @@
       "refillBy": "vibe2-24h-runner",
       "cycle": [
         "LOAD_RELEASED_SOURCE_AND_VERIFIED_LEARNING",
-        "IDENTIFY_ONE_CONCRETE_COMPLETENESS_OR_QUALITY_GAP",
+        "PLAYTEST_RELEASED_BUILD_AND_CAPTURE_EVIDENCE",
+        "IDENTIFY_BUG_COMPLETENESS_OR_QUALITY_GAPS",
+        "PRODUCE_NON_BINDING_REVIEW_FEEDBACK",
+        "VIBE_DECIDES_FEEDBACK_ACCEPTANCE",
+        "CLASSIFY_ACCEPTED_WORK_AS_HOTFIX_MINOR_OR_MAJOR",
+        "PREPARE_MAJOR_UPDATE_AHEAD_OR_USE_FAST_MINOR_LANE",
         "IMPLEMENT_WITHIN_CURRENT_GAME_IDENTITY",
-        "INCREMENTAL_QA",
+        "INCREMENTAL_QA_AND_DEBUG",
         "PERFORMANCE_SANITY",
         "FAN_IN_REGRESSION",
+        "FINAL_REVIEW_FOR_MAJOR_OR_FOCUSED_REVIEW_FOR_FAST_LANE",
         "PROMOTE_VERIFIED_SOURCE_CHANGE_OR_REQUEUE",
+        "INGEST_VERIFIED_RESULT_INTO_LEARNING",
         "CREATE_NEXT_FOCUS_CYCLE"
       ],
       "priorities": [
+        "release-blocking-bugs",
+        "progress-blockers",
         "gameplay-completeness",
         "content-depth",
+        "small-safe-quality-improvements",
         "roblox-native-ux",
         "mobile-readability",
         "performance",
@@ -966,7 +976,24 @@
         "packageLongWorkProtected": true,
         "packageRole": "implementation-owner",
         "priority": "critical",
-        "directMainWrite": false
+        "directMainWrite": false,
+        "feedbackAdvisoryOnly": true,
+        "feedbackDecisionAuthority": "VIBE",
+        "updateScaleDecisionAuthority": "VIBE",
+        "updateScaleInitial": "UNCLASSIFIED",
+        "allowedUpdateScales": [
+          "HOTFIX",
+          "MINOR",
+          "MAJOR"
+        ],
+        "bugEmergencyLane": true,
+        "majorUpdatePrepareAhead": true,
+        "fastRedeployEligibleScales": [
+          "HOTFIX",
+          "MINOR"
+        ],
+        "unverifiedPublicReplacementForbidden": true,
+        "verifiedResultLearningRequired": true
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
       "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_SAME_SOURCE_FOCUS_TASK_EXISTS",
@@ -1025,6 +1052,184 @@
         "min": 2,
         "max": 4,
         "onlyWhenIndependentHighValueWorkExists": true
+      },
+      "playtestReviewLoop": {
+        "version": 1,
+        "required": true,
+        "sequence": [
+          "PLAY_RELEASED_BUILD_OR_EXACT_RELEASE_CANDIDATE",
+          "CAPTURE_REPRODUCIBLE_BUGS_ERRORS_AND_PROGRESS_BLOCKERS",
+          "REVIEW_GAMEPLAY_UX_VISUAL_AUDIO_BALANCE_PERFORMANCE_AND_COMPLETENESS",
+          "PRODUCE_ADVISORY_FEEDBACK_WITH_EVIDENCE",
+          "VIBE_DECIDES_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+          "CLASSIFY_ACCEPTED_WORK_AS_HOTFIX_MINOR_OR_MAJOR",
+          "ROUTE_TO_SCALE_APPROPRIATE_UPDATE_PREPARATION",
+          "REVALIDATE_EXACT_UPDATE_ARTIFACT",
+          "REDEPLOY_ONLY_AFTER_REQUIRED_GATES",
+          "INGEST_VERIFIED_RESULT_INTO_LEARNING"
+        ],
+        "feedbackIsAdvisoryOnly": true,
+        "feedbackCannotForceImplementation": true,
+        "feedbackAcceptanceAuthority": "VIBE",
+        "requiredDecisionRecord": [
+          "decision",
+          "evidence",
+          "reason",
+          "acceptedScope"
+        ],
+        "allowedDecisions": [
+          "ACCEPT",
+          "PARTIAL_ACCEPT",
+          "DEFER",
+          "REJECT"
+        ]
+      },
+      "updateScalePolicy": {
+        "version": 1,
+        "classificationAuthority": "VIBE",
+        "classificationRequiredBeforeImplementation": true,
+        "classes": {
+          "HOTFIX": {
+            "intent": "REPRODUCIBLE_BUG_OR_SMALL_ERROR_FIX",
+            "prepareAheadRequired": false,
+            "fastRedeploy": true,
+            "requiredValidation": [
+              "REPRODUCE_OR_CONFIRM_FAILURE",
+              "FOCUSED_FIX",
+              "INCREMENTAL_QA",
+              "TARGET_PLATFORM_SMOKE",
+              "FOCUSED_REGRESSION",
+              "SECURITY_STEWARD_RESCAN_WHEN_SECURITY_RELEVANT",
+              "EXACT_ARTIFACT_RELEASE_GATE"
+            ],
+            "priority": "IMMEDIATE",
+            "interruptsOtherUpdateWork": true,
+            "redeployAsSoonAsRelevantEvidencePasses": true
+          },
+          "MINOR": {
+            "intent": "SMALL_FEATURE_ENHANCEMENT_OR_LOW_RISK_QUALITY_IMPROVEMENT",
+            "prepareAheadRequired": false,
+            "fastRedeploy": true,
+            "requiredValidation": [
+              "SCOPE_AND_SAVE_COMPATIBILITY_CHECK",
+              "INCREMENTAL_QA",
+              "TARGET_PLATFORM_SMOKE",
+              "FOCUSED_REGRESSION",
+              "PERFORMANCE_SANITY",
+              "EXACT_ARTIFACT_RELEASE_GATE"
+            ]
+          },
+          "MAJOR": {
+            "intent": "LARGE_VERSION_UPDATE_OR_MULTI_SYSTEM_CONTENT_UPDATE",
+            "prepareAheadRequired": true,
+            "publicReleaseProtectedUntilReady": true,
+            "previousPublicReleaseRemainsCanonicalUntilPromotion": true,
+            "requiredPreparation": [
+              "PREPARE_UPDATE_BEFORE_TARGET_RELEASE_WINDOW",
+              "LOCK_UPDATE_SCOPE_AND_COMPATIBILITY_CONTRACT",
+              "IMPLEMENT_ON_NON_PUBLIC_CANDIDATE",
+              "REPEATED_PLAYTEST_AND_BUG_HUNT",
+              "FIX_SMALL_ERRORS_AND_PROGRESS_BLOCKERS",
+              "SAVE_MIGRATION_OR_BACKWARD_COMPATIBILITY_PROOF_IF_NEEDED",
+              "FULL_INCREMENTAL_QA",
+              "TARGET_PLATFORM_RUNTIME",
+              "INDEPENDENT_QA",
+              "FULL_REGRESSION",
+              "PERFORMANCE_SANITY",
+              "FINAL_GAME_REVIEW",
+              "SECURITY_STEWARD_GAME_SECURITY_REVIEW",
+              "EXACT_ARTIFACT_RELEASE_GATE"
+            ],
+            "minimumStablePassRule": "NO_KNOWN_RELEASE_BLOCKING_BUGS_AND_ALL_REQUIRED_GATES_PASS"
+          }
+        },
+        "downgradeMajorValidationToFastLaneForbidden": true,
+        "updateMayBeReclassifiedByVibeWhenEvidenceChanges": true,
+        "releaseGateWeakeningForbidden": true
+      },
+      "fastRedeployPolicy": {
+        "eligibleClasses": [
+          "HOTFIX",
+          "MINOR"
+        ],
+        "speedPriority": true,
+        "skipUnrelatedFullRepositoryWork": true,
+        "requiredRelevantQaCannotBeSkipped": true,
+        "exactSourceAndArtifactBindingRequired": true,
+        "existingReleasePromotionGateStillRequired": true,
+        "hotfixPreemptsMinorAndMajor": true,
+        "bugFixesFirst": true,
+        "fastResponseCannotSkipRequiredRelevantQa": true
+      },
+      "majorUpdatePreparationPolicy": {
+        "prepareBeforePublicVersionChange": true,
+        "keepCurrentPublicVersionLiveWhilePreparing": true,
+        "debugAndErrorSweepRequired": true,
+        "repeatedValidationRequired": true,
+        "finalWholeGameReviewRequired": true,
+        "noDirectProductionPatchBeforeCandidatePass": true
+      },
+      "bugEmergencyLane": {
+        "version": 1,
+        "enabled": true,
+        "priority": "HIGHEST_POST_RELEASE_ENGINEERING_PRIORITY",
+        "interruptsMinorAndMajorPreparation": true,
+        "qualifyingFailures": [
+          "CRASH_OR_START_FAILURE",
+          "PROGRESS_BLOCKER",
+          "SAVE_LOAD_CORRUPTION_OR_FAILURE",
+          "INPUT_OR_CONTROL_UNUSABLE",
+          "MULTIPLAYER_SYNC_BREAK",
+          "REPRODUCIBLE_GAMEPLAY_BREAK",
+          "SEVERE_PERFORMANCE_REGRESSION",
+          "RELEASE_BLOCKING_PLATFORM_ERROR"
+        ],
+        "response": [
+          "CAPTURE_MINIMUM_REPRODUCTION",
+          "TRACE_TO_RESPONSIBLE_STATE_OR_FUNCTION",
+          "FOCUSED_FIX_ONLY",
+          "INCREMENTAL_QA",
+          "TARGET_PLATFORM_SMOKE",
+          "FOCUSED_REGRESSION",
+          "EXACT_ARTIFACT_RELEASE_GATE",
+          "FAST_REDEPLOY"
+        ],
+        "unrelatedMajorUpdateMayNotDelayHotfix": true,
+        "activeMajorCandidateRemainsIsolated": true,
+        "noQaBypass": true,
+        "noDirectUnverifiedProductionPatch": true,
+        "fastResponseMeaning": "MINIMIZE_UNRELATED_WORK_NOT_REQUIRED_EVIDENCE"
+      },
+      "securityStewardIntegration": {
+        "version": 1,
+        "required": true,
+        "steward": "VIBE_SECURITY_STEWARD",
+        "policy": "company-learning/security-immune-system.json",
+        "reuseExistingSecuritySystem": true,
+        "platformAntiCheatDuplicated": false,
+        "robloxExistingGates": [
+          "COMPANY_SECURITY_IMMUNE_SOURCE_SCAN",
+          "SERVER_REMOTE_BOUNDARY_REQUIRED",
+          "SERVER_REMOTE_INPUT_VALIDATION_REQUIRED",
+          "SERVER_REMOTE_RATE_LIMIT_REQUIRED",
+          "ROBLOX_SERVER_CLIENT_BOUNDARY_PASS",
+          "ROBLOX_INDEPENDENT_QA_PASS",
+          "ROBLOX_REGRESSION_PASS"
+        ],
+        "reviewScope": [
+          "SERVER_AUTHORITY",
+          "REMOTE_INPUT_VALIDATION",
+          "RATE_LIMIT",
+          "SAVE_INTEGRITY",
+          "ECONOMY_AND_REWARD_INTEGRITY",
+          "DAMAGE_AND_COOLDOWN_AUTHORITY",
+          "MULTIPLAYER_SYNC_ABUSE",
+          "BACKDOOR_OR_UNTRUSTED_MODULE"
+        ],
+        "confirmedSecurityBugRoute": "HOTFIX",
+        "securityHotfixPreemptsOtherUpdateWork": true,
+        "securityRescanBeforeRedeploy": true,
+        "verifiedSecurityResultReturnsToSecurityLearning": true
       }
     },
     "executionBindings": {
@@ -3619,6 +3824,57 @@
       "quarantineTerminatesAffectedExternalExecution": true,
       "quarantineBlocksCandidatePublication": true,
       "verifiedDefensiveLearningOnly": true
+    },
+    "postReleaseUpdatePolicy": {
+      "version": 1,
+      "appliesTo": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "currentExecutionAvailability": {
+        "ROBLOX": "ACTIVE",
+        "UNITY": "POLICY_READY_PLATFORM_POST_RELEASE_EXECUTOR_PENDING",
+        "FORTNITE_UEFN": "OWNER_HOLD"
+      },
+      "feedbackAuthority": "VIBE",
+      "feedbackNonBinding": true,
+      "updateClasses": [
+        "HOTFIX",
+        "MINOR",
+        "MAJOR"
+      ],
+      "majorPrepareAhead": true,
+      "minorAndHotfixFastRedeploy": true,
+      "allRedeploysRequireRelevantPlatformEvidence": true,
+      "publicVersionNeverReplacedByUnverifiedCandidate": true,
+      "verifiedOutcomeReturnsToVibeLearning": true,
+      "bugEmergencyLaneRequired": true,
+      "hotfixMayPreemptPreparedMajorUpdate": true,
+      "majorCandidateMustRemainIsolatedDuringHotfix": true,
+      "canonicalFlow": [
+        "RELEASE_CONFIRMED",
+        "POST_RELEASE_PLAYTEST_AND_REVIEW",
+        "VIBE_FEEDBACK_DECISION",
+        "UPDATE_SCALE_CLASSIFICATION",
+        "HOTFIX_FAST_LANE_OR_MINOR_FAST_LANE_OR_MAJOR_PREPARATION_LANE",
+        "RELEVANT_QA_AND_DEBUG",
+        "SECURITY_STEWARD_GAME_SECURITY_REVIEW",
+        "EXACT_ARTIFACT_FINAL_GATE",
+        "REDEPLOY",
+        "POST_REDEPLOY_PLAYTEST",
+        "VERIFIED_RESULT_LEARNING_INGEST",
+        "NEXT_UPDATE_CYCLE"
+      ],
+      "bugPriorityRule": "QUALIFYING_BUG_OR_ERROR_PREEMPTS_MINOR_AND_MAJOR_UPDATE_PREPARATION_UNTIL_HOTFIX_RESOLVED_OR_VIBE_DEFERRED",
+      "securityStewardRequired": true,
+      "securityPolicy": "company-learning/security-immune-system.json",
+      "securityFindingRouting": {
+        "confirmedExploitOrSecurityBug": "HOTFIX",
+        "confirmedBackdoorOrCredentialExposure": "SECURITY_QUARANTINE",
+        "ordinaryGameReviewFeedback": "VIBE_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+        "securityReleaseBlockersCannotBeBypassedByOrdinaryFeedbackDecision": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
