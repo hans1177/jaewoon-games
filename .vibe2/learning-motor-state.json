@@ -2316,14 +2316,15 @@
       "coding_negative_1yizr7h",
       "coding_negative_yptmui",
       "coding_negative_903nis",
-      "coding_negative_1wgdfun"
+      "coding_negative_1wgdfun",
+      "coding_negative_f9ni04"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 65,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 155,
-        "verifiedFailures": 366,
+        "verifiedFailures": 367,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -3052,12 +3053,32 @@
             "lastEvidence": "coding_1lu2bkk",
             "lastFailureEvidence": "coding_negative_12fapwx",
             "lastUpdatedAt": "2026-09-20T22:14:44.279Z"
+          },
+          "web|INVALID_PATH|MALFORMED_OUTPUT|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 1
+            },
+            "failureTargets": {
+              "web": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_f9ni04",
+            "lastUpdatedAt": "2026-09-20T23:30:12.292Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_18ldcca",
-        "lastFailureEvidence": "coding_negative_yptmui",
-        "lastUpdatedAt": "2026-09-20T23:18:35.056Z"
+        "lastFailureEvidence": "coding_negative_f9ni04",
+        "lastUpdatedAt": "2026-09-20T23:30:12.292Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 77,
@@ -7619,7 +7640,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T23:29:54.060Z",
+    "lastBuiltAt": "2026-09-20T23:30:12.341Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10278,5 +10299,5 @@
       "knowledge_1sipurs"
     ]
   },
-  "updatedAt": "2026-09-20T23:29:54.060Z"
+  "updatedAt": "2026-09-20T23:30:12.341Z"
 }
