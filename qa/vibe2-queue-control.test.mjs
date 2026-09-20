@@ -659,7 +659,7 @@ test('retryable failure clears reservation identity before the next reservation'
 });
 
 test('retryable failure clears blocker and remains selectable until retry limit', () => {
-  let queue=add(createVibeContinuousQueue(),'retry','retry','unity',{maxRetries:1});
+  let queue=add(createVibeContinuousQueue(),'retry','retry','unity',{retryPolicy:'BOUNDED',maxRetries:1});
   let reserved=reserveNextVibeTask(queue);
   let failed=settleVibeTask(reserved.queue,{taskId:'retry',outcome:'FAIL',evidence:['fail-1'],blocker:'source-candidate-generation-failed'});
   assert.equal(failed.queue.tasks[0].status,'queued');
