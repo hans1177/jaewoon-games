@@ -355,9 +355,10 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
-  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"));
-  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'));
-  assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
+  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'neuron' ]; then"));
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'));
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'));
+  assert(!reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'));
 });
 
 test('24H safety-net refills free game slots while preserving queue-level conflict protection',()=>{
@@ -448,7 +449,7 @@ test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
 
 test('worker never mutates shared queue state and only emits an atomic completion event',()=>{
   const start=workflow.indexOf('  worker:');
-  const end=workflow.indexOf('  fan_in:');
+  const end=workflow.indexOf('  micro_finalize:');
   assert(start>=0 && end>start);
   const workerPart=workflow.slice(start,end);
   assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
@@ -811,3 +812,18 @@ test('continuous core connects existing evidence reasoning into self-generated s
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
   assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
 });
+
+test('completed task micro fan-in runs review before cohort audit and reuses pinned regression evidence',()=>{
+  const microStart=workflow.indexOf('\n  micro_finalize:');
+  const fanInStart=workflow.indexOf('\n  fan_in:');
+  assert.ok(microStart>=0&&fanInStart>microStart);
+  const micro=workflow.slice(microStart,fanInStart);
+  assert.match(workflow,/--output=\/tmp\/vibe2-micro-fanin\.json/);
+  assert.match(workflow,/neuron_ready=\$\{fs\.existsSync\('\/tmp\/vibe2-micro-fanin\.json'\)\?'YES':'NO'\}/);
+  assert.match(workflow,/Upload completed task micro fan-in/);
+  assert.match(micro,/vibe2-contract-regression-v2-/);
+  assert.match(micro,/vibe2-fan-in-review\.mjs/);
+  assert.match(micro,/vibe2-candidate-release\.yml/);
+  assert.match(micro,/micro-fan-in-regression-failed/);
+});
+
