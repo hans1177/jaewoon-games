@@ -200,3 +200,67 @@ test('incremental QA failure signatures are stable without claiming root cause',
   assert.equal(incrementalQaFailureSignature(new Error('changed file missing: index.html')),'CHANGED_FILE_MISSING');
   assert.match(incrementalQaFailureSignature(new Error('PRESENTATION_STATIC_QA_FAILED:LIVING_MOTION:IDLE_REQUIRED')),/^PRESENTATION_STATIC_QA_FAILED/);
 });
+
+
+test('diagnostic causal replay passes only when the exact prepatch issue disappears and carries conservative responsibility evidence',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/diagnostic-demo');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'let timer=setInterval(()=>{},1000); clearInterval(timer);\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/diagnostic-demo',
+    changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{
+      version:2,required:true,prePatchReproduced:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+      status:'READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN',
+      diagnosticType:'INTERVAL_CLEANUP_RISK',diagnosticFile:'index.js',
+      verifiedResponsibleSystem:'GAME_RUNTIME',identicalOrEquivalentInputStateRequired:true
+    }}}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:diagnostic-demo'});
+  assert.equal(result.causalReplay.status,'EXECUTED_PASS');
+  assert.equal(result.causalReplay.executed,true);
+  assert.equal(result.causalReplay.prePatchReproduced,true);
+  assert.equal(result.causalReplay.verificationMode,'DIAGNOSTIC_EXACT_TYPE_FILE_RESCAN');
+  assert.equal(result.causalReplay.verifiedResponsibleSystem,'GAME_RUNTIME');
+  assert.equal(result.causalReplay.targets[0].target,'diagnostic:INTERVAL_CLEANUP_RISK:index.js');
+  assert.equal(result.causalReplay.canonicalQaStillRequired,true);
+});
+
+test('diagnostic causal replay fails closed when the exact issue remains after patch',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/diagnostic-still-broken');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'setInterval(()=>{},1000);\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/diagnostic-still-broken',
+    changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{
+      version:2,required:true,prePatchReproduced:true,executable:true,mode:'DIAGNOSTIC_RESCAN',
+      status:'READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN',
+      diagnosticType:'INTERVAL_CLEANUP_RISK',diagnosticFile:'index.js',
+      verifiedResponsibleSystem:'GAME_RUNTIME'
+    }}}
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'web:diagnostic-still-broken'}),
+    /CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:INTERVAL_CLEANUP_RISK:index\.js/
+  );
+  assert.match(
+    incrementalQaFailureSignature(new Error('CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:INTERVAL_CLEANUP_RISK:index.js')),
+    /^CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT/
+  );
+});
+
+test('continuous worker persists responsible-system evidence only from a verified causal replay pass',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('VIBE2_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM='));
+  assert.ok(workflow.includes('causal_replay_verified_responsible_system='));
+  assert.ok(workflow.includes('IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM'));
+  assert.ok(workflow.includes('independent-qa-verified-responsible-system:'));
+  assert.ok(workflow.includes("clean(process.env.IQA_CAUSAL_REPLAY_STATUS)==='EXECUTED_PASS'"));
+  assert.ok(workflow.includes("clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'"));
+  assert.ok(workflow.includes("clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED).toUpperCase()==='YES'"));
+});
