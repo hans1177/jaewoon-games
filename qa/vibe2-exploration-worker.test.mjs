@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { exploreVibe2WorkOrder, explorationGuidance } from '../tools/vibe2-exploration-worker.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
@@ -244,6 +245,57 @@ test('performance sanity is read only and requires exploration evidence',()=>{
   const fail=verifyPerformanceSanity({root:cwd,manifest:{...manifest,exploration:null}});
   assert.equal(fail.pass,false);
   assert.ok(fail.checks.some(row=>row.name==='exploration-handoff-present'&&!row.pass));
+});
+
+test('performance sanity budgets growth instead of total size for a pre-existing oversized text file',()=>{
+  const cwd=tempRoot();
+  const gameFile=path.join(cwd,'web-games/large/index.html');
+  write(gameFile,'a'.repeat(310000));
+  execFileSync('git',['init'],{cwd,stdio:'pipe'});
+  execFileSync('git',['config','user.email','vibe2-test@example.invalid'],{cwd,stdio:'pipe'});
+  execFileSync('git',['config','user.name','Vibe2 Test'],{cwd,stdio:'pipe'});
+  execFileSync('git',['add','.'],{cwd,stdio:'pipe'});
+  execFileSync('git',['commit','-m','baseline'],{cwd,stdio:'pipe'});
+  const baseMainSha=String(execFileSync('git',['rev-parse','HEAD'],{cwd,encoding:'utf8'})).trim();
+  const manifest={
+    sourceRoot:'web-games/large',
+    changedFiles:['index.html'],
+    baseMainSha,
+    exploration:{reuseKey:'reuse-large',sourceWrite:false}
+  };
+
+  write(gameFile,'a'.repeat(320000));
+  const boundedGrowth=verifyPerformanceSanity({root:cwd,manifest});
+  assert.equal(boundedGrowth.pass,true);
+  assert.ok(boundedGrowth.checks.some(row=>row.name==='single-file-size-budget'&&row.pass&&row.detail.includes('mode=existing-large-delta')));
+
+  write(gameFile,'a'.repeat(610001));
+  const excessiveGrowth=verifyPerformanceSanity({root:cwd,manifest});
+  assert.equal(excessiveGrowth.pass,false);
+  assert.ok(excessiveGrowth.checks.some(row=>row.name==='single-file-size-budget'&&!row.pass&&row.detail.includes('growth=300001')));
+});
+
+test('performance sanity keeps the absolute size budget for new or previously small text files',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'web-games/small/index.html'),'a'.repeat(1000));
+  execFileSync('git',['init'],{cwd,stdio:'pipe'});
+  execFileSync('git',['config','user.email','vibe2-test@example.invalid'],{cwd,stdio:'pipe'});
+  execFileSync('git',['config','user.name','Vibe2 Test'],{cwd,stdio:'pipe'});
+  execFileSync('git',['add','.'],{cwd,stdio:'pipe'});
+  execFileSync('git',['commit','-m','baseline'],{cwd,stdio:'pipe'});
+  const baseMainSha=String(execFileSync('git',['rev-parse','HEAD'],{cwd,encoding:'utf8'})).trim();
+  write(path.join(cwd,'web-games/small/index.html'),'a'.repeat(300001));
+  const result=verifyPerformanceSanity({
+    root:cwd,
+    manifest:{
+      sourceRoot:'web-games/small',
+      changedFiles:['index.html'],
+      baseMainSha,
+      exploration:{reuseKey:'reuse-small',sourceWrite:false}
+    }
+  });
+  assert.equal(result.pass,false);
+  assert.ok(result.checks.some(row=>row.name==='single-file-size-budget'&&!row.pass&&row.detail.includes('mode=absolute')));
 });
 
 test('long functional package owner gets the protected slot before short work',()=>{
