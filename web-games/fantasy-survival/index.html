@@ -550,8 +550,10 @@ function initWorld(){
   for(let i=0;i<7;i++){const p=randomCrystalPoint(180);state.enemies.push(spawnAt(creatures.crystalboar,p.x,p.y))}
   const guardianSpots=[{x:15150,y:2300},{x:17200,y:2650},{x:15100,y:9300},{x:17220,y:9650}];
   for(const p of guardianSpots)state.enemies.push(spawnAt(creatures.crystalguardian,p.x,p.y,null));
-  // 거대 호수 지상: 악어 약 3마리 중 2마리 + 중립 2종 각 2마리 + 무해 3마리
-  for(const p of [{x:3200,y:1740},{x:10800,y:1810}])state.enemies.push(spawnAt(creatures.lakecroc,p.x,p.y,null));
+  // 거대 호수 악어: 전체 4~5마리
+  const lakeCrocCount=4+Math.floor(Math.random()*2);
+  const lakeCrocSurfaceSpots=[{x:2500,y:1730},{x:4700,y:1840},{x:7600,y:1690},{x:10100,y:1860}];
+  for(let i=0;i<lakeCrocCount-1;i++){const p=lakeCrocSurfaceSpots[i%lakeCrocSurfaceSpots.length];state.enemies.push(spawnAt(creatures.lakecroc,p.x,p.y,null))}
   for(const p of [{x:2100,y:1880},{x:12200,y:1760}])state.enemies.push(spawnAt(creatures.lakebuffalo,p.x,p.y,null));
   for(const p of [{x:5200,y:1860},{x:9400,y:1700}])state.enemies.push(spawnAt(creatures.crystaldeer,p.x,p.y,null));
   for(const p of [{x:4100,y:1650},{x:7600,y:1910},{x:11600,y:1660}])state.enemies.push(spawnAt(creatures.lakeheron,p.x,p.y,null));
