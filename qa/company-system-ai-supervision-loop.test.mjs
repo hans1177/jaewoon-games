@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
 import { assignSecurityRecovery, PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION, reserveSecurityRecoveryTask } from '../tools/company-system-ai-queue.mjs';
-import { securityRepairEvidence } from '../tools/company-recovery-queue.mjs';
+import { applySecurityRecoverySystemAiFanIn, securityRepairEvidence } from '../tools/company-recovery-queue.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
 const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
@@ -268,4 +268,71 @@ test('Company System AI Workers manual security target cannot pull unrelated que
   assert.match(workflow,/--id="\$SECURITY_RECOVERY_TASK_ID"/);
   assert.match(workflow,/targeted_security_recovery=/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_REFILL=SKIPPED_TARGETED_SECURITY_RECOVERY/);
+});
+
+
+test('security recovery fan-in advances only the exactly linked recovery row to Primary-AI review',()=>{
+  const recovery={tasks:[
+    {
+      id:'recovery-security-target',status:'dispatched',sourceQueue:'security',sourceTaskId:'security-run-target',recoveryOwner:'SYSTEM_AI',
+      evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-target'],deterministicEvidence:[],retries:0,maxRetries:5
+    },
+    {
+      id:'recovery-security-other',status:'dispatched',sourceQueue:'security',sourceTaskId:'security-run-other',recoveryOwner:'SYSTEM_AI',
+      evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-other'],deterministicEvidence:[],retries:0,maxRetries:5
+    }
+  ]};
+  const systemAi={tasks:[
+    {id:'security-run-target',status:'awaiting-supervisor',lastOutcome:'PASS',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9999',evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-security-target']},
+    {id:'security-run-other',status:'running',evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-security-other']}
+  ]};
+  const result=applySecurityRecoverySystemAiFanIn(recovery,systemAi,[{taskId:'security-run-target',outcome:'PASS',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9999'}]);
+  assert.equal(result.linked,1);
+  const target=result.queue.tasks.find(x=>x.id==='recovery-security-target');
+  const other=result.queue.tasks.find(x=>x.id==='recovery-security-other');
+  assert.equal(target.status,'awaiting-primary-ai-review');
+  assert.equal(target.primaryAiReview,'PENDING');
+  assert.ok(target.deterministicEvidence.includes('system-ai-fan-in:security-run-target'));
+  assert.ok(target.deterministicEvidence.includes('system-ai-supervision-state:awaiting-supervisor'));
+  assert.ok(target.deterministicEvidence.includes('system-ai-candidate-pr:https://github.com/hans1177/jaewoon-games/pull/9999'));
+  assert.equal(other.status,'dispatched');
+});
+
+test('security recovery fan-in accepts deterministic current-main satisfaction but still requires Primary-AI review',()=>{
+  const result=applySecurityRecoverySystemAiFanIn({tasks:[{
+    id:'recovery-current-main',status:'dispatched',sourceQueue:'security',sourceTaskId:'security-run-current',recoveryOwner:'SYSTEM_AI',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-current'],retries:0,maxRetries:5
+  }]},{tasks:[{
+    id:'security-run-current',status:'done',lastOutcome:'DETERMINISTIC_CURRENT_MAIN_SATISFIED',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-current-main']
+  }]},[{taskId:'security-run-current',outcome:'CURRENT_MAIN_SATISFIED'}]);
+  const row=result.queue.tasks[0];
+  assert.equal(row.status,'awaiting-primary-ai-review');
+  assert.equal(row.primaryAiReview,'PENDING');
+  assert.ok(row.deterministicEvidence.includes('system-ai-outcome:CURRENT_MAIN_SATISFIED'));
+});
+
+test('security recovery fan-in fails closed on mismatched supervisor state or recovery linkage',()=>{
+  const recovery={tasks:[{
+    id:'recovery-bad-link',status:'dispatched',sourceQueue:'security',sourceTaskId:'security-run-bad',recoveryOwner:'SYSTEM_AI',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-bad'],retries:0,maxRetries:5
+  }]};
+  assert.throws(()=>applySecurityRecoverySystemAiFanIn(recovery,{tasks:[{
+    id:'security-run-bad',status:'awaiting-supervisor',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9998',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:someone-else']
+  }]},[{taskId:'security-run-bad',outcome:'PASS'}]),/LINK_MISMATCH/);
+  assert.throws(()=>applySecurityRecoverySystemAiFanIn(recovery,{tasks:[{
+    id:'security-run-bad',status:'running',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9998',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-bad-link']
+  }]},[{taskId:'security-run-bad',outcome:'PASS'}]),/SUPERVISOR_STATE_REQUIRED/);
+});
+
+test('System AI fan-in persists exact security recovery review linkage before control commit',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('- name: Persist results for primary AI supervision'));
+  const systemFanIn=fanIn.indexOf('company-system-ai-queue.mjs --command=fan-in');
+  const recoveryFanIn=fanIn.indexOf('company-recovery-queue.mjs --command=fan-in-system-ai');
+  const commit=fanIn.indexOf('git commit -m "system-ai: persist supervised results and security quarantine [skip ci]"');
+  assert.ok(systemFanIn>=0&&recoveryFanIn>systemFanIn&&commit>recoveryFanIn);
+  assert.match(fanIn,/--system-ai=\/tmp\/system-ai-control\/\.vibe2\/system-ai-queue\.json/);
+  assert.match(fanIn,/--results=\/tmp\/company-system-ai-results/);
 });
