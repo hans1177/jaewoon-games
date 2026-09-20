@@ -250,7 +250,19 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
   const editorConfig = runtime?.engineEditors?.[plan.target] || {};
   const releaseState = clean(task.releaseState) || 'other';
-  const supervisionContract=task?.supervisionContract?.required===true?freeze({...task.supervisionContract,approved:task.supervisionApproved===true}):null;
+  const supervisedByEvidence=(task?.evidence||[]).map(clean).includes('supervised-web-build:required');
+  const supervisionContract=task?.supervisionContract?.required===true
+    ?freeze({...task.supervisionContract,approved:task.supervisionApproved===true})
+    :supervisedByEvidence
+      ?freeze({
+        version:1,mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',required:true,status:'REVIEW_REQUIRED',
+        candidateGenerationAllowed:true,automaticPromotionAllowed:false,approvalField:'supervisionApproved',
+        stages:freezeList(['SOURCE_AND_DESIGN_READ','GAMEPLAY_LOOP_DECOMPOSITION','SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK','VIBE_IMPLEMENTATION_CANDIDATE','SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW','MOBILE_AND_RUNTIME_QA','SUPERVISED_PROMOTION']),
+        protectedSemantics:freezeList(['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES']),
+        hardReject:freezeList(['PLACEHOLDER_SOURCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BUTTON_OR_LABEL_ONLY_PASS_CHEAT','BROKEN_MOBILE_INPUT']),
+        approved:false,recoveredFromEvidence:true
+      })
+      :null;
   const supervisionApproved=supervisionContract?task.supervisionApproved===true:true;
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState)
     && ['roblox','web','unity'].includes(plan.target)
