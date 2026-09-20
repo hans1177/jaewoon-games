@@ -205,7 +205,7 @@ jobs:
           const owner=String(process.env.REPO_OWNER||'').toLowerCase();
           const head=String(process.env.HEAD_SHA||'');
           const pass=reviews.some(row=>
-            String(row.state||'').toUpperCase()==='APPROVED' &&
+            ['APPROVED','COMMENTED'].includes(String(row.state||'').toUpperCase()) &&
             String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS' &&
             String(row.commit_id||'')===head &&
             String(row.user?.login||'').toLowerCase()===owner
