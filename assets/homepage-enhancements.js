@@ -81,7 +81,42 @@ function latestVerifiedUnityBuilds(status){
 function bindVerifiedUnityBuild(row,status){
   if(normalizePlatform(selectedPlatform(row))!=='UNITY')return row;
   const build=latestVerifiedUnityBuilds(status).get(gameIdOf(row));
-  return build?{...row,unityBuildUrl:build.download,unityBuildSha256:build.sha256,unityBuildApplicationId:build.applicationId,unityBuildVerified:true}:row;
+  if(!build)return row;
+  const shot=build?.runtimeScreenshot&&typeof build.runtimeScreenshot==='object'?build.runtimeScreenshot:null;
+  const shotUrl=String(shot?.url||'').trim();
+  const shotBound=shot?.verified===true
+    &&String(shot?.buildId||'')===String(build.sha256||'')
+    &&String(shot?.sourceRevision||'')===String(build.sourceCommit||'')
+    &&/^https:\/\//i.test(shotUrl);
+  return {
+    ...row,
+    unityBuildUrl:build.download,
+    unityBuildSha256:build.sha256,
+    unityBuildApplicationId:build.applicationId,
+    unityBuildVerified:true,
+    ...(shotBound?{runtimeGameplayMedia:{
+      platform:'UNITY',
+      captureType:'UNITY_ANDROID_RUNTIME',
+      url:shotUrl,
+      verified:true,
+      capturedAt:shot.capturedAt||null,
+      sourceRevision:shot.sourceRevision,
+      buildId:shot.buildId,
+      workflowRunId:shot.workflowRunId||null
+    }}:{})
+  };
+}
+function verifiedRuntimeImage(row){
+  const media=row?.runtimeGameplayMedia||homepageOf(row)?.runtimeGameplayMedia||row?.homepageRuntimeMedia||null;
+  if(!media||media.verified!==true)return'';
+  const url=String(media.url||'').trim(),platform=normalizePlatform(selectedPlatform(row)),type=String(media.captureType||'').toUpperCase();
+  if(!/^https:\/\//i.test(url)&&!/^\/assets\/runtime-screenshots\//i.test(url))return'';
+  if(platform==='UNITY'&&type!=='UNITY_ANDROID_RUNTIME')return'';
+  if(platform==='ROBLOX'){
+    if(productionClassOf(row)==='RELEASE_CONFIRMED'&&type!=='ROBLOX_PUBLIC_CLIENT_CAPTURE')return'';
+    if(!['ROBLOX_PUBLIC_CLIENT_CAPTURE','ROBLOX_STUDIO_RUNTIME_CAPTURE'].includes(type))return'';
+  }
+  return url;
 }
 function classRank(row){
   const cls=String(runtimeInfo(row).productionClass||'').toUpperCase();
@@ -145,7 +180,8 @@ function mergeGame(row){
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
   const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  const runtimeImage=verifiedRuntimeImage(row);
+  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:runtimeImage||identity.image||row?.image||'assets/pwa-icon-512.png',runtimeGameplayImage:runtimeImage||'',description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformHref(game){
   const p=normalizePlatform(selectedPlatform(game));
@@ -165,7 +201,7 @@ function installStyles(){
 .brandRow{justify-content:center!important}.brand{width:100%;justify-content:center}.brand img{object-position:center center!important}.companyLink{display:none!important}
 #hero.homeFocus{width:96%;margin:0 auto 14px;min-height:220px;border-radius:20px;overflow:hidden;color:#fff;background:#102d42;box-shadow:0 10px 26px rgba(28,93,138,.16);position:relative;isolation:isolate}
 #hero.homeFocus:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,20,31,.95),rgba(3,20,31,.68) 58%,rgba(3,20,31,.25)),var(--focus-bg) center/cover no-repeat;z-index:-1}.homeFocusInner{min-height:220px;padding:24px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start}.homeFocusInner h1{margin:4px 0 7px;font-size:32px;line-height:1.08}.homeFocusInner p{max-width:650px;margin:0 0 12px;font-size:13px;font-weight:800;line-height:1.5}.homeFocusMeta{display:flex;gap:6px;flex-wrap:wrap}.homeFocusMeta span{padding:5px 8px;border:1px solid #ffffff55;border-radius:999px;background:#ffffff20;font-size:10px;font-weight:900}.homeFocusBtn{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;background:#2b91e6;color:#fff;text-decoration:none;font-size:12px;font-weight:900}
-#gameHub{padding:14px 0 3px}#gameHub>.sectionHead,#gameGrid{display:none!important}.homeGameShelf{margin:0 14px 14px}.gameShelfHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:4px 2px 12px}.gameShelfHead h2{margin:0;font-size:25px;color:#155e9f}.gameShelfHead p{margin:3px 0 0;color:#5f7a8d;font-size:10px;font-weight:800}.gameShelfCount{padding:7px 10px;border-radius:999px;background:#102d42;color:#fff;font-size:10px;font-weight:1000}.gameShelfGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.foldGameCard{min-width:0;border:1px solid #d5e8f1;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 5px 14px rgba(58,111,146,.10);position:relative}.releaseTag{position:absolute;z-index:5;right:10px;top:10px;min-width:74px;min-height:42px;padding:0 16px;border-radius:14px;background:#14845b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;font-weight:1000;box-shadow:0 5px 14px rgba(0,0,0,.22)}.foldGameArt{height:155px;position:relative;background:#264a60;overflow:hidden}.foldGameArt img{width:100%;height:100%;object-fit:cover}.foldGameArt:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(2,18,29,.85))}.foldGameTitle{position:absolute;z-index:2;left:12px;right:12px;bottom:10px;color:#fff}.foldGameTitle b{font-size:20px}.foldGameBody{padding:12px}.foldBadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.foldBadge{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:999px;font-size:9px;font-weight:900}.foldBadge.score{background:#d9f4e4;color:#197340}.foldBadge.platform{background:#e7efff;color:#315f9b}.foldBadge.genre{background:#fff0c9;color:#865d00}.foldBadge.play{background:#f0e8ff;color:#6842a8}.foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:700}.foldGameMeta{font-size:10px;line-height:1.6;color:#415f73;font-weight:850;padding:8px 9px;border-radius:9px;background:#eef7fd}.foldGameActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}.foldGameBtn{display:flex;align-items:center;justify-content:center;min-height:38px;border-radius:10px;text-decoration:none;font-size:9px;font-weight:900;background:#2488df;color:#fff}.foldGameBtn.secondary{background:#eef8ff;color:#1767a9;border:1px solid #afd7ef}.foldGameBtn.platformAction{background:#d71920;color:#fff;border:1px solid #a90f15}.foldGameBtn.off{background:#e8eef2;color:#7c8c96;pointer-events:none}@media(max-width:700px){
+#gameHub{padding:14px 0 3px}#gameHub>.sectionHead,#gameGrid{display:none!important}.homeGameShelf{margin:0 14px 14px}.gameShelfHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:4px 2px 12px}.gameShelfHead h2{margin:0;font-size:25px;color:#155e9f}.gameShelfHead p{margin:3px 0 0;color:#5f7a8d;font-size:10px;font-weight:800}.gameShelfCount{padding:7px 10px;border-radius:999px;background:#102d42;color:#fff;font-size:10px;font-weight:1000}.gameShelfGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.foldGameCard{min-width:0;border:1px solid #d5e8f1;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 5px 14px rgba(58,111,146,.10);position:relative}.releaseTag{position:absolute;z-index:5;right:10px;top:10px;min-width:74px;min-height:42px;padding:0 16px;border-radius:14px;background:#14845b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;font-weight:1000;box-shadow:0 5px 14px rgba(0,0,0,.22)}.foldGameArt{height:155px;position:relative;background:#264a60;overflow:hidden}.foldGameArt img{width:100%;height:100%;object-fit:cover}.foldGameArt:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(2,18,29,.85))}.runtimeImageTag{position:absolute;z-index:4;left:10px;top:10px;padding:5px 8px;border-radius:999px;background:rgba(4,22,34,.82);color:#fff;font-size:9px;font-weight:1000}.foldGameTitle{position:absolute;z-index:2;left:12px;right:12px;bottom:10px;color:#fff}.foldGameTitle b{font-size:20px}.foldGameBody{padding:12px}.foldBadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.foldBadge{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:999px;font-size:9px;font-weight:900}.foldBadge.score{background:#d9f4e4;color:#197340}.foldBadge.platform{background:#e7efff;color:#315f9b}.foldBadge.genre{background:#fff0c9;color:#865d00}.foldBadge.play{background:#f0e8ff;color:#6842a8}.foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:700}.foldGameMeta{font-size:10px;line-height:1.6;color:#415f73;font-weight:850;padding:8px 9px;border-radius:9px;background:#eef7fd}.foldGameActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}.foldGameBtn{display:flex;align-items:center;justify-content:center;min-height:38px;border-radius:10px;text-decoration:none;font-size:9px;font-weight:900;background:#2488df;color:#fff}.foldGameBtn.secondary{background:#eef8ff;color:#1767a9;border:1px solid #afd7ef}.foldGameBtn.platformAction{background:#d71920;color:#fff;border:1px solid #a90f15}.foldGameBtn.off{background:#e8eef2;color:#7c8c96;pointer-events:none}@media(max-width:700px){
   #hero.homeFocus{width:calc(100% - 12px);margin-bottom:12px;min-height:260px;border-radius:16px}
   #hero.homeFocus:before{background:linear-gradient(0deg,rgba(3,20,31,.94) 0%,rgba(3,20,31,.70) 58%,rgba(3,20,31,.28) 100%),var(--focus-bg) center/cover no-repeat}
   .homeFocusInner{min-height:260px;padding:18px 16px 16px}
@@ -224,7 +260,8 @@ function buildCard(row){
   const scoreBadge=score.label&&score.label!==statusLabel?`<span class="foldBadge score">${esc(score.label)}</span>`:'';
   const historicalRoblox=String(row?.homepageDisplayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT';
   const recordTag=historicalRoblox?'<span class="releaseTag">배포 기록</span>':released?'<span class="releaseTag">출시</span>':'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}">${recordTag}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
+  const runtimeImageTag=game.runtimeGameplayImage?'<span class="runtimeImageTag">실제 플레이</span>':'';
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}" data-platform="${esc(p)}" data-runtime-gameplay-image="${game.runtimeGameplayImage?'verified':'none'}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}">${recordTag}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy">${runtimeImageTag}<div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
