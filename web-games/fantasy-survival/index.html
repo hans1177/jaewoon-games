@@ -99,8 +99,8 @@ const recipes=[
 {id:'wolf-blade',name:'늑대 송곳검',where:'bench',cost:{wolfHide:2,wood:3,stone:2},desc:'공격력 36 · 빠른 늑대 전리품 무기',kind:'weapon',power:36,range:72,cooldown:360},
 {id:'ironspirit-sword',name:'철정령 검',where:'bench',cost:{ironSpiritCore:3,wood:2,stone:3},desc:'공격력 46',kind:'weapon',power:46,range:78,cooldown:500},
 {id:'ironspirit-armor',name:'철정령 갑옷',where:'bench',cost:{ironSpiritCore:4,stone:5,fiber:3},desc:'최대 체력 +70 · 받는 피해 7% 감소',kind:'armor',maxHp:70,reduce:.07},
-{id:'sovereign-cleaver',name:'근원 대검',where:'goldbench',cost:{sovereignCore:2,goldIngot:10,wood:4,fiber:5},desc:'공격력 460 · 녹스바르 전리품 4티어 무기',kind:'weapon',power:460,range:112,cooldown:1200},
-{id:'sovereign-armor',name:'근원포식자 갑옷',where:'goldbench',cost:{sovereignCore:3,goldIngot:12,walkerClaw:2},desc:'최대 체력 +500 · 받는 피해 50% 감소',kind:'armor',maxHp:500,reduce:.50},
+{id:'sovereign-cleaver',name:'근원 대검',where:'goldbench',cost:{sovereignCore:2,goldIngot:10,wood:4,fiber:5},desc:'공격력 276 · 녹스바르 전리품 4티어 무기',kind:'weapon',power:276,range:112,cooldown:1200},
+{id:'sovereign-armor',name:'근원포식자 갑옷',where:'goldbench',cost:{sovereignCore:3,goldIngot:12,walkerClaw:2},desc:'최대 체력 +300 · 받는 피해 30% 감소',kind:'armor',maxHp:300,reduce:.30},
 {id:'firewolf-saber',name:'화염늑대 검',where:'ironbench',cost:{fireWolfFang:3,ironIngot:3,wood:2},desc:'공격력 82 · 2티어 화염 검',kind:'weapon',power:82,range:82,cooldown:620},
 {id:'firewolf-armor',name:'화염늑대 갑옷',where:'ironbench',cost:{fireWolfFang:4,ironIngot:3,fiber:4},desc:'최대 체력 +105 · 받는 피해 10% 감소',kind:'armor',maxHp:105,reduce:.10},
 {id:'burrower-lance',name:'잠복벌레 창',where:'ironbench',cost:{burrowerShell:3,wood:4,ironIngot:2},desc:'공격력 74 · 긴 사거리',kind:'weapon',power:74,range:112,cooldown:780},
@@ -148,9 +148,9 @@ const recipes=[
 {id:'meal-bug-bug',name:'벌레고기 대접',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 20 회복 · 5초',kind:'consumable',hunger:100,foodRegen:20,foodRegenSeconds:5},
 {id:'meal-bug-firewolf',name:'화염 벌레구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
 {id:'meal-firewolf-firewolf',name:'화염 고기 만찬',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
-{id:'croc-jaw-blade',name:'악어 턱날',where:'goldbench',cost:{crocTooth:5,crocHide:2,goldIngot:7},desc:'공격력 360 · 악어 전리품 4티어 무기',kind:'weapon',power:360,range:84,cooldown:700},
-{id:'croc-tooth-spear',name:'악어 이빨창',where:'goldbench',cost:{crocTooth:7,crocHide:1,goldIngot:6,wood:3},desc:'공격력 320 · 긴 사거리 · 악어 전리품 4티어 무기',kind:'weapon',power:320,range:122,cooldown:850},
-{id:'croc-armor',name:'악어 껍질갑옷',where:'goldbench',cost:{crocHide:8,crocTooth:3,goldIngot:8},desc:'최대 체력 +380 · 받는 피해 35% 감소 · 4티어',kind:'armor',maxHp:380,reduce:.35},
+{id:'croc-jaw-blade',name:'악어 턱날',where:'goldbench',cost:{crocTooth:5,crocHide:2,goldIngot:7},desc:'공격력 216 · 악어 전리품 4티어 무기',kind:'weapon',power:216,range:84,cooldown:700},
+{id:'croc-tooth-spear',name:'악어 이빨창',where:'goldbench',cost:{crocTooth:7,crocHide:1,goldIngot:6,wood:3},desc:'공격력 192 · 긴 사거리 · 악어 전리품 4티어 무기',kind:'weapon',power:192,range:122,cooldown:850},
+{id:'croc-armor',name:'악어 껍질갑옷',where:'goldbench',cost:{crocHide:8,crocTooth:3,goldIngot:8},desc:'최대 체력 +228 · 받는 피해 21% 감소 · 4티어',kind:'armor',maxHp:228,reduce:.21},
 {id:'diving-suit',name:'잠수복',where:'goldbench',cost:{sharkSkin:4,ironIngot:6,fiber:8},desc:'물속 산소 무제한 · 최대 체력 +120',kind:'armor',maxHp:120,reduce:.12,underwaterBreath:true},
 {id:'raw-fish',name:'생선',where:'loot',cost:{},desc:'물고기 전리품 · 화로에서 10초 굽기',kind:'ingredient'},
 {id:'cooked-fish',name:'구운생선',where:'loot',cost:{},desc:'밥 +55 · 요리대 재료로도 사용 가능',kind:'consumable',hunger:55},
@@ -1772,7 +1772,7 @@ function updateCrocodileSpecial(e,targetP,now,playerD){
   }
  }
  if(!e.nextCrocCheck)e.nextCrocCheck=now+3000;
- if(now>=e.nextCrocCheck){e.nextCrocCheck=now+3000;if(playerD<(e.type.detect||760)&&Math.random()<.30){e.crocState={kind:'retreat',until:now+1000};showNotice('악어 · 끌고 뒤집기 준비');return{vx:0,vy:0,active:true}}}
+ if(now>=e.nextCrocCheck){e.nextCrocCheck=now+3000;if(playerD<(e.type.detect||760)&&Math.random()<.30){e.crocState={kind:'retreat',until:now+2500};showNotice('악어 · 끌고 뒤집기 준비');return{vx:0,vy:0,active:true}}}
  return null
 }
 function updateSharkCombo(e,targetP,now,playerD){
