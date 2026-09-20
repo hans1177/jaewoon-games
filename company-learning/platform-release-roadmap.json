@@ -1,5 +1,5 @@
 {
-  "version": 215,
+  "version": 216,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8609,7 +8609,7 @@
         "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
-        "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
+        "state": "MERGED_MAIN_PR_1994",
         "sourcePr": 1994,
         "trigger": "OWNER_DIRECTIVE_2026-09-20_SELF_ADAPTIVE",
         "priorConflict": {
@@ -8657,7 +8657,37 @@
           "directMainAuthority": false,
           "authorityChange": "NONE"
         },
-        "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS"
+        "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS",
+        "mergedCommit": "926310a8515ead25dd55bee3739df2fdf995c0bc"
+      },
+      "strongPressureAdaptiveDownshift": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "triggerRunId": 35498819604,
+        "observed": {
+          "currentMax": 256,
+          "workerCount": 21,
+          "actualPeakConcurrency": 20,
+          "effectivePeakUtilizationPct": 7.81,
+          "failureRatePct": 42.86,
+          "pressureLevel": "SEVERE",
+          "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "priorDecision": "HOLD",
+          "priorReason": "LOW_LOAD"
+        },
+        "rootCause": "LOW_LOAD_CHECK_RAN_BEFORE_STRONG_PRESSURE_AND_SUPPRESSED_DOWNSHIFT_UNTIL_75_PERCENT_SATURATION",
+        "correction": {
+          "minimumDirectPressureWorkers": 4,
+          "strongPressureRequiresSaturation": false,
+          "highOrSevereWithSample": "STEP_DOWN_ONE",
+          "localBackpressureActive": "HOLD_TO_AVOID_DOUBLE_DOWNSHIFT",
+          "sampleBelow4": "LOW_SAMPLE_PRESSURE_HOLD",
+          "mediumPressureBehavior": "UNCHANGED_TWO_SATURATED_RUNS",
+          "healthyRampBehavior": "UNCHANGED_ONE_STEP_UP",
+          "maxStepChangesPerRun": 1
+        },
+        "authorityChange": "NONE",
+        "nextGate": "VERIFY_PRODUCTION_CONTROL_DOWNSHIFTS_FROM_256_ON_SEVERE_FAILURE_PRESSURE_WITH_ADEQUATE_SAMPLE"
       }
     }
   },
