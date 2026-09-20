@@ -30,6 +30,7 @@ jobs:
       verdict: ${{ steps.scan.outputs.verdict }}
       highest: ${{ steps.scan.outputs.highest }}
       findings: ${{ steps.scan.outputs.findings }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -104,6 +105,7 @@ jobs:
           esac
 
       - uses: actions/upload-artifact@v4
+        id: upload
         if: always()
         with:
           name: company-security-report-${{ github.run_id }}
@@ -140,6 +142,7 @@ jobs:
         env:
           HIGHEST: ${{ needs.scan.outputs.highest }}
           VERDICT: ${{ needs.scan.outputs.verdict }}
+          SECURITY_ARTIFACT_ID: ${{ needs.scan.outputs.artifact_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -148,7 +151,7 @@ jobs:
           git worktree prune
           git worktree add /tmp/security-control origin/vibe2-unreal-core
 
-          node tools/company-security-incident.mjs             --command=record             --store=/tmp/security-control/.vibe2/security-incidents.json             --report=/tmp/security-report/security-report.json
+          node tools/company-security-incident.mjs             --command=record             --store=/tmp/security-control/.vibe2/security-incidents.json             --report=/tmp/security-report/security-report.json             --security-run="${GITHUB_RUN_ID}"             --security-artifact="$SECURITY_ARTIFACT_ID"
 
           if [ "$VERDICT" = 'QUARANTINE' ]; then
             node tools/company-recovery-queue.mjs             --command=enqueue             --queue=/tmp/security-control/.vibe2/recovery-queue.json             --priority=critical             --source-queue=security             --source-task="security-run-${GITHUB_RUN_ID}"             --stage=SECURITY_IMMUNE_SCAN             --signature="security-quarantine-${HIGHEST:-UNKNOWN}"             --blast-radius=affected-change             --evidence="security-run:${GITHUB_RUN_ID},security-report:artifact-${GITHUB_RUN_ID}"             --security-report=/tmp/security-report/security-report.json             --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW             --verify=RERUN_SECURITY_SCAN,VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW             --owner=SYSTEM_AI
