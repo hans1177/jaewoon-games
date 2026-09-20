@@ -114,6 +114,7 @@ jobs:
     concurrency:
       group: vibe2-control-state-vibe2-unreal-core
       cancel-in-progress: false
+      queue: max
     steps:
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
