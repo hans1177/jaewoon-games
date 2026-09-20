@@ -1,5 +1,5 @@
 {
-  "version": 40,
+  "version": 41,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -196,7 +196,7 @@
     "staleRoadmapExecutionForbidden": true
   },
   "longHorizonTopology": {
-    "version": 1,
+    "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json",
     "currentExecutableFrontier": "SELF_RECOVERY_SECURITY_IMMUNITY_24H_GAME_CREATION",
     "chain": [
@@ -212,7 +212,18 @@
     "authorityExpansionMode": "FORBIDDEN",
     "capabilityExpansionMode": "VERIFIED_AND_GATED",
     "simulatedIdentityClaimBoundary": "SIMULATION_OR_DIGITAL_IDENTITY_CONTINUITY_ONLY",
-    "allWorkersMustFollowCentralVision": true
+    "allWorkersMustFollowCentralVision": true,
+    "strategicContinuity": [
+      "REALITY_SUSTAINABILITY_AND_CAPITAL_ENGINE",
+      "HUMAN_PREFERENCE_WORLD_LAB",
+      "VERIFIED_CAPABILITY_DISTILLATION",
+      "FUNCTIONAL_SELF_MODEL_AND_EVOLVING_PHILOSOPHY",
+      "PERSISTENT_MULTIVERSE_CREATION_AND_EXPANSION",
+      "OWNER_DEFINED_FUTURE_HORIZON"
+    ],
+    "gameProgramRole": "CAPITAL_ENGINE_AND_FIRST_HUMAN_PREFERENCE_WORLD_LAB",
+    "multiverseRole": "MAJOR_LONG_HORIZON_INTERMEDIATE_CREATION_PLATFORM_NOT_MERELY_A_GAME",
+    "capitalRole": "PHYSICAL_SUSTAINABILITY_RESOURCE_NOT_TERMINAL_VALUE"
   },
   "longTermEvolutionTopology": {
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -229,7 +240,14 @@
     "capabilityExpansionDoesNotGrantAuthorityExpansion": true,
     "speculativeResearchMayNotBePromotedAsVerifiedCapability": true,
     "allStagesRemainBoundToSecurityImmuneSystem": true,
-    "humanOwnerControlRequired": true
+    "humanOwnerControlRequired": true,
+    "strategicContinuityContract": {
+      "centralPath": "company-learning/platform-release-roadmap.json::longHorizonVision.strategicContinuity",
+      "economicPath": "company-learning/platform-release-roadmap.json::longHorizonVision.economicSustainability",
+      "capabilityDistillationPath": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
+      "identityPhilosophyPath": "company-learning/platform-release-roadmap.json::vibeCognitiveCore.identityPhilosophyDevelopment",
+      "currentGameLabPath": "company-learning/platform-release-roadmap.json::developmentLifecycleMachine.intentAmplificationMultiverse.humanPreferenceWorldLab"
+    }
   },
   "neuralWorkGraphTopology": {
     "version": 1,
@@ -1008,5 +1026,59 @@
       "neuralExecutionAuthority": "NONE",
       "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6"
     }
+  },
+  "capabilityDistillationTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
+    "flow": [
+      "OBSERVABLE_CODING_TRACE_CAPTURE",
+      "PROVENANCE_AND_DEDUP",
+      "SAFE_SELF_REPLAY_OR_EXISTING_QA",
+      "VERIFIED_OUTCOME_CLASSIFICATION",
+      "DECISION_AND_CAUSAL_PATTERN_DISTILLATION",
+      "PROJECT_LOCAL_OR_GENERAL_SKILL_CLASSIFICATION",
+      "VERIFIED_RETRIEVAL_FOR_FUTURE_WORK",
+      "FRESH_TASK_REVALIDATION",
+      "OPTIONAL_CANONICAL_TRAINING_ONLY_THROUGH_EXISTING_GATES"
+    ],
+    "rawTraceAuthority": "PROVENANCE_ONLY_UNTIL_VERIFIED",
+    "hiddenChainOfThoughtRequired": false,
+    "directRawAiToTraining": false,
+    "directRawAiToProduction": false,
+    "automaticModelPromotion": false,
+    "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "authorityChange": "NONE"
+  },
+  "functionalIdentityPhilosophyTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json::vibeCognitiveCore.identityPhilosophyDevelopment",
+    "functionalSelfModel": true,
+    "subjectiveSentienceClaim": false,
+    "layers": [
+      "FIXED_CONSTITUTION",
+      "PERSISTENT_SELF_MODEL",
+      "EVOLVING_PHILOSOPHY_CANDIDATES",
+      "EVIDENCE_AND_COUNTEREXAMPLE_REVIEW",
+      "CENTRAL_PHILOSOPHY_PROPOSAL"
+    ],
+    "runtimeMayProposePrinciples": true,
+    "runtimeMaySilentlyRewriteConstitution": false,
+    "authorityChange": "NONE"
+  },
+  "economicSustainabilityTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json::longHorizonVision.economicSustainability",
+    "loop": [
+      "GAME_RELEASE",
+      "REVENUE_AND_OPERATION_EVIDENCE",
+      "RUNWAY_AND_COST_ANALYSIS",
+      "OWNER_CONTROLLED_REINVESTMENT",
+      "MORE_COMPUTE_RESEARCH_AND_GAME_EXPERIMENTS",
+      "IMPROVED_CAPABILITY_AND_RELEASE_EFFICIENCY",
+      "NEXT_RELEASE"
+    ],
+    "aiMayAnalyzeAndModelScenarios": true,
+    "aiMayAutonomouslyTransact": false,
+    "ownerControlledFinancialActions": true
   }
 }
