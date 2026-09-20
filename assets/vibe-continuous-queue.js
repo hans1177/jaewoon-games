@@ -188,6 +188,12 @@ function normalizeTask(input = {}, index = 0) {
   const supervised = supervisionContract?.required===true;
   const unlimitedRetry=unlimitedRetryEligible(input);
   const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
+  const inputEvidence=normalizeEvidence(input.evidence||[]);
+  const atomicPresentation=/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
+    ||inputEvidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(clean(value)));
+  const normalizedEvidence=atomicPresentation
+    ?[...inputEvidence,'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
+    :inputEvidence;
   const task = {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
@@ -213,7 +219,7 @@ function normalizeTask(input = {}, index = 0) {
     supervisionContract,
     supervisionReview: normalizeSupervisionReview(input.supervisionReview),
     blocker: clean(input.blocker) || null,
-    evidence: freezeList(normalizeEvidence(input.evidence || [])),
+    evidence: freezeList(normalizedEvidence),
     lastOutcome: clean(input.lastOutcome) || null,
     reservationId: clean(input.reservationId) || null,
     reservationRunId: clean(input.reservationRunId) || null,
@@ -223,8 +229,10 @@ function normalizeTask(input = {}, index = 0) {
     neuronResults: normalizeNeuronResults(input.neuronResults),
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
-    speculativeEligible: input.speculativeEligible === true,
-    estimatedRisk: ['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low',
+    speculativeEligible: atomicPresentation || input.speculativeEligible === true,
+    estimatedRisk: atomicPresentation ? 'high' : (['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low'),
+    atomicNeuronMode: atomicPresentation ? 'PER_TASK_MICRO_FANIN' : (clean(input.atomicNeuronMode)||null),
+    atomicCompletionRequired: atomicPresentation || input.atomicCompletionRequired === true,
     taskWorkUnits: clampInt(input.taskWorkUnits || input.workUnits || 0, 0, 8),
     packageId: clean(input.packageId) || null,
     packageGoal: clean(input.packageGoal) || null,
