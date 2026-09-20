@@ -63,7 +63,7 @@ const DOMAIN_PATTERNS=freeze({
   UNITY_NETCODE:/unity.*netcode|netcode.?for.?gameobjects|networkobject|networkbehaviour|clientrpc|serverrpc/i,
   UEFN_RUNTIME:/uefn|fortnite.?uefn|unreal.?editor.?for.?fortnite|creative.?device/i,
   UEFN_VERSE:/\bverse\b|verse.?code|verse.?device|fortnite\.com\//i,
-  UEFN_REPLICATION:/uefn.*replication|fortnite.*replication|authority|replicated.?state|multiplayer.?sync/i
+  UEFN_REPLICATION:/uefn.*(?:replication|authority|multiplayer.?sync)|fortnite.*(?:replication|authority|multiplayer.?sync)|verse.*(?:replication|authority|multiplayer)|replicated.?state.*(?:uefn|fortnite)/i
 });
 
 const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']);
@@ -85,6 +85,30 @@ function inferDomains(text='',engine=''){
   if(e==='unity') out.push('UNITY_RUNTIME');
   if(['uefn','fortnite_uefn','fortnite-uefn','fortnite'].includes(e)) out.push('UEFN_RUNTIME','UEFN_VERSE');
   return uniq(out);
+}
+
+function nativeDomainsForEngine(engine=''){
+  const e=lower(engine);
+  if(e==='roblox')return ROBLOX_NATIVE_ONLY;
+  if(e==='unity')return UNITY_NATIVE_ONLY;
+  if(['uefn','fortnite_uefn','fortnite-uefn','fortnite'].includes(e))return UEFN_NATIVE_ONLY;
+  return null;
+}
+function matchingNativeRuntimePassEvidence(record={}){
+  const e=lower(record?.engine||record?.target);
+  const nativeDomains=nativeDomainsForEngine(e);
+  if(!nativeDomains)return true;
+  if(record?.engineQaVerified===true||record?.nativeRuntimeVerified===true||record?.runtimeVerified===true)return true;
+  const evidence=(record?.evidence||[]).map(clean).filter(Boolean);
+  const text=evidence.join(' ').toLowerCase();
+  if(e==='roblox')return /roblox[^\n]*(?:runtime|studio|playtest|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*roblox[^\n]*(?:runtime|studio|playtest|qa)/i.test(text);
+  if(e==='unity')return /unity[^\n]*(?:runtime|playmode|build|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*unity[^\n]*(?:runtime|playmode|build|qa)/i.test(text);
+  return /(?:uefn|fortnite)[^\n]*(?:runtime|verse|playtest|qa)[^\n]*(?:pass|verified|success)|(?:pass|verified|success)[^\n]*(?:uefn|fortnite)[^\n]*(?:runtime|verse|playtest|qa)/i.test(text);
+}
+function nativePositiveMasteryAllowed(record={},domain=''){
+  const nativeDomains=nativeDomainsForEngine(record?.engine||record?.target);
+  if(!nativeDomains||!nativeDomains.has(upper(domain)))return true;
+  return matchingNativeRuntimePassEvidence(record);
 }
 
 function masteryLevel(xp=0){
@@ -370,6 +394,7 @@ export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}
     const domains=CODE_PATTERN_MASTERY[upper(pattern.system)]||inferDomains([pattern.system,pattern.pattern,...(pattern.tags||[])].join(' '),pattern.engine);
     for(const d of domains){
       if(!state.domains[d])continue;
+      if(!nativePositiveMasteryAllowed(pattern,d))continue;
       const row=state.domains[d];
       row.xp+=8;row.level=masteryLevel(row.xp);row.verifiedSuccesses+=1;row.lastEvidence=id;
     }
@@ -401,6 +426,8 @@ export function applyVerifiedExperienceToMastery(stateInput={},experienceInput={
     const domains=inferDomains(text,record.engine);
     for(const d of domains){
       const row=state.domains[d];
+      if(!row)continue;
+      if(outcome==='PASS'&&!nativePositiveMasteryAllowed(record,d))continue;
       const amount=outcome==='PASS'?XP_SUCCESS:XP_FAILURE;
       row.xp+=amount;
       row.level=masteryLevel(row.xp);
