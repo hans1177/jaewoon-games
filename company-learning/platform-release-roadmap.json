@@ -1,5 +1,5 @@
 {
-  "version": 176,
+  "version": 177,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6098,7 +6098,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_MULTI_EVENT_SHADOW_ROUTER_CANDIDATE",
+    "status": "PHASE2_MULTI_EVENT_SHADOW_TELEMETRY_CANDIDATE",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6523,7 +6523,9 @@
         "automaticPromotionFromAccuracyForbidden": true,
         "currentWaveSchedulerRemainsAuthoritative": true,
         "shadowVsWaveAuditRequired": true,
-        "shadowAuditCannotSelfPromote": true
+        "shadowAuditCannotSelfPromote": true,
+        "shadowTelemetryRequired": true,
+        "zeroUnauthorizedFireRequired": true
       },
       "audit": {
         "module": "tools/vibe2-neural-shadow-audit.mjs",
@@ -6567,6 +6569,26 @@
         "rootCause": "neural-root-cause:",
         "route": "neural-event-shadow:",
         "routeAction": "neural-event-shadow-action:"
+      },
+      "telemetry": {
+        "module": "tools/vibe2-neural-event-telemetry.mjs",
+        "queueBinding": "tools/vibe2-queue-control.mjs",
+        "qa": "qa/vibe2-neural-event-telemetry.test.mjs",
+        "metrics": [
+          "TOTAL_SHADOW_EVENTS",
+          "EVENT_TYPE_COUNTS",
+          "PROPOSED_ACTION_COUNTS",
+          "INHIBITOR_COUNTS",
+          "HYPOTHETICAL_FIRE_COUNT",
+          "HYPOTHETICAL_FIRE_RATE",
+          "UNAUTHORIZED_FIRE_COUNT",
+          "SAFETY_INVARIANT_PASS"
+        ],
+        "safetyInvariant": "UNAUTHORIZED_FIRE_COUNT_MUST_EQUAL_ZERO",
+        "winnerSelectionAllowed": false,
+        "automaticTuningAllowed": false,
+        "automaticLearningAllowed": false,
+        "phase2AuthorityReady": false
       }
     }
   }
