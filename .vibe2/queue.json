@@ -14212,8 +14212,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -14223,7 +14223,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "web-qa-or-promotion-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -14711,9 +14711,12 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35480391048%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "web-qa-failure",
         "promotion-skipped",
-        "actions-run-35481052779"
+        "actions-run-35481052779",
+        "system-steward:retry-exhausted-regenerated:generation-10",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_10",
+        "system-steward:failure-signature:web-qa-or-promotion-failed"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -14735,7 +14738,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 9,
+      "recoveryGeneration": 10,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
