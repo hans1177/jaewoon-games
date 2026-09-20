@@ -2271,6 +2271,20 @@ function updateHazards(now){
    if(now-p.lavaSince>=5000||p.hp<=0){knockoutPlayer('용암에 오래 머물러 쓰러졌다')}
  }else{p.lavaSince=0;p.lavaTickAt=0}
 }
+function updateCameraPresentation(p,dt,now,camW,camH){
+ const camera=state.camera,maxX=Math.max(0,camW-innerWidth),maxY=Math.max(0,camH-innerHeight);
+ const targetX=clamp(p.x-innerWidth/2,0,maxX),targetY=clamp(p.y-innerHeight/2,0,maxY);
+ const areaChanged=camera.area!==state.area||!Number.isFinite(camera.baseX)||!Number.isFinite(camera.baseY);
+ if(areaChanged){camera.area=state.area;camera.baseX=targetX;camera.baseY=targetY}
+ const mobile=innerWidth<=900,followRate=mobile?15:12,follow=1-Math.exp(-Math.max(0,dt)*followRate);
+ camera.baseX+=(targetX-camera.baseX)*follow;camera.baseY+=(targetY-camera.baseY)*follow;
+ const attackElapsed=now-(Number(p.attackAt)||-1000000),attackImpact=attackElapsed>=0&&attackElapsed<90?1-attackElapsed/90:0;
+ const hitStartedAt=(Number(p.invuln)||0)-520,hitElapsed=now-hitStartedAt,hitImpact=hitElapsed>=0&&hitElapsed<110?1-hitElapsed/110:0;
+ const strength=Math.min(1,attackImpact*.34+hitImpact*.9),shakeCap=mobile?3.2:5.2,shake=shakeCap*strength;
+ const kick=attackImpact*(mobile?2.2:3.6),fx=Number(p.faceX)||0,fy=Number(p.faceY)||0;
+ const shakeX=Math.sin(now*.19+1.7)*shake,shakeY=Math.sin(now*.23+.4)*shake*.72;
+ camera.x=clamp(camera.baseX-fx*kick+shakeX,0,maxX);camera.y=clamp(camera.baseY-fy*kick+shakeY,0,maxY)
+}
 function update(dt,now){
   const p=state.player;
   let mx=(state.keys.has('KeyD')||state.keys.has('ArrowRight')?1:0)-(state.keys.has('KeyA')||state.keys.has('ArrowLeft')?1:0)+state.stick.x,
@@ -2453,8 +2467,8 @@ function update(dt,now){
   musicTick();
   finishSmeltIfReady();
   if(ui.smeltPanel.classList.contains('open')){if(!nearFurnace())ui.smeltPanel.classList.remove('open');else updateSmeltUi()}
-  const camW=state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:WORLD.w,camH=state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:WORLD.h;state.camera.x=clamp(p.x-innerWidth/2,0,Math.max(0,camW-innerWidth));
-  state.camera.y=clamp(p.y-innerHeight/2,0,Math.max(0,camH-innerHeight));
+  const camW=state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:WORLD.w,camH=state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:WORLD.h;
+  updateCameraPresentation(p,dt,now,camW,camH);
   autosave+=dt;
   if(autosave>10&&state.dirty){autosave=0;saveGame(false)}
   if(ui.sheet.classList.contains('open')&&state.panelMode!=='cooking'&&Math.floor(now/700)!==Math.floor((now-dt*1000)/700))renderPanel();
