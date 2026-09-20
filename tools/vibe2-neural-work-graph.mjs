@@ -98,8 +98,10 @@ export function buildNeuralWorkGraph({
   const eventId=clean(event?.id||route?.event?.id)||null;
   const eventType=clean(event?.type||route?.event?.type).toUpperCase()||'UNKNOWN';
   const eventEvidence=normalizeEvidence(event?.evidence||route?.event?.evidence||[]);
-  const normalizedDependencies=(Array.isArray(dependencies)?dependencies:(Array.isArray(event?.dependencies)?event.dependencies:[]))
-    .map(normalizedDependency);
+  const dependencyInput=Array.isArray(dependencies)&&dependencies.length
+    ?dependencies
+    :(Array.isArray(event?.dependencies)?event.dependencies:[]);
+  const normalizedDependencies=dependencyInput.map(normalizedDependency);
   const nodes=[],edges=[];
   const goalLabel=clean(event?.goal)
     ||clean(diagnosis?.goal)
@@ -149,7 +151,10 @@ export function buildNeuralWorkGraph({
       activationScore:rootVerified?1:.5,
       confidence:rootVerified?1:Number(rootCause?.confidence||.5),
       outputs:[clean(rootCause?.state)||'UNRESOLVED',clean(rootCause?.responsibleSystem)],
-      evidence:[...(rootCause?.evidence||[]),...(rootCause?.nextEvidenceRequired||[])]
+      evidence:[
+        ...(Array.isArray(rootCause?.evidence)?rootCause.evidence:[]),
+        ...(Array.isArray(rootCause?.nextEvidenceRequired)?rootCause.nextEvidenceRequired:[])
+      ]
     }));
   }
 
