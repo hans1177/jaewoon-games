@@ -279,7 +279,7 @@
     {
       "id": "recovery-e36314e23ac645b9df25",
       "status": "cancelled-superseded-canonical-recovery",
-      "priority": "critical",
+      "priority": "high",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
       "relatedTaskIds": [
@@ -291,7 +291,7 @@
       ],
       "failureStage": "system-ai-implementation-failed",
       "failureSignature": "system-ai-implementation-failed",
-      "blastRadius": "portfolio:5",
+      "blastRadius": "single-task",
       "checkpoint": null,
       "evidence": [
         "primary-ai-priority:portfolio-wide-common-web-blocker",
@@ -327,7 +327,10 @@
         "recovery-queue:recovery-453ef0814800056c05b6",
         "actions-run:35426574813",
         "superseded-by:recovery-system-ai-core-implementation-v1",
-        "recovery-normalization-main:4209aad651627af71aebde4b84aacb3ee3b9454d"
+        "recovery-normalization-main:4209aad651627af71aebde4b84aacb3ee3b9454d",
+        "actions-run:35478923812",
+        "actions-run:35479394982",
+        "current-main-verification:failure"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -346,7 +349,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-20T00:30:10.785Z"
+      "updatedAt": "2026-09-20T00:50:39.336Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1064,7 +1067,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:12",
-      "checkpoint": "2026-09-19T23:57:25Z",
+      "checkpoint": "2026-09-20T00:50:25Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1663,7 +1666,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-20T00:45:17.511Z"
+      "updatedAt": "2026-09-20T00:50:39.335Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
@@ -3048,7 +3051,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "performance-sanity-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T00:41:37Z",
+      "checkpoint": "2026-09-20T00:50:25Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -3243,7 +3246,26 @@
         "candidate-sha:8970703fda754231a5d708d850b02b4edd1a0b19",
         "workload:prep-ms:5473",
         "workload:cycle-ms:311315",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35478986195%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35478986195%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-primary-35479423439-1",
+        "candidate-sha:3172aafbf3a0cf8eabaecf43efa9649fb94a5e6a",
+        "base-main:0603c5acb61fafde4244686d915639613065328f",
+        "actions-run:35479423439",
+        "reservation-id:35479423439:1",
+        "workload:prep-ms:10115",
+        "workload:cycle-ms:304072",
+        "exploration-reuse:e4de60cdcd169cf938a35b85",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35479423439%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-1-35479423439-1",
+        "candidate-sha:381ace9bd2f5ab6916512e9dab47ab8a02d6b069",
+        "workload:prep-ms:6849",
+        "workload:cycle-ms:301876",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35479423439%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-2-35479423439-1",
+        "candidate-sha:f76e0ffb2b9439aed41c82be36acdfbe33e2adba",
+        "workload:prep-ms:6066",
+        "workload:cycle-ms:299494",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35479423439%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -3259,7 +3281,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T00:45:17.511Z"
+      "updatedAt": "2026-09-20T00:50:39.336Z"
     }
   ]
 }
