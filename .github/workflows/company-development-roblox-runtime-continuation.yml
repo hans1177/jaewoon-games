@@ -2,6 +2,16 @@ name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation
 
 on:
   workflow_dispatch:
+    inputs:
+      studio_run_approved:
+        description: 'Explicit human approval to run one local-place Roblox Studio validation session'
+        required: true
+        default: false
+        type: boolean
+      game_id:
+        description: 'Exact gameId allowed for this Studio session; required when studio_run_approved=true'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -288,6 +298,9 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - name: Resolve runtime slice
         id: targets
+        env:
+          STUDIO_RUN_APPROVED: ${{ inputs.studio_run_approved }}
+          MANUAL_GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -297,10 +310,25 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
-          const runnerWip=Math.max(1,Number(process.env.ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX||1));
+          const humanApproved=process.env.GITHUB_EVENT_NAME==='workflow_dispatch'
+            &&String(process.env.STUDIO_RUN_APPROVED||'').toLowerCase()==='true'
+            &&String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]';
+          const manualGameId=String(process.env.MANUAL_GAME_ID||'').trim();
+          const runnerWip=1;
           const rows=[];
+          if(!humanApproved||!manualGameId){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'count=0\n');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:[]})}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json=[]\n');
+            console.log('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN');
+            console.log('ROBLOX_STUDIO_MANUAL_APPROVAL_REQUIRED=YES');
+            console.log(`ROBLOX_STUDIO_APPROVAL_PRESENT=${humanApproved?'YES':'NO'}`);
+            console.log(`ROBLOX_STUDIO_EXACT_GAME_ID_PRESENT=${manualGameId?'YES':'NO'}`);
+            process.exit(0);
+          }
           for(const item of q.items||[]){
             if(rows.length>=runnerWip)break;
+            if(item.gameId!==manualGameId)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -344,7 +372,7 @@ jobs:
           console.log('ROBLOX_RUNTIME_RETRY_LIMIT=2');
           console.log('ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0');
           console.log('ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED');
-          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES');
+          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION');
           console.log('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES');
           console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');
           NODE
@@ -355,7 +383,7 @@ jobs:
     if: always() && needs.runtime-plan.result == 'success' && needs.runtime-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 1
       matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 35
@@ -706,11 +734,11 @@ jobs:
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_EXECUTION_WIP_MAX=6'
-          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'
+          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'
           echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
           echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
           echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
-          echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'
+          echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION'
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
           echo 'ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated'
           echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
