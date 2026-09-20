@@ -1218,9 +1218,11 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-test('shared control-state concurrency keeps pending jobs instead of replacing them',()=>{
+test('shared control-state and 24h cycle concurrency keep pending jobs instead of replacing them',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+
+  assert.match(runner,/concurrency:\n\s+group: vibe2-24h-cycle-main\n\s+cancel-in-progress: false\n\s+queue: max/);
 
   const planStart=runner.indexOf('\n  plan:');
   const planSteps=runner.indexOf('\n    steps:',planStart);
