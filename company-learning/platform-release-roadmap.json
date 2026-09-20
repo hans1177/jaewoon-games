@@ -1795,7 +1795,7 @@
           "RERUN_THE_SAME_FAILED_GATE",
           "REPEAT_REPAIR_AND_SAME_GATE_RETEST_UNTIL_PASS"
         ],
-        "retryLimit": "UNLIMITED_UNTIL_PASS_OR_EXPLICIT_STOP_CONDITION",
+        "retryLimit": "UNLIMITED_CAUSAL_REPAIR_WITH_LOCAL_INHIBITORS",
         "advanceOnFailure": false,
         "skipFailedGateAllowed": false,
         "lowerThresholdAllowed": false,
@@ -1817,7 +1817,10 @@
         ],
         "brainLiveness": "NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE",
         "inhibitedActionBehavior": "PRESERVE_CHECKPOINT_ROUTE_AROUND_RECOVER_OR_WAIT_FOR_EVENT_THEN_REEVALUATE",
-        "parallelismPolicy": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_ONLY"
+        "parallelismPolicy": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_ONLY",
+        "globalStopAllowed": false,
+        "passMeaning": "VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT",
+        "inhibitorMeaning": "LOCAL_ACTION_OR_ROUTE_ONLY"
       },
       "systemSteward": {
         "version": 1,
@@ -8720,7 +8723,7 @@
         "PR_OPEN",
         "MERGED",
         "SYNC_REQUIRED",
-        "DONE",
+        "VERIFIED_CHECKPOINT",
         "REPAIR_REQUIRED",
         "HOLD_POLICY_REVIEW_ONLY"
       ],
