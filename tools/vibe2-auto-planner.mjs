@@ -451,8 +451,8 @@ function presentationAtomicSpecsForProject(project={},repoRoot=process.cwd()){
     if(!explicitlyVisual&&!fallbackPrimary)continue;
     const text=readText(sourceFile(repoRoot,relative));
     let passes=presentationSignals(relative,text,engine);
-    if(!passes.length&&fallbackPrimary){
-      passes=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE',...(engine==='web'?['AUDIO_FEEL']:[])];
+    if(fallbackPrimary){
+      passes=[...new Set([...passes,'ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE',...(engine==='web'?['AUDIO_FEEL']:[])])];
     }
     if(!passes.length)continue;
     rows.push({relative,passes:[...new Set(passes)]});
