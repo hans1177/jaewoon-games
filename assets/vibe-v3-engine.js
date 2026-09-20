@@ -161,8 +161,94 @@ export function createVibeRepairLoop({attempts=[],maxAttempts=VIBE3_POLICY.defau
   return Object.freeze({version:1,state:exhausted?'EXHAUSTED':'REPAIR_REQUIRED',stop:exhausted,nextAction:exhausted?null:REPAIR_ACTIONS[failureClass],failureClass,attempts:Object.freeze(normalized),attemptsRemaining:Math.max(0,max-normalized.length),maxAttempts:max,authority:'bounded-self-repair-loop'});
 }
 
+const OBSERVABLE_CAPABILITY_DOMAINS=Object.freeze(new Set([
+  'PROBLEM_DECOMPOSITION','ROOT_CAUSE_DEBUGGING','ARCHITECTURE_JUDGMENT','RESPONSIBILITY_LOCALIZATION',
+  'CONTEXT_SELECTION','TOOL_ORCHESTRATION','QA_DESIGN','REGRESSION_REASONING','FAILURE_RECOVERY',
+  'GENERALIZATION','RESOURCE_EFFICIENCY','WORLD_AND_GAME_SYSTEM_DESIGN'
+]));
+function observableText(value,max=1200){
+  if(value==null)return'';
+  const text=typeof value==='string'?value:(typeof value==='number'||typeof value==='boolean'?String(value):'');
+  return clean(text).slice(0,max);
+}
+function normalizeObservableCodingStep(step={},index=0){
+  const capabilityDomain=upper(step.capabilityDomain);
+  return Object.freeze({
+    index:index+1,
+    stage:upper(step.stage||'OBSERVATION'),
+    action:observableText(step.action),
+    target:observableText(step.target,800)||null,
+    observableHypothesis:observableText(step.observableHypothesis??step.hypothesis,1200)||null,
+    decision:observableText(step.decision,1200)||null,
+    evidence:Object.freeze(unique((Array.isArray(step.evidence)?step.evidence:[step.evidence]).map(value=>observableText(value,1200)))),
+    outcome:upper(step.outcome)||null,
+    candidateId:clean(step.candidateId)||null,
+    failureClass:upper(step.failureClass)||null,
+    capabilityDomain:OBSERVABLE_CAPABILITY_DOMAINS.has(capabilityDomain)?capabilityDomain:null,
+    authority:'observable-evidence-only'
+  });
+}
+export function createVibeObservableCodingTrace({request='',sourceGraph=null,tournament=null,repairLoop=null,finalEvidence={},metadata={}}={}){
+  const steps=[];
+  const explicitSteps=Array.isArray(metadata?.observableCodingSteps)?metadata.observableCodingSteps:[];
+  for(const step of explicitSteps)steps.push(normalizeObservableCodingStep(step,steps.length));
+  const candidates=tournament?.evaluations||[];
+  for(const candidate of candidates){
+    const blockers=Array.isArray(candidate?.blockedReasons)?candidate.blockedReasons:[];
+    steps.push(normalizeObservableCodingStep({
+      stage:'CANDIDATE_EVALUATION',
+      action:'GENERATE_EVALUATE_CANDIDATE',
+      target:candidate?.patchRef||null,
+      evidence:[`eligible=${candidate?.eligible===true}`,`score=${finite(candidate?.score,0)}`,...blockers.map(x=>`blocked=${clean(x)}`),candidate?.failure?`failure=${clean(candidate.failure)}`:null],
+      outcome:candidate?.eligible===true?'ELIGIBLE':'REJECTED',
+      candidateId:candidate?.id||null,
+      capabilityDomain:'TOOL_ORCHESTRATION'
+    },steps.length));
+  }
+  for(const attempt of repairLoop?.attempts||[]){
+    steps.push(normalizeObservableCodingStep({
+      stage:'REPAIR_ATTEMPT',
+      action:'APPLY_EVIDENCE_GUIDED_REPAIR',
+      evidence:[attempt?.failure?`failure=${clean(attempt.failure)}`:null],
+      outcome:attempt?.pass===true?'PASS':'FAIL',
+      candidateId:attempt?.candidateId||null,
+      failureClass:attempt?.pass===true?null:classifyVibeRepairFailure(attempt?.failure||''),
+      capabilityDomain:'FAILURE_RECOVERY'
+    },steps.length));
+  }
+  if(finalEvidence&&Object.keys(finalEvidence).length){
+    const evidence=[];
+    for(const key of ['runtimePass','runtimePassed','qaPassed','regressionPassed','exactRevision','protectedStatePreserved','independentQa','browserQa','runtime']){
+      if(Object.prototype.hasOwnProperty.call(finalEvidence,key))evidence.push(`${key}=${observableText(finalEvidence[key],120)}`);
+    }
+    steps.push(normalizeObservableCodingStep({
+      stage:'FINAL_VERIFICATION',
+      action:'VERIFY_SELECTED_CANDIDATE',
+      evidence,
+      outcome:tournament?.ready===true?'VERIFIED_WINNER':'UNRESOLVED',
+      candidateId:tournament?.winner?.id||null,
+      capabilityDomain:'QA_DESIGN'
+    },steps.length));
+  }
+  const explicitDomains=unique([
+    ...(metadata?.capabilityDomains||[]),
+    ...explicitSteps.map(step=>step?.capabilityDomain)
+  ]).map(upper).filter(domain=>OBSERVABLE_CAPABILITY_DOMAINS.has(domain));
+  const inferredDomains=[];
+  if(sourceGraph?.digest||sourceGraph?.nodes?.length)inferredDomains.push('RESPONSIBILITY_LOCALIZATION');
+  if(candidates.length)inferredDomains.push('TOOL_ORCHESTRATION');
+  if(candidates.some(item=>item?.eligible!==true||item?.failure)||(repairLoop?.attempts||[]).some(item=>item?.pass!==true))inferredDomains.push('FAILURE_RECOVERY');
+  if(Object.prototype.hasOwnProperty.call(finalEvidence||{},'qaPassed')||finalEvidence?.independentQa||finalEvidence?.browserQa)inferredDomains.push('QA_DESIGN');
+  if(Object.prototype.hasOwnProperty.call(finalEvidence||{},'regressionPassed'))inferredDomains.push('REGRESSION_REASONING');
+  const capabilityDomains=unique([...explicitDomains,...inferredDomains]);
+  const reusablePrinciples=unique((metadata?.reusablePrinciples||[]).map(value=>observableText(value,1200)));
+  const core={version:1,boundary:'OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY',goal:observableText(request,2000),capabilityDomains,steps,reusablePrinciples};
+  return Object.freeze({...core,traceDigest:stableHash(JSON.stringify(core)),hiddenReasoningPersisted:false,positivePromotionAuthority:false,authority:'observable-coding-trace-only'});
+}
+
 export function createVibeTrajectoryRecord({request='',sourceGraph=null,tournament=null,repairLoop=null,finalEvidence={},metadata={}}={}){
-  const record={version:1,trajectoryId:`traj_${stableHash(`${request}|${sourceGraph?.digest||''}|${JSON.stringify(tournament?.evaluations||[])}|${JSON.stringify(repairLoop?.attempts||[])}`)}`,request:clean(request),sourceGraphDigest:clean(sourceGraph?.digest)||null,candidates:(tournament?.evaluations||[]).map(item=>({id:item.id,eligible:item.eligible,score:item.score,blockedReasons:[...item.blockedReasons],failure:item.failure||null,patchRef:item.patchRef||null})),selectedCandidateId:tournament?.winner?.id||null,repairAttempts:(repairLoop?.attempts||[]).map(item=>({...item})),outcome:tournament?.ready?'VERIFIED_WINNER':repairLoop?.state||'UNRESOLVED',finalEvidence:Object.freeze({...finalEvidence}),metadata:Object.freeze({...metadata}),learningUse:Object.freeze({positiveWinnerAllowed:tournament?.ready===true,failedCandidatesPreserved:true,hiddenReasoningRequired:false,observableActionsAndEvidenceOnly:true}),authority:'verified-development-trajectory'};
+  const observableCodingTrace=createVibeObservableCodingTrace({request,sourceGraph,tournament,repairLoop,finalEvidence,metadata});
+  const record={version:1,trajectoryId:`traj_${stableHash(`${request}|${sourceGraph?.digest||''}|${JSON.stringify(tournament?.evaluations||[])}|${JSON.stringify(repairLoop?.attempts||[])}`)}`,request:clean(request),sourceGraphDigest:clean(sourceGraph?.digest)||null,candidates:(tournament?.evaluations||[]).map(item=>({id:item.id,eligible:item.eligible,score:item.score,blockedReasons:[...item.blockedReasons],failure:item.failure||null,patchRef:item.patchRef||null})),selectedCandidateId:tournament?.winner?.id||null,repairAttempts:(repairLoop?.attempts||[]).map(item=>({...item})),outcome:tournament?.ready?'VERIFIED_WINNER':repairLoop?.state||'UNRESOLVED',finalEvidence:Object.freeze({...finalEvidence}),metadata:Object.freeze({...metadata}),observableCodingTrace,learningUse:Object.freeze({positiveWinnerAllowed:tournament?.ready===true,failedCandidatesPreserved:true,hiddenReasoningRequired:false,observableActionsAndEvidenceOnly:true,observableCodingTraceCaptured:true,hiddenReasoningPersisted:false}),authority:'verified-development-trajectory'};
   return Object.freeze(record);
 }
 
