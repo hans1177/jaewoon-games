@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
@@ -66,6 +69,23 @@ test('web candidate release checks inline scripts and preserves historical save-
   assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
 });
 
+
+test('web candidate release inline QA module itself compiles',()=>{
+  const webQa=releaseWorkflow.slice(
+    releaseWorkflow.indexOf('- name: Web syntax QA'),
+    releaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR')
+  );
+  const match=/node --input-type=module <<'NODE'\n([\s\S]*?)\n\s+NODE/.exec(webQa);
+  assert.ok(match,'Web syntax QA module heredoc must remain extractable');
+  const source=match[1].split('\n').map(line=>line.replace(/^ {10}/,'')).join('\n');
+  const temp=path.join(os.tmpdir(),`vibe2-release-inline-${process.pid}.mjs`);
+  try{
+    fs.writeFileSync(temp,source,'utf8');
+    execFileSync(process.execPath,['--check',temp],{stdio:'pipe'});
+  }finally{
+    fs.rmSync(temp,{force:true});
+  }
+});
 
 test('web candidate release blocks inline script syntax and historical save-key regressions',()=>{
   const section=releaseWorkflow.slice(releaseWorkflow.indexOf('- name: Web syntax QA'),releaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR'));
