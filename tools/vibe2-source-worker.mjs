@@ -943,7 +943,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const priorFailureClass=generationFailureClass(lastError);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
-    const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
+    const malformedFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT'&&responsibleFiles.length===1;
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const focusedReplaceOnly=focusedFinal
