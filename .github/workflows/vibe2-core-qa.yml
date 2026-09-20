@@ -33,6 +33,7 @@ on:
       - 'tools/vibe2-system-evolution-verify.mjs'
       - 'tools/vibe2-system-architecture-contract.mjs'
       - 'tools/vibe2-architecture-neuron-consistency.mjs'
+      - 'tools/vibe2-architecture-neuron-consistency.mjs'
       - 'tools/vibe2-self-architecture-evolution.mjs'
       - 'tools/vibe2-neural-expansion-readiness.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
@@ -82,6 +83,7 @@ on:
       - 'qa/vibe2-self-architecture-evolution.test.mjs'
       - 'qa/vibe2-neural-expansion-readiness.test.mjs'
       - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
+      - 'qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs'
       - 'qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs'
       - 'qa/vibe2-owner-rule3-unbounded-learning.test.mjs'
       - 'qa/vibe2-owner-rule2-external-ai.test.mjs'
@@ -326,6 +328,9 @@ jobs:
           node --test qa/vibe2-owner-rule2-external-ai.test.mjs
           node --test qa/vibe2-owner-rule3-unbounded-learning.test.mjs
           node --test qa/vibe2-owner-rule4-self-architecture.test.mjs
+          node --check tools/vibe2-architecture-neuron-consistency.mjs
+          node tools/vibe2-architecture-neuron-consistency.mjs
+          node --test qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs
           node --check tools/vibe2-architecture-neuron-consistency.mjs
           node tools/vibe2-architecture-neuron-consistency.mjs
           node --test qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs
