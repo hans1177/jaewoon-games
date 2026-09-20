@@ -29,6 +29,22 @@ const BINARY_AUTHORING_KINDS=freeze([
   'engine-native-binary-asset'
 ]);
 
+const UNITY_DIRECT_AUTHORING=freeze([
+  'csharp-procedural-mesh-and-low-poly-model',
+  'csharp-runtime-material-and-lighting',
+  'csharp-particle-vfx-and-trails',
+  'csharp-runtime-animation-and-secondary-motion',
+  'ugui-runtime-presentation'
+]);
+
+const ROBLOX_DIRECT_AUTHORING=freeze([
+  'luau-composed-low-poly-model',
+  'luau-material-color-and-lighting',
+  'luau-particle-beam-trail-vfx',
+  'luau-runtime-animation-and-secondary-motion',
+  'luau-ui-presentation'
+]);
+
 function matchedForType(selector={},type=''){
   return freezeList((selector.matched||[])
     .filter(row=>clean(row.type)===clean(type))
@@ -44,12 +60,23 @@ function matchedForType(selector={},type=''){
 }
 
 function directAuthoringFor(target='',type=''){
-  if(clean(target).toLowerCase()!=='web') return freezeList([]);
+  const resolvedTarget=clean(target).toLowerCase();
   const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
-  if(audio) return freezeList(['web-audio-sfx']);
-  if(actor) return freezeList(['svg-final-art','canvas-art-and-effects','motion-engine-animation']);
-  return WEB_DIRECT_AUTHORING;
+  if(resolvedTarget==='web'){
+    if(audio) return freezeList(['web-audio-sfx']);
+    if(actor) return freezeList(['svg-final-art','canvas-art-and-effects','motion-engine-animation']);
+    return WEB_DIRECT_AUTHORING;
+  }
+  if(resolvedTarget==='unity'){
+    if(audio) return freezeList([]);
+    return UNITY_DIRECT_AUTHORING;
+  }
+  if(resolvedTarget==='roblox'){
+    if(audio) return freezeList([]);
+    return ROBLOX_DIRECT_AUTHORING;
+  }
+  return freezeList([]);
 }
 
 function decisionFor(selector={},target='',binding={}){
@@ -112,9 +139,11 @@ export function buildVibeAssetProductionPlan({
     decisions,
     capabilities:freeze({
       webDirectAuthoring:WEB_DIRECT_AUTHORING,
+      unityDirectAuthoring:UNITY_DIRECT_AUTHORING,
+      robloxDirectAuthoring:ROBLOX_DIRECT_AUTHORING,
       binaryAuthoringKinds:BINARY_AUTHORING_KINDS,
       canChooseReuse:true,
-      canChooseDirectAuthoring:resolvedTarget==='web',
+      canChooseDirectAuthoring:['web','unity','roblox'].includes(resolvedTarget),
       canRequestGenerator:true
     }),
     summary:freeze({
@@ -132,6 +161,8 @@ export function buildVibeAssetProductionPlan({
       noEmojiPlaceholder:true,
       noGeometricPlaceholder:true,
       directAuthoredSvgCanvasMustBeFinalQualityNotPlaceholder:true,
+      nativeProceduralAuthoringMustBeFinalQualityNotPrimitivePlaceholder:true,
+      composedLowPolyRequiresMultipleMeaningfulPartsAndStyleLock:true,
       binaryAssetsDirectTextEditForbidden:true,
       gameplaySaveProgressionEconomyMutationForbiddenForAssetReasons:true,
       sourceAndTransformProvenanceRequiredForReuse:true,
