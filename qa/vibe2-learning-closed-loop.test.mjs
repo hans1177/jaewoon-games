@@ -35,19 +35,17 @@ test('continuous runner loads distilled external AI and emits exact knowledge tr
   assert.match(runner,/exactInjectedKnowledgeIds/);
   assert.match(workflow,/learning-knowledge-ids:/);
   assert.match(workflow,/knowledgeApplication/);
-  assert.match(workflow,/version:12/);
+  assert.match(workflow,/version:13/);
 });
 
-test('Web adapter external AI path is advisory hash-only and requires later verified distillation',()=>{
+test('Web adapter stays deterministic while external AI remains in a separate verified distillation lane',()=>{
   const bootstrap=read('tools/company-development-web-bootstrap.mjs');
   const devWorkflow=read('.github/workflows/company-development-confirmed-runtime.yml');
   const webIngest=read('tools/vibe2-web-experience-ingest.mjs');
   assert.match(bootstrap,/buildWebContractAdapterPlan/);
-  assert.match(bootstrap,/rawOutputSha256=crypto\.createHash\('sha256'\)/);
-  assert.match(bootstrap,/Do not invent gameplay/);
-  assert.doesNotMatch(bootstrap,/rawOutputStored:true/);
-  assert.match(devWorkflow,/webExternalAiLearningCandidate/);
-  assert.match(devWorkflow,/rawOutputSha256/);
+  assert.match(bootstrap,/WEB_CONTRACT_EXTERNAL_AI_ADVISORY=DEFERRED_TO_VERIFIED_DISTILLATION_LANE/);
+  assert.doesNotMatch(bootstrap,/GEMINI_API_KEY|generativelanguage\.googleapis|rawOutputSha256/);
+  assert.doesNotMatch(devWorkflow,/GEMINI_API_KEY|webExternalAiLearningCandidate|externalAiCandidateFromBootstrap/);
   assert.match(webIngest,/distillExternalAiKnowledge/);
   assert.match(webIngest,/formalImplementationPassed/);
   assert.match(webIngest,/externalAiAcceptedCount/);
