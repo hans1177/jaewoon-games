@@ -66,9 +66,53 @@ function normalizeCapabilityApplications(values = []) {
   return rows.slice(-64);
 }
 
-function capabilityLifecycleFor(taskType = '', applications = []) {
+function normalizeCapabilityBenchmarks(values = []) {
+  const rows = [];
+  const seen = new Set();
+  for (const raw of Array.isArray(values) ? values : []) {
+    const benchmarkId = clean(raw?.benchmarkId);
+    if (!benchmarkId || seen.has(benchmarkId)) continue;
+    seen.add(benchmarkId);
+    rows.push(freeze({
+      version: 1,
+      benchmarkId,
+      pairId: clean(raw?.pairId) || null,
+      capabilityId: clean(raw?.capabilityId) || null,
+      taskId: clean(raw?.taskId) || null,
+      workKey: clean(raw?.workKey) || null,
+      gameId: clean(raw?.gameId) || null,
+      engine: clean(raw?.engine) || null,
+      problemFingerprint: clean(raw?.problemFingerprint) || null,
+      sourceCapabilityGameId: clean(raw?.sourceCapabilityGameId) || null,
+      unseenGame: raw?.unseenGame === true,
+      unseenProblem: raw?.unseenProblem === true,
+      pairedControlChallenger: raw?.pairedControlChallenger === true,
+      sameSourceBaseline: raw?.sameSourceBaseline === true,
+      sameModelGenerationBudget: raw?.sameModelGenerationBudget === true,
+      sameWritableScope: raw?.sameWritableScope === true,
+      sameQaContract: raw?.sameQaContract === true,
+      nonTargetContextFixed: raw?.nonTargetContextFixed === true,
+      targetCapabilityOnlyGuidanceDelta: raw?.targetCapabilityOnlyGuidanceDelta === true,
+      controlFreshQaPass: raw?.controlFreshQaPass === true,
+      challengerFreshQaPass: raw?.challengerFreshQaPass === true,
+      capabilitySpecificSupport: raw?.capabilitySpecificSupport === true,
+      capabilitySpecificContradiction: raw?.capabilitySpecificContradiction === true,
+      inconclusive: raw?.inconclusive === true,
+      evidence: freezeList(raw?.evidence || []),
+      observedAt: clean(raw?.observedAt) || null,
+      rawCodeStored: false,
+      rawModelOutputStored: false,
+      hiddenChainOfThoughtStored: false,
+      authorityExpanded: false
+    }));
+  }
+  return rows.slice(-64);
+}
+
+function capabilityLifecycleFor(taskType = '', applications = [], benchmarks = []) {
   if (clean(taskType) !== 'coding-capability-distillation') return null;
   const rows = normalizeCapabilityApplications(applications);
+  const benchmarkRows = normalizeCapabilityBenchmarks(benchmarks);
   const verifiedApplications = rows.filter((row) =>
     row.independent === true
     && row.selected === true
@@ -78,32 +122,68 @@ function capabilityLifecycleFor(taskType = '', applications = []) {
   const uniqueTasks = new Set(verifiedApplications.map((row) => [row.gameId, row.taskId, row.workKey].filter(Boolean).join('|')).filter(Boolean));
   const independentPassCount = uniqueTasks.size;
   const crossGameVerifiedApplicationCount = new Set(verifiedApplications.map((row) => clean(row.gameId)).filter(Boolean)).size;
-  const contradictionCount = rows.filter((row) => row.capabilitySpecificContradiction === true).length;
+  const directApplicationContradictionCount = rows.filter((row) => row.capabilitySpecificContradiction === true).length;
   const directSupportCount = rows.filter((row) => row.capabilitySpecificSupport === true).length;
-  const state = independentPassCount >= 2
-    ? 'REPEATED_APPLICATION_VERIFIED'
-    : independentPassCount >= 1
-      ? 'APPLICATION_OBSERVED'
-      : 'VERIFIED_REUSABLE';
+  const validBenchmarkRows = benchmarkRows.filter((row) =>
+    row.unseenGame === true
+    && row.unseenProblem === true
+    && row.pairedControlChallenger === true
+    && row.sameSourceBaseline === true
+    && row.sameModelGenerationBudget === true
+    && row.sameWritableScope === true
+    && row.sameQaContract === true
+    && row.nonTargetContextFixed === true
+    && row.targetCapabilityOnlyGuidanceDelta === true
+  );
+  const benchmarkSupportRows = validBenchmarkRows.filter((row) => row.capabilitySpecificSupport === true && row.challengerFreshQaPass === true);
+  const benchmarkContradictionRows = validBenchmarkRows.filter((row) => row.capabilitySpecificContradiction === true);
+  const independentUnseenPassCount = new Set(benchmarkSupportRows.map((row) => [row.gameId, row.problemFingerprint].filter(Boolean).join('|')).filter(Boolean)).size;
+  const distinctUnseenGameCount = new Set(benchmarkSupportRows.map((row) => clean(row.gameId)).filter(Boolean)).size;
+  const contradictionCount = directApplicationContradictionCount + benchmarkContradictionRows.length;
+  const generalizationCandidate = independentPassCount >= 2 && crossGameVerifiedApplicationCount >= 2;
+  const strongGeneralizationVerified = generalizationCandidate
+    && independentUnseenPassCount >= 2
+    && distinctUnseenGameCount >= 2
+    && benchmarkSupportRows.length >= 2
+    && contradictionCount === 0;
+  const state = strongGeneralizationVerified
+    ? 'GENERALIZED_VERIFIED'
+    : generalizationCandidate
+      ? 'GENERALIZATION_CANDIDATE'
+      : independentPassCount >= 2
+        ? 'REPEATED_APPLICATION_VERIFIED'
+        : independentPassCount >= 1
+          ? 'APPLICATION_OBSERVED'
+          : 'VERIFIED_REUSABLE';
   const confidence = independentPassCount >= 2
     ? Number((1 - (1 / (independentPassCount + 2))).toFixed(4))
     : 0.5;
   return freeze({
-    version: 1,
+    version: 2,
     state,
     applicationCount: rows.length,
+    benchmarkCount: benchmarkRows.length,
     independentPassCount,
     crossGameVerifiedApplicationCount,
     directSupportCount,
     contradictionCount,
+    benchmarkSupportCount: benchmarkSupportRows.length,
+    benchmarkContradictionCount: benchmarkContradictionRows.length,
+    independentUnseenPassCount,
+    distinctUnseenGameCount,
     confidence,
     singlePassAutomaticPromotion: false,
     singleFailureAutomaticDeprecation: false,
     unrelatedFailurePenaltyApplied: false,
     confidenceDecayApplied: false,
-    generalizationCandidate: independentPassCount >= 2 && crossGameVerifiedApplicationCount >= 2,
-    strongGeneralizationVerified: false,
-    unseenProblemBenchmarkRequired: true,
+    generalizationCandidate,
+    strongGeneralizationVerified,
+    unseenProblemBenchmarkRequired: !strongGeneralizationVerified,
+    pairedControlChallengerRequired: true,
+    minimumIndependentUnseenPasses: 2,
+    minimumDistinctUnseenGames: 2,
+    capabilitySpecificPositiveSupportRequired: true,
+    zeroCapabilitySpecificContradictionsRequired: true,
     automaticDeprecation: false,
     automaticSupersession: false,
     authorityExpanded: false
@@ -147,7 +227,8 @@ export function createVibeExperienceRecord({
   confirmations = 1,
   createdAt = '',
   lastVerifiedAt = '',
-  capabilityApplications = []
+  capabilityApplications = [],
+  capabilityBenchmarks = []
 } = {}) {
   const normalizedOutcome = ['PASS', 'FAIL', 'REVISE'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'REVISE';
   const proof = freezeList(evidence);
@@ -159,7 +240,8 @@ export function createVibeExperienceRecord({
   const confirmationCount = normalizeConfirmations(confirmations);
   const firstVerifiedAt = clean(createdAt) || null;
   const normalizedCapabilityApplications = normalizeCapabilityApplications(capabilityApplications);
-  const capabilityLifecycle = capabilityLifecycleFor(clean(taskType), normalizedCapabilityApplications);
+  const normalizedCapabilityBenchmarks = normalizeCapabilityBenchmarks(capabilityBenchmarks);
+  const capabilityLifecycle = capabilityLifecycleFor(clean(taskType), normalizedCapabilityApplications, normalizedCapabilityBenchmarks);
   return freeze({
     version: 3,
     id: clean(id) || `exp_${hash(seed)}`,
@@ -183,6 +265,7 @@ export function createVibeExperienceRecord({
     confirmations: confirmationCount,
     confidence: confidenceFor(confirmationCount),
     capabilityApplications: freeze(normalizedCapabilityApplications),
+    capabilityBenchmarks: freeze(normalizedCapabilityBenchmarks),
     capabilityLifecycle,
     capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: firstVerifiedAt,
@@ -194,7 +277,8 @@ export function createVibeExperienceRecord({
 function mergeVerifiedExperience(left, right) {
   const confirmations = normalizeConfirmations((left?.confirmations || 1) + (right?.confirmations || 1));
   const capabilityApplications = normalizeCapabilityApplications([...(left?.capabilityApplications || []), ...(right?.capabilityApplications || [])]);
-  const capabilityLifecycle = capabilityLifecycleFor(clean(left?.taskType || right?.taskType), capabilityApplications);
+  const capabilityBenchmarks = normalizeCapabilityBenchmarks([...(left?.capabilityBenchmarks || []), ...(right?.capabilityBenchmarks || [])]);
+  const capabilityLifecycle = capabilityLifecycleFor(clean(left?.taskType || right?.taskType), capabilityApplications, capabilityBenchmarks);
   return freeze({
     ...left,
     version: 3,
@@ -206,6 +290,7 @@ function mergeVerifiedExperience(left, right) {
     confirmations,
     confidence: confidenceFor(confirmations),
     capabilityApplications: freeze(capabilityApplications),
+    capabilityBenchmarks: freeze(capabilityBenchmarks),
     capabilityLifecycle,
     capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: clean(left?.createdAt) || clean(right?.createdAt) || null,
@@ -272,6 +357,30 @@ export function recordVibeCapabilityApplication(memory, application = {}) {
   const nextMemory = createVibeExperienceMemory(nextRecords);
   const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
   return freeze({ updated: true, duplicate: false, reason: 'capability-application-recorded', memory: nextMemory, record });
+}
+
+export function recordVibeCapabilityBenchmark(memory, benchmark = {}) {
+  const current = createVibeExperienceMemory(memory);
+  const capabilityId = clean(benchmark?.capabilityId);
+  const benchmarkId = clean(benchmark?.benchmarkId);
+  if (!capabilityId || !benchmarkId) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-and-benchmark-id-required', memory: current, record: null });
+  }
+  const target = current.records.find((item) => item.id === capabilityId && item.taskType === 'coding-capability-distillation');
+  if (!target) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-not-found', memory: current, record: null });
+  }
+  if ((target.capabilityBenchmarks || []).some((row) => row.benchmarkId === benchmarkId)) {
+    return freeze({ updated: false, duplicate: true, reason: 'capability-benchmark-duplicate', memory: current, record: target });
+  }
+  const nextRecord = createVibeExperienceRecord({
+    ...target,
+    capabilityBenchmarks: [...(target.capabilityBenchmarks || []), benchmark]
+  });
+  const nextRecords = current.records.map((item) => item.id === target.id ? nextRecord : item);
+  const nextMemory = createVibeExperienceMemory(nextRecords);
+  const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
+  return freeze({ updated: true, duplicate: false, reason: 'capability-benchmark-recorded', memory: nextMemory, record });
 }
 
 export function addVibeExperience(memory, recordInput = {}) {
