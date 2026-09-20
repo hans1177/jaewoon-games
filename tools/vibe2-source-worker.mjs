@@ -418,6 +418,9 @@ function presentationWorkerGuidance(order = {}) {
     '기존 게임 로직을 재설계하지 말고 현재 렌더/애니메이션/오디오/카메라 책임 함수 안에서 직접 수정한다.',
     '표현 계층은 save key, 진행도, 데미지, 쿨다운, 이동 속도, 보상, 드랍률, authoritative hit timing을 임의 변경하지 않는다.',
     '새 wrapper/override/shadow pipeline으로 덮지 말고 기존 책임 시스템을 직접 정리한다.',
+    'ASSET_ADAPTATION에서 Unity는 C# 기반 저폴리 조립 모델·재질·조명·VFX·모션/UI를, Roblox는 Luau 기반 조립 모델·Material/Color·Particle/Beam/Trail·모션/UI를 실제 게임 화면에 구현할 수 있다.',
+    '단일 primitive, 이름만 바꾼 기본 Part/GameObject, 검증용 임시 도형은 최종 그래픽 완료로 인정하지 않는다. 여러 의미 있는 파트와 Style Lock을 사용해 게임 정체성이 보이는 결과를 만든다.',
+    'FBX/PNG/WebP/OGG 등 실제 binary authoring이 필요한 경우 가짜 바이트나 텍스트 파일을 만들지 말고 검증된 기존 에셋 재사용 또는 AUTHORING_GENERATOR_REQUEST 경로를 사용한다.',
     'Web 오디오는 첫 사용자 입력 이후 활성화하고 mute/volume과 resume 중복재생 방지를 유지한다.',
     '모션·VFX·카메라는 모바일 터치와 위험 가독성을 방해하지 않는다.'
   ].join('\n');
