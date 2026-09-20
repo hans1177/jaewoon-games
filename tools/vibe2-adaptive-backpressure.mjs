@@ -126,10 +126,10 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   let decision = 'HOLD';
   let reason = 'LOW_LOAD';
 
-  if (!workerCount || !loaded) {
+  if (!workerCount) {
     healthyStreak = 0;
     pressureStreak = 0;
-    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
+    reason = 'NO_WORKERS';
   } else if (localBackpressureActive) {
     healthyStreak = 0;
     pressureStreak = 0;
@@ -140,6 +140,10 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     pressureStreak = 0;
     decision = next < current ? 'DOWN' : 'HOLD';
     reason = reasons.length ? reasons.join('+') : level;
+  } else if (!loaded) {
+    healthyStreak = 0;
+    pressureStreak = 0;
+    reason = 'LOW_LOAD';
   } else if (mediumPressure) {
     healthyStreak = 0;
     pressureStreak += 1;
