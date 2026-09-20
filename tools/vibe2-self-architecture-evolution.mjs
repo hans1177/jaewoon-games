@@ -47,11 +47,19 @@ function refreshQueuedArchitectureReadiness(queueInput={},readiness={}){
       'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
       `architecture-neural-expansion-readiness:${readiness.pass?'PASS':'PENDING'}`,
       `architecture-neural-expansion-allowed:${readiness.pass?'YES':'NO'}`,
+      'architecture-rule5-atomization-required:YES',
+      'architecture-rule5-neuronization-required:YES',
+      'architecture-rule5-central-code-sync-required:YES',
       ...(readiness.missing||[]).map(key=>`architecture-neural-expansion-missing:${key}`)
     );
     const completionCriteria=(task.completionCriteria||[])
       .map(clean).filter(Boolean)
       .filter(value=>!value.startsWith('NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_'));
+    completionCriteria.push(
+      'RULE5_ATOMIC_ARCHITECTURE_DEFINED',
+      'RULE5_NEURON_MAPPING_DEFINED',
+      'RULE5_CENTRAL_ARCHITECTURE_CODE_TEST_SYNC_PASS'
+    );
     if(readiness.pass)completionCriteria.push(
       'NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF',
       'NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT'
@@ -157,6 +165,7 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
         readiness.pass
           ?'제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.'
           :'신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.',
+        '제5원칙에 따라 변경 구조를 원자 책임 노드로 분해하고 각 노드의 입력·출력·의존성·억제조건·증거를 정의한 뒤 뉴런 타입/엣지로 매핑한다. 중앙 정책·아키텍처맵·책임 코드·계약 테스트가 일치해야 활성화한다.',
         '구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.',
         '실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.'
       ].join('\n'),
@@ -171,12 +180,16 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
         'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
         `architecture-neural-expansion-readiness:${readiness.pass?'PASS':'PENDING'}`,
         `architecture-neural-expansion-allowed:${readiness.pass?'YES':'NO'}`,
+        'architecture-rule5-atomization-required:YES',
+        'architecture-rule5-neuronization-required:YES',
+        'architecture-rule5-central-code-sync-required:YES',
         ...readiness.missing.map(key=>`architecture-neural-expansion-missing:${key}`)
       ],
       completionCriteria:[
         'STRUCTURAL_CAUSE_VERIFIED','AT_LEAST_TWO_ALTERNATIVES_COMPARED','DIRECT_RESPONSIBLE_SYSTEM_CHANGED_OR_VERIFIED_NO_CHANGE',
         'SAME_FAILURE_REPRODUCTION_RECHECKED','RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED',
         'AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED',
+        'RULE5_ATOMIC_ARCHITECTURE_DEFINED','RULE5_NEURON_MAPPING_DEFINED','RULE5_CENTRAL_ARCHITECTURE_CODE_TEST_SYNC_PASS',
         ...(readiness.pass?['NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF','NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT']:[])
       ]
     });
