@@ -171,6 +171,25 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
+test('every atomic worker synchronizes with Vibe control state before any worker work',()=>{
+  const start=workflow.indexOf('  worker:');
+  const end=workflow.indexOf('  fan_in:',start);
+  const workerPart=workflow.slice(start,end);
+  const sync=workerPart.indexOf('- name: Synchronize worker with Vibe before work');
+  const cache=workerPart.indexOf('- name: Restore shared Ollama runtime cache');
+  const order=workerPart.indexOf('- name: Build reserved task work order');
+  assert.ok(sync>=0);
+  assert.ok(cache>sync);
+  assert.ok(order>sync);
+  assert.ok(workerPart.includes('node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json'));
+  assert.ok(workerPart.includes('verify-worker-sync'));
+  assert.ok(workerPart.includes('--reservation-id="$RESERVATION_ID"'));
+  assert.ok(workerPart.includes('--reservation-run="$RESERVATION_RUN_ID"'));
+  assert.ok(workerPart.includes('--reservation-attempt="$RESERVATION_RUN_ATTEMPT"'));
+  assert.ok(workerPart.includes('--reserved-at="$RESERVED_AT"'));
+  assert.ok(workerPart.includes('VIBE2_WORKER_PREFLIGHT_SYNC=PASS'));
+});
+
 test('one Vibe2 wave uses the same reserved main contract without a global exploration barrier',()=>{
   assert(workflow.includes('Checkout pinned main contract'));
   assert(workflow.includes('--project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json"'));
