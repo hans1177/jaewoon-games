@@ -30,7 +30,8 @@ function releaseState(value){const normalized=clean(value).toLowerCase();return 
 function stateFromCatalog(game={}){const cls=clean(game.productionClass).toUpperCase();if(cls==='RELEASE_CONFIRMED')return'release-confirmed';if(cls==='DEVELOPMENT_CONFIRMED')return'development-confirmed';return releaseState(game.homepageCategory);}
 function engineFromProject(project={}){const projectPath=posix(project.robloxProjectPath||project.projectPath||project.source),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(projectPath.startsWith('roblox-games/')||target.startsWith('roblox'))return'roblox';if(projectPath.startsWith('unity-games/')||target.startsWith('unity'))return'unity';if(projectPath.startsWith('web-games/')||target==='web')return'web';if(projectPath.startsWith('unreal-games/')||target.startsWith('unreal'))return'unreal';if(projectPath.startsWith('godot-games/')||target.startsWith('godot'))return'godot';return null;}
 function webRootFromCatalog(game={}){const webPath=posix(game.webPath).replace(/^\//,'');return /^web-games\/[a-zA-Z0-9._-]+$/.test(webPath)?webPath:null;}
-function robloxRootFromCatalog(game={}){const explicit=posix(game.robloxProjectPath||game.robloxPath||'');if(/^roblox-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`roblox-games/${id}`:null;}
+function unityRootFromCatalog(game={}){const explicit=posix(game.unityProjectPath||game.unityPath||game?.canonical?.sources?.unity?.projectPath||'');if(/^unity-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`unity-games/${id}`:null;}
+function robloxRootFromCatalog(game={}){const explicit=posix(game.robloxProjectPath||game.robloxPath||game?.canonical?.sources?.roblox?.projectPath||'');if(/^roblox-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`roblox-games/${id}`:null;}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
@@ -151,9 +152,39 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     presentationFirstPass:clean(item?.presentationFirstPass)
   });
 }
-for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
+for(const game of Array.isArray(catalog.games)?catalog.games:[]){
+  const id=clean(game.id);
+  if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;
+  const state=stateFromCatalog(game);
+  const unityRoot=unityRootFromCatalog(game);
+  const robloxRoot=robloxRootFromCatalog(game);
+  if(id&&unityRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,unityRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='unity')){
+    rows.push({
+      gameId:id,name:clean(game.name),engine:'unity',target:'unity',projectPath:unityRoot,existing:true,
+      lifecycleState:gameLifecycleState(game),releaseState:state,progress:0,source:'game-catalog',
+      developmentBaseline:state==='release-confirmed'?latestDevelopmentBaselineEvidence(id,repoRoot):null
+    });
+  }
+  if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox')){
+    rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,lifecycleState:gameLifecycleState(game),releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});
+  }
+  const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;
+  if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;
+  if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;
+  const exists=fs.existsSync(path.join(repoRoot,root));
+  rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
+}
+return rows;}
 function projectSort(a,b){const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
-function isAutonomousProductionTarget(project={}){if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);if(project.releaseState==='release-confirmed')return project.engine==='unity'&&project.developmentBaseline?.ready===true;if(project.releaseState==='development-confirmed')return project.engine==='web';return false;}
+function isAutonomousProductionTarget(project={}){
+  if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
+  if(project.engine==='unity'){
+    if(project.releaseState==='development-confirmed')return true;
+    return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
+  }
+  if(project.releaseState==='development-confirmed')return project.engine==='web';
+  return false;
+}
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
 function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
@@ -367,41 +398,71 @@ function findWebDiagnosticTask(project,repoRoot,queue){
   out.workUnits=Math.max(3,Math.min(6,rows.length+1));
   return out;
 }
-export function findWebPresentationQualityTask(project,repoRoot,queue){
-  if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
-  const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative);
-  if(!fs.existsSync(file))return null;
+function presentationSourceForProject(project,repoRoot){
+  const root=posix(project.projectPath),engine=clean(project.engine).toLowerCase();
+  const candidates=engine==='web'
+    ?[`${root}/index.html`]
+    :engine==='unity'
+      ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`]
+      :engine==='roblox'
+        ?[`${root}/client/Game.client.luau`,`${root}/shared/GameConfig.luau`]
+        :[];
+  return candidates.find(relative=>fs.existsSync(sourceFile(repoRoot,relative)))||null;
+}
+function presentationStagesForProject(project={}){
+  const engine=clean(project.engine).toLowerCase();
+  const finalMarker=engine==='web'
+    ?'gameplay root 또는 body에 data-presentation-quality-version="1"을 실제 품질 계약 선언으로 기록한다.'
+    :engine==='unity'
+      ?'표현 책임 C# 소스에 public const int PresentationQualityVersion = 1 형태의 실제 품질 계약 마커를 기록한다.'
+      :'표현 책임 Luau 소스에 local PRESENTATION_QUALITY_VERSION = 1 형태의 실제 품질 계약 마커를 기록한다.';
   const stages=[
-    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다.'},
+    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/임시 placeholder는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.'},
     {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 판정·이동속도·밸런스는 변경하지 않는다.'},
     {key:'animation-feel',pass:'ANIMATION_FEEL',goal:'[PRESENTATION_PASS:ANIMATION_FEEL] 주요 공격/상호작용 하나 이상을 준비→가속→impact→짧은 표현용 hit-stop→반동→복귀 흐름으로 다듬는다. 빠른 동작은 smear/trail, 무거운 동작은 overshoot/settle을 검토한다. 실제 데미지/쿨다운/판정 시점은 기존 authoritative gameplay event를 보존하고 표현만 동기화한다.'},
     {key:'vfx',pass:'VFX',goal:'[PRESENTATION_PASS:VFX] 핵심 행동의 시각 피드백을 hit flash, trail/afterimage, impact wave/particle, danger telegraph, reward emphasis 중 게임에 맞는 방식으로 강화한다. 효과는 모바일 입력과 위험 정보를 가리지 않게 제한하고 무제한 파티클 생성이나 매 프레임 불필요한 객체 생성을 피한다.'},
-    {key:'audio-feel',pass:'AUDIO_FEEL',goal:'[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다. 타격음은 기존 impact event와 맞추고 반복음은 기계적인 반복감을 줄인다.'},
     {key:'camera-language',pass:'CAMERA_LANGUAGE',goal:'[PRESENTATION_PASS:CAMERA_LANGUAGE] 일반 행동은 미세한 카메라 반응, 강한 행동은 짧고 강한 반응, 보스/중요 순간은 통제된 hero moment가 되도록 카메라 언어를 정리한다. 줌/흔들림/추적은 모바일 가독성과 조작을 해치지 않고 멀미를 유발할 정도로 지속되지 않게 한다.'},
-    {key:'polish-mobile',pass:'POLISH_MOBILE',goal:'[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, 오디오 끊김, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다. 앞선 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→AUDIO_FEEL→CAMERA_LANGUAGE 패스가 실제 구현된 상태를 보존한 뒤 gameplay root 또는 body에 data-presentation-quality-version="1"을 실제 품질 계약 선언으로 기록한다.'}
+    {key:'polish-mobile',pass:'POLISH_MOBILE',goal:`[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다. 앞선 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→CAMERA_LANGUAGE 패스가 실제 구현된 상태를 보존한 뒤 ${finalMarker}`}
   ];
+  if(engine==='web')stages.splice(4,0,{key:'audio-feel',pass:'AUDIO_FEEL',goal:'[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다. 타격음은 기존 impact event와 맞추고 반복음은 기계적인 반복감을 줄인다.'});
+  return stages;
+}
+export function findPresentationQualityTask(project,repoRoot,queue){
+  if(!['web','unity','roblox'].includes(clean(project.engine).toLowerCase()))return null;
+  if(!['development-confirmed','release-confirmed'].includes(clean(project.releaseState).toLowerCase()))return null;
+  const relative=presentationSourceForProject(project,repoRoot);
+  if(!relative)return null;
+  const stages=presentationStagesForProject(project);
   let previousId=null;
   for(const stage of stages){
-    const id=`${project.gameId}-presentation-${stage.key}-v1`;
+    const prefix=project.engine==='web'?project.gameId:`${project.gameId}-${project.engine}`;
+    const id=`${prefix}-presentation-${stage.key}-v1`;
     if(hasTask(queue,id)){
       if(!taskDone(queue,id))return null;
       previousId=id;
       continue;
     }
     if(previousId&&!taskDone(queue,previousId))return null;
-    const out=task(id,project,stage.goal,[relative],'normal','medium',[
+    const out=task(id,project,stage.goal,[relative],project.gameId==='fantasy-survival'?'owner-immediate':'normal','medium',[
+      'asset-production-parallel:v1',
       'presentation-quality-pipeline:v1',
       `presentation-pass:${stage.pass}`,
       'quality-contract:livingMotionVisualQualityContract',
-      'quality-contract:audioMusicQualityContract',
+      'quality-contract:assetProductionParallelContract',
       'presentation-preserve-gameplay-semantics',
       'presentation-runtime-qa-required',
+      'graphics-pass-real-asset-binding-runtime-required',
       'mobile-performance-qa-required'
     ]);
     out.workUnits=4;
+    out.assetProductionLane=true;
     return out;
   }
   return null;
+}
+export function findWebPresentationQualityTask(project,repoRoot,queue){
+  if(clean(project?.engine).toLowerCase()!=='web')return null;
+  return findPresentationQualityTask(project,repoRoot,queue);
 }
 function scanExplicitMarkerTask(project,repoRoot,queue){
   const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;
@@ -460,13 +521,13 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
   return task(id,project,goal,[relative],'high','medium',['existing-web-continuation','development-validation:missing','preserve-existing-game']);
 }
 function findSafeTasks(project,repoRoot,queue){
-  if(project.engine==='roblox')return uniqueTaskCandidates([scanExplicitMarkerTask(project,repoRoot,queue)]);
-  if(project.engine==='unity')return uniqueTaskCandidates([findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+  if(project.engine==='roblox')return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+  if(project.engine==='unity')return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='web'){
-    if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWebPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findWebPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
