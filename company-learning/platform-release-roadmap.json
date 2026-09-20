@@ -1,5 +1,5 @@
 {
-  "version": 223,
+  "version": 224,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4327,6 +4327,13 @@
       "designGeneratorEnforced": true,
       "deterministicHardGateEnforced": true,
       "baselinePromotionGateEnforced": true
+    },
+    "signalCirculation": {
+      "allDomainsAreLiveSignalParticipants": true,
+      "learningIsOnlyOneSignalDomain": true,
+      "gameDevelopmentSignalHasNoTerminalDoneState": true,
+      "verifiedCheckpointFeedsNextPlanningCycle": true,
+      "auxiliaryEvidenceReturnsToCausalGraph": true
     }
   },
   "vibeCodingMethodSelfImprovement": {
@@ -7226,7 +7233,7 @@
     }
   },
   "neuralDevelopmentBrain": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "status": "PHASE2_SHADOW_WORK_GRAPH_PRODUCTION_VERIFIED_READINESS_QUALITY_NEXT",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
@@ -7372,11 +7379,13 @@
       "BOTTLENECK_AND_RESPONSIBILITY_UPDATE",
       "ACTION_SELECTION",
       "WORK_CONTRACT_COMPILE",
+      "WORKER_PREFLIGHT_VIBE_SYNC",
       "WORKER_OR_QA_OR_RUNTIME_EXECUTION",
       "CRITIC_EVALUATION",
+      "VERIFIED_CHECKPOINT",
       "FACT_UPDATE",
       "VERIFIED_MEMORY_UPDATE",
-      "NEXT_EVENT"
+      "NEXT_CAUSAL_EVENT"
     ],
     "migrationPlan": [
       {
@@ -8640,6 +8649,21 @@
           }
         }
       }
+    },
+    "livenessContract": {
+      "authority": "OWNER_DIRECTIVE_2026-09-20",
+      "runState": "ALWAYS_RUNNING",
+      "globalTerminalStateForbidden": true,
+      "signalTerminalStateForbidden": true,
+      "verifiedWorkMeaning": "CHECKPOINT_AND_NEXT_CAUSAL_INPUT_NOT_TERMINAL_COMPLETION",
+      "localInhibitionOnly": true,
+      "inhibitorMayStopWholeBrain": false,
+      "noRunnableActionMeaning": "KEEP_SENSORS_DIAGNOSIS_MEMORY_RECOVERY_AND_EVENT_INGRESS_LIVE; REPLAN_ON_EVENT_OR_RECOVERY",
+      "durableSignalContinuityRequired": true,
+      "causalReplayRequiredForRecoverableFailure": true,
+      "droppedSignalWithoutDispositionForbidden": true,
+      "busyLoopForbidden": true,
+      "externalResourceBoundaryMayDelayExecutionButCannotTerminateBrain": true
     }
   },
   "assistantRoadmapOrchestration": {
