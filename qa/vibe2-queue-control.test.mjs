@@ -20,6 +20,7 @@ import {
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
   recoverFanInRegressionFailure,
+  verifyVibeWorkerSynchronization,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -27,6 +28,24 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
+
+test('worker preflight requires exact live Vibe reservation identity',()=>{
+  const reservation={id:'sync:1',runId:'sync-run',runAttempt:2,reservedAt:'2026-09-20T14:18:00Z'};
+  const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'sync-task',gameId:'sync-game',target:'web',department:'development',type:'implementation',
+    goal:'sync',status:'queued',sourceRoot:'web-games/sync-game',responsibleFiles:['index.html']
+  }]}),{maxConcurrentTasks:20,lane:'game-primary',reservation});
+  const pass=verifyVibeWorkerSynchronization(reserved.queue,{
+    taskId:'sync-task',reservationId:'sync:1',reservationRunId:'sync-run',reservationRunAttempt:2,reservedAt:'2026-09-20T14:18:00Z'
+  });
+  assert.equal(pass.pass,true);
+  assert.deepEqual(pass.failures,[]);
+  const stale=verifyVibeWorkerSynchronization(reserved.queue,{
+    taskId:'sync-task',reservationId:'wrong',reservationRunId:'sync-run',reservationRunAttempt:2,reservedAt:'2026-09-20T14:18:00Z'
+  });
+  assert.equal(stale.pass,false);
+  assert.ok(stale.failures.includes('RESERVATION_ID_MISMATCH'));
+});
 
 test('queue ingress preserves explicit atomic graphics metadata and evidence',()=>{
   const queue=enqueueVibeTask(createVibeContinuousQueue(),{
