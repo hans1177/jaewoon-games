@@ -475,6 +475,18 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('neuralDiagnosis'));
 });
 
+test('continuous worker captures incremental QA failure signature before failed step exits',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('- name: Run impact-first incremental QA role');
+  const end=workflow.indexOf('- name: Run read-only performance sanity role',start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/qa_rc=\$\{PIPESTATUS\[0\]\}/);
+  assert.match(block,/VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE/);
+  assert.match(block,/failure_signature=\$failure_signature/);
+  assert.match(workflow,/IQA_FAILURE_SIGNATURE:/);
+  assert.match(workflow,/incremental-qa-failure-signature:/);
+});
+
 test('worker immutable result preserves causal replay status without treating plan-only as executed',()=>{
   const start=workflow.indexOf('- name: Run impact-first incremental QA role');
   const resultStart=workflow.indexOf('- name: Build immutable worker result');
