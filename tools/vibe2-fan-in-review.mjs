@@ -92,7 +92,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       const rootCause=verifyNeuralRootCause({
         diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
         evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))],
-        sampleId:resultSampleId(selectedResult)||clean(task.id)
+        sampleId:resultSampleId(selectedResult)||clean(task.id),
+        verificationStage:'FAN_IN_REVIEW'
       });
       for(const marker of neuralRootCauseEvidence(rootCause))evidence.add(marker);
       const neuralEventRoute=simulateNeuralEventRoute({
@@ -245,13 +246,16 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_NEURAL_PHASE2_REASON=${readiness.reason}`);
   console.log(`VIBE2_NEURAL_PHASE2_GATES=${JSON.stringify(readiness.gates)}`);
   console.log(`VIBE2_NEURAL_SHADOW_EVENTS=${summary.events.total}`);
-  console.log(`VIBE2_NEURAL_CALIBRATION_ELIGIBLE=${summary.feedback.calibrationEligible}`);
-  console.log(`VIBE2_NEURAL_CALIBRATION_ACCURACY=${summary.feedback.observedAccuracy??'NA'}`);
+  console.log(`VIBE2_NEURAL_CALIBRATION_CONTRACT_VERSION=${summary.calibrationPredictionContractVersion||1}`);
+  console.log(`VIBE2_NEURAL_CALIBRATION_ELIGIBLE=${summary.identifiedCalibrationEligible}`);
+  console.log(`VIBE2_NEURAL_CALIBRATION_ACCURACY=${summary.identifiedCalibrationAccuracy??'NA'}`);
+  console.log(`VIBE2_NEURAL_CALIBRATION_LIFETIME_ACCURACY=${summary.feedback.identifiedObservedAccuracy??'NA'}`);
   console.log(`VIBE2_NEURAL_ROOT_VERIFIED=${summary.rootCause.verified}`);
   console.log(`VIBE2_NEURAL_ROOT_IDENTITY_COVERAGE=${summary.rootCause.verifiedSampleIdentityCoverage}`);
   console.log(`VIBE2_NEURAL_ROOT_PREDICTION_COVERAGE=${summary.rootCausePredictionCoverage}`);
   console.log(`VIBE2_NEURAL_ROOT_CONTRADICTION_RATE=${summary.rootCause.predictionContradictionRate??'NA'}`);
   console.log(`VIBE2_NEURAL_ROOT_SAMPLE_CONFLICTS=${summary.rootCause.sampleConflicts}`);
+  console.log(`VIBE2_NEURAL_ROOT_LIFECYCLE_PROGRESSIONS=${summary.rootCause.lifecycleProgressionRows||0}`);
   console.log(`VIBE2_NEURAL_WAVE_AUDIT_SAMPLES=${summary.shadowAuditSamples}`);
   console.log(`VIBE2_NEURAL_WORK_GRAPH_COUNT=${result.neuralWorkGraphSummary?.distinctGraphs||0}`);
   console.log(`VIBE2_NEURAL_WORK_GRAPH_CONFLICTS=${result.neuralWorkGraphSummary?.conflicts||0}`);

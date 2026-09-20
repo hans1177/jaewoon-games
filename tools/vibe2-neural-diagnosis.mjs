@@ -69,7 +69,7 @@ function hypothesisCandidates(text=''){
   add('runtime-input-binding','GAME_INPUT',0.9,/MOBILE_TOUCH_ACTION_NOT_CONNECTED|TOWER_POSITION_INPUT_REQUIRED|POINTER|TOUCH|INPUT_REQUIRED/i,'입력이 실제 상태 변화 또는 배치 책임 함수에 연결되지 않았을 가능성');
   add('runtime-spatial-state','GAME_RUNTIME',0.88,/REAL_SPATIAL_STATE_REQUIRED|REAL_ENTITY_INTERACTION_REQUIRED|COLLISION_RUNTIME_REQUIRED|PLAYER_XY_MOVEMENT_REQUIRED|VISUAL_MOVEMENT_REQUIRED/i,'실제 런타임 공간 상태/엔티티 상호작용 증거가 부족할 가능성');
   add('audio-runtime-binding','GAME_AUDIO',0.86,/MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|AUDIO/i,'오디오 UI와 실제 오디오 상태 연결 누락 가능성');
-  add('source-generation-path','SOURCE_GENERATION',0.86,/SOURCE_CANDIDATE_GENERATION_FAILED|MALFORMED_OUTPUT|EDIT_MATCH|NO_OP|TIMEOUT/i,'모델 출력 형식·anchor·generation 경로 문제 가능성');
+  add('source-generation-path','SOURCE_GENERATION',0.86,/SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED|SOURCE[-_ ]?GENERATION[-_ ]?FAILURE|DIAGNOSTIC[-_ ]?POSTCONDITION|MALFORMED_OUTPUT|EDIT_MATCH|NO_OP|TIMEOUT/i,'모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성');
   add('pipeline-or-runner','INFRA',0.82,/WORKFLOW|RUNNER|CHECKOUT|ARTIFACT|CI_FAILURE|INFRA/i,'게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성');
   add('save-compatibility','SAVE_SYSTEM',0.9,/SAVE|LOCALSTORAGE|PERSIST|RESTORE/i,'저장키·저장 의미·복구 경로 호환성 문제 가능성');
   if(!rows.length)rows.push({id:'responsible-system-unknown',system:'UNKNOWN',confidence:0.35,reason:'명시적 실패 시그니처가 충분하지 않아 추가 증거 필요'});
@@ -90,6 +90,33 @@ function responsibility(hypotheses=[]){
     system:top.system,
     confidence:clamp(top.score/total),
     alternatives:ranked.slice(1,4).map(row=>({system:row.system,confidence:clamp(row.score/total)}))
+  };
+}
+
+function pipelinePrediction({rows=[],task={},responsibility:owner}={}){
+  const evidence=(Array.isArray(rows)?rows:[]).map(clean).filter(Boolean);
+  const sourceGenerationObserved=evidence.some(value=>{
+    const text=value.toUpperCase();
+    return /^FAILURE-CAUSE:SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED(?:$|:)/.test(text)
+      ||/^SYSTEM-STEWARD:FAILURE-SIGNATURE:SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED(?:$|:)/.test(text)
+      ||/^SOURCE[-_ ]?GENERATION[-_ ]?FAILURE(?::|=)/.test(text)
+      ||/^SOURCE[-_ ]?CANDIDATE[-_ ]?GENERATION[-_ ]?FAILED(?::|=)/.test(text);
+  });
+  if(sourceGenerationObserved){
+    return{
+      nextBlockingSystem:'SOURCE_GENERATION',
+      confidence:.98,
+      basis:'OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY',
+      calibrationTarget:'NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE',
+      advisoryOnly:true
+    };
+  }
+  return{
+    nextBlockingSystem:clean(owner?.system)||'UNKNOWN',
+    confidence:clamp(owner?.confidence),
+    basis:'RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER',
+    calibrationTarget:'NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE',
+    advisoryOnly:true
   };
 }
 
@@ -174,6 +201,7 @@ export function buildNeuralDiagnosis({task={},project={}}={}){
     basis:'CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS',
     verified:false
   }:{...weightedOwner,basis:'WEIGHTED_SHADOW_HYPOTHESES',verified:false};
+  const pipeline=pipelinePrediction({rows,task,responsibility:owner});
   const blocker=bottleneck({rows,task,hypotheses,responsibility:owner});
   const hardInhibitors=inhibitors(task,rows);
   const stage=failureStage(rows,task);
@@ -186,13 +214,14 @@ export function buildNeuralDiagnosis({task={},project={}}={}){
     rank:index+1
   }));
   return{
-    version:1,
+    version:2,
     mode:'PHASE1_SHADOW_ADVISORY',
     authority:'DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY',
     facts,
     hypotheses,
     causalEdges,
     responsibility:owner,
+    pipelinePrediction:pipeline,
     bottleneck:blocker,
     inhibitors:hardInhibitors,
     actionRecommendation:{
@@ -223,6 +252,7 @@ export function neuralDiagnosisGuidance(diagnosis={}){
   return[
     '[NEURAL DIAGNOSIS SHADOW MODE]',
     `responsibility=${diagnosis.responsibility?.system||'UNKNOWN'} confidence=${Number(diagnosis.responsibility?.confidence||0).toFixed(2)}`,
+    `pipeline-prediction=${diagnosis.pipelinePrediction?.nextBlockingSystem||diagnosis.responsibility?.system||'UNKNOWN'} target=NEXT_OBSERVED_BLOCKING_SYSTEM`,
     `bottleneck-score=${diagnosis.bottleneck?.score||0} advisory-only=YES`,
     `failure-stage=${diagnosis.actionRecommendation?.failureStage||'UNKNOWN'}`,
     top?`top-hypothesis=${top.id} confidence=${Number(top.confidence||0).toFixed(2)}`:'',

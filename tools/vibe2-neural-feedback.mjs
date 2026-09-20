@@ -76,8 +76,13 @@ export function evaluateNeuralDiagnosisFeedback({
     };
   }
 
-  const predictedResponsibility=clean(diagnosis?.responsibility?.system)||null;
-  const predictedConfidence=clamp(diagnosis?.responsibility?.confidence);
+  const pipelinePrediction=diagnosis?.pipelinePrediction&&typeof diagnosis.pipelinePrediction==='object'
+    ?diagnosis.pipelinePrediction
+    :null;
+  const predictedResponsibility=clean(pipelinePrediction?.nextBlockingSystem)||clean(diagnosis?.responsibility?.system)||null;
+  const predictedConfidence=clamp(pipelinePrediction?.confidence??diagnosis?.responsibility?.confidence);
+  const predictionContractVersion=pipelinePrediction?2:1;
+  const predictionBasis=clean(pipelinePrediction?.basis)||(pipelinePrediction?'PIPELINE_PREDICTION':'LEGACY_RESPONSIBILITY_FALLBACK');
   const observed=observedPipelineState({outcome,blocker,candidateFailure,roleResults,evidence});
   const responsibilityMatch=observed.responsibility
     ? predictedResponsibility===observed.responsibility
@@ -85,9 +90,11 @@ export function evaluateNeuralDiagnosisFeedback({
   const matchState=responsibilityMatch===true?'MATCH':responsibilityMatch===false?'MISMATCH':'UNKNOWN';
 
   return{
-    version:1,
+    version:2,
     mode:'PHASE1_SHADOW_FEEDBACK',
     calibrationTarget:'NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE',
+    predictionContractVersion,
+    predictionBasis,
     sampleId:clean(sampleId)||null,
     predicted:{
       responsibility:predictedResponsibility,
@@ -111,7 +118,9 @@ export function evaluateNeuralDiagnosisFeedback({
 export function neuralFeedbackEvidence(feedback={}){
   if(clean(feedback.mode)!=='PHASE1_SHADOW_FEEDBACK')return[];
   const payload={
-    version:1,
+    version:2,
+    predictionContractVersion:Math.max(1,Number(feedback?.predictionContractVersion||1)),
+    predictionBasis:clean(feedback?.predictionBasis)||'LEGACY_RESPONSIBILITY_FALLBACK',
     sampleId:clean(feedback?.sampleId)||null,
     predictedResponsibility:clean(feedback?.predicted?.responsibility)||null,
     predictedConfidence:Number(feedback?.predicted?.confidence||0),
@@ -182,6 +191,14 @@ export function summarizeNeuralFeedbackEvidence(values=[]){
   }
   const identifiedRows=[...bySample.values()];
   const rows=[...identifiedRows,...legacyRows];
+  const contractVersion=row=>Math.max(1,Number(row?.predictionContractVersion||1));
+  const currentPredictionContractVersion=identifiedRows.length
+    ?Math.max(...identifiedRows.map(contractVersion))
+    :1;
+  const currentContractIdentifiedRows=identifiedRows.filter(row=>contractVersion(row)===currentPredictionContractVersion);
+  const currentContractIdentifiedEligible=currentContractIdentifiedRows.filter(row=>row.sampleEligible===true);
+  const currentContractIdentifiedMatches=currentContractIdentifiedEligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
+  const currentContractIdentifiedMismatches=currentContractIdentifiedEligible.filter(row=>row.responsibilityMatch===false||clean(row.matchState)==='MISMATCH').length;
   const eligible=rows.filter(row=>row.sampleEligible===true);
   const identifiedEligible=identifiedRows.filter(row=>row.sampleEligible===true);
   const matches=eligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
@@ -189,7 +206,7 @@ export function summarizeNeuralFeedbackEvidence(values=[]){
   const identifiedMatches=identifiedEligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
   const identifiedMismatches=identifiedEligible.filter(row=>row.responsibilityMatch===false||clean(row.matchState)==='MISMATCH').length;
   return{
-    version:3,
+    version:4,
     rawEvidenceRows:parsedRows.length,
     durableEvidenceSamples:rows.length,
     distinctSampleIds:bySample.size,
@@ -205,6 +222,14 @@ export function summarizeNeuralFeedbackEvidence(values=[]){
     unknown:rows.length-eligible.length,
     observedAccuracy:eligible.length?matches/eligible.length:null,
     identifiedObservedAccuracy:identifiedEligible.length?identifiedMatches/identifiedEligible.length:null,
+    currentPredictionContractVersion,
+    currentContractDistinctSampleIds:currentContractIdentifiedRows.length,
+    currentContractIdentifiedCalibrationEligible:currentContractIdentifiedEligible.length,
+    currentContractIdentifiedMatches,
+    currentContractIdentifiedMismatches,
+    currentContractIdentifiedObservedAccuracy:currentContractIdentifiedEligible.length
+      ?currentContractIdentifiedMatches/currentContractIdentifiedEligible.length
+      :null,
     phase2AuthorityReady:false,
     automaticAuthorityEscalationForbidden:true
   };

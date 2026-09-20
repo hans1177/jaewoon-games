@@ -330,3 +330,71 @@ test('root cause summary preserves prediction contradictions for explicit review
   assert.equal(summary.predictionConsistencyRate,0);
   assert.equal(summary.predictionContradictionRate,1);
 });
+
+test('worker to fan-in root-cause lifecycle progression is not a same-checkpoint conflict',()=>{
+  const worker=enc('neural-root-cause:',{
+    version:1,
+    sampleId:'progression-sample',
+    state:'CAUSAL_REPAIR_VERIFIED_AWAITING_INDEPENDENT_CONFIRMATION',
+    causalRepairVerified:true,
+    independentConfirmation:false,
+    responsibleSystemVerified:true,
+    responsibleSystem:'GAME_RUNTIME',
+    predictedResponsibleSystem:'GAME_RUNTIME',
+    predictedSystemConsistentWithVerified:true,
+    rootCauseVerified:false,
+    phase2AuthorityEligible:false
+  });
+  const fanIn=enc('neural-root-cause:',{
+    version:1,
+    sampleId:'progression-sample',
+    state:'ROOT_CAUSE_VERIFIED',
+    causalRepairVerified:true,
+    independentConfirmation:true,
+    responsibleSystemVerified:true,
+    responsibleSystem:'GAME_RUNTIME',
+    predictedResponsibleSystem:'GAME_RUNTIME',
+    predictedSystemConsistentWithVerified:true,
+    rootCauseVerified:true,
+    phase2AuthorityEligible:false
+  });
+  const summary=summarizeNeuralRootCauseEvidence([worker,fanIn]);
+  assert.equal(summary.rawEvidenceRows,2);
+  assert.equal(summary.distinctSampleIds,1);
+  assert.equal(summary.duplicateSampleRows,1);
+  assert.equal(summary.lifecycleProgressionRows,1);
+  assert.equal(summary.sampleConflicts,0);
+  assert.equal(summary.verified,1);
+  assert.equal(summary.states.ROOT_CAUSE_VERIFIED,1);
+});
+
+test('Phase2 calibration quality evaluates the newest prediction contract cohort only',()=>{
+  const evidence=evidenceSet().filter(value=>!value.startsWith('neural-shadow-feedback:'));
+  for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    version:1,
+    sampleId:`feedback-legacy-${i}`,
+    predictedResponsibility:'VALIDATOR',
+    observedResponsibility:'SOURCE_GENERATION',
+    matchState:'MISMATCH',
+    responsibilityMatch:false,
+    sampleEligible:true
+  }));
+  for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    version:2,
+    predictionContractVersion:2,
+    predictionBasis:'OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY',
+    sampleId:`feedback-current-${i}`,
+    predictedResponsibility:'SOURCE_GENERATION',
+    observedResponsibility:'SOURCE_GENERATION',
+    matchState:'MATCH',
+    responsibilityMatch:true,
+    sampleEligible:true
+  }));
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
+  assert.equal(result.evidenceSummary.feedback.observedAccuracy,.5);
+  assert.equal(result.evidenceSummary.feedback.currentPredictionContractVersion,2);
+  assert.equal(result.evidenceSummary.identifiedCalibrationEligible,20);
+  assert.equal(result.evidenceSummary.identifiedCalibrationAccuracy,1);
+  assert.equal(result.gates.calibrationVolume,true);
+  assert.equal(result.gates.calibrationAccuracy,true);
+});
