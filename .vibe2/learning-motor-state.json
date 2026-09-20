@@ -2331,7 +2331,8 @@
       "coding_negative_903nis",
       "coding_negative_1wgdfun",
       "coding_negative_f9ni04",
-      "coding_negative_zcjbmg"
+      "coding_negative_zcjbmg",
+      "coding_negative_9oro3v"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -3098,7 +3099,7 @@
         "verifiedApplications": 79,
         "firstCandidatePasses": 8,
         "totalGenerationAttempts": 165,
-        "verifiedFailures": 307,
+        "verifiedFailures": 308,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -4135,12 +4136,32 @@
             "lastEvidence": "coding_1ws5sp6",
             "lastFailureEvidence": null,
             "lastUpdatedAt": "2026-09-20T23:29:37.685Z"
+          },
+          "web|INVALID_PATH|MALFORMED_OUTPUT|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 1
+            },
+            "failureTargets": {
+              "web": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_9oro3v",
+            "lastUpdatedAt": "2026-09-20T23:57:56.084Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_7x5fzf",
-        "lastFailureEvidence": "coding_negative_903nis",
-        "lastUpdatedAt": "2026-09-20T23:48:36.683Z"
+        "lastFailureEvidence": "coding_negative_9oro3v",
+        "lastUpdatedAt": "2026-09-20T23:57:56.084Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 414,
@@ -7674,7 +7695,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T23:53:53.405Z",
+    "lastBuiltAt": "2026-09-20T23:57:56.135Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10367,5 +10388,5 @@
       "knowledge_120npi6"
     ]
   },
-  "updatedAt": "2026-09-20T23:53:53.405Z"
+  "updatedAt": "2026-09-20T23:57:56.135Z"
 }
