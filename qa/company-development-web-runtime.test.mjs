@@ -354,6 +354,28 @@ test('presentation runtime observation measures frame continuity and living moti
   assert.equal(evidence.pass,true);
 });
 
+test('canvas presentation observation uses runtime surface changes without renderer context sampling',()=>{
+  const frameDeltas=Array.from({length:29},()=>16.7);
+  const samples=Array.from({length:7},(_,i)=>({
+    playerPresent:false,
+    playerVisual:null,
+    canvasState:[`640x360:frame-${i}`],
+    canvasRenderSurfaceCount:1,
+    environmentVisualDetailCount:0,
+    enemyVisualDetailCount:0,
+    activeAnimationCount:0,
+    playerAnimationCount:0,
+    motionState:'attack',
+    vfxActiveCount:1,
+    cameraResponse:'follow'
+  }));
+  const evidence=summarizePresentationRuntimeSamples({samples,frameDeltas});
+  assert.equal(evidence.canvasRuntimeObserved,true);
+  assert.equal(evidence.environmentVisualObserved,true);
+  assert.equal(evidence.entityModelDetailObserved,true);
+  assert.equal(evidence.pass,true);
+});
+
 test('presentation runtime observation rejects frozen presentation despite healthy frame timing',()=>{
   const frameDeltas=Array.from({length:29},()=>16.7);
   const sample={playerPresent:true,playerVisual:{x:10,y:20,w:20,h:30,transform:'none',opacity:'1'},canvasState:['320x180:same'],activeAnimationCount:0,playerAnimationCount:0,motionState:'',vfxActiveCount:0,cameraResponse:''};
