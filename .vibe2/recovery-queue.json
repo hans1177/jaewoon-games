@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T23:59:04.531Z"
+      "updatedAt": "2026-09-20T00:03:52.267Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1606,7 +1606,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T23:59:04.531Z"
+      "updatedAt": "2026-09-20T00:03:52.267Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
@@ -3093,7 +3093,10 @@
         "system-steward:failure-signature:performance-sanity-failed",
         "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-edb0c96ef284dc4e51dc",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -3109,11 +3112,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-19T23:59:04.572Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-19T23:59:04.572Z"
-      ]
+      "updatedAt": "2026-09-20T00:03:52.267Z"
     }
   ]
 }
