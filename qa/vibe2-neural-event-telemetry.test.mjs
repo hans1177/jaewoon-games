@@ -61,5 +61,22 @@ test('distinct event identities prevent retry shadow samples from collapsing',()
   const summary=summarizeNeuralEventShadowEvidence([a,b]);
   assert.equal(summary.total,2);
   assert.equal(summary.byEventType.WORKER_RESULT,2);
+  assert.equal(summary.duplicateEventRows,0);
+  assert.equal(summary.eventConflicts,0);
   assert.equal(summary.unauthorizedFireCount,0);
+});
+
+test('duplicate event identity counts once and conflicting replay stays visible',()=>{
+  const a=marker({eventId:'task-r|run-1:1|primary|candidate-a'});
+  const duplicate=marker({eventId:'task-r|run-1:1|primary|candidate-a'});
+  const conflict=marker({
+    eventId:'task-r|run-1:1|primary|candidate-a',
+    eventType:'QA_RESULT',
+    actionKind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR'
+  });
+  const summary=summarizeNeuralEventShadowEvidence([a,duplicate,conflict]);
+  assert.equal(summary.rawEvidenceRows,3);
+  assert.equal(summary.total,1);
+  assert.equal(summary.duplicateEventRows,2);
+  assert.equal(summary.eventConflicts,1);
 });
