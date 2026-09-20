@@ -278,6 +278,11 @@ function updateUi(){
   ui.gameRoot.dataset.state=state.phase;
   ui.gameRoot.dataset.resource=String(Math.floor(state.pollen));
   ui.gameRoot.dataset.progress=String(state.wave+'/'+waves.length);
+  ui.gameRoot.dataset.choice=state.selectedSpecies||'';
+  ui.gameRoot.dataset.speed=String(state.speed);
+  ui.gameRoot.dataset.skillCooldown=state.skillCd.toFixed(2);
+  ui.gameRoot.dataset.towerCount=String(state.towers.length);
+  ui.gameRoot.dataset.enemyCount=String(state.enemies.length);
   document.body.dataset.runResult=state.phase==='won'?'victory':state.phase==='lost'?'defeat':'';
   document.body.dataset.audioState=state.muted?'muted':(audioCtx&&audioCtx.state==='running'?'running':'locked');
   document.body.dataset.placementMode=(state.selectedSpecies&&state.phase!=='won'&&state.phase!=='lost')?'active':'inactive';
