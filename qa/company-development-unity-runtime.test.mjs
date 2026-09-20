@@ -206,3 +206,16 @@ test('Unity executor admits source-bind work so missing owner-focused native roo
   assert.match(workflowSource,/node tools\/company-development-unity-bootstrap\.mjs/);
   assert.match(workflowSource,/resolveSelectedPlatform\(item\)!=='UNITY'/);
 });
+
+
+test('Unity runtime smoke publishes the real screenshot only with exact build and release binding',()=>{
+  assert.match(runtimeSmokeSource,/adb exec-out screencap -p > "\$out_dir\/screenshot\.png"/);
+  assert.match(runtimeWorkflowSource,/Publish verified Unity runtime gameplay screenshot/);
+  assert.match(runtimeWorkflowSource,/UNITY_RUNTIME_SCREENSHOT_PUBLICATION=PASS/);
+  assert.match(runtimeWorkflowSource,/String\(row\?\.sha256\|\|''\)===process\.env\.BUILD_ID/);
+  assert.match(runtimeWorkflowSource,/String\(row\?\.sourceCommit\|\|''\)===process\.env\.SOURCE_COMMIT/);
+  assert.match(runtimeWorkflowSource,/gh release upload "\$release_tag"/);
+  assert.match(runtimeWorkflowSource,/captureType:'UNITY_ANDROID_RUNTIME'/);
+  assert.match(runtimeWorkflowSource,/source:'ANDROID_RUNTIME_SMOKE_ADB_SCREENCAP'/);
+  assert.match(runtimeWorkflowSource,/gh workflow run homepage-manager\.yml/);
+});
