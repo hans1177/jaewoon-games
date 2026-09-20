@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
+import { buildNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -113,7 +114,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     }
     return{...task,evidence:[...evidence]};
   });
-  return{queue:{...queue,tasks},reviewed,skipped,releaseCandidates,experienceReviews,pass:reviewed.every(row=>row.pass)};
+  const neuralShadowAudit=buildNeuralShadowAudit({reviewed});
+  return{queue:{...queue,tasks},reviewed,skipped,releaseCandidates,experienceReviews,neuralShadowAudit,pass:reviewed.every(row=>row.pass)};
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile=''}={}){
@@ -123,7 +125,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   const results=resultsFromPayload(payload);
   const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload)});
   writeJson(queueFile,result.queue);
-  if(clean(outputFile))writeJson(outputFile,{version:3,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:4,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,neuralShadowAudit:result.neuralShadowAudit,pass:result.pass});
   return result;
 }
 
