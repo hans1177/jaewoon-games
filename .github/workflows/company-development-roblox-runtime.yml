@@ -839,19 +839,29 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
           let count=0;
           for(const item of q.items||[]){
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
-            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
-            const revision=String(item.robloxSourceCommit||'').trim();
-            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
+            if(!secondaryOwnerFocus){
+              if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+              if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
+            }
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
             if(exactBuild)continue;
+            if(secondaryOwnerFocus&&!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))continue;
             count++;
           }
           process.stdout.write(String(count));
@@ -878,7 +888,7 @@ jobs:
           echo 'ROBLOX_REGRESSION_PASS=NO'
           echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
-      - name: Dispatch Roblox five-lead preflight and actual Studio continuation
+      - name: Dispatch Roblox preflight continuation with Studio manual-only guard
         if: always() && github.actor == 'github-actions[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -889,24 +899,39 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
           let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
-            const revision=String(item.robloxSourceCommit||'').trim();
-            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
             if(exactBuild){
-              if(item.robloxBuildPreflightPassed!==true){
+              const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
+              const runtimePassed=secondaryOwnerFocus?item.ownerFocusRobloxRuntimePassed:item.robloxRuntimePassed;
+              const runtimeHarness=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeHarnessVersion:item.robloxRuntimeHarnessVersion;
+              const runtimeEvidence=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeEvidence:item.robloxRuntimeEvidence;
+              const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
+              if(preflightPassed!==true){
                 preflightReady++;
-              }else if(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion){
-                const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
-                const securityBlocked=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure);
+              }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
+                const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
                 if(securityBlocked)externalBlocked++;
                 else runtimeReady++;
               }
+              continue;
+            }
+            if(secondaryOwnerFocus){
+              if(['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))packagePending++;
               continue;
             }
             if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
@@ -925,6 +950,8 @@ jobs:
           echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
           echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
           echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
+          echo 'ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN'
+          echo 'ROBLOX_STUDIO_MANUAL_WORKFLOW_DISPATCH_REQUIRED=YES'
           echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"

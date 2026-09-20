@@ -12,10 +12,10 @@ function read(path) {
 test('Roblox post-runtime QA stays exact-artifact and real-Studio only', () => {
   const workflow = read(workflowPath);
   assert.match(workflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'/);
-  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3/);
-  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES/);
-  assert.match(workflow, /max-parallel: 3/);
+  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'/);
+  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1/);
+  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION/);
+  assert.match(workflow, /max-parallel: 1/);
   assert.match(workflow, /EXPECTED_ARTIFACT/);
   assert.match(workflow, /Get-FileHash -Algorithm SHA256/);
   assert.match(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
@@ -40,4 +40,43 @@ test('mobile independent QA uses Studio device simulation and real UI interactio
   assert.match(probe, /ExecuteMultiplayerTestAsync\(1/);
   assert.match(probe, /ROBLOX_MOBILE_CONTROL_UI_PASS=YES/);
   assert.match(probe, /ROBLOX_INDEPENDENT_QA_PASS=YES/);
+});
+
+test('owner-focused secondary Roblox enters native mobile QA and regression without changing canonical Unity',()=>{
+  const workflow=read(workflowPath);
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxServerClientBoundaryPassed===true/);
+  assert.match(workflow,/artifactIdentity:artifact,secondaryOwnerFocus/);
+  assert.match(workflow,/secondaryOwnerFocus=\(\$env:SECONDARY_OWNER_FOCUS -eq 'true'\)/);
+  assert.match(workflow,/ownerFocusRobloxPostRuntimeQaEvidence/);
+  assert.match(workflow,/ownerFocusRobloxIndependentQaPassed=independent/);
+  assert.match(workflow,/ownerFocusRobloxRegressionPassed=regression/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState=regression\?'QA_READY'/);
+  const start=workflow.indexOf('if(secondaryOwnerFocus){',workflow.indexOf('Persist exact post-runtime QA state'));
+  const end=workflow.indexOf('continue;',start);
+  assert.ok(start>=0&&end>start,'secondary post-runtime persist branch missing');
+  const block=workflow.slice(start,end);
+  assert.doesNotMatch(block,/selectedPlatform\s*[:=]/);
+  assert.doesNotMatch(block,/targetPlatform\s*[:=]/);
+  assert.doesNotMatch(block,/currentStep\s*[:=]/);
+  assert.doesNotMatch(block,/canonicalState\s*[:=]/);
+});
+
+
+test('post-runtime Studio QA is manual-only, exact-game, single-session and local-place',()=>{
+  const workflow=read(workflowPath);
+  assert.match(workflow,/studio_qa_approved:/);
+  assert.match(workflow,/game_id:/);
+  assert.match(workflow,/STUDIO_QA_APPROVED: \$\{\{ inputs\.studio_qa_approved \}\}/);
+  assert.match(workflow,/GITHUB_EVENT_NAME==='workflow_dispatch'/);
+  assert.match(workflow,/GITHUB_ACTOR\|\|''\)!=='github-actions\[bot\]'/);
+  assert.match(workflow,/ROBLOX_STUDIO_QA_UNATTENDED_AUTORUN=FORBIDDEN/);
+  assert.match(workflow,/ROBLOX_STUDIO_QA_MANUAL_APPROVAL_REQUIRED=YES/);
+  assert.match(workflow,/if\(item\.gameId!==manualGameId\)continue;/);
+  assert.match(workflow,/max-parallel: 1/);
+  assert.match(workflow,/--localPlaceFile/);
+  assert.doesNotMatch(workflow,/--placeId/);
+  assert.doesNotMatch(workflow,/--universeId/);
+  assert.doesNotMatch(workflow,/PublishAsync/);
 });

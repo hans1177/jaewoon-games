@@ -17,23 +17,29 @@ function configuredLeads(directive={}){
   return {leads,distinct,pool:new Set((ai.modelPool||[]).map(clean).filter(Boolean))};
 }
 
-export function inspectRobloxBuildPreflight({item={},directive={}}={}){
+export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwnerFocus=false}={}){
   const blockers=[];
   const {leads,distinct,pool}=configuredLeads(directive);
-  const verifiedVibe2Handoff=hasVerifiedVibe2SourceHandoff(item);
+  const secondary=secondaryOwnerFocus===true;
+  const verifiedVibe2Handoff=!secondary&&hasVerifiedVibe2SourceHandoff(item);
   const nativeWebValidationPassed=Boolean(item.webValidationPassedAt);
   const nativeMusicValidationPassed=item.musicValidationPassed===true;
   const webValidationPassed=nativeWebValidationPassed||verifiedVibe2Handoff;
   const musicValidationPassed=nativeMusicValidationPassed||verifiedVibe2Handoff;
+  const sourceValidationPassed=secondary?Boolean(item.ownerFocusRobloxSourceBootstrapPassedAt):Boolean(item.robloxSourceBootstrapPassedAt);
+  const buildOrPackagePassed=secondary?item.ownerFocusRobloxBuildOrPackagePassed===true:item.robloxBuildOrPackagePassed===true;
+  const sourceRevision=clean(secondary?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit);
+  const buildSourceRevision=clean(secondary?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision);
+  const artifactIdentity=clean(secondary?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity);
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')blockers.push('development-confirmed-required');
-  if(upper(item.selectedPlatform||item.targetPlatform)!=='ROBLOX')blockers.push('roblox-platform-required');
+  if(!secondary&&upper(item.selectedPlatform||item.targetPlatform)!=='ROBLOX')blockers.push('roblox-platform-required');
   if(!webValidationPassed)blockers.push('web-validation-missing');
   if(!musicValidationPassed)blockers.push('music-validation-missing');
-  if(!item.robloxSourceBootstrapPassedAt)blockers.push('source-validation-missing');
-  if(item.robloxBuildOrPackagePassed!==true)blockers.push('build-package-not-passed');
-  if(!COMMIT.test(clean(item.robloxSourceCommit)))blockers.push('source-revision-invalid');
-  if(clean(item.robloxBuildSourceRevision)!==clean(item.robloxSourceCommit))blockers.push('source-revision-mismatch');
-  if(!SHA256.test(clean(item.robloxBuildArtifactIdentity)))blockers.push('artifact-identity-invalid');
+  if(!sourceValidationPassed)blockers.push('source-validation-missing');
+  if(!buildOrPackagePassed)blockers.push('build-package-not-passed');
+  if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');
+  if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
+  if(!SHA256.test(artifactIdentity))blockers.push('artifact-identity-invalid');
   if(distinct.length!==ROLES.length)blockers.push('five-distinct-leads-missing');
   for(const role of ROLES){
     if(!leads[role])blockers.push(`lead-missing:${role}`);
@@ -44,16 +50,17 @@ export function inspectRobloxBuildPreflight({item={},directive={}}={}){
     blockers:Object.freeze([...new Set(blockers)]),
     leads:Object.freeze({...leads}),
     distinctLeadCount:distinct.length,
+    secondaryOwnerFocus:secondary,
     build:Object.freeze({
-      sourceRevision:clean(item.robloxSourceCommit)||null,
-      artifactIdentity:clean(item.robloxBuildArtifactIdentity)||null,
+      sourceRevision:sourceRevision||null,
+      artifactIdentity:artifactIdentity||null,
       webValidationPassed,
       musicValidationPassed,
       nativeWebValidationPassed,
       nativeMusicValidationPassed,
-      sourceEligibilityAuthority:verifiedVibe2Handoff?'verified-vibe2-source-handoff':'web-music-validation',
-      sourceValidationPassed:Boolean(item.robloxSourceBootstrapPassedAt),
-      buildOrPackagePassed:item.robloxBuildOrPackagePassed===true,
+      sourceEligibilityAuthority:secondary?'owner-focused-secondary-roblox':verifiedVibe2Handoff?'verified-vibe2-source-handoff':'web-music-validation',
+      sourceValidationPassed,
+      buildOrPackagePassed,
     }),
   });
 }
@@ -94,8 +101,8 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
   throw new Error(`ROBLOX_PREFLIGHT_LEAD_FAILED ${role}:${model}: ${clean(last?.message)}`);
 }
 
-export async function evaluateRobloxBuildPreflight({item={},directive={},fetchImpl=globalThis.fetch}={}){
-  const facts=inspectRobloxBuildPreflight({item,directive});
+export async function evaluateRobloxBuildPreflight({item={},directive={},fetchImpl=globalThis.fetch,secondaryOwnerFocus=false}={}){
+  const facts=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus});
   if(!facts.pass)return Object.freeze({version:1,gameId:item.gameId||null,pass:false,state:'BLOCKED',checkedAt:new Date().toISOString(),facts,leadReviews:[],blockers:[...facts.blockers],authority:'roblox-five-distinct-lead-build-preflight'});
   const leadReviews=[];
   for(const role of ROLES)leadReviews.push(await callLead(facts.leads[role],role,facts,{fetchImpl}));
@@ -103,7 +110,7 @@ export async function evaluateRobloxBuildPreflight({item={},directive={},fetchIm
   for(const review of leadReviews){if(review.decision!=='PASS')blockers.push(`lead-block:${review.role}:${review.blockers.join('|')||'unspecified'}`);}
   return Object.freeze({
     version:1,gameId:item.gameId||null,pass:blockers.length===0,state:blockers.length?'BLOCKED':'PASS',checkedAt:new Date().toISOString(),
-    sourceRevision:facts.build.sourceRevision,artifactIdentity:facts.build.artifactIdentity,facts,
+    sourceRevision:facts.build.sourceRevision,artifactIdentity:facts.build.artifactIdentity,secondaryOwnerFocus:facts.secondaryOwnerFocus===true,facts,
     leadReviews:Object.freeze(leadReviews),blockers:Object.freeze(blockers),
     authority:'roblox-five-distinct-lead-build-preflight',
   });
@@ -120,7 +127,8 @@ async function main(){
   if(!gameId||!output)throw new Error('game-id and output are required');
   const item=(queue.items||[]).find(row=>row.gameId===gameId);
   if(!item)throw new Error(`queue item missing: ${gameId}`);
-  const result=await evaluateRobloxBuildPreflight({item,directive});
+  const secondaryOwnerFocus=clean(args['secondary-owner-focus']).toLowerCase()==='true';
+  const result=await evaluateRobloxBuildPreflight({item,directive,secondaryOwnerFocus});
   fs.mkdirSync(path.dirname(output),{recursive:true});
   fs.writeFileSync(output,`${JSON.stringify(result,null,2)}\n`);
   console.log(`ROBLOX_BUILD_PREFLIGHT_GAME=${gameId}`);

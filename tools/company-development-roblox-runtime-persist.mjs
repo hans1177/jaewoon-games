@@ -23,10 +23,43 @@ for(const target of expected){
   const item=(queue.items||[]).find(x=>x.gameId===target.gameId);
   if(!item) throw new Error(`queue item missing: ${target.gameId}`);
   const r=byId.get(target.gameId);
-  const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity;
+  const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+  const sourceRevision=secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit;
+  const artifactIdentity=secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity;
+  const exact=r?.sourceRevision===sourceRevision&&r?.artifactIdentity===artifactIdentity&&Boolean(r?.secondaryOwnerFocus)===secondaryOwnerFocus;
   const expectedHarness=String(target.runtimeHarnessVersion||'');
   const resultHarness=String(r?.runtimeHarnessVersion||'');
   const harnessExact=Boolean(expectedHarness)&&resultHarness===expectedHarness;
+  if(secondaryOwnerFocus){
+    if(r?.runtimePassed===true&&r?.actualStudioRuntime===true&&r?.serverClientBoundaryPassed===true&&exact&&harnessExact){
+      Object.assign(item,{
+        ownerFocusRobloxRuntimePassed:true,ownerFocusRobloxRuntimePassedAt:stamp,ownerFocusRobloxRuntimeFailedAt:null,ownerFocusRobloxRuntimeEvidence:r,
+        ownerFocusRobloxRuntimeRetryCount:0,ownerFocusRobloxRuntimeHarnessVersion:resultHarness,ownerFocusRobloxServerClientBoundaryPassed:true,
+        ownerFocusRobloxRuntimeSecurityHold:false,ownerFocusRobloxRuntimeSecurityHoldAt:null,
+        ownerFocusRobloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true,ownerFocusRobloxMobileControlUiPassed:r.mobileControlUiPassed===true,
+        ownerFocusRobloxIndependentQaPassed:false,ownerFocusRobloxIndependentQaPassedAt:null,ownerFocusRobloxRegressionPassed:false,ownerFocusRobloxRegressionPassedAt:null,
+        ownerFocusRobloxPostRuntimeQaEvidence:null,ownerFocusRobloxAssetPipelineState:'RUNTIME_READY',updatedAt:stamp,
+      });
+      pass++;
+    }else{
+      const failure=r?.failure||(!harnessExact?'ROBLOX_RUNTIME_HARNESS_MISMATCH':'ROBLOX_RUNTIME_RESULT_MISSING');
+      const securityHold=['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(failure);
+      const retryableFailure=!securityHold&&['roblox-studio-install-failed','roblox-studio-busy','roblox-studio-runtime-failed','roblox-studio-runtime-timeout','ROBLOX_RUNTIME_RESULT_MISSING'].includes(failure);
+      const sameHarness=String(item.ownerFocusRobloxRuntimeHarnessVersion||'')===resultHarness;
+      const baseRetryCount=sameHarness?Number(item.ownerFocusRobloxRuntimeRetryCount||0):0;
+      const retryCount=retryableFailure?baseRetryCount+1:0;
+      Object.assign(item,{
+        ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimeFailedAt:stamp,ownerFocusRobloxRuntimeEvidence:r||null,ownerFocusRobloxRuntimeRetryCount:retryCount,
+        ownerFocusRobloxRuntimeHarnessVersion:resultHarness||expectedHarness,ownerFocusRobloxServerClientBoundaryPassed:false,
+        ownerFocusRobloxRuntimeSecurityHold:securityHold,ownerFocusRobloxRuntimeSecurityHoldAt:securityHold?stamp:null,
+        ownerFocusRobloxIndependentQaPassed:false,ownerFocusRobloxIndependentQaPassedAt:null,ownerFocusRobloxRegressionPassed:false,ownerFocusRobloxRegressionPassedAt:null,
+        ownerFocusRobloxPostRuntimeQaEvidence:null,ownerFocusRobloxAssetPipelineState:securityHold?'RUNTIME_SECURITY_HOLD':'RUNTIME_REPAIR_REQUIRED',
+        ownerFocusRobloxRuntimeFailure:failure,updatedAt:stamp,
+      });
+      fail++;
+    }
+    continue;
+  }
   if(r?.runtimePassed===true&&r?.actualStudioRuntime===true&&r?.serverClientBoundaryPassed===true&&exact&&harnessExact){
     Object.assign(item,{
       robloxRuntimePassed:true,robloxRuntimePassedAt:stamp,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:r,
