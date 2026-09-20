@@ -101,12 +101,21 @@ export function buildNeuralWorkGraph({
   const normalizedDependencies=(Array.isArray(dependencies)?dependencies:(Array.isArray(event?.dependencies)?event.dependencies:[]))
     .map(normalizedDependency);
   const nodes=[],edges=[];
+  const goalLabel=clean(event?.goal)
+    ||clean(diagnosis?.goal)
+    ||(clean(diagnosis?.actionRecommendation?.failureStage)?`RECOVER_EXACT_STAGE:${clean(diagnosis.actionRecommendation.failureStage)}`:'OBSERVE_EVENT');
+  const goalId='goal';
+  nodes.push(node({
+    id:goalId,nodeClass:'GOAL',neuronType:'INTENT',label:goalLabel,
+    activationScore:1,confidence:1,outputs:[goalLabel],evidence:[clean(event?.goal)]
+  }));
   const sensorId=`sensor:${eventId||eventType.toLowerCase()}`;
   nodes.push(node({
     id:sensorId,nodeClass:'EVIDENCE',neuronType:'SENSOR',
     label:`${eventType} event`,activationScore:1,confidence:1,
-    outputs:['EVENT_OBSERVED'],evidence:eventEvidence
+    inputs:[goalId],outputs:['EVENT_OBSERVED'],evidence:eventEvidence
   }));
+  edges.push(edge(goalId,sensorId,'OBSERVED_THROUGH_EVENT',1));
 
   const facts=Array.isArray(diagnosis?.facts)?diagnosis.facts:[];
   for(const [index,fact] of facts.entries()){
