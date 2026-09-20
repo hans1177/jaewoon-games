@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.',isIdleMode: true,gameplayMechanics:['pointer-tower-placement-optimized','progression-difficulty','ui-movement','ui-progression','ui-restart']}",
+      "replace": "GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.',isIdleMode: true,gameplayMechanics:['pointer-tower-placement-optimized','progression-difficulty','ui-movement','ui-progression','ui-restart'],PROGRESSION_REWARD_IDEMPOTENT: true}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
