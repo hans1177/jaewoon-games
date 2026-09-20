@@ -19567,7 +19567,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치 미리보기/취소, 충분한 터치 영역을 제공한다.\n- 중복 handler와 test harness를 제거한다.\n\n실제 gameplay scope 결속:\nscope-corefun-f556b6611b\nscope-coreloop-0-db6dafda13\nscope-coreloop-1-d43c3d2506\nscope-coreloop-2-42423ea982\nscope-coreloop-3-683fae91c6\nscope-mobileux-62b476fd93\n\n후보 생성/QA는 자동 진행하지만 verified supervisor PASS 전에는 main/release 승격 금지. 다른 게임 작업은 계속 병렬 진행한다.",
       "responsibleFiles": [
         "web-games/bug-defense/index.html"
@@ -19575,7 +19575,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
@@ -19620,7 +19620,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-supervised-review",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -20910,11 +20910,11 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22bug-defense-web-runtime-repair-v1%7C35503547002%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fbug-defense-web-runtime-repair-v1-primary-35503547002-1%7CCI_RESULT%22%2C%22eventId%22%3A%22bug-defense-web-runtime-repair-v1%7C35503547002%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fbug-defense-web-runtime-repair-v1-primary-35503547002-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22nodeCount%22%3A25%2C%22edgeCount%22%3A23%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A11%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A9%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22bug-defense-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35503547002%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fbug-defense-web-runtime-repair-v1-primary-35503547002-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_BLOCKED%22%2C%22proposedAction%22%3A%22PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR%22%2C%22proposedReason%22%3A%22VERIFIED_ROOT_CAUSE_AVAILABLE%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3A%22ROOT_CAUSE_VERIFIED%22%7D"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
-      "reservationId": "35503547002:1",
-      "reservationRunId": "35503547002",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T09:54:34Z",
+      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
@@ -48999,7 +48999,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 개미 시뮬레이터\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.",
       "responsibleFiles": [
         "web-games/ant-simulator/index.html"
@@ -49007,7 +49007,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 1,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -49051,7 +49051,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-supervised-review",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -49326,10 +49326,10 @@
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22ant-simulator-existing-web-assessment-v1%22%2C%22sampleId%22%3A%22ant-simulator-existing-web-assessment-v1%7C35503547002%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fant-simulator-existing-web-assessment-v1-speculative-2-35503547002-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_BLOCKED%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35503547002:1",
-      "reservationRunId": "35503547002",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T09:54:34Z",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
