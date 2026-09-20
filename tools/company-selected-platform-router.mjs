@@ -111,18 +111,7 @@ export function verifiedOwnerReleaseHandoffEligible(item={}){
   );
 }
 
-export function targetPlatformDevelopmentEligible(item={}){
-  if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
-  const status=upper(item.status);
-  if(status!=='ACTIVE'&&status!=='PENDING')return false;
-  const state=upper(item.canonicalState);
-  if(state==='DEVELOPMENT_BLOCKED'||state==='DEVELOPMENT_BASELINE_READY')return false;
-  const step=upper(item.currentStep);
-  if(!['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_TECHNICAL_VALIDATION','UNITY_ANDROID_TECHNICAL_VALIDATION'].includes(step))return false;
-  const platform=resolveSelectedPlatform(item);
-  const adapter=adapterForPlatform(platform);
-  if(!adapter?.existingExecutionPath)return false;
-  if(verifiedOwnerReleaseHandoffEligible(item))return true;
+function freshWebPlatformGate(item={}){
   const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
   const score=Number(item.webStrictScore??item.strictImplementationScore);
   return Boolean(
@@ -133,8 +122,85 @@ export function targetPlatformDevelopmentEligible(item={}){
     Number.isFinite(score)&&score>=90&&
     hard.length===0&&
     Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&
-    item.webPromotionRevalidationPassed===true
+    item.webPromotionRevalidationPassed===true&&
+    clean(item.webSourceIndexSha256||item.webPlatformHandoff?.sourceIndexSha256)
   );
+}
+
+function publishedReleaseEvidence(platform,item={}){
+  const key=normalizeSelectedPlatform(platform);
+  if(key==='ROBLOX')return item.robloxReleaseEvidence||item.platformReleaseEvidence?.ROBLOX||{};
+  if(key==='UNITY')return item.unityReleaseEvidence||item.platformReleaseEvidence?.UNITY||{};
+  if(key==='FORTNITE_UEFN')return item.uefnReleaseEvidence||item.fortniteUefnReleaseEvidence||item.platformReleaseEvidence?.FORTNITE_UEFN||{};
+  return{};
+}
+
+export function releasedNativePlatforms(item={}){
+  const out=new Set((Array.isArray(item.releasedPlatforms)?item.releasedPlatforms:[]).map(normalizeSelectedPlatform).filter(Boolean));
+  const checks=[
+    ['ROBLOX',item.robloxReleaseClaim===true],
+    ['UNITY',item.unityReleaseClaim===true],
+    ['FORTNITE_UEFN',item.uefnReleaseClaim===true||item.fortniteUefnReleaseClaim===true],
+  ];
+  for(const [platform,claim] of checks){
+    const evidence=publishedReleaseEvidence(platform,item);
+    if(claim&&(evidence.published===true||evidence.released===true||upper(evidence.state)==='PASS'||upper(evidence.status)==='PUBLISHED'))out.add(platform);
+  }
+  return [...out];
+}
+
+function completedWebSyncSha(item={},platform=''){
+  const p=normalizeSelectedPlatform(platform);
+  const sync=item.webNativeRevisionSync?.platforms?.[p]||{};
+  const release=publishedReleaseEvidence(p,item);
+  return clean(sync.completedWebSourceIndexSha256||sync.webSourceIndexSha256||release.webSourceIndexSha256||release.webRevisionSha256);
+}
+
+export function webRevisionPropagationTargets(item={}){
+  if(upper(item.productionClass)!=='RELEASE_CONFIRMED')return[];
+  if(!freshWebPlatformGate(item))return[];
+  const current=clean(item.webSourceIndexSha256||item.webPlatformHandoff?.sourceIndexSha256);
+  if(!current)return[];
+  return releasedNativePlatforms(item).filter(platform=>completedWebSyncSha(item,platform)!==current);
+}
+
+export function expandTargetPlatformDevelopmentCandidates(items=[]){
+  const out=[];
+  for(const item of Array.isArray(items)?items:[]){
+    if(upper(item.productionClass)!=='RELEASE_CONFIRMED'){out.push(item);continue;}
+    const targets=webRevisionPropagationTargets(item);
+    for(const platform of targets){
+      out.push({
+        ...item,
+        selectedPlatform:platform,
+        targetPlatform:platform,
+        webNativePropagation:true,
+        webNativePropagationTarget:platform,
+        webNativePropagationWebSourceIndexSha256:clean(item.webSourceIndexSha256||item.webPlatformHandoff?.sourceIndexSha256),
+        currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+        canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+        status:'ACTIVE'
+      });
+    }
+  }
+  return out;
+}
+
+export function targetPlatformDevelopmentEligible(item={}){
+  const releasePropagation=item.webNativePropagation===true&&upper(item.productionClass)==='RELEASE_CONFIRMED';
+  if(!releasePropagation&&upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
+  const status=upper(item.status);
+  if(status!=='ACTIVE'&&status!=='PENDING')return false;
+  const state=upper(item.canonicalState);
+  if(state==='DEVELOPMENT_BLOCKED'||state==='DEVELOPMENT_BASELINE_READY')return false;
+  const step=upper(item.currentStep);
+  if(!['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_TECHNICAL_VALIDATION','UNITY_ANDROID_TECHNICAL_VALIDATION'].includes(step))return false;
+  const platform=resolveSelectedPlatform(item);
+  const adapter=adapterForPlatform(platform);
+  if(!adapter?.existingExecutionPath)return false;
+  if(releasePropagation)return freshWebPlatformGate(item)&&webRevisionPropagationTargets(item).includes(platform);
+  if(verifiedOwnerReleaseHandoffEligible(item))return true;
+  return freshWebPlatformGate(item);
 }
 
 export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platform=''){
@@ -155,10 +221,12 @@ export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platfor
 
 export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
   const limit=Math.max(0,Math.min(DEVELOPMENT_GAME_WIP_MAX,Number(max)||0));
-  return Object.freeze(items
+  return Object.freeze(expandTargetPlatformDevelopmentCandidates(items)
     .filter(targetPlatformDevelopmentEligible)
     .map(item=>({...item,selectedPlatform:resolveSelectedPlatform(item)}))
     .sort((a,b)=>{
+      const propagation=Number(b.webNativePropagation===true)-Number(a.webNativePropagation===true);
+      if(propagation)return propagation;
       const priority={ROBLOX:0,UNITY:0,FORTNITE_UEFN:2};
       const ap=priority[resolveSelectedPlatform(a)]??99;
       const bp=priority[resolveSelectedPlatform(b)]??99;
