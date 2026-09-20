@@ -125,14 +125,16 @@ test('Web development validation is parallel-first with twenty isolated workers 
   assert.match(router,/WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL/);
   assert.match(policy,/parallelExecutionDefault: true/);
   assert.match(policy,/webValidationParallelismTarget: 20/);
-  assert.match(policy,/webValidationParallelismMax: 20/);
-  assert.match(policy,/sharedRuntimeStatePersistedBySingleAggregationStep: true/);
+  assert.match(policy,/webValidationParallelismMax: null/);
+  assert.match(policy,/atomicResultIngressLightweight: true/);
+  assert.match(policy,/taskMicroFanInReleasesCapacityImmediately: true/);
 });
 
 test('DESIGN_ONLY runtime follows central unbounded WIP policy with external matrix wave bounds',()=>{
   assert.match(policy,/concurrentGameWipTarget: 20/);
-  assert.match(policy,/concurrentGameWipMax: 20/);
-  assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
+  assert.match(policy,/concurrentGameWipMax: null/);
+  assert.match(policy,/externalProviderBoundary: 256/);
+  assert.match(policy,/adaptiveExpansionSteps: \[20, 32, 64, 128, 256\]/);
   assert.match(designRuntime,/const roadmap=JSON\.parse\(fs\.readFileSync\('company-learning\/platform-release-roadmap\.json','utf8'\)\)/);
   assert.match(designRuntime,/globalSelectedPlatformDevelopmentWipMax/);
   assert.match(designRuntime,/slice\(0,preservationOnly\?1:designWipMax\)/);
