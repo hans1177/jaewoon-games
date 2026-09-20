@@ -11,7 +11,7 @@
 </head>
 <body>
 <canvas id="game"></canvas>
-<div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="multi" class="multiBtn">멀티</button><button id="bgmToggle" class="multiBtn">BGM ON</button></div><a class="home" href="/">홈</a></div>
+<div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn">멀티</button><button id="bgmToggle" class="multiBtn">BGM ON</button></div><a class="home" href="/">홈</a></div>
 <div id="notice" class="notice"></div><div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick"><div id="knob" class="knob"></div></div>
 <div class="actions"><button id="craft" class="act craft">제작</button><div class="utilityStack"><button id="dismount" class="act dismount">내리기</button><button id="gather" class="act gather">채집</button><button id="inventory" class="act inventory">가방</button></div><div class="combatStack"><button id="map" class="act map">지도</button><button id="attack" class="act attack">공격</button></div></div>
 <div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
@@ -35,7 +35,7 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=33,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=34,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -96,8 +96,8 @@ const recipes=[
 {id:'wolf-blade',name:'늑대 송곳검',where:'bench',cost:{wolfHide:2,wood:3,stone:2},desc:'공격력 36 · 빠른 늑대 전리품 무기',kind:'weapon',power:36,range:72,cooldown:360},
 {id:'ironspirit-sword',name:'철정령 검',where:'bench',cost:{ironSpiritCore:3,wood:2,stone:3},desc:'공격력 46',kind:'weapon',power:46,range:78,cooldown:500},
 {id:'ironspirit-armor',name:'철정령 갑옷',where:'bench',cost:{ironSpiritCore:4,stone:5,fiber:3},desc:'최대 체력 +70 · 받는 피해 7% 감소',kind:'armor',maxHp:70,reduce:.07},
-{id:'sovereign-cleaver',name:'근원 대검',where:'goldbench',cost:{sovereignCore:2,goldIngot:10,wood:4,fiber:5},desc:'공격력 230 · 녹스바르 전리품 4티어 무기',kind:'weapon',power:230,range:112,cooldown:1200},
-{id:'sovereign-armor',name:'근원포식자 갑옷',where:'goldbench',cost:{sovereignCore:3,goldIngot:12,walkerClaw:2},desc:'최대 체력 +250 · 받는 피해 25% 감소',kind:'armor',maxHp:250,reduce:.25},
+{id:'sovereign-cleaver',name:'근원 대검',where:'goldbench',cost:{sovereignCore:2,goldIngot:10,wood:4,fiber:5},desc:'공격력 460 · 녹스바르 전리품 4티어 무기',kind:'weapon',power:460,range:112,cooldown:1200},
+{id:'sovereign-armor',name:'근원포식자 갑옷',where:'goldbench',cost:{sovereignCore:3,goldIngot:12,walkerClaw:2},desc:'최대 체력 +500 · 받는 피해 50% 감소',kind:'armor',maxHp:500,reduce:.50},
 {id:'firewolf-saber',name:'화염늑대 검',where:'ironbench',cost:{fireWolfFang:3,ironIngot:3,wood:2},desc:'공격력 82 · 2티어 화염 검',kind:'weapon',power:82,range:82,cooldown:620},
 {id:'firewolf-armor',name:'화염늑대 갑옷',where:'ironbench',cost:{fireWolfFang:4,ironIngot:3,fiber:4},desc:'최대 체력 +105 · 받는 피해 10% 감소',kind:'armor',maxHp:105,reduce:.10},
 {id:'burrower-lance',name:'잠복벌레 창',where:'ironbench',cost:{burrowerShell:3,wood:4,ironIngot:2},desc:'공격력 74 · 긴 사거리',kind:'weapon',power:74,range:112,cooldown:780},
@@ -177,7 +177,7 @@ const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
 const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
-const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:1500,dmg:50,speed:62,r:40,color:'#3a1728',detect:700,boss:true,area:'underground'},
+const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
 giantburrower:{id:'giantburrower',name:'초거대 잠복벌레',mood:'aggressive',hp:300,dmg:20,speed:68,r:35,color:'#8c5c34',detect:460,attackCooldown:1000,burrower:true,volcanoZone:'wasteland'},
 sandwalker:{id:'sandwalker',name:'오아시스 샌드 워커',mood:'neutral',hp:500,dmg:44,speed:58,r:40,color:'#8f7048',detect:430,attackCooldown:1000,volcanoZone:'wasteland'},
@@ -211,8 +211,55 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
-let noticeTimer=0,autosave=0,lastWorldTap={target:null,at:0};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
+const ACHIEVEMENTS=[
+ {id:'strong-body',name:'강력한 신체',desc:'화산 또는 수정 지역 몬스터를 처치'},
+ {id:'escape-step',name:'탈출의 1걸음',desc:'무전기 부품을 발견'},
+ {id:'boss-hunter',name:'보스 사냥꾼',desc:'세계수 보스 녹스바르 처치'},
+ {id:'building-lover',name:'건축 러버',desc:'건축물 4개 이상 건설'},
+ {id:'grand-explorer',name:'대탐험가',desc:'협곡·세계수·화산·수정 지대를 모두 발견'},
+ {id:'first-chef',name:'첫 요리',desc:'요리대에서 음식을 처음 완성'},
+ {id:'shadow-friend',name:'그림자 친구',desc:'그림자 늑대를 부화'},
+ {id:'gold-crafter',name:'황금 장인',desc:'금 제작대 장비를 처음 제작'},
+ {id:'hunter-master',name:'사냥의 달인',desc:'몬스터 20마리 처치'},
+ {id:'seal-breaker',name:'봉인 해제자',desc:'수정 돌의 봉인을 해제'}
+];
+function unlockAchievement(id,announce=true){
+ if(!state.achievements||typeof state.achievements!=='object')state.achievements={};
+ if(state.achievements[id])return false;
+ const a=ACHIEVEMENTS.find(x=>x.id===id);if(!a)return false;
+ state.achievements[id]=Date.now();state.dirty=true;
+ if(announce)showNotice('업적 달성 · '+a.name);
+ if(state.panelMode==='achievements'&&ui.sheet.classList.contains('open'))renderAchievements();
+ return true
+}
+function mainStructureCount(){
+ return[state.bench,state.furnace,state.ironBench,state.goldBench,state.cookingStation,state.incubator].filter(Boolean).length
+}
+function checkAchievementProgress(announce=true){
+ const strongMaterials=['fireWolfFang','burrowerShell','walkerClaw','calmMagmaCore','rageMagmaCore','fireSnakeScale','hardShell','crystalCore'];
+ if(strongMaterials.some(k=>!!state.knownMaterials?.[k])||state.knownItems?.['crystal-goat-meat'])unlockAchievement('strong-body',announce);
+ if(state.story?.radioPart)unlockAchievement('escape-step',announce);
+ if(state.bossDefeated)unlockAchievement('boss-hunter',announce);
+ if(mainStructureCount()>=4)unlockAchievement('building-lover',announce);
+ if(state.discovered?.canyon&&state.discovered?.worldtree&&state.discovered?.volcano&&state.discovered?.crystal)unlockAchievement('grand-explorer',announce);
+ if(Object.values(state.knownCookingRecipes||{}).some(Boolean))unlockAchievement('first-chef',announce);
+ if(state.pet?.hatched)unlockAchievement('shadow-friend',announce);
+ if(Object.entries(state.knownItems||{}).some(([id,v])=>{const r=v&&item(id);return!!r&&r.where==='goldbench'&&['weapon','armor','tool'].includes(r.kind)}))unlockAchievement('gold-crafter',announce);
+ if((state.player?.kills||0)>=20)unlockAchievement('hunter-master',announce);
+ if(state.crystalSealReleased)unlockAchievement('seal-breaker',announce)
+}
+function renderAchievements(){
+ const done=ACHIEVEMENTS.filter(a=>state.achievements?.[a.id]).length;
+ let html='<div class="info"><b>업적</b><br>달성 '+done+' / '+ACHIEVEMENTS.length+'</div>';
+ for(const a of ACHIEVEMENTS){
+  const cleared=!!state.achievements?.[a.id];
+  html+='<div class="recordCard"><h4>'+(cleared?'✅ ':'🔒 ')+a.name+'</h4><p>'+a.desc+(cleared?'\n달성 완료':'')+'</p></div>'
+ }
+ ui.sheetBody.innerHTML=html
+}
+function openAchievements(){state.panelMode='achievements';ui.sheet.classList.add('open');renderAchievements()}
+let noticeTimer=0,autosave=0,achievementCheckAt=0,lastWorldTap={target:null,at:0};
 const deathFx=[];
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 function pointInPoly(x,y,poly=CANYON_POLY){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y,hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(hit)inside=!inside}return inside}
@@ -377,7 +424,10 @@ function markExplored(){
 function discoverRegion(){
   const r=regionAt(state.player.x,state.player.y);
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
-  if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}if(r==='volcano'&&!state.discovered.volcano){state.discovered.volcano=true;state.dirty=true;showNotice('발견함 화산')}if(r==='crystal'&&!state.discovered.crystal){state.discovered.crystal=true;state.dirty=true;showNotice('발견함 수정 지대')}
+  if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}
+  if(r==='volcano'&&!state.discovered.volcano){state.discovered.volcano=true;state.dirty=true;showNotice('발견함 화산')}
+  if(r==='crystal'&&!state.discovered.crystal){state.discovered.crystal=true;state.dirty=true;showNotice('발견함 수정 지대')}
+  checkAchievementProgress(true)
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11550,14320);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
 function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else if(kind==='essence'){const p=randomCrystalPoint(140);x=p.x;y=p.y}else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y))}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
@@ -525,7 +575,7 @@ function craftItem(id){
  else if(r.kind==='consumable')addInv(r.id);
  else if(r.kind==='torch'){p.torch=true;p.torchDurability=300000;p.torchEquipped=false}
  else if(r.kind==='map'){p.map=true;rememberItem(r.id);ui.mapBtn.classList.add('ready');ui.mapTab.hidden=false}
- rememberItem(r.id);showNotice(r.name+' 제작 완료');updateHud();renderPanel();saveGame(false)
+ rememberItem(r.id);checkAchievementProgress(true);showNotice(r.name+' 제작 완료');updateHud();renderPanel();saveGame(false)
 }
 function tabState(){ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');ui.ironBenchTab.textContent='철 제작대';ui.goldBenchTab.textContent='금 제작대'}
 function renderCraft(){
@@ -554,7 +604,7 @@ function cookSelectedMeal(){
  const mealId=COOKING_COMBOS[foodComboKey(a,b)];
  if(!mealId){showNotice('이 조합은 요리가 되지 않아 · 다른 조합을 실험해봐');return}
  state.player.inventory[a]--;state.player.inventory[b]--;addInv(mealId,1);
- const invented=!state.knownCookingRecipes[mealId];state.knownCookingRecipes[mealId]=true;state.dirty=true;
+ const invented=!state.knownCookingRecipes[mealId];state.knownCookingRecipes[mealId]=true;state.dirty=true;unlockAchievement('first-chef',true);
  showNotice(invented?'새 레시피 발명 · '+item(mealId).name:item(mealId).name+' 완성');
  renderCooking();saveGame(false)
 }
@@ -835,6 +885,7 @@ function renderPanel(){
  if(state.panelMode==='inventory')renderInventory();
  else if(state.panelMode==='map')renderMap();
  else if(state.panelMode==='bestiary')renderBestiary();
+ else if(state.panelMode==='achievements')renderAchievements();
  else if(state.panelMode==='cooking')renderCooking();
  else if(state.panelMode==='story')renderStory();
  else if(state.panelMode==='gift')renderGift();
@@ -909,6 +960,8 @@ function gather(){
 }
 function currentWeapon(){return item(state.player.weapon)}function currentDamage(){const base=(currentWeapon()?.power||0)+(item(state.player.armor)?.bonusDamage||0);return base*(performance.now()<(state.player.weakenedUntil||0)?.5:1)}function currentRange(){return currentWeapon()?.range||0}function currentCooldown(){return currentWeapon()?.cooldown||380}
 function awardLoot(e){
+ if(e?.type&&(e.type.volcanoZone||e.type.crystalZone||e.type.crystalVariant||e.type.guardian))unlockAchievement('strong-body',true);
+ if(e?.type?.id==='rootsovereign')unlockAchievement('boss-hunter',true);
  const food=[];
  if(e.type.foodDrop){addInv(e.type.foodDrop,1);food.push(item(e.type.foodDrop)?.name||e.type.foodDrop)}
  if(e.type.vegetableDrop){addInv(e.type.vegetableDrop,1);food.push(item(e.type.vegetableDrop)?.name||e.type.vegetableDrop)}
@@ -936,7 +989,7 @@ function awardLoot(e){
 }
 function rewardBoss(){
  if(state.bossDefeated)return;
- state.bossDefeated=true;state.bossSummoned=false;state.bossExitAt=Date.now()+10000;addInv('forest-wooden-sword',1);unlockBestiary('rootsovereign');
+ state.bossDefeated=true;state.bossSummoned=false;state.bossExitAt=Date.now()+10000;addInv('forest-wooden-sword',1);unlockBestiary('rootsovereign');unlockAchievement('boss-hunter',true);
  showNotice('녹스바르 격파 · 숲의 목검 획득 · 10초 뒤 지상 복귀');state.dirty=true
 }
 function multiIsHost(){return multiplayer.connected&&multiplayer.hostId===multiplayer.playerId}
@@ -1155,7 +1208,7 @@ function petTarget(){return state.enemies.find(e=>e.netId===state.pet.targetId&&
 function engagePet(e){if(petAlive()&&e&&e.hp>0)state.pet.targetId=e.netId}
 function hatchShadowWolf(){
  const pet=state.pet;pet.hatched=true;pet.alive=true;pet.hp=pet.maxHp=250;pet.x=state.player.x+55;pet.y=state.player.y+25;pet.respawnAt=0;pet.reviveClickUntil=0;pet.mounted=false;pet.targetId=null;
- state.incubation.eggPlaced=false;state.incubation.hatchAt=0;state.dirty=true;showNotice('그림자 늑대가 부화했어');saveGame(false)
+ state.incubation.eggPlaced=false;state.incubation.hatchAt=0;state.dirty=true;unlockAchievement('shadow-friend',true);showNotice('그림자 늑대가 부화했어');saveGame(false)
 }
 function interactIncubator(){
  if(!state.incubator||state.area!=='surface')return;
@@ -1338,7 +1391,7 @@ function summonBoss(){
  if(state.bossSummoned){showNotice('이미 보스가 소환되어 있어');return}
  if(state.player.root<1){showNotice('제단에 바칠 뿌리가 필요해');return}
  state.player.root--;state.altarUsed=true;state.bossSummoned=true;
- const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+1200,telegraphUntil:0,hitIndex:0,nextHitAt:0};
+ const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false};
  state.enemies.push(boss);state.dirty=true;showNotice('봉인이 깨졌다 · 근원포식자 녹스바르')
 }
 function doubleTapTarget(id,now,action){
@@ -1368,7 +1421,7 @@ function leaveQuestCave(){
 }
 function takeRadioPart(){
  if(state.story.radioPart){showNotice('무전기 부품은 이미 챙겼어');return}
- state.story.radioPart=true;state.story.stage='return-survivor';state.dirty=true;updateHud();showNotice('무전기 부품 1개 획득');saveGame(false)
+ state.story.radioPart=true;state.story.stage='return-survivor';state.dirty=true;updateHud();unlockAchievement('escape-step',true);showNotice('무전기 부품 1개 획득');saveGame(false)
 }
 
 function storyLabBlocked(x,y){
@@ -1596,29 +1649,55 @@ function chaseMonster(e,target,now,speedMult=1,damageMult=1){
 function setBossBanner(text=''){ui.bossBanner.textContent=text;ui.bossBanner.classList.toggle('on',!!text)}
 function updateBoss(e,p,now){
  if(now<(e.stunnedUntil||0)){setBossBanner('녹스바르 · 속박됨');return{vx:0,vy:0}}
- const s=e.bossState||(e.bossState={mode:'idle',nextAt:now+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0});
+ const s=e.bossState||(e.bossState={mode:'idle',nextAt:now+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false});
  const d=dist(e.x,e.y,p.x,p.y);
  if(s.mode==='telegraph-normal'){
    setBossBanner('일반 공격 예고 · 피할 수 있음');
-   if(now>=s.telegraphUntil){if(d<125)enemyDamageTarget(e,50,false);s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('')}
+   if(now>=s.telegraphUntil){if(d<145)enemyDamageTarget(e,e.type.dmg,false);s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('')}
    return{vx:0,vy:0}
  }
  if(s.mode==='telegraph-triple'){
    setBossBanner('3연참 예고 · 1초 간격');
    if(now>=s.telegraphUntil&&s.hitIndex===0){s.hitIndex=1;s.nextHitAt=now}
    if(s.hitIndex>0&&s.hitIndex<=3&&now>=s.nextHitAt){
-     if(d<135)enemyDamageTarget(e,100,false);
+     if(d<155)enemyDamageTarget(e,e.type.dmg*2,false);
      s.hitIndex++;s.nextHitAt=now+1000;
      if(s.hitIndex>3){s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('')}
    }
    return{vx:0,vy:0}
  }
- setBossBanner('');
- if(d>110){return{vx:(p.x-e.x)/(d||1)*e.type.speed,vy:(p.y-e.y)/(d||1)*e.type.speed}}
- if(now>=s.nextAt){
-   if(Math.random()<.30){s.mode='telegraph-triple';s.telegraphUntil=now+700;s.hitIndex=0}
-   else{s.mode='telegraph-normal';s.telegraphUntil=now+520}
+ if(s.mode==='telegraph-root'){
+   setBossBanner('뿌리 폭발 예고 · 멀리 피해야 함');
+   if(now>=s.telegraphUntil){
+     if(d<250){enemyDamageTarget(e,e.type.dmg*1.2,true);applyEnemyEffectTarget(e,p,'stun',2000)}
+     s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('')
+   }
+   return{vx:0,vy:0}
  }
+ if(s.mode==='telegraph-charge'){
+   setBossBanner('근원 돌진 준비');
+   if(now>=s.telegraphUntil){s.mode='charge';s.chargeUntil=now+1800;s.hitDone=false}
+   return{vx:0,vy:0}
+ }
+ if(s.mode==='charge'){
+   setBossBanner('근원 돌진');
+   if(!s.hitDone&&d<e.type.r+32){
+     s.hitDone=true;enemyDamageTarget(e,e.type.dmg*1.5,true);applyEnemyEffectTarget(e,p,'stun',1500);
+     s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('');return{vx:0,vy:0}
+   }
+   if(now>=s.chargeUntil){s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('');return{vx:0,vy:0}}
+   return{vx:(p.x-e.x)/(d||1)*e.type.speed*2.3,vy:(p.y-e.y)/(d||1)*e.type.speed*2.3}
+ }
+ setBossBanner('');
+ if(now>=s.nextAt&&d<=300){
+   const roll=Math.random();
+   if(roll<.25){s.mode='telegraph-triple';s.telegraphUntil=now+700;s.hitIndex=0}
+   else if(roll<.50){s.mode='telegraph-root';s.telegraphUntil=now+1100}
+   else if(roll<.75){s.mode='telegraph-charge';s.telegraphUntil=now+700}
+   else{s.mode='telegraph-normal';s.telegraphUntil=now+520}
+   return{vx:0,vy:0}
+ }
+ if(d>110)return{vx:(p.x-e.x)/(d||1)*e.type.speed,vy:(p.y-e.y)/(d||1)*e.type.speed};
  return{vx:0,vy:0}
 }
 function guardianTarget(e){
@@ -1681,7 +1760,7 @@ function activateCrystalSeal(now){
  if(now-state.crystalSealLastTap>2500)state.crystalSealClicks=0;
  state.crystalSealLastTap=now;state.crystalSealClicks++;
  if(state.crystalSealClicks<3){showNotice('수정 돌 봉인 · '+state.crystalSealClicks+'/3');return}
- state.crystalSealClicks=0;state.crystalSealReleased=true;spawnCrystalSealMonsters(true)
+ state.crystalSealClicks=0;state.crystalSealReleased=true;unlockAchievement('seal-breaker',true);spawnCrystalSealMonsters(true)
 }
 function summonCrystalJunior(e){
  const a=Math.random()*Math.PI*2,r=55;
@@ -1864,6 +1943,7 @@ function update(dt,now){
     }
     state.enemies=state.enemies.filter(e=>e.hp>0);
   }
+  if(now>=achievementCheckAt){achievementCheckAt=now+1000;checkAchievementProgress(true)}
   weatherTick(Date.now());
   multiTick(now);
   musicTick();
@@ -2185,7 +2265,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -2222,13 +2302,13 @@ function loadGame(){
    }
   }else state.explored={};
   state.area=s.area==='underground'?'underground':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
-  state.rootTaken=!!s.rootTaken;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}state.questCaveInit=!!s.questCaveInit;
+  state.rootTaken=!!s.rootTaken;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}state.questCaveInit=!!s.questCaveInit;
   if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);
-  if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+1000,telegraphUntil:0,hitIndex:0,nextHitAt:0};state.enemies.push(boss)}
-  if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
+  if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false};state.enemies.push(boss)}
+  checkAchievementProgress(false);if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
  }catch(e){}
 }
-window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));document.getElementById('bgmToggle').addEventListener('click',toggleBgm);ui.bestiaryBtn.addEventListener('click',openBestiary);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
+window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));document.getElementById('bgmToggle').addEventListener('click',toggleBgm);ui.bestiaryBtn.addEventListener('click',openBestiary);document.getElementById('achievements').addEventListener('click',openAchievements);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{once:true,capture:true});window.addEventListener('keydown',ensureMusicStarted,{once:true,capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}initWorld();loadGame();markExplored();discoverRegion();resize();updateHud();requestAnimationFrame(loop);const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('가방이 생겼어 · 동쪽 철 협곡에서 철을 찾아봐');
 })();
