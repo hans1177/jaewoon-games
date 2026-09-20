@@ -513,3 +513,22 @@ test('GAME_SEED cannot constrain Vibe creative composition',()=>{
   assert.equal(rule.suggestionsAreNeverPassFailGates,true);
   assert.equal(rule.actualGameCountLimit,null);
 });
+
+
+test('all platform results use the existing unbounded learning fabric',()=>{
+  const p=roadmap.learningClosedLoopContract?.platformResultPropagation;
+  assert.equal(p.mode,'UNBOUNDED_PLATFORM_RESULT_LEARNING_AND_PROPAGATION');
+  assert.equal(p.totalSignalLimit,null);
+  assert.equal(p.perCycleEligibleTargetCap,null);
+  assert.equal(p.futureTargetGenerationNeverStops,true);
+  assert.deepEqual(p.platforms,['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(p.allVerifiedResultsFeedExistingLearningFabric,true);
+  assert.ok(p.learningChannels.includes('PRACTICE'));
+  assert.ok(p.learningChannels.includes('COMPARE_PREVIOUS_RESULT')===false);
+  assert.ok(p.learningChannels.includes('BENCHMARK'));
+  assert.ok(p.learningChannels.includes('CAUSAL_HYPOTHESIS'));
+  assert.ok(p.learningChannels.includes('STRATEGY_COMPARISON'));
+  assert.equal(p.crossPlatformPassSubstitutionForbidden,true);
+  assert.equal(p.previousVerifiedBestRemainsComparisonBaseline,true);
+  assert.equal(p.actualConcurrentExecutionBoundedOnlyByExistingPhysicalScheduler,true);
+});

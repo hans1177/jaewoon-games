@@ -2086,5 +2086,35 @@
     "fixedCategorySlots": false,
     "downstreamQaAuthorityUnchanged": true,
     "authorityExpansion": "NONE"
+  },
+  "platformLearningPropagationTopology": {
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.platformResultPropagation",
+    "producer": "tools/vibe2-learning-motor.mjs#propagateVerifiedPlatformPatterns",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "learningFabric": [
+      "experience",
+      "failure-memory",
+      "practice",
+      "distillation",
+      "benchmark",
+      "holdout",
+      "causal-hypothesis",
+      "counterfactual",
+      "strategy-comparison",
+      "mastery",
+      "pattern-propagation"
+    ],
+    "totalSignalLimit": null,
+    "perCycleEligibleTargetCap": null,
+    "newTargetsContinueFutureCycles": true,
+    "samePlatformAutoCandidate": true,
+    "crossPlatformKnowledgeOnly": true,
+    "crossPlatformPassSubstitution": false,
+    "verification": "EACH_TARGET_FRESH_NATIVE_OR_RUNTIME_QA_PLUS_REGRESSION"
   }
 }

@@ -26,13 +26,14 @@ const CLASSIFIERS=[
 
 function engineOf(sample={}){
   const source=clean(sample?.input||'')+' '+clean(sample?.instruction||'');
+  if(/uefn-games\//i.test(source)||/uefn|fortnite|\bverse\b/i.test(source))return'fortnite_uefn';
   if(/roblox-games\//i.test(source)||/roblox|luau|studio/i.test(source))return'roblox';
   if(/unity-games\//i.test(source)||/unity|c#/i.test(source))return'unity';
   return'web';
 }
 
 function sampleVerified(sample={}){
-  if(!['coding','bugfix','unity'].includes(clean(sample.taskType)))return false;
+  if(!['coding','bugfix','unity','roblox','fortnite_uefn','uefn'].includes(clean(sample.taskType)))return false;
   if(upper(sample.independentQa)!=='PASS')return false;
   const browser=upper(sample.browserQa);
   if(browser&& !['PASS','NOT_APPLICABLE'].includes(browser))return false;

@@ -1,7 +1,7 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "MACHINE_EXECUTION_CONTRACT",
-  "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
+  "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN outcomes into immediate unbounded Vibe learning without weakening release, QA, runtime, score, or training gates.",
   "principles": {
     "vibeImplementationOwner": "VIBE2_VIBE3",
     "webRole": [
@@ -16,7 +16,14 @@
     "noAutoPass": true,
     "verifiedEvidenceOnlyForPositiveMastery": true,
     "verifiedFailureMayTeachAvoidPatterns": true,
-    "authorityNeverExpandsWithMastery": true
+    "authorityNeverExpandsWithMastery": true,
+    "allSupportedPlatformResultsFeedLearning": true,
+    "supportedLearningPlatforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ]
   },
   "mastery": {
     "replacesDepartmentLevel": false,
@@ -52,7 +59,9 @@
       "ANIMATION_FEEL",
       "VFX",
       "AUDIO_FEEL",
-      "CAMERA_LANGUAGE"
+      "CAMERA_LANGUAGE",
+      "UNITY_RUNTIME",
+      "UEFN_RUNTIME"
     ],
     "verifiedSuccessXp": 12,
     "verifiedFailureLessonXp": 5,
@@ -505,5 +514,58 @@
     "retiredKnowledgeRetrievalForbidden": true,
     "rawExternalAiOutputDirectUse": false,
     "authorityExpanded": false
+  },
+  "platformPatternPropagation": {
+    "mode": "UNBOUNDED_SAME_PLATFORM_VERIFIED_PATTERN_PROPAGATION",
+    "totalSignalLimit": null,
+    "perCycleEligibleTargetCap": null,
+    "futureTargetsGenerateOnLaterCycles": true,
+    "supportedPlatforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "sourceRequirement": "VERIFIED_REUSABLE_PLATFORM_RESULT_OR_VERIFIED_CODE_PATTERN",
+    "rawCodeCopyForbidden": true,
+    "applicabilityCheckRequiredPerTarget": true,
+    "smallestResponsibleChangeOrVerifiedNoApplicability": true,
+    "freshNativeOrRuntimeQaRequiredPerTarget": true,
+    "freshRegressionRequiredPerTarget": true,
+    "crossPlatformKnowledgeTransferAllowed": true,
+    "crossPlatformPassSubstitutionForbidden": true,
+    "physicalExecutionConcurrencyUsesExistingScheduler": true
+  },
+  "platformResultLearningFabric": {
+    "generationLimit": null,
+    "sources": [
+      "VERIFIED_EXPERIENCE",
+      "VERIFIED_FAILURE",
+      "CODE_PATTERN",
+      "PRACTICE_DISTILLATION",
+      "BENCHMARK",
+      "HOLDOUT",
+      "CAUSAL_HYPOTHESIS",
+      "COUNTERFACTUAL",
+      "STRATEGY_COMPARISON",
+      "REGRESSION_HOTSPOT"
+    ],
+    "loops": [
+      "REPLAY",
+      "PRACTICE",
+      "COMPARE_PREVIOUS_RESULT",
+      "COMPARE_CHAMPION_CHALLENGER",
+      "FALSIFY",
+      "ALTERNATIVE_HYPOTHESIS",
+      "HARDER_BENCHMARK",
+      "CROSS_DOMAIN_TRANSFER",
+      "FRESH_PROJECT_APPLICATION",
+      "FRESH_PLATFORM_QA",
+      "REPEAT"
+    ],
+    "previousVerifiedBestMustRemainComparisonBaseline": true,
+    "positiveLearningRequiresFreshVerifiedOutcome": true,
+    "failureLessonsRemainReusableNegativeKnowledge": true,
+    "allSupportedPlatformsShareLearningFabric": true
   }
 }

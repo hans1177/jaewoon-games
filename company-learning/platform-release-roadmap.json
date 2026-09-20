@@ -9589,6 +9589,42 @@
       "strongerThanHumanBaselineMayBeRecordedOnlyWhenMatchedBenchmarkEvidenceExists": true,
       "unverifiedSuperhumanClaimForbidden": true,
       "capabilityGrowthDoesNotExpandAuthority": true
+    },
+    "platformResultPropagation": {
+      "mode": "UNBOUNDED_PLATFORM_RESULT_LEARNING_AND_PROPAGATION",
+      "totalSignalLimit": null,
+      "perCycleEligibleTargetCap": null,
+      "futureTargetGenerationNeverStops": true,
+      "platforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "allVerifiedResultsFeedExistingLearningFabric": true,
+      "learningChannels": [
+        "EXPERIENCE",
+        "FAILURE_MEMORY",
+        "PRACTICE",
+        "DISTILLATION",
+        "BENCHMARK",
+        "HOLDOUT",
+        "CAUSAL_HYPOTHESIS",
+        "COUNTERFACTUAL",
+        "STRATEGY_COMPARISON",
+        "MASTERY",
+        "PATTERN_PROPAGATION"
+      ],
+      "samePlatformAutomaticApplicationCandidateGeneration": true,
+      "crossPlatformTransfer": "KNOWLEDGE_PATTERN_HYPOTHESIS_AND_LESSON_ONLY",
+      "crossPlatformPassSubstitutionForbidden": true,
+      "targetApplicabilityRequired": true,
+      "targetFreshNativeRuntimeQaRequired": true,
+      "targetFreshRegressionRequired": true,
+      "rawCodeCopyForbidden": true,
+      "previousVerifiedBestRemainsComparisonBaseline": true,
+      "actualConcurrentExecutionBoundedOnlyByExistingPhysicalScheduler": true,
+      "generationMustContinueWhileNewEligibleTargetsNewVerifiedResultsOrNewLearningQuestionsExist": true
     }
   },
   "genrePresentationQualityContract": {
