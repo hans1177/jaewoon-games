@@ -393,3 +393,13 @@ test('owner-focused concurrent Roblox lane carries exact merged source revision 
   assert.doesNotMatch(secondaryPersist,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
   assert.doesNotMatch(secondaryPersist,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
 });
+
+test('owner-focused Roblox package completion dispatches the existing continuation without canonical Unity mutation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxBuildOrPackagePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
+  assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
+});
