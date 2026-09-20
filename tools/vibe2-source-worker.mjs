@@ -1280,7 +1280,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         console.log(`VIBE2_DIAGNOSTIC_POSTCONDITION_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}:${diagnosticFocusedReplaceOnly.spec.diagnosticType}`);
       }
       let systemAtomicPairCreditRetry=false;
-      if(!allowFullRewrite&&systemAtomicPairRequired&&['SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(failureClass)&&attempt>=maxAttempts&&!systemAtomicPairCreditUsed){
+      if(!allowFullRewrite&&systemAtomicPairRequired&&focusedFinalRetryAllowed(error)&&attempt>=maxAttempts&&!systemAtomicPairCreditUsed){
         maxAttempts=attempt+1;
         systemAtomicPairCreditUsed=true;
         systemAtomicPairCreditRetry=true;

@@ -245,10 +245,10 @@ test('system architecture worker filters control metadata from source context wi
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/SYS-ARCH-context-boundary-v1/files', responsibleFile), 'utf8'), /systemValue = 2/);
 });
 
-test('system architecture candidate retries until source and causal regression test change together with valid syntax', async () => {
+test('system architecture candidate gets one bounded retry after atomic-pair edit mismatch', async () => {
   const cwd=tempRoot();
   const sourceOnly=path.join(cwd,'source-only.json');
-  const invalidPaired=path.join(cwd,'invalid-paired.json');
+  const editMismatchPaired=path.join(cwd,'edit-mismatch-paired.json');
   const paired=path.join(cwd,'paired.json');
   const sourceFile='tools/demo-system.mjs';
   const testFile='qa/demo-system.test.mjs';
@@ -311,10 +311,10 @@ test('system architecture candidate retries until source and causal regression t
   write(sourceOnly,JSON.stringify({
     edits:[{path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'}]
   }));
-  write(invalidPaired,JSON.stringify({
+  write(editMismatchPaired,JSON.stringify({
     edits:[
-      {path:sourceFile,find:'systemValue = 1',replace:'systemValue = '},
-      {path:testFile,find:'assert.equal(systemValue,1)',replace:'assert.equal(systemValue,2)'}
+      {path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'},
+      {path:testFile,find:'assert.equal(systemValue,9)',replace:'assert.equal(systemValue,2)'}
     ]
   }));
   write(paired,JSON.stringify({
@@ -323,7 +323,7 @@ test('system architecture candidate retries until source and causal regression t
       {path:testFile,find:'assert.equal(systemValue,1)',replace:'assert.equal(systemValue,2)'}
     ]
   }));
-  const result=await runVibe2SourceWorker({cwd,responseFiles:[sourceOnly,invalidPaired,paired]});
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[sourceOnly,editMismatchPaired,paired]});
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.baseAttemptBudget,2);
   assert.equal(result.generation.effectiveAttemptBudget,3);
