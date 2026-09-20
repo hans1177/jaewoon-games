@@ -42,7 +42,7 @@ test('PARALLELISM_CONTRACT_GATE keeps GAME_PRIMARY internally unbounded and bind
   assert.equal(runtime.continuous.executionLanes.GAME_PRIMARY.capacityAwareFreeSlotRefill,true);
   assert.equal(runtime.continuous.planningBacklog.activeWaveBlocksReserveNotPlanning,false);
   assert.equal(runtime.continuous.planningBacklog.activeWorkAllowsIndependentFreeSlotReserve,true);
-  assert.equal(runtime.continuous.refillBatchPolicy,'REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_UP_TO_CURRENT_ADAPTIVE_TARGET');
+  assert.equal(runtime.continuous.refillBatchPolicy,'REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_AFTER_ATOMIC_TASK_MICRO_FANIN');
 
   assert.equal(runtime.continuous.dynamicBackpressure,true);
   assert.deepEqual(runtime.adaptiveBackpressure.steps,[4,8,16,20,32,64,128,256]);
