@@ -317,3 +317,21 @@ test('Roblox source workflow requires durable Vibe3 learning memory for source g
   assert.ok(workflow.includes('e.vibe3LearningApplied!==true||!e.recombinationRecipeId'));
 });
 
+test('owner-focused concurrent Roblox source lane preserves canonical selected Unity state',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('ownerFocusedSecondaryPlatformEligible'));
+  assert.ok(workflow.includes("const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX')"));
+  assert.ok(workflow.includes('secondaryOwnerFocus,'));
+  assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_READY'"));
+  assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_PROMOTION_PENDING'"));
+  assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED'"));
+  const persistAt=workflow.indexOf('const secondaryOwnerFocus=target.secondaryOwnerFocus===true;');
+  assert.ok(persistAt>=0,'secondary P0 persistence branch missing');
+  const primaryAt=workflow.indexOf("if(result.pass===true){",persistAt+1);
+  const secondaryBlock=workflow.slice(persistAt,primaryAt);
+  assert.doesNotMatch(secondaryBlock,/selectedPlatform:'ROBLOX'/);
+  assert.doesNotMatch(secondaryBlock,/targetPlatform:'ROBLOX'/);
+  assert.doesNotMatch(secondaryBlock,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
+  assert.doesNotMatch(secondaryBlock,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+});
+
