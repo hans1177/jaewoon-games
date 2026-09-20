@@ -5,16 +5,16 @@
   "pressureStreak": 0,
   "lastDecision": "HOLD",
   "lastReason": "OWNER_MINIMUM_WAVE_20:FAILURE_RATE+RUNNER_QUEUE_WAIT",
-  "lastRunId": "35512686301",
-  "lastUpdatedAt": "2026-09-20T13:16:28.216Z",
+  "lastRunId": "35512486783",
+  "lastUpdatedAt": "2026-09-20T13:16:56.638Z",
   "lastTelemetry": {
-    "runId": "35512686301",
-    "workerCount": 3,
+    "runId": "35512486783",
+    "workerCount": 1,
     "effectiveMax": 20,
-    "actualPeakConcurrency": 3,
-    "effectivePeakUtilizationPct": 15,
+    "actualPeakConcurrency": 1,
+    "effectivePeakUtilizationPct": 5,
     "failureRatePct": 100,
     "pressureLevel": "SEVERE",
-    "bottleneck": "PERFORMANCE_SANITY"
+    "bottleneck": "SOURCE_CANDIDATE_GENERATION"
   }
 }
