@@ -3170,8 +3170,8 @@
       "gameId": "insect-survival",
       "gameName": "곤충 생존기",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -3494,9 +3494,9 @@
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -3514,8 +3514,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -3574,8 +3574,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
       "version": 2,
@@ -4026,8 +4025,8 @@
       "gameId": "cozy-island",
       "gameName": "포근섬",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -4366,9 +4365,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -4386,8 +4385,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "preserveExistingWebArchive": true,
       "existingWebSourcePath": "web-games/cozy-island",
       "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
@@ -4449,11 +4448,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
       "gameId": "crystal-defense",
       "gameName": "수정 디펜스",
@@ -4782,13 +4780,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -4845,17 +4843,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:57:44.367Z"
+      }
     },
     {
       "version": 2,
@@ -4863,8 +4851,8 @@
       "gameId": "human-go",
       "gameName": "휴먼 GO",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -5203,9 +5191,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -5223,8 +5211,8 @@
         "zero blocking runtime console or invalid-resource errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5283,11 +5271,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
       "gameId": "island-village",
       "gameName": "무인도 마을",
@@ -5629,13 +5616,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5694,20 +5681,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
       "gameId": "egg-heist",
       "gameName": "알 도둑 대작전",
@@ -6049,13 +6026,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-EGG-HEIST-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6114,20 +6091,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
       "gameId": "chess-battle",
       "gameName": "체스 배틀",
@@ -6477,13 +6444,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-CHESS-BATTLE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6542,20 +6509,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
       "gameId": "survival2",
       "gameName": "숲의 생존자들",
@@ -6881,13 +6838,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-SURVIVAL2-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6946,20 +6903,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
       "gameId": "territory-war",
       "gameName": "영토전쟁",
@@ -7285,13 +7232,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7350,17 +7297,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      }
     },
     {
       "version": 2,
@@ -13640,20 +13577,317 @@
         "모바일에서도 즉시 이해되는 입력과 피드백"
       ],
       "CORE_LOOP": [
-        "현재 상황과 목표를 읽고 의미 있는 다음 행동을 선택한다.",
-        "행동 결과로 게임 상태·자원·위험·진행도가 실제로 변한다.",
-        "변화된 상태를 바탕으로 새로운 목표와 선택을 갱신하며 다음 사이클로 이어간다."
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ],
       "DISTINCT_IDENTITY": "좀비 생존기을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
       "MARKET_EVIDENCE_SUMMARY": {
-        "role": "DESIGN_REEVALUATION",
+        "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
         "hardPassFailGate": false,
-        "available": false,
-        "note": "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes the canonical gates."
+        "available": true,
+        "note": "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes the canonical gates.",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Vampire Survivors",
+            "qualitative": "action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations",
+            "metrics": []
+          },
+          {
+            "title": "Brotato",
+            "qualitative": "compact arena survival benchmark for short runs, item choices and build synergy",
+            "metrics": []
+          },
+          {
+            "title": "Survivor.io",
+            "qualitative": "mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection",
+            "metrics": []
+          },
+          {
+            "title": "Global action/session signal",
+            "metrics": [
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
       },
       "TARGET_AUDIENCE": "좀비 생존기의 핵심 장르 플레이를 선호하는 글로벌 플레이어",
-      "TARGET_SESSION_DIRECTION": "첫 세션부터 입력, 핵심 행동, 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 다시 설계한다.",
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
@@ -13671,7 +13905,66 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-09-20T06:57:44.373Z"
+      "updatedAt": "2026-09-20T06:57:44.373Z",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "ORIGINAL_MATERIAL",
+          "value": "original non-game seed material composition"
+        }
+      ],
+      "TARGET_SESSION_MINUTES": 30,
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
+      }
     }
   ],
   "seedMaterials": [
@@ -15474,7 +15767,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-20T05:39:14.658Z",
+    "lastReplenishedAt": "2026-09-20T06:58:03.644Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
