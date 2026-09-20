@@ -17,7 +17,10 @@ test('repeated structural failure becomes one atomic self-architecture evolution
   assert(task.responsibleFiles.includes('tools/vibe2-source-worker.mjs'));
   assert(task.responsibleFiles.includes('qa/vibe2-source-worker.test.mjs'));
   assert(task.evidence.includes('architecture-total-evolution-generation-limit:NONE'));
+  assert(task.evidence.includes('architecture-neural-expansion-phase:LAST_STAGE_ONLY'));
+  assert(task.evidence.includes('architecture-neural-expansion-allowed:NO'));
   assert(task.completionCriteria.includes('BEFORE_AFTER_METRIC_IMPROVED'));
+  assert(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
 });
 
 test('unchanged evidence does not create a busy-loop generation after verified architecture work',()=>{
