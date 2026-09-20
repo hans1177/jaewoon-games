@@ -146,7 +146,7 @@
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL",
-    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_ACTIVE_EXECUTION_CAP_IS_20",
+    "maxConcurrentGameTasksMeaning": "CURRENT_EXTERNAL_PROVIDER_BATCH_BOUND_ONLY; INTERNAL_GAME_PRIMARY_CONCURRENCY_UNBOUNDED_AND_VIBE_SELF_ADAPTIVE",
     "developmentFirstScheduling": {
       "enabled": true,
       "gameImplementationBeforeNonblockingSupervision": true,
@@ -175,20 +175,24 @@
     },
     "perWorkerSlotRefillEnabled": false,
     "fanInRefillTrigger": "repository-dispatch",
-    "refillBatchPolicy": "REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_UP_TO_ACTIVE_CAP_20",
+    "refillBatchPolicy": "REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_UP_TO_VIBE_ADAPTIVE_EXTERNAL_CAPACITY",
     "gamePrimaryExecutionWave": {
       "enabled": true,
       "lane": "GAME_PRIMARY",
-      "ownerTarget": 20,
-      "maxActiveWorkers": 20,
+      "ownerTarget": null,
+      "maxActiveWorkers": null,
       "reserveOnlyAfterFanIn": false,
       "singleActiveWorkerWave": false,
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "20 is the active game-development execution cap; 256 is only the external provider/planning bound. Safe free slots refill without waiting for all active workers.",
+      "note": "20 is historical/reference evidence only. Vibe chooses active GAME_PRIMARY concurrency from telemetry and current external capacity; no internal fixed maximum or owner floor is enforced.",
       "capacityAwareFreeSlotRefill": true,
-      "externalProviderMax": 256
+      "externalProviderMax": 256,
+      "internalHardCap": null,
+      "adaptiveTarget": true,
+      "controlMode": "VIBE_SELF_ADAPTIVE_EXTERNAL_CAPACITY_ONLY",
+      "historicalReferenceWave": 20
     },
     "planningBacklog": {
       "enabled": true,
@@ -205,14 +209,18 @@
     },
     "executionLanes": {
       "GAME_PRIMARY": {
-        "activeWaveTarget": 20,
+        "activeWaveTarget": null,
         "consumesGamePrimarySlot": true,
         "taskClass": "development-implementation",
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
-        "maxActiveWorkers": 20,
+        "maxActiveWorkers": null,
         "fanInOnlyRefill": false,
         "adaptiveGameControlEligible": true,
-        "capacityAwareFreeSlotRefill": true
+        "capacityAwareFreeSlotRefill": true,
+        "internalHardCap": null,
+        "adaptiveTarget": true,
+        "controlMode": "VIBE_SELF_ADAPTIVE_EXTERNAL_CAPACITY_ONLY",
+        "historicalReferenceWave": 20
       },
       "RECOVERY_FAST": {
         "consumesGamePrimarySlot": false,
@@ -262,7 +270,7 @@
   },
   "adaptiveBackpressure": {
     "enabled": true,
-    "mode": "external-capacity-batch-protection-only-policy-remains-unbounded",
+    "mode": "vibe-self-adaptive-external-capacity-only",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
       256,
@@ -295,12 +303,15 @@
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
     "externalBatchMax": 256,
-    "ownerMinimumWave": 20,
-    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
-    "ownerMinimumWaveAppliedTo": [
-      "reserve",
-      "fan-in-adaptive-update"
-    ]
+    "ownerMinimumWave": null,
+    "ownerMinimumWaveAuthority": null,
+    "ownerMinimumWaveAppliedTo": [],
+    "adaptiveMinimumWave": 1,
+    "adaptiveMinimumWaveMeaning": "TECHNICAL_SINGLE_WORKER_FLOOR_NOT_OWNER_CONCURRENCY_POLICY",
+    "selfControlled": true,
+    "internalHardCap": null,
+    "externalCapacityOnly": true,
+    "currentExternalBatchMax": 256
   },
   "sources": {
     "queue": ".vibe2/queue.json",
