@@ -1099,6 +1099,7 @@
               "INCREMENTAL_QA",
               "TARGET_PLATFORM_SMOKE",
               "FOCUSED_REGRESSION",
+              "SECURITY_STEWARD_RESCAN_WHEN_SECURITY_RELEVANT",
               "EXACT_ARTIFACT_RELEASE_GATE"
             ],
             "priority": "IMMEDIATE",
@@ -1136,6 +1137,7 @@
               "FULL_REGRESSION",
               "PERFORMANCE_SANITY",
               "FINAL_GAME_REVIEW",
+              "SECURITY_STEWARD_GAME_SECURITY_REVIEW",
               "EXACT_ARTIFACT_RELEASE_GATE"
             ],
             "minimumStablePassRule": "NO_KNOWN_RELEASE_BLOCKING_BUGS_AND_ALL_REQUIRED_GATES_PASS"
@@ -1197,6 +1199,37 @@
         "noQaBypass": true,
         "noDirectUnverifiedProductionPatch": true,
         "fastResponseMeaning": "MINIMIZE_UNRELATED_WORK_NOT_REQUIRED_EVIDENCE"
+      },
+      "securityStewardIntegration": {
+        "version": 1,
+        "required": true,
+        "steward": "VIBE_SECURITY_STEWARD",
+        "policy": "company-learning/security-immune-system.json",
+        "reuseExistingSecuritySystem": true,
+        "platformAntiCheatDuplicated": false,
+        "robloxExistingGates": [
+          "COMPANY_SECURITY_IMMUNE_SOURCE_SCAN",
+          "SERVER_REMOTE_BOUNDARY_REQUIRED",
+          "SERVER_REMOTE_INPUT_VALIDATION_REQUIRED",
+          "SERVER_REMOTE_RATE_LIMIT_REQUIRED",
+          "ROBLOX_SERVER_CLIENT_BOUNDARY_PASS",
+          "ROBLOX_INDEPENDENT_QA_PASS",
+          "ROBLOX_REGRESSION_PASS"
+        ],
+        "reviewScope": [
+          "SERVER_AUTHORITY",
+          "REMOTE_INPUT_VALIDATION",
+          "RATE_LIMIT",
+          "SAVE_INTEGRITY",
+          "ECONOMY_AND_REWARD_INTEGRITY",
+          "DAMAGE_AND_COOLDOWN_AUTHORITY",
+          "MULTIPLAYER_SYNC_ABUSE",
+          "BACKDOOR_OR_UNTRUSTED_MODULE"
+        ],
+        "confirmedSecurityBugRoute": "HOTFIX",
+        "securityHotfixPreemptsOtherUpdateWork": true,
+        "securityRescanBeforeRedeploy": true,
+        "verifiedSecurityResultReturnsToSecurityLearning": true
       }
     },
     "executionBindings": {
@@ -3769,13 +3802,22 @@
         "UPDATE_SCALE_CLASSIFICATION",
         "HOTFIX_FAST_LANE_OR_MINOR_FAST_LANE_OR_MAJOR_PREPARATION_LANE",
         "RELEVANT_QA_AND_DEBUG",
+        "SECURITY_STEWARD_GAME_SECURITY_REVIEW",
         "EXACT_ARTIFACT_FINAL_GATE",
         "REDEPLOY",
         "POST_REDEPLOY_PLAYTEST",
         "VERIFIED_RESULT_LEARNING_INGEST",
         "NEXT_UPDATE_CYCLE"
       ],
-      "bugPriorityRule": "QUALIFYING_BUG_OR_ERROR_PREEMPTS_MINOR_AND_MAJOR_UPDATE_PREPARATION_UNTIL_HOTFIX_RESOLVED_OR_VIBE_DEFERRED"
+      "bugPriorityRule": "QUALIFYING_BUG_OR_ERROR_PREEMPTS_MINOR_AND_MAJOR_UPDATE_PREPARATION_UNTIL_HOTFIX_RESOLVED_OR_VIBE_DEFERRED",
+      "securityStewardRequired": true,
+      "securityPolicy": "company-learning/security-immune-system.json",
+      "securityFindingRouting": {
+        "confirmedExploitOrSecurityBug": "HOTFIX",
+        "confirmedBackdoorOrCredentialExposure": "SECURITY_QUARANTINE",
+        "ordinaryGameReviewFeedback": "VIBE_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+        "securityReleaseBlockersCannotBeBypassedByOrdinaryFeedbackDecision": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
