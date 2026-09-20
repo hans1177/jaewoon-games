@@ -23,14 +23,14 @@ function walk(dir,out=[]){
 function readRecord(file){
   try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}
 }
-function validRepresentative(file,row){
+function validRepresentative(file,row,root=ROOT){
   if(!row||clean(row.domain)!=='runtime-media'||clean(row.status).toUpperCase()!=='VERIFIED')return false;
   if(clean(row.retentionClass).toUpperCase()!=='RUNTIME_MEDIA')return false;
   if(row.data?.homepageRepresentative!==true)return false;
   if(!isPass(row.data?.runtimeVerification))return false;
   const media=clean(row.data?.mediaPath);
   if(!/^assets\/runtime-evidence\/(?:roblox|unity|fortnite-uefn|web)\//.test(media))return false;
-  const abs=path.join(ROOT,media);
+  const abs=path.join(root,media);
   if(!fs.existsSync(abs)||!fs.statSync(abs).isFile())return false;
   const expected=clean(row.data?.sha256).toLowerCase();
   return /^[0-9a-f]{64}$/.test(expected)&&sha256(abs)===expected;
@@ -45,7 +45,7 @@ export function buildRuntimeMediaIndex({root=ROOT}={}){
   const rows=[];
   for(const file of walk(recordRoot,[])){
     const row=readRecord(file);
-    if(!validRepresentative(file,row))continue;
+    if(!validRepresentative(file,row,root))continue;
     rows.push({
       gameId:clean(row.data.gameId),
       platform:clean(row.data.platform).toUpperCase(),
