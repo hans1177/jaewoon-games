@@ -101,6 +101,7 @@ jobs:
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
             tools/vibe2-continuous-runner.mjs \
+            tools/vibe2-central-work-contract.mjs \
             tools/vibe2-neural-diagnosis.mjs \
             tools/vibe2-neural-feedback.mjs \
             tools/vibe2-neural-critic.mjs \
@@ -1100,6 +1101,7 @@ jobs:
             qa/vibe2-neural-fanin-root-cause.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-central-work-contract.test.mjs \
             qa/vibe2-exploration-worker.test.mjs \
             qa/vibe2-queue-control.test.mjs \
             qa/vibe2-work-package.test.mjs \
