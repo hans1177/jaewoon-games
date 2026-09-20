@@ -300,7 +300,8 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
       'Do NOT return path or find. The worker will apply them exactly.',
-      'Return exactly one JSON object with one key: {"replace":"COMPLETE_REPLACEMENT_SOURCE_SNIPPET"}',
+      'Return exactly one JSON object with exactly one key named "replace".',
+      'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace must be the smallest syntactically valid coherent source replacement that satisfies the diagnostic postcondition and preserves unrelated behavior.',
       'No markdown, prose, placeholders, ellipsis, or extra keys.',
       'SOURCE CONTEXT AROUND DIAGNOSTIC ANCHOR:',
@@ -665,7 +666,7 @@ export function generationFailureClass(error){
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
   if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
-  if(/JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|같은 파일에 edit\/new\/replace 중복 작업 금지/i.test(message))return'MALFORMED_OUTPUT';
+  if(/JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)/i.test(message))return'MALFORMED_OUTPUT';
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
@@ -673,7 +674,7 @@ function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH'
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|SEMANTIC_DIFF_BUDGET_VIOLATION|DIAGNOSTIC_POSTCONDITION_MISSING|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|DIAGNOSTIC_POSTCONDITION_MISSING|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[]}={}){
   const raw=String(prompt??'');
@@ -781,7 +782,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
       'Do NOT return path or find. The worker will apply them exactly.',
-      'Return exactly one JSON object with one key: {"replace":"COMPLETE_REPLACEMENT_SOURCE_SNIPPET"}',
+      'Return exactly one JSON object with exactly one key named "replace".',
+      'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
       'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.',
       'Preserve save keys, gameplay values, existing behavior, and unrelated systems unless the Goal explicitly requires changing them.',

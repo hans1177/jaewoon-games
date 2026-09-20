@@ -1,5 +1,5 @@
 {
-  "version": 218,
+  "version": 219,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -613,6 +613,69 @@
           "runId": 35478191975,
           "conclusion": "success"
         }
+      },
+      "post1989SourceGenerationFailureAudit": {
+        "version": 1,
+        "state": "FOCUSED_REPLACE_PLACEHOLDER_REPAIR_IMPLEMENTED_PENDING_CI",
+        "sourceIssue": 2017,
+        "productionRuns": [
+          35498381395,
+          35498819604,
+          35499247938,
+          35499585668,
+          35499982325,
+          35500348340,
+          35500767356,
+          35501147685,
+          35501512856
+        ],
+        "aggregatedFinalSourceGenerationFailures": {
+          "TIMEOUT": 0,
+          "MALFORMED_OUTPUT": 0,
+          "EDIT_MATCH": 0,
+          "NO_OP": 0,
+          "SEMANTIC_DIFF_BUDGET": 0,
+          "DIAGNOSTIC_POSTCONDITION": 0,
+          "CENTRAL_POLICY_STALE": 0,
+          "OTHER": 42
+        },
+        "verifiedOtherSignatures": {
+          "focusedReplacePlaceholder": {
+            "message": "focused replace placeholder 금지",
+            "reproducedVariants": 4,
+            "evidenceRuns": [
+              35500348340,
+              35501512856
+            ]
+          },
+          "emptyRelativePath": {
+            "message": "잘못된 상대 경로:",
+            "reproducedVariants": 1,
+            "evidenceRuns": [
+              35501512856
+            ],
+            "selectedForThisRepair": false
+          }
+        },
+        "selectedLargestVerifiedRecurringSignature": "FOCUSED_REPLACE_PLACEHOLDER",
+        "rootCause": "FOCUSED_REPLACE_PROMPT_EXPOSED_A_COPYABLE_PLACEHOLDER_LITERAL_THAT_THE_SMALL_LOCAL_MODEL_REPEATED_VERBATIM_WHILE_THE_FAILURE_CLASSIFIER_FELL_THROUGH_TO_OTHER",
+        "responsibleSystems": [
+          "tools/vibe2-source-worker.mjs::buildFocusedReplaceOnlyPrompt",
+          "tools/vibe2-source-worker.mjs::generationFailureClass",
+          "tools/vibe2-source-worker.mjs::shouldRetryGenerationError"
+        ],
+        "correction": {
+          "copyablePlaceholderLiteralRemovedFromPrompt": true,
+          "placeholderFailureClass": "MALFORMED_OUTPUT",
+          "placeholderFailureRetryable": true,
+          "retryBudgetIncreased": false,
+          "timeoutIncreased": false,
+          "workerCountIncreased": false,
+          "qaBypassAllowed": false,
+          "writableScopeExpanded": false
+        },
+        "authorityChange": "NONE",
+        "nextGate": "CI_PASS_THEN_PRODUCTION_WAVE_VERIFY_PLACEHOLDER_FAILURE_DISAPPEARS_OR_RECLASSIFIES_WITH_REAL_CAUSAL_CLASS"
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,

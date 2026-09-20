@@ -51,6 +51,8 @@ test('reproduced interval diagnostic is anchored before incremental QA',()=>{
   const focused=buildDiagnosticFocusedReplaceOnlyPrompt('Goal: [DIAGNOSTIC_BUNDLE] interval cleanup',{exploration,sourceRoot,responsibleFiles:['rpg.html']});
   assert.ok(focused);
   assert.match(focused.prompt,/clearInterval/);
+  assert.doesNotMatch(focused.prompt,/COMPLETE_REPLACEMENT_SOURCE_SNIPPET/);
+  assert.match(focused.prompt,/exactly one key named "replace"/);
   assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:'function start(){ AUDIO.timer=setInterval(()=>tick(),285); }'}]},exploration}).pass,false);
   const repaired='function stop(){ if(AUDIO.timer){ clearInterval(AUDIO.timer); AUDIO.timer=null; } }\nfunction start(){ stop(); AUDIO.timer=setInterval(()=>tick(),285); }';
   assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:repaired}]},exploration}).pass,true);
@@ -727,6 +729,9 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('모델 JSON 파싱 실패')),'MALFORMED_OUTPUT');
   assert.equal(generationFailureClass(new Error('같은 파일에 edit/new/replace 중복 작업 금지')),'MALFORMED_OUTPUT');
   assert.equal(shouldRetryGenerationError(new Error('같은 파일에 edit/new/replace 중복 작업 금지')),true);
+  assert.equal(generationFailureClass(new Error('focused replace placeholder 금지: index.html')),'MALFORMED_OUTPUT');
+  assert.equal(shouldRetryGenerationError(new Error('focused replace placeholder 금지: index.html')),true);
+  assert.equal(generationFailureClass(new Error('focused replace 비어 있음')),'MALFORMED_OUTPUT');
 });
 test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', async () => {
   const cwd = tempRoot();
@@ -1120,7 +1125,7 @@ test('focused replace-only pins exact path and anchor while model emits only rep
   const focused=buildFocusedReplaceOnlyPrompt(base,{error:new Error('timeout'),responsibleFiles:['index.html']});
   assert.ok(focused);
   assert.match(focused.prompt,/Do NOT return path or find/);
-  assert.match(focused.prompt,/Return exactly one JSON object with one key/);
+  assert.match(focused.prompt,/Return exactly one JSON object with exactly one key named "replace"/);
   const normalized=normalizeFocusedReplaceOnly(JSON.stringify({replace:'const playButton=document.getElementById("play") ?? document.body;'}),focused.spec);
   assert.equal(normalized.edits.length,1);
   assert.equal(normalized.edits[0].path,'index.html');
@@ -1258,6 +1263,15 @@ test('focused replace-only rejects unchanged replacement and supports early comp
   const spec={path:'index.html',find:'const state={running:false};'};
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:spec.find}),spec),/변경 없는 edit/);
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:'COMPLETE_REPLACEMENT_SOURCE_SNIPPET'}),spec),/placeholder 금지/);
+  const focused=buildFocusedReplaceOnlyPrompt([
+    'Goal: repair play state',
+    'Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    spec.find
+  ].join('\n'),{responsibleFiles:['index.html']});
+  assert.ok(focused);
+  assert.doesNotMatch(focused.prompt,/COMPLETE_REPLACEMENT_SOURCE_SNIPPET/);
+  assert.match(focused.prompt,/exactly one key named "replace"/);
   assert.equal(modelResponseComplete(JSON.stringify({replace:'const state={running:true};'}),'JSON_REPLACE_ONLY'),true);
   assert.equal(modelResponseComplete('{"replace":','JSON_REPLACE_ONLY'),false);
 });

@@ -1,5 +1,5 @@
 {
-  "version": 60,
+  "version": 61,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -467,7 +467,7 @@
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
-        "state": "ACTIVE_PR_2013_PENDING_MERGE",
+        "state": "POST_2017_PRIORITY_2_SOURCE_FAILURE_REPAIR",
         "sourceRoadmap": "company-learning/platform-release-roadmap.json#assistantRoadmapOrchestration.implementationState.vibeBottleneckCentralCheckpoint",
         "completedRepairPrs": [
           1983,
@@ -486,7 +486,7 @@
         },
         "openTelemetryInvariant": {
           "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
-          "state": "OPEN_INVESTIGATION",
+          "state": "RESOLVED_BY_OWNER_UNBOUNDED_DIRECTIVE_AND_PR_2020",
           "expectedMeaning": "EFFECTIVE_MAX_MUST_REFLECT_THE_EXECUTION_CAP_THAT_CAN_ACTUALLY_CONSTRAIN_GAME_PRIMARY_WORKERS_FOR_THE_OBSERVED_WAVE",
           "doNotInferLowLoadFromUnrelatedGlobalMax": true,
           "responsibleSystems": [
@@ -495,7 +495,23 @@
             ".vibe2/parallelism-control.json"
           ]
         },
-        "nextRuntimeGate": "FIX_OR_VERIFY_EFFECTIVE_MAX_BINDING_THEN_RECLASSIFY_POST_1989_SOURCE_GENERATION_FAILURES",
+        "post1989SourceGenerationFailureAudit": {
+          "completedProductionRuns": 9,
+          "finalSourceGenerationFailures": 42,
+          "reportedFinalClasses": {
+            "OTHER": 42
+          },
+          "verifiedRecurringSignature": "FOCUSED_REPLACE_PLACEHOLDER",
+          "rootCause": "COPYABLE_PLACEHOLDER_LITERAL_IN_FOCUSED_REPLACE_PROMPT_PLUS_OTHER_FALLTHROUGH_CLASSIFICATION",
+          "responsibleSystem": "tools/vibe2-source-worker.mjs",
+          "repairBranch": "assistant/p0-source-placeholder-2017",
+          "retryBudgetIncreased": false,
+          "timeoutIncreased": false,
+          "workerCountIncreased": false,
+          "qaBypassAllowed": false,
+          "authorityChange": "NONE"
+        },
+        "nextRuntimeGate": "VERIFY_FOCUSED_REPLACE_PLACEHOLDER_REPAIR_IN_PRODUCTION_THEN_CONTINUE_POST_1989_FAILURE_CLASSIFICATION",
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
         "authorityChange": "NONE",
         "sourcePr": 2013
