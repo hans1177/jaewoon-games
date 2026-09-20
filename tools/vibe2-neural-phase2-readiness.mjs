@@ -27,7 +27,9 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
   let duplicateSampleRows=0,sampleConflicts=0;
   for(const row of parsedRows){
     const sampleId=clean(row.sampleId);
-    if(!sampleId){legacyRows.push(row);continue;}
+    const identityParts=sampleId.split('|');
+    const canonicalIdentity=identityParts.length>=4&&identityParts.slice(0,4).every(Boolean);
+    if(!canonicalIdentity){legacyRows.push(row);continue;}
     if(bySample.has(sampleId)){
       duplicateSampleRows+=1;
       if(JSON.stringify(bySample.get(sampleId))!==JSON.stringify(row))sampleConflicts+=1;
