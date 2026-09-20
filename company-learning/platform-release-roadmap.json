@@ -1,5 +1,5 @@
 {
-  "version": 206,
+  "version": 207,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8098,6 +8098,108 @@
         },
         "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
       }
+    }
+  },
+  "assetProductionParallelContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "enabled": true,
+    "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
+    "scope": "ACTIVE_DEVELOPMENT_CONFIRMED_AND_RELEASE_CONFIRMED_GAMES",
+    "firstAdoption": {
+      "gameId": "fantasy-survival",
+      "name": "마력숲 생존기",
+      "priority": "P0_OWNER_FOCUSED_GAME",
+      "targetPlatforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "mode": "UNITY_ROBLOX_CONCURRENT"
+    },
+    "inputContract": {
+      "requiredSources": [
+        "CURRENT_VALIDATED_WEB_COMPANION",
+        "APPROVED_DESIGN_BASELINE",
+        "GAME_STYLE_LOCK"
+      ],
+      "deriveVisibleAssetInventory": true,
+      "deriveAssetSpecFromActualGameplayNeeds": true,
+      "speculativeAssetWorkOutsideApprovedGameplayScopeForbidden": true
+    },
+    "workflow": [
+      "DERIVE_VISIBLE_ASSET_INVENTORY_AND_ASSET_SPEC",
+      "CLASSIFY_A_B_C_VISUAL_PRIORITY",
+      "RUN_GAMEPLAY_CODE_AND_ASSET_PRODUCTION_IN_PARALLEL",
+      "BIND_REAL_ASSETS_TO_UNITY_AND_ROBLOX_PRESENTATION_LAYERS",
+      "RUN_VISUAL_RUNTIME_QA_ON_ACTUAL_GAMEPLAY",
+      "ASSET_REPAIR_REQUIRED_FOR_FAILED_ASSET_SCOPE",
+      "REVALIDATE_PLATFORM_PRESENTATION_AND_REGRESSION"
+    ],
+    "productionLanes": [
+      "ART_DIRECTION",
+      "THREE_D_ASSET",
+      "MATERIAL_TEXTURE",
+      "ANIMATION",
+      "VFX",
+      "UI_ART",
+      "AUDIO"
+    ],
+    "visualPriority": {
+      "A_GAMEPLAY_CRITICAL": [
+        "PLAYER_CHARACTER",
+        "PRIMARY_ENEMIES",
+        "CORE_WEAPONS_TOOLS",
+        "CORE_RESOURCES",
+        "CRAFTING_STRUCTURES",
+        "PRIMARY_TERRAIN",
+        "COMBAT_HIT_VFX"
+      ],
+      "B_WORLD_IDENTITY": [
+        "REGION_ENVIRONMENT",
+        "LANDMARKS",
+        "FOLIAGE",
+        "LIGHTING",
+        "ATMOSPHERE",
+        "AMBIENT_PARTICLES"
+      ],
+      "C_POLISH": [
+        "SECONDARY_ANIMATION",
+        "RARE_ITEM_VISUALS",
+        "DECORATION",
+        "UI_POLISH",
+        "ADVANCED_AUDIO_POLISH"
+      ]
+    },
+    "graphicsPassContract": {
+      "graphicsReviewOrTextSpecAloneCannotPass": true,
+      "realAssetRequired": true,
+      "inGameBindingRequired": true,
+      "actualRuntimeVisualEvidenceRequired": true,
+      "requiredAssetMissingBlocksGraphicsPass": true,
+      "placeholderVisualCannotSatisfyGraphicsPass": true,
+      "targetPlatformPresentationMustBeValidatedIndependently": true,
+      "crossPlatformStyleLockRequired": true
+    },
+    "parallelism": {
+      "gameplayCodeAndAssetProductionConcurrent": true,
+      "responsibleFilesMustBeExplicitAndDisjoint": true,
+      "sameResponsibleFileParallelForbidden": true,
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "newWorkerAuthorityCreated": false,
+      "queueMutationAuthorityCreated": false,
+      "waveReorderAuthorityCreated": false
+    },
+    "failureHandling": {
+      "state": "ASSET_REPAIR_REQUIRED",
+      "repairOnlyFailedAssetScopeWhenSafe": true,
+      "unrelatedCodeWorkMayContinueWhenDependencySafe": true,
+      "repairMustRebindAssetAndRepeatVisualRuntimeQa": true,
+      "waitingStateForCorrectableAssetFailureForbidden": true
+    },
+    "preservation": {
+      "gameplayBalanceSaveProgressionAndHitSemanticsMustNotChangeFromAssetOnlyWork": true,
+      "existingAssetLicenseAndProvenancePolicyReused": true,
+      "qualitySecurityEvidenceAndSaveCompatibilityGatesUnchanged": true
     }
   }
 }
