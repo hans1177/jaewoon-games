@@ -7354,8 +7354,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
@@ -7365,7 +7365,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "web-qa-or-promotion-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -7962,9 +7962,13 @@
         "exploration-reuse:0ee54de91a52cad7abcb0f0f",
         "web-qa-failure",
         "promotion-skipped",
-        "actions-run-35480383119"
+        "actions-run-35480383119",
+        "system-steward:retry-exhausted-regenerated:generation-12",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_12",
+        "system-steward:failure-signature:web-qa-or-promotion-failed",
+        "recovery-queue:recovery-e47b9cce83eaad34ba1d"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -7986,7 +7990,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 11,
+      "recoveryGeneration": 12,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -10620,7 +10624,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 1,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -11097,7 +11101,8 @@
         "exploration-reuse:98fcdc3247f5b3c684fae945",
         "web-qa-failure",
         "promotion-skipped",
-        "actions-run-35480383800"
+        "actions-run-35480383800",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -11739,7 +11744,8 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:6242",
         "workload:cycle-ms:299312",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35480391048:1",
@@ -13235,7 +13241,8 @@
         "shared-context-policy:0c7aaf7e9de1259a1c3878394a53264da0a62f2d184c87133e4685da02fcb834",
         "workload:prep-ms:10671",
         "workload:cycle-ms:277982",
-        "exploration-reuse:e2815816b530042ad9c3238a"
+        "exploration-reuse:e2815816b530042ad9c3238a",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35479804503:1",
@@ -14103,7 +14110,8 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CINVALID_PATH%7CMALFORMED_OUTPUT%7CNO_OP%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:12238",
         "workload:cycle-ms:310671",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CINVALID_PATH%7CMALFORMED_OUTPUT%7CNO_OP%7CTIMEOUT%22%2C%22failureClass%22%3A%22NO_OP%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CINVALID_PATH%7CMALFORMED_OUTPUT%7CNO_OP%7CTIMEOUT%22%2C%22failureClass%22%3A%22NO_OP%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35480391048:1",
@@ -14657,7 +14665,8 @@
         "release-dispatch-recovery-candidate-sha:5195f41d7878585915864fc69b4635aa04c1e6cf",
         "release-dispatch-recovery-at:1789864609117",
         "release-dispatch-recovery-at:1789864825197",
-        "release-dispatch-recovery-at:1789865123541"
+        "release-dispatch-recovery-at:1789865123541",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35480391048:1",
@@ -15207,7 +15216,8 @@
         "release-dispatch-recovery-candidate-sha:50605f5849798cb3eecba87d0532938db6c9596e",
         "release-dispatch-recovery-at:1789864609117",
         "release-dispatch-recovery-at:1789864825197",
-        "release-dispatch-recovery-at:1789865123541"
+        "release-dispatch-recovery-at:1789865123541",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35480391048:1",
@@ -16670,7 +16680,8 @@
         "release-dispatch-recovery-candidate-sha:30e5b67adc088defdcd12afad17e86ab40716f8a",
         "release-dispatch-recovery-at:1789864609117",
         "release-dispatch-recovery-at:1789864825197",
-        "release-dispatch-recovery-at:1789865123541"
+        "release-dispatch-recovery-at:1789865123541",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35480391048:1",
@@ -17713,7 +17724,7 @@
         "web-games/chess-battle/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -17969,7 +17980,10 @@
         "release-dispatch-recovery-candidate-sha:f776281f2ab0eb23e126e6b9e37849e625dd4eaa",
         "release-dispatch-recovery-at:1789864609117",
         "release-dispatch-recovery-at:1789864825197",
-        "release-dispatch-recovery-at:1789865123541"
+        "release-dispatch-recovery-at:1789865123541",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35480391048:1",
@@ -18038,7 +18052,7 @@
         "web-games/crystal-defense/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -18391,7 +18405,10 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CMALFORMED_OUTPUT%7CNO_OP%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:5691",
         "workload:cycle-ms:309932",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMALFORMED_OUTPUT%7CNO_OP%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMALFORMED_OUTPUT%7CNO_OP%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35479804503%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35480391048:1",
@@ -19500,7 +19517,7 @@
         "web-games/survival2/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -19752,7 +19769,10 @@
         "release-dispatch-recovery-candidate-sha:79bb71cdad7ed265078f9ab5c41277692cf49621",
         "release-dispatch-recovery-at:1789864609117",
         "release-dispatch-recovery-at:1789864825197",
-        "release-dispatch-recovery-at:1789865123541"
+        "release-dispatch-recovery-at:1789865123541",
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35480391048:1",
@@ -19821,7 +19841,7 @@
         "web-games/monster-adventure/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -20061,7 +20081,9 @@
         "actions-run-35480311224",
         "system-steward:retry-exhausted-regenerated:generation-2",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_2",
-        "system-steward:failure-signature:web-qa-or-promotion-failed"
+        "system-steward:failure-signature:web-qa-or-promotion-failed",
+        "recovery-queue:recovery-8aa83fdfc1e593ab4d99",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35480391048:1",
