@@ -381,8 +381,8 @@ function discoverRegion(){
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11550,14320);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
 function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else if(kind==='essence'){const p=randomCrystalPoint(140);x=p.x;y=p.y}else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y))}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
-function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.crystalZone){const p=randomCrystalPoint(120);x=p.x;y=p.y}else if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11560,14320);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
-function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
+function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.crystalZone){const p=randomCrystalPoint(120);x=p.x;y=p.y}else if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11560,14320);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
+function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
 function initWorld(){
   state.trees=Array.from({length:420},(_,i)=>makeNode('tree',i));
   state.rocks=Array.from({length:340},(_,i)=>makeNode('rock',i));
@@ -1011,6 +1011,7 @@ function applyRemoteEnemyEffect(payload){
  if(payload.kind==='burn'){p.burnTicks=4;p.burnNext=now+1000;showNotice('화염 상태 · 4초')}
  else if(payload.kind==='stun'){p.stunnedUntil=Math.max(p.stunnedUntil||0,now+duration);showNotice('기절 · '+Math.max(1,Math.round(duration/1000))+'초')}
  else if(payload.kind==='weaken'){p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration);showNotice('수정 수호자의 포효 · 공격력/속도 15초 절반')}
+ else if(payload.kind==='heavy'){showNotice((payload.sourceName||'적')+' · 특수 공격 강타')}
  state.dirty=true;updateHud()
 }
 function applyEnemyEffectTarget(e,p,kind,duration=0){
@@ -1455,7 +1456,7 @@ function updateStoryLabBoss(e,p,now){
  }
  if(now>=(e.roarUntil||0))setBossBanner('');
  if(d>e.type.r+30)return{vx:(p.x-e.x)/(d||1)*e.type.speed,vy:(p.y-e.y)/(d||1)*e.type.speed};
- if(now-e.attackAt>(e.type.attackCooldown||1200)){e.attackAt=now;enemyDamageTarget(e,30,false)}
+ if(enemyAttackReady(e,now,1200)){markEnemyAttack(e,now);enemyDamageTarget(e,30,false)}
  return{vx:0,vy:0}
 }
 
@@ -1538,6 +1539,45 @@ function damageMonster(target,amount,attacker,now){
     if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+12000});
   }
 }
+function enemyFastAttackException(type){
+ return!!type&&['crystalboar','crystalboarjunior','crystalguardian'].includes(type.id)
+}
+function enemyAttackReady(e,now,fallback=900){
+ if(enemyFastAttackException(e.type))return now-e.attackAt>(e.type.attackCooldown||fallback);
+ return now>=(e.nextAttackAt||0)
+}
+function markEnemyAttack(e,now){
+ e.attackAt=now;
+ if(!enemyFastAttackException(e.type))e.nextAttackAt=now+rand(3000,4000)
+}
+function enemyHasBuiltInSpecial(type){
+ return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower)
+}
+function enemyCanUseCommonSpecial(e){
+ return!!e&&e.type.mood!=='harmless'&&!enemyHasBuiltInSpecial(e.type)&&e.type.id!=='crystalboarjunior'
+}
+function showCommonEnemySpecial(e){
+ if(e.playerTargetId&&e.playerTargetId!==multiplayer.playerId&&multiplayer.connected&&multiIsHost())multiSend('enemy-effect',{targetId:e.playerTargetId,kind:'heavy',sourceName:e.type.name});
+ else showNotice(e.type.name+' · 특수 공격 강타')
+}
+function commonEnemySpecialHit(e,targetP,now,baseDamage){
+ markEnemyAttack(e,now);enemyDamageTarget(e,baseDamage*1.5,true);showCommonEnemySpecial(e)
+}
+function tryTimedCommonEnemySpecial(e,targetP,now,playerD){
+ if(!enemyCanUseCommonSpecial(e)||!e.hostile)return false;
+ if(!e.nextCommonSpecialAt)e.nextCommonSpecialAt=now+3000;
+ if(now<e.nextCommonSpecialAt)return false;
+ e.nextCommonSpecialAt=now+3000;
+ const meleeRange=e.type.r+25;
+ if(playerD<=meleeRange&&Math.random()<.40){commonEnemySpecialHit(e,targetP,now,e.type.dmg);return true}
+ return false
+}
+function performEnemyBasicAttack(e,targetP,now){
+ markEnemyAttack(e,now);
+ if(enemyCanUseCommonSpecial(e)&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*1.5,true);showCommonEnemySpecial(e);return}
+ if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyEnemyEffectTarget(e,targetP,'burn',4000);return}
+ enemyDamageTarget(e,e.type.dmg,false)
+}
 function chaseMonster(e,target,now,speedMult=1,damageMult=1){
   if(!target||target.hp<=0)return null;
   const d=dist(e.x,e.y,target.x,target.y),meleeRange=e.type.r+target.type.r+8;
@@ -1546,20 +1586,21 @@ function chaseMonster(e,target,now,speedMult=1,damageMult=1){
     vx=(target.x-e.x)/(d||1)*e.type.speed*speedMult;
     vy=(target.y-e.y)/(d||1)*e.type.speed*speedMult
   }
-  if(d<=meleeRange&&now-e.attackAt>(e.type.attackCooldown||900)){
-    e.attackAt=now;
-    damageMonster(target,e.type.dmg*damageMult,e,now)
+  if(d<=meleeRange&&enemyAttackReady(e,now,900)){
+    markEnemyAttack(e,now);
+    const special=enemyCanUseCommonSpecial(e)&&Math.random()<.30;
+    damageMonster(target,e.type.dmg*damageMult*(special?1.5:1),e,now)
   }
   return{vx,vy}
 }
 function setBossBanner(text=''){ui.bossBanner.textContent=text;ui.bossBanner.classList.toggle('on',!!text)}
 function updateBoss(e,p,now){
  if(now<(e.stunnedUntil||0)){setBossBanner('녹스바르 · 속박됨');return{vx:0,vy:0}}
- const s=e.bossState||(e.bossState={mode:'idle',nextAt:now+1200,telegraphUntil:0,hitIndex:0,nextHitAt:0});
+ const s=e.bossState||(e.bossState={mode:'idle',nextAt:now+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0});
  const d=dist(e.x,e.y,p.x,p.y);
  if(s.mode==='telegraph-normal'){
    setBossBanner('일반 공격 예고 · 피할 수 있음');
-   if(now>=s.telegraphUntil){if(d<125)enemyDamageTarget(e,50,false);s.mode='idle';s.nextAt=now+rand(2000,3000);setBossBanner('')}
+   if(now>=s.telegraphUntil){if(d<125)enemyDamageTarget(e,50,false);s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('')}
    return{vx:0,vy:0}
  }
  if(s.mode==='telegraph-triple'){
@@ -1568,7 +1609,7 @@ function updateBoss(e,p,now){
    if(s.hitIndex>0&&s.hitIndex<=3&&now>=s.nextHitAt){
      if(d<135)enemyDamageTarget(e,100,false);
      s.hitIndex++;s.nextHitAt=now+1000;
-     if(s.hitIndex>3){s.mode='idle';s.nextAt=now+rand(2000,3000);setBossBanner('')}
+     if(s.hitIndex>3){s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('')}
    }
    return{vx:0,vy:0}
  }
@@ -1703,7 +1744,8 @@ function update(dt,now){
       if(e.hp<=0||e.area!==state.area)continue;
       const playerTarget=multiEnemyPlayerTarget(e),targetP=playerTarget.player; e.playerTargetId=playerTarget.id; const playerD=dist(e.x,e.y,targetP.x,targetP.y);
       let vx=0,vy=0,monsterFight=false;
-      if(e.type.boss){const b=updateBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
+      if(tryTimedCommonEnemySpecial(e,targetP,now,playerD))monsterFight=true;
+      if(!monsterFight&&e.type.boss){const b=updateBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
       if(!e.type.boss&&now<(e.stunnedUntil||0)){vx=0;vy=0;monsterFight=true}
       if(!monsterFight&&e.type.labBoss){const b=updateStoryLabBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
   
@@ -1712,7 +1754,7 @@ function update(dt,now){
       }
       if(!monsterFight&&e.type.vampireBat&&playerD<e.type.r+27&&now>=(e.nextSpecialAt||0)){
         e.nextSpecialAt=now+2000;
-        if(Math.random()<.30){e.attackAt=now;enemyDamageTarget(e,30,false);e.hp=Math.min(e.maxHp,e.hp+30);showNotice('거대 흡혈 박쥐 · 흡혈');monsterFight=true}
+        if(Math.random()<.30){markEnemyAttack(e,now);enemyDamageTarget(e,30,false);e.hp=Math.min(e.maxHp,e.hp+30);showNotice('거대 흡혈 박쥐 · 흡혈');monsterFight=true}
       }
       if(!monsterFight&&e.type.guardian){
         const rage=guardianRageState(e,targetP,now),gt=guardianTarget(e);
@@ -1728,7 +1770,7 @@ function update(dt,now){
               vy=(targetP.y-e.y)/(playerD||1)*e.type.speed*rage
             }else{
               vx=0;vy=0;
-              if(now-e.attackAt>(e.type.attackCooldown||1050)){e.attackAt=now;enemyDamageTarget(e,e.type.dmg*rage,false)}
+              if(enemyAttackReady(e,now,1050)){markEnemyAttack(e,now);enemyDamageTarget(e,e.type.dmg*rage,false)}
             }
             monsterFight=true
           }
@@ -1761,8 +1803,8 @@ function update(dt,now){
         const sp=updateCrystalBoarSpecial(e,targetP,now);
         if(sp){vx=sp.vx;vy=sp.vy;monsterFight=true}
       }
-      if(!monsterFight&&e.type.crystalSpecial&&e.hostile&&playerD<(e.type.detect||560)&&playerD<e.type.r+28&&now-e.attackAt>(e.type.attackCooldown||1100)){
-        e.attackAt=now;
+      if(!monsterFight&&e.type.crystalSpecial&&e.hostile&&playerD<(e.type.detect||560)&&playerD<e.type.r+28&&enemyAttackReady(e,now,1100)){
+        markEnemyAttack(e,now);
         const roll=Math.random();
         if(roll<.30){e.special={kind:'charge',started:now,retreatUntil:now+700,chargeAt:now+2000,endAt:now+5000};showNotice('수정 멧돼지 · 기절 돌진 준비');monsterFight=true}
         else if(roll<.50){summonCrystalJunior(e);monsterFight=true}
@@ -1776,7 +1818,7 @@ function update(dt,now){
           const meleeRange=e.type.r+25;
           if(playerD>meleeRange){vx=(targetP.x-e.x)/(playerD||1)*e.type.speed;vy=(targetP.y-e.y)/(playerD||1)*e.type.speed}
           else{vx=0;vy=0}
-          if(playerD<=meleeRange&&now-e.attackAt>(e.type.attackCooldown||900)){e.attackAt=now;if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyEnemyEffectTarget(e,targetP,'burn',4000)}else enemyDamageTarget(e,e.type.dmg,false)}
+          if(playerD<=meleeRange&&enemyAttackReady(e,now,900))performEnemyBasicAttack(e,targetP,now)
         }else{
           if(now>e.wanderAt){e.wanderAt=now+rand(900,2200);e.wander+=rand(-1.2,1.2)}
           vx=Math.cos(e.wander)*e.type.speed*.28;vy=Math.sin(e.wander)*e.type.speed*.28
