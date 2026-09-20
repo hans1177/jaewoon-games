@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 66,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -257,10 +257,10 @@
     }
   },
   "neuralWorkGraphTopology": {
-    "version": 1,
+    "version": 3,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_SHADOW_POST_REPAIR_VALIDATION_WITH_CAPACITY_AWARE_20_SLOT_EXECUTION",
+    "currentState": "ALWAYS_RUNNING_ATOMIC_SIGNAL_MESH_WITH_VIBE_SYNCED_WORKERS",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -302,6 +302,127 @@
         "RECOVERY_FALLBACK"
       ],
       "globalWaveBarrierForbiddenWhenIndependentNodesCanProgress": true
+    },
+    "circulationModel": {
+      "runState": "ALWAYS_RUNNING",
+      "globalStopState": null,
+      "terminalSignalState": null,
+      "executionTopology": "ATOMIC_NEURON_STREAM",
+      "model": "DISTRIBUTED_CAUSAL_SIGNAL_MESH",
+      "principle": "EVERY_VIBE_INTERNAL_SYSTEM_IS_A_SIGNAL PARTICIPANT; LEARNING_IS ONE DOMAIN, NOT THE BRAIN",
+      "primaryGameDevelopmentFlow": [
+        "OWNER_OR_SYSTEM_EVENT",
+        "SENSE_CURRENT_STATE",
+        "UPDATE_FACTS_AND_HYPOTHESES",
+        "PROPAGATE_CAUSAL_RELATIONSHIPS",
+        "ROUTE_RESPONSIBILITY",
+        "PLAN_ATOMIC_WORK",
+        "COMPILE_GATED_WORK_CONTRACT",
+        "SYNC_WORKER_WITH_VIBE_AND_PINNED_MAIN",
+        "EXECUTE_ATOMIC_WORK",
+        "QA_PERFORMANCE_RUNTIME_AND_SECURITY_EVIDENCE",
+        "CRITIC_AND_ROOT_CAUSE_UPDATE",
+        "VERIFIED_CHECKPOINT",
+        "MEMORY_AND_PROVENANCE_UPDATE",
+        "EMIT_NEXT_CAUSAL_EVENT"
+      ],
+      "signalDomains": {
+        "DIRECTIVE_POLICY_CONTEXT": [
+          "platform-release-roadmap",
+          "company-architecture-map",
+          "company-log-map",
+          "company-shared-context",
+          "vibe2-central-work-contract"
+        ],
+        "STATE_PERCEPTION": [
+          "vibe2-handoff",
+          "vibe2-game-fact-pack",
+          "vibe2-development-intelligence",
+          "vibe2-design-intelligence",
+          "vibe2-existing-web-assessment"
+        ],
+        "PLANNING_ROUTING": [
+          "vibe2-auto-planner",
+          "vibe2-work-package",
+          "vibe2-asset-production-plan",
+          "vibe2-neural-diagnosis",
+          "vibe2-neural-event-router",
+          "vibe2-neural-work-graph"
+        ],
+        "ATOMIC_EXECUTION": [
+          "vibe2-continuous-runner",
+          "vibe2-exploration-worker",
+          "vibe2-source-worker",
+          "vibe2-candidate-reconcile"
+        ],
+        "QUALITY_EVIDENCE": [
+          "vibe2-incremental-qa",
+          "vibe2-performance-sanity",
+          "vibe2-fan-in-review",
+          "runtime-validation",
+          "independent-qa"
+        ],
+        "CAUSAL_CRITIC": [
+          "vibe2-neural-critic",
+          "vibe2-neural-root-cause",
+          "vibe2-neural-feedback",
+          "vibe2-neural-shadow-audit",
+          "vibe2-neural-event-telemetry",
+          "vibe2-neural-phase2-readiness"
+        ],
+        "RECOVERY_IMMUNITY": [
+          "vibe2-system-steward",
+          "vibe2-release-dispatch-recovery",
+          "vibe2-remote-work-lock",
+          "company-security-immune-system"
+        ],
+        "RESOURCE_CIRCULATION": [
+          "vibe2-queue-control",
+          "vibe2-adaptive-backpressure",
+          "vibe2-parallelism-telemetry",
+          "free-budget-telemetry"
+        ],
+        "ASSET_PRESENTATION_STORY": [
+          "vibe2-artbook-direction-selection",
+          "vibe2-artbook-story-core",
+          "vibe2-artbook-story-engine",
+          "vibe2-asset-production-plan"
+        ],
+        "RELEASE_LIFECYCLE": [
+          "vibe2-release-baseline-queue",
+          "vibe2-post-release-focus",
+          "candidate-release-gates",
+          "platform-runtime-dispatch"
+        ],
+        "MEMORY_LEARNING": [
+          "vibe2-experience-control",
+          "vibe2-learning-motor",
+          "vibe2-distillation-ingest",
+          "vibe2-code-pattern-ingest",
+          "vibe2-capability-distillation",
+          "vibe2-weight-learning",
+          "vibe2-authorized-source-memory",
+          "vibe2-training-sample",
+          "vibe2-training-request"
+        ],
+        "EXTERNAL_REFERENCE_DISTILLATION": [
+          "vibe2-external-ai-distillation",
+          "vibe2-external-gameplay-distill",
+          "vibe2-multisource-learning-collector",
+          "vibe2-licensed-reference-samples"
+        ],
+        "PROVENANCE_BENCHMARK": [
+          "vibe2-merged-pr-provenance",
+          "vibe2-real-platform-dataset-gate",
+          "vibe2-practice-dataset",
+          "verified-runtime-benchmark"
+        ]
+      },
+      "crossDomainRule": "SIGNALS MAY ROUTE ACROSS ANY CAUSALLY RELEVANT DOMAIN THROUGH CONTRACTED EVENTS; NO DOMAIN IS A TERMINAL SINK",
+      "verifiedCheckpointRule": "PASS CREATES VERIFIED_CHECKPOINT AND NEXT CAUSAL INPUT",
+      "inhibitionRule": "INHIBIT ONLY UNSAFE ACTION; KEEP EVENT SENSOR DIAGNOSIS RECOVERY MEMORY AND REPLAN LIVE",
+      "workerSyncRule": "EVERY EXECUTION WORKER MUST MATCH LIVE VIBE RESERVATION IDENTITY AND PINNED MAIN CONTRACT BEFORE WORK",
+      "durableReplayRule": "EVERY SIGNAL IS RESOLVED BY EXECUTION VERIFIED_CHECKPOINT REQUEUE RECOVERY INHIBITION OR AWAITED_EVENT; SILENT DROP FORBIDDEN"
     },
     "auditability": {
       "everyActionLinksToEvidence": true,
@@ -659,6 +780,15 @@
       "gamePrimaryFixedInternalCap": null,
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
       "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
+      "workerPreflightSynchronization": {
+        "required": true,
+        "controlBranch": "vibe2-unreal-core",
+        "canonicalContractBranch": "main",
+        "reservationIdentityMustMatch": true,
+        "pinnedMainShaMustMatchReservedContract": true,
+        "sharedContextMustPassBeforeWork": true,
+        "unsynchronizedWorkerAction": "INHIBIT_AND_REPLAN_OR_REQUEUE"
+      },
       "authorityChange": "NONE"
     },
     "liveShadowRepairLoop": {

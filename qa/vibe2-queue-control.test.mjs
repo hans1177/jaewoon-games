@@ -20,6 +20,7 @@ import {
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
   recoverFanInRegressionFailure,
+  verifyVibeWorkerSynchronization,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -27,6 +28,41 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
+
+test('worker preflight requires exact live Vibe reservation identity',()=>{
+  const reservation={id:'sync:1',runId:'sync-run',runAttempt:2,reservedAt:'2026-09-20T14:18:00Z'};
+  const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'sync-task',gameId:'sync-game',target:'web',department:'development',type:'implementation',
+    goal:'sync',status:'queued',sourceRoot:'web-games/sync-game',responsibleFiles:['index.html']
+  }]}),{maxConcurrentTasks:20,lane:'game-primary',reservation});
+  const pass=verifyVibeWorkerSynchronization(reserved.queue,{
+    taskId:'sync-task',reservationId:'sync:1',reservationRunId:'sync-run',reservationRunAttempt:2,reservedAt:'2026-09-20T14:18:00Z'
+  });
+  assert.equal(pass.pass,true);
+  assert.deepEqual(pass.failures,[]);
+  const stale=verifyVibeWorkerSynchronization(reserved.queue,{
+    taskId:'sync-task',reservationId:'wrong',reservationRunId:'sync-run',reservationRunAttempt:2,reservedAt:'2026-09-20T14:18:00Z'
+  });
+  assert.equal(stale.pass,false);
+  assert.ok(stale.failures.includes('RESERVATION_ID_MISMATCH'));
+});
+
+test('legacy done state migrates to verified checkpoint and PASS never emits terminal done',()=>{
+  const legacy=createVibeContinuousQueue({tasks:[{
+    id:'legacy-done',gameId:'legacy',target:'web',department:'development',type:'implementation',
+    goal:'legacy',status:'done',sourceRoot:'web-games/legacy'
+  }]});
+  assert.equal(legacy.tasks[0].status,'verified');
+  const queued=createVibeContinuousQueue({tasks:[{
+    id:'pass-checkpoint',gameId:'pass',target:'web',department:'development',type:'implementation',
+    goal:'pass',status:'queued',sourceRoot:'web-games/pass'
+  }]});
+  const settled=settleVibeTask(queued,{taskId:'pass-checkpoint',outcome:'PASS',evidence:['qa-pass']});
+  assert.equal(settled.queue.tasks[0].status,'verified');
+  assert.ok(settled.queue.tasks[0].evidence.includes('signal-state:VERIFIED_CHECKPOINT'));
+  assert.ok(settled.queue.tasks[0].evidence.includes('signal-continuity:NEXT_CAUSAL_INPUT'));
+  assert.equal(settled.next.brainLive,true);
+});
 
 test('queue ingress preserves explicit atomic graphics metadata and evidence',()=>{
   const queue=enqueueVibeTask(createVibeContinuousQueue(),{
@@ -927,7 +963,7 @@ test('work package metadata survives queue normalization and larger functional p
 });
 
 
-test('practice-only PASS settles done without candidate QA promotion', () => {
+test('practice-only PASS settles verified checkpoint without candidate QA promotion', () => {
   let queue=createVibeContinuousQueue({tasks:[{
     id:'practice',target:'web',department:'development',type:'research',goal:'[VIBE_LEARNING_PRACTICE] save',
     status:'running',priority:'low',releaseState:'other',evidence:['learning-practice-only','production-pass:NO']
@@ -937,7 +973,7 @@ test('practice-only PASS settles done without candidate QA promotion', () => {
     evidence:['learning-practice-only','production-pass:NO','source-write:NO']
   }]);
   const task=merged.queue.tasks.find(t=>t.id==='practice');
-  assert.equal(task.status,'done');
+  assert.equal(task.status,'verified');
   assert.equal(task.lastOutcome,'PASS');
   assert.ok(task.evidence.includes('production-pass:NO'));
   assert.equal(merged.applied[0].outcome,'DONE_PRACTICE');
@@ -1114,7 +1150,7 @@ test('reserve-batch heals downgraded atomic queue schema even when no work is re
       department:'development',
       type:'implementation',
       goal:'done',
-      status:'done',
+      status:'verified',
       sourceRoot:'web-games/done',
       responsibleFiles:['index.html']
     }]
@@ -1155,7 +1191,7 @@ test('continuous core workflow distinguishes pending neuron results from complet
 test('PASS exposes newly satisfied dependency nodes for immediate event-driven DAG refill',()=>{
   let queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
     {id:'root-a',gameId:'a',target:'web',department:'development',type:'implementation',goal:'root a',status:'running',sourceRoot:'web-games/a',responsibleFiles:['index.html'],reservationId:'dep-run:1',reservationRunId:'dep-run',reservedAt:'2026-09-20T10:00:00Z'},
-    {id:'root-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'root b',status:'done',sourceRoot:'web-games/b',responsibleFiles:['index.html']},
+    {id:'root-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'root b',status:'verified',sourceRoot:'web-games/b',responsibleFiles:['index.html']},
     {id:'child-ready',gameId:'c',target:'web',department:'development',type:'implementation',goal:'child',status:'queued',sourceRoot:'web-games/c',responsibleFiles:['index.html'],dependencies:['root-a','root-b']},
     {id:'child-wait',gameId:'d',target:'web',department:'development',type:'implementation',goal:'child wait',status:'queued',sourceRoot:'web-games/d',responsibleFiles:['index.html'],dependencies:['root-a','missing-root']}
   ]});

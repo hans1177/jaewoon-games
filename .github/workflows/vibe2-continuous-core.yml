@@ -415,6 +415,30 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Synchronize worker with Vibe before work
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          RESERVATION_ID: ${{ matrix.reservationId }}
+          RESERVATION_RUN_ID: ${{ matrix.reservationRunId }}
+          RESERVATION_RUN_ATTEMPT: ${{ matrix.reservationRunAttempt }}
+          RESERVED_AT: ${{ matrix.reservedAt }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          test -n "$CONTRACT_SHA"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
+          (
+            cd "$contract_root"
+            node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
+          )
+          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-worker-shared-context.log
+          node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
+          grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
+          echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
+          echo 'VIBE2_WORKER_PREFLIGHT_SYNC=PASS'
+
       - name: Restore shared Ollama runtime cache
         id: worker_ollama_cache
         uses: actions/cache/restore@v4

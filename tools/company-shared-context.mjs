@@ -81,7 +81,8 @@ export function validateSharedWorkerContext({
   if(orchestration?.absenceBlocksWorkerProgress!==false)fail('PRIMARY_AI_ABSENCE_MUST_NOT_BLOCK');
   if(orchestration?.workersContinue24hFromCentralContract!==true)fail('AUTONOMOUS_24H_WORK_REQUIRED');
   if(orchestration?.reviewRequiredForWorkerCompletion!==false)fail('PRIMARY_AI_REVIEW_MUST_BE_NON_BLOCKING');
-  if(orchestration?.deterministicEvidenceOwnsTaskCompletion!==true)fail('DETERMINISTIC_COMPLETION_AUTHORITY');
+  if(orchestration?.deterministicEvidenceCreatesVerifiedCheckpoint!==true)fail('DETERMINISTIC_VERIFIED_CHECKPOINT_AUTHORITY');
+  if(orchestration?.verifiedCheckpointDoesNotStopBrain!==true)fail('VERIFIED_CHECKPOINT_MUST_NOT_STOP_BRAIN');
   if(architecture?.workerRoles?.PRIMARY_AI_ORCHESTRATOR!=='NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR')fail('ARCHITECTURE_PRIMARY_AI_ROLE');
   if(architecture?.autonomous24hWorkersContinueWithoutPrimaryAi!==true)fail('ARCHITECTURE_AUTONOMOUS_24H');
   if(architecture?.primaryAiPresenceRequired!==false)fail('ARCHITECTURE_PRIMARY_AI_NONBLOCKING');
