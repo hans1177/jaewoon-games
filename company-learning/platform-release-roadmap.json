@@ -1,5 +1,5 @@
 {
-  "version": 188,
+  "version": 189,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -2751,8 +2751,8 @@
       "workStealing": true
     },
     "ownerFocusedDevelopment": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-20",
       "enabled": true,
       "oneLogicalCaretakerPerFocusedGame": true,
       "stickyOwnership": true,
@@ -2762,7 +2762,27 @@
         "max": 4
       },
       "focusSource": "OWNER_DIRECTIVE_OR_OWNER_EDIT",
-      "ownerFocusPreemptsGeneralDevelopment": true
+      "ownerFocusPreemptsGeneralDevelopment": true,
+      "primaryGameFocus": {
+        "gameId": "fantasy-survival",
+        "name": "마력숲 생존기",
+        "directive": "MAIN_DEVELOPMENT_FOCUS",
+        "developmentPriority": "P0_OWNER_FOCUSED_GAME",
+        "targetPlatforms": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "platformDevelopmentMode": "UNITY_ROBLOX_CONCURRENT",
+        "concurrentPlatformDevelopment": true,
+        "lifecycleStateRequired": "ACTIVE",
+        "productionClassRequired": "DEVELOPMENT_CONFIRMED",
+        "preemptsGeneralGameDevelopment": true,
+        "otherEligibleGameDevelopmentMayContinueWhenCapacityRemains": true,
+        "qualitySecurityEvidenceAndSaveCompatibilityGatesUnchanged": true,
+        "platformPriorityTierUnchanged": true,
+        "neuralExecutionAuthorityChange": false,
+        "source": "OWNER_DIRECTIVE_2026-09-20"
+      }
     },
     "ownerWebEditPropagation": {
       "version": 1,
