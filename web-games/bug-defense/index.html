@@ -1,10 +1,617 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#0b1020;color:#f5f7fb;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}body{display:flex;justify-content:center;overflow-x:hidden}.game{width:min(100%,560px);min-height:100vh;padding:16px;background:linear-gradient(180deg,#15213a,#0a1120 66%,#070b14)}.hero,.panel{padding:15px;border:1px solid #2b3c5d;border-radius:18px;background:#17233a;margin-bottom:12px}.hero h1{margin:6px 0 8px;font-size:25px}.desc,.status{font-size:13px;line-height:1.5;color:#c8d4e8}.arena{position:relative;height:170px;border-radius:18px;border:1px solid #324667;background:radial-gradient(circle at 55% 35%,#28416a,#111a2e 58%,#0a0f1b);margin-bottom:12px;overflow:hidden}.player{position:absolute;width:52px;height:52px;border-radius:16px;left:calc(12% + (var(--pos,0) * 9%));top:72px;background:#60a5fa;border:4px solid #dbeafe;transition:left .18s}.enemy{position:absolute;width:48px;height:48px;border-radius:50%;right:34px;top:48px;background:#fb7185;border:4px solid #ffe4e6}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.stat{padding:8px 4px;border-radius:11px;background:#0d1729;text-align:center}.stat b{display:block;font-size:16px}.scope{display:grid;gap:8px}.scope-action,.audio button,.session-phase{min-height:54px;border:0;border-radius:13px;background:#eef4ff;color:#111827;font-weight:760;text-align:left;padding:9px 11px}.scope-action span,.session-phase span,.session-phase small{display:block;font-size:12px;line-height:1.35;margin:2px 0}.scope-action small,.session-phase small{font-size:10px;opacity:.72}.scope-action[data-scope-covered="true"],.session-phase[data-session-stage-complete="true"]{outline:3px solid #86efac}.session-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.audio{display:grid;grid-template-columns:116px 1fr;gap:10px;align-items:center}.audio input{width:100%}.meter{height:8px;border-radius:8px;background:#23314d;overflow:hidden;margin-top:10px}.meter span{display:block;height:100%;width:0;background:#a78bfa;transition:width .2s}@media(max-width:390px){.stats,.session-grid{grid-template-columns:repeat(2,1fr)}.audio{grid-template-columns:1fr}}</style></head><body data-audio-state="locked" data-approved-scope-count="5"><main class="game" data-session-minutes="30" data-session-stage-count="4" data-session-current-stage="0" data-session-completed-stages="0"><section class="hero"><small>DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 캐주얼</small><h1>곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.</h1><p class="desc">wave defense readability</p></section><section class="panel"><h2>30분 플레이 구조</h2><div class="session-grid"><button class="session-phase" type="button" data-session-stage="1" data-session-start="0" data-session-end="5" data-session-stage-complete="false"><b>0–5분</b><span>도입 · 조작과 첫 목표</span><small>Read the incoming insect wave and its threat pattern.</small></button><button class="session-phase" type="button" data-session-stage="2" data-session-start="5" data-session-end="15" data-session-stage-complete="false"><b>5–15분</b><span>핵심 루프 · 반복과 성장</span><small>Place or adjust defenders and spend limited resources on the highest-value counter.</small></button><button class="session-phase" type="button" data-session-stage="3" data-session-start="15" data-session-end="25" data-session-stage-complete="false"><b>15–25분</b><span>난도 상승 · 변형과 압박</span><small>Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.</small></button><button class="session-phase" type="button" data-session-stage="4" data-session-start="25" data-session-end="30" data-session-stage-complete="false"><b>25–30분</b><span>마무리 · 클라이맥스와 보상</span><small>누적된 성장과 학습을 사용해 마지막 목표를 해결하고 명확한 보상과 다음 목표를 연다.</small></button></div></section><section class="arena"><div class="player" id="player"></div><div class="enemy" id="enemy"></div></section><section class="stats" id="state" data-state="ready" data-score="0" data-health="100" data-resource="0" data-progress="0"><div class="stat"><b id="score">0</b><small>SCORE</small></div><div class="stat"><b id="health">100</b><small>HP</small></div><div class="stat"><b id="wave">1</b><small>WAVE</small></div><div class="stat"><b id="resource">0</b><small>RESOURCE</small></div><div class="stat"><b id="level">1</b><small>LEVEL</small></div><div class="stat"><b id="enemyHp">100</b><small>ENEMY HP</small></div><div class="stat"><b id="position">0</b><small>POSITION</small></div><div class="stat"><b id="cooldown">0</b><small>COOLDOWN</small></div></section><section class="panel"><h2>승인 분량 전체 구현</h2><div class="scope"><button id="scope-control-1" class="scope-action" data-scope-id="scope-corefun-f9eac87035" type="button"><b>1</b><span>wave defense readability</span><small>OBJECTIVE</small></button><button id="scope-control-2" class="scope-action" data-scope-id="scope-coreloop-0-f96e139c08" type="button"><b>2</b><span>Read the incoming insect wave and its threat pattern.</span><small>SURVIVAL</small></button><button id="scope-control-3" class="scope-action" data-scope-id="scope-coreloop-1-e0fc69d258" type="button"><b>3</b><span>Place or adjust defenders and spend limited resources on the highest-value counter.</span><small>ECONOMY</small></button><button id="scope-control-4" class="scope-action" data-scope-id="scope-coreloop-2-87f31deaff" type="button"><b>4</b><span>Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.</span><small>PROGRESSION</small></button><button id="scope-control-5" class="scope-action" data-scope-id="scope-mobileux-bb5af6ed38" type="button"><b>5</b><span>Yes</span><small>MOBILE</small></button></div><div class="meter"><span id="meter"></span></div></section><section class="panel audio"><button id="mute" data-audio-control="mute" type="button">음악 켜짐</button><label>볼륨 <input id="volume" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.28"></label></section><div class="panel status" id="status">STATUS: 준비 · 30분 4단계 세션 · 승인 scope 5개 실제 입력 검증 대기</div></main><script>const cfg={"genre":"CASUAL","initial":{"score":0,"hp":100,"wave":1,"resource":0,"progress":0},"notes":[220,277.2,329.6],"scopeCount":5,"sessionMinutes":30,"sessionPhases":[{"id":"onboarding","start":0,"end":5,"label":"도입 · 조작과 첫 목표"},{"id":"core-loop","start":5,"end":15,"label":"핵심 루프 · 반복과 성장"},{"id":"escalation","start":15,"end":25,"label":"난도 상승 · 변형과 압박"},{"id":"climax","start":25,"end":30,"label":"마무리 · 클라이맥스와 보상"}]};const state={...cfg.initial,turn:0,level:1,enemyHp:100,position:0,cooldown:0,combo:0,energy:100,objective:0};const $=id=>document.getElementById(id);let audioCtx=null,master=null,osc=null,muted=false;async function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=Number($('volume').value);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='sine';osc.frequency.value=cfg.notes[0];osc.connect(master);osc.start()}if(audioCtx.state==='suspended')await audioCtx.resume();document.body.dataset.audioState=muted?'muted':'running'}function advance(label){if(state.progress>=100){state.progress=state.progress%100;state.wave++;state.level++;state.resource+=2}const s=$('state');s.dataset.state='turn-'+state.turn;s.dataset.score=String(state.score);s.dataset.health=String(state.hp);s.dataset.resource=String(state.resource);s.dataset.progress=String(state.progress);$('score').textContent=state.score;$('health').textContent=state.hp;$('wave').textContent=state.wave;$('resource').textContent=state.resource;$('level').textContent=state.level;$('enemyHp').textContent=state.enemyHp;$('position').textContent=state.position;$('cooldown').textContent=state.cooldown;$('meter').style.width=Math.min(100,state.progress)+'%';$('player').style.setProperty('--pos',String(state.position));$('enemy').style.opacity=String(.35+.65*(state.enemyHp/100));if(osc)osc.frequency.setTargetAtTime(cfg.notes[state.turn%cfg.notes.length],audioCtx.currentTime,.03);$('status').textContent='STATUS: '+label+' · TURN '+state.turn+' · OBJECTIVE '+state.objective+' · ENERGY '+state.energy+' · SESSION '+cfg.sessionMinutes+'m'} async function scopeHandler1(){await ensureAudio();const button=document.getElementById("scope-control-1");button.dataset.scopeCovered='true';state.turn++;state.objective++;state.score+=7;state.progress+=9;state.position=(state.position+1)%8;advance("scope-corefun-f9eac87035");}
-async function scopeHandler4(){await ensureAudio();const button=document.getElementById('scope-control-4');button.dataset.scopeCovered='true';state.turn++;state.resource+=8;state.level++;state.score+=9;state.progress+=7;state.energy=Math.min(100,state.energy+2);advance('scope-coreloop-1-e0fc69d258');}
-async function scopeHandler2(){await ensureAudio();const button=document.getElementById("scope-control-2");button.dataset.scopeCovered='true';state.turn++;state.hp=Math.min(100,state.hp+3);state.energy=Math.min(100,state.energy+4);state.score+=6;state.progress+=7;advance("scope-coreloop-0-f96e139c08");}
-async function scopeHandler2(){await ensureAudio();const button=document.getElementById('scope-control-2');button.dataset.scopeCovered='true';state.turn++;state.hp=Math.min(100,state.hp+3);state.energy=Math.min(100,state.energy+4);state.score+=6;state.progress+=7;advance('scope-coreloop-0-f96e139c08');}
-async function scopeHandler3(){await ensureAudio();const button=document.getElementById("scope-control-3");button.dataset.scopeCovered='true';state.turn++;state.resource+=9;state.score+=6;state.progress+=7;state.energy=Math.min(100,state.energy+2);advance("scope-coreloop-1-e0fc69d258");}
-async function scopeHandler3(){await ensureAudio();const button=document.getElementById('scope-control-3');button.dataset.scopeCovered='true';state.turn++;state.resource+=9;state.score+=6;state.progress+=7;state.energy=Math.min(100,state.energy+2);advance('scope-coreloop-1-e0fc69d258');}
-async function scopeHandler4(){await ensureAudio();const button=document.getElementById("scope-control-4");button.dataset.scopeCovered='true';state.turn++;state.resource+=8;state.level++;state.score+=9;state.progress+=11;advance("scope-coreloop-2-87f31deaff");}
-async function scopeHandler4(){await ensureAudio();const button=document.getElementById("scope-control-4");button.dataset.scopeCovered='true';state.turn++;state.resource+=8;state.level++;state.score+=9;state.progress+=11;advance("scope-coreloop-2-87f31deaff");}
-async function scopeHandler5(){await ensureAudio();const button=document.getElementById("scope-control-5");button.dataset.scopeCovered='true';state.turn++;state.position=(state.position+1)%8;state.energy=Math.min(100,state.energy+1);state.score+=7;state.progress+=8;advance("scope-mobileux-bb5af6ed38");}
-document.getElementById("scope-control-5").addEventListener('click',scopeHandler5); const sessionRoot=document.querySelector('[data-session-minutes="30"]');const sessionStages=[...document.querySelectorAll('[data-session-stage]')];sessionStages.forEach((button,index)=>button.addEventListener('click',async()=>{await ensureAudio();button.dataset.sessionStageComplete='true';sessionRoot.dataset.sessionCurrentStage=String(index+1);sessionRoot.dataset.sessionCompletedStages=String(sessionStages.filter(x=>x.dataset.sessionStageComplete==='true').length);state.turn++;state.score+=5+index;state.progress+=8+index;advance('session-stage-'+(index+1));}));document.addEventListener('keydown',event=>{if(['ArrowRight','ArrowUp','Space'].includes(event.code)){const buttons=[...document.querySelectorAll('.scope-action')];const button=buttons[state.turn%buttons.length];if(button)button.click()}});$('mute').addEventListener('click',async()=>{await ensureAudio();muted=!muted;master.gain.value=muted?0:Number($('volume').value);$('mute').textContent=muted?'음악 꺼짐':'음악 켜짐';document.body.dataset.audioState=muted?'muted':'running'});$('volume').addEventListener('input',async()=>{await ensureAudio();if(!muted)master.gain.value=Number($('volume').value)});advance('ready');</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>곤충 디펜스</title>
+<style>
+:root{color-scheme:dark;--bg:#07140f;--panel:#10271b;--panel2:#173624;--line:#315640;--text:#f4f8ef;--muted:#b9c9ba;--accent:#d9f99d;--danger:#fb7185;--gold:#fde68a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#06100c;color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overscroll-behavior:none}
+body{display:flex;justify-content:center;background:radial-gradient(circle at 50% 0,#173e29 0,#07140f 42%,#040b08 100%)}
+button{font:inherit}
+.game{width:min(100%,620px);min-height:100vh;padding:12px 12px calc(18px + env(safe-area-inset-bottom));display:grid;gap:10px}
+.topbar,.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(24,60,39,.96),rgba(12,31,21,.96));border-radius:17px;box-shadow:0 12px 35px rgba(0,0,0,.2)}
+.topbar{padding:12px;display:grid;gap:10px}
+.titleRow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+h1{font-size:24px;margin:0;letter-spacing:-.04em}
+.subtitle{font-size:12px;color:var(--muted);line-height:1.45;margin-top:4px}
+.pills{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pill{background:#081a11;border:1px solid #294b36;border-radius:12px;padding:7px;text-align:center;min-width:0}
+.pill b{display:block;font-size:17px}.pill small{font-size:10px;color:#b5c7b7}
+.controls{display:flex;gap:6px;flex-wrap:wrap}
+.smallBtn,.primaryBtn,.skillBtn,.card,.evolveBtn,.retryBtn{border:0;border-radius:12px;min-height:44px;font-weight:800}
+.smallBtn{padding:8px 11px;background:#e8f4e7;color:#102018}
+.audioTools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.volumeCtl{display:flex;align-items:center;gap:5px;font-size:10px;color:#dbe9d8;background:#081a11;border:1px solid #294b36;border-radius:10px;padding:5px 7px}
+.volumeCtl input{width:76px;accent-color:#bef264}
+.smallBtn[aria-pressed="true"]{background:#a7f3d0}
+.primaryBtn{flex:1;min-width:148px;background:linear-gradient(180deg,#d9f99d,#a3e635);color:#19310e;padding:9px 14px}
+.primaryBtn:disabled,.skillBtn:disabled,.evolveBtn:disabled{opacity:.42}
+.panel{padding:10px}
+.preview{display:flex;gap:7px;align-items:center;overflow-x:auto;padding-bottom:2px}
+.previewLabel{font-size:11px;color:#d4e5d4;min-width:70px}
+.enemyTag{white-space:nowrap;border:1px solid #46634e;background:#0c1c13;border-radius:999px;padding:6px 9px;font-size:11px}
+.enemyTag strong{color:#fff}.typeMark{font-weight:900;margin-right:4px}
+.arenaWrap{position:relative;border-radius:18px;overflow:hidden;border:1px solid #3a6549;background:#0a1d13}
+canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-gradient(180deg,#32643d 0,#20492f 34%,#193a27 100%)}
+.legend{position:absolute;left:8px;bottom:7px;display:flex;gap:5px;pointer-events:none}
+.legend span{font-size:9px;padding:4px 6px;border-radius:999px;background:rgba(5,15,10,.78);border:1px solid rgba(255,255,255,.14)}
+.message{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);background:rgba(3,12,8,.88);border:1px solid #86a98d;border-radius:14px;padding:10px 14px;font-weight:900;text-align:center;pointer-events:none;opacity:0;transition:opacity .2s;max-width:82%}
+.message.show{opacity:1}
+.deck{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.card{background:#eff7e9;color:#132319;text-align:left;padding:9px;border:2px solid transparent;position:relative;min-height:86px}
+.card.selected{border-color:#facc15;box-shadow:0 0 0 2px rgba(250,204,21,.25)}
+.card strong,.card small{display:block}.card strong{font-size:14px}.card small{font-size:10px;line-height:1.35;margin-top:3px;color:#46594c}
+.card .cost{position:absolute;right:7px;top:7px;background:#243e2a;color:#fff;border-radius:999px;padding:3px 6px;font-size:10px}
+.infoGrid{display:grid;grid-template-columns:1.35fr 1fr;gap:8px}
+.readout{font-size:12px;line-height:1.45;color:#dbe9d8;min-height:62px}
+.readout b{color:#fff}
+.evolveBox{display:grid;gap:6px}
+.evolveBtn{background:#fef3c7;color:#3b2e0b;padding:8px}
+.skillRow{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.skillBtn{background:#dbeafe;color:#14233f;padding:9px}.skillBtn.alt{background:#f3e8ff;color:#32145f}
+.progress{height:8px;border-radius:99px;background:#06120c;overflow:hidden;border:1px solid #2c4b36}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#86efac,#bef264)}
+.status{font-size:11px;color:#bcd0be;line-height:1.45}
+.endPanel{display:none;text-align:center;padding:18px}
+.endPanel.show{display:block}
+.endPanel h2{font-size:25px;margin:0 0 7px}.endPanel p{color:#c5d5c5;font-size:13px}
+.retryBtn{padding:10px 18px;background:#fff;color:#172217}
+.hint{font-size:10px;color:#9fb2a2;text-align:center;padding:0 6px}
+@media(max-width:430px){
+  .game{padding:9px 9px calc(16px + env(safe-area-inset-bottom))}
+  .pills{grid-template-columns:repeat(2,1fr)}
+  .deck{grid-template-columns:1fr 1fr}.card:last-child{grid-column:1/-1}
+  .infoGrid{grid-template-columns:1fr}
+  h1{font-size:21px}
+}
+</style>
+</head>
+<body data-audio-state="locked" data-run-result="" data-placement-mode="active" data-route-id="garden-prep">
+<main class="game" id="game" data-approved-scope-count="6" data-gameplay-system-count="6" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-state="ready" data-resource="120" data-progress="0">
+<section class="topbar">
+  <div class="titleRow">
+    <div>
+      <h1>곤충 디펜스</h1>
+      <div class="subtitle">정원의 생태계 관리자 · 상성 + 서식지 적응 + 실시간 웨이브</div>
+    </div>
+    <div class="audioTools">
+      <button class="smallBtn" id="muteBtn" data-audio-control="mute" aria-pressed="false">소리 ON</button>
+      <label class="volumeCtl" aria-label="효과음 볼륨">볼륨 <input id="volumeCtl" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.55"></label>
+    </div>
+  </div>
+  <div class="pills">
+    <div class="pill"><b id="pollen">120</b><small>꽃가루</small></div>
+    <div class="pill"><b id="plantHp">100</b><small>식물 HP</small></div>
+    <div class="pill"><b id="waveNo">1 / 6</b><small>웨이브</small></div>
+    <div class="pill"><b id="score">0</b><small>생태 경험</small></div>
+  </div>
+  <div class="controls">
+    <button class="primaryBtn" id="waveBtn" data-gameplay-action="wave-read-and-launch" data-scope-id="scope-coreloop-0-db6dafda13" data-mechanic-id="route-threat-analysis">웨이브 1 시작</button>
+    <button class="smallBtn" id="speedBtn" data-gameplay-action="mobile-speed-control" data-touch-control="speed" data-mechanic-id="mobile-combat-speed">속도 ×1</button>
+    <button class="smallBtn" id="pauseBtn" data-gameplay-action="combat-pause" data-mechanic-id="combat-pause">일시정지</button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="preview" id="preview" data-objective="prepare-wave-1"><span class="previewLabel">다음 침입</span></div>
+</section>
+
+<section class="arenaWrap">
+  <canvas id="arena" width="596" height="360" aria-label="곤충 디펜스 전장" data-gameplay-surface="true" data-gameplay-action="predator-spatial-placement" data-placement-position="habitat-slot" data-scope-id="scope-coreloop-1-d43c3d2506" data-mechanic-id="predator-habitat-placement"></canvas>
+  <div class="legend"><span data-area="leaf">🍃 잎</span><span data-area="stem">🌿 줄기</span><span data-area="flower">🌼 꽃</span></div>
+  <div class="message" id="message"></div>
+</section>
+
+<section class="panel">
+  <div class="deck">
+    <button class="card" data-species="ladybug" data-gameplay-action="counter-select-ladybug" data-mechanic-id="counter-swarm-ladybug">
+      <span class="cost">30</span><strong>🐞 무당벌레</strong><small>물리 · 군집 상성<br>잎: 공격속도 +25%</small>
+    </button>
+    <button class="card" data-species="mantis" data-gameplay-action="counter-select-mantis" data-scope-id="scope-corefun-f556b6611b" data-mechanic-id="ecological-counter-selection">
+      <span class="cost">50</span><strong>🦗 사마귀</strong><small>관통 · 비행 상성<br>줄기: 사거리 +25%</small>
+    </button>
+    <button class="card" data-species="lacewing" data-gameplay-action="counter-select-lacewing" data-mechanic-id="counter-shell-lacewing">
+      <span class="cost">45</span><strong>🪽 풀잠자리</strong><small>독 · 갑각 상성/둔화<br>꽃: 독 지속 +40%</small>
+    </button>
+  </div>
+</section>
+
+<section class="panel infoGrid">
+  <div>
+    <div class="readout" id="readout"><b>배치 방법</b><br>곤충 카드를 고른 뒤 전장의 빈 서식지를 터치해 배치해. 이미 배치한 곤충을 터치하면 진화할 수 있어.</div>
+    <div class="progress"><span id="waveProgress"></span></div>
+  </div>
+  <div class="evolveBox">
+    <button class="evolveBtn" id="evolveBtn" data-gameplay-action="predator-evolution" data-scope-id="scope-coreloop-3-683fae91c6" data-mechanic-id="pollen-evolution-progression" disabled>선택 곤충 진화</button>
+    <div class="skillRow">
+      <button class="skillBtn" id="pheromoneBtn" data-gameplay-action="pheromone-response" data-mechanic-id="live-pheromone-response">페로몬 둔화 · 25</button>
+      <button class="skillBtn alt" id="clearBtn" data-gameplay-action="placement-cancel" data-mechanic-id="placement-cancel">선택 해제</button>
+      <button class="skillBtn" id="repositionBtn" data-gameplay-action="combat-reposition" data-scope-id="scope-coreloop-2-42423ea982" data-mechanic-id="live-defender-reposition">전투 중 재배치</button>
+      <button class="skillBtn alt" id="quickPlaceBtn" data-gameplay-action="mobile-quick-placement" data-touch-control="quick-placement" data-scope-id="scope-mobileux-62b476fd93" data-mechanic-id="one-hand-quick-placement">한손 빠른 배치</button>
+    </div>
+  </div>
+</section>
+
+<section class="panel endPanel" id="endPanel">
+  <h2 id="endTitle">정원을 지켰어!</h2>
+  <p id="endText"></p>
+  <button class="retryBtn" id="retryBtn" data-gameplay-action="retry-wave" data-retry="true" data-mechanic-id="wave-retry">다시 도전</button>
+</section>
+
+<div class="status" id="status">READY · 적의 속성을 보고 상성 곤충을 배치해.</div>
+<div class="hint">● 군집 · ◆ 갑각 · ▲ 비행 · 색상뿐 아니라 문양으로도 속성을 구분해.</div>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+var SAVE_KEY='bugDefenseSaveV2';
+var VERSION=2;
+var canvas=document.getElementById('arena');
+var ctx=canvas.getContext('2d');
+var W=canvas.width,H=canvas.height;
+var DPR=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+var ui={
+  pollen:document.getElementById('pollen'),
+  plantHp:document.getElementById('plantHp'),
+  waveNo:document.getElementById('waveNo'),
+  knowledge:document.getElementById('score'),
+  waveBtn:document.getElementById('waveBtn'),
+  speedBtn:document.getElementById('speedBtn'),
+  pauseBtn:document.getElementById('pauseBtn'),
+  preview:document.getElementById('preview'),
+  readout:document.getElementById('readout'),
+  evolveBtn:document.getElementById('evolveBtn'),
+  pheromoneBtn:document.getElementById('pheromoneBtn'),
+  clearBtn:document.getElementById('clearBtn'),
+  repositionBtn:document.getElementById('repositionBtn'),
+  quickPlaceBtn:document.getElementById('quickPlaceBtn'),
+  progress:document.getElementById('waveProgress'),
+  status:document.getElementById('status'),
+  message:document.getElementById('message'),
+  endPanel:document.getElementById('endPanel'),
+  endTitle:document.getElementById('endTitle'),
+  endText:document.getElementById('endText'),
+  retryBtn:document.getElementById('retryBtn'),
+  muteBtn:document.getElementById('muteBtn'),
+  volumeCtl:document.getElementById('volumeCtl'),
+  gameRoot:document.getElementById('game')
+};
+
+var species={
+  ladybug:{name:'무당벌레',icon:'🐞',cost:30,damage:8,rate:.62,range:112,kind:'physical',counter:'swarm',habitat:'leaf',bonus:'잎 적응 · 공격속도 +25%'},
+  mantis:{name:'사마귀',icon:'🦗',cost:50,damage:19,rate:1.05,range:124,kind:'pierce',counter:'flyer',habitat:'stem',bonus:'줄기 적응 · 사거리 +25%'},
+  lacewing:{name:'풀잠자리',icon:'🪽',cost:45,damage:6,rate:.82,range:116,kind:'toxin',counter:'shell',habitat:'flower',bonus:'꽃 적응 · 독 지속 +40%'}
+};
+var enemyDefs={
+  aphid:{name:'진딧물',mark:'●',type:'swarm',hp:34,speed:24,reward:7,color:'#f9a8d4'},
+  beetle:{name:'갑충',mark:'◆',type:'shell',hp:80,speed:16,reward:12,color:'#93c5fd'},
+  moth:{name:'나방',mark:'▲',type:'flyer',hp:52,speed:28,reward:10,color:'#fde68a'},
+  boss:{name:'거대 잎벌레',mark:'◆',type:'shell',hp:330,speed:12,reward:45,color:'#fca5a5',boss:true}
+};
+var waves=[
+  [{k:'aphid',n:8,g:.75}],
+  [{k:'aphid',n:7,g:.68},{k:'moth',n:4,g:.95}],
+  [{k:'beetle',n:5,g:1.05},{k:'aphid',n:8,g:.58}],
+  [{k:'moth',n:8,g:.68},{k:'beetle',n:5,g:.94}],
+  [{k:'aphid',n:10,g:.48},{k:'beetle',n:6,g:.82},{k:'moth',n:7,g:.62}],
+  [{k:'boss',n:1,g:1.2},{k:'moth',n:7,g:.62},{k:'beetle',n:6,g:.78}]
+];
+
+var slots=[
+ {x:75,y:75,h:'leaf'},{x:180,y:67,h:'flower'},{x:290,y:78,h:'stem'},{x:405,y:67,h:'leaf'},{x:505,y:82,h:'flower'},
+ {x:115,y:270,h:'stem'},{x:230,y:282,h:'leaf'},{x:350,y:270,h:'flower'},{x:480,y:282,h:'stem'}
+];
+
+var state={
+  phase:'ready',wave:0,pollen:120,plantHp:100,knowledge:0,bestWave:0,
+  selectedSpecies:'ladybug',selectedTower:-1,towers:[],enemies:[],shots:[],floaters:[],
+  spawnQueue:[],spawnTimer:0,killed:0,totalWave:0,paused:false,speed:1,skillCd:0,
+  waveCheckpoint:null,lastTime:performance.now(),muted:false,volume:.55,lastPlacement:null,
+  placementMode:false,relocateTower:-1,spawnSerial:0
+};
+
+var audioCtx=null;
+function loadSave(){
+  try{
+    var raw=localStorage.getItem(SAVE_KEY);
+    if(!raw)return;
+    var s=JSON.parse(raw);
+    if(s.version!==VERSION)return;
+    state.knowledge=Math.max(0,Number(s.knowledge)||0);
+    state.bestWave=Math.max(0,Number(s.bestWave)||0);
+    state.speed=[1,1.5,2].indexOf(Number(s.speed))>=0?Number(s.speed):1;
+    state.muted=!!s.muted;
+    state.volume=Math.max(0,Math.min(1,Number.isFinite(Number(s.volume))?Number(s.volume):.55));
+  }catch(e){}
+}
+function saveMeta(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:VERSION,knowledge:state.knowledge,bestWave:state.bestWave,speed:state.speed,muted:state.muted,volume:state.volume}));}catch(e){}
+}
+function ensureAudio(){
+  if(state.muted)return;
+  if(!audioCtx){
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    audioCtx=new AC();
+  }
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  document.body.dataset.audioState=state.muted?'muted':'running';
+}
+function beep(freq,dur,vol){
+  if(state.muted)return;
+  ensureAudio();
+  if(!audioCtx)return;
+  var o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type='sine';o.frequency.value=freq;
+  g.gain.setValueAtTime((vol||.035)*state.volume,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
+}
+function msg(text,ms){
+  ui.message.textContent=text;ui.message.classList.add('show');
+  clearTimeout(msg.t);msg.t=setTimeout(function(){ui.message.classList.remove('show');},ms||900);
+}
+function typeLabel(type){return type==='swarm'?'● 군집':type==='shell'?'◆ 갑각':'▲ 비행';}
+function multiplier(kind,type){
+  if(kind==='physical')return type==='swarm'?1.65:type==='shell'?.65:.9;
+  if(kind==='pierce')return type==='flyer'?1.55:type==='shell'?1.2:.9;
+  return type==='shell'?1.6:type==='flyer'?.8:1.05;
+}
+function habitatLabel(h){return h==='leaf'?'잎':h==='stem'?'줄기':'꽃';}
+function buildWaveQueue(index){
+  var q=[],groups=waves[index]||[];
+  groups.forEach(function(group){
+    for(var i=0;i<group.n;i++)q.push({k:group.k,delay:group.g});
+  });
+  return q;
+}
+function previewWave(){
+  ui.preview.innerHTML='<span class="previewLabel">'+(state.phase==='playing'?'현재 침입':'다음 침입')+'</span>';
+  var groups=waves[Math.min(state.wave,waves.length-1)]||[];
+  groups.forEach(function(g){
+    var d=enemyDefs[g.k],tag=document.createElement('span');
+    tag.className='enemyTag';
+    tag.innerHTML='<span class="typeMark">'+d.mark+'</span><strong>'+d.name+'</strong> ×'+g.n+' · '+typeLabel(d.type);
+    ui.preview.appendChild(tag);
+  });
+}
+function updateUi(){
+  ui.gameRoot.dataset.state=state.phase;
+  ui.gameRoot.dataset.resource=String(Math.floor(state.pollen));
+  ui.gameRoot.dataset.progress=String(state.wave+'/'+waves.length);
+  ui.gameRoot.dataset.choice=state.selectedSpecies||'';
+  ui.gameRoot.dataset.speed=String(state.speed);
+  ui.gameRoot.dataset.skillCooldown=state.skillCd.toFixed(2);
+  ui.gameRoot.dataset.towerCount=String(state.towers.length);
+  ui.gameRoot.dataset.enemyCount=String(state.enemies.length);
+  ui.gameRoot.dataset.relocate=String(state.relocateTower);
+  ui.preview.dataset.objective=state.phase==='playing'?'defend-wave-'+(state.wave+1):'prepare-wave-'+Math.min(state.wave+1,waves.length);
+  document.body.dataset.runResult=state.phase==='won'?'victory':state.phase==='lost'?'defeat':'';
+  document.body.dataset.audioState=state.muted?'muted':(audioCtx&&audioCtx.state==='running'?'running':'locked');
+  document.body.dataset.placementMode=state.placementMode?'active':'inactive';
+  document.body.dataset.routeId=state.phase==='playing'?'wave-route-'+(state.wave+1):(state.lastPlacement?'placement-'+state.lastPlacement:'garden-prep');
+  canvas.dataset.towerType=state.towers.length?state.towers[state.towers.length-1].species:'';
+  canvas.dataset.placementPosition=state.lastPlacement||'habitat-slot';
+  canvas.dataset.enemyType=state.enemies.length?state.enemies[0].type:'';
+  if(state.enemies.some(function(e){return e.boss;})){canvas.dataset.bossId='garden-boss';canvas.dataset.bossPattern=state.plantHp<55?'pressure-charge':'armored-march';}
+  else{delete canvas.dataset.bossId;delete canvas.dataset.bossPattern;}
+  ui.volumeCtl.value=String(state.volume);
+  ui.pollen.textContent=Math.floor(state.pollen);
+  ui.plantHp.textContent=Math.max(0,Math.ceil(state.plantHp));
+  ui.waveNo.textContent=Math.min(state.wave+1,waves.length)+' / '+waves.length;
+  ui.knowledge.textContent=state.knowledge;
+  ui.speedBtn.textContent='속도 ×'+state.speed;
+  ui.pauseBtn.textContent=state.paused?'계속':'일시정지';
+  ui.muteBtn.textContent=state.muted?'소리 OFF':'소리 ON';
+  ui.muteBtn.setAttribute('aria-pressed',state.muted?'true':'false');
+  ui.waveBtn.disabled=state.phase==='playing'||state.phase==='won'||state.phase==='lost';
+  ui.waveBtn.textContent=state.phase==='ready'?'웨이브 '+(state.wave+1)+' 시작':'전투 중';
+  ui.pheromoneBtn.disabled=state.phase!=='playing'||state.skillCd>0||state.pollen<25;
+  ui.pheromoneBtn.textContent=state.skillCd>0?'페로몬 '+state.skillCd.toFixed(1)+'s':'페로몬 둔화 · 25';
+  var tower=state.towers[state.selectedTower];
+  if(tower){
+    var sp=species[tower.species],cost=35+tower.level*25;
+    ui.evolveBtn.disabled=tower.level>=3||state.pollen<cost;
+    ui.evolveBtn.textContent=tower.level>=3?'최대 진화':'진화 Lv.'+(tower.level+1)+' · '+cost;
+    ui.readout.innerHTML='<b>'+sp.icon+' '+sp.name+' Lv.'+tower.level+'</b><br>'+habitatLabel(tower.habitat)+' 서식지 · '+(tower.adapted?sp.bonus:'적응 보너스 없음')+'<br>공격 '+Math.round(tower.damage)+' · 사거리 '+Math.round(tower.range);
+  }else{
+    ui.evolveBtn.disabled=true;
+  }
+  var done=state.totalWave?state.killed/state.totalWave:0;
+  ui.progress.style.width=Math.max(0,Math.min(100,done*100))+'%';
+  ui.status.textContent=state.phase.toUpperCase()+' · 배치 '+state.towers.length+' · 적 '+state.enemies.length+' · 처치 '+state.killed+'/'+state.totalWave;
+}
+function selectSpecies(id,activatePlacement){
+  state.selectedSpecies=id;state.selectedTower=-1;
+  state.relocateTower=-1;
+  state.placementMode=activatePlacement!==false;
+  document.querySelectorAll('.card').forEach(function(b){b.classList.toggle('selected',b.dataset.species===id);});
+  var sp=species[id];
+  ui.readout.innerHTML='<b>'+sp.icon+' '+sp.name+'</b><br>'+sp.cost+' 꽃가루 · '+sp.bonus+'<br>'+typeLabel(sp.counter)+' 적에게 강함';
+  updateUi();beep(420,.05,.025);
+}
+function beginWave(){
+  if(state.phase==='playing'||state.wave>=waves.length)return;
+  ensureAudio();
+  state.phase='playing';state.paused=false;state.killed=0;
+  state.spawnQueue=buildWaveQueue(state.wave);state.totalWave=state.spawnQueue.length;state.spawnTimer=.2;
+  state.waveCheckpoint={
+    pollen:state.pollen,plantHp:state.plantHp,
+    towers:JSON.parse(JSON.stringify(state.towers))
+  };
+  previewWave();updateUi();msg('웨이브 '+(state.wave+1)+' 시작',850);beep(330,.12,.045);
+}
+function spawnEnemy(k){
+  var d=enemyDefs[k];
+  var scale=1+state.wave*.14;
+  state.enemies.push({
+    id:'enemy-'+state.wave+'-'+(++state.spawnSerial),kind:k,type:d.type,name:d.name,mark:d.mark,color:d.color,
+    x:-25,y:178+((state.spawnSerial*17)%27-13),hp:d.hp*scale,maxHp:d.hp*scale,
+    speed:d.speed*(1+state.wave*.035),reward:d.reward,boss:!!d.boss,
+    slow:0,poison:0,poisonTick:0
+  });
+}
+function placeTower(slotIndex){
+  var slot=slots[slotIndex],sp=species[state.selectedSpecies];
+  if(!sp)return;
+  if(state.relocateTower>=0&&state.towers[state.relocateTower]){
+    var movingIndex=state.relocateTower;
+    var occupied=state.towers.some(function(t,i){return i!==movingIndex&&t.slot===slotIndex;});
+    if(occupied||state.towers[movingIndex].slot===slotIndex){
+      var empty=slots.findIndex(function(_s,i){return !state.towers.some(function(t,j){return j!==movingIndex&&t.slot===i;})&&i!==state.towers[movingIndex].slot;});
+      if(empty>=0){slotIndex=empty;slot=slots[slotIndex];}
+    }
+    var moving=state.towers[movingIndex],movingSpecies=species[moving.species];
+    moving.slot=slotIndex;moving.habitat=slot.h;moving.adapted=slot.h===movingSpecies.habitat;
+    state.selectedTower=movingIndex;state.relocateTower=-1;state.placementMode=false;
+    state.lastPlacement='slot-'+slotIndex+'-'+slot.h;
+    msg(moving.adapted?'재배치 · 서식지 적응!':'재배치 완료',800);beep(590,.07,.035);updateUi();return;
+  }
+  if(state.towers.some(function(t){return t.slot===slotIndex;})){state.placementMode=false;selectTower(slotIndex);return;}
+  if(state.pollen<sp.cost){msg('꽃가루가 부족해',800);beep(130,.08,.04);return;}
+  state.pollen-=sp.cost;
+  var adapted=slot.h===sp.habitat;
+  state.towers.push({
+    slot:slotIndex,species:state.selectedSpecies,habitat:slot.h,adapted:adapted,level:1,
+    damage:sp.damage,range:sp.range,cooldown:(state.towers.length%5)*.05
+  });
+  state.selectedTower=state.towers.length-1;
+  state.placementMode=false;
+  state.lastPlacement='slot-'+slotIndex+'-'+slot.h;
+  document.body.dataset.routeId='placement-'+state.lastPlacement;
+  msg(adapted?'서식지 적응 보너스 활성!':'배치 완료',800);
+  beep(adapted?660:520,.07,.035);updateUi();
+}
+function selectTower(slotIndex){
+  var idx=state.towers.findIndex(function(t){return t.slot===slotIndex;});
+  if(idx<0)return;
+  state.selectedTower=idx;
+  document.querySelectorAll('.card').forEach(function(b){b.classList.remove('selected');});
+  updateUi();beep(460,.045,.025);
+}
+function beginReposition(mobileQuick){
+  if(state.phase==='won'||state.phase==='lost')return;
+  if(!state.towers.length){
+    if(mobileQuick){
+      var first=(waves[Math.min(state.wave,waves.length-1)]||[])[0],enemy=first&&enemyDefs[first.k],counter=enemy&&enemy.type==='flyer'?'mantis':enemy&&enemy.type==='shell'?'lacewing':'ladybug';
+      selectSpecies(counter,true);
+    }else state.placementMode=true;
+    state.relocateTower=-1;updateUi();msg('빈 서식지를 터치해 배치',850);return;
+  }
+  if(mobileQuick){
+    var threat=(waves[Math.min(state.wave,waves.length-1)]||[])[0],def=threat&&enemyDefs[threat.k];
+    state.selectedSpecies=def&&def.type==='flyer'?'mantis':def&&def.type==='shell'?'lacewing':'ladybug';
+  }
+  state.relocateTower=state.selectedTower>=0?state.selectedTower:0;
+  state.selectedTower=state.relocateTower;state.placementMode=true;updateUi();
+  msg(mobileQuick?'한손 빠른 재배치 · 새 위치 터치':'재배치할 새 서식지를 터치',900);
+}
+function evolveSelected(){
+  var t=state.towers[state.selectedTower];if(!t||t.level>=3)return;
+  var cost=35+t.level*25;if(state.pollen<cost){msg('꽃가루가 부족해');return;}
+  state.pollen-=cost;t.level++;t.damage*=1.42;t.range*=1.08;
+  state.knowledge++;saveMeta();msg('Lv.'+t.level+' 진화!',850);beep(780,.09,.04);updateUi();
+}
+function pheromone(){
+  if(state.phase!=='playing'||state.skillCd>0||state.pollen<25)return;
+  ensureAudio();state.pollen-=25;state.skillCd=12;
+  state.enemies.forEach(function(e){e.slow=Math.max(e.slow,3.2);});
+  state.floaters.push({x:W/2,y:150,text:'페로몬 둔화!',life:1.1,color:'#e9d5ff'});
+  beep(250,.18,.05);updateUi();
+}
+function nearestTarget(tower){
+  var s=slots[tower.slot],best=null,bestDist=1e9;
+  state.enemies.forEach(function(e){
+    var dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);
+    if(dist<=tower.range&&dist<bestDist){best=e;bestDist=dist;}
+  });
+  return best;
+}
+function towerStats(t){
+  var sp=species[t.species],rate=sp.rate,range=t.range,poisonDur=2.1;
+  if(t.adapted&&t.habitat==='leaf'&&t.species==='ladybug')rate*=.75;
+  if(t.adapted&&t.habitat==='stem'&&t.species==='mantis')range*=1.25;
+  if(t.adapted&&t.habitat==='flower'&&t.species==='lacewing')poisonDur*=1.4;
+  return{sp:sp,rate:rate,range:range,poisonDur:poisonDur};
+}
+function attack(t,e){
+  var st=towerStats(t),m=multiplier(st.sp.kind,e.type),damage=t.damage*m;
+  e.hp-=damage;
+  if(st.sp.kind==='toxin'){e.poison=Math.max(e.poison,st.poisonDur);e.slow=Math.max(e.slow,1.35);}
+  state.shots.push({x1:slots[t.slot].x,y1:slots[t.slot].y,x2:e.x,y2:e.y,life:.13,color:m>=1.4?'#bef264':'#e5e7eb'});
+  state.floaters.push({x:e.x,y:e.y-20,text:(m>=1.4?'상성! ':'')+Math.round(damage),life:.55,color:m>=1.4?'#d9f99d':'#fff'});
+  if(m>=1.4)beep(720,.035,.018);
+}
+function killEnemy(e){
+  state.pollen+=e.reward;state.knowledge+=e.boss?3:1;state.killed++;
+  state.bestWave=Math.max(state.bestWave,state.wave+1);saveMeta();
+  state.floaters.push({x:e.x,y:e.y-12,text:'+'+e.reward+' 꽃가루',life:.8,color:'#fde68a'});
+}
+function leakEnemy(e){
+  var hit=e.boss?32:(e.type==='shell'?15:10);
+  state.plantHp-=hit;
+  state.floaters.push({x:W-82,y:177,text:'식물 -'+hit,life:.8,color:'#fecdd3'});
+  beep(110,.12,.055);
+  if(state.plantHp<=0)loseGame();
+}
+function loseGame(){
+  state.phase='lost';state.paused=false;state.enemies=[];state.spawnQueue=[];
+  ui.endPanel.classList.add('show');ui.endTitle.textContent='방어선이 무너졌어';
+  ui.endText.textContent='생태 경험 '+state.knowledge+'은 유지돼. 현재 웨이브 시작 상태로 돌아가 배치를 바꿔볼 수 있어.';
+  ui.retryBtn.textContent='웨이브 '+(state.wave+1)+' 다시 도전';
+  msg('실패 · 배치를 다시 짜봐',1200);saveMeta();updateUi();
+}
+function winGame(){
+  state.phase='won';state.enemies=[];state.spawnQueue=[];
+  ui.endPanel.classList.add('show');ui.endTitle.textContent='정원을 지켰어!';
+  ui.endText.textContent='6개 웨이브 완료 · 생태 경험 '+state.knowledge+' · 상성과 서식지 적응을 끝까지 활용했어.';
+  ui.retryBtn.textContent='처음부터 다시';
+  state.bestWave=waves.length;saveMeta();beep(880,.22,.055);updateUi();
+}
+function retry(){
+  ui.endPanel.classList.remove('show');
+  if(state.phase==='lost'&&state.waveCheckpoint){
+    state.pollen=state.waveCheckpoint.pollen;state.plantHp=state.waveCheckpoint.plantHp;
+    state.towers=JSON.parse(JSON.stringify(state.waveCheckpoint.towers));
+    state.phase='ready';state.selectedTower=-1;state.killed=0;state.totalWave=0;previewWave();updateUi();msg('같은 웨이브 재도전',900);
+  }else{
+    state.wave=0;state.pollen=120;state.plantHp=100;state.towers=[];state.enemies=[];state.phase='ready';
+    state.selectedTower=-1;state.killed=0;state.totalWave=0;previewWave();updateUi();
+  }
+}
+function finishWave(){
+  if(state.phase!=='playing')return;
+  state.pollen+=25+state.wave*7;state.wave++;
+  if(state.wave>=waves.length){winGame();return;}
+  state.phase='ready';state.selectedTower=-1;state.totalWave=0;state.killed=0;
+  previewWave();updateUi();msg('방어 성공 · 다음 웨이브 준비',1050);beep(620,.12,.04);
+}
+function update(dt){
+  if(state.paused||state.phase!=='playing')return;
+  var scaled=dt*state.speed;
+  if(state.skillCd>0)state.skillCd=Math.max(0,state.skillCd-scaled);
+  if(state.spawnQueue.length){
+    state.spawnTimer-=scaled;
+    if(state.spawnTimer<=0){
+      var next=state.spawnQueue.shift();spawnEnemy(next.k);state.spawnTimer=next.delay;
+    }
+  }
+  state.enemies.forEach(function(e){
+    if(e.slow>0)e.slow=Math.max(0,e.slow-scaled);
+    if(e.poison>0){
+      e.poison-=scaled;e.poisonTick-=scaled;
+      if(e.poisonTick<=0){e.hp-=4;e.poisonTick=.7;}
+    }
+    e.x+=e.speed*(e.slow>0?.58:1)*scaled;
+  });
+  state.towers.forEach(function(t){
+    var st=towerStats(t);t.cooldown-=scaled;
+    if(t.cooldown<=0){
+      var target=nearestTarget(t);
+      if(target){attack(t,target);t.cooldown=st.rate;}
+    }
+  });
+  for(var i=state.enemies.length-1;i>=0;i--){
+    var e=state.enemies[i];
+    if(e.hp<=0){killEnemy(e);state.enemies.splice(i,1);}
+    else if(e.x>W-45){leakEnemy(e);state.enemies.splice(i,1);}
+  }
+  state.shots.forEach(function(s){s.life-=scaled;});
+  state.shots=state.shots.filter(function(s){return s.life>0;});
+  state.floaters.forEach(function(f){f.life-=scaled;f.y-=18*scaled;});
+  state.floaters=state.floaters.filter(function(f){return f.life>0;});
+  if(!state.spawnQueue.length&&!state.enemies.length&&state.phase==='playing')finishWave();
+  updateUi();
+}
+function roundedRect(x,y,w,h,r,fill,stroke){
+  ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  var grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#346946');grad.addColorStop(1,'#163522');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(223,245,214,.1)';
+  for(var gx=20;gx<W;gx+=44){for(var gy=20;gy<H;gy+=44){ctx.beginPath();ctx.arc(gx,gy,2,0,Math.PI*2);ctx.fill();}}
+  roundedRect(0,142,W,76,30,'#7c5e3e','#a98a63');
+  ctx.fillStyle='rgba(255,255,255,.09)';
+  for(var p=10;p<W;p+=55)ctx.fillRect(p,178,25,3);
+  ctx.fillStyle='#b7df8a';ctx.fillRect(W-38,120,22,120);
+  ctx.fillStyle='#e4f7bb';ctx.beginPath();ctx.arc(W-27,128,32,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#486b31';ctx.font='bold 14px system-ui';ctx.fillText('식물',W-49,105);
+
+  slots.forEach(function(s,idx){
+    var occupied=state.towers.find(function(t){return t.slot===idx;});
+    var col=s.h==='leaf'?'#86efac':s.h==='stem'?'#a3e635':'#fde68a';
+    ctx.globalAlpha=occupied?.adapted?.85:.55;
+    ctx.fillStyle=col;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.x,s.y,28,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;ctx.stroke();
+    ctx.fillStyle='#132319';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(habitatLabel(s.h),s.x,s.y+4);
+  });
+
+  state.towers.forEach(function(t,idx){
+    var s=slots[t.slot],sp=species[t.species],sel=idx===state.selectedTower;
+    ctx.fillStyle=sel?'#fff7ae':'#f8fff3';ctx.beginPath();ctx.arc(s.x,s.y,22,0,Math.PI*2);ctx.fill();
+    ctx.font='26px system-ui';ctx.textAlign='center';ctx.fillText(sp.icon,s.x,s.y+9);
+    ctx.fillStyle='#102018';ctx.font='bold 10px system-ui';ctx.fillText('Lv.'+t.level,s.x,s.y+38);
+    if(t.adapted){ctx.strokeStyle='#facc15';ctx.lineWidth=3;ctx.beginPath();ctx.arc(s.x,s.y,31,0,Math.PI*2);ctx.stroke();}
+  });
+
+  state.enemies.forEach(function(e){
+    var r=e.boss?24:17;
+    ctx.fillStyle=e.color;ctx.strokeStyle=e.slow>0?'#c4b5fd':'#25352b';ctx.lineWidth=e.slow>0?4:2;
+    ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#172018';ctx.font='900 '+(e.boss?17:13)+'px system-ui';ctx.textAlign='center';ctx.fillText(e.mark,e.x,e.y+5);
+    var bw=e.boss?58:38,bx=e.x-bw/2,by=e.y-r-12;
+    ctx.fillStyle='#311';ctx.fillRect(bx,by,bw,5);ctx.fillStyle='#86efac';ctx.fillRect(bx,by,bw*Math.max(0,e.hp/e.maxHp),5);
+    if(e.poison>0){ctx.fillStyle='#d8b4fe';ctx.font='9px system-ui';ctx.fillText('독',e.x,e.y+r+12);}
+  });
+  state.shots.forEach(function(s){ctx.globalAlpha=Math.min(1,s.life/.13);ctx.strokeStyle=s.color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x1,s.y1);ctx.lineTo(s.x2,s.y2);ctx.stroke();ctx.globalAlpha=1;});
+  state.floaters.forEach(function(f){ctx.globalAlpha=Math.max(0,Math.min(1,f.life*1.6));ctx.fillStyle=f.color;ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(f.text,f.x,f.y);ctx.globalAlpha=1;});
+  ctx.textAlign='start';
+}
+function pointerPos(ev){
+  var rect=canvas.getBoundingClientRect();
+  return{x:(ev.clientX-rect.left)*(W/rect.width),y:(ev.clientY-rect.top)*(H/rect.height)};
+}
+function hitSlot(p){
+  var best=-1,dist=112;
+  slots.forEach(function(s,i){var d=Math.hypot(p.x-s.x,p.y-s.y);if(d<dist){dist=d;best=i;}});
+  return best;
+}
+canvas.addEventListener('pointerup',function(ev){
+  ev.preventDefault();ensureAudio();
+  var p=pointerPos(ev),slot=hitSlot(p);
+  if(slot>=0){placeTower(slot);return;}
+  state.selectedTower=-1;updateUi();
+});
+document.querySelectorAll('.card').forEach(function(b){
+  b.addEventListener('pointerdown',function(){ensureAudio();selectSpecies(b.dataset.species);});
+});
+ui.waveBtn.addEventListener('click',beginWave);
+ui.evolveBtn.addEventListener('click',evolveSelected);
+ui.pheromoneBtn.addEventListener('click',pheromone);
+ui.repositionBtn.addEventListener('click',function(){beginReposition(false);});
+ui.quickPlaceBtn.addEventListener('click',function(){beginReposition(true);});
+ui.clearBtn.addEventListener('click',function(){state.selectedTower=-1;state.relocateTower=-1;state.placementMode=false;document.querySelectorAll('.card').forEach(function(b){b.classList.remove('selected');});updateUi();});
+ui.pauseBtn.addEventListener('click',function(){if(state.phase!=='playing')return;state.paused=!state.paused;updateUi();});
+ui.speedBtn.addEventListener('click',function(){
+  state.speed=state.speed===1?1.5:state.speed===1.5?2:1;saveMeta();updateUi();
+});
+ui.muteBtn.addEventListener('click',function(){state.muted=!state.muted;saveMeta();if(!state.muted)ensureAudio();updateUi();});
+ui.volumeCtl.addEventListener('input',function(){state.volume=Math.max(0,Math.min(1,Number(ui.volumeCtl.value)||0));saveMeta();if(!state.muted)ensureAudio();updateUi();});
+ui.retryBtn.addEventListener('click',retry);
+document.addEventListener('visibilitychange',function(){if(document.hidden&&state.phase==='playing'){state.paused=true;updateUi();}});
+
+function loop(now){
+  var dt=Math.min(.05,(now-state.lastTime)/1000);state.lastTime=now;
+  update(dt);draw();requestAnimationFrame(loop);
+}
+loadSave();selectSpecies('ladybug',false);previewWave();updateUi();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
