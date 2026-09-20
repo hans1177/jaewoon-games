@@ -4,6 +4,7 @@ if(typeof kill!=='function')return;
 const baseKill=kill;
 kill=function(m){
   if(m&&m.type==='reaper'&&!m.dead){
+    const killer=m.aiKiller||'player',rewardXp=m.xp||0,rewardGold=m.g||0;
     m.dead=true;
     m.hp=0;
     m.a=0;
@@ -13,6 +14,8 @@ kill=function(m){
     if(typeof reaperDefeated!=='undefined')reaperDefeated=true;
     if(typeof reaperRef!=='undefined')reaperRef=null;
     if(typeof unlockAfterReaper==='function')unlockAfterReaper();
+    if(typeof partyRegisterKill==='function')partyRegisterKill(m,killer,rewardXp,rewardGold);
+    m.lastKillerId=killer;m.aiKiller=null;
     if(typeof sfx==='function')sfx('bossDown');
     setTimeout(()=>{if(typeof zone!=='undefined'&&zone==='f9'&&typeof say==='function')say('사신','꽤 실력이 좋군. 다음에는 봐주는 건 없다.')},380);
     setTimeout(()=>{
