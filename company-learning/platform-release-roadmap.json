@@ -1,5 +1,5 @@
 {
-  "version": 179,
+  "version": 180,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6098,7 +6098,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_DURABLE_SHADOW_AUDIT_READINESS_CANDIDATE",
+    "status": "PHASE2_DETERMINISTIC_SHADOW_SAMPLE_ID_CANDIDATE",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6621,6 +6621,19 @@
         "disagreementReviewRequired": true,
         "waveAuditSampleSource": "DURABLE_QUEUE_EVIDENCE",
         "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true
+      },
+      "sampleIdentity": {
+        "workerAndQa": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
+        "fanInAudit": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
+        "deterministic": true,
+        "randomOrWallClockIdentityForbidden": true,
+        "separateReservationsAreIndependentSamples": true,
+        "identicalRetryOutcomesMayNotCollapseAcrossReservations": true,
+        "evidenceFields": [
+          "neural-shadow-feedback.sampleId",
+          "neural-event-shadow.eventId",
+          "neural-shadow-wave-audit.sampleId"
+        ]
       }
     }
   }
