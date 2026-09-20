@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -369,7 +369,29 @@
       "noRunnableTaskBehavior": "CAUSAL_REPLAN_OR_AWAIT_EVENT_WITH_SENSORS_AND_RECOVERY_LIVE",
       "verifiedCheckpointFeedsPlanner": true,
       "signalDropForbidden": true,
-      "busyLoopForbidden": true
+      "busyLoopForbidden": true,
+      "realArtifactPracticeFeedsNextCausalGeneration": true,
+      "verifiedBetterArtifactIsNextPracticeBaseline": true
+    },
+    "realWebArtifactPracticeLoop": {
+      "enabled": true,
+      "lane": "GAME_PRIMARY",
+      "firstBaseline": "APPROVED_DESIGN_BOOTSTRAP",
+      "recurringBaseline": "CURRENT_VERIFIED_WEB_ARTIFACT",
+      "planner": "tools/vibe2-auto-planner.mjs",
+      "generationFunction": "nextCausalGenerationId",
+      "isolatedCandidateBranchesRequired": true,
+      "sourceWriteScope": "CANDIDATE_BRANCH_ONLY",
+      "freshQaRequired": true,
+      "runtimeComparisonRequired": true,
+      "repeatOnVerifiedImprovement": true,
+      "verifiedBetterArtifactBecomesNextBaseline": true,
+      "terminalCompletion": false,
+      "sourceFreeLearningIdleSecondary": true,
+      "sourceFreeLearningIdleMayWriteGameSource": false,
+      "productionReleaseUsesExistingGateOnly": true,
+      "directMainWrite": false,
+      "noRunnableBehavior": "CAUSAL_REPLAN_OR_AWAIT_EVENT_WITH_BRAIN_LIVE"
     }
   },
   "adaptiveBackpressure": {
