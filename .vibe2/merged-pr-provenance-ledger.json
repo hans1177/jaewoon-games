@@ -5053,11 +5053,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_89174fe7badd8cd873845feb",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2035",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c48b3a885067660c4479773138b1b2734b447c45",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2035,
+        "baseBranch": "main",
+        "headBranch": "assistant/neural-work-graph-v1-rebased",
+        "baseSha": "c48b3a885067660c4479773138b1b2734b447c45",
+        "headSha": "1251e84bcf6282844db5c3b4b8a769547ffe98d9",
+        "mergeCommitSha": "7cdbb5239abb8b8d0280bf6a980dbb094754ed94",
+        "mergedAt": "2026-09-20T09:46:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a043fd09a2b8e47b38d692515dd79738a63bca182bd521a773f43ae36f67e730",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/neural-work-graph-v1-rebased",
+        "candidateSha": "1251e84bcf6282844db5c3b4b8a769547ffe98d9"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 684,
+        "deletedLineCount": 23,
+        "changedFiles": [
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-neural-event-router.test.mjs",
+          "qa/vibe2-neural-fanin-root-cause.test.mjs",
+          "qa/vibe2-neural-work-graph.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "tools/vibe2-neural-event-router.mjs",
+          "tools/vibe2-neural-work-graph.mjs",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-neural-event-router.test.mjs",
+          "qa/vibe2-neural-fanin-root-cause.test.mjs",
+          "qa/vibe2-neural-work-graph.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "tools/vibe2-neural-event-router.mjs",
+          "tools/vibe2-neural-work-graph.mjs",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2035",
+        "merge-commit:7cdbb5239abb8b8d0280bf6a980dbb094754ed94",
+        "base-main:c48b3a885067660c4479773138b1b2734b447c45"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 41
+    "total": 42
   }
 }
