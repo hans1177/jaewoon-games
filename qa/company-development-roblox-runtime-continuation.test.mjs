@@ -91,14 +91,21 @@ test('malformed Vibe2 handoff cannot bypass missing Web or music eligibility at 
   assert.ok(result.blockers.includes('music-validation-missing'));
 });
 
-test('runtime uses authenticated self-hosted Windows runner pool and the original package identity for actual Roblox Studio multiplayer sessions',()=>{
+test('runtime uses one explicitly human-approved local-place Studio session and exact package identity',()=>{
   assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '9'"));
-  assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'"));
+  assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'"));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.ok(!workflow.includes('runs-on: windows-latest'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));
-  assert.ok(workflow.includes('max-parallel: 3'));
+  assert.ok(workflow.includes("studio_run_approved:"));
+  assert.ok(workflow.includes("game_id:"));
+  assert.ok(workflow.includes("process.env.GITHUB_EVENT_NAME==='workflow_dispatch'"));
+  assert.ok(workflow.includes("String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]'"));
+  assert.ok(workflow.includes("ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN"));
+  assert.ok(workflow.includes("ROBLOX_STUDIO_MANUAL_APPROVAL_REQUIRED=YES"));
+  assert.ok(workflow.includes("if(item.gameId!==manualGameId)continue;"));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION'));
+  assert.ok(workflow.includes('max-parallel: 1'));
   assert.ok(workflow.includes("const maxRetryableFailures=2"));
   assert.ok(workflow.includes("const retryBudgetAvailable=retryCount<maxRetryableFailures"));
   assert.ok(workflow.includes("const securityHold=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure)"));
@@ -139,6 +146,9 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes("'roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
+  assert.ok(!workflow.includes('--placeId'));
+  assert.ok(!workflow.includes('--universeId'));
+  assert.ok(!workflow.includes('PublishAsync'));
   assert.ok(workflow.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'));
   assert.ok(smoke.includes('StudioTestService:ExecuteMultiplayerTestAsync(1'));
   assert.ok(smoke.includes('task.delay(90'));
@@ -229,4 +239,15 @@ test('secondary Roblox runtime persistence never rewrites the canonical selected
   assert.doesNotMatch(block,/targetPlatform\s*:/);
   assert.doesNotMatch(block,/currentStep\s*:/);
   assert.doesNotMatch(block,/canonicalState\s*:/);
+});
+
+
+test('automatic continuation may run preflight but can never launch Studio without a human dispatch',()=>{
+  assert.match(workflow,/studio_run_approved:/);
+  assert.match(workflow,/STUDIO_RUN_APPROVED: \$\{\{ inputs\.studio_run_approved \}\}/);
+  assert.match(workflow,/GITHUB_EVENT_NAME==='workflow_dispatch'/);
+  assert.match(workflow,/GITHUB_ACTOR\|\|''\)!=='github-actions\[bot\]'/);
+  assert.match(workflow,/ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN/);
+  assert.match(workflow,/const runnerWip=1/);
+  assert.match(workflow,/if\(!humanApproved\|\|!manualGameId\)\{/);
 });
