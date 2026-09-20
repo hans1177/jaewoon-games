@@ -467,7 +467,7 @@
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
-        "state": "ACTIVE",
+        "state": "ACTIVE_PR_2013_PENDING_MERGE",
         "sourceRoadmap": "company-learning/platform-release-roadmap.json#assistantRoadmapOrchestration.implementationState.vibeBottleneckCentralCheckpoint",
         "completedRepairPrs": [
           1983,
@@ -497,7 +497,8 @@
         },
         "nextRuntimeGate": "FIX_OR_VERIFY_EFFECTIVE_MAX_BINDING_THEN_RECLASSIFY_POST_1989_SOURCE_GENERATION_FAILURES",
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-        "authorityChange": "NONE"
+        "authorityChange": "NONE",
+        "sourcePr": 2013
       }
     },
     "phase2Shadow": {
