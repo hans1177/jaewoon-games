@@ -842,3 +842,121 @@ test('presentation quality passes are queued in canonical order',()=>{
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
   assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
 });
+
+
+test('exact Web repair carries one mapped deterministic diagnostic from the superseded same-file task',()=>{
+  const root=tempRepo();
+  const gameId='diagnostic-bridge-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><button>Play</button></body></html>','utf8');
+  const diagnostic={
+    id:`${gameId}-diagnostic-bundle-touch-index-html`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'touch-action diagnostic repair',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,blocker:null,
+    evidence:[
+      'diagnostic:TOUCH_ACTION_UNSPECIFIED',
+      'diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html',
+      'diagnostic-severity:medium',
+      'repair-mode:MODEL'
+    ]
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Diagnostic Bridge',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Diagnostic Bridge',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED'
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[diagnostic]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const exact=result.queue.tasks.find(row=>row.id===`${gameId}-web-runtime-repair-v1`);
+  assert.ok(exact);
+  assert.ok(exact.evidence.includes('diagnostic:TOUCH_ACTION_UNSPECIFIED'));
+  assert.ok(exact.evidence.includes('diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html'));
+  assert.ok(exact.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
+  assert.ok(exact.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
+  assert.equal(exact.neuralDiagnosis.responsibility.system,'GAME_INPUT');
+  assert.equal(exact.neuralDiagnosis.responsibility.verified,false);
+  const superseded=result.queue.tasks.find(row=>row.id===diagnostic.id);
+  assert.equal(superseded.status,'cancelled');
+  assert.equal(superseded.blocker,'superseded-by:VIBE_WEB_REPAIR');
+});
+
+test('exact Web repair does not carry ambiguous deterministic diagnostics as responsibility evidence',()=>{
+  const root=tempRepo();
+  const gameId='diagnostic-ambiguous-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>large source marker</main></body></html>','utf8');
+  const diagnostic={
+    id:`${gameId}-diagnostic-bundle-large-index-html`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'large file diagnostic',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,blocker:null,
+    evidence:[
+      'diagnostic:LARGE_SINGLE_FILE',
+      'diagnostic-key:LARGE_SINGLE_FILE:index.html',
+      'diagnostic-severity:high',
+      'repair-mode:MODEL'
+    ]
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Ambiguous Diagnostic',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Ambiguous Diagnostic',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'REAL_GAME_MECHANIC_COUNT_TOO_LOW'
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[diagnostic]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const exact=result.queue.tasks.find(row=>row.id===`${gameId}-web-runtime-repair-v1`);
+  assert.ok(exact);
+  assert.equal(exact.evidence.includes('diagnostic:LARGE_SINGLE_FILE'),false);
+  assert.equal(exact.evidence.some(value=>value.startsWith('diagnostic-responsibility-shadow:')),false);
+  assert.equal(exact.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'),false);
+});
+
+test('queued exact Web repair refresh inherits mapped diagnostic evidence from an older same-file diagnostic task',()=>{
+  const root=tempRepo();
+  const gameId='diagnostic-refresh-bridge-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><button>Play</button></body></html>','utf8');
+  const exact={
+    id:`${gameId}-web-runtime-repair-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'old runtime repair goal',releaseState:'development-confirmed',status:'queued',retries:1,maxRetries:2,blocker:null,
+    evidence:['company-runtime-state:WEB_VIBE_REPAIR_REQUIRED']
+  };
+  const diagnostic={
+    id:`${gameId}-diagnostic-bundle-dom-index-html`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'dom binding diagnostic',releaseState:'development-confirmed',status:'cancelled',retries:0,maxRetries:2,blocker:'superseded-by:VIBE_WEB_REPAIR',
+    evidence:[
+      'diagnostic:DOM_NULL_EVENT_BIND',
+      'diagnostic-key:DOM_NULL_EVENT_BIND:index.html',
+      'diagnostic-severity:medium',
+      'repair-mode:MODEL'
+    ]
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Diagnostic Refresh Bridge',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Diagnostic Refresh Bridge',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED'
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[exact,diagnostic]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const refreshed=result.queue.tasks.find(row=>row.id===exact.id);
+  assert.ok(refreshed.evidence.includes('diagnostic:DOM_NULL_EVENT_BIND'));
+  assert.ok(refreshed.evidence.includes('diagnostic-key:DOM_NULL_EVENT_BIND:index.html'));
+  assert.ok(refreshed.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
+  assert.ok(refreshed.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
+});
