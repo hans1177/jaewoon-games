@@ -9,6 +9,23 @@ import { pathToFileURL } from 'node:url';
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const now=()=>new Date().toISOString();
+const SECURITY_REPAIR_ALLOWED_PREFIXES=['tools/','qa/','assets/','.github/workflows/','company-learning/'];
+const SECURITY_REPAIR_FORBIDDEN_FILES=new Set([
+  'company-learning/platform-release-roadmap.json',
+  'company-learning/company-log-map.json',
+  'company-learning/company-architecture-map.json'
+]);
+export function isSafeSecurityRepairFile(file=''){
+  const p=clean(file).replaceAll('\\\\','/').replace(/^\.\//,'');
+  return Boolean(p)&&!p.startsWith('/')&&!p.includes('..')&&SECURITY_REPAIR_ALLOWED_PREFIXES.some(prefix=>p.startsWith(prefix))&&!SECURITY_REPAIR_FORBIDDEN_FILES.has(p);
+}
+export function securityRepairEvidence(report={}){
+  return uniq((report.findings||[])
+    .filter(x=>clean(x.disposition).toUpperCase()!=='REVIEW'&&['HIGH','CRITICAL'].includes(clean(x.severity).toUpperCase()))
+    .map(x=>clean(x.file).replaceAll('\\\\','/').replace(/^\.\//,''))
+    .filter(isSafeSecurityRepairFile)
+    .map(file=>'security-repair-file:'+file));
+}
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
@@ -86,7 +103,11 @@ export function runRecoveryQueue(args={}){
     const result=enqueueRecovery(queue,{
       id:args.id,priority:args.priority,sourceQueue:args['source-queue'],sourceTaskId:args['source-task'],
       relatedTaskIds:clean(args.related).split(','),failureStage:args.stage,failureSignature:args.signature,
-      blastRadius:args['blast-radius'],checkpoint:args.checkpoint,evidence:clean(args.evidence).split(','),
+      blastRadius:args['blast-radius'],checkpoint:args.checkpoint,
+      evidence:uniq([
+        ...clean(args.evidence).split(','),
+        ...securityRepairEvidence(clean(args['security-report'])?readJson(clean(args['security-report']),{}):{})
+      ]),
       recoveryStrategy:args.strategy,verificationPlan:clean(args.verify).split(','),recoveryOwner:args.owner
     });queue=result.queue;writeJson(file,queue);return{cmd,...result};
   }
