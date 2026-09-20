@@ -284,6 +284,22 @@ export function diagnosticFocusedReplaceOnlySpec({exploration={},sourceRoot='',r
     };
   }catch{return null;}
 }
+export function deterministicDiagnosticFocusedReplace(spec={}){
+  const type=clean(spec?.diagnosticType).toUpperCase(),file=posix(spec?.path),find=String(spec?.find??''),context=String(spec?.context??'');
+  if(type!=='INTERVAL_CLEANUP_RISK'||!file.toLowerCase().endsWith('.html')||!find||!context||/\bclearInterval\s*\(/.test(context))return null;
+  const match=find.match(/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*=\s*setInterval\s*\(/);
+  if(!match)return null;
+  const timer=match[1],findAt=context.indexOf(find);
+  if(findAt<0)return null;
+  const beforeAssignment=context.slice(Math.max(0,findAt-500),findAt)+'\n'+find.slice(0,Math.max(0,match.index||0));
+  const singletonGuard=new RegExp(`if\\s*\\(\\s*${regexEscape(timer)}\\s*\\)\\s*(?:return\\b|\\{[^{}]{0,160}\\breturn\\b[^{}]{0,160}\\})`,'m');
+  if(!singletonGuard.test(beforeAssignment))return null;
+  const indent=(find.match(/^\s*/)||[''])[0];
+  return{
+    replace:`${indent}window.addEventListener('pagehide',()=>{if(${timer}){clearInterval(${timer});${timer}=null;}},{once:true});\n${find}`,
+    timer,path:file,reason:'INTERVAL_SINGLETON_PAGEHIDE_CLEANUP'
+  };
+}
 export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},sourceRoot='',responsibleFiles=[],error=null}={}){
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
   if(!spec)return null;
@@ -1221,6 +1237,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const diagnosticFocusedReplaceOnly=!allowFullRewrite
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
+    const deterministicDiagnostic=attempt===1&&diagnosticFocusedReplaceOnly
+      ?deterministicDiagnosticFocusedReplace(diagnosticFocusedReplaceOnly.spec)
+      :null;
     const systemAtomicPairCompletion=!allowFullRewrite&&systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'
       ?buildSystemAtomicPairCompletionPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,partialCandidate:lastRejectedCandidate})
       :null;
@@ -1255,7 +1274,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly;
     const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':((timeoutFastEscalation||focusedFirstEditEarlyStop)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
-      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
+      const raw=deterministicDiagnostic
+        ?JSON.stringify({replace:deterministicDiagnostic.replace})
+        :await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
+      if(deterministicDiagnostic)console.log(`VIBE2_DIAGNOSTIC_DETERMINISTIC_REPAIR=${deterministicDiagnostic.reason}:${diagnosticFocusedReplaceOnly.spec.diagnosticType}:${deterministicDiagnostic.path}:${deterministicDiagnostic.timer}`);
       lastRaw=raw;
       const fullWebClosedHtmlEarlyStop=completionMode==='FULL_WEB'
         && String(raw).trimStart().startsWith(FULL_FILE_PREFIX)
@@ -1299,7 +1321,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRejectedCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,deterministicDiagnosticRepair:deterministicDiagnostic!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
