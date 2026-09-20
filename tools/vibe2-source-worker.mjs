@@ -10,6 +10,7 @@ import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
+import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -1139,6 +1140,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const order=readJson(path.resolve(cwd,workOrderFile));
   if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
+  const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
   const developmentAuthority=assertGameDevelopmentAuthority();
   const target=clean(order.target).toLowerCase();
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
@@ -1187,6 +1189,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
+  const centralPolicyCompletion=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_CANDIDATE_WRITE'});
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
   const candidateManifestPath=posix(path.relative(cwd,path.join(candidateRoot,'manifest.json')));
@@ -1270,6 +1273,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     priority:clean(order.priority)||'normal',
     generation,
     developmentAuthority,
+    compiledWorkContract:order?.compiledWorkContract&&typeof order.compiledWorkContract==='object'?order.compiledWorkContract:null,
+    centralPolicyFreshness:{preflight:centralPolicyPreflight,completion:centralPolicyCompletion},
     baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
     goal:order.goal,
     generatedAt:new Date().toISOString(),
