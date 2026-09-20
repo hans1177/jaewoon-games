@@ -185,6 +185,7 @@ jobs:
           node --check qa/vibe2-neural-feedback.test.mjs
           node --check qa/vibe2-neural-critic.test.mjs
           node --check qa/vibe2-neural-root-cause.test.mjs
+          node --check qa/vibe2-neural-fanin-root-cause.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -208,6 +209,7 @@ jobs:
           node --test qa/vibe2-neural-feedback.test.mjs
           node --test qa/vibe2-neural-critic.test.mjs
           node --test qa/vibe2-neural-root-cause.test.mjs
+          node --test qa/vibe2-neural-fanin-root-cause.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
