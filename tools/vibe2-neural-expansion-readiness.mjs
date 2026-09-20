@@ -11,17 +11,21 @@ const clean=v=>String(v??'').trim();
 const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...rest]=x.slice(2).split('=');return[k,rest.join('=')]}));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 
+export const NEURAL_EXPANSION_MAX_PARALLEL_CHECKS=5;
+
 export const NEURAL_EXPANSION_READINESS_CHECKS=Object.freeze({
   rule1QaPass:['qa/vibe2-owner-rule1-continuity.test.mjs'],
   rule2QaPass:['qa/vibe2-owner-rule2-external-ai.test.mjs'],
   rule3QaPass:['qa/vibe2-owner-rule3-unbounded-learning.test.mjs'],
+  rule4QaPass:['qa/vibe2-owner-rule4-self-architecture.test.mjs'],
   atomicNeuronFanInQaPass:[
     'qa/vibe2-neural-event-router.test.mjs',
     'qa/vibe2-neural-event-telemetry.test.mjs',
     'qa/vibe2-neural-fanin-root-cause.test.mjs'
   ],
   sharedContextQaPass:['qa/company-shared-context.test.mjs','qa/company-central-policy-contract.test.mjs'],
-  securityQaPass:['qa/company-security-steward.test.mjs','qa/company-security-recovery-e2e.test.mjs']
+  securityQaPass:['qa/company-security-steward.test.mjs','qa/company-security-recovery-e2e.test.mjs'],
+  bottleneckQaPass:['qa/vibe2-system-architecture-execution.test.mjs','qa/vibe2-parallelism-telemetry.test.mjs']
 });
 
 function runNodeTests(root,files){
@@ -62,7 +66,7 @@ function runNodeTestsAsync(root,files){
   });
 }
 
-function buildReadinessResult(results,{evaluationMode='SERIAL_COMPATIBILITY_QA_ORDERED_FINAL_GATE'}={}){
+function buildReadinessResult(results,{evaluationMode='SERIAL_COMPATIBILITY_QA_ORDERED_FINAL_GATE',parallelLaneCount=1}={}){
   const checks={},details={};
   for(const [key,files] of Object.entries(NEURAL_EXPANSION_READINESS_CHECKS)){
     const result=results[key]||{};
@@ -71,17 +75,22 @@ function buildReadinessResult(results,{evaluationMode='SERIAL_COMPATIBILITY_QA_O
   }
   const required=Object.keys(NEURAL_EXPANSION_READINESS_CHECKS);
   const missing=required.filter(key=>checks[key]!==true);
+  const orderedRuleGatePass=['rule1QaPass','rule2QaPass','rule3QaPass','rule4QaPass'].every(key=>checks[key]===true);
   return{
     version:1,
     kind:'vibe2-neural-expansion-readiness',
     source:'DIRECT_TARGETED_QA',
-    pass:missing.length===0,
+    pass:missing.length===0&&orderedRuleGatePass,
     ...checks,
     required,
     missing,
     details,
     evaluationMode,
-    parallelLaneCount:evaluationMode.startsWith('PARALLEL_')?required.length:1,
+    parallelLaneCount,
+    maxParallelChecks:NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,
+    orderedRuleGatePass,
+    bottleneckGatePass:checks.bottleneckQaPass===true,
+    finalGateOrderEnforced:true,
     implementationOrder:['RULE_1','RULE_2','RULE_3','RULE_4_FINAL_STAGE'],
     internalNeuralStructureExpansionAllowedWhenPass:true,
     neuralExecutionAuthorityExpansionAllowed:false,
@@ -97,10 +106,33 @@ export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runN
   return buildReadinessResult(results);
 }
 
-export async function evaluateNeuralExpansionReadinessParallel({root=process.cwd(),runner=runNodeTestsAsync}={}){
+async function runBoundedChecks({root,entries,runner,maxParallelChecks}){
+  const limit=Math.max(1,Math.min(NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,Number(maxParallelChecks)||NEURAL_EXPANSION_MAX_PARALLEL_CHECKS,entries.length));
+  const settled=new Array(entries.length);
+  let cursor=0;
+  const workers=Array.from({length:limit},async()=>{
+    while(true){
+      const index=cursor++;
+      if(index>=entries.length)return;
+      const [key,files]=entries[index];
+      settled[index]=[key,await runner(root,files)];
+    }
+  });
+  await Promise.all(workers);
+  return{settled,limit};
+}
+
+export async function evaluateNeuralExpansionReadinessParallel({
+  root=process.cwd(),
+  runner=runNodeTestsAsync,
+  maxParallelChecks=NEURAL_EXPANSION_MAX_PARALLEL_CHECKS
+}={}){
   const entries=Object.entries(NEURAL_EXPANSION_READINESS_CHECKS);
-  const settled=await Promise.all(entries.map(async([key,files])=>[key,await runner(root,files)]));
-  return buildReadinessResult(Object.fromEntries(settled),{evaluationMode:'PARALLEL_INDEPENDENT_QA_ORDERED_FINAL_GATE'});
+  const {settled,limit}=await runBoundedChecks({root,entries,runner,maxParallelChecks});
+  return buildReadinessResult(Object.fromEntries(settled),{
+    evaluationMode:'PARALLEL_BOUNDED_INDEPENDENT_QA_ORDERED_FINAL_GATE',
+    parallelLaneCount:limit
+  });
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
