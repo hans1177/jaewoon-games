@@ -1885,7 +1885,8 @@
       "coding_negative_1s8odyc",
       "coding_negative_1wsf7i4",
       "coding_negative_120ky7",
-      "coding_negative_9nlda0"
+      "coding_negative_9nlda0",
+      "coding_negative_se75ir"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -2579,7 +2580,7 @@
         "verifiedApplications": 46,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 99,
-        "verifiedFailures": 275,
+        "verifiedFailures": 276,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -2632,13 +2633,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 2,
-            "verifiedFailures": 4,
+            "verifiedFailures": 5,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 5,
             "totalContextBytes": 5374,
             "lastEvidence": "coding_zf22d0",
-            "lastFailureEvidence": "coding_negative_1rbl3mk",
-            "lastUpdatedAt": "2026-09-20T15:37:45.054Z"
+            "lastFailureEvidence": "coding_negative_se75ir",
+            "lastUpdatedAt": "2026-09-20T16:31:52.685Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 11,
@@ -3507,7 +3508,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 3,
-            "verifiedFailures": 11,
+            "verifiedFailures": 12,
             "games": {
               "daechung-rpg": 1
             },
@@ -3515,18 +3516,19 @@
               "unity": 1
             },
             "failureGames": {
-              "daechung-rpg": 11
+              "daechung-rpg": 12
             },
             "failureTargets": {
-              "unity": 11
+              "unity": 12
             },
             "failureClasses": {
               "INVALID_PATH": 9,
-              "EDIT_MATCH": 2
+              "EDIT_MATCH": 2,
+              "NO_OP": 1
             },
             "lastEvidence": "coding_zf22d0",
-            "lastFailureEvidence": "coding_negative_1rbl3mk",
-            "lastUpdatedAt": "2026-09-20T15:37:45.054Z"
+            "lastFailureEvidence": "coding_negative_se75ir",
+            "lastUpdatedAt": "2026-09-20T16:31:52.685Z"
           },
           "web|INVALID_PATH|OTHER|TIMEOUT": {
             "verifiedApplications": 0,
@@ -3551,8 +3553,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_vpzoof",
-        "lastFailureEvidence": "coding_negative_120ky7",
-        "lastUpdatedAt": "2026-09-20T16:26:33.418Z"
+        "lastFailureEvidence": "coding_negative_se75ir",
+        "lastUpdatedAt": "2026-09-20T16:31:52.685Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 330,
@@ -7037,7 +7039,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T16:31:42.195Z",
+    "lastBuiltAt": "2026-09-20T16:31:52.733Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9194,5 +9196,5 @@
       "knowledge_m8qcx6"
     ]
   },
-  "updatedAt": "2026-09-20T16:31:42.195Z"
+  "updatedAt": "2026-09-20T16:31:52.733Z"
 }
