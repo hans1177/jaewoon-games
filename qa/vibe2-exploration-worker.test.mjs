@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { exploreVibe2WorkOrder, explorationGuidance } from '../tools/vibe2-exploration-worker.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
@@ -233,17 +234,36 @@ test('causal replay becomes executable only with explicit prepatch reproduction 
   assert.ok(result.editContract.requiredFocusedChecks.includes('CAUSAL_REPLAY_POSTPATCH_REQUIRED'));
   assert.equal(result.editContract.causalReplay.canonicalQaStillRequired,true);
 });
-test('performance sanity is read only and requires exploration evidence',()=>{
+test('performance sanity is read only, requires exploration evidence, and budgets candidate growth',()=>{
   const cwd=tempRoot();
-  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
-  const manifest={sourceRoot:'unity-games/demo',changedFiles:['Assets/Player.cs'],exploration:{reuseKey:'reuse-1',sourceWrite:false}};
+  const player=path.join(cwd,'unity-games/demo/Assets/Player.cs');
+  write(player,'a'.repeat(882000));
+  execFileSync('git',['init','-q'],{cwd});
+  execFileSync('git',['config','user.email','vibe2-test@example.invalid'],{cwd});
+  execFileSync('git',['config','user.name','Vibe2 Test'],{cwd});
+  execFileSync('git',['add','.'],{cwd});
+  execFileSync('git',['commit','-qm','baseline'],{cwd});
+  const baseMainSha=String(execFileSync('git',['rev-parse','HEAD'],{cwd,encoding:'utf8'})).trim();
+  const manifest={sourceRoot:'unity-games/demo',changedFiles:['Assets/Player.cs'],baseMainSha,exploration:{reuseKey:'reuse-1',sourceWrite:false}};
+
+  fs.appendFileSync(player,'b'.repeat(50000),'utf8');
   const pass=verifyPerformanceSanity({root:cwd,manifest});
   assert.equal(pass.pass,true);
   assert.equal(pass.role,'performance');
   assert.equal(pass.sourceWrite,false);
+  assert.equal(pass.fileGrowth[0].baseBytes,882000);
+  assert.equal(pass.fileGrowth[0].growthBytes,50000);
+  assert.ok(pass.checks.some(row=>row.name==='single-file-growth-budget'&&row.pass));
+
   const fail=verifyPerformanceSanity({root:cwd,manifest:{...manifest,exploration:null}});
   assert.equal(fail.pass,false);
   assert.ok(fail.checks.some(row=>row.name==='exploration-handoff-present'&&!row.pass));
+
+  fs.appendFileSync(player,'c'.repeat(260001),'utf8');
+  const oversizedGrowth=verifyPerformanceSanity({root:cwd,manifest});
+  assert.equal(oversizedGrowth.pass,false);
+  assert.equal(oversizedGrowth.fileGrowth[0].growthBytes,310001);
+  assert.ok(oversizedGrowth.checks.some(row=>row.name==='single-file-growth-budget'&&!row.pass));
 });
 
 test('long functional package owner gets the protected slot before short work',()=>{
