@@ -30,7 +30,7 @@ export function distillSecurityLearning({incidentsInput={},experienceInput={},co
   let experienceAdded=0,patternsAdded=0;const stamp=new Date().toISOString();
   incidents.incidents=incidents.incidents.map(incident=>{
     const eligible=clean(incident.status)==='RESOLVED_VERIFIED'&&clean(incident.primaryAiReview).toUpperCase()==='PASS'
-      &&clean(incident.learningPromotion).toUpperCase()!=='PROMOTED'&&(incident.verificationEvidence||[]).length>=3;
+      &&clean(incident.learningPromotion).toUpperCase()==='PENDING'&&(incident.verificationEvidence||[]).length>=3;
     if(!eligible)return incident;
     const reviewMode=clean(incident.verificationMode).toUpperCase()==='AUTHORIZED_POLICY_REVIEW_PASS';
     const sig='security_'+hash([incident.rule,incident.category,incident.rootCause,incident.remediation,incident.verificationMode].join('|'));
