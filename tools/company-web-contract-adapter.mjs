@@ -108,9 +108,21 @@ function mechanicIdFor(item,candidate,index){
   const id=lower(candidate.id||'').replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'');
   return (id?family+'-'+id:family+'-action-'+String(index+1)).slice(0,64);
 }
+function scopeMatchPriority(item={},index=0){
+  const path=clean(item.path);
+  const requirement=approvedScopeRequirement(item);
+  let priority=50;
+  if(/^coreLoop\[\d+\]/.test(path))priority=10;
+  else if(/^mobileUx(?:\b|\.)/i.test(path))priority=20;
+  else if(requirement&&requirement!=='GENERIC')priority=25;
+  else if(/^coreFun$/i.test(path))priority=90;
+  return{item,index,priority};
+}
 export function buildWebContractAdapterPlan({html='',inventory=[]}={}){
   const candidates=extractWebGameplayCandidates(html),used=new Set(),bindings=[],ambiguous=[],unmapped=[];
-  for(const [index,item] of (inventory||[]).entries()){
+  const ordered=(inventory||[]).map((item,index)=>scopeMatchPriority(item,index))
+    .sort((a,b)=>a.priority-b.priority||a.index-b.index);
+  for(const {item,index} of ordered){
     const ranked=candidates
       .filter(candidate=>!used.has(candidate.key)||candidate.existingScopeId===item.id)
       .map(candidate=>({candidate,...scoreCandidate(item,candidate)}))
@@ -146,7 +158,18 @@ export function buildWebContractAdapterPlan({html='',inventory=[]}={}){
     highConfidenceCount:bindings.filter(row=>row.confidence==='HIGH').length,
     mediumConfidenceCount:bindings.filter(row=>row.confidence==='MEDIUM').length,
     ambiguousCount:ambiguous.length,unmappedCount:unmapped.length,
-    bindings,ambiguous,unmapped,
+    bindings:bindings.sort((a,b)=>{
+      const ai=(inventory||[]).findIndex(item=>item.id===a.scopeId),bi=(inventory||[]).findIndex(item=>item.id===b.scopeId);
+      return ai-bi;
+    }),
+    ambiguous:ambiguous.sort((a,b)=>{
+      const ai=(inventory||[]).findIndex(item=>item.id===a.scopeId),bi=(inventory||[]).findIndex(item=>item.id===b.scopeId);
+      return ai-bi;
+    }),
+    unmapped:unmapped.sort((a,b)=>{
+      const ai=(inventory||[]).findIndex(item=>item.id===a.scopeId),bi=(inventory||[]).findIndex(item=>item.id===b.scopeId);
+      return ai-bi;
+    }),
     externalAiReviewRequired:ambiguous.length>0||unmapped.length>0,
     authorityExpanded:false
   };
