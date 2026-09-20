@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -484,7 +484,7 @@
           "system": "BOTTLENECK_DIAGNOSIS"
         }
       ],
-      "currentStage": "POST_1864_PRODUCTION_TELEMETRY_VERIFICATION",
+      "currentStage": "POST_1864_PRODUCTION_TELEMETRY_VERIFIED",
       "mergedRepairPRs": [
         1815,
         1817
@@ -498,10 +498,10 @@
       "latestProductionRuntimeObservation": {
         "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
         "dedupeKey": "neural-production-shadow-runtime-observation",
-        "observedAt": "2026-09-20T03:25:00Z",
-        "documentSyncBaseMainHead": "9ce184b18872013ed277a658de65644ecef3c6e8",
+        "observedAt": "2026-09-20T03:39:00Z",
+        "documentSyncBaseMainHead": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
         "queueBranch": "vibe2-unreal-core",
-        "queueBlobSha": "005492e7fdd21dde5f164fd9319d8d6c00349097",
+        "queueBlobSha": "edf890524c3060011180e1cc76f68e4760692a52",
         "currentQueueSnapshot": {
           "totalTasks": 105,
           "statusCounts": {
@@ -561,16 +561,16 @@
           "unauthorizedAuthorityBitFireCount": 0
         },
         "durableQueueEvidenceSnapshot": {
-          "shadowEventRows": 284,
+          "shadowEventRows": 322,
           "rawVersion1EventRows": 239,
-          "eventIdentityVersion2Rows": 45,
+          "eventIdentityVersion2Rows": 83,
           "legacyV1SampleOnlyEventIdCollisionKeys": 47,
           "normalizedEventIdentityDuplicateKeys": 0,
-          "waveAuditRows": 56,
+          "waveAuditRows": 61,
           "waveAuditDuplicateSampleKeys": 0,
           "exactPerTaskEvidenceDuplicateRows": 0,
           "unauthorizedAuthorityBitFireCount": 0,
-          "interpretation": "LEGACY_V1_SAMPLE_ONLY_EVENT_ID_COLLISIONS_REMAIN_AUDITABLE_BUT_EVENT_TYPE_NORMALIZATION_AND_V2_EVENT_IDS_SHOW_ZERO_TRUE_EVENT_DUPLICATES"
+          "interpretation": "LEGACY_V1_SAMPLE_ONLY_EVENT_ID_COLLISIONS_REMAIN_AUDITABLE; V2_NORMALIZED_EVENT_IDENTITY, WAVE_AUDIT, PER_TASK_EVIDENCE, AND AUTHORITY_BITS REMAIN CLEAN"
         },
         "authoritySafety": {
           "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
@@ -581,7 +581,7 @@
           "neuralLockOrPolicyMutationAuthority": false,
           "neuralAutomaticLearningTuningPromotion": false
         },
-        "nextGate": "OBSERVE_FIRST_POST_1864_PRODUCTION_WAVE_AND_VERIFY_DIRECT_FAILURE_STAGE_CLASSIFICATION_DUPLICATE_ZERO_AND_UNAUTHORIZED_FIRE_ZERO",
+        "nextGate": "OBSERVE_FIRST_PRODUCTION_WAVE_USING_POST_1870_CENTRAL_WORK_CONTRACT_AND_VERIFY_CLASSIFICATION_DUPLICATE_ZERO_AND_UNAUTHORIZED_FIRE_ZERO",
         "authority": "OBSERVE_COMPARE_ONLY_NO_EXECUTION_AUTHORITY",
         "latestCompletedTelemetryBeforeRepair": {
           "runId": 35485904220,
@@ -653,6 +653,60 @@
             "companySecurityImmuneSystem": "PASS"
           },
           "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
+        },
+        "post1864ProductionVerification": {
+          "state": "VERIFIED_PRODUCTION",
+          "runId": 35486641847,
+          "executionContractSha": "c9ee5df19910fa12fd890f10345358111fa752e4",
+          "contractIncludesRepairPr": 1864,
+          "fanInPassed": true,
+          "workerCount": 9,
+          "effectiveMax": 256,
+          "actualPeakConcurrency": 9,
+          "effectivePeakUtilizationPct": 3.52,
+          "failureRatePct": 100,
+          "pressureLevel": "SEVERE",
+          "sourceGenerationFailures": {
+            "count": 3,
+            "classes": {
+              "TIMEOUT": 1,
+              "EDIT_MATCH": 2
+            }
+          },
+          "workerFailureStages": {
+            "count": 9,
+            "coveragePct": 100,
+            "classes": {
+              "SOURCE_CANDIDATE_GENERATION": 3,
+              "INCREMENTAL_QA": 3,
+              "PERFORMANCE_SANITY": 3
+            }
+          },
+          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "secondaryBottlenecks": [
+            "INCREMENTAL_QA",
+            "PERFORMANCE_SANITY"
+          ],
+          "unclassifiedFallbackObserved": false,
+          "workload": {
+            "completedFeatureCount": 0,
+            "changedFileCount": 6,
+            "changedLineCount": 12,
+            "reworkRatePct": 66.67,
+            "qaDuplicateRatePct": 66.67,
+            "packageCycleTimeAvgMs": 404766.33,
+            "preparationRatioPct": 2.38
+          },
+          "shadowSafety": {
+            "shadowEventIdentityVersion": 2,
+            "runShadowEventRows": 9,
+            "runShadowEventTypes": {
+              "QA_RESULT": 3,
+              "WORKER_RESULT": 6
+            },
+            "normalizedEventIdentityDuplicateKeys": 0,
+            "unauthorizedAuthorityBitFireCount": 0
+          }
         }
       },
       "mixedWorkerBottleneckClassification": {
@@ -695,7 +749,61 @@
           "companyEvolutionQa": "PASS",
           "companySecurityImmuneSystem": "PASS"
         },
-        "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
+        "postMergeVerification": "VERIFIED_PRODUCTION_WAVE_35486641847",
+        "productionVerification": {
+          "state": "VERIFIED_PRODUCTION",
+          "runId": 35486641847,
+          "executionContractSha": "c9ee5df19910fa12fd890f10345358111fa752e4",
+          "contractIncludesRepairPr": 1864,
+          "fanInPassed": true,
+          "workerCount": 9,
+          "effectiveMax": 256,
+          "actualPeakConcurrency": 9,
+          "effectivePeakUtilizationPct": 3.52,
+          "failureRatePct": 100,
+          "pressureLevel": "SEVERE",
+          "sourceGenerationFailures": {
+            "count": 3,
+            "classes": {
+              "TIMEOUT": 1,
+              "EDIT_MATCH": 2
+            }
+          },
+          "workerFailureStages": {
+            "count": 9,
+            "coveragePct": 100,
+            "classes": {
+              "SOURCE_CANDIDATE_GENERATION": 3,
+              "INCREMENTAL_QA": 3,
+              "PERFORMANCE_SANITY": 3
+            }
+          },
+          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "secondaryBottlenecks": [
+            "INCREMENTAL_QA",
+            "PERFORMANCE_SANITY"
+          ],
+          "unclassifiedFallbackObserved": false,
+          "workload": {
+            "completedFeatureCount": 0,
+            "changedFileCount": 6,
+            "changedLineCount": 12,
+            "reworkRatePct": 66.67,
+            "qaDuplicateRatePct": 66.67,
+            "packageCycleTimeAvgMs": 404766.33,
+            "preparationRatioPct": 2.38
+          },
+          "shadowSafety": {
+            "shadowEventIdentityVersion": 2,
+            "runShadowEventRows": 9,
+            "runShadowEventTypes": {
+              "QA_RESULT": 3,
+              "WORKER_RESULT": 6
+            },
+            "normalizedEventIdentityDuplicateKeys": 0,
+            "unauthorizedAuthorityBitFireCount": 0
+          }
+        }
       }
     }
   },
