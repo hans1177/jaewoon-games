@@ -9,8 +9,8 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const roadmap=json('company-learning/platform-release-roadmap.json');
   const architecture=json('company-learning/company-architecture-map.json');
   const motor=json('company-learning/vibe2-learning-motor.json');
-  assert.equal(roadmap.version,211);
-  assert.equal(architecture.version,53);
+  assert.equal(roadmap.version,215);
+  assert.equal(architecture.version,57);
   assert.equal(motor.version,5);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
@@ -35,7 +35,7 @@ test('continuous runner loads distilled external AI and emits exact knowledge tr
   assert.match(runner,/exactInjectedKnowledgeIds/);
   assert.match(workflow,/learning-knowledge-ids:/);
   assert.match(workflow,/knowledgeApplication/);
-  assert.match(workflow,/version:12/);
+  assert.match(workflow,/version:13/);
 });
 
 test('Web adapter stays deterministic while external AI remains in a separate verified distillation lane',()=>{
