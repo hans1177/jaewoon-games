@@ -920,6 +920,43 @@ test('semantic diff hard gate protects existing save keys from silent removal',(
   assert.match(result.violations.join('|'),/SAVE_KEY_COMPATIBILITY/);
 });
 
+test('semantic diff invariant blocks variable-backed save key mutation outside explicit migration',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),"const C={id:'demo'}; const key='jg-final:'+C.id; const load=()=>localStorage.getItem(key); const save=()=>localStorage.setItem(key,'{}'); function actDefense(){return 1;}\n");
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:"const key='jg-final:'+C.id;",replace:"const key='jg-final:'+C.id+1;"}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'LOW',primaryTargets:['actDefense'],allowedDependentSymbolsOrSystems:[],ownedState:[],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','PLACEMENT'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },
+    sourceRoot
+  });
+  assert.equal(result.mode,'INVARIANT_ENFORCE');
+  assert.equal(result.pass,false);
+  assert.equal(result.saveContractInvariantEnforced,true);
+  assert.match(result.violations.join('|'),/SAVE_CONTRACT_MUTATION:index\.html:binding:key/);
+});
+
+test('semantic diff invariant allows unrelated source repair when save binding is unchanged',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),"const C={id:'demo'}; const key='jg-final:'+C.id; const load=()=>localStorage.getItem(key); const save=()=>localStorage.setItem(key,'{}'); function actDefense(){return 1;}\n");
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'function actDefense(){return 1;}',replace:'function actDefense(){return 2;}'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'LOW',primaryTargets:['actDefense'],allowedDependentSymbolsOrSystems:[],ownedState:[],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['PLACEMENT'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    },
+    sourceRoot
+  });
+  assert.equal(result.mode,'OBSERVE_ONLY');
+  assert.equal(result.pass,true);
+  assert.deepEqual(result.saveContractMutations,[]);
+});
+
 test('ambiguous or low confidence semantic classification is observe-only instead of false rejecting',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'const value=1;',replace:'const value=2; gold+=1;'}],newFiles:[],replaceFiles:[]},
