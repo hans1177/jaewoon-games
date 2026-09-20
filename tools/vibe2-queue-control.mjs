@@ -415,6 +415,14 @@ function codingStrategyFailureEvidence(row = {}) {
   };
   return[`coding-strategy-negative:${encodeURIComponent(JSON.stringify(payload))}`];
 }
+function neuralWorkerSampleId(row={}) {
+  return[
+    clean(row?.taskId),
+    resultReservationId(row),
+    clean(row?.variant)||'primary',
+    clean(row?.candidateBranch)
+  ].filter(Boolean).join('|')||null;
+}
 function neuralWorkerFeedback(row = {}) {
   return evaluateNeuralDiagnosisFeedback({
     diagnosis:row?.neuralDiagnosis||null,
@@ -422,7 +430,8 @@ function neuralWorkerFeedback(row = {}) {
     blocker:row?.blocker,
     candidateFailure:row?.candidateFailure||null,
     roleResults:row?.roleResults||{},
-    evidence:Array.isArray(row?.evidence)?row.evidence:[]
+    evidence:Array.isArray(row?.evidence)?row.evidence:[],
+    sampleId:neuralWorkerSampleId(row)
   });
 }
 function neuralWorkerEventType(row={}) {
@@ -439,6 +448,7 @@ function neuralWorkerEvidence(row = {}) {
   const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence});
   const eventRoute=simulateNeuralEventRoute({
     event:{
+      id:neuralWorkerSampleId(row),
       type:neuralWorkerEventType(row),
       taskId:clean(row?.taskId)||null,
       outcome:clean(row?.outcome).toUpperCase()||null,
