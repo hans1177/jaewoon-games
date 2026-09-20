@@ -12,6 +12,8 @@ const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
 const now=()=>new Date().toISOString();
 const POLICY_REVIEW_RULE='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW';
 const PRIMARY_AI_DIRECT_REVIEW_PASS='PRIMARY_AI_DIRECT_REVIEW=PASS';
+const PRIMARY_AI_SECURITY_REVIEW_PASS='PRIMARY_AI_SECURITY_REVIEW: PASS';
+const POLICY_REVIEW_PASS_MARKERS=new Set([PRIMARY_AI_DIRECT_REVIEW_PASS,PRIMARY_AI_SECURITY_REVIEW_PASS]);
 const severityRank={HIGH:3,CRITICAL:4};
 const boundedUniq=(xs,max=512)=>uniq(xs).slice(-Math.max(1,Number(max)||512));
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
@@ -207,7 +209,7 @@ export function resolveSecurityIncident(storeInput={},{
       const decision=clean(input.decision).toUpperCase();
       const prNumber=Number(input.prNumber||0),securityRunId=Number(input.securityRunId||0),securityArtifactId=Number(input.securityArtifactId||0);
       const sourceUrl=clean(input.sourceUrl),scanDetectedAt=clean(input.scanDetectedAt),expectedFindingCount=Number(input.findingCount||0);
-      if(decision!==PRIMARY_AI_DIRECT_REVIEW_PASS)throw new Error('SECURITY_POLICY_REVIEW_EXPLICIT_PASS_REQUIRED');
+      if(!POLICY_REVIEW_PASS_MARKERS.has(decision))throw new Error('SECURITY_POLICY_REVIEW_EXPLICIT_PASS_REQUIRED');
       if(!Number.isInteger(prNumber)||prNumber<1||!Number.isInteger(securityRunId)||securityRunId<1||!Number.isInteger(securityArtifactId)||securityArtifactId<1){
         throw new Error('SECURITY_POLICY_REVIEW_IDENTITY_REQUIRED');
       }
@@ -221,7 +223,7 @@ export function resolveSecurityIncident(storeInput={},{
         throw new Error('SECURITY_POLICY_REVIEW_FINDING_COUNT_MISMATCH:'+actualFindingCount+':'+expectedFindingCount);
       }
       approval={
-        decision:PRIMARY_AI_DIRECT_REVIEW_PASS,source:'GITHUB_PR_REVIEW',prNumber,sourceUrl,
+        decision,canonicalDecision:PRIMARY_AI_DIRECT_REVIEW_PASS,source:'GITHUB_PR_REVIEW',prNumber,sourceUrl,
         securityRunId,securityArtifactId,scanDetectedAt,findingCount:actualFindingCount
       };
     }
