@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const joy={id:null,x:0,y:0,dx:0,dy:0};",
+      "replace": "<div id=\"gameOverOverlay\" class=\"overlay\"><div class=\"panel\"><div class=\"titlemark\">RUN OVER</div><h2>별빛이 꺼졌다</h2><p id=\"result\">게임 오버</p><button id=\"restartBtn\" class=\"wide\">다시 시작</button></div></div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
