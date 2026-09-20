@@ -3896,7 +3896,7 @@ async function fightOneEnemy(mode, waveIndex=1, waveTotal=1){
 
       tryShrinkOnAttack(e,target,shrinkState);
       const monsterFrozen=await triggerIceSpike(e,target,iceState);
-      const monsterStunned=tryStunOnAttack();
+      let monsterStunned=tryStunOnAttack();
 
       relicHealOnAttack();
 
