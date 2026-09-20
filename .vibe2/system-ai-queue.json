@@ -392,7 +392,7 @@
         "no production implementation files changed"
       ],
       "verificationCommands": [
-        "node --test qa/company-web-bootstrap-signal-classifier.test.mjs"
+        "node --test qa/company-development-web-runtime.test.mjs"
       ],
       "dependencies": [
         "sys-web-bootstrap-signal-routing-v1"
@@ -407,11 +407,12 @@
       "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-vibe-planner-repair-fixtures-v1",
@@ -456,11 +457,13 @@
         "publish:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20",
+        "direct-fixture-added:qa/vibe2-planner-web-repair-fixtures.test.mjs"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-source-bootstrap-safety-v1",
@@ -483,7 +486,7 @@
         "direct-main-write prohibition is tested"
       ],
       "verificationCommands": [
-        "node --test qa/vibe2-web-bootstrap-boundary-contract.test.mjs"
+        "node --test qa/vibe2-source-worker.test.mjs"
       ],
       "dependencies": [
         "sys-vibe-web-source-bootstrap-boundary-v1"
@@ -505,11 +508,12 @@
         "publish:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-web-handoff-e2e-second-opinion-v1",
@@ -534,7 +538,7 @@
         "candidate-only safety and QA/regression presence are asserted"
       ],
       "verificationCommands": [
-        "node --test qa/company-web-vibe-handoff-second-opinion.test.mjs"
+        "node --test qa/company-web-vibe-handoff-e2e.test.mjs qa/company-development-web-runtime.test.mjs qa/vibe2-auto-planner.test.mjs qa/vibe2-source-worker.test.mjs"
       ],
       "dependencies": [
         "sys-web-vibe-handoff-e2e-contract-v1",
@@ -552,11 +556,12 @@
       "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-web-strict-gate-integrity-v1",
@@ -578,7 +583,7 @@
         "central gate thresholds remain referenced"
       ],
       "verificationCommands": [
-        "node --test qa/company-web-strict-gate-integrity.test.mjs"
+        "node --test qa/company-web-independent-promotion-contract.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-web-runtime.test.mjs"
       ],
       "dependencies": [
         "sys-web-bootstrap-signal-routing-v1"
@@ -593,11 +598,12 @@
       "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-development-queue-transition-v1",
@@ -619,7 +625,7 @@
         "stale blocker cannot override current success evidence"
       ],
       "verificationCommands": [
-        "node --test qa/company-development-queue-web-transition.test.mjs"
+        "node --test qa/company-development-queue-reconcile.test.mjs qa/vibe2-auto-planner.test.mjs qa/company-development-web-runtime.test.mjs"
       ],
       "dependencies": [
         "sys-web-bootstrap-signal-routing-v1",
@@ -635,11 +641,12 @@
       "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-web-platform-handoff-v1",
@@ -662,7 +669,7 @@
         "no platform gate is weakened"
       ],
       "verificationCommands": [
-        "node --test qa/company-web-platform-handoff-contract.test.mjs"
+        "node --test qa/company-machine-development-lifecycle.test.mjs qa/company-web-independent-promotion-contract.test.mjs qa/company-native-score-not-web-score-contract.test.mjs qa/tier1-development-baseline-gate.test.mjs"
       ],
       "dependencies": [
         "sys-web-vibe-handoff-e2e-contract-v1"
@@ -684,11 +691,12 @@
         "publish:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:47.065Z"
+      "updatedAt": "2026-09-20T00:57:24.528Z"
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
