@@ -1191,7 +1191,8 @@
       "coding_7wmv0t",
       "coding_1i0tu70",
       "coding_10dhupe",
-      "coding_1tuvgqp"
+      "coding_1tuvgqp",
+      "coding_2mlng"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -2892,9 +2893,9 @@
         "lastUpdatedAt": "2026-09-20T20:43:39.219Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 59,
+        "verifiedApplications": 60,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 131,
+        "totalGenerationAttempts": 133,
         "verifiedFailures": 303,
         "games": {
           "territory-war": 11,
@@ -2908,13 +2909,13 @@
           "seed-idle-growth-rpg-crystal-bloom": 1,
           "egg-heist": 7,
           "monster-adventure": 1,
-          "daechung-rpg": 9,
+          "daechung-rpg": 10,
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
           "fantasy-survival": 4
         },
         "targets": {
           "web": 56,
-          "unity": 3
+          "unity": 4
         },
         "contextModes": {
           "UNKNOWN": {
@@ -2948,14 +2949,14 @@
             "lastUpdatedAt": "2026-09-20T20:41:50.582Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 8,
+            "verifiedApplications": 9,
             "verifiedFailures": 10,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 18,
-            "totalContextBytes": 188736,
-            "lastEvidence": "coding_7wmv0t",
+            "totalGenerationAttempts": 20,
+            "totalContextBytes": 193529,
+            "lastEvidence": "coding_2mlng",
             "lastFailureEvidence": "coding_negative_39n122",
-            "lastUpdatedAt": "2026-09-20T20:33:18.877Z"
+            "lastUpdatedAt": "2026-09-20T20:44:23.458Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -3871,15 +3872,15 @@
             "lastUpdatedAt": "2026-09-20T14:55:54.769Z"
           },
           "unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 5,
+            "totalGenerationAttempts": 7,
             "verifiedFailures": 5,
             "games": {
-              "daechung-rpg": 2
+              "daechung-rpg": 3
             },
             "targets": {
-              "unity": 2
+              "unity": 3
             },
             "failureGames": {
               "daechung-rpg": 5
@@ -3890,9 +3891,9 @@
             "failureClasses": {
               "INVALID_PATH": 5
             },
-            "lastEvidence": "coding_8ltqsz",
+            "lastEvidence": "coding_2mlng",
             "lastFailureEvidence": "coding_negative_39n122",
-            "lastUpdatedAt": "2026-09-20T19:43:26.364Z"
+            "lastUpdatedAt": "2026-09-20T20:44:23.458Z"
           },
           "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|UI_STATE|WEB_RUNTIME": {
             "verifiedApplications": 1,
@@ -3932,9 +3933,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1i0tu70",
+        "lastEvidence": "coding_2mlng",
         "lastFailureEvidence": "coding_negative_4f8f4z",
-        "lastUpdatedAt": "2026-09-20T20:41:50.582Z"
+        "lastUpdatedAt": "2026-09-20T20:44:23.458Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 362,
@@ -7422,7 +7423,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T20:44:13.126Z",
+    "lastBuiltAt": "2026-09-20T20:44:23.497Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9869,5 +9870,5 @@
       "knowledge_1j7zlzg"
     ]
   },
-  "updatedAt": "2026-09-20T20:44:13.126Z"
+  "updatedAt": "2026-09-20T20:44:23.497Z"
 }
