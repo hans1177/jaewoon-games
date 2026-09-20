@@ -427,6 +427,7 @@ function neuralWorkerFeedback(row = {}) {
 function neuralWorkerEventType(row={}) {
   const evidence=(Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(Boolean);
   const roles=row?.roleResults&&typeof row.roleResults==='object'?row.roleResults:{};
+  if(row?.candidateFailure||clean(roles.implementation).toUpperCase()==='FAIL')return'WORKER_RESULT';
   if(clean(roles.test).toUpperCase()==='FAIL'||evidence.some(value=>value.startsWith('incremental-qa-failure-signature:')))return'QA_RESULT';
   return'WORKER_RESULT';
 }
