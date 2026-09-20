@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -89,7 +89,12 @@
         "ROBLOX_REPLICATION",
         "ROBLOX_MULTIPLAYER"
       ]
-    }
+    },
+    "legacyDepartmentLevelCeilingAppliesOnlyToLegacyField": true,
+    "domainMasteryLevelLimit": null,
+    "verifiedGrowthUnbounded": true,
+    "postLegacyLevelXpStep": 200,
+    "levelMeaning": "VERIFIED_DOMAIN_EXPERIENCE_INDEX_NOT_AUTHORITY"
   },
   "retrieval": {
     "priority": [
@@ -216,14 +221,19 @@
       "AUDIO_FEEL",
       "CAMERA_LANGUAGE"
     ],
-    "levels": 10,
+    "levels": null,
     "runOn": [
       "NEW_VERIFIED_EXPERIENCE",
       "MASTERY_LEVEL_UP",
       "NEW_VERIFIED_FAILURE_PATTERN"
     ],
     "benchmarkResultIsTrainingEvidence": false,
-    "onlyVerifiedPromotedResultMayEnterCanonicalDistillation": true
+    "onlyVerifiedPromotedResultMayEnterCanonicalDistillation": true,
+    "baseDifficultyBands": 10,
+    "generationLimit": null,
+    "repeatForever": true,
+    "difficultyEscalatesWithVerifiedMastery": true,
+    "levelIsCurrentMasteryMatchedDifficulty": true
   },
   "candidateTournament": {
     "defaultCandidates": 1,
@@ -235,8 +245,8 @@
   },
   "idleTraining": {
     "enabled": true,
-    "productionWorkAlwaysPreemptsPractice": true,
-    "usesOnlyFreeCapacity": true,
+    "productionWorkAlwaysPreemptsPractice": false,
+    "usesOnlyFreeCapacity": false,
     "drills": [
       "VERIFIED_FAILURE_REPLAY",
       "BENCHMARK_LADDER",
@@ -252,7 +262,15 @@
       "ANIMATION_FEEL_DRILL",
       "VFX_READABILITY_DRILL",
       "AUDIO_FEEL_DRILL",
-      "CAMERA_LANGUAGE_DRILL"
+      "CAMERA_LANGUAGE_DRILL",
+      "CODING_STRATEGY_DRILL",
+      "GRAPHICS_COMPOSITION_DRILL",
+      "ASSET_PRODUCTION_DRILL",
+      "HYPOTHESIS_FALSIFICATION_DRILL",
+      "SELF_MODEL_CALIBRATION_DRILL",
+      "CROSS_DOMAIN_TRANSFER_DRILL",
+      "EXTERNAL_REFERENCE_SYNTHESIS_DRILL",
+      "RELEARNING_REPLAY_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -271,7 +289,14 @@
       "verifiedDistilledLessonMayEnterRetrieval": true,
       "verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining": true,
       "authorityExpanded": false
-    }
+    },
+    "productionDefaultPriorityHigherThanPractice": true,
+    "practiceSignalGenerationAlwaysOn": true,
+    "practiceGenerationLimit": null,
+    "relearningGenerationLimit": null,
+    "practiceQueueItemLimit": null,
+    "executionMayYieldToHigherPriorityProduction": true,
+    "productionPresenceDoesNotSuppressPracticeGeneration": true
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",

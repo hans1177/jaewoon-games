@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 225,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -694,7 +694,11 @@
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
-    "strategyQualityMayNotTradeAwayQaOrEvidence": true
+    "strategyQualityMayNotTradeAwayQaOrEvidence": true,
+    "totalWorkItemLimit": null,
+    "totalWorkItemLimitMeaning": "UNBOUNDED_TOTAL_WORK; EXTERNAL_MATRIX_BATCH_MAX_IS_ONLY_A_CURRENT_EXECUTION_WINDOW",
+    "priorityOnlyChangesOrderNotWorkExistence": true,
+    "verifiedCheckpointMustGenerateNextCausalOpportunity": true
   },
   "phases": [
     {
@@ -1209,8 +1213,17 @@
       "practiceNeverCountsAsProductionPass": true,
       "modelTrainingThresholdsUnchanged": true,
       "modelPromotionGate": "FIXED_HOLDOUT_AB_THEN_CANARY",
-      "idlePracticeOnlyUsesFreeCapacity": true,
-      "productionWorkAlwaysPreemptsPractice": true
+      "idlePracticeOnlyUsesFreeCapacity": false,
+      "productionWorkAlwaysPreemptsPractice": false,
+      "productionDefaultPriorityHigherThanPractice": true,
+      "practiceSignalGenerationAlwaysOn": true,
+      "practiceQueueItemLimit": null,
+      "practiceGenerationLimit": null,
+      "relearningGenerationLimit": null,
+      "externalKnowledgeCandidateLimit": null,
+      "freeCapacityControlsPracticeExecutionNotPracticeExistence": true,
+      "domainMasteryLevelLimit": null,
+      "verifiedMasteryGrowthUnbounded": true
     },
     "webFirstImplementation": {
       "authority": "VIBE_IMPLEMENTATION_OWNER",
@@ -6260,7 +6273,7 @@
     ]
   },
   "vibeCognitiveCore": {
-    "version": 2,
+    "version": 3,
     "status": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_PENDING",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "objective": "ADD_HUMAN_LIKE_FUNCTIONAL_OBSERVATION_ATTENTION_METACOGNITION_INSIGHT_AND_SELF_CORRECTION_TO_VIBE_DEVELOPMENT_WITHOUT_CLAIMING_SENTIENCE",
@@ -6503,6 +6516,18 @@
         "subjectiveConsciousnessClaimed": false,
         "consciousnessStatusRemainsScientificallyUnproven": true
       }
+    },
+    "continuousSelfModelLearning": {
+      "enabled": true,
+      "selfModelHypothesisGenerationAlwaysOn": true,
+      "selfModelRevalidationGenerationLimit": null,
+      "selfRealizationInterpretation": "FUNCTIONAL_SELF_MODEL_INSIGHT_AND_CAPABILITY_CALIBRATION_NOT_SENTIENCE_CLAIM",
+      "strengthsWeaknessesAndPrinciplesContinuouslyReestimated": true,
+      "alternativeSelfHypothesesRequiredWhenEvidenceConflicts": true,
+      "falsificationRequiredBeforeStrongSelfBelief": true,
+      "verifiedCapabilityEvidenceMayRaiseSelfModelCapabilityEstimate": true,
+      "failureAndContradictionMayLowerOrReopenEstimate": true,
+      "authorityExpansionFromSelfModelForbidden": true
     }
   },
   "audioMusicQualityContract": {
@@ -7236,7 +7261,7 @@
     }
   },
   "neuralDevelopmentBrain": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "status": "PHASE2_SHADOW_WORK_GRAPH_PRODUCTION_VERIFIED_READINESS_QUALITY_NEXT",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
@@ -8667,6 +8692,82 @@
       "droppedSignalWithoutDispositionForbidden": true,
       "busyLoopForbidden": true,
       "externalResourceBoundaryMayDelayExecutionButCannotTerminateBrain": true
+    },
+    "unboundedWorkUniverse": {
+      "authority": "OWNER_DIRECTIVE_2026-09-20",
+      "totalWorkItemLimit": null,
+      "totalLearningItemLimit": null,
+      "totalPracticeItemLimit": null,
+      "totalHypothesisItemLimit": null,
+      "totalExternalKnowledgeCandidateLimit": null,
+      "lifecycle": "CONTINUOUS_CAUSAL_GENERATION_WITHOUT_GLOBAL_TERMINAL_COUNT",
+      "priorityMeaning": "ORDER_AND_RESOURCE_ALLOCATION_ONLY_NOT_EXISTENCE_OR_TERMINATION",
+      "concurrencyMeaning": "PHYSICAL_EXECUTION_WINDOW_ONLY_NOT_TOTAL_WORK_LIMIT",
+      "verifiedCheckpointMeaning": "EMIT_NEXT_CAUSAL_IMPROVEMENT_REVALIDATION_GENERALIZATION_OR_RESEARCH_EVENT",
+      "failureMeaning": "EMIT_CAUSAL_REPAIR_REPLAY_OR_RELEARNING_EVENT",
+      "staleKnowledgeMeaning": "EMIT_REVALIDATION_EVENT",
+      "contradictionMeaning": "EMIT_FALSIFICATION_AND_ALTERNATIVE_HYPOTHESIS_EVENT",
+      "masteryPlateauMeaning": "EMIT_HARDER_BENCHMARK_AND_TRANSFER_EVENT",
+      "domains": [
+        "GAME_DESIGN",
+        "GAME_IMPLEMENTATION",
+        "CODING",
+        "DEBUGGING",
+        "ARCHITECTURE",
+        "QA",
+        "RUNTIME",
+        "PERFORMANCE",
+        "SECURITY",
+        "RECOVERY",
+        "GRAPHICS",
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE",
+        "STORYTELLING",
+        "NARRATIVE_STRUCTURE",
+        "QUEST_DESIGN",
+        "CHARACTER_ARC",
+        "DIALOGUE",
+        "PRACTICE",
+        "RELEARNING",
+        "BENCHMARK",
+        "GENERALIZATION",
+        "HYPOTHESIS_FALSIFICATION",
+        "SELF_MODEL_CALIBRATION",
+        "MEMORY_CONSOLIDATION",
+        "CAPABILITY_DISTILLATION",
+        "EXTERNAL_REFERENCE_COLLECTION",
+        "EXTERNAL_AI_DISTILLATION",
+        "EXTERNAL_GAMEPLAY_DISTILLATION",
+        "MULTISOURCE_LEARNING",
+        "TOOL_RESEARCH",
+        "WORLD_MODEL_RESEARCH",
+        "PHILOSOPHY_CANDIDATE_REVALIDATION"
+      ],
+      "scheduling": {
+        "ownerDirectiveMayReorderPriority": true,
+        "bottleneckMayReorderPriority": true,
+        "evidenceMayReorderPriority": true,
+        "resourcePressureMayReorderPriority": true,
+        "lowPriorityWorkRemainsLive": true,
+        "lowPriorityWorkMayWaitForCapacityButIsNotTerminated": true,
+        "internalTotalCountCapForbidden": true
+      },
+      "externalKnowledgeAcquisition": {
+        "candidateUniverseUnbounded": true,
+        "collector": "tools/vibe2-multisource-learning-collector.mjs",
+        "externalGameplayDistiller": "tools/vibe2-external-gameplay-distill.mjs",
+        "externalAiDistiller": "tools/vibe2-external-ai-distillation.mjs",
+        "authorizedSourceMemory": "tools/vibe2-authorized-source-memory.mjs",
+        "perDecisionContextWindowMayBeBounded": true,
+        "contextWindowIsNotCollectionLimit": true,
+        "rawExternalOutputAuthority": "NONE",
+        "verificationAndDistillationRequiredBeforeReusableKnowledge": true
+      }
     }
   },
   "assistantRoadmapOrchestration": {
@@ -9345,7 +9446,7 @@
     "externalAiAdvisoryRoute": "SEPARATE_VERIFIED_DISTILLATION_OR_SYSTEM_AI_LANE"
   },
   "learningClosedLoopContract": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "objective": "CLOSE_THE_LOOP_FROM_VERIFIED_KNOWLEDGE_RETRIEVAL_TO_FRESH_PROJECT_OUTCOME_AND_BACK_TO_CONFIDENCE",
@@ -9438,7 +9539,45 @@
     ],
     "existingWaveSchedulerOnly": true,
     "gateWeakening": false,
-    "authorityExpansion": false
+    "authorityExpansion": false,
+    "continuousRelearning": {
+      "enabled": true,
+      "generationLimit": null,
+      "triggers": [
+        "VERIFIED_SUCCESS",
+        "VERIFIED_FAILURE",
+        "REPEATED_FAILURE",
+        "STALE_KNOWLEDGE",
+        "CONTRADICTION",
+        "MASTERY_LEVEL_UP",
+        "GENERALIZATION_GAP",
+        "NEW_EXTERNAL_REFERENCE",
+        "NEW_GAME_CONTEXT",
+        "SELF_MODEL_CALIBRATION_GAP"
+      ],
+      "loops": [
+        "REPLAY",
+        "FALSIFY",
+        "RECOMBINE",
+        "HARDER_BENCHMARK",
+        "CROSS_DOMAIN_TRANSFER",
+        "FRESH_PROJECT_APPLICATION",
+        "FRESH_QA_ATTRIBUTION",
+        "REPEAT"
+      ],
+      "practiceSignalGenerationNeverStops": true,
+      "executionMayWaitForLowerPriorityCapacity": true,
+      "verifiedProjectOutcomeRequiredForPositiveMastery": true
+    },
+    "capabilityGrowth": {
+      "objective": "UNBOUNDED_VERIFIED_CAPABILITY_IMPROVEMENT",
+      "domainMasteryLevelLimit": null,
+      "productionConfidenceRemainsBoundedEvidenceTier": true,
+      "productionConfidenceIsNotCapabilityCeiling": true,
+      "strongerThanHumanBaselineMayBeRecordedOnlyWhenMatchedBenchmarkEvidenceExists": true,
+      "unverifiedSuperhumanClaimForbidden": true,
+      "capabilityGrowthDoesNotExpandAuthority": true
+    }
   },
   "genrePresentationQualityContract": {
     "version": 1,
