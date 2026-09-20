@@ -16,7 +16,8 @@ function writePolicy(root,{pilot='fantasy-survival'}={}){
     machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
     humanDocumentRequired:false,
     assetProductionParallelContract:{
-      version:2,enabled:true,
+      version:3,enabled:true,
+      atomicPresentationExecution:{enabled:true,legacySerialStageChain:false,topology:'RESPONSIBLE_FILE_ATOMIC_FAN_OUT_WITH_PACKAGE_FAN_IN'},
       firstAdoption:{gameId:pilot,targetPlatforms:['UNITY','ROBLOX']},
       platformAssetSeparation:{
         webAssetDirectReuseIntoUnityForbidden:true,
@@ -213,4 +214,29 @@ function applyWorldSnapshot(w){if(w.weather)setWeather(w.weather.kind)}
     assert.equal(result.weatherPresentationQa.status,'STATIC_PASS');
     assert.equal(result.weatherPresentationQa.runtimeStillRequired,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('central graphics contract forbids the legacy serial presentation chain',()=>{
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const contract=roadmap.assetProductionParallelContract;
+  assert.equal(contract.version,3);
+  assert.equal(contract.atomicPresentationExecution.enabled,true);
+  assert.equal(contract.atomicPresentationExecution.legacySerialStageChain,false);
+  assert.equal(contract.atomicPresentationExecution.legacyStageOrderExecutionForbidden,true);
+  assert.equal(contract.parallelism.differentResponsibleFilesMayFanOutImmediately,true);
+  assert.equal(contract.parallelism.monolithicPresentationFileMustBeOneAtomicTaskNotRepeatedSerialPasses,true);
+  assert.equal(contract.parallelism.globalPresentationWaveBarrierForbidden,true);
+  assert.ok(contract.workflow.includes('MICRO_FAN_IN_EACH_ATOMIC_PRESENTATION_TASK_IMMEDIATELY'));
+  assert.equal(contract.workflow.includes('RUN_GAMEPLAY_CODE_AND_ASSET_PRODUCTION_IN_PARALLEL'),false);
+
+  const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
+  assert.equal(runtime.continuous.atomicNeuronStream.presentationAtomicFanOut.enabled,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.presentationAtomicFanOut.legacySerialStageChain,false);
+
+  const planner=fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs',import.meta.url),'utf8');
+  assert.doesNotMatch(planner,/function presentationStagesForProject/);
+  assert.match(planner,/findPresentationQualityTasks/);
+  assert.match(planner,/PRESENTATION_ATOMIC:/);
+  assert.match(planner,/PRESENTATION_FANIN:POLISH_MOBILE/);
 });
