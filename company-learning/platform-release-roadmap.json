@@ -1,5 +1,5 @@
 {
-  "version": 180,
+  "version": 181,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6098,7 +6098,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_DETERMINISTIC_SHADOW_SAMPLE_ID_CANDIDATE",
+    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6515,7 +6515,7 @@
         "causalRepairWithoutResponsibleSystemMayNotExpandScope": true
       },
       "promotionGate": {
-        "status": "NOT_ELIGIBLE",
+        "status": "SHADOW_OBSERVATION_ACTIVE_NOT_AUTHORITY_ELIGIBLE",
         "minimumShadowEvidenceRequired": true,
         "rootCauseVerifierRequired": true,
         "securityReviewRequired": true,
@@ -6635,6 +6635,20 @@
           "neural-shadow-wave-audit.sampleId"
         ]
       }
+    },
+    "activation": {
+      "mode": "MERGED_MAIN_SHADOW_OBSERVATION",
+      "mainCommit": "42d6863a1d47bd7ad7863457e8562a22136b3c5a",
+      "activated": true,
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": false,
+      "neuralWorkerCreationAuthority": false,
+      "neuralQueueMutationAuthority": false,
+      "neuralWaveReorderAuthority": false,
+      "neuralLearningAuthority": false,
+      "neuralAutomaticPromotionAuthority": false,
+      "readinessMeaning": "REVIEW_ELIGIBILITY_ONLY",
+      "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY"
     }
   }
 }
