@@ -585,10 +585,10 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
   return freeze({ updated: found, outcome: normalizedOutcome, queue: nextQueue, next, dispatchNext: next.continueRequired, longRunningProcessRequired: false });
 }
 
-export function summarizeVibeContinuousQueue(queueInput) {
+export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
-  const next = selectVibeQueueBatch(queue);
+  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
   return freeze({
     version: 5,
     counts: freeze(counts),
