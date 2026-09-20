@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<canvas id=\"game\"></canvas>",
+      "replace": ".toast { position: fixed; z-index: 80; left: 50%; top: 20%; transform: translate(-50%, -7px); max-width: 84vw; padding: 8px 10px; border-radius: 11px; background: #13243ced; color: #fff; font-size: 10px; font-weight: 1000; text-align: center; opacity: 0; transition: .18s; pointer-events: none; } .toast.on { opacity: 1; transform: translate(-50%, 0) }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
