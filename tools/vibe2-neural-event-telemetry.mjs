@@ -56,6 +56,7 @@ export function summarizeNeuralEventShadowEvidence(values=[]){
     rawEvidenceRows:parsedRows.length,
     total:rows.length,
     distinctEventIds:byEventId.size,
+    identifiedEventCount:byEventId.size,
     legacyUnidentifiedRows:legacyRows.length,
     duplicateEventRows,
     eventConflicts,
