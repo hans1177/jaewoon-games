@@ -7,7 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory, addVibeExperience } from '../assets/vibe-experience-memory.js';
 import { validateDesignAwareExperience } from './vibe2-design-intelligence.mjs';
-import { applyCapabilityApplicationReviews } from './vibe2-capability-distillation.mjs';
+import { applyCapabilityApplicationReviews, applyCapabilityGeneralizationBenchmarkReviews } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
@@ -315,6 +315,7 @@ export function runExperiencePromotionBatch({
   const payload=reviews||(clean(reviewsFile)?readJson(reviewsFile,null):null);
   const rows=Array.isArray(payload)?payload:(Array.isArray(payload?.experienceReviews)?payload.experienceReviews:[]);
   const capabilityApplicationRows=Array.isArray(payload?.capabilityApplicationReviews)?payload.capabilityApplicationReviews:[];
+  const capabilityGeneralizationBenchmarkRows=Array.isArray(payload?.capabilityGeneralizationBenchmarkReviews)?payload.capabilityGeneralizationBenchmarkReviews:[];
   let memory=readJson(memoryFile,{records:[]});
   const results=[];
   for(const review of rows){
@@ -325,13 +326,17 @@ export function runExperiencePromotionBatch({
   const promotedCount=results.filter(row=>row.promoted).length;
   const capabilityApplications=applyCapabilityApplicationReviews(memory,capabilityApplicationRows);
   if(capabilityApplications.applied>0)memory=capabilityApplications.memory;
-  const changed=promotedCount>0||capabilityApplications.applied>0;
+  const capabilityBenchmarks=applyCapabilityGeneralizationBenchmarkReviews(memory,capabilityGeneralizationBenchmarkRows);
+  if(capabilityBenchmarks.applied>0)memory=capabilityBenchmarks.memory;
+  const changed=promotedCount>0||capabilityApplications.applied>0||capabilityBenchmarks.applied>0;
   if(changed){
     try{writeMemory(memoryFile,memory);}catch(error){
       return Object.freeze({
         promoted:false,persisted:false,promotedCount:0,total:rows.length,results:Object.freeze(results),
         capabilityApplicationTotal:capabilityApplicationRows.length,capabilityApplicationApplied:0,
         capabilityApplicationDuplicates:capabilityApplications.duplicates,capabilityApplicationMissing:capabilityApplications.missing,
+        capabilityGeneralizationBenchmarkTotal:capabilityGeneralizationBenchmarkRows.length,capabilityGeneralizationBenchmarkApplied:0,
+        capabilityGeneralizationBenchmarkDuplicates:capabilityBenchmarks.duplicates,capabilityGeneralizationBenchmarkMissing:capabilityBenchmarks.missing,
         reason:'experience-storage-failed',storageError:clean(error?.message||error),memory
       });
     }
@@ -346,6 +351,10 @@ export function runExperiencePromotionBatch({
     capabilityApplicationApplied:capabilityApplications.applied,
     capabilityApplicationDuplicates:capabilityApplications.duplicates,
     capabilityApplicationMissing:capabilityApplications.missing,
+    capabilityGeneralizationBenchmarkTotal:capabilityGeneralizationBenchmarkRows.length,
+    capabilityGeneralizationBenchmarkApplied:capabilityBenchmarks.applied,
+    capabilityGeneralizationBenchmarkDuplicates:capabilityBenchmarks.duplicates,
+    capabilityGeneralizationBenchmarkMissing:capabilityBenchmarks.missing,
     reason:changed?'verified-reviewed-experience-batch-updated':'no-reviewed-experience-promoted',
     authority:'unchanged',
     memory
