@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "WAVE_PRIMARY_NEURAL_TARGET_DOCUMENTED",
+    "currentState": "PHASE1_SHADOW_DIAGNOSIS_CODE_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -293,6 +293,16 @@
       "RUNTIME_STATE_MAY_NOT_CREATE_POLICY",
       "WORKER_MAY_NOT_SELF_ACCEPT_PROTECTED_PROMOTION",
       "DETERMINISTIC_AND_RUNTIME_GATES_REMAIN_AUTHORITATIVE"
-    ]
+    ],
+    "phase1RuntimeBindings": {
+      "diagnosis": "tools/vibe2-neural-diagnosis.mjs",
+      "planner": "tools/vibe2-auto-planner.mjs",
+      "workOrder": "tools/vibe2-continuous-runner.mjs",
+      "waveScheduler": "UNCHANGED_AND_AUTHORITATIVE",
+      "actionAuthority": "NONE",
+      "workerCreationAuthority": "NONE",
+      "waveReorderAuthority": "NONE",
+      "qa": "qa/vibe2-neural-diagnosis.test.mjs"
+    }
   }
 }
