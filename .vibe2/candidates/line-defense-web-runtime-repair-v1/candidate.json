@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<canvas id=\"game\"></canvas>",
+      "replace": ".toast id=\"toast\" class=\"toast\" replace \"id=\"toast\" class=\"toast on\""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
