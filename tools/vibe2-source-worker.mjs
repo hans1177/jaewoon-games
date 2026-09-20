@@ -293,7 +293,9 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
     ?'HARD POSTCONDITION: replacement source must add a real clearInterval(...) lifecycle path so the exact INTERVAL_CLEANUP_RISK rescan is absent. Do not merely rename or move setInterval.'
     :spec.diagnosticType==='TOUCH_ACTION_UNSPECIFIED'
       ?'HARD POSTCONDITION: replacement source must add a real touch-action: CSS declaration to the actual interactive control/arena selector while preserving intended page scrolling. Do not satisfy this with a comment or data attribute.'
-      :'HARD POSTCONDITION: the replacement must directly eliminate the reproduced diagnostic target before any unrelated improvement.';
+      :spec.diagnosticType==='DOM_NULL_EVENT_BIND'
+        ?'HARD POSTCONDITION: directly repair the reproduced document.getElementById(...).addEventListener(...) chain. Preserve the event behavior but add a real null-safe guard or optional chaining so the unsafe direct chain is absent.'
+        :'HARD POSTCONDITION: the replacement must directly eliminate the reproduced diagnostic target before any unrelated improvement.';
   return{
     spec,
     prompt:[
@@ -319,14 +321,22 @@ export function evaluateDiagnosticPostcondition({candidate={},exploration={}}={}
   const replay=exploration?.editContract?.causalReplay||{};
   if(replay.executable!==true||clean(replay.mode).toUpperCase()!=='DIAGNOSTIC_RESCAN')return{required:false,pass:true,type:null,file:null,reason:null};
   const type=clean(replay.diagnosticType).toUpperCase(),file=posix(replay.diagnosticFile);
+  const targetEdits=(candidate.edits||[]).filter(row=>posix(row?.path)===file);
   const changed=[
-    ...(candidate.edits||[]).filter(row=>posix(row?.path)===file).map(row=>String(row?.replace??'')),
+    ...targetEdits.map(row=>String(row?.replace??'')),
     ...(candidate.newFiles||[]).filter(row=>posix(row?.path)===file).map(row=>String(row?.content??'')),
     ...(candidate.replaceFiles||[]).filter(row=>posix(row?.path)===file).map(row=>String(row?.content??''))
   ].join('\n');
   let pass=Boolean(changed.trim()),reason=pass?null:'DIAGNOSTIC_FILE_NOT_CHANGED';
   if(pass&&type==='INTERVAL_CLEANUP_RISK'&&!/\bclearInterval\s*\(/.test(changed)){pass=false;reason='CLEAR_INTERVAL_LIFECYCLE_MISSING';}
   if(pass&&type==='TOUCH_ACTION_UNSPECIFIED'&&!/touch-action\s*:/i.test(changed)){pass=false;reason='TOUCH_ACTION_POLICY_MISSING';}
+  if(pass&&type==='DOM_NULL_EVENT_BIND'){
+    const unsafe=/document\.getElementById\s*\([^\n;]+\)\s*\.addEventListener\s*\(/;
+    const targeted=targetEdits.some(row=>unsafe.test(String(row?.find??''))||clean(replay.diagnosticNeedle)&&String(row?.find??'').includes(clean(replay.diagnosticNeedle)));
+    if(!targeted){pass=false;reason='DOM_NULL_EVENT_BIND_TARGET_NOT_REPAIRED';}
+    else if(unsafe.test(changed)){pass=false;reason='DOM_NULL_EVENT_BIND_STILL_UNSAFE';}
+    else if(!/\baddEventListener\s*\(/.test(changed)){pass=false;reason='DOM_EVENT_BEHAVIOR_NOT_PRESERVED';}
+  }
   return{required:true,pass,type,file,reason,needle:clean(replay.diagnosticNeedle)||null,authorityExpanded:false};
 }
 
