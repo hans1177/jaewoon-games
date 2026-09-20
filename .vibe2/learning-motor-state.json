@@ -2056,7 +2056,8 @@
       "coding_negative_1dcqdbj",
       "coding_negative_1wvn0mr",
       "coding_negative_dn7vx0",
-      "coding_negative_ns3jea"
+      "coding_negative_ns3jea",
+      "coding_negative_bil2z3"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -2755,7 +2756,7 @@
         "verifiedApplications": 50,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 108,
-        "verifiedFailures": 294,
+        "verifiedFailures": 295,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -2809,13 +2810,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 4,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 10,
             "totalContextBytes": 53617,
             "lastEvidence": "coding_1wl8e3o",
-            "lastFailureEvidence": "coding_negative_dn7vx0",
-            "lastUpdatedAt": "2026-09-20T17:58:19.531Z"
+            "lastFailureEvidence": "coding_negative_bil2z3",
+            "lastUpdatedAt": "2026-09-20T18:15:03.316Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -3734,7 +3735,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 3,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {
               "daechung-rpg": 1
             },
@@ -3742,17 +3743,17 @@
               "unity": 1
             },
             "failureGames": {
-              "daechung-rpg": 2
+              "daechung-rpg": 3
             },
             "failureTargets": {
-              "unity": 2
+              "unity": 3
             },
             "failureClasses": {
-              "INVALID_PATH": 2
+              "INVALID_PATH": 3
             },
             "lastEvidence": "coding_12qwebj",
-            "lastFailureEvidence": "coding_negative_dn7vx0",
-            "lastUpdatedAt": "2026-09-20T17:58:19.531Z"
+            "lastFailureEvidence": "coding_negative_bil2z3",
+            "lastUpdatedAt": "2026-09-20T18:15:03.316Z"
           },
           "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|UI_STATE|WEB_RUNTIME": {
             "verifiedApplications": 1,
@@ -3775,8 +3776,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1wl8e3o",
-        "lastFailureEvidence": "coding_negative_dn7vx0",
-        "lastUpdatedAt": "2026-09-20T17:58:19.531Z"
+        "lastFailureEvidence": "coding_negative_bil2z3",
+        "lastUpdatedAt": "2026-09-20T18:15:03.316Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 352,
@@ -7261,7 +7262,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T18:14:00.594Z",
+    "lastBuiltAt": "2026-09-20T18:15:03.366Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9657,5 +9658,5 @@
       "knowledge_1709w1c"
     ]
   },
-  "updatedAt": "2026-09-20T18:14:00.594Z"
+  "updatedAt": "2026-09-20T18:15:03.366Z"
 }
