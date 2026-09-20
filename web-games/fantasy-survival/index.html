@@ -35,10 +35,12 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=35,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:36000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=36,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
+const JUNGLE_REGION={x:21600,y:0,w:14400,h:12000}; // 새 맵 전체 면적의 정확히 40%
+const JUNGLE_LAKES=[{x:24400,y:2600,r:360},{x:29400,y:6500,r:300},{x:34200,y:9300,r:340}];
 const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y:8500},{x:11550,y:7000}];
 const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},SHADOW_WOLF_EGG_2={x:11480,y:9750,r:30},MAP_CELL=400;
 const GIANT_LAKE_SURFACE={x:0,y:0,w:14400,h:2000};
@@ -84,7 +86,7 @@ const recipes=[
 {id:'gold-greatsword',name:'황금 검',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:6},desc:'공격력 100 · 묵직한 황금 검',kind:'weapon',power:100,range:105,cooldown:1150},
 {id:'gold-dagger',name:'금단검',where:'goldbench',cost:{wood:1,fiber:2,goldIngot:3},desc:'공격력 68 · 공격속도 0.22초 · 짧은 사거리',kind:'weapon',power:68,range:58,cooldown:220},
 {id:'gold-axe',name:'금 도끼',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4},desc:'나무 채집량 6배',kind:'tool',target:'tree',mult:6},
-{id:'gold-pick',name:'금 곡괭이',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4},desc:'돌·철 채집 강화 · 화산 금은 철 곡괭이만 가능',kind:'tool',target:'rock',mult:7},
+{id:'gold-pick',name:'금 곡괭이',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4,leechSucker:1},desc:'돌·철 채집 강화 · 독점석 채굴 가능 · 거머리 흡반 필요',kind:'tool',target:'rock',mult:7},
 {id:'wolf-armor',name:'늑대 방어구',where:'ironbench',cost:{wolfHide:3,wood:2},desc:'최대 체력 +100 · 받는 피해 10% 감소',kind:'armor',maxHp:100,reduce:.10},
 {id:'walker-greatsword',name:'워커 대검',where:'goldbench',cost:{walkerClaw:4,goldIngot:7,wood:3,fiber:3},desc:'공격력 97 · 공격속도 1초 · 중립 몬스터에게 2배 데미지',kind:'weapon',power:97,range:104,cooldown:1000,neutralDouble:true},
 {id:'sand-armor',name:'모래의 방어구',where:'goldbench',cost:{walkerClaw:2,goldIngot:9},desc:'최대 체력 +150 · 받는 피해 15% 감소 · 초거대 벌레가 먼저 공격하지 않음',kind:'armor',maxHp:150,reduce:.15,burrowerPeace:true},
@@ -164,7 +166,13 @@ const recipes=[
 {id:'meal-lake-fish-fish',name:'거대 호수 생선 만찬',where:'meal',cost:{},desc:'밥 +90 · 초당 체력 22 회복 · 5초',kind:'consumable',hunger:90,foodRegen:22,foodRegenSeconds:5},
 {id:'meal-lake-hare-greens',name:'토끼 야채구이',where:'meal',cost:{},desc:'밥 +80 · 초당 체력 18 회복 · 4초',kind:'consumable',hunger:80,foodRegen:18,foodRegenSeconds:4},
 {id:'meal-lake-lizard-greens',name:'도마뱀 야채볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
-{id:'meal-lake-deer-greens',name:'수정사슴 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5}
+{id:'meal-lake-deer-greens',name:'수정사슴 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
+{id:'leech-cleaver',name:'거머리 흡혈도',where:'goldbench',cost:{leechSucker:4,monopolyStone:5,goldIngot:4},desc:'공격력 185 · 밀림 3티어 무기',kind:'weapon',power:185,range:88,cooldown:800},
+{id:'gorilla-armor',name:'고릴라 중갑',where:'goldbench',cost:{gorillaHide:6,monopolyStone:8,goldIngot:7},desc:'최대 체력 +250 · 받는 피해 23% 감소 · 4티어',kind:'armor',maxHp:250,reduce:.23},
+{id:'gorilla-guard-armor',name:'고릴라 수호갑',where:'goldbench',cost:{gorillaHide:8,monopolyStone:10,goldIngot:8},desc:'최대 체력 +270 · 받는 피해 24% 감소 · 4티어',kind:'armor',maxHp:270,reduce:.24},
+{id:'anaconda-armor',name:'아나콘다 비늘갑옷',where:'goldbench',cost:{anacondaScale:7,monopolyStone:7,goldIngot:6},desc:'최대 체력 +240 · 받는 피해 22% 감소 · 4티어',kind:'armor',maxHp:240,reduce:.22},
+{id:'mud-blade',name:'머드 워커 도',where:'goldbench',cost:{mudCore:5,monopolyStone:5,goldIngot:4},desc:'공격력 170 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:170,range:86,cooldown:760,slowChance:.10,slowDuration:3000},
+{id:'mud-spear',name:'머드 워커 창',where:'goldbench',cost:{mudCore:6,monopolyStone:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000}
 ];
 const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','forest-hare-meat','world-bird-meat','canyon-lizard-meat','crystal-goat-meat','worldtree-greens','cooked-fish','cooked-crystal-deer-meat','cooked-hare-meat','cooked-lizard-meat','cooked-greens'];
 const COOKING_COMBOS={
@@ -196,12 +204,12 @@ const COOKING_COMBOS={
 };
 function foodComboKey(a,b){return[a,b].sort().join('|')}
 const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
-const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword']);
-const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit']);
+const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear']);
+const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor']);
 function itemTier(id){return ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe']);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -232,18 +240,22 @@ lakebuffalo:{id:'lakebuffalo',name:'호수 물소',mood:'neutral',hp:560,dmg:42,
 crystaldeer:{id:'crystaldeer',name:'수정 사슴',mood:'neutral',hp:360,dmg:28,speed:82,r:23,color:'#90a8d8',detect:460,lakeZone:true,foodDrop:'raw-crystal-deer-meat'},
 lakeheron:{id:'lakeheron',name:'호수 왜가리',mood:'harmless',hp:95,dmg:0,speed:78,r:17,color:'#cad8d3',detect:0,lakeZone:true,huntable:true},
 shark:{id:'shark',name:'거대 호수 상어',mood:'neutral',hp:800,dmg:50,speed:104,r:30,color:'#5a7f96',detect:620,underwater:true,sharkSpecial:true},
-lakefish:{id:'lakefish',name:'호수 물고기',mood:'harmless',hp:50,dmg:0,speed:72,r:13,color:'#8ec8d7',detect:0,underwater:true,huntable:true,foodDrop:'raw-fish'}
+lakefish:{id:'lakefish',name:'호수 물고기',mood:'harmless',hp:50,dmg:0,speed:72,r:13,color:'#8ec8d7',detect:0,underwater:true,huntable:true,foodDrop:'raw-fish'},
+giantleech:{id:'giantleech',name:'초거대 거머리',mood:'aggressive',hp:400,dmg:44,speed:74,r:26,color:'#55313f',detect:520,jungle:true,leechLife:44},
+gorilla:{id:'gorilla',name:'밀림 고릴라',mood:'neutral',hp:1000,dmg:50,speed:70,r:36,color:'#4a5149',detect:560,jungle:true,gorillaSpecial:true},
+anaconda:{id:'anaconda',name:'아나콘다',mood:'aggressive',hp:800,dmg:65,speed:86,r:30,color:'#416743',detect:720,jungle:true,anacondaSpecial:true},
+mudwalker:{id:'mudwalker',name:'머드 워커',mood:'aggressive',hp:750,dmg:40,speed:66,r:32,color:'#65553f',detect:650,jungle:true,mudSpecial:true}
 };
 const DROP_MATERIAL_NAMES={
  mossTusk:'이끼멧돼지 엄니',stoneCore:'돌정령 핵',goblinCharm:'고블린 부적',wolfHide:'늑대가죽',
  ironSpiritCore:'철 정령 핵',bearClaw:'곰발톱',bearHide:'곰가죽',bearFang:'곰이빨',
  sovereignCore:'근원포식자 핵',fireWolfFang:'화염 늑대 송곳니',burrowerShell:'초거대 벌레 갑각',
  walkerClaw:'샌드워커 집게',calmMagmaCore:'고요한 화염 핵',rageMagmaCore:'격노한 화염 핵',
- fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽'
+ fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석'
 };
-const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin'];
+const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
 const ACHIEVEMENTS=[
  {id:'strong-body',name:'강력한 신체',desc:'화산 또는 수정 지역 몬스터를 처치'},
  {id:'escape-step',name:'탈출의 1걸음',desc:'무전기 부품을 발견'},
