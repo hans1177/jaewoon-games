@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "id": "JAEWOON_COMPANY_RECORD_CONTRACT_V1",
+  "authority": "company-learning/platform-release-roadmap.json#recordsGovernance",
+  "canonicalRoot": "company-records",
+  "pathTemplates": {
+    "record": "company-records/<domain>/<yyyy>/<yyyy-mm-dd>/<scope-id>/<record-type>--<record-id>.json",
+    "runtimeMedia": "assets/runtime-evidence/<platform>/<game-id>/<yyyy-mm-dd>/<artifact-id>/<capture-id>.<ext>",
+    "runtimeMediaManifest": "company-records/runtime-media/<yyyy>/<yyyy-mm-dd>/<game-id>/<platform>-runtime-media--<record-id>.json"
+  },
+  "enums": {
+    "domains": [
+      "planning",
+      "marketing",
+      "graphics",
+      "development",
+      "qa",
+      "security",
+      "release",
+      "homepage",
+      "runtime-media",
+      "learning",
+      "operations"
+    ],
+    "statuses": [
+      "DRAFT",
+      "VERIFIED",
+      "REJECTED",
+      "SUPERSEDED",
+      "ARCHIVED"
+    ],
+    "scopeTypes": [
+      "GAME",
+      "PORTFOLIO",
+      "PLATFORM",
+      "COMPANY"
+    ],
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN",
+      "WEB",
+      "CROSS_PLATFORM",
+      "NONE"
+    ],
+    "retentionClasses": [
+      "CANONICAL",
+      "RELEASE_EVIDENCE",
+      "SECURITY_EVIDENCE",
+      "LEARNING_EVIDENCE",
+      "RUNTIME_MEDIA",
+      "TRANSIENT_QA",
+      "WORKING_DRAFT"
+    ]
+  },
+  "requiredTopLevel": [
+    "schemaVersion",
+    "recordId",
+    "recordType",
+    "domain",
+    "scope",
+    "timestamps",
+    "provenance",
+    "status",
+    "retentionClass",
+    "data",
+    "evidenceRefs",
+    "relatedFiles",
+    "supersedes",
+    "tags"
+  ],
+  "requiredNested": {
+    "scope": [
+      "type",
+      "id",
+      "gameId",
+      "platform"
+    ],
+    "timestamps": [
+      "createdAt",
+      "observedAt"
+    ],
+    "provenance": [
+      "producer",
+      "authority",
+      "sourceRevision",
+      "artifactIdentity",
+      "sourceRefs"
+    ]
+  },
+  "formats": {
+    "kebabCase": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    "recordId": "^[a-z0-9][a-z0-9._-]{2,127}$",
+    "isoDate": "^\\d{4}-\\d{2}-\\d{2}$",
+    "isoDateTime": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$",
+    "gitSha": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+    "sha256": "^[0-9a-f]{64}$"
+  },
+  "rules": {
+    "recordFilename": "<record-type>--<record-id>.json",
+    "recordTypeMustBeKebabCase": true,
+    "domainMustMatchPath": true,
+    "pathDateMustMatchCreatedAtDate": true,
+    "scopeFolderMustMatchScopeId": true,
+    "arraysMustBeUniqueStrings": [
+      "evidenceRefs",
+      "relatedFiles",
+      "supersedes",
+      "tags"
+    ],
+    "verifiedRecordRequiresObservedAt": true,
+    "codeOrBuildBoundRecordRequiresSourceRevision": true,
+    "builtOrPublishedArtifactRecordRequiresArtifactIdentity": true,
+    "researchRecordRequiresFactInferenceSeparationWhenPresent": true,
+    "runtimeMediaManifestRequiresSha256": true,
+    "rawSecretsForbidden": true,
+    "rawHostilePayloadForbidden": true
+  },
+  "runtimeMediaManifestDataRequired": [
+    "gameId",
+    "platform",
+    "captureAt",
+    "sourceRevision",
+    "artifactIdentity",
+    "sha256",
+    "runtimeVerification",
+    "mediaPath"
+  ],
+  "legacy": {
+    "grandfatheredRoots": [
+      "company-learning/evidence",
+      "design"
+    ],
+    "migrateOnTouch": true,
+    "untouchedLegacyDoesNotFailGovernance": true,
+    "newRecordsMustUseCanonicalRoot": true
+  }
+}
