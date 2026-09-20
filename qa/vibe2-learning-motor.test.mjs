@@ -547,8 +547,8 @@ test('idle practice advances beyond the first five represented mastery gaps',()=
   }));
   const result=injectIdlePracticeTask({tasks:represented},idle);
   assert.equal(result.added,true);
-  assert.equal(result.reason,'IDLE_PRACTICE_ENQUEUED');
-  assert.equal(result.task.id,`LEARNING-PRACTICE-${idle.drills[5].id}`);
+  assert.equal(result.reason,'PRACTICE_SIGNAL_ENQUEUED');
+  assert.equal(result.task.id,`LEARNING-PRACTICE-${idle.drills[5].id}-g1`);
   assert.equal(result.task.type,'research');
   assert.ok(result.task.evidence.includes('production-pass:NO'));
 });

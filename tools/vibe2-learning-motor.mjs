@@ -1127,6 +1127,7 @@ function idlePracticeBaseId(drill={}){
 }
 function practiceTaskGeneration(taskId='',baseId=''){
   const id=clean(taskId),prefix=`${baseId}-g`;
+  if(id===baseId)return 1;
   if(!id.startsWith(prefix))return 0;
   const value=Number(id.slice(prefix.length));
   return Number.isInteger(value)&&value>0?value:0;
@@ -1197,7 +1198,10 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const deduped=dedupeIdlePracticeTasks(inputTasks);
   const tasks=deduped.tasks;
   const normalizedQueue=deduped.changed?{...queueInput,tasks}:queueInput;
-  const candidates=(idlePracticeInput?.drills||[]).map(drill=>({drill,next:nextPracticeGeneration(tasks,drill)})).filter(row=>row.next);
+  const candidates=(idlePracticeInput?.drills||[])
+    .map((drill,index)=>({drill,index,next:nextPracticeGeneration(tasks,drill)}))
+    .filter(row=>row.next)
+    .sort((a,b)=>a.next.generation-b.next.generation||a.index-b.index);
   if(!candidates.length)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:'ALL_PRACTICE_GENERATIONS_ACTIVE'};
   const {drill,next}=candidates[0];
   const id=idlePracticeTaskId(drill,next.generation);
