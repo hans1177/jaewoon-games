@@ -3170,8 +3170,8 @@
       "gameId": "insect-survival",
       "gameName": "곤충 생존기",
       "status": "ACTIVE",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -3494,9 +3494,9 @@
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
-      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
-      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -3514,8 +3514,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "ACTIVE",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -3574,7 +3574,8 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "updatedAt": "2026-09-20T02:10:41.099Z"
     },
     {
       "version": 2,
@@ -4025,8 +4026,8 @@
       "gameId": "cozy-island",
       "gameName": "포근섬",
       "status": "ACTIVE",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -4365,9 +4366,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
-      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
-      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -4385,8 +4386,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "ACTIVE",
       "preserveExistingWebArchive": true,
       "existingWebSourcePath": "web-games/cozy-island",
       "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
@@ -4448,14 +4449,15 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "updatedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 1,
       "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
       "gameId": "crystal-defense",
       "gameName": "수정 디펜스",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
       "REFERENCE_GAMES": [
         "Kingdom Rush",
@@ -4873,7 +4875,9 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T06:28:11.511Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.516Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.516Z",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 2,
@@ -4881,8 +4885,8 @@
       "gameId": "human-go",
       "gameName": "휴먼 GO",
       "status": "ACTIVE",
-      "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -5221,9 +5225,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
-      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
-      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -5241,8 +5245,8 @@
         "zero blocking runtime console or invalid-resource errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "ACTIVE",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5301,14 +5305,15 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "updatedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 1,
       "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
       "gameId": "island-village",
       "gameName": "무인도 마을",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -5750,14 +5755,16 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T06:28:37.752Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.516Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.516Z",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 1,
       "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
       "gameId": "egg-heist",
       "gameName": "알 도둑 대작전",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -6199,14 +6206,16 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T06:28:11.511Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 1,
       "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
       "gameId": "chess-battle",
       "gameName": "체스 배틀",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "GAME_CATEGORY": "PUZZLE",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -6656,14 +6665,16 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T06:28:11.511Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 1,
       "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
       "gameId": "survival2",
       "gameName": "숲의 생존자들",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -7080,14 +7091,16 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T06:28:11.511Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 1,
       "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
       "gameId": "territory-war",
       "gameName": "영토전쟁",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -7504,7 +7517,9 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T06:28:37.752Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T16:35:09.517Z",
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     },
     {
       "version": 2,
@@ -13311,7 +13326,7 @@
       "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
       "gameId": "fantasy-survival",
       "gameName": "마력숲 생존기",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
@@ -13764,7 +13779,9 @@
         "strictDesignScore": 80,
         "excellentDesign": false,
         "promotedAt": "2026-09-19T16:51:19.541Z"
-      }
+      },
+      "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
+      "pausedAt": "2026-09-20T02:10:41.102Z"
     }
   ],
   "seedMaterials": [
@@ -18874,19 +18891,13 @@
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-    "gameCount": 9,
+    "gameCount": 3,
     "gameIds": [
-      "crystal-defense",
       "insect-survival",
-      "chess-battle",
       "cozy-island",
-      "egg-heist",
-      "human-go",
-      "island-village",
-      "survival2",
-      "territory-war"
+      "human-go"
     ],
-    "updatedAt": "2026-09-19T05:13:56.723Z"
+    "updatedAt": "2026-09-20T02:10:41.102Z"
   },
   "ownerPreservationIntake": {
     "source": "owner-design-reset-queue.json",
