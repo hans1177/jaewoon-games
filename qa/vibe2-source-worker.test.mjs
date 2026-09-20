@@ -1125,7 +1125,7 @@ test('focused replace-only pins exact path and anchor while model emits only rep
   const focused=buildFocusedReplaceOnlyPrompt(base,{error:new Error('timeout'),responsibleFiles:['index.html']});
   assert.ok(focused);
   assert.match(focused.prompt,/Do NOT return path or find/);
-  assert.match(focused.prompt,/Return exactly one JSON object with one key/);
+  assert.match(focused.prompt,/Return exactly one JSON object with exactly one key named "replace"/);
   const normalized=normalizeFocusedReplaceOnly(JSON.stringify({replace:'const playButton=document.getElementById("play") ?? document.body;'}),focused.spec);
   assert.equal(normalized.edits.length,1);
   assert.equal(normalized.edits[0].path,'index.html');
