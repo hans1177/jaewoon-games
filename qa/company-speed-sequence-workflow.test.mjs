@@ -131,8 +131,9 @@ test('Web development validation is parallel-first with twenty isolated workers 
 
 test('DESIGN_ONLY runtime follows central unbounded WIP policy with external matrix wave bounds',()=>{
   assert.match(policy,/concurrentGameWipTarget: 20/);
-  assert.match(policy,/concurrentGameWipMax: 20/);
-  assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
+  assert.match(policy,/concurrentGameWipMax: null/);
+  assert.match(policy,/externalProviderBoundary: 256/);
+  assert.match(policy,/adaptiveExpansionSteps: \[20, 32, 64, 128, 256\]/);
   assert.match(designRuntime,/const roadmap=JSON\.parse\(fs\.readFileSync\('company-learning\/platform-release-roadmap\.json','utf8'\)\)/);
   assert.match(designRuntime,/globalSelectedPlatformDevelopmentWipMax/);
   assert.match(designRuntime,/slice\(0,preservationOnly\?1:designWipMax\)/);
