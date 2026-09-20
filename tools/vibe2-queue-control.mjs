@@ -389,6 +389,37 @@ export function settleVibeTask(queueInput, { taskId = '', outcome = 'PASS', evid
   return finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
 }
 
+export function verifyVibeWorkerSynchronization(queueInput, {
+  taskId = '', reservationId = '', reservationRunId = '', reservationRunAttempt = 0, reservedAt = ''
+} = {}) {
+  const queue=createVibeContinuousQueue(queueInput);
+  const id=clean(taskId);
+  if(!id)throw new Error('VIBE_WORKER_SYNC_TASK_ID_REQUIRED');
+  const task=queue.tasks.find(row=>row.id===id);
+  if(!task)throw new Error(`VIBE_WORKER_SYNC_TASK_NOT_FOUND:${id}`);
+  const failures=[];
+  if(task.status!=='running')failures.push(`STATUS_${task.status||'UNKNOWN'}`);
+  const expectedReservationId=clean(reservationId);
+  const expectedRunId=clean(reservationRunId);
+  const expectedReservedAt=clean(reservedAt);
+  const expectedAttempt=Math.max(0,Math.floor(Number(reservationRunAttempt)||0));
+  if(!expectedReservationId||clean(task.reservationId)!==expectedReservationId)failures.push('RESERVATION_ID_MISMATCH');
+  if(!expectedRunId||clean(task.reservationRunId)!==expectedRunId)failures.push('RESERVATION_RUN_ID_MISMATCH');
+  if(Number(task.reservationRunAttempt||0)!==expectedAttempt)failures.push('RESERVATION_RUN_ATTEMPT_MISMATCH');
+  if(!expectedReservedAt||clean(task.reservedAt)!==expectedReservedAt)failures.push('RESERVED_AT_MISMATCH');
+  if(clean(task.blocker))failures.push('TASK_BLOCKED');
+  return {
+    pass:failures.length===0,
+    status:failures.length===0?'PASS':'FAIL',
+    taskId:id,
+    reservationId:clean(task.reservationId)||null,
+    reservationRunId:clean(task.reservationRunId)||null,
+    reservationRunAttempt:Number(task.reservationRunAttempt||0),
+    reservedAt:clean(task.reservedAt)||null,
+    failures
+  };
+}
+
 function workloadEvidence(row = {}) {
   const metrics=row?.metrics||{};
   const changedFiles=Number(metrics.changedFileCount);
@@ -686,7 +717,17 @@ export function runQueueCommand(args = {}) {
   let queue = createVibeContinuousQueue(rawQueue);
   const command = clean(args.command).toLowerCase();
   let result;
-  if (command === 'enqueue') {
+  if (command === 'verify-worker-sync') {
+    const sync=verifyVibeWorkerSynchronization(queue,{
+      taskId:clean(args.id),
+      reservationId:clean(args['reservation-id']),
+      reservationRunId:clean(args['reservation-run']),
+      reservationRunAttempt:Number(args['reservation-attempt']||0),
+      reservedAt:clean(args['reserved-at'])
+    });
+    if(!sync.pass)throw new Error(`VIBE_WORKER_SYNC_FAILED:${sync.failures.join(',')}`);
+    result={command,...sync,queue,summary:summarizeVibeContinuousQueue(queue)};
+  } else if (command === 'enqueue') {
     queue = enqueueVibeTask(queue, {
       id: args.id, gameId: args.game, target: args.target, department: args.department, type: args.type, goal: args.goal,
       responsibleFiles: list(args.files), dependencies: list(args.dependencies), priority: args.priority, releaseState: args['release-state'],
@@ -852,6 +893,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const result = runQueueCommand(parseArgs());
   console.log(`VIBE2_QUEUE_COMMAND=${result.command}`);
   if(result.executionLane)console.log(`VIBE2_EXECUTION_LANE=${result.executionLane}`);
+  if(result.command==='verify-worker-sync'){
+    console.log(`VIBE2_WORKER_SYNC=${result.pass===true?'PASS':'FAIL'}`);
+    console.log(`VIBE2_WORKER_SYNC_TASK=${result.taskId||'NONE'}`);
+    console.log(`VIBE2_WORKER_SYNC_RESERVATION=${result.reservationId||'NONE'}`);
+  }
   if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
   if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
   if(Array.isArray(result.dependencyReadyTaskIds)){
