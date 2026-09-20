@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "var bossCombat=false;",
+      "replace": "var groundSize=100;var ground=new THREE.Mesh(new THREE.BoxGeometry(groundSize,10,10),mat(0x327ac5));world.add(ground);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
