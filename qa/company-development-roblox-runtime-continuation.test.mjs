@@ -196,3 +196,37 @@ test('runtime success does not invent later QA, datastore, regression, final rev
   assert.ok(persistHelper.includes('ROBLOX_RELEASE_CLAIM=NO'));
   assert.ok(persistHelper.includes('robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true'));
 });
+
+test('owner-focused secondary Roblox keeps canonical Unity while using exact preflight and Studio runtime evidence',()=>{
+  const item={
+    gameId:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    webValidationPassedAt:'2026-09-20T00:00:00.000Z',musicValidationPassed:true,
+    ownerFocusRobloxSourceBootstrapPassedAt:'2026-09-20T00:01:00.000Z',
+    ownerFocusRobloxSourceCommit:'a'.repeat(40),
+    ownerFocusRobloxBuildOrPackagePassed:true,
+    ownerFocusRobloxBuildSourceRevision:'a'.repeat(40),
+    ownerFocusRobloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  };
+  const verdict=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus:true});
+  assert.equal(verdict.pass,true,verdict.blockers.join(','));
+  assert.equal(verdict.secondaryOwnerFocus,true);
+  assert.equal(item.selectedPlatform,'UNITY');
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/--secondary-owner-focus="\$SECONDARY_OWNER_FOCUS"/);
+  assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed:true/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
+  assert.match(workflow,/secondaryOwnerFocus=\(\$env:SECONDARY_OWNER_FOCUS -eq 'true'\)/);
+  assert.match(persistHelper,/ownerFocusRobloxAssetPipelineState:'RUNTIME_READY'/);
+  assert.match(persistHelper,/Boolean\(r\?\.secondaryOwnerFocus\)===secondaryOwnerFocus/);
+});
+
+test('secondary Roblox runtime persistence never rewrites the canonical selected-platform fields',()=>{
+  const start=persistHelper.indexOf("if(secondaryOwnerFocus){");
+  const end=persistHelper.indexOf("\n    continue;",start);
+  assert.ok(start>=0&&end>start,'secondary runtime persist branch missing');
+  const block=persistHelper.slice(start,end);
+  assert.doesNotMatch(block,/selectedPlatform\s*:/);
+  assert.doesNotMatch(block,/targetPlatform\s*:/);
+  assert.doesNotMatch(block,/currentStep\s*:/);
+  assert.doesNotMatch(block,/canonicalState\s*:/);
+});
