@@ -1,5 +1,5 @@
 {
-  "version": 212,
+  "version": 213,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3079,12 +3079,17 @@
         "required": true,
         "ref": "origin/main",
         "policyPath": "company-learning/platform-release-roadmap.json",
-        "compare": "SHA256_LOCAL_AND_LIVE_MAIN",
+        "compare": "EXECUTION_POLICY_PROJECTION_SHA256_LOCAL_AND_LIVE_MAIN",
         "refreshBeforeSourceGeneration": true,
         "refreshBeforeCandidateWrite": true,
         "fetchOrValidationFailure": "FAIL_CLOSED",
         "fingerprintMismatch": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
-        "implementationState": "MERGED_MAIN_PR_1877"
+        "implementationState": "MERGED_MAIN_PR_1984",
+        "executionPolicyProjection": "WORKER_EXECUTION_POLICY_V1",
+        "fullDocumentShaRecorded": true,
+        "fullDocumentShaBoundToExecutionEvidence": true,
+        "unrelatedRoadmapProgressChangeInvalidatesWork": false,
+        "executionPolicySemanticChangeInvalidatesWork": true
       }
     },
     "primaryAiOrchestration": {
@@ -8485,7 +8490,41 @@
           "lockPolicyMutationAuthority": false,
           "automaticLearningTuningPromotionAuthority": false
         },
-        "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
+        "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED",
+        "bottleneckRepair": {
+          "state": "MERGED_MAIN_PR_1984",
+          "triggerRunId": 35496729551,
+          "observedWorkerCount": 12,
+          "observedFailureRatePct": 100,
+          "observedBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "confirmedCentralPolicyStaleWorkers": 7,
+          "rootCause": "FULL_ROADMAP_DOCUMENT_SHA_INVALIDATED_ACTIVE_WORKERS_ON_UNRELATED_ROADMAP_PROGRESS_CHANGES",
+          "correction": {
+            "localFullDocumentValidationPreserved": true,
+            "liveMainValidationPreserved": true,
+            "fullDocumentShaRecorded": true,
+            "staleComparison": "WORKER_EXECUTION_POLICY_V1_PROJECTION_SHA256",
+            "unrelatedRoadmapProgressInvalidatesActiveWorker": false,
+            "workerExecutionOrAuthoritySemanticChangeInvalidatesActiveWorker": true,
+            "preSourceGenerationCheck": true,
+            "preCandidateWriteCheck": true,
+            "fetchOrParseFailureAction": "FAIL_CLOSED"
+          },
+          "authority": {
+            "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+            "workerCreationAuthority": false,
+            "queueMutationAuthority": false,
+            "waveReorderAuthority": false,
+            "lockPolicyMutationAuthority": false,
+            "automaticLearningTuningPromotionAuthority": false,
+            "authorityChange": "NONE"
+          },
+          "code": [
+            "tools/vibe2-central-work-contract.mjs",
+            "qa/vibe2-central-work-contract.test.mjs"
+          ],
+          "sourcePr": 1984
+        }
       }
     }
   },

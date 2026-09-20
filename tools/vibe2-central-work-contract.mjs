@@ -12,6 +12,66 @@ const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');
 
+function workerExecutionPolicyProjection(policy={}){
+  const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
+  const live=shared?.liveMainFreshness||{};
+  const orchestration=policy?.assistantRoadmapOrchestration||{};
+  const role=orchestration?.assistantRole||{};
+  const boundary=orchestration?.executionBoundary||{};
+  return{
+    status:clean(policy.status)||null,
+    policySource:clean(policy.policySource)||null,
+    sharedWorkerContext:{
+      requiredForAllWorkers:shared.requiredForAllWorkers===true,
+      centralPolicy:clean(shared.centralPolicy)||null,
+      beforeWorkRequired:shared.beforeWorkRequired===true,
+      afterWorkRequired:shared.afterWorkRequired===true,
+      bindSha256ToExecutionEvidence:shared.bindSha256ToExecutionEvidence===true,
+      completionRequiresSharedContextSync:shared.completionRequiresSharedContextSync===true,
+      runtimeMayNotCreatePolicy:shared.runtimeMayNotCreatePolicy===true,
+      aiMayNotExpandOwnAuthority:shared.aiMayNotExpandOwnAuthority===true,
+      staleContextMayNotStartWork:shared.staleContextMayNotStartWork===true,
+      staleContextMayNotCompleteWork:shared.staleContextMayNotCompleteWork===true,
+      syncMode:clean(shared.syncMode)||null,
+      mismatchAction:clean(shared.mismatchAction)||null,
+      liveMainFreshness:{
+        required:live.required===true,
+        ref:clean(live.ref)||null,
+        policyPath:clean(live.policyPath)||null,
+        compare:clean(live.compare)||null,
+        refreshBeforeSourceGeneration:live.refreshBeforeSourceGeneration===true,
+        refreshBeforeCandidateWrite:live.refreshBeforeCandidateWrite===true,
+        fetchOrValidationFailure:clean(live.fetchOrValidationFailure)||null,
+        fingerprintMismatch:clean(live.fingerprintMismatch)||null
+      }
+    },
+    assistantRoadmapOrchestration:{
+      sourceOfTruth:clean(orchestration.sourceOfTruth)||null,
+      blockerOnly:orchestration.blockerOnly===true,
+      dedupeRequired:orchestration?.operatingModel?.dedupeRequired===true,
+      assistantRole:{
+        mayCreateExecutionWorker:role.mayCreateExecutionWorker===true,
+        mayMutateWaveQueue:role.mayMutateWaveQueue===true,
+        mayReorderWave:role.mayReorderWave===true,
+        mayMutateLocksOrPolicy:role.mayMutateLocksOrPolicy===true,
+        mayAutoPromoteLearningOrTuning:role.mayAutoPromoteLearningOrTuning===true,
+        mayExpandNeuralAuthority:role.mayExpandNeuralAuthority===true
+      },
+      executionBoundary:{
+        executionAuthority:clean(boundary.executionAuthority)||null,
+        neuralExecutionAuthority:boundary.neuralExecutionAuthority===true,
+        workerCreationAuthority:boundary.workerCreationAuthority===true,
+        queueMutationAuthority:boundary.queueMutationAuthority===true,
+        waveReorderAuthority:boundary.waveReorderAuthority===true,
+        lockPolicyMutationAuthority:boundary.lockPolicyMutationAuthority===true,
+        automaticLearningTuningPromotionAuthority:boundary.automaticLearningTuningPromotionAuthority===true
+      },
+      implementationNextGate:clean(orchestration?.implementationState?.nextGate)||null
+    }
+  };
+}
+function workerExecutionPolicyFingerprint(policy={}){return sha256(JSON.stringify(workerExecutionPolicyProjection(policy)));}
+
 function policyValidationErrors(policy={}){
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
@@ -51,7 +111,7 @@ export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CAN
   if(!fs.existsSync(file)){
     return{
       required:required===true,present:false,valid:required!==true,path:policyPath,
-      fingerprint:null,version:null,status:null,policySource:null,syncMode:null,
+      fingerprint:null,executionFingerprint:null,version:null,status:null,policySource:null,syncMode:null,
       errors:required===true?['CENTRAL_POLICY_MISSING']:[],document:null
     };
   }
@@ -62,14 +122,14 @@ export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CAN
   }catch(error){
     return{
       required:required===true,present:true,valid:false,path:policyPath,
-      fingerprint:raw?sha256(raw):null,version:null,status:null,policySource:null,
+      fingerprint:raw?sha256(raw):null,executionFingerprint:null,version:null,status:null,policySource:null,
       syncMode:null,errors:['CENTRAL_POLICY_PARSE:'+clean(error?.message||error)],document:null
     };
   }
   const errors=policyValidationErrors(document);
   return{
     required:required===true,present:true,valid:errors.length===0,path:policyPath,
-    fingerprint:sha256(raw),version:Number(document.version)||null,
+    fingerprint:sha256(raw),executionFingerprint:workerExecutionPolicyFingerprint(document),version:Number(document.version)||null,
     status:clean(document.status)||null,policySource:clean(document.policySource)||null,
     syncMode:clean(document?.developmentLifecycleMachine?.sharedWorkerContext?.syncMode)||null,
     errors,document
@@ -93,7 +153,7 @@ export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),poli
     const errors=policyValidationErrors(document);
     return{
       required:required===true,present:true,valid:errors.length===0,path:policyPath,
-      fingerprint:sha256(raw),version:Number(document.version)||null,
+      fingerprint:sha256(raw),executionFingerprint:workerExecutionPolicyFingerprint(document),version:Number(document.version)||null,
       status:clean(document.status)||null,policySource:clean(document.policySource)||null,
       syncMode:clean(document?.developmentLifecycleMachine?.sharedWorkerContext?.syncMode)||null,
       errors,document,source:'GIT_REF',ref:resolvedRef
@@ -102,7 +162,7 @@ export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),poli
     const detail=clean(error?.stderr||error?.message||error).replace(/\s+/g,' ').slice(0,240)||'UNKNOWN';
     return{
       required:required===true,present:false,valid:required!==true,path:policyPath,
-      fingerprint:null,version:null,status:null,policySource:null,syncMode:null,
+      fingerprint:null,executionFingerprint:null,version:null,status:null,policySource:null,syncMode:null,
       errors:required===true?[`CENTRAL_POLICY_LIVE_REF:${detail}`]:[],document:null,source:'GIT_REF',ref:resolvedRef
     };
   }
@@ -200,6 +260,7 @@ export function compileVibeCentralWorkContract({
       path:source.path||CANONICAL_VIBE_POLICY_PATH,
       version:source.version||null,
       fingerprint:source.fingerprint||null,
+      executionFingerprint:source.executionFingerprint||null,
       status:source.status||null,
       policySource:source.policySource||null,
       syncMode:source.syncMode||null
@@ -281,7 +342,7 @@ export function compiledWorkContractGuidance(contract={}){
   const request=contract.workRequest||{};
   return[
     '[CENTRAL ROADMAP WORK CONTRACT]',
-    `policy=${contract.policy?.path||CANONICAL_VIBE_POLICY_PATH}; version=${contract.policy?.version??'unknown'}; sha256=${contract.policy?.fingerprint||'missing'}`,
+    `policy=${contract.policy?.path||CANONICAL_VIBE_POLICY_PATH}; version=${contract.policy?.version??'unknown'}; sha256=${contract.policy?.fingerprint||'missing'}; execution-sha256=${contract.policy?.executionFingerprint||'missing'}`,
     contract.freshness?.liveMainRequired===true?`live-main-ref=${contract.freshness?.liveMainRef||'origin/main'}; refresh-before-check=YES`:'',
     `work-key=${request.workKey||'NONE'}; next-gate=${request.nextGate||'NONE'}; dedupe-key=${request.dedupeKey||'NONE'}`,
     `exact-writable-files=${(contract.writableScope?.exactResponsibleFiles||[]).join(', ')||'NONE'}`,
@@ -293,7 +354,7 @@ export function compiledWorkContractGuidance(contract={}){
     'Preserve already-passed stages. Repair the exact failure stage, then revalidate it immediately.',
     'This contract does not grant worker creation, queue mutation, wave reorder, lock/policy mutation, or automatic learning/promotion authority.',
     contract.learning?.traceOnlyUntilSupervisorPass===true?'Supervised candidate is TRACE_ONLY. Reusable learning remains blocked until supervisor PASS.':'',
-    'The central roadmap fingerprint must still match before source generation and again before candidate output is written.'
+    'The central roadmap must stay valid, and its worker execution-policy projection fingerprint must still match before source generation and again before candidate output is written. Full document SHA remains evidence but unrelated roadmap progress metadata does not invalidate an active worker.'
   ].filter(Boolean).join('\n');
 }
 
@@ -304,8 +365,9 @@ export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},p
   const current=loadCentralPolicySnapshot({repoRoot:cwd,policyPath,required:true});
   if(!current.valid)throw new Error(`CENTRAL_POLICY_INVALID:${phase}:${current.errors.join('|')||'UNKNOWN'}`);
   if(!contract?.policy?.fingerprint)throw new Error(`CENTRAL_POLICY_FINGERPRINT_MISSING:${phase}`);
-  if(current.fingerprint!==contract.policy.fingerprint){
-    throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.fingerprint}->${current.fingerprint}`);
+  if(!contract?.policy?.executionFingerprint)throw new Error(`CENTRAL_POLICY_EXECUTION_FINGERPRINT_MISSING:${phase}`);
+  if(current.executionFingerprint!==contract.policy.executionFingerprint){
+    throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.executionFingerprint}->${current.executionFingerprint}`);
   }
   let liveMain=null;
   if(contract?.freshness?.liveMainRequired===true){
@@ -317,13 +379,13 @@ export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},p
       fetchRemote:contract?.freshness?.liveMainRefreshBeforeCheck!==false
     });
     if(!liveMain.valid)throw new Error(`CENTRAL_POLICY_LIVE_INVALID:${phase}:${liveMain.errors.join('|')||'UNKNOWN'}`);
-    if(liveMain.fingerprint!==contract.policy.fingerprint){
-      throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.fingerprint}->${liveMain.fingerprint}`);
+    if(liveMain.executionFingerprint!==contract.policy.executionFingerprint){
+      throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.executionFingerprint}->${liveMain.executionFingerprint}`);
     }
   }
   return{
     status:'PASS',phase,fresh:true,path:current.path,version:current.version,
-    fingerprint:current.fingerprint,syncMode:current.syncMode,
-    liveMainRef:liveMain?.ref||null,liveMainVersion:liveMain?.version||null,liveMainFingerprint:liveMain?.fingerprint||null
+    fingerprint:current.fingerprint,executionFingerprint:current.executionFingerprint,syncMode:current.syncMode,
+    liveMainRef:liveMain?.ref||null,liveMainVersion:liveMain?.version||null,liveMainFingerprint:liveMain?.fingerprint||null,liveMainExecutionFingerprint:liveMain?.executionFingerprint||null
   };
 }
