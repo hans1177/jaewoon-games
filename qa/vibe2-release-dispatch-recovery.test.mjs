@@ -40,8 +40,8 @@ test('default cooldown retries stranded reviewed winners after two minutes',()=>
   assert.equal(selectReviewedWinnerRecoveries({tasks:[recent]},{nowMs:1_120_001}).count,1);
 });
 
-test('done tasks never re-enter release gate recovery',()=>{
-  const row={...winner(),status:'done'};
+test('verified checkpoint tasks never re-enter release gate recovery',()=>{
+  const row={...winner(),status:'verified'};
   assert.equal(selectReviewedWinnerRecoveries({tasks:[row]}).count,0);
 });
 
