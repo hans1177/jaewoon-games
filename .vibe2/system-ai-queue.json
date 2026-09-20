@@ -374,7 +374,7 @@
     },
     {
       "id": "sys-verify-web-bootstrap-signal-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "high",
       "goal": "Independently verify the Web bootstrap expected-signal contract after the signal-routing implementation is accepted. Add a focused black-box contract test that proves VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING and VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_REPAIR:* remain actionable control signals, while unrelated bootstrap exceptions remain real failures. Do not modify implementation files.",
       "responsibleFiles": [
@@ -399,8 +399,8 @@
       ],
       "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -411,11 +411,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-19T05:32:24.208Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-vibe-planner-repair-fixtures-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "high",
       "goal": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
       "responsibleFiles": [
@@ -441,12 +441,12 @@
       ],
       "retries": 1,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -460,11 +460,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:22.125Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-source-bootstrap-safety-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "high",
       "goal": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
       "responsibleFiles": [
@@ -490,12 +490,12 @@
       ],
       "retries": 1,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -509,11 +509,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:22.125Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-web-handoff-e2e-second-opinion-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "high",
       "goal": "Provide a second independent end-to-end verifier after the first E2E verifier is accepted. Validate bootstrap signal -> workflow routing -> development queue state -> planner task -> candidate-only Vibe source worker -> QA/regression chain. Fail if any stage becomes a generic terminal web-gameplay-music dead end.",
       "responsibleFiles": [
@@ -544,8 +544,8 @@
       ],
       "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -556,11 +556,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-19T05:32:24.208Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-web-strict-gate-integrity-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "goal": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
       "responsibleFiles": [
@@ -585,8 +585,8 @@
       ],
       "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -597,11 +597,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-19T05:32:24.208Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-development-queue-transition-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "goal": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
       "responsibleFiles": [
@@ -627,8 +627,8 @@
       ],
       "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -639,11 +639,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-19T05:32:24.208Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-web-platform-handoff-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
       "responsibleFiles": [
@@ -669,12 +669,12 @@
       ],
       "retries": 1,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480075259:1",
+      "reservedAt": "2026-09-20T00:56:47.065Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -688,7 +688,7 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:56:22.125Z"
+      "updatedAt": "2026-09-20T00:56:47.065Z"
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
