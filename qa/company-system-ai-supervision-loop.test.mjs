@@ -9,6 +9,7 @@ const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml'
 const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
 const queue=fs.readFileSync('tools/company-system-ai-queue.mjs','utf8');
 const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
+const securityAssignmentWorkflow=fs.readFileSync('.github/workflows/company-security-recovery-assignment.yml','utf8');
 
 test('System AI supervision is reserve then implementation then verification then PR then fan-in',()=>{
   const reserve=workflow.indexOf('- name: Reserve disjoint supervised assignments');
@@ -206,4 +207,26 @@ test('Primary AI security recovery assignment is never invoked automatically by 
   assert.doesNotMatch(securityWorkflow,/--command=assign-security-recovery/);
   assert.match(queue,/PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE/);
   assert.match(queue,/SYSTEM_AI_SECURITY_RECOVERY_EXPLICIT_APPROVAL_REQUIRED/);
+});
+
+
+test('Primary AI security recovery assignment workflow is manual-only and atomically persists both control files',()=>{
+  assert.match(securityAssignmentWorkflow,/on:\n  workflow_dispatch:/);
+  assert.doesNotMatch(securityAssignmentWorkflow,/\n  schedule:/);
+  assert.doesNotMatch(securityAssignmentWorkflow,/\n  push:/);
+  assert.doesNotMatch(securityAssignmentWorkflow,/\n  repository_dispatch:/);
+  assert.match(securityAssignmentWorkflow,/test "\$DECISION" = 'PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE'/);
+  assert.match(securityAssignmentWorkflow,/for attempt in 1 2 3; do/);
+  assert.match(securityAssignmentWorkflow,/git fetch origin main vibe2-unreal-core --quiet/);
+  assert.match(securityAssignmentWorkflow,/git worktree add --detach \/tmp\/security-recovery-assignment-control origin\/vibe2-unreal-core/);
+  assert.match(securityAssignmentWorkflow,/--command=assign-security-recovery/);
+  assert.match(securityAssignmentWorkflow,/--queue="\$control\/\.vibe2\/system-ai-queue\.json"/);
+  assert.match(securityAssignmentWorkflow,/--recovery="\$control\/\.vibe2\/recovery-queue\.json"/);
+  assert.match(securityAssignmentWorkflow,/git add \.vibe2\/system-ai-queue\.json \.vibe2\/recovery-queue\.json/);
+  assert.match(securityAssignmentWorkflow,/git commit -m "security: assign supervised recovery \$RECOVERY_ID \[skip ci\]"/);
+  assert.match(securityAssignmentWorkflow,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(securityAssignmentWorkflow,/SECURITY_RECOVERY_ASSIGNMENT_CONTROL_REFRESH_RETRY/);
+  assert.match(securityAssignmentWorkflow,/SECURITY_RECOVERY_ASSIGNMENT_AUTO_DISPATCH=NO/);
+  assert.doesNotMatch(securityAssignmentWorkflow,/company-system-ai-cycle/);
+  assert.doesNotMatch(securityAssignmentWorkflow,/refs\/heads\/main|HEAD:main/);
 });
