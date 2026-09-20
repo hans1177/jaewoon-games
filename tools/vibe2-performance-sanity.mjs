@@ -4,6 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const clean=value=>String(value??'').trim();
@@ -16,6 +17,17 @@ function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 
+function baselineFileBytes({root,baseMainSha,sourceRoot,relative}){
+  const sha=clean(baseMainSha);
+  if(!/^[0-9a-f]{7,64}$/i.test(sha))return null;
+  const repoPath=posix(path.posix.join(sourceRoot,relative));
+  try{
+    return execFileSync('git',['show',`${sha}:${repoPath}`],{cwd:root,encoding:null,maxBuffer:32*1024*1024}).length;
+  }catch{
+    return null;
+  }
+}
+
 export function verifyPerformanceSanity({root=process.cwd(),manifest={}}={}){
   const sourceRoot=posix(manifest.sourceRoot);
   const changed=[...new Set((manifest.changedFiles||[]).map(posix).filter(Boolean))];
@@ -25,17 +37,24 @@ export function verifyPerformanceSanity({root=process.cwd(),manifest={}}={}){
   add('exploration-read-only',manifest?.exploration?.sourceWrite===false,String(manifest?.exploration?.sourceWrite));
   add('bounded-changed-file-count',changed.length>0&&changed.length<=MAX_CHANGED_FILES,String(changed.length));
   let binary=false,oversized=false,missing=false;
+  const sizeBudgetDetails=[];
   for(const relative of changed){
     if(BINARY_EXTENSIONS.has(path.extname(relative).toLowerCase()))binary=true;
     const file=path.resolve(root,sourceRoot,relative);
     if(!fs.existsSync(file)||!fs.statSync(file).isFile()){missing=true;continue;}
-    if(fs.statSync(file).size>MAX_SINGLE_TEXT_FILE_BYTES)oversized=true;
+    const currentBytes=fs.statSync(file).size;
+    const baselineBytes=baselineFileBytes({root,baseMainSha:manifest.baseMainSha,sourceRoot,relative});
+    const growthBytes=baselineBytes===null?currentBytes:currentBytes-baselineBytes;
+    const preExistingOversized=baselineBytes!==null&&baselineBytes>MAX_SINGLE_TEXT_FILE_BYTES;
+    const withinBudget=currentBytes<=MAX_SINGLE_TEXT_FILE_BYTES||(preExistingOversized&&growthBytes<=MAX_SINGLE_TEXT_FILE_BYTES);
+    if(!withinBudget)oversized=true;
+    sizeBudgetDetails.push(`${relative}:current=${currentBytes}:baseline=${baselineBytes===null?'missing':baselineBytes}:growth=${growthBytes}:mode=${preExistingOversized?'existing-large-delta':'absolute'}`);
   }
   add('no-binary-source-write',!binary,binary?'binary-change-detected':'text-only');
   add('changed-files-exist',!missing,missing?'missing-changed-file':'all-present');
-  add('single-file-size-budget',!oversized,oversized?`>${MAX_SINGLE_TEXT_FILE_BYTES}`:`<=${MAX_SINGLE_TEXT_FILE_BYTES}`);
+  add('single-file-size-budget',!oversized,sizeBudgetDetails.join(';')||`<=${MAX_SINGLE_TEXT_FILE_BYTES}`);
   const pass=checks.every(row=>row.pass);
-  return{version:1,role:'performance',sourceWrite:false,pass,sourceRoot,changedFiles:changed,checks};
+  return{version:2,role:'performance',sourceWrite:false,pass,sourceRoot,changedFiles:changed,checks};
 }
 
 export function runPerformanceSanity({root=process.cwd(),manifestFile='',outputFile=''}={}){
