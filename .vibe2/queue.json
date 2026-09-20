@@ -12800,8 +12800,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
@@ -12845,7 +12845,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "incremental-qa-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -14015,7 +14015,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T07:52:04.799Z"
     },
     {
       "id": "daechung-rpg-web-runtime-repair-v1",
