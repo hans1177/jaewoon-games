@@ -25,6 +25,10 @@ on:
       - 'artbook-submissions/**'
       - 'web-games/**'
       - 'assets/**'
+      - 'company-records/runtime-media/**'
+      - 'homepage-runtime-media.json'
+      - 'tools/homepage-runtime-media-sync.mjs'
+      - 'qa/homepage-runtime-media.test.mjs'
       - 'manifest.webmanifest'
       - 'install.html'
       - 'sw.js'
@@ -57,6 +61,10 @@ on:
       - 'artbook-submissions/**'
       - 'web-games/**'
       - 'assets/**'
+      - 'company-records/runtime-media/**'
+      - 'homepage-runtime-media.json'
+      - 'tools/homepage-runtime-media-sync.mjs'
+      - 'qa/homepage-runtime-media.test.mjs'
       - 'manifest.webmanifest'
       - 'install.html'
       - 'sw.js'
@@ -163,6 +171,14 @@ jobs:
             echo 'HOMEPAGE_TEST_SYNC=NO_RUNTIME_BRANCH'
           fi
 
+      - name: Sync verified native runtime gameplay media
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/homepage-runtime-media-sync.mjs
+          node tools/homepage-runtime-media-sync.mjs
+          node --test qa/homepage-runtime-media.test.mjs
+
       - name: Run homepage manager contract
         run: node tools/homepage-manager.mjs
 
@@ -172,19 +188,21 @@ jobs:
           for file in \
             index.html company.html game-catalog.json company-status.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
-            assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
+            assets/homepage-enhancements.js assets/artbook-viewer.js homepage-runtime-media.json manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json _headers; do
             test -f "$file"
           done
-          node -e "for (const file of ['game-catalog.json','company-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node -e "for (const file of ['game-catalog.json','company-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','homepage-runtime-media.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
           node --check tools/homepage-test-candidate-sync.mjs
+          node --check tools/homepage-runtime-media-sync.mjs
           node --check tools/game-catalog-normalization.mjs
           node --check tools/company-status-sync.mjs
           node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
+          node --test qa/homepage-runtime-media.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
@@ -264,7 +282,7 @@ jobs:
           candidate_dir='.homepage-candidate'
           rm -rf "$candidate_dir"
           mkdir -p "$candidate_dir"
-          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json homepage-runtime-media.json web-games artbook-submissions)
           base_sha="$(git rev-parse HEAD)"
           git add -- "${published_paths[@]}"
           git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
@@ -278,7 +296,7 @@ jobs:
             baseSha:process.env.BASE_SHA,
             patchSha256:process.env.PATCH_SHA256,
             changed:process.env.CANDIDATE_CHANGED==='true',
-            paths:['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
+            paths:['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json','homepage-runtime-media.json','web-games','artbook-submissions'],
           },null,2)+'\n');
           NODE
           git reset --quiet
