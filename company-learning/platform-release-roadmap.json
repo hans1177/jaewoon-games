@@ -6719,7 +6719,7 @@
     }
   },
   "presentationPipelineImplementation": {
-    "version": 4,
+    "version": 5,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "status": "CODE_WIRED_CI_VERIFIED_CANONICAL_RUNTIME_QA_ACTIVE",
     "canonicalPassOrder": [
@@ -6752,7 +6752,20 @@
       "wrapperShadowPresentationPipelineForbidden": true,
       "graphicsAtomicNeuronExecutionRequired": true,
       "graphicsTaskMicroFanInRequired": true,
-      "graphicsGlobalWaveBarrierForbidden": true
+      "graphicsGlobalWaveBarrierForbidden": true,
+      "actualRuntimeGraphicsRequiredForPresentationPass": true,
+      "contextMatchedBackgroundAndEnvironmentRequired": true,
+      "placeholderPrimitiveCharacterOrMonsterCompletionForbidden": true,
+      "actionStateMotionCoverageRequired": [
+        "IDLE",
+        "MOVE",
+        "ATTACK",
+        "HIT",
+        "DEATH"
+      ],
+      "runtimeVfxBindingRequired": true,
+      "runtimeCameraBindingRequired": true,
+      "markerOnlyOrStaticDescriptionCompletionForbidden": true
     },
     "verificationTests": [
       "qa/vibe2-auto-planner.test.mjs",
@@ -6768,8 +6781,13 @@
       "mobileViewport": "390x844 touch",
       "frameTiming": true,
       "livingVisualMotion": true,
+      "environmentVisualDetail": true,
+      "characterMonsterVisualDetail": true,
+      "canvasRenderSurfaceRuntimeObservation": true,
+      "attackHitDeathMotionEvidence": true,
       "liveDomContractExposure": true,
       "canonicalPlaywrightValidator": true,
+      "validatorSchemaVersion": 16,
       "separateShadowValidator": false
     },
     "runtimeHardGate": "PRESENTATION_RUNTIME_QUALITY_REQUIRED",
@@ -9018,7 +9036,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 3,
+    "version": 4,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -9092,6 +9110,11 @@
       "realAssetRequired": true,
       "inGameBindingRequired": true,
       "actualRuntimeVisualEvidenceRequired": true,
+      "contextMatchedBackgroundRuntimeEvidenceRequired": true,
+      "characterMonsterVisualDetailRuntimeEvidenceRequired": true,
+      "combatDeathMotionRequiredWhenRuntimeKillObserved": true,
+      "vfxAndCameraMustBindToGameplayRuntime": true,
+      "markerOnlyPresentationPassForbidden": true,
       "requiredAssetMissingBlocksGraphicsPass": true,
       "placeholderVisualCannotSatisfyGraphicsPass": true,
       "targetPlatformPresentationMustBeValidatedIndependently": true,
@@ -9109,6 +9132,7 @@
       "globalWaveBarrierForbidden": true,
       "sourceAndFileConflictProtectionStillRequired": true,
       "qaSecurityReleaseGatesPreserved": true,
+      "realRuntimePresentationHardGatePreserved": true,
       "phase2NeuralExecutionAuthorityCreated": false,
       "newWorkerAuthorityCreated": false,
       "queueMutationAuthorityCreated": false,
