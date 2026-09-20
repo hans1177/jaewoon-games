@@ -15,6 +15,10 @@ test('PARALLELISM_CONTRACT_GATE separates provider capacity from GAME_PRIMARY ex
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.humanDocumentRequired,false);
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.externalProviderAndPlanningBound,256);
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.gamePrimaryActiveExecutionCap,20);
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.globalActiveWorkerBarrier,false);
+  assert.equal(roadmap.neuralDevelopmentBrain.currentWaveExecution.adaptiveBackpressureMayNotRaiseGamePrimaryAbove20,true);
 
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.externalMatrixBatchMax,256);
