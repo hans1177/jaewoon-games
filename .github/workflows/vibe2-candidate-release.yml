@@ -250,7 +250,7 @@ jobs:
             const source=fs.readFileSync(file,'utf8');
             const rel=file.replaceAll('\\','/');
             const scripts=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
-              .filter(match=>!\bsrc\s*=\s*/i.test(match[1]||''));
+              .filter(match=>!/\bsrc\s*=\s*/i.test(match[1]||''));
             for(let i=0;i<scripts.length;i++){
               const tmp=path.join(os.tmpdir(),`vibe2-inline-${process.pid}-${i}.mjs`);
               fs.writeFileSync(tmp,scripts[i][2]||'','utf8');
@@ -365,7 +365,7 @@ jobs:
           fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main --quiet
+          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
