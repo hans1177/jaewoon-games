@@ -1,5 +1,5 @@
 {
-  "version": 162,
+  "version": 163,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -447,9 +447,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 4,
+      "version": 5,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "CAUSAL_FAST_PATH_EFFECTIVENESS_VERIFIED_SPEED_OPTIMIZATION_VALIDATING",
+      "status": "MALFORMED_FAST_PATH_CI_VERIFIED_DIAGNOSTIC_REVALIDATION_PENDING",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -474,7 +474,8 @@
       "workflowTelemetryCommit": "d897e86d13cf228bb1bdcfff9592c36cc6e60497",
       "causalFastPathTriggers": [
         "EDIT_MATCH",
-        "TIMEOUT"
+        "TIMEOUT",
+        "MALFORMED_OUTPUT"
       ],
       "causalFastPathStartAttempt": 2,
       "causalFastPathMode": "WORKER_PINNED_REPLACE_ONLY",
@@ -516,9 +517,9 @@
       },
       "latestRelevantQa": {
         "companyEvolutionQa": {
-          "runId": 35476198189,
+          "runId": 35478191975,
           "conclusion": "success",
-          "head": "0a5d558e2079fb46388f2931c6f6dce02147950c"
+          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
         },
         "priorIntegratedRegression": {
           "runId": 35476177597,
@@ -526,12 +527,22 @@
           "head": "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
         },
         "centralPolicyContract": {
-          "state": "RETRIGGERED_BY_THIS_DOCUMENT_SYNC_AFTER_GAME_RESTORE"
+          "state": "RETRIGGERED_BY_MALFORMED_FAST_PATH_DOCUMENT_SYNC"
         },
         "vibe2CoreQa": {
-          "runId": 35476535607,
+          "runId": 35478191978,
           "conclusion": "success",
-          "head": "a066a13071bbefbc195edcde6e2b39c834330ddd"
+          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
+        },
+        "integratedRegression": {
+          "runId": 35478191977,
+          "conclusion": "success",
+          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
+        },
+        "vibeQa": {
+          "runId": 35478191970,
+          "conclusion": "success",
+          "head": "35a23af193bfdeb14c05d567132cf40891ec87e8"
         }
       },
       "verifiedEffectivenessWave": {
@@ -581,6 +592,27 @@
         "queuePolicyTestCommit": "cd1274152c27d5e858cbfbc674322ae73217b378",
         "reservePreflight": "SYNTAX_AND_MACHINE_STATE_ONLY",
         "fullCoreRegression": "FAN_IN_ONLY"
+      },
+      "malformedFastEscalationScope": "FOCUSED_WEB_REPAIR_ONLY",
+      "malformedFastEscalationSourceCommit": "4921eae839561c45bea38de7b6fcd46a7d75e23a",
+      "malformedFastEscalationTestCommit": "35a23af193bfdeb14c05d567132cf40891ec87e8",
+      "malformedFastEscalationCiRuns": {
+        "vibe2CoreQa": {
+          "runId": 35478191978,
+          "conclusion": "success"
+        },
+        "vibeQa": {
+          "runId": 35478191970,
+          "conclusion": "success"
+        },
+        "integratedRegression": {
+          "runId": 35478191977,
+          "conclusion": "success"
+        },
+        "companyEvolutionQa": {
+          "runId": 35478191975,
+          "conclusion": "success"
+        }
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
