@@ -1164,10 +1164,11 @@ jobs:
           fi
           echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
 
-          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json; then
+          if [ -z "$(git status --porcelain -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json)" ]; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
           else
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json
+            test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
             git commit -m "vibe2: fan in parallel worker results [skip ci]"
             pushed=0
             for attempt in 1 2 3; do
