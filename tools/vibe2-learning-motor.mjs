@@ -190,6 +190,104 @@ function normalizeCodingConstitution(input={}){
   })).filter(row=>row.id&&row.failureFingerprint&&row.strategy);
   return{version:1,rules,advisoryOnly:true,authorityExpanded:false,lastBuiltAt:clean(source.lastBuiltAt)||null};
 }
+
+function normalizeProductionConfidence(input={}){
+  const source=input&&typeof input==='object'?input:{},domains={};
+  for(const d of MASTERY_DOMAINS){
+    const row=source.domains?.[d]||{};
+    domains[d]={
+      verifiedApplications:Math.max(0,Number(row.verifiedApplications)||0),
+      verifiedFailures:Math.max(0,Number(row.verifiedFailures)||0),
+      games:{...(row.games||{})},
+      holdoutPasses:Math.max(0,Number(row.holdoutPasses)||0),
+      level:Math.max(1,Math.min(5,Number(row.level)||1)),
+      lastEvidence:clean(row.lastEvidence)||null,
+      lastUpdatedAt:clean(row.lastUpdatedAt)||null
+    };
+  }
+  return{version:1,domains,seenOutcomeIds:uniq(source.seenOutcomeIds||[])};
+}
+function knowledgeLifecycle(row={}){
+  const apps=Math.max(0,Number(row.verifiedApplications)||0),fails=Math.max(0,Number(row.verifiedFailures)||0);
+  const games=Object.keys(row.games||{}).filter(Boolean).length,total=apps+fails,failRate=total?fails/total:0;
+  if(fails>=4&&failRate>=0.7)return'RETIRED';
+  if(fails>=2&&failRate>0.5)return'DEMOTED';
+  if(apps>=5&&games>=2&&(apps/Math.max(1,total))>=0.6)return'PREFERRED';
+  if(apps>=2)return'VERIFIED';
+  return'CANDIDATE';
+}
+function normalizeKnowledgeAttribution(input={}){
+  const source=input&&typeof input==='object'?input:{},entries={};
+  for(const [id,raw] of Object.entries(source.entries||{})){
+    const row=raw&&typeof raw==='object'?raw:{};
+    entries[clean(id)]={
+      source:clean(row.source)||'UNKNOWN',
+      verifiedApplications:Math.max(0,Number(row.verifiedApplications)||0),
+      verifiedFailures:Math.max(0,Number(row.verifiedFailures)||0),
+      games:{...(row.games||{})},
+      targets:{...(row.targets||{})},
+      state:clean(row.state)||knowledgeLifecycle(row),
+      lastEvidence:clean(row.lastEvidence)||null,
+      lastFailureEvidence:clean(row.lastFailureEvidence)||null,
+      lastUpdatedAt:clean(row.lastUpdatedAt)||null
+    };
+  }
+  return{version:1,entries,seenOutcomeIds:uniq(source.seenOutcomeIds||[])};
+}
+function productionConfidenceLevel(row={}){
+  const apps=Math.max(0,Number(row.verifiedApplications)||0),fails=Math.max(0,Number(row.verifiedFailures)||0);
+  const games=Object.keys(row.games||{}).filter(Boolean).length,total=apps+fails,failRate=total?fails/total:0,holdouts=Math.max(0,Number(row.holdoutPasses)||0);
+  if(holdouts>=2&&games>=3&&apps>=8&&failRate<=0.15)return 5;
+  if(games>=3&&apps>=7&&failRate<=0.25)return 4;
+  if(games>=2&&apps>=4&&failRate<=0.35)return 3;
+  if(apps>=2&&failRate<=0.5)return 2;
+  return 1;
+}
+function knowledgeRefsFromEvidence(evidence=[]){
+  const marker=(evidence||[]).map(clean).filter(x=>x.startsWith('learning-knowledge-ids:')).at(-1);
+  if(!marker)return[];
+  try{
+    const rows=JSON.parse(decodeURIComponent(marker.slice('learning-knowledge-ids:'.length)));
+    return Array.isArray(rows)?rows.map(clean).filter(Boolean).slice(0,40):[];
+  }catch{return[];}
+}
+export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput),memory=normalizeKnowledgeAttribution(state.knowledgeAttribution),confidence=normalizeProductionConfidence(state.productionConfidence);
+  const seen=new Set(memory.seenOutcomeIds||[]);let added=0,positive=0,negative=0;
+  for(const task of queueInput?.tasks||[]){
+    const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
+    const outcome=codingVerificationOutcome(task);
+    if(!outcome)continue;
+    const refs=knowledgeRefsFromEvidence(evidence);if(!refs.length)continue;
+    const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
+    const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const eventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
+    if(seen.has(eventId))continue;
+    for(const ref of refs){
+      const at=ref.indexOf(':');const source=at>0?upper(ref.slice(0,at)):'UNKNOWN',id=at>0?ref.slice(at+1):ref;
+      if(!id)continue;
+      const key=source+':'+id,row=memory.entries[key]||{source,verifiedApplications:0,verifiedFailures:0,games:{},targets:{},state:'CANDIDATE',lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
+      if(outcome==='PASS'){row.verifiedApplications+=1;row.lastEvidence=eventId;positive+=1;}
+      else{row.verifiedFailures+=1;row.lastFailureEvidence=eventId;negative+=1;}
+      row.games[gameId]=(row.games[gameId]||0)+1;row.targets[target]=(row.targets[target]||0)+1;row.state=knowledgeLifecycle(row);row.lastUpdatedAt=new Date().toISOString();memory.entries[key]=row;
+    }
+    const domains=inferDomains(clean(task.goal),task.target);
+    for(const domain of domains){
+      const row=confidence.domains[domain];if(!row)continue;
+      if(outcome==='PASS'){row.verifiedApplications+=1;if(evidence.some(x=>x.startsWith('phase4-unseen-game:')||x==='phase4-strong-generalization-evidence:YES'))row.holdoutPasses+=1;}
+      else row.verifiedFailures+=1;
+      row.games[gameId]=(row.games[gameId]||0)+1;row.level=productionConfidenceLevel(row);row.lastEvidence=eventId;row.lastUpdatedAt=new Date().toISOString();
+    }
+    seen.add(eventId);added+=1;
+  }
+  memory.seenOutcomeIds=[...seen].slice(-5000);state.knowledgeAttribution=memory;state.productionConfidence=confidence;state.updatedAt=new Date().toISOString();
+  return{state,added,positive,negative};
+}
+function knowledgeStateFor(master={},source='',id=''){
+  const key=upper(source)+':'+clean(id);
+  return clean(master?.knowledgeAttribution?.entries?.[key]?.state)||'VERIFIED';
+}
+
 export function createMasteryState(seed={}){
   const domains={};
   for(const d of MASTERY_DOMAINS){
@@ -211,6 +309,8 @@ export function createMasteryState(seed={}){
     regressionHotspots:normalizeRegressionHotspots(seed.regressionHotspots),
     architectureDriftMemory:normalizeArchitectureDriftMemory(seed.architectureDriftMemory),
     codingConstitution:normalizeCodingConstitution(seed.codingConstitution),
+    productionConfidence:normalizeProductionConfidence(seed.productionConfidence),
+    knowledgeAttribution:normalizeKnowledgeAttribution(seed.knowledgeAttribution),
     updatedAt:clean(seed.updatedAt)||null
   };
 }
@@ -779,7 +879,7 @@ function failureFingerprintForExperience(record={}){
   return [lower(record.engine)||'any',...classes,...domains].filter(Boolean).join('|');
 }
 
-export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},practiceDistilledInput={},masteryInput={}}={}){
+export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},practiceDistilledInput={},externalAiDistilledInput={},masteryInput={}}={}){
   const qWords=words([task.goal,task.gameId,task.target,task.genre,task.blocker,task.lastOutcome,...(task.evidence||[])].filter(Boolean).join(' '));
   const gameId=clean(task.gameId);
   const engine=lower(task.target);
@@ -808,7 +908,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     return {record,score:Number(score.toFixed(3)),reasons};
   }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
 
-  const patterns=(codePatternsInput?.patterns||[]).map(row=>{
+  const mastery=createMasteryState(masteryInput);
+  const patterns=(codePatternsInput?.patterns||[]).filter(row=>knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)!=='RETIRED').map(row=>{
     const pWords=words([row.id,row.system,row.problem,row.pattern,row.tags].flat().filter(Boolean).join(' '));
     let score=overlapScore(qWords,pWords)*3;
     if(gameId&&clean(row.gameId)===gameId) score+=30;
@@ -818,22 +919,40 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
   const taskType=lower(task.taskType||task.type||'coding');
   const playbook=playbooksInput?.taskTypes?.[taskType]||playbooksInput?.taskTypes?.coding||null;
-  const mastery=createMasteryState(masteryInput);
   const domains=inferDomains(clean(task.goal),engine);
   const practiceDistilled=(practiceDistilledInput?.entries||[])
-    .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.retrievalEligible===true&&clean(row.authority)==='VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE'&&domains.includes(upper(row.domain)))
+    .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.retrievalEligible===true&&clean(row.authority)==='VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE'&&knowledgeStateFor(mastery,'PRACTICE_DISTILLED',row?.id)!=='RETIRED'&&domains.includes(upper(row.domain)))
     .map(row=>({id:clean(row.id),domain:upper(row.domain),confirmations:Math.max(1,Number(row.confirmations)||1),verificationEvidence:(row.verificationEvidence||[]).map(clean).filter(Boolean).slice(0,6),authority:clean(row.authority),relevance:Math.min(12,4+Math.max(1,Number(row.confirmations)||1))}))
     .sort((a,b)=>b.relevance-a.relevance||a.domain.localeCompare(b.domain)).slice(0,6);
+  const externalAiDistilled=(externalAiDistilledInput?.entries||[])
+    .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.distilled===true&&row?.advisoryOnly===true&&row?.reusable===true&&row?.rawOutputStored===false&&row?.directSourceWrite!==true&&row?.directProductionPass!==true&&knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)!=='RETIRED')
+    .map(row=>{
+      const eWords=words([row.id,row.engine,row.gameId,...(row.domains||[]),...(row.patterns||[]),...(row.cautions||[])].filter(Boolean).join(' '));
+      let relevance=overlapScore(qWords,eWords)*2;
+      if(gameId&&clean(row.gameId)===gameId)relevance+=8;
+      if(engine&&lower(row.engine)===engine)relevance+=5;
+      if((row.domains||[]).some(domain=>domains.includes(upper(domain))))relevance+=8;
+      return{id:clean(row.id),provider:clean(row.provider),model:clean(row.model),engine:lower(row.engine),gameId:clean(row.gameId),domains:(row.domains||[]).map(upper),patterns:(row.patterns||[]).map(clean).filter(Boolean).slice(0,8),cautions:(row.cautions||[]).map(clean).filter(Boolean).slice(0,8),relevance,state:knowledgeStateFor(mastery,'EXTERNAL_AI_DISTILLED',row?.id)};
+    })
+    .filter(row=>row.relevance>0&&row.state!=='RETIRED')
+    .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','SAME_FAILURE_VERIFIED','SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','VERIFIED_PRACTICE_DISTILLED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','SAME_FAILURE_VERIFIED','SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
     failureFingerprint,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
     experience:ranked.map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,failureCause:x.record.failureCause,relevance:x.score,reasons:x.reasons})),
     codePatterns:patterns,
     practiceDistilled,
+    externalAiDistilled,
+    exactKnowledgeIds:uniq([
+      ...ranked.map(x=>'EXPERIENCE:'+clean(x.record.id)),
+      ...patterns.map(x=>'CODE_PATTERN:'+clean(x.id)),
+      ...practiceDistilled.map(x=>'PRACTICE_DISTILLED:'+clean(x.id)),
+      ...externalAiDistilled.map(x=>'EXTERNAL_AI_DISTILLED:'+clean(x.id))
+    ]).filter(Boolean).slice(0,40),
     playbook,
-    mastery:domains.map(d=>({domain:d,...mastery.domains[d]})),
+    mastery:domains.map(d=>({domain:d,...mastery.domains[d],productionConfidenceLevel:Number(mastery.productionConfidence?.domains?.[d]?.level||1)})),
     authorityExpanded:false
   };
 }
@@ -846,6 +965,8 @@ export function learningGuidance(context={}){
   for(const row of context.experience||[]) lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}`);
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
+  for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
+  if(context.mastery?.length) lines.push(`- production-confidence=${context.mastery.map(x=>x.domain+':PC'+Number(x.productionConfidenceLevel||1)).join(' | ')}`);
   if(context.playbook?.checklist?.length) lines.push(`- playbook=${context.playbook.checklist.join(' | ')}`);
   if(context.mastery?.length) lines.push(`- mastery=${context.mastery.map(x=>x.domain+':LV'+x.level).join(' | ')}`);
   return lines.join('\n');
@@ -856,8 +977,9 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
   const goal=clean(task.goal);
   const repeated=Object.values(state.failureSignatures||{}).some(row=>Number(row.count)>=2&&(row.domains||[]).some(d=>inferDomains(goal,task.target).includes(d)));
   const highRisk=lower(task.priority)==='critical'||lower(task.estimatedRisk)==='high'||/FULL_WEB_GAME_REBUILD|release|migration|multiplayer|datastore/i.test(goal);
-  const count=repeated||highRisk?3:1;
-  return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false};
+  const strategies=Object.values(state.codingStrategyMemory?.strategies||{}),promotionGap=strategies.some(row=>row.state==='VERIFIED')&&!strategies.some(row=>row.state==='PREFERRED')&&lower(task.type||'implementation')==='implementation';
+  const count=repeated||highRisk||promotionGap?3:1;
+  return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':promotionGap?'strategy-promotion-evidence-gap':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false};
 }
 
 function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput={}){
@@ -1392,15 +1514,16 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
   const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
   const driftApplied=applyVerifiedArchitectureDriftOutcomes(calibrationApplied.state,queueInput);
-  const constitution=buildCodingConstitution(driftApplied.state);
-  driftApplied.state.codingConstitution=constitution;
-  driftApplied.state.updatedAt=new Date().toISOString();
-  const benchmark=buildBenchmarkLadder(driftApplied.state,experienceInput,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(driftApplied.state,benchmark);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,driftApplied.state);
+  const knowledgeApplied=applyVerifiedKnowledgeOutcomes(driftApplied.state,queueInput);
+  const constitution=buildCodingConstitution(knowledgeApplied.state);
+  knowledgeApplied.state.codingConstitution=constitution;
+  knowledgeApplied.state.updatedAt=new Date().toISOString();
+  const benchmark=buildBenchmarkLadder(knowledgeApplied.state,experienceInput,companyQueueInput);
+  const idlePractice=buildIdlePracticeQueue(knowledgeApplied.state,benchmark);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,knowledgeApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:driftApplied.state,
+    state:knowledgeApplied.state,
     addedExperience:applied.added,
     addedCodePatterns:patternApplied.added,
     addedCodingStrategyOutcomes:strategyApplied.added,
@@ -1408,6 +1531,9 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     addedCodingCalibrationOutcomes:calibrationApplied.added||0,
     addedRegressionHotspotEvents:calibrationApplied.hotspotEventsAdded||0,
     addedArchitectureDriftOutcomes:driftApplied.added||0,
+    addedKnowledgeAttributionOutcomes:knowledgeApplied.added||0,
+    knowledgePositiveApplications:knowledgeApplied.positive||0,
+    knowledgeNegativeApplications:knowledgeApplied.negative||0,
     codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
     idlePractice,
@@ -1445,6 +1571,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_CODING_CALIBRATION_OUTCOMES_ADDED=${result.addedCodingCalibrationOutcomes||0}`);
   console.log(`VIBE2_REGRESSION_HOTSPOT_EVENTS_ADDED=${result.addedRegressionHotspotEvents||0}`);
   console.log(`VIBE2_ARCHITECTURE_DRIFT_OUTCOMES_ADDED=${result.addedArchitectureDriftOutcomes||0}`);
+  console.log(`VIBE2_KNOWLEDGE_ATTRIBUTION_OUTCOMES_ADDED=${result.addedKnowledgeAttributionOutcomes||0}`);
+  console.log(`VIBE2_KNOWLEDGE_POSITIVE_APPLICATIONS=${result.knowledgePositiveApplications||0}`);
+  console.log(`VIBE2_KNOWLEDGE_NEGATIVE_APPLICATIONS=${result.knowledgeNegativeApplications||0}`);
   console.log(`VIBE2_CODING_CONSTITUTION_RULES=${result.codingConstitutionRuleCount||0}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_BENCHMARK_CASES=${result.benchmark.phase4GeneralizationCases||0}`);
