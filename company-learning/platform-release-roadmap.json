@@ -9853,9 +9853,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 3,
+    "version": 4,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "RULE_1_CANONICALIZED_HERE; VERIFIED_COMPLETION_IS_A_CHECKPOINT_AND_CONTINUATION_SIGNAL; NO_TERMINAL_DONE_STATE_WITHOUT_EXPLICIT_OWNER_STOP",
+    "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -10022,6 +10022,105 @@
         "unsafeWorkGenerationForbidden": true,
         "busyLoopWithoutUsefulPlanningForbidden": true
       }
+    },
+    "rule3": {
+      "id": "RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE",
+      "label": "제3규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "VIBE_CONTINUOUSLY_GENERATES_NEW_LEARNING_SIGNALS_FROM_WORK_RESULTS_PRACTICE_FAILURES_HYPOTHESES_FALSIFICATION_BENCHMARKS_HOLDOUTS_AND_CROSS_PROJECT_TRANSFER_WITHOUT_A_TOTAL_SIGNAL_OR_GENERATION_CEILING",
+      "vibeIsPrimaryLearningAgent": true,
+      "totalLearningSignalLimit": null,
+      "practiceQueueItemLimit": null,
+      "practiceGenerationLimit": null,
+      "relearningGenerationLimit": null,
+      "benchmarkGenerationLimit": null,
+      "hypothesisGenerationLimit": null,
+      "crossProjectTransferGenerationLimit": null,
+      "multiverseProjectVariantLimit": null,
+      "signalGenerationAlwaysOn": true,
+      "executionResourceBoundedSignalExistenceUnbounded": true,
+      "everyNewVerifiedOrFailedResultGeneratesNextLearningCandidate": true,
+      "learningLoop": [
+        "INGEST_NEW_RESULT_OR_OBSERVATION",
+        "COMPARE_WITH_PREVIOUS_VERIFIED_RESULTS",
+        "GENERATE_HYPOTHESIS_OR_RELEARNING_SIGNAL",
+        "CREATE_PRACTICE_OR_BENCHMARK_OR_HOLDOUT",
+        "ATTEMPT_FALSIFICATION",
+        "RUN_INDEPENDENT_VERIFICATION",
+        "DISTILL_VERIFIED_POSITIVE_OR_NEGATIVE_LESSON",
+        "APPLY_TO_FRESH_PROJECT_OR_DIFFERENT_CONTEXT",
+        "COMPARE_OUTCOME_WITH_BASELINE_AND_PRIOR_GENERATIONS",
+        "GENERATE_NEXT_SIGNAL_AND_REPEAT"
+      ],
+      "requiredSignalClasses": [
+        "REAL_PROJECT_IMPLEMENTATION",
+        "REAL_PROJECT_FAILURE",
+        "PRACTICE",
+        "RELEARNING",
+        "HYPOTHESIS",
+        "FALSIFICATION",
+        "BENCHMARK",
+        "HOLDOUT",
+        "PREVIOUS_RESULT_COMPARISON",
+        "CROSS_DOMAIN_TRANSFER",
+        "CROSS_PROJECT_TRANSFER",
+        "NEW_PROJECT_OR_VARIANT_RESULT",
+        "EXTERNAL_VERIFIED_REFERENCE"
+      ],
+      "canonicalLearningNetwork": {
+        "source": "tools/vibe2-learning-motor.mjs",
+        "policy": "company-learning/vibe2-learning-motor.json",
+        "oneSharedNetwork": true,
+        "parallelPlatformSpecificTrainerForbidden": true,
+        "supportedEvidenceTargets": [
+          "WEB",
+          "ROBLOX",
+          "UNITY",
+          "FORTNITE_UEFN"
+        ],
+        "platformNativeDomains": {
+          "WEB": [
+            "WEB_RUNTIME"
+          ],
+          "ROBLOX": [
+            "ROBLOX_STUDIO",
+            "ROBLOX_DATASTORE",
+            "ROBLOX_REMOTE_SECURITY",
+            "ROBLOX_REPLICATION",
+            "ROBLOX_MULTIPLAYER"
+          ],
+          "UNITY": [
+            "UNITY_RUNTIME",
+            "UNITY_PHYSICS",
+            "UNITY_NETCODE"
+          ],
+          "FORTNITE_UEFN": [
+            "UEFN_RUNTIME",
+            "UEFN_VERSE",
+            "UEFN_REPLICATION"
+          ]
+        },
+        "nativeRuntimeEvidenceRequiredForNativePositiveMastery": true,
+        "webEvidenceCannotSubstituteNativeRuntimePass": true
+      },
+      "multiverse": {
+        "unit": "PROJECT_VARIANT_OR_NEW_PROJECT",
+        "conceptualExpansionUnbounded": true,
+        "executionResourceBounded": true,
+        "verifiedMechanismGeneralizationOnly": true,
+        "gameSpecificValuesDoNotBecomeUniversalLaw": true,
+        "canonicalProjectIdentityProtected": true,
+        "branchMustNotOverwriteCanonicalProject": true
+      },
+      "positiveMasteryRequiresVerifiedEvidence": true,
+      "verifiedFailureMayBecomeAvoidLesson": true,
+      "rawPracticeOutputMayDirectlyEnterCanonicalLearning": false,
+      "rawExternalAiOutputMayDirectlyEnterCanonicalLearning": false,
+      "benchmarkAloneCountsAsProductionPass": false,
+      "practiceAloneCountsAsProductionPass": false,
+      "authorityExpansion": false,
+      "gateWeakening": false
     }
   }
 }
