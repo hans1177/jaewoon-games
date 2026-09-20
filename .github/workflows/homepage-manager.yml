@@ -5,6 +5,8 @@ on:
     workflows:
       - Company Status Sync
       - Company DEVELOPMENT_CONFIRMED Runtime
+      - Vibe2 Unity Release Result
+      - Company DEVELOPMENT_CONFIRMED Roblox Release Promotion
     types: [completed]
   push:
     branches: [main]
@@ -25,6 +27,9 @@ on:
       - 'artbook-submissions/**'
       - 'web-games/**'
       - 'assets/**'
+      - 'company-records/**'
+      - 'tools/homepage-runtime-media-index.mjs'
+      - 'qa/homepage-runtime-media-index.test.mjs'
       - 'manifest.webmanifest'
       - 'install.html'
       - 'sw.js'
@@ -57,6 +62,9 @@ on:
       - 'artbook-submissions/**'
       - 'web-games/**'
       - 'assets/**'
+      - 'company-records/**'
+      - 'tools/homepage-runtime-media-index.mjs'
+      - 'qa/homepage-runtime-media-index.test.mjs'
       - 'manifest.webmanifest'
       - 'install.html'
       - 'sw.js'
@@ -163,6 +171,15 @@ jobs:
             echo 'HOMEPAGE_TEST_SYNC=NO_RUNTIME_BRANCH'
           fi
 
+      - name: Build verified runtime gameplay media index
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/homepage-runtime-media-index.mjs
+          node --test qa/homepage-runtime-media-index.test.mjs
+          node tools/homepage-runtime-media-index.mjs --output=assets/runtime-evidence/index.json
+          node -e "const x=JSON.parse(require('fs').readFileSync('assets/runtime-evidence/index.json','utf8'));if(x.actualRuntimeOnly!==true||x.generatedMarketingMockForbidden!==true)process.exit(1)"
+
       - name: Run homepage manager contract
         run: node tools/homepage-manager.mjs
 
@@ -172,7 +189,7 @@ jobs:
           for file in \
             index.html company.html game-catalog.json company-status.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
-            assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
+            assets/homepage-enhancements.js assets/artbook-viewer.js assets/runtime-evidence/index.json manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json _headers; do
             test -f "$file"
           done
@@ -180,6 +197,7 @@ jobs:
           node --check assets/homepage-enhancements.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
+          node --check tools/homepage-runtime-media-index.mjs
           node --check tools/homepage-test-candidate-sync.mjs
           node --check tools/game-catalog-normalization.mjs
           node --check tools/company-status-sync.mjs
@@ -189,6 +207,8 @@ jobs:
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
+          grep -Fq "getJson('/assets/runtime-evidence/index.json')" assets/homepage-enhancements.js
+          grep -Fq "homepageRuntimeMediaVerified" assets/homepage-enhancements.js
           grep -Fq "runtimeInfoAuthority='company-runtime'" tools/company-status-sync.mjs
           node <<'NODE'
           const fs=require('fs');
