@@ -1,5 +1,5 @@
 {
-  "version": 27,
+  "version": 28,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -388,7 +388,17 @@
         "duplicateSampleIdCountsOnce": true,
         "conflictingSameSampleResultsBlockReview": true,
         "legacyUnidentifiedEvidenceCannotAloneQualifyReview": true,
-        "sampleVolumeAloneSufficient": false
+        "sampleVolumeAloneSufficient": false,
+        "feedbackDeduplicatedBySampleId": true,
+        "shadowEventsDeduplicatedByEventId": true,
+        "waveAuditDeduplicatedBySampleId": true,
+        "conflictingFeedbackEventOrAuditIdentityBlocksReview": true
+      },
+      "readinessDistinctEvidenceHardening": {
+        "state": "CANDIDATE_BRANCH",
+        "branch": "assistant/neural-readiness-distinct-all-evidence-v1",
+        "authority": "REVIEW_ELIGIBILITY_ONLY",
+        "executionAuthority": "NONE"
       }
     },
     "activation": {
