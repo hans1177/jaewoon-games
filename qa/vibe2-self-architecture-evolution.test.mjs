@@ -18,6 +18,8 @@ test('repeated structural failure becomes one atomic self-architecture evolution
   assert(task.responsibleFiles.includes('qa/vibe2-source-worker.test.mjs'));
   assert(task.evidence.includes('architecture-total-evolution-generation-limit:NONE'));
   assert(task.evidence.includes('architecture-neural-expansion-phase:LAST_STAGE_ONLY'));
+  assert(task.evidence.includes('architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION'));
+  assert(task.evidence.includes('architecture-neural-expansion-readiness:PENDING'));
   assert(task.evidence.includes('architecture-neural-expansion-allowed:NO'));
   assert(task.completionCriteria.includes('BEFORE_AFTER_METRIC_IMPROVED'));
   assert(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
@@ -38,4 +40,23 @@ test('high recovery generation can trigger structural evolution before three sep
   const result=injectSelfArchitectureEvolutionTasks({tasks:[failure('a','queue-starvation',2)]},{});
   assert.equal(result.added.length,1);
   assert(result.added[0].responsibleFiles.includes('tools/vibe2-auto-planner.mjs'));
+});
+
+
+test('verified final-stage readiness allows Vibe to consider neural expansion without expanding execution authority',()=>{
+  const input={tasks:[failure('a','source-candidate-generation-failed'),failure('b','source-candidate-generation-failed'),failure('c','source-candidate-generation-failed')]};
+  const result=injectSelfArchitectureEvolutionTasks(input,{
+    neuralExpansionReadiness:{
+      source:'TEST_VERIFIED_QA',
+      rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
+      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true
+    }
+  });
+  assert.equal(result.neuralExpansionReadiness.pass,true);
+  assert.equal(result.added.length,1);
+  const task=result.added[0];
+  assert.ok(task.evidence.includes('architecture-neural-expansion-readiness:PASS'));
+  assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:YES'));
+  assert.ok(task.completionCriteria.includes('NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF'));
+  assert.ok(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
 });
