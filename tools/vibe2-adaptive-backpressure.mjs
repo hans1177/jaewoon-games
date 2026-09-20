@@ -5,6 +5,7 @@ export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 1
 export const DEFAULT_ADAPTIVE_MAX = 256;
 export const DEFAULT_ADAPTIVE_TARGET = 20;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
+export const MIN_DIRECT_PRESSURE_WORKERS = 4;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const clean = (value) => String(value ?? '').trim();
@@ -118,6 +119,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const level = pressureLevel(telemetry);
   const reasons = pressureReasons(telemetry);
   const strongPressure = ['SEVERE', 'HIGH'].includes(level) || reasons.length > 0;
+  const strongPressureSampleReady = workerCount >= MIN_DIRECT_PRESSURE_WORKERS;
   const mediumPressure = level === 'MEDIUM' && reasons.length === 0;
 
   let next = current;
@@ -126,20 +128,24 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   let decision = 'HOLD';
   let reason = 'LOW_LOAD';
 
-  if (!workerCount || !loaded) {
+  if (!workerCount) {
     healthyStreak = 0;
     pressureStreak = 0;
-    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
+    reason = 'NO_WORKERS';
   } else if (localBackpressureActive) {
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
-  } else if (strongPressure) {
+  } else if (strongPressure && strongPressureSampleReady) {
     next = stepDown(current);
     healthyStreak = 0;
     pressureStreak = 0;
     decision = next < current ? 'DOWN' : 'HOLD';
     reason = reasons.length ? reasons.join('+') : level;
+  } else if (!loaded) {
+    healthyStreak = 0;
+    pressureStreak = 0;
+    reason = strongPressure ? 'LOW_SAMPLE_PRESSURE_HOLD' : 'LOW_LOAD';
   } else if (mediumPressure) {
     healthyStreak = 0;
     pressureStreak += 1;
@@ -194,7 +200,8 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
       effectivePeakUtilizationPct: num(telemetry.effectivePeakUtilizationPct),
       failureRatePct: num(telemetry.failureRatePct),
       pressureLevel: level,
-      bottleneck: clean(telemetry.bottleneck) || 'NONE'
+      bottleneck: clean(telemetry.bottleneck) || 'NONE',
+      strongPressureSampleReady
     }
   });
 }
