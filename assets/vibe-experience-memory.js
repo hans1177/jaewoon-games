@@ -66,9 +66,69 @@ function normalizeCapabilityApplications(values = []) {
   return rows.slice(-64);
 }
 
-function capabilityLifecycleFor(taskType = '', applications = []) {
+function normalizeCapabilityBenchmarks(values = []) {
+  const rows = [];
+  const seen = new Set();
+  for (const raw of Array.isArray(values) ? values : []) {
+    const benchmarkId = clean(raw?.benchmarkId);
+    if (!benchmarkId || seen.has(benchmarkId)) continue;
+    seen.add(benchmarkId);
+    rows.push(freeze({
+      version: 1,
+      benchmarkId,
+      caseId: clean(raw?.caseId) || null,
+      pairId: clean(raw?.pairId) || null,
+      gameId: clean(raw?.gameId) || null,
+      engine: clean(raw?.engine) || null,
+      unseenGame: raw?.unseenGame === true,
+      unseenProblemFingerprint: clean(raw?.unseenProblemFingerprint) || null,
+      independent: raw?.independent === true,
+      pairedControlChallenger: raw?.pairedControlChallenger === true,
+      controlFreshQaPass: raw?.controlFreshQaPass === true,
+      challengerFreshQaPass: raw?.challengerFreshQaPass === true,
+      freshIndependentQaPass: raw?.freshIndependentQaPass === true,
+      fullRegressionPass: raw?.fullRegressionPass === true,
+      nativeRuntimeRequired: raw?.nativeRuntimeRequired === true,
+      nativeRuntimePass: raw?.nativeRuntimePass === true,
+      nonTargetContextFixed: raw?.nonTargetContextFixed === true,
+      writableScopeFixed: raw?.writableScopeFixed === true,
+      modelBudgetFixed: raw?.modelBudgetFixed === true,
+      qaContractFixed: raw?.qaContractFixed === true,
+      capabilitySpecificPositiveSupport: raw?.capabilitySpecificPositiveSupport === true,
+      capabilitySpecificContradiction: raw?.capabilitySpecificContradiction === true,
+      evidence: freezeList(raw?.evidence || []),
+      observedAt: clean(raw?.observedAt) || null,
+      rawCodeStored: false,
+      rawModelOutputStored: false,
+      hiddenChainOfThoughtStored: false,
+      authorityExpanded: false
+    }));
+  }
+  return rows.slice(-64);
+}
+
+function normalizeCapabilityPortfolio(value = {}) {
+  const state = clean(value?.state).toUpperCase();
+  const normalizedState = ['DEPRECATED', 'SUPERSEDED'].includes(state) ? state : 'ACTIVE';
+  return freeze({
+    version: 1,
+    state: normalizedState,
+    decisionId: clean(value?.decisionId) || null,
+    reason: clean(value?.reason) || null,
+    reviewed: value?.reviewed === true,
+    capabilitySpecificEvidence: value?.capabilitySpecificEvidence === true,
+    supersededByCapabilityId: normalizedState === 'SUPERSEDED' ? (clean(value?.supersededByCapabilityId) || null) : null,
+    evidence: freezeList(value?.evidence || []),
+    observedAt: clean(value?.observedAt) || null,
+    authorityExpanded: false
+  });
+}
+
+function capabilityLifecycleFor(taskType = '', applications = [], benchmarks = [], portfolio = {}) {
   if (clean(taskType) !== 'coding-capability-distillation') return null;
   const rows = normalizeCapabilityApplications(applications);
+  const benchmarkRows = normalizeCapabilityBenchmarks(benchmarks);
+  const portfolioState = normalizeCapabilityPortfolio(portfolio);
   const verifiedApplications = rows.filter((row) =>
     row.independent === true
     && row.selected === true
@@ -80,16 +140,51 @@ function capabilityLifecycleFor(taskType = '', applications = []) {
   const crossGameVerifiedApplicationCount = new Set(verifiedApplications.map((row) => clean(row.gameId)).filter(Boolean)).size;
   const contradictionCount = rows.filter((row) => row.capabilitySpecificContradiction === true).length;
   const directSupportCount = rows.filter((row) => row.capabilitySpecificSupport === true).length;
-  const state = independentPassCount >= 2
-    ? 'REPEATED_APPLICATION_VERIFIED'
-    : independentPassCount >= 1
-      ? 'APPLICATION_OBSERVED'
-      : 'VERIFIED_REUSABLE';
+  const generalizationCandidate = independentPassCount >= 2 && crossGameVerifiedApplicationCount >= 2;
+
+  const qualifyingBenchmarks = benchmarkRows.filter((row) =>
+    row.unseenGame === true
+    && Boolean(row.unseenProblemFingerprint)
+    && row.independent === true
+    && row.pairedControlChallenger === true
+    && row.challengerFreshQaPass === true
+    && row.freshIndependentQaPass === true
+    && row.fullRegressionPass === true
+    && (!row.nativeRuntimeRequired || row.nativeRuntimePass === true)
+    && row.nonTargetContextFixed === true
+    && row.writableScopeFixed === true
+    && row.modelBudgetFixed === true
+    && row.qaContractFixed === true
+    && row.capabilitySpecificPositiveSupport === true
+    && row.capabilitySpecificContradiction === false
+  );
+  const benchmarkCaseKeys = new Set(qualifyingBenchmarks.map((row) =>
+    clean(row.caseId) || [clean(row.gameId), clean(row.unseenProblemFingerprint), clean(row.pairId)].join('|')
+  ).filter(Boolean));
+  const unseenBenchmarkPassCount = benchmarkCaseKeys.size;
+  const unseenBenchmarkDistinctGameCount = new Set(qualifyingBenchmarks.map((row) => clean(row.gameId)).filter(Boolean)).size;
+  const benchmarkContradictionCount = benchmarkRows.filter((row) => row.capabilitySpecificContradiction === true).length;
+  const strongGeneralizationVerified = generalizationCandidate
+    && unseenBenchmarkPassCount >= 2
+    && unseenBenchmarkDistinctGameCount >= 2
+    && benchmarkContradictionCount === 0;
+
+  let state = generalizationCandidate
+    ? 'GENERALIZATION_CANDIDATE'
+    : independentPassCount >= 2
+      ? 'REPEATED_APPLICATION_VERIFIED'
+      : independentPassCount >= 1
+        ? 'APPLICATION_OBSERVED'
+        : 'VERIFIED_REUSABLE';
+  if (strongGeneralizationVerified) state = 'GENERALIZED_VERIFIED';
+  if (portfolioState.state === 'DEPRECATED') state = 'DEPRECATED';
+  if (portfolioState.state === 'SUPERSEDED') state = 'SUPERSEDED';
+
   const confidence = independentPassCount >= 2
     ? Number((1 - (1 / (independentPassCount + 2))).toFixed(4))
     : 0.5;
   return freeze({
-    version: 1,
+    version: 2,
     state,
     applicationCount: rows.length,
     independentPassCount,
@@ -97,13 +192,19 @@ function capabilityLifecycleFor(taskType = '', applications = []) {
     directSupportCount,
     contradictionCount,
     confidence,
+    generalizationCandidate,
+    benchmarkCount: benchmarkRows.length,
+    unseenBenchmarkPassCount,
+    unseenBenchmarkDistinctGameCount,
+    benchmarkContradictionCount,
+    strongGeneralizationVerified,
+    portfolioState: portfolioState.state,
+    retrievalEligible: !['DEPRECATED', 'SUPERSEDED'].includes(portfolioState.state),
     singlePassAutomaticPromotion: false,
     singleFailureAutomaticDeprecation: false,
     unrelatedFailurePenaltyApplied: false,
     confidenceDecayApplied: false,
-    generalizationCandidate: independentPassCount >= 2 && crossGameVerifiedApplicationCount >= 2,
-    strongGeneralizationVerified: false,
-    unseenProblemBenchmarkRequired: true,
+    unseenProblemBenchmarkRequired: !strongGeneralizationVerified,
     automaticDeprecation: false,
     automaticSupersession: false,
     authorityExpanded: false
@@ -147,7 +248,9 @@ export function createVibeExperienceRecord({
   confirmations = 1,
   createdAt = '',
   lastVerifiedAt = '',
-  capabilityApplications = []
+  capabilityApplications = [],
+  capabilityBenchmarks = [],
+  capabilityPortfolio = {}
 } = {}) {
   const normalizedOutcome = ['PASS', 'FAIL', 'REVISE'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'REVISE';
   const proof = freezeList(evidence);
@@ -159,7 +262,9 @@ export function createVibeExperienceRecord({
   const confirmationCount = normalizeConfirmations(confirmations);
   const firstVerifiedAt = clean(createdAt) || null;
   const normalizedCapabilityApplications = normalizeCapabilityApplications(capabilityApplications);
-  const capabilityLifecycle = capabilityLifecycleFor(clean(taskType), normalizedCapabilityApplications);
+  const normalizedCapabilityBenchmarks = normalizeCapabilityBenchmarks(capabilityBenchmarks);
+  const normalizedCapabilityPortfolio = normalizeCapabilityPortfolio(capabilityPortfolio);
+  const capabilityLifecycle = capabilityLifecycleFor(clean(taskType), normalizedCapabilityApplications, normalizedCapabilityBenchmarks, normalizedCapabilityPortfolio);
   return freeze({
     version: 3,
     id: clean(id) || `exp_${hash(seed)}`,
@@ -183,6 +288,8 @@ export function createVibeExperienceRecord({
     confirmations: confirmationCount,
     confidence: confidenceFor(confirmationCount),
     capabilityApplications: freeze(normalizedCapabilityApplications),
+    capabilityBenchmarks: freeze(normalizedCapabilityBenchmarks),
+    capabilityPortfolio: normalizedCapabilityPortfolio,
     capabilityLifecycle,
     capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: firstVerifiedAt,
@@ -194,7 +301,11 @@ export function createVibeExperienceRecord({
 function mergeVerifiedExperience(left, right) {
   const confirmations = normalizeConfirmations((left?.confirmations || 1) + (right?.confirmations || 1));
   const capabilityApplications = normalizeCapabilityApplications([...(left?.capabilityApplications || []), ...(right?.capabilityApplications || [])]);
-  const capabilityLifecycle = capabilityLifecycleFor(clean(left?.taskType || right?.taskType), capabilityApplications);
+  const capabilityBenchmarks = normalizeCapabilityBenchmarks([...(left?.capabilityBenchmarks || []), ...(right?.capabilityBenchmarks || [])]);
+  const rightPortfolio = normalizeCapabilityPortfolio(right?.capabilityPortfolio || {});
+  const leftPortfolio = normalizeCapabilityPortfolio(left?.capabilityPortfolio || {});
+  const capabilityPortfolio = rightPortfolio.decisionId ? rightPortfolio : leftPortfolio;
+  const capabilityLifecycle = capabilityLifecycleFor(clean(left?.taskType || right?.taskType), capabilityApplications, capabilityBenchmarks, capabilityPortfolio);
   return freeze({
     ...left,
     version: 3,
@@ -206,6 +317,8 @@ function mergeVerifiedExperience(left, right) {
     confirmations,
     confidence: confidenceFor(confirmations),
     capabilityApplications: freeze(capabilityApplications),
+    capabilityBenchmarks: freeze(capabilityBenchmarks),
+    capabilityPortfolio,
     capabilityLifecycle,
     capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: clean(left?.createdAt) || clean(right?.createdAt) || null,
@@ -272,6 +385,71 @@ export function recordVibeCapabilityApplication(memory, application = {}) {
   const nextMemory = createVibeExperienceMemory(nextRecords);
   const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
   return freeze({ updated: true, duplicate: false, reason: 'capability-application-recorded', memory: nextMemory, record });
+}
+
+export function recordVibeCapabilityBenchmark(memory, benchmark = {}) {
+  const current = createVibeExperienceMemory(memory);
+  const capabilityId = clean(benchmark?.capabilityId);
+  const benchmarkId = clean(benchmark?.benchmarkId);
+  if (!capabilityId || !benchmarkId) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-and-benchmark-id-required', memory: current, record: null });
+  }
+  const target = current.records.find((item) => item.id === capabilityId && item.taskType === 'coding-capability-distillation');
+  if (!target) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-not-found', memory: current, record: null });
+  }
+  if ((target.capabilityBenchmarks || []).some((row) => row.benchmarkId === benchmarkId)) {
+    return freeze({ updated: false, duplicate: true, reason: 'capability-benchmark-duplicate', memory: current, record: target });
+  }
+  const nextRecord = createVibeExperienceRecord({
+    ...target,
+    capabilityBenchmarks: [...(target.capabilityBenchmarks || []), benchmark]
+  });
+  const nextMemory = createVibeExperienceMemory(current.records.map((item) => item.id === target.id ? nextRecord : item));
+  const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
+  return freeze({ updated: true, duplicate: false, reason: 'capability-benchmark-recorded', memory: nextMemory, record });
+}
+
+export function recordVibeCapabilityPortfolioDecision(memory, decision = {}) {
+  const current = createVibeExperienceMemory(memory);
+  const capabilityId = clean(decision?.capabilityId);
+  const decisionId = clean(decision?.decisionId);
+  const state = clean(decision?.state).toUpperCase();
+  const evidence = freezeList(decision?.evidence || []);
+  if (!capabilityId || !decisionId) {
+    return freeze({ updated: false, reason: 'capability-and-decision-id-required', memory: current, record: null });
+  }
+  if (!['DEPRECATED', 'SUPERSEDED'].includes(state)) {
+    return freeze({ updated: false, reason: 'unsupported-portfolio-state', memory: current, record: null });
+  }
+  if (decision?.reviewed !== true || decision?.capabilitySpecificEvidence !== true || evidence.length < 2) {
+    return freeze({ updated: false, reason: 'reviewed-capability-specific-evidence-required', memory: current, record: null });
+  }
+  const supersededByCapabilityId = clean(decision?.supersededByCapabilityId);
+  if (state === 'SUPERSEDED' && (!supersededByCapabilityId || supersededByCapabilityId === capabilityId)) {
+    return freeze({ updated: false, reason: 'valid-superseding-capability-required', memory: current, record: null });
+  }
+  const target = current.records.find((item) => item.id === capabilityId && item.taskType === 'coding-capability-distillation');
+  if (!target) {
+    return freeze({ updated: false, reason: 'capability-not-found', memory: current, record: null });
+  }
+  if (target.capabilityPortfolio?.decisionId === decisionId) {
+    return freeze({ updated: false, duplicate: true, reason: 'capability-portfolio-decision-duplicate', memory: current, record: target });
+  }
+  const capabilityPortfolio = normalizeCapabilityPortfolio({
+    state,
+    decisionId,
+    reason: clean(decision?.reason) || null,
+    reviewed: true,
+    capabilitySpecificEvidence: true,
+    supersededByCapabilityId,
+    evidence,
+    observedAt: clean(decision?.observedAt) || null
+  });
+  const nextRecord = createVibeExperienceRecord({ ...target, capabilityPortfolio });
+  const nextMemory = createVibeExperienceMemory(current.records.map((item) => item.id === target.id ? nextRecord : item));
+  const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
+  return freeze({ updated: true, duplicate: false, reason: 'capability-portfolio-decision-recorded', memory: nextMemory, record });
 }
 
 export function addVibeExperience(memory, recordInput = {}) {
