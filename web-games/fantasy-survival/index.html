@@ -830,7 +830,66 @@ function survivorInteract(){
  if(q.completed)showNotice('조금 더 확인해 봐야겠어')
 }
 
-function renderPanel(){if(!ui.sheet.classList.contains('open'))return;if(state.panelMode==='inventory')renderInventory();else if(state.panelMode==='map')renderMap();else if(state.panelMode==='bestiary')renderBestiary();else if(state.panelMode==='cooking')renderCooking();else if(state.panelMode==='story')renderStory();else renderCraft()}function openCraft(mode=state.craftMode){state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.classList.remove('open')}
+function renderPanel(){
+ if(!ui.sheet.classList.contains('open'))return;
+ if(state.panelMode==='inventory')renderInventory();
+ else if(state.panelMode==='map')renderMap();
+ else if(state.panelMode==='bestiary')renderBestiary();
+ else if(state.panelMode==='cooking')renderCooking();
+ else if(state.panelMode==='story')renderStory();
+ else if(state.panelMode==='gift')renderGift();
+ else renderCraft()
+}function openCraft(mode=state.craftMode){state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}
+
+function openGiftPlayer(targetId){
+ if(!multiplayer.connected){showNotice('멀티에서만 동료에게 아이템을 줄 수 있어');return}
+ const r=multiplayer.remote.get(targetId),now=performance.now();
+ if(!r||r.area!==state.area||now-(r.seenAt||0)>2000){showNotice('동료가 가까이에 없어');return}
+ state.giftTargetId=targetId;state.panelMode='gift';ui.sheet.classList.add('open');renderGift()
+}
+function giftableItems(){
+ return recipes.filter(r=>['weapon','tool','armor','consumable','ingredient'].includes(r.kind)&&invCount(r.id)>0)
+}
+function renderGift(){
+ tabState();
+ const id=state.giftTargetId,r=id?multiplayer.remote.get(id):null,now=performance.now();
+ if(!multiplayer.connected||!r||r.area!==state.area||now-(r.seenAt||0)>2500){
+  ui.sheetBody.innerHTML='<div class="info">동료가 연결되어 있지 않아.</div>';return
+ }
+ const list=giftableItems(),p=state.player;
+ let html='<div class="info"><b>동료 '+id.slice(-4)+'에게 주기</b><br>무기·방어구·도구·소모품·요리 재료를 1개씩 줄 수 있어.<br>장착 중인 장비도 줄 수 있어.</div><div class="grid">';
+ if(!list.length)html+='<div class="info">줄 수 있는 아이템이 없어.</div>';
+ for(const itemData of list){
+  let slot='';
+  if(p.weapon===itemData.id)slot=' · 무기 장착 중';
+  else if(p.armor===itemData.id)slot=' · 방어구 장착 중';
+  else if(p.tool===itemData.id)slot=' · 도구 장착 중';
+  html+='<button class="invItem" data-gift-id="'+itemData.id+'"><b>'+itemData.name+' ×'+invCount(itemData.id)+'</b><small>'+itemData.desc+'</small><small class="slot">1개 주기'+slot+'</small></button>'
+ }
+ html+='</div>';ui.sheetBody.innerHTML=html;
+ ui.sheetBody.querySelectorAll('[data-gift-id]').forEach(b=>b.addEventListener('click',()=>giveItemToPlayer(b.dataset.giftId)))
+}
+function giveItemToPlayer(itemId){
+ const targetId=state.giftTargetId,r=targetId?multiplayer.remote.get(targetId):null,now=performance.now(),itemData=item(itemId);
+ if(!multiplayer.connected||!r||r.area!==state.area||now-(r.seenAt||0)>2500){showNotice('동료가 연결되어 있지 않아');renderGift();return}
+ if(!itemData||!['weapon','tool','armor','consumable','ingredient'].includes(itemData.kind)||invCount(itemId)<1){showNotice('줄 수 없는 아이템이야');renderGift();return}
+ const p=state.player,next=invCount(itemId)-1;
+ p.inventory[itemId]=next;if(next<=0)delete p.inventory[itemId];
+ if(next<=0&&p.weapon===itemId)setWeapon(null);
+ if(next<=0&&p.armor===itemId)setArmor(null);
+ if(next<=0&&p.tool===itemId)p.tool=null;
+ multiSend('gift-item',{targetId,fromId:multiplayer.playerId,itemId,count:1});
+ state.dirty=true;updateHud();showNotice(itemData.name+' 1개를 동료에게 줬어');renderGift();saveGame(false)
+}
+function receiveGiftItem(payload){
+ if(!payload||payload.targetId!==multiplayer.playerId)return;
+ const itemId=String(payload.itemId||''),itemData=item(itemId);
+ if(!itemData||!['weapon','tool','armor','consumable','ingredient'].includes(itemData.kind))return;
+ addInv(itemId,1);updateHud();saveGame(false);
+ showNotice('동료에게 '+itemData.name+' 1개를 받았어');
+ if(state.panelMode==='inventory'&&ui.sheet.classList.contains('open'))renderInventory()
+}
+function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.classList.remove('open')}
 function gather(){
  const p=state.player;if(performance.now()<(p.stunnedUntil||0)){showNotice('기절 중');return}if(state.area!=='surface'){showNotice('지하에는 채집할 자원이 없어');return}
  let best=null,bestD=92;
@@ -1070,6 +1129,7 @@ async function connectMultiplayer(rawRoom){
   .on('broadcast',{event:'attack'},({payload})=>hostApplyRemoteAttack(payload))
   .on('broadcast',{event:'pet-attack'},({payload})=>hostApplyPetAttack(payload))
   .on('broadcast',{event:'kill-reward'},({payload})=>grantRemoteKillReward(payload))
+  .on('broadcast',{event:'gift-item'},({payload})=>receiveGiftItem(payload))
   .subscribe(async status=>{
     if(status==='SUBSCRIBED'){
       multiplayer.connected=true;ui.multiRoom.value=room;
@@ -1407,6 +1467,17 @@ function handleWorldTap(e){
   return
  }
  if(state.area!=='storylab1'&&state.area!=='storylab2'&&petAlive()&&dist(wx,wy,state.pet.x,state.pet.y)<55){doubleTapTarget('shadow-pet',now,mountPet);return}
+ if(multiplayer.connected){
+  let remoteId=null,remoteD=55;
+  for(const [id,r] of multiplayer.remote){
+   if(!r||r.area!==state.area||now-(r.seenAt||0)>2000)continue;
+   const d=dist(wx,wy,r.x,r.y);if(d<remoteD){remoteId=id;remoteD=d}
+  }
+  if(remoteId){
+   if(!doubleTapTarget('remote-player:'+remoteId,now,()=>openGiftPlayer(remoteId)))showNotice('동료를 한 번 더 눌러 아이템 주기');
+   return
+  }
+ }
  const eggSpots=multiplayer.connected?[SHADOW_WOLF_EGG,SHADOW_WOLF_EGG_2]:[SHADOW_WOLF_EGG],eggIndex=state.area==='surface'&&!state.shadowEggTaken?eggSpots.findIndex(egg=>dist(wx,wy,egg.x,egg.y)<55):-1;
  if(eggIndex>=0){
   doubleTapTarget('shadow-wolf-egg:'+eggIndex,now,()=>{if(state.shadowEggTaken)return;state.shadowEggTaken=true;addInv('shadow-wolf-egg',1);state.dirty=true;showNotice(multiplayer.connected?'그림자 늑대 알 획득 · 멀티 총 2개 · 플레이어당 1개':'그림자 늑대 알 획득');saveGame(false)});return
