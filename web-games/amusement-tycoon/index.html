@@ -427,7 +427,11 @@ function renderBuildBar(){
 renderBuildBar();
 
 function upgradeCost(level){return FOOD_UP_BASE*Math.pow(2,level||0);}
-function capacity(b){
+var hire=document.createElement("button");
+hire.type="button";
+hire.className="infoBtn";
+hire.textContent="직원 고용";
+hire.disabled=stat /no_think
   var d=BUILD_DEFS[b.type],lv=b.level||0;
   if(d.kind==="food")return d.cap+lv*4;
   if(d.kind==="ride")return d.cap+lv*2;
