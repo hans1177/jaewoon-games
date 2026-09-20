@@ -8,6 +8,7 @@ import {
   applyVerifiedCodingStrategyOutcomes,
   applyVerifiedCodingCalibration,
   applyVerifiedArchitectureDriftOutcomes,
+  applyVerifiedKnowledgeOutcomes,
   architectureDriftRiskForTask,
   architectureDriftGuidance,
   buildCodingConstitution,
@@ -750,3 +751,84 @@ test('phase 4 practice waits when no unseen catalog game exists',()=>{
   const practice=buildIdlePracticeQueue({},benchmark);
   assert.equal(practice.phase4GeneralizationDrills,0);
 });
+
+test('verified external AI distilled knowledge enters retrieval after internal verified memory and raw output is not required',()=>{
+  const experienceInput={records:[{id:'internal-1',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat mobile save',reusablePatterns:['internal-safe-pattern']}]};
+  const externalAiDistilledInput={entries:[{
+    id:'external-ai-distilled:gem-1',sourceKind:'external-ai-distilled',provider:'GEMINI',model:'gemini-test',
+    engine:'web',gameId:'cross-game',domains:['COMBAT','MOBILE_INPUT'],patterns:['trace combat input to state before patch'],cautions:['do not widen writable scope'],
+    verified:true,independentlyVerified:true,distilled:true,advisoryOnly:true,reusable:true,rawOutputStored:false,directSourceWrite:false,directProductionPass:false
+  }]};
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'g1',target:'web',goal:'combat mobile input repair'},
+    experienceInput,codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},practiceDistilledInput:{entries:[]},externalAiDistilledInput,masteryInput:{}
+  });
+  assert.equal(ctx.experience[0].id,'internal-1');
+  assert.equal(ctx.externalAiDistilled.length,1);
+  assert.equal(ctx.externalAiDistilled[0].id,'external-ai-distilled:gem-1');
+  assert.ok(ctx.exactKnowledgeIds.includes('EXPERIENCE:internal-1'));
+  assert.ok(ctx.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:external-ai-distilled:gem-1'));
+  assert.ok(ctx.priority.indexOf('EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY')>ctx.priority.indexOf('SAME_GAME_VERIFIED'));
+});
+
+test('retired distilled knowledge is excluded from retrieval',()=>{
+  const externalAiDistilledInput={entries:[{
+    id:'external-ai-distilled:retired',sourceKind:'external-ai-distilled',provider:'GEMINI',model:'m',
+    engine:'web',domains:['COMBAT'],patterns:['old pattern'],verified:true,independentlyVerified:true,distilled:true,advisoryOnly:true,reusable:true,rawOutputStored:false
+  }]};
+  const masteryInput={knowledgeAttribution:{entries:{
+    'EXTERNAL_AI_DISTILLED:external-ai-distilled:retired':{source:'EXTERNAL_AI_DISTILLED',verifiedApplications:1,verifiedFailures:5,games:{g1:6},state:'RETIRED'}
+  }}};
+  const ctx=retrieveUnifiedLearning({task:{gameId:'g1',target:'web',goal:'combat repair'},externalAiDistilledInput,masteryInput});
+  assert.equal(ctx.externalAiDistilled.length,0);
+});
+
+test('exact knowledge attribution raises production confidence only from verified project outcomes',()=>{
+  const ids=encodeURIComponent(JSON.stringify(['CODE_PATTERN:pat-1','EXTERNAL_AI_DISTILLED:ext-1']));
+  const pass=(id,gameId)=>({id,gameId,target:'web',goal:'combat mobile input repair',evidence:[
+    'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+    'learning-knowledge-ids:'+ids,'actions-run:'+id
+  ]});
+  const infraFail={id:'infra',gameId:'g1',target:'web',goal:'combat mobile input repair',evidence:[
+    'learning-knowledge-ids:'+ids,'failure-cause:source-candidate-generation-failed','actions-run:infra'
+  ]};
+  const learned=applyVerifiedKnowledgeOutcomes({}, {tasks:[pass('p1','g1'),pass('p2','g2'),infraFail]});
+  assert.equal(learned.added,2);
+  assert.equal(learned.positive,4);
+  assert.equal(learned.negative,0);
+  const pattern=learned.state.knowledgeAttribution.entries['CODE_PATTERN:pat-1'];
+  assert.equal(pattern.verifiedApplications,2);
+  assert.equal(pattern.verifiedFailures,0);
+  assert.equal(pattern.state,'VERIFIED');
+  assert.equal(learned.state.productionConfidence.domains.COMBAT.verifiedApplications,2);
+  assert.equal(learned.state.productionConfidence.domains.COMBAT.level,2);
+  assert.equal(learned.state.productionConfidence.domains.MOBILE_INPUT.level,2);
+  const deduped=applyVerifiedKnowledgeOutcomes(learned.state,{tasks:[pass('p1','g1'),pass('p2','g2')]});
+  assert.equal(deduped.added,0);
+});
+
+test('verified regression failure can demote knowledge without treating infrastructure failure as evidence',()=>{
+  const ids=encodeURIComponent(JSON.stringify(['CODE_PATTERN:risky']));
+  const fail=(id,gameId)=>({id,gameId,target:'web',goal:'save restore repair',evidence:[
+    'learning-knowledge-ids:'+ids,'failure-cause:fan-in-regression-failed','actions-run:'+id
+  ]});
+  let state={knowledgeAttribution:{entries:{
+    'CODE_PATTERN:risky':{source:'CODE_PATTERN',verifiedApplications:2,verifiedFailures:0,games:{g0:2},state:'VERIFIED'}
+  }}};
+  const learned=applyVerifiedKnowledgeOutcomes(state,{tasks:[fail('f1','g1'),fail('f2','g2'),fail('f3','g3')]});
+  const row=learned.state.knowledgeAttribution.entries['CODE_PATTERN:risky'];
+  assert.equal(row.verifiedFailures,3);
+  assert.equal(row.state,'DEMOTED');
+});
+
+test('verified-only strategy memory opens candidate tournament to gather preferred evidence without lowering thresholds',()=>{
+  const state=createMasteryState({codingStrategyMemory:{strategies:{
+    RESPONSIBILITY_FIRST:{verifiedApplications:3,firstCandidatePasses:3,verifiedFailures:0,games:{g1:3},targets:{web:3},state:'VERIFIED'}
+  }}});
+  const policy=candidateTournamentPolicy({task:{type:'implementation',goal:'ordinary web repair',target:'web'},masteryInput:state});
+  assert.equal(policy.candidateCount,3);
+  assert.equal(policy.reason,'strategy-promotion-evidence-gap');
+  assert.equal(state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'VERIFIED');
+  assert.equal(policy.gateBypass,false);
+});
+
