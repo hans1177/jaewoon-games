@@ -988,12 +988,12 @@
       "webValidationEvidencePath": null
     }
   ],
-  "updatedAt": "2026-09-20T05:11:01.734Z",
+  "updatedAt": "2026-09-20T05:22:57.613Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
   "executionContract": "CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT",
-  "webValidationPolicy": "WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM",
+  "webValidationPolicy": "REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM",
   "webValidationContractVersion": 4,
   "webGateRequired": true,
   "webValidationParallelism": 20,
