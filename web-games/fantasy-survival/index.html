@@ -2078,7 +2078,7 @@ function crocodileMonsterTarget(e){
 function setBossBanner(text=''){ui.bossBanner.textContent=text;ui.bossBanner.classList.toggle('on',!!text)}
 function updateBoss(e,p,now){
  if(now<(e.stunnedUntil||0)){setBossBanner('녹스바르 · 속박됨');return{vx:0,vy:0}}
- const s=e.bossState||(e.bossState={mode:'idle',nextAt:now+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false});
+ const s=e.bossState||(e.bossState={mode:'idle',nextAt:now+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false,chargeVx:0,chargeVy:0});
  const d=dist(e.x,e.y,p.x,p.y);
  if(s.mode==='telegraph-normal'){
    setBossBanner('일반 공격 예고 · 피할 수 있음');
@@ -2104,25 +2104,30 @@ function updateBoss(e,p,now){
    return{vx:0,vy:0}
  }
  if(s.mode==='telegraph-charge'){
-   setBossBanner('근원 돌진 준비');
-   if(now>=s.telegraphUntil){s.mode='charge';s.chargeUntil=now+1800;s.hitDone=false}
+   setBossBanner('근원 돌진 준비 · 4초');
+   if(now>=s.telegraphUntil){
+     const dx=p.x-e.x,dy=p.y-e.y,chargeD=Math.hypot(dx,dy)||1;
+     s.chargeVx=dx/chargeD*e.type.speed*2.3;
+     s.chargeVy=dy/chargeD*e.type.speed*2.3;
+     s.mode='charge';s.chargeUntil=now+1800;s.hitDone=false
+   }
    return{vx:0,vy:0}
  }
  if(s.mode==='charge'){
-   setBossBanner('근원 돌진');
+   setBossBanner('근원 돌진 · 직선');
    if(!s.hitDone&&d<e.type.r+32){
      s.hitDone=true;enemyDamageTarget(e,e.type.dmg*1.5,true);applyEnemyEffectTarget(e,p,'stun',1500);
      s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('');return{vx:0,vy:0}
    }
    if(now>=s.chargeUntil){s.mode='idle';s.nextAt=now+rand(3000,4000);setBossBanner('');return{vx:0,vy:0}}
-   return{vx:(p.x-e.x)/(d||1)*e.type.speed*2.3,vy:(p.y-e.y)/(d||1)*e.type.speed*2.3}
+   return{vx:s.chargeVx||0,vy:s.chargeVy||0}
  }
  setBossBanner('');
  if(now>=s.nextAt&&d<=300){
    const roll=Math.random();
    if(roll<.25){s.mode='telegraph-triple';s.telegraphUntil=now+700;s.hitIndex=0}
    else if(roll<.50){s.mode='telegraph-root';s.telegraphUntil=now+1100}
-   else if(roll<.75){s.mode='telegraph-charge';s.telegraphUntil=now+700}
+   else if(roll<.75){s.mode='telegraph-charge';s.telegraphUntil=now+4000;s.chargeVx=0;s.chargeVy=0}
    else{s.mode='telegraph-normal';s.telegraphUntil=now+520}
    return{vx:0,vy:0}
  }
@@ -2415,7 +2420,7 @@ function update(dt,now){
       if(now<(e.slowedUntil||0)){vx*=.5;vy*=.5}
       const visualSpeed=Math.hypot(vx,vy);e.moving=visualSpeed>.5;
       const liveEnemyTarget=e.enemyTarget&&e.enemyTarget.hp>0?e.enemyTarget:null;
-      const alwaysFacesPlayer=!!(e.type.boss||e.type.labBoss);
+      const alwaysFacesPlayer=!!((e.type.boss&&e.bossState?.mode!=='charge')||e.type.labBoss);
       const playerAggro=alwaysFacesPlayer||(!liveEnemyTarget&&(e.hostile||e.type.guardian||e.type.vampireBat||e.type.caveLeader||e.type.crystalSpecial||e.provokedByPlayer)&&playerD<(e.type.detect||430));
       const lookTarget=liveEnemyTarget||(playerAggro?targetP:null);
       if(lookTarget){
