@@ -62,7 +62,7 @@ function runNodeTestsAsync(root,files){
   });
 }
 
-function buildReadinessResult(results){
+function buildReadinessResult(results,{evaluationMode='SERIAL_COMPATIBILITY_QA_ORDERED_FINAL_GATE'}={}){
   const checks={},details={};
   for(const [key,files] of Object.entries(NEURAL_EXPANSION_READINESS_CHECKS)){
     const result=results[key]||{};
@@ -80,7 +80,8 @@ function buildReadinessResult(results){
     required,
     missing,
     details,
-    evaluationMode:'PARALLEL_INDEPENDENT_QA_ORDERED_FINAL_GATE',
+    evaluationMode,
+    parallelLaneCount:evaluationMode.startsWith('PARALLEL_')?required.length:1,
     implementationOrder:['RULE_1','RULE_2','RULE_3','RULE_4_FINAL_STAGE'],
     internalNeuralStructureExpansionAllowedWhenPass:true,
     neuralExecutionAuthorityExpansionAllowed:false,
@@ -99,7 +100,7 @@ export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runN
 export async function evaluateNeuralExpansionReadinessParallel({root=process.cwd(),runner=runNodeTestsAsync}={}){
   const entries=Object.entries(NEURAL_EXPANSION_READINESS_CHECKS);
   const settled=await Promise.all(entries.map(async([key,files])=>[key,await runner(root,files)]));
-  return buildReadinessResult(Object.fromEntries(settled));
+  return buildReadinessResult(Object.fromEntries(settled),{evaluationMode:'PARALLEL_INDEPENDENT_QA_ORDERED_FINAL_GATE'});
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
