@@ -9,6 +9,7 @@ import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../asse
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
+import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -195,7 +196,7 @@ function supervisedWebBuildContract(){
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
   const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];
   const supervised=supervisedWebBuildRequired(project,goal);
-  return{
+  const plannedTask={
     id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,
     releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
@@ -204,6 +205,8 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
     supervisionContract:supervised?supervisedWebBuildContract():null,
     evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence,...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
+  plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
+  return plannedTask;
 }
 
 function transformativeTaskEligible(taskInput={}){
