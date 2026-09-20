@@ -902,6 +902,7 @@ jobs:
             baseCodingMethod?.focusedFirstEditEarlyStop===true?'coding-focused-first-edit-early-stop:YES':'',
             baseCodingMethod?.focusedFinalRetry===true?'coding-focused-final-retry:YES':'',
             baseCodingMethod?.focusedReplaceOnly===true?'coding-focused-replace-only:YES':'',
+            baseCodingMethod?.focusedReplaceStringRecovery===true?'coding-focused-replace-string-recovery:YES':'',
             baseCodingMethod?.focusedFirstAttemptFastPath===true?'coding-focused-first-attempt-fast-path:YES':'',
             baseCodingMethod?.focusedMinimalJsonContract===true?'coding-focused-minimal-json:YES':'',
             clean(baseCodingMethod?.contextMode)&&`coding-context-mode:${clean(baseCodingMethod.contextMode)}`,
