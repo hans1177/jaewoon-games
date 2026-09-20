@@ -32,8 +32,14 @@ export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={})
   if(Number(handoff.strictScore||0)<90)blockers.push('WEB_HANDOFF_STRICT_SCORE_BELOW_90');
   if(handoff.promotionRevalidationPassed!==true)blockers.push('WEB_HANDOFF_PROMOTION_REVALIDATION_REQUIRED');
   if(handoff.nativeRuntimePassTransferred!==false)blockers.push('WEB_HANDOFF_NATIVE_PASS_TRANSFER_FORBIDDEN');
+  const presentation=handoff.presentationContract||null;
+  if(presentation?.ready!==true)blockers.push('WEB_HANDOFF_PRESENTATION_READY_REQUIRED');
+  if(clean(presentation?.kind)!=='WEB_TO_NATIVE_PRESENTATION_CONTRACT')blockers.push('WEB_HANDOFF_PRESENTATION_KIND_INVALID');
+  if(!clean(presentation?.styleLock?.id))blockers.push('WEB_HANDOFF_STYLE_LOCK_REQUIRED');
+  if(presentation?.commercialReadiness?.pass!==true)blockers.push('WEB_HANDOFF_COMMERCIAL_READINESS_REQUIRED');
+  if(presentation?.webAssetBinaryCopyRequired!==false)blockers.push('WEB_HANDOFF_PLATFORM_NATIVE_ADAPTATION_REQUIRED');
   for(const field of required)if(!got.includes(clean(field)))blockers.push('WEB_HANDOFF_CARRY_FORWARD_MISSING:'+clean(field));
-  return Object.freeze({pass:blockers.length===0,blockers:Object.freeze(blockers),carryForward:Object.freeze(got)});
+  return Object.freeze({pass:blockers.length===0,blockers:Object.freeze(blockers),carryForward:Object.freeze(got),presentation:Object.freeze(presentation||{})});
 }
 
 function baselineContent(baseline={}){

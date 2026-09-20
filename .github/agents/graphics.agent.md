@@ -99,3 +99,14 @@ Web PASS는 Roblox/Unity/UEFN native build/runtime/independent QA/regression PAS
 - 선언 후에는 canonical Playwright가 실제 프레임 연속성과 살아있는 시각 변화, 액션 표현을 관측하므로 정적인 장식·임시 모형·메타데이터만으로 통과시키지 않는다.
 - 목표 60FPS는 품질 목표이며, 저사양에서는 효과 비용을 줄이되 입력·게임 의미·위험 가독성을 보존한다.
 - Web 표현 런타임이 성립하기 전에는 그래픽 완성 책임을 Roblox/Unity/UEFN 단계로 넘기지 않는다.
+
+## 장르별 UI/애니메이션 / 상업용 시각 게이트
+
+기존 `ASSET_ADAPTATION → LIVING_MOTION → ANIMATION_FEEL → VFX → AUDIO_FEEL(Web) → CAMERA_LANGUAGE → POLISH_MOBILE` 순서를 유지한다.
+
+- UI는 장르, 화면 정보 우선순위, 모바일 엄지 도달 영역, Style Lock의 아이콘/타이포/UI Motion Language를 함께 보고 게임별로 만든다. unrelated 장르 간 동일 HUD 복붙은 금지한다.
+- 몬스터/유닛 종류는 색상만이 아니라 실루엣, 이동, 공격, 피격, 사망, 전투 역할 중 하나 이상이 실제로 달라야 한다.
+- 캐릭터/몬스터 애니메이션은 체형과 무기/생태에서 출발하며 idle/move/attack/hit/death를 실제 상태와 연결한다. 핵심이면 equip/interact/use-item/skill/celebrate도 구현한다.
+- UI 피드백은 버튼 누름, 구매, 제작, 보상, 레벨업, 피해, 퀘스트 완료 등 실제 이벤트와 동기화한다.
+- 모바일에서 44px 미만 핵심 조작, HUD가 핵심 화면을 가리는 배치, 과도한 화면 흔들림/번쩍임, 읽기 어려운 텍스트는 Commercial Readiness 실패다.
+- 마지막 POLISH_MOBILE에서 아트 일관성, 애니메이션 연속성, 오디오/피드백, 모바일 성능, 접근성, 저장/업데이트 안내, 첫 플레이 가독성을 함께 확인한다.

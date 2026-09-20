@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,approvedScopeRequirement,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
-import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
+import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,summarizeCommercialReadinessEvidence,summarizePresentationRegression,buildWebPresentationHandoff,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -354,28 +354,6 @@ test('presentation runtime observation measures frame continuity and living moti
   assert.equal(evidence.pass,true);
 });
 
-test('canvas presentation observation uses runtime surface changes without renderer context sampling',()=>{
-  const frameDeltas=Array.from({length:29},()=>16.7);
-  const samples=Array.from({length:7},(_,i)=>({
-    playerPresent:false,
-    playerVisual:null,
-    canvasState:[`640x360:frame-${i}`],
-    canvasRenderSurfaceCount:1,
-    environmentVisualDetailCount:0,
-    enemyVisualDetailCount:0,
-    activeAnimationCount:0,
-    playerAnimationCount:0,
-    motionState:'attack',
-    vfxActiveCount:1,
-    cameraResponse:'follow'
-  }));
-  const evidence=summarizePresentationRuntimeSamples({samples,frameDeltas});
-  assert.equal(evidence.canvasRuntimeObserved,true);
-  assert.equal(evidence.environmentVisualObserved,true);
-  assert.equal(evidence.entityModelDetailObserved,true);
-  assert.equal(evidence.pass,true);
-});
-
 test('presentation runtime observation rejects frozen presentation despite healthy frame timing',()=>{
   const frameDeltas=Array.from({length:29},()=>16.7);
   const sample={playerPresent:true,playerVisual:{x:10,y:20,w:20,h:30,transform:'none',opacity:'1'},canvasState:['320x180:same'],activeAnimationCount:0,playerAnimationCount:0,motionState:'',vfxActiveCount:0,cameraResponse:''};
@@ -397,22 +375,6 @@ test('final presentation marker turns runtime presentation evidence into a gate'
   assert.equal(passed.presentation.status,'PASS');
 });
 
-
-test('presentation hard gate requires actual environment and entity visual detail for world action games',()=>{
-  const base={
-    before:{presentationQualityVersion:1},after:{presentationQualityVersion:1},reloadAfter:{presentationQualityVersion:1},
-    footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},
-    runtimeFeatureEvidence:{},featureRequirements:{worldRequired:true,actionPresentationRequired:true},movementProbe:{}
-  };
-  const failed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true,environmentVisualObserved:false,entityModelDetailObserved:false}});
-  assert.equal(failed.presentation.environmentVisualPass,false);
-  assert.equal(failed.presentation.entityModelDetailPass,false);
-  assert.equal(failed.presentation.pass,false);
-  const passed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true,environmentVisualObserved:true,entityModelDetailObserved:true}});
-  assert.equal(passed.presentation.environmentVisualPass,true);
-  assert.equal(passed.presentation.entityModelDetailPass,true);
-  assert.equal(passed.presentation.pass,true);
-});
 
 test('presentation runtime marker must be exposed by the live DOM',()=>{
   const evidence=buildRuntimeValidationEvidence({
@@ -462,6 +424,53 @@ test('action presentation gate rejects model-like static combat and inconvenient
   assert.equal(failed.mobileUi.pass,false);
 });
 
+test('preplatform Web prompt requires coherent action presentation and intuitive mobile UI',()=>{
+  const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
+  assert.match(source,/data-presentation-quality-version="2"/);
+  assert.match(source,/선행동작\(anticipation\/windup\).*타격\(active\/contact\).*회수\(recovery\/follow-through\)/);
+  assert.match(source,/몬스터는 승인된 세계관.*생태.*전투 역할/);
+  assert.match(source,/모바일.*전투 버튼|전투 버튼.*모바일|모바일 UI|엄지/);
+});
+
+
+test('canvas presentation observation uses runtime surface changes without renderer context sampling',()=>{
+  const frameDeltas=Array.from({length:29},()=>16.7);
+  const samples=Array.from({length:7},(_,i)=>({
+    playerPresent:false,
+    playerVisual:null,
+    canvasState:[`640x360:frame-${i}`],
+    canvasRenderSurfaceCount:1,
+    environmentVisualDetailCount:0,
+    enemyVisualDetailCount:0,
+    activeAnimationCount:0,
+    playerAnimationCount:0,
+    motionState:'attack',
+    vfxActiveCount:1,
+    cameraResponse:'follow'
+  }));
+  const evidence=summarizePresentationRuntimeSamples({samples,frameDeltas});
+  assert.equal(evidence.canvasRuntimeObserved,true);
+  assert.equal(evidence.environmentVisualObserved,true);
+  assert.equal(evidence.entityModelDetailObserved,true);
+  assert.equal(evidence.pass,true);
+});
+
+test('presentation hard gate requires actual environment and entity visual detail for world action games',()=>{
+  const base={
+    before:{presentationQualityVersion:1},after:{presentationQualityVersion:1},reloadAfter:{presentationQualityVersion:1},
+    footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},
+    runtimeFeatureEvidence:{},featureRequirements:{worldRequired:true,actionPresentationRequired:true},movementProbe:{}
+  };
+  const failed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true,environmentVisualObserved:false,entityModelDetailObserved:false}});
+  assert.equal(failed.presentation.environmentVisualPass,false);
+  assert.equal(failed.presentation.entityModelDetailPass,false);
+  assert.equal(failed.presentation.pass,false);
+  const passed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true,environmentVisualObserved:true,entityModelDetailObserved:true}});
+  assert.equal(passed.presentation.environmentVisualPass,true);
+  assert.equal(passed.presentation.entityModelDetailPass,true);
+  assert.equal(passed.presentation.pass,true);
+});
+
 test('action presentation requires death motion when a combat action removes an enemy',()=>{
   const base={
     mechanicId:'weapon-attack',label:'공격',
@@ -487,10 +496,109 @@ test('action presentation requires death motion when a combat action removes an 
   assert.equal(passed.pass,true);
 });
 
-test('preplatform Web prompt requires coherent action presentation and intuitive mobile UI',()=>{
-  const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
-  assert.match(source,/data-presentation-quality-version="2"/);
-  assert.match(source,/선행동작\(anticipation\/windup\).*타격\(active\/contact\).*회수\(recovery\/follow-through\)/);
-  assert.match(source,/몬스터는 승인된 세계관.*생태.*전투 역할/);
-  assert.match(source,/모바일.*전투 버튼|전투 버튼.*모바일|모바일 UI|엄지/);
+test('commercial readiness gate requires style lock, genre UI, animation, accessibility, audio and performance',()=>{
+  const view={
+    commercialReadinessVersion:1,
+    styleLockId:'forest-survival-v1',
+    styleLockRevision:'r1',
+    genreUiProfile:'SURVIVAL_TOUCH',
+    uiMotionLanguage:'grounded-responsive',
+    uniqueFunctionalUiCount:5,
+    smallControlCount:0,
+    duplicateActionRatio:0.2,
+    testUiRatio:0,
+    motionStates:['idle','move','attack','hit','death'],
+    enemyTypes:['wolf','boar'],
+    enemyPresentationSignatures:['wolf:lunge-bite-fall','boar:charge-gore-collapse'],
+    colorOnlyStatusCount:0,
+    intenseMotionEffectCount:1,
+    motionSafetyControlCount:1,
+    muteControls:1,
+    volumeControls:1,
+    monetizationControlCount:1,
+    mixedMonetizationGameplayControlCount:0
+  };
+  const evidence=summarizeCommercialReadinessEvidence({
+    required:true,
+    qualityVersion:2,
+    commercialVersion:1,
+    before:view,after:view,reloadAfter:view,
+    featureRequirements:{genreKey:'SURVIVAL',genreUiMinimum:4,actionPresentationRequired:true},
+    actionEvidence:[{presentationEvent:{motionStates:['attack','hit']}}],
+    presentationRuntime:{livingMotionObserved:true,frameTiming:{pass:true}},
+    interactionCount:4,
+    stateTransitionCount:4,
+    saveRestore:{required:true,pass:true,status:'PASS'}
+  });
+  assert.equal(evidence.pass,true);
+  assert.equal(evidence.styleLock.pass,true);
+  assert.equal(evidence.genrePresentation.pass,true);
+  assert.equal(evidence.enemyDistinctiveness.pass,true);
+  assert.equal(evidence.accessibility.pass,true);
+  assert.equal(evidence.audio.pass,true);
+  assert.equal(evidence.performance.pass,true);
+});
+
+test('commercial readiness gate rejects style drift, weak mobile UI and mixed monetization controls',()=>{
+  const before={
+    commercialReadinessVersion:1,styleLockId:'style-a',styleLockRevision:'r1',genreUiProfile:'ACTION_TOUCH',uiMotionLanguage:'snappy',
+    uniqueFunctionalUiCount:3,smallControlCount:0,duplicateActionRatio:0.2,testUiRatio:0,motionStates:['idle','move'],
+    enemyTypes:['a','b'],enemyPresentationSignatures:['same-body'],colorOnlyStatusCount:0,intenseMotionEffectCount:0,motionSafetyControlCount:0,
+    muteControls:1,volumeControls:1,mixedMonetizationGameplayControlCount:0
+  };
+  const after={...before,styleLockId:'style-b',smallControlCount:2,colorOnlyStatusCount:1,mixedMonetizationGameplayControlCount:1};
+  const evidence=summarizeCommercialReadinessEvidence({
+    required:true,qualityVersion:2,commercialVersion:1,before,after,reloadAfter:after,
+    featureRequirements:{genreKey:'ACTION',genreUiMinimum:3,actionPresentationRequired:false},
+    presentationRuntime:{livingMotionObserved:true,frameTiming:{pass:true}},
+    interactionCount:4,stateTransitionCount:4,saveRestore:{required:false}
+  });
+  assert.equal(evidence.pass,false);
+  assert.equal(evidence.styleLock.pass,false);
+  assert.equal(evidence.enemyDistinctiveness.pass,false);
+  assert.equal(evidence.accessibility.pass,false);
+  assert.equal(evidence.monetization.pass,false);
+});
+
+test('presentation regression guard blocks visual quality regressions against the last passing evidence',()=>{
+  const previous={
+    pass:true,
+    designBaselineSha256:'same-design',
+    sourceFootprint:{presentationQualityVersion:2,commercialReadinessVersion:1},
+    before:{styleLockId:'style-a',styleLockRevision:'r1',genreUiProfile:'SURVIVAL_TOUCH'},
+    presentationRuntime:{livingMotionObserved:true},
+    runtimeValidationEvidence:{commercialReadiness:{enemyDistinctiveness:{pass:true},accessibility:{pass:true}}}
+  };
+  const current={
+    pass:false,
+    designBaselineSha256:'same-design',
+    sourceFootprint:{presentationQualityVersion:1,commercialReadinessVersion:1},
+    before:{styleLockId:'style-a',styleLockRevision:'r1',genreUiProfile:'GENERIC'},
+    presentationRuntime:{livingMotionObserved:false},
+    runtimeValidationEvidence:{commercialReadiness:{enemyDistinctiveness:{pass:false},accessibility:{pass:false}}}
+  };
+  const regression=summarizePresentationRegression({previous,current});
+  assert.equal(regression.required,true);
+  assert.equal(regression.pass,false);
+  assert.equal(regression.checks.presentationVersionNotDecreased,false);
+  assert.equal(regression.checks.genreUiProfileStable,false);
+  assert.equal(regression.checks.livingMotionPreserved,false);
+});
+
+test('validated Web presentation handoff carries style, UI, motion and commercial readiness without requiring asset binary copy',()=>{
+  const handoff=buildWebPresentationHandoff({
+    gameId:'demo',
+    featureRequirements:{genreKey:'SURVIVAL',genreUiMinimum:4},
+    before:{styleLockId:'demo-style',styleLockRevision:'r2',genreUiProfile:'SURVIVAL_TOUCH',uiMotionLanguage:'grounded'},
+    footprint:{commercialReadinessVersion:1},
+    runtimeValidationEvidence:{presentation:{pass:true},commercialReadiness:{pass:true,animation:{motionStates:['idle','move','attack','hit','death']},enemyDistinctiveness:{pass:true}}},
+    actionPresentationEvidence:{required:true,pass:true,phases:['windup','active','recovery'],vfxObserved:true,sfxObserved:true},
+    presentationRuntime:{motionStates:['idle','move'],cameraResponses:['impact-small']},
+    visualRegression:{required:true,pass:true,status:'PASS'}
+  });
+  assert.equal(handoff.ready,true);
+  assert.equal(handoff.styleLock.id,'demo-style');
+  assert.equal(handoff.ui.profile,'SURVIVAL_TOUCH');
+  assert.equal(handoff.webAssetBinaryCopyRequired,false);
+  assert.match(handoff.adaptationRule,/PLATFORM_NATIVE_RENDERING_ALLOWED/);
 });

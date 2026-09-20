@@ -900,7 +900,7 @@ test('presentation quality passes are queued in canonical order',()=>{
   queue={tasks:stages.map(row=>done(row.id))};
   const finalPass=findWebPresentationQualityTask(project,root,queue);
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
-  assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
+  assert.match(finalPass.goal,/data-presentation-quality-version="2"/);
   assert.equal(finalPass.estimatedRisk,'high');
   assert.equal(finalPass.speculativeEligible,true);
   assert.equal(finalPass.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
@@ -941,9 +941,9 @@ test('web art direction and presentation are mandatory before platform handoff',
   assert.ok(task.supervisionContract.stages.includes('PRESENTATION_IMPLEMENTATION'));
   assert.ok(task.supervisionContract.stages.includes('REAL_RUNTIME_VISUAL_EVIDENCE_REVIEW'));
   assert.ok(task.supervisionContract.hardReject.includes('PLACEHOLDER_MONSTER_OR_CHARACTER'));
+  assert.ok(task.supervisionContract.hardReject.includes('PRIMITIVE_ONLY_CHARACTER_OR_MONSTER'));
   assert.ok(task.supervisionContract.hardReject.includes('CONTEXT_MISMATCH_BACKGROUND'));
   assert.ok(task.supervisionContract.hardReject.includes('INCOMPLETE_ACTION_MOTION_SET'));
-  assert.ok(task.supervisionContract.hardReject.includes('PRIMITIVE_ONLY_CHARACTER_OR_MONSTER'));
   assert.ok(task.supervisionContract.hardReject.includes('MISSING_COMBAT_DEATH_MOTION'));
   assert.ok(task.supervisionContract.hardReject.includes('MARKER_ONLY_PRESENTATION_PASS'));
   assert.match(task.goal,/게임별 아트 방향과 Style Lock/);
@@ -993,4 +993,59 @@ test('web repair converts presentation blockers into concrete visual and motion 
   assert.match(task.goal,/idle\/move\/attack\/hit\/death/);
   assert.match(task.goal,/anticipation\/windup/);
   assert.match(task.goal,/impact 이벤트/);
+});
+
+
+test('presentation planner adds genre-specific UI animation and commercial readiness guidance without changing pass order',()=>{
+  const root=tempRepo();
+  const gameId='survival-commercial-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const project={
+    gameId,
+    name:'Survival Commercial',
+    genre:'survival',
+    engine:'web',
+    releaseState:'development-confirmed',
+    projectPath:`web-games/${gameId}`
+  };
+  const first=findWebPresentationQualityTask(project,root,{tasks:[]});
+  assert.equal(first.id,`${gameId}-presentation-asset-adaptation-v1`);
+  assert.ok(first.evidence.includes('quality-contract:genrePresentationQualityContract'));
+  assert.ok(first.evidence.includes('quality-contract:commercialReadinessGate'));
+  assert.ok(first.evidence.includes('presentation-canonical-order-preserved'));
+  assert.match(first.goal,/생존 장르/);
+  assert.match(first.goal,/동일 HUD를 복사하지 않는다/);
+  assert.match(first.goal,/첫 10분/);
+
+  const done=(task)=>({...task,status:'done'});
+  const second=findWebPresentationQualityTask(project,root,{tasks:[done(first)]});
+  assert.equal(second.id,`${gameId}-presentation-living-motion-v1`);
+  const third=findWebPresentationQualityTask(project,root,{tasks:[done(first),done(second)]});
+  assert.equal(third.id,`${gameId}-presentation-animation-feel-v1`);
+  assert.match(third.goal,/idle\/move\/attack\/hit\/death/);
+  assert.match(third.goal,/무기·캐릭터 체형·몬스터 공격 방식/);
+});
+
+test('final Web presentation pass requires commercial readiness marker and keeps canonical pass sequence',()=>{
+  const root=tempRepo();
+  const gameId='commercial-marker-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Commercial Marker',genre:'tycoon',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const tasks=[];
+  const expected=['asset-adaptation','living-motion','animation-feel','vfx','audio-feel','camera-language'];
+  for(const suffix of expected){
+    const next=findWebPresentationQualityTask(project,root,{tasks});
+    assert.equal(next.id,`${gameId}-presentation-${suffix}-v1`);
+    tasks.push({...next,status:'done'});
+  }
+  const finalPass=findWebPresentationQualityTask(project,root,{tasks});
+  assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
+  assert.match(finalPass.goal,/data-presentation-quality-version="2"/);
+  assert.match(finalPass.goal,/data-commercial-readiness-version="1"/);
+  assert.match(finalPass.goal,/타이쿤\/시뮬레이션/);
+  assert.match(finalPass.goal,/Commercial Readiness/);
 });
