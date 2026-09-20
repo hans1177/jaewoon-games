@@ -100,6 +100,22 @@ test('durable audit marker preserves distinct review sample identity',()=>{
   assert.equal(summary.sampleConflicts,0);
 });
 
+test('task-only audit identity is legacy and excluded from distinct readiness samples',()=>{
+  const marker='neural-shadow-wave-audit:'+encodeURIComponent(JSON.stringify({
+    version:1,
+    taskId:'task-only',
+    sampleId:'task-only',
+    actualWaveOutcome:'WAVE_RELEASE_ELIGIBLE',
+    proposedAction:'REQUEST_EVIDENCE',
+    comparisonClass:'WAVE_PROCEEDS_NEURAL_HOLDS'
+  }));
+  const summary=summarizeDurableNeuralShadowAudit([marker]);
+  assert.equal(summary.sampleCount,1);
+  assert.equal(summary.distinctSampleIds,0);
+  assert.equal(summary.identifiedSampleCount,0);
+  assert.equal(summary.legacyUnidentifiedRows,1);
+});
+
 test('conflicting durable audit rows for one sample identity stay visible',()=>{
   const base={
     version:1,
