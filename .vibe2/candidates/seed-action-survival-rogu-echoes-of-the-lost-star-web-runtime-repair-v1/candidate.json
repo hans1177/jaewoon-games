@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const joy={id:null,x:0,y:0,dx:0,dy:0};",
+      "replace": "<div id=\"choices\" class=\"choices\"></div><div id=\"level\" class=\"level\"></div><div id=\"wave\" class=\"wave\"></div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
