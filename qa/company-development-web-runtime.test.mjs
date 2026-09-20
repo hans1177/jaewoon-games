@@ -354,6 +354,28 @@ test('presentation runtime observation measures frame continuity and living moti
   assert.equal(evidence.pass,true);
 });
 
+test('canvas presentation observation uses runtime surface changes without renderer context sampling',()=>{
+  const frameDeltas=Array.from({length:29},()=>16.7);
+  const samples=Array.from({length:7},(_,i)=>({
+    playerPresent:false,
+    playerVisual:null,
+    canvasState:[`640x360:frame-${i}`],
+    canvasRenderSurfaceCount:1,
+    environmentVisualDetailCount:0,
+    enemyVisualDetailCount:0,
+    activeAnimationCount:0,
+    playerAnimationCount:0,
+    motionState:'attack',
+    vfxActiveCount:1,
+    cameraResponse:'follow'
+  }));
+  const evidence=summarizePresentationRuntimeSamples({samples,frameDeltas});
+  assert.equal(evidence.canvasRuntimeObserved,true);
+  assert.equal(evidence.environmentVisualObserved,true);
+  assert.equal(evidence.entityModelDetailObserved,true);
+  assert.equal(evidence.pass,true);
+});
+
 test('presentation runtime observation rejects frozen presentation despite healthy frame timing',()=>{
   const frameDeltas=Array.from({length:29},()=>16.7);
   const sample={playerPresent:true,playerVisual:{x:10,y:20,w:20,h:30,transform:'none',opacity:'1'},canvasState:['320x180:same'],activeAnimationCount:0,playerAnimationCount:0,motionState:'',vfxActiveCount:0,cameraResponse:''};
@@ -375,6 +397,22 @@ test('final presentation marker turns runtime presentation evidence into a gate'
   assert.equal(passed.presentation.status,'PASS');
 });
 
+
+test('presentation hard gate requires actual environment and entity visual detail for world action games',()=>{
+  const base={
+    before:{presentationQualityVersion:1},after:{presentationQualityVersion:1},reloadAfter:{presentationQualityVersion:1},
+    footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},
+    runtimeFeatureEvidence:{},featureRequirements:{worldRequired:true,actionPresentationRequired:true},movementProbe:{}
+  };
+  const failed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true,environmentVisualObserved:false,entityModelDetailObserved:false}});
+  assert.equal(failed.presentation.environmentVisualPass,false);
+  assert.equal(failed.presentation.entityModelDetailPass,false);
+  assert.equal(failed.presentation.pass,false);
+  const passed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true,environmentVisualObserved:true,entityModelDetailObserved:true}});
+  assert.equal(passed.presentation.environmentVisualPass,true);
+  assert.equal(passed.presentation.entityModelDetailPass,true);
+  assert.equal(passed.presentation.pass,true);
+});
 
 test('presentation runtime marker must be exposed by the live DOM',()=>{
   const evidence=buildRuntimeValidationEvidence({
@@ -422,6 +460,31 @@ test('action presentation gate rejects model-like static combat and inconvenient
   assert.equal(failed.vfxObserved,false);
   assert.equal(failed.sfxObserved,false);
   assert.equal(failed.mobileUi.pass,false);
+});
+
+test('action presentation requires death motion when a combat action removes an enemy',()=>{
+  const base={
+    mechanicId:'weapon-attack',label:'공격',
+    combatOutcomeSignature:JSON.stringify({enemy:-1,boss:0}),
+    presentationEvent:{
+      motionStates:['attack','hit'],
+      actionPhases:['windup','active','recovery'],
+      vfxPeak:2,audioNodeDelta:1,canvasChanged:true,audioEvents:['sword-hit']
+    }
+  };
+  const failed=summarizeActionPresentationEvidence({required:true,qualityVersion:2,actionEvidence:[base],before:{smallControlCount:0,bottomActionCount:3}});
+  assert.equal(failed.enemyRemovalObserved,true);
+  assert.equal(failed.deathMotionObserved,false);
+  assert.equal(failed.deathMotionPass,false);
+  assert.equal(failed.pass,false);
+  const passed=summarizeActionPresentationEvidence({
+    required:true,qualityVersion:2,
+    actionEvidence:[{...base,presentationEvent:{...base.presentationEvent,motionStates:['attack','hit','death']}}],
+    before:{smallControlCount:0,bottomActionCount:3}
+  });
+  assert.equal(passed.deathMotionObserved,true);
+  assert.equal(passed.deathMotionPass,true);
+  assert.equal(passed.pass,true);
 });
 
 test('preplatform Web prompt requires coherent action presentation and intuitive mobile UI',()=>{
