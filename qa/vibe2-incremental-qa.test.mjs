@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { runIncrementalQa, incrementalQaFailureSignature } from '../tools/vibe2-incremental-qa.mjs';
 
@@ -40,6 +41,38 @@ test('content change invalidates cache key',()=>{
   let two=runIncrementalQa({root,files:['a.js'],cacheFile:cache,namespace:'web:demo'});
   assert.notEqual(two.contentHash,one.contentHash);
   assert.equal(two.cached,false);
+});
+
+test('HTML inline JavaScript syntax fails closed before presentation or fan-in',()=>{
+  const root=repo();
+  const file=path.join(root,'index.html');
+  fs.writeFileSync(file,'<!doctype html><html><body><script>function loadGame(){return 1}</script><script type="application/json">{"safe":true}</script></body></html>\n','utf8');
+  const pass=runIncrementalQa({root,files:['index.html'],namespace:'web:fantasy-survival'});
+  assert.equal(pass.outcome,'PASS');
+  assert.ok(pass.checks[0].checks.includes('inline-script-syntax'));
+  fs.writeFileSync(file,'<!doctype html><html><body><script>p.loot=o.loot&&typeof o.loot==="object"?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.l /no_think)\ntry{const s=JSON.parse("{}");}catch(e){}</script></body></html>\n','utf8');
+  assert.throws(
+    ()=>runIncrementalQa({root,files:['index.html'],namespace:'web:fantasy-survival'}),
+    /SyntaxError in index\.html#script-1/
+  );
+});
+
+test('old v8 cached PASS cannot bypass the inline script syntax gate',()=>{
+  const root=repo();
+  const cache=path.join(root,'.cache','qa.json');
+  const namespace='web:fantasy-survival';
+  const relative='index.html';
+  const broken='<!doctype html><html><body><script>function loadGame(){ const x=Number(value /no_think) try{return x}catch(e){return 0} }</script></body></html>\n';
+  fs.writeFileSync(path.join(root,relative),broken,'utf8');
+  const hash=crypto.createHash('sha256');
+  for(const part of ['vibe2-incremental-qa-v8',namespace,'null','null','null','null',relative,Buffer.from(broken)])hash.update(part);
+  const oldHash=hash.digest('hex');
+  fs.mkdirSync(path.dirname(cache),{recursive:true});
+  fs.writeFileSync(cache,JSON.stringify({version:6,entries:{[oldHash]:{outcome:'PASS',checks:[]}}}), 'utf8');
+  assert.throws(
+    ()=>runIncrementalQa({root,files:[relative],cacheFile:cache,namespace}),
+    /SyntaxError in index\.html#script-1/
+  );
 });
 
 test('manifest changed files resolve inside sourceRoot and causal replay stays plan-only without verified prepatch reproduction',()=>{
