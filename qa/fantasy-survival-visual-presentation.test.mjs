@@ -59,3 +59,21 @@ test('world regions use cached contextual material patterns instead of flat colo
   assert.match(source,/fillFantasyRegionTexturePolygon\(CANYON_POLY,'wasteland'/);
   assert.match(source,/fillFantasyRegionTexturePolygon\(WORLD_TREE_POLY,'forest'/);
 });
+
+test('interactive world resources and stations use authored visual assets while keeping interaction labels',()=>{
+  assert.match(source,/function fantasyWorldObjectSvg\(kind\)/);
+  assert.match(source,/fantasyWorldObjectAsset\(kind\)/);
+  assert.match(source,/drawFantasyWorldObject\(kind,x,y,size,size\)/);
+  const node=functionBody('drawNode');
+  assert.match(node,/n\.kind==='poisonstone'/);
+  assert.match(node,/독점석/);
+  const structure=functionBody('drawStructure');
+  assert.match(structure,/drawFantasyWorldObject\(visualKind/);
+  assert.match(structure,/제작대/);
+  assert.match(structure,/화로 · 두 번 누르기/);
+  assert.match(structure,/부화기 · 두 번 누르기/);
+  assert.match(structure,/요리대 · 두 번 누르기/);
+  assert.match(structure,/독점석 제작대/);
+  assert.match(structure,/금 제작대/);
+  assert.match(structure,/깃발/);
+});
