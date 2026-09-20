@@ -57,6 +57,14 @@ export function verifySystemEvolutionCandidate({root=process.cwd(),manifest={},b
   if(!changedTests.length)errors.push('CHANGED_REGRESSION_TEST_REQUIRED');
   if(manifest?.compiledWorkContract?.invariants?.authorityMustRemainUnchanged!==true)errors.push('AUTHORITY_INVARIANT_MISSING');
   if(manifest?.compiledWorkContract?.invariants?.qualityEvidenceAndSecurityGatesMustRemainUnchanged!==true)errors.push('GATE_INVARIANT_MISSING');
+  const neuralAllowed=manifest?.developmentAuthority?.neuralExpansionAllowed===true;
+  if(neuralAllowed){
+    if(clean(manifest?.developmentAuthority?.neuralExpansionMode)!=='EVIDENCE_GATED_SELF_EXPANSION')errors.push('NEURAL_EXPANSION_MODE_INVALID');
+    if(clean(manifest?.developmentAuthority?.neuralExpansionReadiness)!=='PASS')errors.push('NEURAL_EXPANSION_READINESS_REQUIRED');
+    if(manifest?.developmentAuthority?.neuralExecutionAuthorityExpansionAllowed!==false)errors.push('NEURAL_EXECUTION_AUTHORITY_EXPANSION_FORBIDDEN');
+    if(manifest?.developmentAuthority?.authorityExpanded!==false)errors.push('NEURAL_EXPANSION_AUTHORITY_INVARIANT_REQUIRED');
+    if(manifest?.developmentAuthority?.gateWeakening!==false)errors.push('NEURAL_EXPANSION_GATE_INVARIANT_REQUIRED');
+  }
   const base=clean(baseSha||manifest.baseMainSha);
   if(base){
     try{
@@ -72,7 +80,9 @@ export function verifySystemEvolutionCandidate({root=process.cwd(),manifest={},b
   }
   return{
     version:1,pass:errors.length===0,errors,changedFiles:changed,changedTests,responsibleFiles:responsible,
-    authorityExpanded:false,gateWeakening:false,beforeAfterRegressionProofRequired:true,fullRegressionRequired:true,securityRequired:true
+    authorityExpanded:false,gateWeakening:false,neuralExpansionAllowed:neuralAllowed,
+    neuralExpansionRequiresVerifiedReadiness:neuralAllowed,
+    beforeAfterRegressionProofRequired:true,fullRegressionRequired:true,securityRequired:true
   };
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
