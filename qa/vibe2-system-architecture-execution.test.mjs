@@ -85,14 +85,18 @@ test('neural expansion readiness PASS reaches the system work order without expa
 });
 
 
-test('system candidate workflow closes the inline module heredoc at the shell indentation boundary',()=>{
+test('system candidate workflow closes the inline module heredoc at the YAML shell boundary',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const lines=workflow.split('\n');
+  const boundary=lines.findIndex(line=>line.includes('candidate_target="$(node -e'));
   const opener=lines.findIndex(line=>line.includes("node --input-type=module - \"$candidate_manifest\" <<'NODE' > /tmp/vibe2-system-candidate-files.txt"));
+  assert.notEqual(boundary,-1);
   assert.notEqual(opener,-1);
+  const shellBoundaryIndent=(lines[boundary].match(/^\s*/)||[''])[0].length;
   const openerIndent=(lines[opener].match(/^\s*/)||[''])[0].length;
   const terminator=lines.findIndex((line,index)=>index>opener&&line.trim()==='NODE');
   assert.notEqual(terminator,-1);
   const terminatorIndent=(lines[terminator].match(/^\s*/)||[''])[0].length;
-  assert.equal(terminatorIndent,openerIndent);
+  assert.ok(openerIndent>shellBoundaryIndent);
+  assert.equal(terminatorIndent,shellBoundaryIndent);
 });
