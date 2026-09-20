@@ -17,7 +17,7 @@ function applyScopes(){document.body.dataset.approvedScopeCount=String(scopes.le
 applyScopes();
 const log=(m,cls='')=>{$('.log').innerHTML=cls?`<span class="${cls}">${m}</span>`:m};
 const save=()=>localStorage.setItem(key,JSON.stringify(S));
-function clamp=(v,a,b)=>Math.max(a,Math.min(b,v))
+function buttons(items){for(let i=0;i<5;i++){const b=$('#a'+i);b.textContent=items[i]||'행동';b.disabled=S /no_think
 let audioCtx=null,master=null,osc=null,muted=false;async function ensureAudio(){try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=.03*Number($('#volume').value||.24);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='triangle';osc.frequency.value=146.8;osc.connect(master);osc.start()}if(audioCtx.state==='suspended')await audioCtx.resume();document.body.dataset.audioState=muted?'muted':'running'}catch{document.body.dataset.audioState='muted'}}
 async function ensureAudio(){try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=.03*Number($('#volume').value||.24);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='triangle';osc.frequency.value=146.8;osc.connect(master);osc.start()}if(audioCtx.state==='suspended')await audioCtx.resume();document.body.dataset.audioState=muted?'muted':'running'}catch{document.body.dataset.audioState='muted'}}
 function stat(label,val){const d=el('div','stat');d.innerHTML=`<b>${val}</b><small>${label}</small>`;return d}
