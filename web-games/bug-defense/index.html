@@ -22,6 +22,9 @@ h1{font-size:24px;margin:0;letter-spacing:-.04em}
 .controls{display:flex;gap:6px;flex-wrap:wrap}
 .smallBtn,.primaryBtn,.skillBtn,.card,.evolveBtn,.retryBtn{border:0;border-radius:12px;min-height:44px;font-weight:800}
 .smallBtn{padding:8px 11px;background:#e8f4e7;color:#102018}
+.audioTools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.volumeCtl{display:flex;align-items:center;gap:5px;font-size:10px;color:#dbe9d8;background:#081a11;border:1px solid #294b36;border-radius:10px;padding:5px 7px}
+.volumeCtl input{width:76px;accent-color:#bef264}
 .smallBtn[aria-pressed="true"]{background:#a7f3d0}
 .primaryBtn{flex:1;min-width:148px;background:linear-gradient(180deg,#d9f99d,#a3e635);color:#19310e;padding:9px 14px}
 .primaryBtn:disabled,.skillBtn:disabled,.evolveBtn:disabled{opacity:.42}
@@ -65,15 +68,18 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
 }
 </style>
 </head>
-<body>
-<main class="game" id="game">
+<body data-audio-state="locked" data-run-result="" data-placement-mode="active" data-route-id="garden-prep">
+<main class="game" id="game" data-approved-scope-count="6" data-gameplay-system-count="6" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-state="ready" data-resource="120" data-progress="0">
 <section class="topbar">
   <div class="titleRow">
     <div>
       <h1>곤충 디펜스</h1>
       <div class="subtitle">정원의 생태계 관리자 · 상성 + 서식지 적응 + 실시간 웨이브</div>
     </div>
-    <button class="smallBtn" id="muteBtn" aria-pressed="false">소리 ON</button>
+    <div class="audioTools">
+      <button class="smallBtn" id="muteBtn" data-audio-control="mute" aria-pressed="false">소리 ON</button>
+      <label class="volumeCtl" aria-label="효과음 볼륨">볼륨 <input id="volumeCtl" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.55"></label>
+    </div>
   </div>
   <div class="pills">
     <div class="pill"><b id="pollen">120</b><small>꽃가루</small></div>
@@ -82,9 +88,9 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
     <div class="pill"><b id="knowledge">0</b><small>생태 경험</small></div>
   </div>
   <div class="controls">
-    <button class="primaryBtn" id="waveBtn">웨이브 1 시작</button>
-    <button class="smallBtn" id="speedBtn">속도 ×1</button>
-    <button class="smallBtn" id="pauseBtn">일시정지</button>
+    <button class="primaryBtn" id="waveBtn" data-gameplay-action="wave-read-and-launch" data-scope-id="scope-coreloop-0-db6dafda13" data-mechanic-id="wave-threat-analysis">웨이브 1 시작</button>
+    <button class="smallBtn" id="speedBtn" data-gameplay-action="mobile-speed-control" data-touch-control="speed" data-scope-id="scope-mobileux-62b476fd93" data-mechanic-id="mobile-combat-speed">속도 ×1</button>
+    <button class="smallBtn" id="pauseBtn" data-gameplay-action="combat-pause" data-mechanic-id="combat-pause">일시정지</button>
   </div>
 </section>
 
@@ -93,20 +99,20 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
 </section>
 
 <section class="arenaWrap">
-  <canvas id="arena" width="596" height="360" aria-label="곤충 디펜스 전장"></canvas>
-  <div class="legend"><span>🍃 잎</span><span>🌿 줄기</span><span>🌼 꽃</span></div>
+  <canvas id="arena" width="596" height="360" aria-label="곤충 디펜스 전장" data-gameplay-surface="true" data-gameplay-action="predator-spatial-placement" data-placement-position="habitat-slot" data-scope-id="scope-coreloop-1-d43c3d2506" data-mechanic-id="predator-habitat-placement"></canvas>
+  <div class="legend"><span data-area="leaf">🍃 잎</span><span data-area="stem">🌿 줄기</span><span data-area="flower">🌼 꽃</span></div>
   <div class="message" id="message"></div>
 </section>
 
 <section class="panel">
   <div class="deck">
-    <button class="card" data-species="ladybug">
+    <button class="card" data-species="ladybug" data-gameplay-action="counter-select-ladybug" data-mechanic-id="counter-swarm-ladybug">
       <span class="cost">30</span><strong>🐞 무당벌레</strong><small>물리 · 군집 상성<br>잎: 공격속도 +25%</small>
     </button>
-    <button class="card" data-species="mantis">
+    <button class="card" data-species="mantis" data-gameplay-action="counter-select-mantis" data-scope-id="scope-corefun-f556b6611b" data-mechanic-id="ecological-counter-selection">
       <span class="cost">50</span><strong>🦗 사마귀</strong><small>관통 · 비행 상성<br>줄기: 사거리 +25%</small>
     </button>
-    <button class="card" data-species="lacewing">
+    <button class="card" data-species="lacewing" data-gameplay-action="counter-select-lacewing" data-mechanic-id="counter-shell-lacewing">
       <span class="cost">45</span><strong>🪽 풀잠자리</strong><small>독 · 갑각 상성/둔화<br>꽃: 독 지속 +40%</small>
     </button>
   </div>
@@ -118,10 +124,10 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
     <div class="progress"><span id="waveProgress"></span></div>
   </div>
   <div class="evolveBox">
-    <button class="evolveBtn" id="evolveBtn" disabled>선택 곤충 진화</button>
+    <button class="evolveBtn" id="evolveBtn" data-gameplay-action="predator-evolution" data-scope-id="scope-coreloop-3-683fae91c6" data-mechanic-id="pollen-evolution-progression" disabled>선택 곤충 진화</button>
     <div class="skillRow">
-      <button class="skillBtn" id="pheromoneBtn">페로몬 둔화 · 25</button>
-      <button class="skillBtn alt" id="clearBtn">선택 해제</button>
+      <button class="skillBtn" id="pheromoneBtn" data-gameplay-action="pheromone-response" data-scope-id="scope-coreloop-2-42423ea982" data-mechanic-id="live-pheromone-response">페로몬 둔화 · 25</button>
+      <button class="skillBtn alt" id="clearBtn" data-gameplay-action="placement-cancel" data-mechanic-id="placement-cancel">선택 해제</button>
     </div>
   </div>
 </section>
@@ -129,7 +135,7 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
 <section class="panel endPanel" id="endPanel">
   <h2 id="endTitle">정원을 지켰어!</h2>
   <p id="endText"></p>
-  <button class="retryBtn" id="retryBtn">다시 도전</button>
+  <button class="retryBtn" id="retryBtn" data-gameplay-action="retry-wave" data-retry="true" data-mechanic-id="wave-retry">다시 도전</button>
 </section>
 
 <div class="status" id="status">READY · 적의 속성을 보고 상성 곤충을 배치해.</div>
@@ -166,7 +172,9 @@ var ui={
   endTitle:document.getElementById('endTitle'),
   endText:document.getElementById('endText'),
   retryBtn:document.getElementById('retryBtn'),
-  muteBtn:document.getElementById('muteBtn')
+  muteBtn:document.getElementById('muteBtn'),
+  volumeCtl:document.getElementById('volumeCtl'),
+  gameRoot:document.getElementById('game')
 };
 
 var species={
@@ -198,7 +206,7 @@ var state={
   phase:'ready',wave:0,pollen:120,plantHp:100,knowledge:0,bestWave:0,
   selectedSpecies:'ladybug',selectedTower:-1,towers:[],enemies:[],shots:[],floaters:[],
   spawnQueue:[],spawnTimer:0,killed:0,totalWave:0,paused:false,speed:1,skillCd:0,
-  waveCheckpoint:null,lastTime:performance.now(),muted:false
+  waveCheckpoint:null,lastTime:performance.now(),muted:false,volume:.55,lastPlacement:null
 };
 
 var audioCtx=null;
@@ -212,10 +220,11 @@ function loadSave(){
     state.bestWave=Math.max(0,Number(s.bestWave)||0);
     state.speed=[1,1.5,2].indexOf(Number(s.speed))>=0?Number(s.speed):1;
     state.muted=!!s.muted;
+    state.volume=Math.max(0,Math.min(1,Number.isFinite(Number(s.volume))?Number(s.volume):.55));
   }catch(e){}
 }
 function saveMeta(){
-  try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:VERSION,knowledge:state.knowledge,bestWave:state.bestWave,speed:state.speed,muted:state.muted}));}catch(e){}
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:VERSION,knowledge:state.knowledge,bestWave:state.bestWave,speed:state.speed,muted:state.muted,volume:state.volume}));}catch(e){}
 }
 function ensureAudio(){
   if(state.muted)return;
@@ -225,6 +234,7 @@ function ensureAudio(){
     audioCtx=new AC();
   }
   if(audioCtx.state==='suspended')audioCtx.resume();
+  document.body.dataset.audioState=state.muted?'muted':'running';
 }
 function beep(freq,dur,vol){
   if(state.muted)return;
@@ -232,7 +242,7 @@ function beep(freq,dur,vol){
   if(!audioCtx)return;
   var o=audioCtx.createOscillator(),g=audioCtx.createGain();
   o.type='sine';o.frequency.value=freq;
-  g.gain.setValueAtTime(vol||.035,audioCtx.currentTime);
+  g.gain.setValueAtTime((vol||.035)*state.volume,audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
   o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
 }
@@ -265,6 +275,19 @@ function previewWave(){
   });
 }
 function updateUi(){
+  ui.gameRoot.dataset.state=state.phase;
+  ui.gameRoot.dataset.resource=String(Math.floor(state.pollen));
+  ui.gameRoot.dataset.progress=String(state.wave+'/'+waves.length);
+  document.body.dataset.runResult=state.phase==='won'?'victory':state.phase==='lost'?'defeat':'';
+  document.body.dataset.audioState=state.muted?'muted':(audioCtx&&audioCtx.state==='running'?'running':'locked');
+  document.body.dataset.placementMode=(state.selectedSpecies&&state.phase!=='won'&&state.phase!=='lost')?'active':'inactive';
+  document.body.dataset.routeId=state.phase==='playing'?'wave-route-'+(state.wave+1):(state.lastPlacement?'placement-'+state.lastPlacement:'garden-prep');
+  canvas.dataset.towerType=state.towers.length?state.towers[state.towers.length-1].species:'';
+  canvas.dataset.placementPosition=state.lastPlacement||'habitat-slot';
+  canvas.dataset.enemyType=state.enemies.length?state.enemies[0].type:'';
+  if(state.enemies.some(function(e){return e.boss;})){canvas.dataset.bossId='garden-boss';canvas.dataset.bossPattern=state.plantHp<55?'pressure-charge':'armored-march';}
+  else{delete canvas.dataset.bossId;delete canvas.dataset.bossPattern;}
+  ui.volumeCtl.value=String(state.volume);
   ui.pollen.textContent=Math.floor(state.pollen);
   ui.plantHp.textContent=Math.max(0,Math.ceil(state.plantHp));
   ui.waveNo.textContent=Math.min(state.wave+1,waves.length)+' / '+waves.length;
@@ -292,6 +315,7 @@ function updateUi(){
 }
 function selectSpecies(id){
   state.selectedSpecies=id;state.selectedTower=-1;
+  document.body.dataset.placementMode='active';
   document.querySelectorAll('.card').forEach(function(b){b.classList.toggle('selected',b.dataset.species===id);});
   var sp=species[id];
   ui.readout.innerHTML='<b>'+sp.icon+' '+sp.name+'</b><br>'+sp.cost+' 꽃가루 · '+sp.bonus+'<br>'+typeLabel(sp.counter)+' 적에게 강함';
@@ -330,6 +354,8 @@ function placeTower(slotIndex){
     damage:sp.damage,range:sp.range,cooldown:Math.random()*.25
   });
   state.selectedTower=state.towers.length-1;
+  state.lastPlacement='slot-'+slotIndex+'-'+slot.h;
+  document.body.dataset.routeId='placement-'+state.lastPlacement;
   msg(adapted?'서식지 적응 보너스 활성!':'배치 완료',800);
   beep(adapted?660:520,.07,.035);updateUi();
 }
@@ -508,7 +534,7 @@ function pointerPos(ev){
   return{x:(ev.clientX-rect.left)*(W/rect.width),y:(ev.clientY-rect.top)*(H/rect.height)};
 }
 function hitSlot(p){
-  var best=-1,dist=38;
+  var best=-1,dist=112;
   slots.forEach(function(s,i){var d=Math.hypot(p.x-s.x,p.y-s.y);if(d<dist){dist=d;best=i;}});
   return best;
 }
@@ -530,6 +556,7 @@ ui.speedBtn.addEventListener('click',function(){
   state.speed=state.speed===1?1.5:state.speed===1.5?2:1;saveMeta();updateUi();
 });
 ui.muteBtn.addEventListener('click',function(){state.muted=!state.muted;saveMeta();if(!state.muted)ensureAudio();updateUi();});
+ui.volumeCtl.addEventListener('input',function(){state.volume=Math.max(0,Math.min(1,Number(ui.volumeCtl.value)||0));saveMeta();if(!state.muted)ensureAudio();updateUi();});
 ui.retryBtn.addEventListener('click',retry);
 document.addEventListener('visibilitychange',function(){if(document.hidden&&state.phase==='playing'){state.paused=true;updateUi();}});
 
