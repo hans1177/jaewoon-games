@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "var cleanerMeshes=[];",
+      "replace": "function burger(fr){var baseColor=0xe69b54;g.add(box(1.6,1.1,1.5,baseColor));var fr=box(1.75,0.2,1.6,0x3b7657);fr.position.y=1.22;g.add(fr);}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
