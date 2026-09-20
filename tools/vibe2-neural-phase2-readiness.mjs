@@ -94,11 +94,15 @@ export function evaluatePhase2Readiness({
     maxRootCausePredictionContradictionRate:Math.max(0,Math.min(1,Number(thresholds.maxRootCausePredictionContradictionRate??0.3)))
   };
   const predictionCoverage=rootCause.verified>0?rootCause.predictionEvaluated/rootCause.verified:0;
+  const identifiedShadowEvents=Number(events.identifiedEventCount||0);
+  const identifiedCalibrationEligible=Number(feedback.identifiedCalibrationEligible||0);
+  const identifiedCalibrationAccuracy=feedback.identifiedObservedAccuracy;
+  const identifiedWaveAuditSamples=Number(audit.distinctSampleIds??audit.identifiedSampleCount??audit.sampleCount??0);
   const gates={
-    shadowEventVolume:events.total>=required.shadowEvents,
-    calibrationVolume:feedback.calibrationEligible>=required.calibrationEligible,
-    calibrationAccuracy:feedback.observedAccuracy!==null&&feedback.observedAccuracy>=required.calibrationAccuracy,
-    verifiedRootCauseVolume:rootCause.verified>=required.verifiedRootCause,
+    shadowEventVolume:identifiedShadowEvents>=required.shadowEvents,
+    calibrationVolume:identifiedCalibrationEligible>=required.calibrationEligible,
+    calibrationAccuracy:identifiedCalibrationAccuracy!==null&&identifiedCalibrationAccuracy!==undefined&&identifiedCalibrationAccuracy>=required.calibrationAccuracy,
+    verifiedRootCauseVolume:rootCause.verifiedSampleIdentified>=required.verifiedRootCause,
     rootCauseSampleIdentityCoverage:rootCause.verifiedSampleIdentityCoverage>=required.rootCauseSampleIdentityCoverage,
     zeroFeedbackSampleConflicts:Number(feedback.sampleConflicts||0)===0,
     zeroShadowEventConflicts:Number(events.eventConflicts||0)===0,
