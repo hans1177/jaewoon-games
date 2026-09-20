@@ -19257,6 +19257,1309 @@
             "ollamaCacheHit": true,
             "ollamaRuntimeSource": "CACHE"
           }
+        },
+        {
+          "version": 13,
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "reservationId": "35517729611:1",
+          "variant": "speculative-1",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "87922bc5827368b233d4369133d9b3786926ccfd",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "DIAGNOSTIC_POSTCONDITION",
+            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:TOUCH_ACTION_UNSPECIFIED:index.html:TOUCH_ACTION_POLICY_MISSING"
+          },
+          "evidence": [
+            "base-main:87922bc5827368b233d4369133d9b3786926ccfd",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+            "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:2",
+            "coding-primary-targets:%5B%22ensureAudio%22%2C%22advance%22%5D",
+            "coding-primary-systems:%5B%22AI%22%2C%22GOAL_STATE%22%2C%22CORE_STATE%22%2C%22INTERACTION%22%2C%22COMBAT%22%2C%22ECONOMY%22%2C%22PROGRESSION%22%2C%22PRESENTATION%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
+            "coding-semantic-system-budget:9",
+            "coding-failure-fingerprint:web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A73a2ceb29bb96077cecf%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_74d39d52bb47e6444412ec04%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1a453e3e34004eb1c376197d%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_f3072d255ad4f857aea1fc34%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_dd1edc1a11a1e7a360dfda28%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7022dd1d29e03580f9fab379%22%5D",
+            "actions-run:35517729611",
+            "reservation-id:35517729611:1",
+            "variant:speculative-1",
+            "shared-context-sync:MISSING"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": false,
+            "taskId": "bug-defense-web-runtime-repair-v1",
+            "packageId": "bug-defense-wp-1u9lhoa",
+            "target": "web",
+            "sourceRoot": "web-games/bug-defense",
+            "baseMainSha": "87922bc5827368b233d4369133d9b3786926ccfd",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "impactFiles": [
+              "index.html"
+            ],
+            "contextFiles": [
+              "index.html"
+            ],
+            "relatedFiles": [],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "PARTIAL_REPAIR",
+              "confidence": "HIGH",
+              "reasons": [
+                "WORKING_GAMEPLAY_REUSABLE",
+                "PROTOTYPE_MARKER_PRESENT_BUT_NOT_DECISIVE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 12954,
+                "sourceSha256": "98393ad40883915aae55d3a76094fbc28a755313ae3c743c1921f42fb15c1aeb",
+                "validationScore": 0,
+                "approvedDesign": true,
+                "gameplaySignalCount": 6,
+                "gameplaySignals": {
+                  "input": true,
+                  "runtimeLoop": false,
+                  "mutableState": true,
+                  "gameplayOutcome": false,
+                  "progression": true,
+                  "combat": true,
+                  "spatial": false,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": true
+                },
+                "prototypeMarkerCount": 4,
+                "approvedScopeRequiredCount": 5,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 5,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "bug-defense",
+              "sourceRoot": "web-games/bug-defense",
+              "sourcePath": "web-games/bug-defense/index.html",
+              "designBaselinePath": "design/bug-defense/2026-09-13/design-revised.json"
+            },
+            "fileDigests": [
+              {
+                "path": "index.html",
+                "hash": "98393ad40883915a",
+                "bytes": 12954
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "ensureAudio",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "advance",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "AI",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "GOAL_STATE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "CORE_STATE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "INTERACTION",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "COMBAT",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "ECONOMY",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  }
+                ],
+                "focusedChecksAdded": [
+                  "HOTSPOT_RECHECK:SYMBOL:ensureAudio",
+                  "HOTSPOT_RECHECK:SYMBOL:advance",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:INTERACTION",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:ECONOMY",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+                ],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "ensureAudio",
+                "advance"
+              ],
+              "allowedResponsibleFiles": [
+                "index.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "scopeHandler1",
+                "scopeHandler4",
+                "scopeHandler2",
+                "scopeHandler3",
+                "scopeHandler5",
+                "AI",
+                "PROGRESSION",
+                "INPUT",
+                "CORE_STATE",
+                "ECONOMY"
+              ],
+              "primarySystems": [
+                "AI",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "COMBAT",
+                "ECONOMY",
+                "PROGRESSION",
+                "PRESENTATION"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "directDependentSystems": [
+                "AI",
+                "PROGRESSION",
+                "INPUT",
+                "CORE_STATE",
+                "ECONOMY"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "ownedState": [
+                "state",
+                "audioCtx",
+                "AC",
+                "s"
+              ],
+              "readState": [
+                "cfg",
+                "state",
+                "audioCtx",
+                "AC",
+                "s"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:ensureAudio",
+                "STATE_WRITE:state",
+                "STATE_WRITE:audioCtx",
+                "STATE_WRITE:AC",
+                "RESPONSIBLE_FUNCTION:advance",
+                "STATE_WRITE:s"
+              ],
+              "requiredObservableResult": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치 미리보기/취소, 충분한 터치 영역을 제공한다.\n- 중복 handler와 test harness를 제거한다.\n\n실제 gameplay scope 결속:\nscope-corefun-f556b6611b\nscope-coreloop-0-db6dafda13\nscope-coreloop-1-d43c3d2506\nscope-coreloop-2-42423ea982\nscope-coreloop-3-683fae91c6\nscope-mobileux-62b476fd93\n\n후보 생성/QA는 자동 진행하지만 verified supervisor PASS 전에는 main/release 승격 금지. 다른 게임 작업은 계속 병렬 진행한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "AI",
+                  "GOAL_STATE",
+                  "CORE_STATE",
+                  "INTERACTION",
+                  "COMBAT",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PRESENTATION",
+                  "INPUT"
+                ],
+                "preferredPrimarySymbols": [
+                  "ensureAudio",
+                  "advance"
+                ],
+                "maxSystemCount": 9,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "AI",
+                  "PROGRESSION",
+                  "ECONOMY",
+                  "COMBAT",
+                  "WORLD"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PRESENTATION",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_INTERACTION",
+                "MICRO_ECONOMY",
+                "MICRO_PROGRESSION",
+                "MICRO_GOAL_STATE",
+                "MICRO_INPUT",
+                "HOTSPOT_RECHECK:SYMBOL:ensureAudio",
+                "HOTSPOT_RECHECK:SYMBOL:advance",
+                "HOTSPOT_RECHECK:SYSTEM:AI",
+                "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:INTERACTION",
+                "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                "HOTSPOT_RECHECK:SYSTEM:ECONOMY",
+                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": true,
+                "nodeTestTargets": [],
+                "executable": true,
+                "mode": "DIAGNOSTIC_RESCAN",
+                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+                "diagnosticType": "TOUCH_ACTION_UNSPECIFIED",
+                "diagnosticFile": "index.html",
+                "diagnosticLine": null,
+                "diagnosticNeedle": "touch-action",
+                "diagnosticMicroTask": "index.html에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.",
+                "verifiedResponsibleSystem": "GAME_INPUT",
+                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "ensureAudio",
+                  "advance"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "scopeHandler1",
+                  "scopeHandler4",
+                  "scopeHandler2",
+                  "scopeHandler3",
+                  "scopeHandler5",
+                  "AI",
+                  "PROGRESSION",
+                  "INPUT",
+                  "CORE_STATE",
+                  "ECONOMY"
+                ],
+                "ownedState": [
+                  "state",
+                  "audioCtx",
+                  "AC",
+                  "s"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PRESENTATION",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_INTERACTION",
+                  "MICRO_ECONOMY",
+                  "MICRO_PROGRESSION",
+                  "MICRO_GOAL_STATE",
+                  "MICRO_INPUT",
+                  "HOTSPOT_RECHECK:SYMBOL:ensureAudio",
+                  "HOTSPOT_RECHECK:SYMBOL:advance",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:INTERACTION",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "HOTSPOT_RECHECK:SYSTEM:ECONOMY",
+                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 7,
+                "edgeCount": 10,
+                "maxFunctionBodyBytes": 1051,
+                "maxCallsPerFunction": 2,
+                "maxCalledByPerFunction": 5,
+                "maxStateWritesPerFunction": 3,
+                "maxSystemsPerFunction": 7,
+                "multiWriterStateCount": 2,
+                "stateWriterLinkCount": 15,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 0,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 3
+              },
+              "responsibilityGraph": {
+                "nodeCount": 7,
+                "relevantNodes": [
+                  {
+                    "name": "ensureAudio",
+                    "systems": [
+                      "AI",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "scopeHandler1",
+                      "scopeHandler4",
+                      "scopeHandler2",
+                      "scopeHandler3",
+                      "scopeHandler5"
+                    ],
+                    "stateReads": [
+                      "cfg",
+                      "state",
+                      "audioCtx",
+                      "AC"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "audioCtx",
+                      "AC"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "advance",
+                    "systems": [
+                      "INTERACTION",
+                      "COMBAT",
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "scopeHandler1",
+                      "scopeHandler4",
+                      "scopeHandler2",
+                      "scopeHandler3",
+                      "scopeHandler5"
+                    ],
+                    "stateReads": [
+                      "cfg",
+                      "state",
+                      "audioCtx",
+                      "s"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "s"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler1",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler4",
+                    "systems": [
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler2",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler3",
+                    "systems": [
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler5",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "scopeHandler1",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler1",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler4",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler4",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler2",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler2",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler3",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler3",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler5",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler5",
+                    "to": "advance",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 90,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "state:ensureAudio,advance,scopeHandler1,scopeHandler4,scopeHandler2,scopeHandler3,scopeHandler5"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "button:scopeHandler1,scopeHandler4,scopeHandler2,scopeHandler3,scopeHandler5"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "FAIL",
+                "web-stage:WEB_REPAIR",
+                "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "recovery-exact-stage:WEB_REPAIR",
+                "role-result:exploration:FAIL",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "shared-context-sync:MISSING",
+                "failure-cause:source-candidate-generation-failed",
+                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+                "system-steward:failure-signature:source-candidate-generation-failed",
+                "recovery-queue:recovery-b604759a4b7b6772ff03",
+                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+                "recovery-exact-stage:UNKNOWN_STAGE",
+                "recovery-queue:recovery-7f578ec759bfde044675"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "d1f19905067dfa847bc17885",
+            "generatedAt": "2026-09-20T14:52:57.583Z"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+            "candidateVariant": "speculative-1",
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "ensureAudio",
+              "advance"
+            ],
+            "primarySystems": [
+              "AI",
+              "GOAL_STATE",
+              "CORE_STATE",
+              "INTERACTION",
+              "COMBAT",
+              "ECONOMY",
+              "PROGRESSION",
+              "PRESENTATION"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "AI",
+              "PROGRESSION",
+              "ECONOMY",
+              "COMBAT",
+              "WORLD"
+            ],
+            "ownedState": [
+              "state",
+              "audioCtx",
+              "AC",
+              "s"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "AI",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "COMBAT",
+                "ECONOMY",
+                "PROGRESSION",
+                "PRESENTATION",
+                "INPUT"
+              ],
+              "preferredPrimarySymbols": [
+                "ensureAudio",
+                "advance"
+              ],
+              "maxSystemCount": 9,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": null,
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": true,
+              "nodeTestTargets": [],
+              "executable": true,
+              "mode": "DIAGNOSTIC_RESCAN",
+              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+              "diagnosticType": "TOUCH_ACTION_UNSPECIFIED",
+              "diagnosticFile": "index.html",
+              "diagnosticLine": null,
+              "diagnosticNeedle": "touch-action",
+              "diagnosticMicroTask": "index.html에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.",
+              "verifiedResponsibleSystem": "GAME_INPUT",
+              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "generationAttempts": 0,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "WORK_ORDER_FALLBACK"
+          },
+          "presentationQuality": null,
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/bug-defense",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "web-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "recovery-exact-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-7",
+                "value": "recovery-exact-stage:UNKNOWN_STAGE",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-8",
+                "value": "supervised-web-build:required",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-9",
+                "value": "automatic-promotion:blocked-until-supervised-approval",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "current-deterministic-diagnostic-touch-action-unspecified",
+                "system": "GAME_INPUT",
+                "confidence": 0.99,
+                "reason": "현재 task의 결정론적 diagnostic TOUCH_ACTION_UNSPECIFIED(index.html)가 GAME_INPUT 책임 가설을 직접 지지함",
+                "diagnosticType": "TOUCH_ACTION_UNSPECIFIED",
+                "diagnosticFile": "index.html",
+                "verified": false,
+                "advisoryOnly": true
+              },
+              {
+                "id": "runtime-input-binding",
+                "system": "GAME_INPUT",
+                "confidence": 0.9,
+                "reason": "입력이 실제 상태 변화 또는 배치 책임 함수에 연결되지 않았을 가능성"
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "audio-runtime-binding",
+                "system": "GAME_AUDIO",
+                "confidence": 0.86,
+                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              },
+              {
+                "id": "pipeline-or-runner",
+                "system": "INFRA",
+                "confidence": 0.82,
+                "reason": "게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "current-deterministic-diagnostic-touch-action-unspecified",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.99,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "runtime-input-binding",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "save-compatibility",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 3
+              },
+              {
+                "from": "audio-runtime-binding",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 4
+              }
+            ],
+            "responsibility": {
+              "system": "GAME_INPUT",
+              "confidence": 0.99,
+              "alternatives": [
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.16885553470919326
+                },
+                {
+                  "system": "GAME_AUDIO",
+                  "confidence": 0.16135084427767354
+                },
+                {
+                  "system": "SOURCE_GENERATION",
+                  "confidence": 0.16135084427767354
+                }
+              ],
+              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 6,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 1,
+                "evidenceConfidence": 0.99
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "SUPERVISOR_PASS_REQUIRED_BUT_MISSING",
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "WEB_REPAIR",
+              "responsibleSystem": "GAME_INPUT",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "SUPERVISOR_PASS_REQUIRED_BUT_MISSING"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_74d39d52bb47e6444412ec04",
+              "capability_ctrace_1a453e3e34004eb1c376197d",
+              "capability_ctrace_f3072d255ad4f857aea1fc34",
+              "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_74d39d52bb47e6444412ec04",
+              "capability_ctrace_1a453e3e34004eb1c376197d",
+              "capability_ctrace_f3072d255ad4f857aea1fc34",
+              "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 93140,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "CODE_PATTERN:pat_130jf9c",
+              "CODE_PATTERN:pat_1avbmmv",
+              "CODE_PATTERN:pat_1vgfuno",
+              "CODE_PATTERN:pat_3f780w",
+              "CODE_PATTERN:pat_9pwgix",
+              "CODE_PATTERN:pat_m3ipio",
+              "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf",
+              "VERIFIED_CAPABILITY:capability_ctrace_74d39d52bb47e6444412ec04",
+              "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d",
+              "VERIFIED_CAPABILITY:capability_ctrace_f3072d255ad4f857aea1fc34",
+              "VERIFIED_CAPABILITY:capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "VERIFIED_CAPABILITY:capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35517729611:1",
+            "reservedAt": "2026-09-20T14:51:17Z",
+            "workerStartedAt": 1789915928666,
+            "workerFinishedAt": 1789916021806,
+            "checkoutMs": 5617,
+            "modelPrepMs": 7249,
+            "candidateMs": 43390,
+            "qaMs": 0,
+            "workerTotalMs": 93140,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
         }
       ],
       "companyContext": null,
