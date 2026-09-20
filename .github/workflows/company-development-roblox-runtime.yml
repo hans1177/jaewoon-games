@@ -888,7 +888,7 @@ jobs:
           echo 'ROBLOX_REGRESSION_PASS=NO'
           echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
-      - name: Dispatch Roblox five-lead preflight and actual Studio continuation
+      - name: Dispatch Roblox preflight continuation with Studio manual-only guard
         if: always() && github.actor == 'github-actions[bot]'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -950,6 +950,8 @@ jobs:
           echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
           echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
           echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
+          echo 'ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN'
+          echo 'ROBLOX_STUDIO_MANUAL_WORKFLOW_DISPATCH_REQUIRED=YES'
           echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
