@@ -3051,7 +3051,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "performance-sanity-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T01:18:50Z",
+      "checkpoint": "2026-09-20T01:30:27Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -3306,7 +3306,26 @@
         "candidate-sha:a3c50f39939b677afc1e92159825afdadb95eb78",
         "workload:prep-ms:9447",
         "workload:cycle-ms:177042",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35480391048%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35480391048%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-primary-35481059596-1",
+        "candidate-sha:35a43a338776799e766ae05d26eecaac7cb0f1eb",
+        "base-main:8ea860d92ae16ca489689b2d37239e495e241920",
+        "actions-run:35481059596",
+        "reservation-id:35481059596:1",
+        "workload:prep-ms:5757",
+        "workload:cycle-ms:297012",
+        "exploration-reuse:f42457646585563d07bc5435",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35481059596%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-1-35481059596-1",
+        "candidate-sha:d3496f0d255aa9cd96597705e7248d5354eac9b6",
+        "workload:prep-ms:5453",
+        "workload:cycle-ms:289144",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35481059596%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-2-35481059596-1",
+        "candidate-sha:46ca9ea6bcd0ddb25fc17fc9c96f966c1ac20b86",
+        "workload:prep-ms:5504",
+        "workload:cycle-ms:309654",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35481059596%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -3322,7 +3341,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T01:25:55.650Z"
+      "updatedAt": "2026-09-20T01:30:34.421Z"
     },
     {
       "id": "recovery-30d0f7d9f4575fe5f49d",
@@ -3815,7 +3834,16 @@
         "actions-run-35480383800",
         "recovery-escalated-from:vibe2",
         "recovery-route:VIBE2_VIBE3",
-        "recovery-queue:recovery-30d0f7d9f4575fe5f49d"
+        "recovery-queue:recovery-30d0f7d9f4575fe5f49d",
+        "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-2-35481059596-1",
+        "candidate-sha:75faeb3e1a6e60966a3534f8536856db28950e6c",
+        "base-main:8ea860d92ae16ca489689b2d37239e495e241920",
+        "coding-primary-targets:%5B%22createBuildingVisual%22%2C%22chooseTarget%22%2C%22serviceComplete%22%2C%22addTrash%22%2C%22updateGuests%22%5D",
+        "actions-run:35481059596",
+        "reservation-id:35481059596:1",
+        "workload:prep-ms:5721",
+        "workload:cycle-ms:296553",
+        "exploration-reuse:220466cb070b0e00f62ee5b0"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -3831,7 +3859,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T01:04:09.073Z",
-      "updatedAt": "2026-09-20T01:25:55.649Z"
+      "updatedAt": "2026-09-20T01:30:34.420Z"
     },
     {
       "id": "recovery-e47b9cce83eaad34ba1d",
@@ -4451,7 +4479,15 @@
         "system-steward:failure-signature:web-qa-or-promotion-failed",
         "recovery-escalated-from:vibe2",
         "recovery-route:VIBE2_VIBE3",
-        "recovery-queue:recovery-e47b9cce83eaad34ba1d"
+        "recovery-queue:recovery-e47b9cce83eaad34ba1d",
+        "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35481059596-1",
+        "candidate-sha:f6aa23f5857bcd457c55c5951df71f471fd17787",
+        "base-main:8ea860d92ae16ca489689b2d37239e495e241920",
+        "actions-run:35481059596",
+        "reservation-id:35481059596:1",
+        "workload:prep-ms:6364",
+        "workload:cycle-ms:304590",
+        "exploration-reuse:dbac951a08e64a02b7242442"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -4467,7 +4503,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T01:04:09.073Z",
-      "updatedAt": "2026-09-20T01:25:55.648Z"
+      "updatedAt": "2026-09-20T01:30:34.420Z"
     },
     {
       "id": "recovery-8aa83fdfc1e593ab4d99",
