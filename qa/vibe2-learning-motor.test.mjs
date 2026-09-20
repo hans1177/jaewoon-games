@@ -884,10 +884,12 @@ test('verified Unity and Fortnite UEFN outcomes enter the same canonical mastery
   const input={records:[
     {
       id:'unity-verified-1',gameId:'unity-game',engine:'unity',verified:true,reusable:true,outcome:'PASS',
+      engineQaVerified:true,reviewVerified:true,evidence:['unity-runtime-qa:PASS'],
       goal:'Unity runtime Rigidbody Collider Netcode authoritative multiplayer',reusablePatterns:['unity-safe-runtime']
     },
     {
       id:'uefn-verified-1',gameId:'uefn-game',engine:'fortnite_uefn',verified:true,reusable:true,outcome:'PASS',
+      engineQaVerified:true,reviewVerified:true,evidence:['uefn-runtime-qa:PASS'],
       goal:'UEFN Verse device authoritative multiplayer replication',reusablePatterns:['uefn-safe-runtime']
     }
   ]};
@@ -918,4 +920,24 @@ test('Unity and Fortnite UEFN native gaps generate practice signals without clai
   assert.ok(practice.drills.some(row=>row.kind==='UNITY_NATIVE_DRILL'));
   assert.ok(practice.drills.some(row=>row.kind==='FORTNITE_UEFN_NATIVE_DRILL'));
   assert.ok(practice.drills.every(row=>row.countsAsProductionPass===false));
+});
+
+
+test('native positive mastery does not rise from verified metadata without matching native runtime proof',()=>{
+  const input={records:[
+    {
+      id:'unity-no-runtime',gameId:'unity-game',engine:'unity',verified:true,reusable:true,outcome:'PASS',
+      goal:'Unity Rigidbody combat core loop',reusablePatterns:['generic-combat-pattern']
+    },
+    {
+      id:'uefn-no-runtime',gameId:'uefn-game',engine:'fortnite_uefn',verified:true,reusable:true,outcome:'PASS',
+      goal:'UEFN Verse multiplayer core loop',reusablePatterns:['generic-state-pattern']
+    }
+  ]};
+  const result=applyVerifiedExperienceToMastery({},input);
+  assert.equal(result.state.domains.UNITY_RUNTIME.xp,0);
+  assert.equal(result.state.domains.UNITY_PHYSICS.xp,0);
+  assert.equal(result.state.domains.UEFN_RUNTIME.xp,0);
+  assert.equal(result.state.domains.UEFN_VERSE.xp,0);
+  assert.ok(result.state.domains.CORE_LOOP.xp>0);
 });
