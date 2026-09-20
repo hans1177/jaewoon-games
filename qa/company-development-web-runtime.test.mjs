@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,approvedScopeRequirement,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
-import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
+import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,summarizeCommercialReadinessEvidence,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -389,6 +389,50 @@ test('presentation runtime marker must be exposed by the live DOM',()=>{
   assert.equal(evidence.presentation.status,'FAIL');
 });
 
+
+test('commercial readiness gate requires runtime contract, mobile/audio quality, presentation, accessibility and distinct enemies',()=>{
+  const passed=summarizeCommercialReadinessEvidence({
+    required:true,commercialVersion:1,
+    footprint:{presentationQualityVersion:2,saveContract:true},
+    before:{commercialReadinessVersion:1,smallControlCount:0,gameplayControlCount:3,muteControls:1,volumeControls:1,enemyTypes:['wolf','snake'],enemyPresentationSignatures:['48|28|30%|none|stalk','22|52|50%|none|coil'],enemyEntityCount:2,accessibilityControlCount:1},
+    after:{commercialReadinessVersion:1,scrollWidth:390,viewportWidth:390},
+    reloadAfter:{commercialReadinessVersion:1},
+    presentationRuntime:{pass:true,vfxActiveMax:1,cameraResponses:['impact']},
+    saveRestore:{pass:true},
+    validationStage:'final-content-depth',
+    contentDepthValidation:{pass:true}
+  });
+  assert.equal(passed.pass,true);
+  assert.equal(passed.enemyDistinctiveness.pass,true);
+  assert.equal(passed.accessibility.pass,true);
+
+  const failed=summarizeCommercialReadinessEvidence({
+    required:true,commercialVersion:1,
+    footprint:{presentationQualityVersion:2,saveContract:false},
+    before:{commercialReadinessVersion:1,smallControlCount:0,gameplayControlCount:3,muteControls:1,volumeControls:1,enemyTypes:['red-wolf','blue-wolf'],enemyPresentationSignatures:['48|28|30%|none|same'],enemyEntityCount:2,accessibilityControlCount:0},
+    after:{commercialReadinessVersion:1,scrollWidth:390,viewportWidth:390},
+    reloadAfter:{commercialReadinessVersion:1},
+    presentationRuntime:{pass:true,vfxActiveMax:2,cameraResponses:['shake']},
+    validationStage:'initial-cycle'
+  });
+  assert.equal(failed.pass,false);
+  assert.equal(failed.enemyDistinctiveness.pass,false);
+  assert.equal(failed.accessibility.pass,false);
+});
+
+test('runtime validation exposes commercial readiness as a canonical gate when marker is present',()=>{
+  const result=buildRuntimeValidationEvidence({
+    validationStage:'initial-cycle',
+    footprint:{presentationQualityVersion:2,commercialReadinessVersion:1,saveContract:false,economyContract:false,difficultyContract:false},
+    before:{commercialReadinessVersion:1,presentationQualityVersion:2,smallControlCount:0,gameplayControlCount:2,muteControls:1,volumeControls:1,enemyTypes:[],enemyPresentationSignatures:[],enemyEntityCount:0,accessibilityControlCount:0},
+    after:{commercialReadinessVersion:1,presentationQualityVersion:2,scrollWidth:390,viewportWidth:390},
+    reloadAfter:{commercialReadinessVersion:1,presentationQualityVersion:2},
+    runtimeFeatureEvidence:{},featureRequirements:{},movementProbe:{},
+    presentationRuntime:{pass:true,vfxActiveMax:0,cameraResponses:[],frameTiming:{pass:true},livingMotionObserved:true}
+  });
+  assert.equal(result.commercialReadiness.required,true);
+  assert.equal(result.commercialReadiness.pass,true);
+});
 
 test('action presentation gate requires attack flow, hit response, VFX, SFX and mobile-friendly controls',()=>{
   const actionEvidence=[{
