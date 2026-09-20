@@ -1,5 +1,7 @@
 // 파일명: tools/vibe2-neural-event-router.mjs
-// 역할: Phase 2 권한 부여 전, 이벤트 기반 뉴런 라우팅 결정을 shadow simulation으로 계산한다. 실제 worker 생성/우선순위 변경은 절대 하지 않는다.
+// 역할: Phase 2 권한 부여 전, 이벤트 기반 뉴런 라우팅 결정과 neural work graph를 shadow simulation으로 계산한다. 실제 worker 생성/우선순위 변경은 절대 하지 않는다.
+
+import { buildNeuralWorkGraph, neuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
 
 const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
@@ -26,7 +28,8 @@ function normalizeEvent(event={}){
     outcome:clean(event.outcome).toUpperCase()||null,
     stage:clean(event.stage).toUpperCase()||null,
     signature:clean(event.signature)||null,
-    evidence:uniq(event.evidence||[])
+    evidence:uniq(event.evidence||[]),
+    dependencies:Array.isArray(event.dependencies)?event.dependencies:[]
   };
 }
 
@@ -104,13 +107,22 @@ export function simulateNeuralEventRoute({
     &&proposedAction.kind!=='OBSERVE_ONLY'
     &&inhibitors.filter(value=>value!=='PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED').length===0;
 
+  const workGraph=buildNeuralWorkGraph({
+    event:normalizedEvent,
+    diagnosis,
+    rootCause,
+    route:{proposedAction,inhibitors,wouldFireWithoutPhase2Authority},
+    dependencies:normalizedEvent.dependencies,
+    resourceState:{policyFresh,lockConflict,securityBlocked}
+  });
   return{
-    version:1,
+    version:2,
     mode:'PHASE2_SHADOW_EVENT_ROUTER',
     event:normalizedEvent,
     proposedAction,
     inhibitors,
     wouldFireWithoutPhase2Authority,
+    workGraph,
     fireAllowed:false,
     workerCreationAllowed:false,
     queueMutationAllowed:false,
@@ -143,6 +155,7 @@ export function neuralEventRouteEvidence(route={}){
   };
   return[
     `neural-event-shadow:${encodeURIComponent(JSON.stringify(payload))}`,
-    `neural-event-shadow-action:${payload.actionKind}`
+    `neural-event-shadow-action:${payload.actionKind}`,
+    ...neuralWorkGraphEvidence(route.workGraph||{})
   ];
 }
