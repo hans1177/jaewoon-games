@@ -73,6 +73,7 @@ export function summarizeNeuralEventShadowEvidence(values=[]){
     hypotheticalFireCount,
     hypotheticalFireRate:rows.length?hypotheticalFireCount/rows.length:null,
     unauthorizedFireCount,
+    unauthorizedAuthorityCount,
     byEventType,
     byAction,
     byInhibitor,
