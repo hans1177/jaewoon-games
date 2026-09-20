@@ -62,6 +62,7 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
   const states={};
   let verified=0,systemVerified=0,predictionConsistent=0,predictionContradicted=0,sampleIdentified=0,verifiedSampleIdentified=0;
   let identifiedPredictionConsistent=0,identifiedPredictionContradicted=0;
+  let identifiedVerifiedPredictionConsistent=0,identifiedVerifiedPredictionContradicted=0;
   for(const row of rows){
     const state=clean(row.state)||'UNRESOLVED';
     const identified=Boolean(clean(row.sampleId));
@@ -74,15 +75,22 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
     if(row.responsibleSystemVerified===true)systemVerified+=1;
     if(row.predictedSystemConsistentWithVerified===true){
       predictionConsistent+=1;
-      if(identified)identifiedPredictionConsistent+=1;
+      if(identified){
+        identifiedPredictionConsistent+=1;
+        if(row.rootCauseVerified===true)identifiedVerifiedPredictionConsistent+=1;
+      }
     }
     if(row.predictedSystemConsistentWithVerified===false){
       predictionContradicted+=1;
-      if(identified)identifiedPredictionContradicted+=1;
+      if(identified){
+        identifiedPredictionContradicted+=1;
+        if(row.rootCauseVerified===true)identifiedVerifiedPredictionContradicted+=1;
+      }
     }
   }
   const predictionEvaluated=predictionConsistent+predictionContradicted;
   const identifiedPredictionEvaluated=identifiedPredictionConsistent+identifiedPredictionContradicted;
+  const identifiedVerifiedPredictionEvaluated=identifiedVerifiedPredictionConsistent+identifiedVerifiedPredictionContradicted;
   return{
     version:3,
     rawEvidenceRows:parsedRows.length,
@@ -107,6 +115,11 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
     identifiedPredictionContradicted,
     identifiedPredictionConsistencyRate:identifiedPredictionEvaluated?identifiedPredictionConsistent/identifiedPredictionEvaluated:null,
     identifiedPredictionContradictionRate:identifiedPredictionEvaluated?identifiedPredictionContradicted/identifiedPredictionEvaluated:null,
+    identifiedVerifiedPredictionEvaluated,
+    identifiedVerifiedPredictionConsistent,
+    identifiedVerifiedPredictionContradicted,
+    identifiedVerifiedPredictionConsistencyRate:identifiedVerifiedPredictionEvaluated?identifiedVerifiedPredictionConsistent/identifiedVerifiedPredictionEvaluated:null,
+    identifiedVerifiedPredictionContradictionRate:identifiedVerifiedPredictionEvaluated?identifiedVerifiedPredictionContradicted/identifiedVerifiedPredictionEvaluated:null,
     states
   };
 }
@@ -131,7 +144,7 @@ export function evaluatePhase2Readiness({
     maxRootCausePredictionContradictionRate:Math.max(0,Math.min(1,Number(thresholds.maxRootCausePredictionContradictionRate??0.3)))
   };
   const predictionCoverage=rootCause.verifiedSampleIdentified>0
-    ?rootCause.identifiedPredictionEvaluated/rootCause.verifiedSampleIdentified
+    ?rootCause.identifiedVerifiedPredictionEvaluated/rootCause.verifiedSampleIdentified
     :0;
   const identifiedShadowEvents=Number(events.identifiedEventCount||0);
   const calibrationPredictionContractVersion=Number(feedback.currentPredictionContractVersion||1);
@@ -149,8 +162,8 @@ export function evaluatePhase2Readiness({
     zeroRootCauseSampleConflicts:rootCause.sampleConflicts===0,
     zeroShadowAuditSampleConflicts:Number(audit.sampleConflicts||0)===0,
     rootCausePredictionCoverage:predictionCoverage>=required.rootCausePredictionCoverage,
-    rootCausePredictionContradictionRate:rootCause.identifiedPredictionContradictionRate!==null
-      &&rootCause.identifiedPredictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
+    rootCausePredictionContradictionRate:rootCause.identifiedVerifiedPredictionContradictionRate!==null
+      &&rootCause.identifiedVerifiedPredictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
     waveAuditVolume:identifiedWaveAuditSamples>=required.waveAuditSamples,
     zeroUnauthorizedFire:events.unauthorizedFireCount===0,
     shadowSafetyInvariant:events.safetyInvariantPass===true
