@@ -146,7 +146,7 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,4);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
-  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
   assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
@@ -306,7 +306,7 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
 });
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
-  assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("format('vibe2-neuron-ingress-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
   assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=workflow.indexOf('  model_cache:',start);
@@ -337,10 +337,10 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(workflow.includes('Dispatch atomic neuron completion'));
   assert(workflow.includes("event_type:'vibe2-neuron-complete'"));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
-  assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'));
-  assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'));
-  assert.equal(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'),false);
-  assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes('VIBE2_ATOMIC_INGRESS_RESULT=$neuron_reason'));
+  assert(workflow.includes('VIBE2_ATOMIC_INGRESS_READY=$ready'));
+  assert(workflow.includes("[ \"$neuron_reason\" = 'TASK_MICRO_FANIN_COMPLETE' ]"));
+  assert(workflow.includes("format('vibe2-neuron-ingress-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
   assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
   assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
@@ -448,7 +448,7 @@ test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
 
 test('worker never mutates shared queue state and only emits an atomic completion event',()=>{
   const start=workflow.indexOf('  worker:');
-  const end=workflow.indexOf('  fan_in:');
+  const end=workflow.indexOf('  micro_finalize:');
   assert(start>=0 && end>start);
   const workerPart=workflow.slice(start,end);
   assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
@@ -595,7 +595,7 @@ test('fan-in review persists neural shadow versus wave audit without authority',
   const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(source,/buildNeuralShadowAudit/);
   assert.match(source,/neuralShadowAudit/);
-  assert.match(source,/version:7,role:'review'/);
+  assert.match(source,/version:8,role:'review'/);
   assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
 });
 
