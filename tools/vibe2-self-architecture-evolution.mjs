@@ -129,8 +129,13 @@ function nextGeneration(queue,signature,count){
 }
 export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput={}){
   let queue=createVibeContinuousQueue(queueInput);
+  const readinessInput=controlInput?.neuralExpansionReadiness&&typeof controlInput.neuralExpansionReadiness==='object'
+    ?controlInput.neuralExpansionReadiness:null;
   const readiness=neuralExpansionReadiness(controlInput);
-  const rebound=refreshQueuedArchitectureReadiness(queue,readiness);
+  const readinessExplicit=Boolean(readinessInput&&Object.keys(readinessInput).length);
+  const rebound=readinessExplicit
+    ?refreshQueuedArchitectureReadiness(queue,readiness)
+    :{queue,refreshed:[]};
   if(rebound.refreshed.length)queue=createVibeContinuousQueue(rebound.queue);
   const signals=structuralSignals(queue),added=[];
   for(const signal of signals){
