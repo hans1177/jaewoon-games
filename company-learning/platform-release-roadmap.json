@@ -1,5 +1,5 @@
 {
-  "version": 212,
+  "version": 213,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3290,7 +3290,7 @@
       "actionableDevelopmentBottleneckRouting": "MAXIMIZE_ELIGIBLE_FREE_AI_ON_CAUSAL_UNBLOCKING_AND_GAME_DEVELOPMENT"
     },
     "securityImmuneSystem": {
-      "version": 3,
+      "version": 4,
       "policyFile": "company-learning/security-immune-system.json",
       "steward": "tools/company-security-steward.mjs",
       "incidentTool": "tools/company-security-incident.mjs",
@@ -3348,7 +3348,7 @@
         "malformedWorkflowGuard": "QA_BLOCKS_BROKEN_FAN_IN_SECURITY_LOOP"
       },
       "policyReviewSourceIdentity": {
-        "version": 1,
+        "version": 2,
         "state": "MERGED_MAIN_VERIFIED",
         "exactSourceUrlRequired": true,
         "acceptedSourceForms": [
@@ -3408,7 +3408,76 @@
           "mergeAuthorityChange": "NONE",
           "directMainAuthorityChange": "NONE"
         },
-        "nextGate": "KEEP_SECURITY_RECOVERY_LOOP_STABLE_AND_REQUIRE_EXACT_POLICY_REVIEW_PROVENANCE_FOR_AUTHORIZED_RESOLUTION"
+        "nextGate": "KEEP_SECURITY_RECOVERY_LOOP_STABLE_AND_REJECT_POLICY_REVIEW_APPROVALS_NOT_BOUND_TO_RECORDED_SECURITY_SCAN_PROVENANCE",
+        "scanProvenanceBinding": {
+          "state": "MERGED_MAIN_VERIFIED",
+          "sourcePr": 1979,
+          "mergedCommit": "774e5776343e983408374917b18e7354a432db55",
+          "implementationCommit": "b15d10d80434fb8586feb95df6fa4a5ceb484bf5",
+          "persistedIncidentFields": [
+            "securityRunId",
+            "securityArtifactId"
+          ],
+          "workflow": {
+            "file": ".github/workflows/company-security-immune.yml",
+            "uploadStepHasStableId": true,
+            "scanJobExportsArtifactId": true,
+            "recordStepPersistsRunId": true,
+            "recordStepPersistsArtifactId": true
+          },
+          "authorization": {
+            "recordedRunIdMustMatchApprovalRunId": true,
+            "recordedArtifactIdMustMatchApprovalArtifactId": true,
+            "runMismatchError": "SECURITY_POLICY_REVIEW_RUN_MISMATCH",
+            "artifactMismatchError": "SECURITY_POLICY_REVIEW_ARTIFACT_MISMATCH",
+            "exactSourceUrlRequirementPreserved": true,
+            "scanTimestampAndFindingCountRequirementPreserved": true
+          },
+          "verification": {
+            "companySecurityImmuneSystem": {
+              "state": "PASS",
+              "runId": 35497284904,
+              "artifactId": 10601037084,
+              "findings": 0
+            },
+            "vibeQa": {
+              "state": "PASS",
+              "runId": 35497284956
+            },
+            "centralPolicyContract": {
+              "state": "PASS",
+              "runId": 35497284942
+            },
+            "mainWriteGuard": {
+              "state": "PASS",
+              "runId": 35497284827
+            },
+            "integratedRegression": {
+              "state": "PASS",
+              "runId": 35497284856
+            },
+            "companyEvolutionQa": {
+              "state": "PASS",
+              "runId": 35497284859
+            },
+            "vibe3EngineContract": {
+              "state": "PASS",
+              "runId": 35497284885
+            },
+            "mergedPrProvenance": {
+              "state": "PASS",
+              "runId": 35497327102
+            }
+          },
+          "invariants": {
+            "rawSecretOrMalwareStorageChange": "NONE",
+            "recoveryQueueAuthorityChange": "NONE",
+            "workerAuthorityChange": "NONE",
+            "mergeAuthorityChange": "NONE",
+            "directMainAuthorityChange": "NONE",
+            "gameplayOrSaveDataChange": "NONE"
+          }
+        }
       }
     }
   },

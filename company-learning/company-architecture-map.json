@@ -1,5 +1,5 @@
 {
-  "version": 54,
+  "version": 55,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1653,7 +1653,7 @@
     "authorityExpansion": false
   },
   "securityRecoveryTopology": {
-    "version": 1,
+    "version": 2,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralContract": "company-learning/platform-release-roadmap.json::developmentLifecycleMachine.securityImmuneSystem",
     "securityPolicy": "company-learning/security-immune-system.json",
@@ -1669,6 +1669,18 @@
         "queryStringRejected": true,
         "issueCommentFragmentRejected": true,
         "nonNumericReviewAnchorRejected": true
+      },
+      "authorizedPolicyReviewScanProvenance": {
+        "persistedFields": [
+          "securityRunId",
+          "securityArtifactId"
+        ],
+        "actualWorkflowRunIdRecorded": true,
+        "actualUploadArtifactIdRecorded": true,
+        "approvalMustMatchRecordedRunId": true,
+        "approvalMustMatchRecordedArtifactId": true,
+        "exactSourceUrlCheckPreserved": true,
+        "scanIdentityAndFindingCountCheckPreserved": true
       }
     },
     "verifiedImplementation": {
@@ -1688,6 +1700,19 @@
       "lockOrPolicyMutationByRuntime": false,
       "directMainPromotion": false,
       "authorityChange": "NONE"
+    },
+    "provenanceHardening": {
+      "state": "MERGED_MAIN_VERIFIED",
+      "sourcePr": 1979,
+      "mergedCommit": "774e5776343e983408374917b18e7354a432db55",
+      "implementationCommit": "b15d10d80434fb8586feb95df6fa4a5ceb484bf5",
+      "workflow": ".github/workflows/company-security-immune.yml",
+      "incidentTool": "tools/company-security-incident.mjs",
+      "contractTest": "qa/company-security-steward.test.mjs",
+      "securityRunId": 35497284904,
+      "securityArtifactId": 10601037084,
+      "mergedPrProvenanceRunId": 35497327102,
+      "authorityExpansion": false
     }
   }
 }
