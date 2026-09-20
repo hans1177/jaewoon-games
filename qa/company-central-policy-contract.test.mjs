@@ -12,6 +12,7 @@ const flow=readText('COMPANY_FLOW.md');
 const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
+const architecture=readJson('company-learning/company-architecture-map.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
@@ -527,4 +528,40 @@ test('Vibe self-architecture evolution is executable and adopted only after veri
   assert.equal(e.runtimeSafetyProjectionMustRemainIdentical,true);
   assert.equal(e.automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass,true);
   assert.equal(e.directMainWriteForbidden,true);
+});
+
+
+test('planning department is the canonical combined planning growth monetization and marketing function',()=>{
+  const p=roadmap.planningGrowthMarketingDepartment;
+  assert.equal(p.canonicalRoleKey,'planning');
+  assert.equal(p.mergeMode,'EXTEND_EXISTING_PLANNING_DEPARTMENT_NO_PARALLEL_DUPLICATE_DEPARTMENT');
+  assert.equal(p.authority.vibeDecidesAcceptPartialDeferReject,true);
+  assert.equal(p.authority.autonomousFinancialTransactionAuthority,false);
+  assert.equal(p.authority.autonomousAdSpendAuthority,false);
+  assert.ok(p.researchDomains.monetizationAndRevenue.includes('PAID_ITEMS_AND_COSMETICS'));
+  assert.ok(p.researchDomains.monetizationAndRevenue.includes('IN_GAME_AD_REVENUE_WHEN_PLATFORM_SUPPORTED'));
+  assert.ok(p.researchDomains.marketingAndGrowth.includes('PAID_USER_ACQUISITION_RESEARCH'));
+  assert.ok(p.researchDomains.marketingAndGrowth.includes('PLATFORM_ADVERTISING_OPTIONS'));
+  assert.ok(p.researchDomains.marketingAndGrowth.includes('LAUNCH_TIMING_AND_UPDATE_TIMING'));
+  assert.deepEqual(p.applicationDecisionContract.allowedDecisions,['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT']);
+  assert.equal(p.applicationDecisionContract.decisionAuthority,'VIBE');
+  assert.equal(p.applicationDecisionContract.automaticAcceptanceForbidden,true);
+  assert.equal(p.timingPolicy.majorGameChangeUsesPostReleaseMajorPreparationLane,true);
+  assert.equal(p.timingPolicy.revenueBlockingBugUsesHotfixLane,true);
+  assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,true);
+  assert.equal(p.learningLoop.verifiedOutcomeReturnsToExistingVibeLearning,true);
+  assert.equal(roadmap.longHorizonVision.economicSustainability.revenueResearchOwnedBy,'planning');
+  assert.equal(roadmap.longHorizonVision.economicSustainability.marketingResearchOwnedBy,'planning');
+});
+
+test('architecture reuses planning instead of creating a duplicate marketing department',()=>{
+  const p=architecture.departmentTopology.planning;
+  assert.equal(p.canonicalRoleKey,'planning');
+  assert.equal(p.duplicateMarketingDepartmentForbidden,true);
+  assert.equal(p.vibeDecisionAuthority,true);
+  assert.equal(p.autonomousPaidSpendAuthority,false);
+  assert.ok(p.mergedResponsibilities.includes('MONETIZATION_AND_REVENUE_RESEARCH'));
+  assert.ok(p.mergedResponsibilities.includes('AD_REVENUE_AND_PAID_ACQUISITION_RESEARCH'));
+  assert.ok(architecture.executionTopology.planningGrowthMarketing.includes('APPLICATION_SCOPE_AND_TIMING_REVIEW'));
+  assert.equal(architecture.workerRoles.PLANNING_GROWTH_MARKETING,'EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING');
 });
