@@ -380,8 +380,77 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
   return { released:true, updated:true, reason:'RELEASED', queue:nextQueue };
 }
 
+function appendDependencyReadyShadowEvents(queueBeforeInput, settled, { taskId = '', outcome = 'PASS' } = {}) {
+  if(clean(outcome).toUpperCase()!=='PASS'||settled?.updated!==true)return settled;
+  const before=createVibeContinuousQueue(queueBeforeInput);
+  const after=createVibeContinuousQueue(settled.queue);
+  const sourceId=clean(taskId);
+  const sourceBefore=before.tasks.find(task=>task.id===sourceId);
+  const sourceAfter=after.tasks.find(task=>task.id===sourceId);
+  if(!sourceBefore||sourceBefore.status==='done'||sourceAfter?.status!=='done')return settled;
+  const beforeDone=new Set(before.tasks.filter(task=>task.status==='done').map(task=>task.id));
+  const afterDone=new Set(after.tasks.filter(task=>task.status==='done').map(task=>task.id));
+  const completionIdentity=clean(sourceBefore.reservationId)||clean(sourceBefore.reservationRunId)||'legacy';
+  const shadowEvents=[];
+  const tasks=after.tasks.map(task=>{
+    const dependencies=(Array.isArray(task.dependencies)?task.dependencies:[]).map(clean).filter(Boolean);
+    if(task.status!=='queued'||!dependencies.includes(sourceId))return task;
+    const wasReady=dependencies.every(id=>beforeDone.has(id));
+    const isReady=dependencies.every(id=>afterDone.has(id));
+    if(wasReady||!isReady)return task;
+    const dependencyRows=dependencies.map(id=>({
+      id,
+      required:true,
+      state:afterDone.has(id)?'DONE':'WAITING',
+      satisfied:afterDone.has(id),
+      evidence:afterDone.has(id)?['dependency-task:done']:[]
+    }));
+    const route=simulateNeuralEventRoute({
+      event:{
+        id:[task.id,sourceId,completionIdentity,'DEPENDENCY_READY'].filter(Boolean).join('|'),
+        type:'DEPENDENCY_READY',
+        taskId:task.id,
+        gameId:task.gameId,
+        outcome:'PASS',
+        stage:'DEPENDENCY_COMPLETION',
+        dependencies:dependencyRows,
+        evidence:[`dependency-completed:${sourceId}`]
+      },
+      diagnosis:null,
+      rootCause:null,
+      policyFresh:true,
+      lockConflict:false,
+      securityBlocked:false
+    });
+    const markers=[
+      `neural-dependency-ready:${sourceId}`,
+      ...neuralEventRouteEvidence(route)
+    ];
+    shadowEvents.push({
+      taskId:task.id,
+      completedDependencyId:sourceId,
+      eventId:route.event.id,
+      actionKind:route.proposedAction.kind,
+      wouldFireWithoutPhase2Authority:route.wouldFireWithoutPhase2Authority===true,
+      fireAllowed:route.fireAllowed===true
+    });
+    return{...task,evidence:[...new Set([...(task.evidence||[]),...markers])]};
+  });
+  if(!shadowEvents.length)return settled;
+  const queue=createVibeContinuousQueue({tasks,maxConcurrentTasks:after.maxConcurrentTasks});
+  const next=selectVibeQueueBatch(queue);
+  return{
+    ...settled,
+    queue,
+    next,
+    dispatchNext:next.continueRequired,
+    dependencyShadowEvents:Object.freeze(shadowEvents.map(row=>Object.freeze(row)))
+  };
+}
+
 export function settleVibeTask(queueInput, { taskId = '', outcome = 'PASS', evidence = [], blocker = '', retryable = true } = {}) {
-  return finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
+  const settled=finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
+  return appendDependencyReadyShadowEvents(queueInput,settled,{taskId,outcome});
 }
 
 function workloadEvidence(row = {}) {
