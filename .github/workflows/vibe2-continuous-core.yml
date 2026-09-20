@@ -101,6 +101,7 @@ jobs:
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
             tools/vibe2-continuous-runner.mjs \
+            tools/vibe2-asset-production-plan.mjs \
             tools/vibe2-central-work-contract.mjs \
             tools/vibe2-neural-diagnosis.mjs \
             tools/vibe2-neural-feedback.mjs \
@@ -1107,6 +1108,7 @@ jobs:
             set +e
             (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-native-asset-production.test.mjs \
             qa/vibe2-neural-diagnosis.test.mjs \
             qa/vibe2-neural-feedback.test.mjs \
             qa/vibe2-neural-critic.test.mjs \
