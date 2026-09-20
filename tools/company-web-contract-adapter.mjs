@@ -224,7 +224,7 @@ export function applyWebContractAdapterBindings({html='',inventory=[]}={}){
   let out=String(html??'');const plan=buildWebContractAdapterPlan({html:out,inventory}),applied=[];
   for(const row of plan.bindings||[]){
     if(!row.controlId||!['HIGH','MEDIUM'].includes(clean(row.confidence).toUpperCase()))continue;
-    const id=escapeRegExp(row.controlId),tagRe=new RegExp('<[a-z0-9-]+\\b[^>]*\\bid=(?:"'+id+'"|\\''+id+'\\')[^>]*>','i'),before=out;
+    const id=escapeRegExp(row.controlId),tagRe=new RegExp("<[a-z0-9-]+\\b[^>]*\\bid=(?:\\\""+id+"\\\"|'"+id+"')[^>]*>","i"),before=out;
     out=out.replace(tagRe,tag=>{let next=bindTagAttribute(tag,'data-scope-id',row.scopeId);next=bindTagAttribute(next,'data-mechanic-id',row.proposedMechanicId||row.currentMechanicId||'gameplay-action');if(!/\\sdata-gameplay-action=/i.test(next))next=bindTagAttribute(next,'data-gameplay-action',row.family.toLowerCase());if(row.requirement==='SPATIAL_WORLD')next=bindTagAttribute(next,'data-spatial-input','true');return next;});
     if(out!==before)applied.push({scopeId:row.scopeId,controlId:row.controlId,mechanicId:row.proposedMechanicId,confidence:row.confidence});
   }
