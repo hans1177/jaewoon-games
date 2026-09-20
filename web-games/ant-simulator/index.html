@@ -62,7 +62,7 @@ addEventListener('resize',resize);resize();
 function showNotice(t){$('notice').textContent=t;$('notice').classList.add('on');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove('on'),1700)}
 function seeded(n){let x=Math.sin(n*91.133+17.71)*43758.5453;return x-Math.floor(x)}
 function newId(prefix){return prefix+(entitySeq++)}
-function spawnWorld(){
+const state={started:false,faction:'red',classId:'worker',player:{x:1400,y:3300,hp:100,maxHp:100,carry:0,faceX:1,faceY:0,attackAt:0,deadUntil:0,depositAt:0},ants:[],queens:[],bugs:[],food:[],colonyFood:{red:20,blue:20,yellow:20},camera:{x:0,y:0},last:performance.now()};
  state.ants=[];state.queens=[];state.bugs=[];state.food=[];entitySeq=1;
  Object.entries(factions).forEach(([f,c])=>{
   state.queens.push({id:newId('q'),faction:f,x:c.x,y:c.y,hp:600,maxHp:600});
