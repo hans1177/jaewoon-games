@@ -90,7 +90,18 @@ function runCausalReplay({root,data={}}={}){
     const sourceDir=assertInside(root,sourceRoot);
     const report=diagnoseGame(sourceDir,{maxIssues:200});
     const stillPresent=(report.issues||[]).some(row=>clean(row?.type).toUpperCase()===type&&posix(row?.file)===file);
-    if(stillPresent)throw new Error(`CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:${type}:${file}`);
+    if(stillPresent){
+      const error=new Error(`CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:${type}:${file}`);
+      error.causalReplay={
+        status:'EXECUTED_FAIL',executed:true,prePatchReproduced:true,
+        targets:[{target:`diagnostic:${type}:${file}`,outcome:'STILL_PRESENT_AFTER_PATCH'}],
+        verifiedResponsibleSystem:null,
+        verificationMode:'DIAGNOSTIC_EXACT_TYPE_FILE_RESCAN',
+        identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,
+        canonicalQaStillRequired:true
+      };
+      throw error;
+    }
     return{
       status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,
       targets:[{target:`diagnostic:${type}:${file}`,outcome:'ABSENT_AFTER_PATCH'}],
@@ -368,11 +379,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   }catch(error){
     const signature=incrementalQaFailureSignature(error);
     const message=clean(error?.message||error).replace(/\s+/g,' ').slice(0,500);
-    const result={outcome:'FAIL',failure:{signature,message},fullRegressionStillRequired:true};
+    const causalReplay=error?.causalReplay&&typeof error.causalReplay==='object'?error.causalReplay:null;
+    const result={outcome:'FAIL',failure:{signature,message},causalReplay,fullRegressionStillRequired:true};
     if(clean(args.output))writeJson(clean(args.output),result);
     console.error('VIBE2_INCREMENTAL_QA=FAIL');
     console.error(`VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE=${signature}`);
     console.error(`VIBE2_INCREMENTAL_QA_FAILURE_MESSAGE=${message}`);
+    if(causalReplay){
+      console.error(`VIBE2_CAUSAL_REPLAY_STATUS=${causalReplay.status||'EXECUTED_FAIL'}`);
+      console.error(`VIBE2_CAUSAL_REPLAY_EXECUTED=${causalReplay.executed===true?'YES':'NO'}`);
+      console.error(`VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=${causalReplay.prePatchReproduced===true?'YES':'NO'}`);
+      console.error(`VIBE2_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM=${causalReplay.verifiedResponsibleSystem||'NONE'}`);
+    }
     process.exitCode=1;
   }
 }

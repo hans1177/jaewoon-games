@@ -244,10 +244,16 @@ test('diagnostic causal replay fails closed when the exact issue remains after p
       verifiedResponsibleSystem:'GAME_RUNTIME'
     }}}
   },null,2));
-  assert.throws(
-    ()=>runIncrementalQa({root,manifest,namespace:'web:diagnostic-still-broken'}),
-    /CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:INTERVAL_CLEANUP_RISK:index\.js/
-  );
+  let replayError=null;
+  try{runIncrementalQa({root,manifest,namespace:'web:diagnostic-still-broken'});}catch(error){replayError=error;}
+  assert.ok(replayError);
+  assert.match(replayError.message,/CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:INTERVAL_CLEANUP_RISK:index\.js/);
+  assert.equal(replayError.causalReplay.status,'EXECUTED_FAIL');
+  assert.equal(replayError.causalReplay.executed,true);
+  assert.equal(replayError.causalReplay.prePatchReproduced,true);
+  assert.equal(replayError.causalReplay.verifiedResponsibleSystem,null);
+  assert.equal(replayError.causalReplay.targets[0].outcome,'STILL_PRESENT_AFTER_PATCH');
+  assert.equal(replayError.causalReplay.canonicalQaStillRequired,true);
   assert.match(
     incrementalQaFailureSignature(new Error('CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:INTERVAL_CLEANUP_RISK:index.js')),
     /^CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT/
