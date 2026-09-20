@@ -1,46 +1,61 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
-// 역할: 정책상 무제한 병렬을 유지하면서 외부 GitHub matrix 배치 용량 안에서 텔레메트리 기반 압력 조절만 수행한다.
+// 역할: 내부 인위적 병렬 상한 없이 외부 실행 용량 안에서 텔레메트리 기반으로 Vibe가 스스로 병렬도를 조절한다.
 
-export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 128, 256]);
+export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([1, 2, 4, 8, 16, 20, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const clean = (value) => String(value ?? '').trim();
+const positiveInt = (value, fallback = 1) => {
+  const n = Math.floor(num(value));
+  return n > 0 ? n : Math.max(1, Math.floor(num(fallback)) || 1);
+};
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-function normalizeStep(value = DEFAULT_ADAPTIVE_MAX) {
-  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, DEFAULT_ADAPTIVE_MAX);
-  return ADAPTIVE_PARALLELISM_STEPS.reduce((best, step) => Math.abs(step - raw) < Math.abs(best - raw) ? step : best, DEFAULT_ADAPTIVE_MAX);
+function adaptiveSteps(maximumMax = DEFAULT_ADAPTIVE_MAX) {
+  const ceiling = positiveInt(maximumMax, DEFAULT_ADAPTIVE_MAX);
+  const steps = ADAPTIVE_PARALLELISM_STEPS.filter((step) => step <= ceiling);
+  let next = steps.length ? steps[steps.length - 1] : 1;
+  while (next < ceiling) {
+    const doubled = Math.min(ceiling, Math.max(next + 1, next * 2));
+    if (!steps.includes(doubled)) steps.push(doubled);
+    next = doubled;
+  }
+  if (!steps.includes(ceiling)) steps.push(ceiling);
+  return steps.sort((a, b) => a - b);
 }
-function stepDown(current) {
-  const index = ADAPTIVE_PARALLELISM_STEPS.indexOf(normalizeStep(current));
-  return ADAPTIVE_PARALLELISM_STEPS[Math.max(0, index - 1)];
+function stepDown(current, maximumMax = DEFAULT_ADAPTIVE_MAX) {
+  const ceiling = positiveInt(maximumMax, DEFAULT_ADAPTIVE_MAX);
+  const value = clamp(positiveInt(current, ceiling), 1, ceiling);
+  const lower = adaptiveSteps(ceiling).filter((step) => step < value);
+  return lower.length ? lower[lower.length - 1] : 1;
 }
-function stepUp(current) {
-  const index = ADAPTIVE_PARALLELISM_STEPS.indexOf(normalizeStep(current));
-  return ADAPTIVE_PARALLELISM_STEPS[Math.min(ADAPTIVE_PARALLELISM_STEPS.length - 1, index + 1)];
+function stepUp(current, maximumMax = DEFAULT_ADAPTIVE_MAX) {
+  const ceiling = positiveInt(maximumMax, DEFAULT_ADAPTIVE_MAX);
+  const value = clamp(positiveInt(current, ceiling), 1, ceiling);
+  return adaptiveSteps(ceiling).find((step) => step > value) || ceiling;
 }
 
 export function createParallelismControl(input = {}) {
   return Object.freeze({
     version: 3,
-    currentMax: normalizeStep(input.currentMax),
+    currentMax: positiveInt(input.currentMax, DEFAULT_ADAPTIVE_MAX),
     healthyStreak: Math.max(0, Math.floor(num(input.healthyStreak))),
     pressureStreak: Math.max(0, Math.floor(num(input.pressureStreak))),
     lastDecision: clean(input.lastDecision) || 'INIT',
-    lastReason: clean(input.lastReason) || 'DEFAULT_EXTERNAL_BATCH_MAX',
+    lastReason: clean(input.lastReason) || 'DEFAULT_EXTERNAL_CAPACITY',
     lastRunId: clean(input.lastRunId) || null,
     lastUpdatedAt: clean(input.lastUpdatedAt) || null,
     lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null
   });
 }
 
-export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX, { minimumMax = 4 } = {}) {
+export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX, { minimumMax = 1 } = {}) {
   const control = createParallelismControl(controlInput);
-  const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, DEFAULT_ADAPTIVE_MAX);
-  const floor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
-  return Math.max(1, Math.min(requested, Math.max(control.currentMax, floor)));
+  const requested = positiveInt(requestedMax, DEFAULT_ADAPTIVE_MAX);
+  const floor = clamp(positiveInt(minimumMax, 1), 1, requested);
+  return Math.max(floor, Math.min(requested, control.currentMax));
 }
 
 function pressureLevel(telemetry = {}) {
@@ -79,18 +94,25 @@ function isHealthy(telemetry = {}) {
     && num(telemetry.checkout?.p95Ms) < 15000;
 }
 
-export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = 4 } = {}) {
+export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, {
+  now = new Date().toISOString(),
+  telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS,
+  minimumMax = 1,
+  maximumMax = DEFAULT_ADAPTIVE_MAX
+} = {}) {
+  const ceiling = positiveInt(maximumMax, DEFAULT_ADAPTIVE_MAX);
+  const configuredFloor = clamp(positiveInt(minimumMax, 1), 1, ceiling);
   let control = createParallelismControl(controlInput);
   const nowMs = Date.parse(now);
   const previousAt = Date.parse(clean(control.lastUpdatedAt));
   const stale = Number.isFinite(nowMs) && Number.isFinite(previousAt) && nowMs - previousAt > Math.max(60_000, Number(telemetryTtlMs) || DEFAULT_TELEMETRY_TTL_MS);
-  if (stale && control.currentMax < DEFAULT_ADAPTIVE_MAX) {
+  if (stale && control.currentMax !== ceiling) {
     control = createParallelismControl({
-      currentMax: DEFAULT_ADAPTIVE_MAX,
+      currentMax: ceiling,
       healthyStreak: 0,
       pressureStreak: 0,
       lastDecision: 'RESET',
-      lastReason: 'STALE_TELEMETRY_RESET',
+      lastReason: 'STALE_TELEMETRY_RESET_TO_EXTERNAL_CAPACITY',
       lastRunId: null,
       lastUpdatedAt: now,
       lastTelemetry: null
@@ -100,15 +122,15 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   if (runId && control.lastRunId === runId) {
     return createParallelismControl({
       ...control,
+      currentMax: clamp(control.currentMax, configuredFloor, ceiling),
       lastDecision: 'HOLD',
       lastReason: 'DUPLICATE_RUN',
       lastUpdatedAt: now
     });
   }
 
-  const configuredFloor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
-  const originalCurrent = control.currentMax;
-  const current = Math.max(originalCurrent, configuredFloor);
+  const originalCurrent = clamp(control.currentMax, 1, ceiling);
+  const current = clamp(Math.max(originalCurrent, configuredFloor), configuredFloor, ceiling);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
   const effectiveMax = Math.max(1, Math.floor(num(telemetry.effectiveMax) || current));
   const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
@@ -134,7 +156,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
   } else if (strongPressure) {
-    next = stepDown(current);
+    next = stepDown(current, ceiling);
     healthyStreak = 0;
     pressureStreak = 0;
     decision = next < current ? 'DOWN' : 'HOLD';
@@ -143,7 +165,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak = 0;
     pressureStreak += 1;
     if (pressureStreak >= 2) {
-      next = stepDown(current);
+      next = stepDown(current, ceiling);
       decision = next < current ? 'DOWN' : 'HOLD';
       reason = next < current ? 'MEDIUM_PRESSURE_STREAK_2' : 'AT_MIN_PRESSURE';
       pressureStreak = 0;
@@ -154,9 +176,9 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak += 1;
     pressureStreak = 0;
     if (healthyStreak >= 1) {
-      next = stepUp(current);
+      next = stepUp(current, ceiling);
       decision = next > current ? 'UP' : 'HOLD';
-      reason = next > current ? 'HEALTHY_FAST_RAMP' : 'AT_MAX_HEALTHY';
+      reason = next > current ? 'HEALTHY_FAST_RAMP' : 'AT_EXTERNAL_CAPACITY';
       healthyStreak = next > current ? 0 : healthyStreak;
     } else {
       reason = 'HEALTHY_RAMP_PENDING';
@@ -167,14 +189,17 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     reason = 'NEUTRAL';
   }
 
-  if (next < configuredFloor) next = configuredFloor;
-  if (originalCurrent < configuredFloor && next === configuredFloor) {
-    decision = 'UP';
-    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
-  } else if (originalCurrent === configuredFloor && next === configuredFloor && strongPressure) {
-    decision = 'HOLD';
-    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
+  if (next < configuredFloor) {
+    next = configuredFloor;
+    if (originalCurrent < configuredFloor) {
+      decision = 'UP';
+      reason = `ADAPTIVE_MINIMUM_${configuredFloor}`;
+    } else if (strongPressure) {
+      decision = 'HOLD';
+      reason = `ADAPTIVE_MINIMUM_${configuredFloor}`;
+    }
   }
+  next = clamp(next, configuredFloor, ceiling);
 
   return createParallelismControl({
     ...control,
@@ -193,7 +218,8 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
       effectivePeakUtilizationPct: num(telemetry.effectivePeakUtilizationPct),
       failureRatePct: num(telemetry.failureRatePct),
       pressureLevel: level,
-      bottleneck: clean(telemetry.bottleneck) || 'NONE'
+      bottleneck: clean(telemetry.bottleneck) || 'NONE',
+      externalCapacity: ceiling
     }
   });
 }
