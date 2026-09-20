@@ -108,9 +108,9 @@ test('runtime uses one explicitly human-approved local-place Studio session and 
   assert.ok(workflow.includes('max-parallel: 1'));
   assert.ok(workflow.includes("const maxRetryableFailures=2"));
   assert.ok(workflow.includes("const retryBudgetAvailable=retryCount<maxRetryableFailures"));
-  assert.ok(workflow.includes("const securityHold=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure)"));
-  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'")||workflow.includes("const retryableStudioBusy=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
-  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'")||workflow.includes("const retryableStudioStateMigration=!securityHold&&!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
+  assert.ok(workflow.includes("const securityHold=runtimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure)"));
+  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&runtimePassed!==true&&runtimeEvidence?.failure==='roblox-studio-busy'"));
+  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&runtimePassed!==true&&runtimeEvidence?.failure==='roblox-studio-busy'"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('Resolve authenticated local Roblox Studio'));
@@ -132,9 +132,9 @@ test('runtime uses one explicitly human-approved local-place Studio session and 
   assert.ok(workflow.includes('ROBLOX_STUDIO_STALE_AUTOMATION_CLEANUP=YES'));
   assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
   assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
-  assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
+  assert.ok(workflow.includes("runtimeEvidence?.failure==='roblox-studio-install-failed'"));
   assert.ok(workflow.includes("'roblox-studio-runtime-failed','roblox-studio-runtime-timeout'"));
-  assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
+  assert.ok(workflow.includes("failureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
   assert.ok(workflow.includes("$authDeadline = (Get-Date).AddSeconds(15)"));
   assert.ok(workflow.includes('$p.WaitForExit(165000)'));
   assert.ok(workflow.includes("'roblox-studio-authentication-required'"));
@@ -156,8 +156,8 @@ test('runtime uses one explicitly human-approved local-place Studio session and 
   assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES'));
   assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));
   assert.ok(!smoke.includes('print("ROBLOX_RUNTIME_SMOKE=PASS")'));
-  assert.ok(workflow.includes("(item.robloxRuntimePassed===true&&sameHarness)"));
-  assert.ok(workflow.includes("(item.robloxRuntimePassed!==true||!sameHarness)"));
+  assert.ok(workflow.includes("(runtimePassed===true&&sameHarness)"));
+  assert.ok(workflow.includes("if(preflightPassed!==true||(runtimePassed===true&&sameHarness)"));
   assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
 });
 
