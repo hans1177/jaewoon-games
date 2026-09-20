@@ -609,7 +609,7 @@ jobs:
       actions: write
 
   game_study:
-    needs: [plan, recovery_fast, continuous, learning_idle]
+    needs: [plan, continuous, learning_idle]
     if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
