@@ -693,6 +693,7 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
   return {
     updated:true, ready:true, slotReleased, stale:false, reason:'TASK_MICRO_FANIN_COMPLETE',
     taskId, variant, expectedVariants:joinedExpected, resultCount:nextResults.length,
+    microFanInResults:nextResults,
     applied:merged.applied, neuralCalibration:merged.neuralCalibration, neuralEventTelemetry:merged.neuralEventTelemetry, queue
   };
 }
@@ -814,6 +815,10 @@ export function runQueueCommand(args = {}) {
     const neuron = recordVibeNeuronResult(queue, row, { expectedVariants: optionalMaxConcurrent(args['expected-variants']) ?? 1 });
     queue = neuron.queue;
     if (neuron.updated) writeJson(file, queue);
+    const microOutput=clean(args.output);
+    if(microOutput&&neuron.ready===true&&Array.isArray(neuron.microFanInResults)){
+      writeJson(microOutput,{version:3,microFanIn:true,taskId:neuron.taskId,reservationId:resultReservationId(row),results:neuron.microFanInResults,tasks:queue.tasks||[]});
+    }
     result = {
       command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks,
       reservationMaxConcurrentTasks, adaptiveControl, ...neuron,
