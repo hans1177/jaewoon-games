@@ -87,3 +87,20 @@ test('causal repair without regression remains unverified root cause',()=>{
   assert.ok(result.nextEvidenceRequired.includes('FULL_REGRESSION_PASS'));
   assert.ok(result.nextEvidenceRequired.includes('INDEPENDENT_REVIEW_PASS'));
 });
+
+test('root-cause evidence records the observation checkpoint without granting authority',()=>{
+  const result=verifyNeuralRootCause({
+    diagnosis,
+    sampleId:'checkpoint-worker-1',
+    verificationStage:'WORKER_RESULT',
+    evidence:[]
+  });
+  assert.equal(result.version,2);
+  assert.equal(result.verificationStage,'WORKER_RESULT');
+  const marker=neuralRootCauseEvidence(result).find(x=>x.startsWith('neural-root-cause:'));
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-root-cause:'.length)));
+  assert.equal(payload.version,2);
+  assert.equal(payload.verificationStage,'WORKER_RESULT');
+  assert.equal(payload.actionFiringAllowed,false);
+  assert.equal(payload.phase2AuthorityEligible,false);
+});

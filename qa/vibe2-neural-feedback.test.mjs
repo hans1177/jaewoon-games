@@ -197,3 +197,60 @@ test('duplicate calibration sample identity counts once and conflicting result s
   assert.equal(summary.duplicateSampleRows,2);
   assert.equal(summary.sampleConflicts,1);
 });
+
+test('pipeline prediction is calibrated separately from causal responsibility',()=>{
+  const d={
+    mode:'PHASE1_SHADOW_ADVISORY',
+    responsibility:{system:'GAME_INPUT',confidence:.9},
+    pipelinePrediction:{
+      nextBlockingSystem:'SOURCE_GENERATION',
+      confidence:.98,
+      basis:'OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY'
+    },
+    actionRecommendation:{failureStage:'WEB_REPAIR'},
+    bottleneck:{score:90}
+  };
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:d,
+    outcome:'FAIL',
+    candidateFailure:{class:'DIAGNOSTIC_POSTCONDITION'},
+    roleResults:{implementation:'FAIL'}
+  });
+  assert.equal(feedback.predicted.responsibility,'SOURCE_GENERATION');
+  assert.equal(feedback.predictionContractVersion,2);
+  assert.equal(feedback.responsibilityMatch,true);
+  const marker=neuralFeedbackEvidence(feedback).find(x=>x.startsWith('neural-shadow-feedback:'));
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-shadow-feedback:'.length)));
+  assert.equal(payload.predictionContractVersion,2);
+  assert.equal(payload.predictionBasis,'OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY');
+});
+
+test('current calibration cohort uses the newest prediction contract while preserving lifetime history',()=>{
+  const enc=payload=>'neural-shadow-feedback:'+encodeURIComponent(JSON.stringify(payload));
+  const legacy=enc({
+    version:1,
+    sampleId:'legacy-v1',
+    predictedResponsibility:'GAME_INPUT',
+    observedResponsibility:'SOURCE_GENERATION',
+    matchState:'MISMATCH',
+    responsibilityMatch:false,
+    sampleEligible:true
+  });
+  const current=enc({
+    version:2,
+    predictionContractVersion:2,
+    predictionBasis:'OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY',
+    sampleId:'current-v2',
+    predictedResponsibility:'SOURCE_GENERATION',
+    observedResponsibility:'SOURCE_GENERATION',
+    matchState:'MATCH',
+    responsibilityMatch:true,
+    sampleEligible:true
+  });
+  const summary=summarizeNeuralFeedbackEvidence([legacy,current]);
+  assert.equal(summary.observedAccuracy,.5);
+  assert.equal(summary.currentPredictionContractVersion,2);
+  assert.equal(summary.currentContractIdentifiedCalibrationEligible,1);
+  assert.equal(summary.currentContractIdentifiedMatches,1);
+  assert.equal(summary.currentContractIdentifiedObservedAccuracy,1);
+});

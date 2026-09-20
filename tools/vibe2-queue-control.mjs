@@ -456,7 +456,7 @@ export function buildNeuralWorkerTransaction(row = {}) {
   const sampleId=neuralWorkerSampleId(row);
   const feedback=neuralWorkerFeedback(row);
   const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:rowEvidence});
-  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence,sampleId});
+  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence,sampleId,verificationStage:'WORKER_RESULT'});
   const eventType=neuralWorkerEventType(row);
   const eventRoute=simulateNeuralEventRoute({
     event:{
