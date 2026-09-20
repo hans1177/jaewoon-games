@@ -10,6 +10,8 @@ const clean=v=>String(v??'').trim();
 const unique=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const now=()=>new Date().toISOString();
 export const PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION='PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE';
+export const PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS='PRIMARY_AI_SECURITY_RECOVERY_REVIEW=PASS';
+export const PRIMARY_AI_SECURITY_RECOVERY_REVIEW_REWORK='PRIMARY_AI_SECURITY_RECOVERY_REVIEW=REWORK';
 function securityRecoveryRepairFiles(rec={}){
   return unique([...(rec.evidence||[]),...(rec.dispatchEvidence||[])]
     .map(clean)
@@ -102,6 +104,71 @@ export function assignSecurityRecovery(queueInput,recoveryInput,{recoveryId='',d
   return{queue:{...queue,tasks},recovery,task};
 }
 
+export function reviewSecurityRecovery(queueInput,recoveryInput,{recoveryId='',decision='',evidence=[]}={}){
+  const queue=normalizeSystemAiQueue(queueInput);
+  const recovery={...recoveryInput,tasks:(recoveryInput.tasks||[]).map(x=>({...x}))};
+  const review=clean(decision);
+  if(![PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS,PRIMARY_AI_SECURITY_RECOVERY_REVIEW_REWORK].includes(review))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_EXACT_REVIEW_REQUIRED');
+  const id=clean(recoveryId);
+  if(!id)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ID_REQUIRED');
+  const rec=recovery.tasks.find(x=>clean(x.id)===id);
+  if(!rec)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_NOT_FOUND:'+id);
+  if(clean(rec.status)!=='awaiting-primary-ai-review')throw new Error('SYSTEM_AI_SECURITY_RECOVERY_NOT_REVIEWABLE:'+id+':'+clean(rec.status));
+  if(clean(rec.sourceQueue).toLowerCase()!=='security'||clean(rec.recoveryOwner).toUpperCase()!=='SYSTEM_AI')throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ROUTE_INVALID:'+id);
+  const taskId=clean(rec.sourceTaskId);
+  if(!taskId||!(rec.evidence||[]).includes('system-ai-assignment:'+taskId))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ASSIGNMENT_LINK_REQUIRED:'+id);
+  const task=queue.tasks.find(x=>x.id===taskId);
+  if(!task)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TASK_NOT_FOUND:'+taskId);
+  if(!(task.evidence||[]).includes('primary-ai-security-recovery-assignment:APPROVE'))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ASSIGNMENT_EVIDENCE_REQUIRED:'+taskId);
+  if(!(task.evidence||[]).includes('security-recovery:'+id))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TASK_LINK_MISMATCH:'+taskId+':'+id);
+  const stamp=now();
+  const reviewEvidence=unique([...(evidence||[]),'security-recovery-review:'+id,'security-recovery-review-decision:'+review]);
+  let tasks;
+  let recoveryTasks;
+  if(review===PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS){
+    const candidateReady=task.status==='awaiting-supervisor';
+    const currentMainReady=task.status==='done'&&task.lastOutcome==='DETERMINISTIC_CURRENT_MAIN_SATISFIED';
+    if(!candidateReady&&!currentMainReady)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TASK_NOT_REVIEWABLE:'+taskId+':'+task.status+':'+clean(task.lastOutcome));
+    tasks=queue.tasks.map(x=>x.id!==taskId?x:{
+      ...x,
+      status:'done',
+      blocker:null,
+      lastOutcome:candidateReady?'PRIMARY_AI_ACCEPTED':x.lastOutcome,
+      evidence:unique([...(x.evidence||[]),...reviewEvidence,'primary-ai-review:PASS']),
+      updatedAt:stamp,
+      reservationId:null,
+      reservedAt:null
+    });
+    recoveryTasks=recovery.tasks.map(x=>clean(x.id)!==id?x:{
+      ...x,
+      status:'verified',
+      primaryAiReview:'PASS',
+      evidence:unique([...(x.evidence||[]),...reviewEvidence,'primary-ai-recovery-review:PASS']),
+      updatedAt:stamp
+    });
+  }else{
+    tasks=queue.tasks.map(x=>x.id!==taskId?x:{
+      ...x,
+      status:'queued',
+      blocker:'security-recovery-primary-ai-rework',
+      candidateBranch:null,
+      pullRequestUrl:null,
+      reservationId:null,
+      reservedAt:null,
+      evidence:unique([...(x.evidence||[]),...reviewEvidence,'primary-ai-rework:security-recovery-primary-ai-rework']),
+      updatedAt:stamp
+    });
+    recoveryTasks=recovery.tasks.map(x=>clean(x.id)!==id?x:{
+      ...x,
+      status:'queued',
+      primaryAiReview:'REWORK',
+      evidence:unique([...(x.evidence||[]),...reviewEvidence,'primary-ai-recovery-review:REWORK']),
+      updatedAt:stamp
+    });
+  }
+  return{queue:{...queue,tasks},recovery:{...recovery,tasks:recoveryTasks},taskId,recoveryId:id,decision:review};
+}
+
 export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}={}){
   const queue=normalizeSystemAiQueue(queueInput);
   const taskId=clean(id);
@@ -171,6 +238,18 @@ export function runSystemAiQueue(args={}){
     const result=assignSecurityRecovery(queue,readJson(recoveryFile,{tasks:[]}),{
       recoveryId:args['recovery-id'],
       decision:args.decision
+    });
+    writeJson(file,result.queue);
+    writeJson(recoveryFile,result.recovery);
+    return{command,...result};
+  }
+  if(command==='review-security-recovery'){
+    const recoveryFile=clean(args.recovery);
+    if(!recoveryFile)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_FILE_REQUIRED');
+    const result=reviewSecurityRecovery(queue,readJson(recoveryFile,{tasks:[]}),{
+      recoveryId:args['recovery-id'],
+      decision:args.decision,
+      evidence:unique(clean(args.evidence).split(','))
     });
     writeJson(file,result.queue);
     writeJson(recoveryFile,result.recovery);
