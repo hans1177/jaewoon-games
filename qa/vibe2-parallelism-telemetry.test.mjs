@@ -77,6 +77,35 @@ test('direct source-generation failures outrank runner under-utilization while p
   assert.match(next.lastReason,/RUNNER_CAPACITY/);
 });
 
+test('mixed direct worker failure stages stay classified instead of falling back to unclassified',()=>{
+  const results=Array.from({length:9},(_,i)=>{
+    const sourceFail=i<3;
+    const qaFail=i>=3&&i<6;
+    return row(i,{
+      start:1000+i*5,
+      end:5000+i*5,
+      outcome:'FAIL',
+      runId:'mixed-worker-failures',
+      candidateFailure:sourceFail?{class:i===0?'NO_OP':'MALFORMED_OUTPUT',message:'source generation failed'}:null,
+      blocker:sourceFail?'source-candidate-generation-failed':qaFail?'incremental-qa-failed':'performance-sanity-failed'
+    });
+  });
+  const t=computeParallelismTelemetry({results,requestedMax:9,effectiveMax:9,taskCount:9});
+  assert.equal(t.failureRatePct,100);
+  assert.deepEqual(t.workerFailureStages.classes,{
+    SOURCE_CANDIDATE_GENERATION:3,
+    INCREMENTAL_QA:3,
+    PERFORMANCE_SANITY:3
+  });
+  assert.equal(t.workerFailureStages.count,9);
+  assert.equal(t.workerFailureStages.coveragePct,100);
+  assert.equal(t.bottleneck,'SOURCE_CANDIDATE_GENERATION');
+  assert.deepEqual(t.secondaryBottlenecks,['INCREMENTAL_QA','PERFORMANCE_SANITY']);
+  assert.deepEqual(t.bottleneckCandidates,['SOURCE_CANDIDATE_GENERATION','INCREMENTAL_QA','PERFORMANCE_SANITY']);
+  assert.equal(t.bottleneckCandidates.includes('WORKER_FAILURES_UNCLASSIFIED'),false);
+  assert.equal(t.pass,false);
+});
+
 test('source candidate failures are reported as the real saturated-wave bottleneck',()=>{
   const results=Array.from({length:20},(_,i)=>row(i,{
     start:1000+i*5,end:5000+i*5,outcome:'FAIL',runId:'125',
