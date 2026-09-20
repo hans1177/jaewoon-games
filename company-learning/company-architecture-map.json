@@ -1,5 +1,5 @@
 {
-  "version": 57,
+  "version": 58,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -433,7 +433,7 @@
         "authorityChange": "NONE"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
-        "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
+        "state": "MERGED_MAIN_PR_1994",
         "sourcePr": 1994,
         "controller": ".vibe2/parallelism-control.json",
         "algorithm": "tools/vibe2-adaptive-backpressure.mjs",
@@ -462,6 +462,25 @@
         "healthySaturationMayUpshiftAbove20": true,
         "matrixFanOutUsesCurrentAdaptiveTarget": true,
         "telemetryEffectiveMaxUsesCurrentAdaptiveTarget": true,
+        "authorityChange": "NONE"
+      },
+      "strongPressureAdaptiveDownshift": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "controller": "tools/vibe2-adaptive-backpressure.mjs::decideAdaptiveBackpressure",
+        "minimumDirectPressureWorkers": 4,
+        "evaluationOrder": [
+          "NO_WORKERS",
+          "RUN_LOCAL_BACKPRESSURE",
+          "STRONG_PRESSURE_WITH_SUFFICIENT_SAMPLE",
+          "LOW_LOAD",
+          "MEDIUM_PRESSURE",
+          "HEALTHY_RAMP"
+        ],
+        "strongPressureSaturationRequired": false,
+        "maxStepChangesPerRun": 1,
+        "externalBoundary": 256,
+        "adaptiveMinimum": 4,
         "authorityChange": "NONE"
       }
     },
