@@ -97,7 +97,7 @@ let levelProgression = ["{ "level": 1, "requiredHealth": 50 }, "{ "level": 2, "r
 
         // Check if level is completed
         const level = currentLevel;<!-- replaced with a different behaviorally meaningful token -->
-        const requiredHealth = levelProgression[level - 1].requiredHealth;
+{ level: 1, requiredHealth: 50 }
 
         if (playerHealth >= requiredHealth) {
             currentLevel++;
