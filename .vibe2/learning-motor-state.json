@@ -5,18 +5,18 @@
   "authorityExpanded": false,
   "domains": {
     "CORE_LOOP": {
-      "xp": 726,
-      "level": 9,
+      "xp": 731,
+      "level": 10,
       "verifiedSuccesses": 56,
-      "verifiedFailureLessons": 18,
-      "lastEvidence": "capability_ctrace_82c7184020b6c7803e6cddb0"
+      "verifiedFailureLessons": 19,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "STATE_MACHINE": {
-      "xp": 1132,
+      "xp": 1137,
       "level": 12,
       "verifiedSuccesses": 73,
-      "verifiedFailureLessons": 60,
-      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
+      "verifiedFailureLessons": 61,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "COMBAT": {
       "xp": 858,
@@ -33,11 +33,11 @@
       "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
     },
     "PROGRESSION": {
-      "xp": 949,
+      "xp": 954,
       "level": 11,
       "verifiedSuccesses": 62,
-      "verifiedFailureLessons": 41,
-      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
+      "verifiedFailureLessons": 42,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "ECONOMY": {
       "xp": 713,
@@ -54,11 +54,11 @@
       "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
     },
     "MOBILE_INPUT": {
-      "xp": 615,
+      "xp": 620,
       "level": 9,
       "verifiedSuccesses": 43,
-      "verifiedFailureLessons": 27,
-      "lastEvidence": "capability_ctrace_eb25e3cb816388cd5f62190f"
+      "verifiedFailureLessons": 28,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "UI_STATE": {
       "xp": 152,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_98ff2306686a32e38f808a33"
     },
     "DEBUGGING": {
-      "xp": 1120,
+      "xp": 1125,
       "level": 11,
       "verifiedSuccesses": 74,
-      "verifiedFailureLessons": 60,
-      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
+      "verifiedFailureLessons": 61,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "RECOVERY": {
       "xp": 769,
@@ -159,11 +159,11 @@
       "lastEvidence": null
     },
     "QUEST_DESIGN": {
-      "xp": 860,
+      "xp": 865,
       "level": 10,
       "verifiedSuccesses": 55,
-      "verifiedFailureLessons": 40,
-      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
+      "verifiedFailureLessons": 41,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "CHARACTER_ARC": {
       "xp": 0,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1012,
+      "xp": 1017,
       "level": 11,
       "verifiedSuccesses": 61,
-      "verifiedFailureLessons": 56,
-      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
+      "verifiedFailureLessons": 57,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -391,7 +391,8 @@
     "capability_ctrace_82c7184020b6c7803e6cddb0",
     "capability_ctrace_cabd54645f7cd0476a6c213e",
     "capability_ctrace_952084b55868155b9986b095",
-    "capability_ctrace_30eb5b825c658b88991658d6"
+    "capability_ctrace_30eb5b825c658b88991658d6",
+    "capability_ctrace_1180839975001f0bcbccc483"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -515,8 +516,8 @@
       ]
     },
     "fail_3e38u6": {
-      "count": 13,
-      "lastEvidence": "capability_ctrace_7636b423561193400bbaf0e6",
+      "count": 14,
+      "lastEvidence": "capability_ctrace_1180839975001f0bcbccc483",
       "example": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
       "domains": [
         "CORE_LOOP",
@@ -7264,7 +7265,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T18:26:49.813Z",
+    "lastBuiltAt": "2026-09-20T18:26:57.518Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9661,5 +9662,5 @@
       "knowledge_1pxlmfu"
     ]
   },
-  "updatedAt": "2026-09-20T18:26:49.813Z"
+  "updatedAt": "2026-09-20T18:26:57.518Z"
 }
