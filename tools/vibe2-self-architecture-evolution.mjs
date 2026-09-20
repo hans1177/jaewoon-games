@@ -91,12 +91,13 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
         `architecture-recovery-generation:${signal.recoveryGeneration}`,
         'architecture-total-evolution-generation-limit:NONE','architecture-busy-loop-forbidden',
         'architecture-before-after-comparison-required','architecture-regression-required','architecture-security-required','architecture-system-construction-allowed',
-        'architecture-authority-expansion:NO','architecture-gate-weakening:NO'
+        'architecture-authority-expansion:NO','architecture-gate-weakening:NO',
+        'architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-allowed:NO'
       ],
       completionCriteria:[
         'STRUCTURAL_CAUSE_VERIFIED','AT_LEAST_TWO_ALTERNATIVES_COMPARED','DIRECT_RESPONSIBLE_SYSTEM_CHANGED_OR_VERIFIED_NO_CHANGE',
         'SAME_FAILURE_REPRODUCTION_RECHECKED','RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED',
-        'AUTHORITY_UNCHANGED','GATES_UNCHANGED'
+        'AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED'
       ]
     });
   }
