@@ -1,5 +1,5 @@
 {
-  "version": 31,
+  "version": 32,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -411,7 +411,10 @@
         "learningEligible",
         "authorityPromotionEligible"
       ],
-      "authorityEvidenceMustPreserveActualBits": true
+      "authorityEvidenceMustPreserveActualBits": true,
+      "sampleIdentityAllFourComponentsRequired": true,
+      "partialIdentityTreatedAsLegacy": true,
+      "taskIdOnlyFallbackExcludedFromReadiness": true
     },
     "activation": {
       "mainCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
