@@ -1,5 +1,5 @@
 {
-  "version": 54,
+  "version": 55,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -383,12 +383,27 @@
           "PRE_SOURCE_GENERATION",
           "PRE_CANDIDATE_WRITE"
         ],
-        "compare": "SHA256_LOCAL_AND_LIVE_MAIN",
+        "compare": "EXECUTION_POLICY_PROJECTION_SHA256_LOCAL_AND_LIVE_MAIN",
         "fetchFailure": "FAIL_CLOSED",
         "mismatchFailure": "CENTRAL_POLICY_STALE",
         "productionReproductionRun": 35487156349,
         "authorityChange": "NONE",
-        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY"
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "executionPolicyProjection": "WORKER_EXECUTION_POLICY_V1",
+        "fullDocumentShaRecorded": true,
+        "unrelatedRoadmapProgressInvalidatesActiveWorker": false,
+        "workerExecutionOrAuthoritySemanticChangeInvalidatesActiveWorker": true,
+        "bottleneckRepair": {
+          "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+          "triggerRunId": 35496729551,
+          "confirmedCentralPolicyStaleWorkers": 7,
+          "projectionOwner": "tools/vibe2-central-work-contract.mjs::workerExecutionPolicyProjection",
+          "checks": [
+            "PRE_SOURCE_GENERATION",
+            "PRE_CANDIDATE_WRITE"
+          ],
+          "authorityChange": "NONE"
+        }
       }
     },
     "phase2Shadow": {
