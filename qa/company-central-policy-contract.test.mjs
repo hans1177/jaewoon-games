@@ -493,3 +493,31 @@ test('제2규칙 binds every observable external AI action to security quarantin
   assert.equal(security.monitorAllObservableExternalAiActivity,true);
   assert.equal(security.quarantineBlocksCandidatePublication,true);
 });
+
+
+test('제3원칙 keeps self-generated learning signal branches unbounded while execution stays scheduler-bounded',()=>{
+  const rule=roadmap.ownerCanonicalRules?.rule3;
+  const loop=roadmap.learningClosedLoopContract?.continuousRelearning;
+  const universe=roadmap.neuralDevelopmentBrain?.unboundedWorkUniverse;
+  assert.equal(rule?.id,'RULE_3_SELF_GENERATED_UNBOUNDED_LEARNING_SIGNAL_MULTIVERSE');
+  assert.equal(rule?.externalPromptRequired,false);
+  assert.equal(rule?.selfGeneratedLearningSignalsAlwaysOn,true);
+  assert.equal(rule?.totalSignalGenerationLimit,null);
+  assert.equal(rule?.totalBranchGenerationLimit,null);
+  assert.equal(rule?.totalQuestionGenerationLimit,null);
+  assert.equal(rule?.totalHypothesisGenerationLimit,null);
+  assert.equal(rule?.totalRelearningGenerationLimit,null);
+  assert.equal(rule?.oneCycleExecutionWindowRemainsFinite,true);
+  assert.equal(rule?.existingSchedulerOwnsConcurrency,true);
+  assert.equal(rule?.busyLoopForbidden,true);
+  assert.equal(rule?.verifiedProjectOutcomeRequiredForPositiveMastery,true);
+  assert.equal(rule?.authorityExpansion,false);
+  assert.equal(rule?.gateWeakening,false);
+  assert.equal(loop?.selfGeneratedSignalGenerationAlwaysOn,true);
+  assert.equal(loop?.selfGeneratedSignalGenerationLimit,null);
+  assert.equal(loop?.selfGeneratedBranchGenerationLimit,null);
+  assert.equal(loop?.externalPromptRequiredForNextLearningSignal,false);
+  assert.equal(universe?.totalQuestionItemLimit,null);
+  assert.equal(universe?.totalSelfGeneratedLearningSignalLimit,null);
+  assert.equal(universe?.selfGeneratedSignalGenerationAlwaysOn,true);
+});

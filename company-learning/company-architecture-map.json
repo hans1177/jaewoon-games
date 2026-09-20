@@ -1,5 +1,5 @@
 {
-  "version": 68,
+  "version": 69,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2072,6 +2072,29 @@
     "defensiveLearning": "tools/company-security-learning.mjs -> existing Vibe learning motor",
     "rawHostilePayloadRetention": false,
     "externalProviderAttack": false,
+    "authorityChange": "NONE"
+  },
+  "ownerRule3Topology": {
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule3",
+    "generator": "tools/vibe2-learning-motor.mjs",
+    "signalModel": "SELF_GENERATED_CAUSAL_LEARNING_MULTIVERSE",
+    "branchFamilies": [
+      "CURIOSITY",
+      "FALSIFICATION",
+      "RELEARNING",
+      "HARDER_BENCHMARK",
+      "CROSS_DOMAIN_TRANSFER"
+    ],
+    "totalSignalGenerationLimit": null,
+    "totalBranchGenerationLimit": null,
+    "lifetimeGenerationUnbounded": true,
+    "oneRefreshSeedSetFinite": true,
+    "physicalExecutionWindowOwnedByExistingScheduler": true,
+    "verifiedCheckpointEmitsFurtherBranches": true,
+    "failureEmitsAlternativeBranches": true,
+    "noSilentTerminalSignal": true,
+    "busyLoopForbidden": true,
+    "positiveLearningRequiresVerifiedEvidence": true,
     "authorityChange": "NONE"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -296,7 +296,41 @@
     "relearningGenerationLimit": null,
     "practiceQueueItemLimit": null,
     "executionMayYieldToHigherPriorityProduction": true,
-    "productionPresenceDoesNotSuppressPracticeGeneration": true
+    "productionPresenceDoesNotSuppressPracticeGeneration": true,
+    "selfGeneratedSignalMultiverse": {
+      "enabled": true,
+      "externalPromptRequired": false,
+      "selfGenerationAlwaysOn": true,
+      "totalSignalGenerationLimit": null,
+      "totalBranchGenerationLimit": null,
+      "branchFamilies": [
+        "CURIOSITY",
+        "FALSIFICATION",
+        "RELEARNING",
+        "HARDER_BENCHMARK",
+        "CROSS_DOMAIN_TRANSFER"
+      ],
+      "triggerEvidence": [
+        "INSUFFICIENT_VERIFIED_EVIDENCE",
+        "MASTERY_GAP",
+        "PERFORMANCE_OR_CONFIDENCE_GAP",
+        "VERIFIED_SUCCESS",
+        "VERIFIED_FAILURE",
+        "REPEATED_FAILURE",
+        "CONTRADICTION",
+        "MASTERY_PLATEAU",
+        "CAPABILITY_GAP",
+        "STALE_KNOWLEDGE"
+      ],
+      "functionalCuriosityMeaning": "GENERATE_TESTABLE_QUESTIONS_FROM_EVIDENCE_GAPS_NOT_EMOTION_OR_SENTIENCE_CLAIM",
+      "oneRefreshUsesFiniteSeedSet": true,
+      "lifetimeGenerationUnbounded": true,
+      "existingSchedulerOwnsExecutionConcurrency": true,
+      "busyLoopForbidden": true,
+      "positiveMasteryStillRequiresVerifiedProjectOutcome": true,
+      "authorityExpansion": false,
+      "gateWeakening": false
+    }
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",
