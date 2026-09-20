@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 14,
+      "runtime": 15,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -303,7 +303,11 @@
     "ownerMinimumWaveAppliedTo": [],
     "minimumAdaptiveWave": 4,
     "baselineAdaptiveWave": 20,
-    "staleTelemetryResetTarget": 20
+    "staleTelemetryResetTarget": 20,
+    "minimumDirectPressureWorkers": 4,
+    "strongPressureRequiresSaturation": false,
+    "lowSampleStrongPressureAction": "HOLD",
+    "strongPressureAction": "STEP_DOWN_ONE_EVEN_BEFORE_SATURATION"
   },
   "sources": {
     "queue": ".vibe2/queue.json",

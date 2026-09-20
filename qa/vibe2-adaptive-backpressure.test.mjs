@@ -103,6 +103,47 @@ test('medium pressure requires two consecutive saturated runs before one-step do
   assert.equal(second.lastReason, 'MEDIUM_PRESSURE_STREAK_2');
 });
 
+test('strong pressure downshifts even before saturation when the sample is large enough', () => {
+  const next=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:256}),
+    pressuredTelemetry({
+      runId:'severe-low-utilization',
+      workerCount:21,
+      effectiveMax:256,
+      actualPeakConcurrency:20,
+      effectivePeakUtilizationPct:7.81,
+      failureRatePct:42.86,
+      pressureLevel:'SEVERE',
+      bottleneck:'SOURCE_CANDIDATE_GENERATION'
+    }),
+    {minimumMax:4}
+  );
+  assert.equal(next.currentMax,128);
+  assert.equal(next.lastDecision,'DOWN');
+  assert.equal(next.lastReason,'FAILURE_RATE');
+  assert.equal(next.lastTelemetry.strongPressureSampleReady,true);
+});
+
+test('tiny strong-pressure sample does not overreact', () => {
+  const next=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:256}),
+    pressuredTelemetry({
+      runId:'tiny-severe-sample',
+      workerCount:2,
+      effectiveMax:256,
+      actualPeakConcurrency:2,
+      effectivePeakUtilizationPct:0.78,
+      failureRatePct:50,
+      pressureLevel:'SEVERE'
+    }),
+    {minimumMax:4}
+  );
+  assert.equal(next.currentMax,256);
+  assert.equal(next.lastDecision,'HOLD');
+  assert.equal(next.lastReason,'LOW_SAMPLE_PRESSURE_HOLD');
+  assert.equal(next.lastTelemetry.strongPressureSampleReady,false);
+});
+
 test('run-local queue backpressure does not also lower the persistent adaptive wave', () => {
   const control = createParallelismControl({ currentMax: 64 });
   const next = decideAdaptiveBackpressure(
