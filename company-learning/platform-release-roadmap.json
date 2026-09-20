@@ -856,7 +856,8 @@
         "save-meaning",
         "content-structure",
         "balance-intent",
-        "verified-learning-context"
+        "verified-learning-context",
+        "presentation-contract"
       ],
       "platformAdaptationAllowed": true,
       "silentScopeDropForbidden": true,
@@ -878,10 +879,14 @@
         "WEB_HANDOFF_SOURCE_BOUND",
         "WEB_HANDOFF_BASELINE_BOUND",
         "WEB_HANDOFF_PROMOTION_REVALIDATED",
-        "WEB_HANDOFF_SCOPE_CARRY_FORWARD_REQUIRED"
+        "WEB_HANDOFF_SCOPE_CARRY_FORWARD_REQUIRED",
+        "WEB_HANDOFF_PRESENTATION_READY"
       ],
       "consumer": "tools/company-development-roblox-bootstrap.mjs",
-      "evidenceDoesNotTransferAsNativePass": true
+      "evidenceDoesNotTransferAsNativePass": true,
+      "presentationContractField": "presentationContract",
+      "presentationContractSource": "WEB_VALIDATION_EVIDENCE.webPlatformPresentationHandoff",
+      "presentationContractReadyRequired": true
     },
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
