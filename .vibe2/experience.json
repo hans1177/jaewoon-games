@@ -2051,115 +2051,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_f68f735fa6e0cc79036cc1f3",
-          "taskId": "ant-simulator-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "candidate-sha:47f7cd1fd521af644cc367c81771e34de05ee4d4",
-            "base-main:b999e2e2247094e4f35a0649dc9e3f48c95a1283",
-            "incremental-qa-hash:67c8d01b5bd4a3c3f590bfa73b4dd047b9cf00a244aa3ef76f9a55806ac61a3a",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35503547002",
-            "reservation-id:35503547002:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:bc9cd47312c83d5f993c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_887f6a493caa9517fda55dc0",
-          "taskId": "bug-defense-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "bug-defense",
-          "engine": "web",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1a453e3e34004eb1c376197d",
-            "capability_ctrace_74d39d52bb47e6444412ec04",
-            "capability_ctrace_f3072d255ad4f857aea1fc34",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
-          ],
-          "evidence": [
-            "candidate-sha:e60dcdfdabff1d777a12952a12fe2b2a705eafa9",
-            "base-main:b999e2e2247094e4f35a0649dc9e3f48c95a1283",
-            "incremental-qa-hash:4a3aab222e403c85098284f0a23b910630e491776fdd455a2c912a617bf7c56d",
-            "causal-replay-status:EXECUTED_PASS",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35503547002",
-            "reservation-id:35503547002:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:86808debb4d515cee41c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_1c51075f8e4941e8c88bab72",
-          "taskId": "bug-defense-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "bug-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_1a453e3e34004eb1c376197d",
-            "capability_ctrace_74d39d52bb47e6444412ec04",
-            "capability_ctrace_f3072d255ad4f857aea1fc34",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
-          ],
-          "evidence": [
-            "base-main:b999e2e2247094e4f35a0649dc9e3f48c95a1283",
-            "actions-run:35503547002",
-            "reservation-id:35503547002:1",
-            "capability-application-sample:ae342c51c9d18d67a072"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_3e424ca8bceb8f46ada963c5",
           "taskId": "bug-defense-web-runtime-repair-v1",
           "workKey": null,
@@ -4352,6 +4243,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2c813ce0068ef6c7594ee16d",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:fe60759d76dff087959f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4292d1ce464b33a0acdf2712",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7793cc3e5a5da54e6b4c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b882213dcf00d9bf1b6593fe",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7146a331130459410f1b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [
@@ -4503,11 +4493,11 @@
         "version": 2,
         "state": "GENERALIZATION_CANDIDATE",
         "applicationCount": 64,
-        "independentPassCount": 7,
-        "crossGameVerifiedApplicationCount": 7,
+        "independentPassCount": 6,
+        "crossGameVerifiedApplicationCount": 6,
         "directSupportCount": 0,
         "contradictionCount": 0,
-        "confidence": 0.8889,
+        "confidence": 0.875,
         "generalizationCandidate": true,
         "benchmarkCount": 3,
         "unseenBenchmarkPassCount": 0,
@@ -4525,7 +4515,7 @@
         "automaticSupersession": false,
         "authorityExpanded": false
       },
-      "capabilityConfidence": 0.8889,
+      "capabilityConfidence": 0.875,
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
@@ -6930,109 +6920,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_112b8ffb4e39774487cc8e4e",
-          "taskId": "village-dungeons-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_2fa9b22629238db4c1902074",
-            "capability_ctrace_e985c0d214b8307f1572e929",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "candidate-sha:2dfd17f1586d7d8b623b1ef3328c1af44f89f7ad",
-            "base-main:7ff228ba6f28b9bfee856a8246bca06896833162",
-            "incremental-qa-hash:a8eb6e67f0a7f7275cf72f05feed58f028833b9133f50ca4be18a059a60dc8ac",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35502664862",
-            "reservation-id:35502664862:1",
-            "capability-application-sample:1c3f8b0830485c56ef43"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_457260f58bec147e51d459a8",
-          "taskId": "bug-defense-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "bug-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_2fa9b22629238db4c1902074"
-          ],
-          "evidence": [
-            "base-main:c48b3a885067660c4479773138b1b2734b447c45",
-            "actions-run:35503052042",
-            "reservation-id:35503052042:1",
-            "capability-application-sample:af26e6adbe189fa967d0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_2c8c401b8b4baecbad8211e7",
-          "taskId": "bug-defense-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "bug-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_2fa9b22629238db4c1902074"
-          ],
-          "evidence": [
-            "base-main:c48b3a885067660c4479773138b1b2734b447c45",
-            "actions-run:35503052042",
-            "reservation-id:35503052042:1",
-            "capability-application-sample:40b4f48682e113bab2a8"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_788208c97407608541d14e47",
           "taskId": "bug-defense-web-runtime-repair-v1",
           "workKey": null,
@@ -9222,6 +9109,105 @@
             "reservation-id:35508605430:1",
             "fan-in-review:PASS",
             "capability-application-sample:0322145cab26bcfd10db"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9bd5dc3fd619a3b3703ff079",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:fe60759d76dff087959f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4a68f5ef7299e10ceb1ff663",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7793cc3e5a5da54e6b4c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_73148eb56e01db81c36a7369",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7146a331130459410f1b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -58936,7 +58922,11 @@
         "coding-trace:ctrace_183b9e042e21b1633a040cfc",
         "actions-run:35506656887",
         "reservation-id:35506656887:1",
-        "coding-trace:ctrace_4ffd012fc0042f9500ac3deb"
+        "coding-trace:ctrace_4ffd012fc0042f9500ac3deb",
+        "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+        "actions-run:35508897680",
+        "reservation-id:35508897680:1",
+        "coding-trace:ctrace_ec85c856ff62530b973607e1"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -58945,8 +58935,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 4,
-      "confidence": 0.8,
+      "confirmations": 5,
+      "confidence": 0.8333,
       "capabilityApplications": [
         {
           "version": 1,
@@ -59254,6 +59244,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e5d4a503ffff720080543cb1",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:fe60759d76dff087959f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4c993380cbe65b4886bc3291",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7793cc3e5a5da54e6b4c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ec5665d6bee55f93a2daa2d9",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7146a331130459410f1b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -59272,7 +59361,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 9,
+        "applicationCount": 12,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -59342,7 +59431,11 @@
         "coding-trace:ctrace_0ad7d8d729282ace722064c2",
         "actions-run:35506656887",
         "reservation-id:35506656887:1",
-        "coding-trace:ctrace_d77b7c71c6ca7cd17fe29f99"
+        "coding-trace:ctrace_d77b7c71c6ca7cd17fe29f99",
+        "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+        "actions-run:35508897680",
+        "reservation-id:35508897680:1",
+        "coding-trace:ctrace_c80e664d4799960806242436"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -59351,8 +59444,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 5,
-      "confidence": 0.8333,
+      "confirmations": 6,
+      "confidence": 0.8571,
       "capabilityApplications": [
         {
           "version": 1,
@@ -59660,6 +59753,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a38312656241ff2e3e734c08",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:fe60759d76dff087959f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2ade05dffec9731c8a978a53",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7793cc3e5a5da54e6b4c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_093921898b4cc04e46e4d5e4",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7146a331130459410f1b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -59678,7 +59870,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 9,
+        "applicationCount": 12,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -59745,7 +59937,11 @@
         "base-main:1de6030d791dc19840c51d5b171fca35817bb68d",
         "actions-run:35506455649",
         "reservation-id:35506455649:1",
-        "coding-trace:ctrace_01d40b1c48df1386d2c73921"
+        "coding-trace:ctrace_01d40b1c48df1386d2c73921",
+        "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+        "actions-run:35508897680",
+        "reservation-id:35508897680:1",
+        "coding-trace:ctrace_6e663f6ea771012f17f002ac"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -59754,8 +59950,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 4,
-      "confidence": 0.8,
+      "confirmations": 5,
+      "confidence": 0.8333,
       "capabilityApplications": [
         {
           "version": 1,
@@ -60162,6 +60358,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_12c0e34af53fe2ce9c6ed852",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:fe60759d76dff087959f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_72c7e2aac1711a792d90c174",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7793cc3e5a5da54e6b4c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d19825c9264a6de537e9150d",
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "bug-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_74d39d52bb47e6444412ec04",
+            "capability_ctrace_1a453e3e34004eb1c376197d",
+            "capability_ctrace_f3072d255ad4f857aea1fc34",
+            "capability_ctrace_7022dd1d29e03580f9fab379",
+            "capability_ctrace_0ce73fa4ec23024bd474ad30"
+          ],
+          "evidence": [
+            "base-main:47956093cbd11a365c80f05668d85da6145c9ddf",
+            "actions-run:35508897680",
+            "reservation-id:35508897680:1",
+            "capability-application-sample:7146a331130459410f1b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -60180,7 +60475,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 12,
+        "applicationCount": 15,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
