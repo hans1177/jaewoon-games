@@ -1,5 +1,5 @@
 {
-  "version": 182,
+  "version": 183,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3790,27 +3790,30 @@
     }
   },
   "changeRecord": {
-    "id": "NEURAL_SHADOW_HARDENING_DISTINCT_QUALITY_SAMPLES_2026-09-20",
+    "id": "VIBE2_NEURAL_NONBLOCKING_INDEPENDENT_REFILL_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_WORKER_CONTEXT_SYNC_RUNTIME_V3_2026-09-20",
-    "reason": "HARDEN MERGED NEURAL SHADOW OBSERVATION WITHOUT GRANTING PHASE2 EXECUTION AUTHORITY. POLICY/LOCK EVENTS CALIBRATE IN SHADOW WITHOUT UNRELATED ROOT-CAUSE PROOF; ROOT-CAUSE EVIDENCE GAINS DETERMINISTIC SAMPLE IDENTITY; PHASE2 REVIEW ELIGIBILITY REQUIRES DISTINCT IDENTIFIED ROOT-CAUSE SAMPLES, CALIBRATION ACCURACY, PREDICTION COVERAGE, LOW CONTRADICTION, AND ZERO SAMPLE CONFLICTS.",
+    "previousChangeRecordId": "NEURAL_SHADOW_HARDENING_DISTINCT_QUALITY_SAMPLES_2026-09-20",
+    "reason": "REMOVE THE LEGACY GLOBAL WAVE-DRAIN BARRIER FROM INDEPENDENT GAME-PRIMARY REFILL. RUN 35482496037 OBSERVED 8 ACTIVE GAME WORKERS, 7 QUEUED GAME-PRIMARY TASKS, AND 248 FREE SLOTS, YET CONTINUOUS EXECUTION WAS SKIPPED BECAUSE WAVE_READY WAS NO. KEEP THE EXISTING WAVE EXECUTION ENGINE, SOURCE/FILE LOCKS, FAN-IN, QA, LEARNING-IDLE SAFETY, AND PHASE2 NEURAL AUTHORITY BLOCKS INTACT.",
     "invariants": {
       "existingWaveSchedulerRemainsAuthoritative": true,
+      "globalWaveDrainNoLongerBlocksIndependentProduction": true,
+      "sourceRootExclusive": true,
+      "responsibleFileExclusive": true,
+      "adaptiveCapacityStillApplies": true,
+      "fanInStillRequired": true,
+      "qaGatesNotWeakened": true,
+      "learningIdleZeroActiveBarrierPreserved": true,
+      "gameStudyZeroActiveBarrierPreserved": true,
       "neuralExecutionAuthorityGranted": false,
-      "workerCreationAuthorityGranted": false,
-      "queueMutationAuthorityGranted": false,
-      "waveReorderAuthorityGranted": false,
-      "lockAcquisitionAuthorityGranted": false,
-      "automaticLearningAuthorityGranted": false,
-      "automaticPromotionAuthorityGranted": false,
-      "qualityGateWeakeningForbidden": true
+      "neuralQueueMutationAuthorityGranted": false,
+      "neuralWaveReorderAuthorityGranted": false
     },
     "next": [
-      "RUN_FULL_NEURAL_AND_CENTRAL_POLICY_REGRESSION",
-      "COLLECT_DISTINCT_DURABLE_SHADOW_SAMPLES",
-      "MEASURE_CALIBRATION_ACCURACY_AND_ROOT_CAUSE_CONTRADICTION_RATE",
-      "KEEP_PHASE2_EXECUTION_AUTHORITY_BLOCKED_UNTIL_EXPLICIT_PRIMARY_AND_SECURITY_REVIEW"
+      "RUN_PARALLELISM_AND_CORE_REGRESSION",
+      "VERIFY_24H_CONTINUOUS_STARTS_WITH_ACTIVE_INDEPENDENT_WORKERS_AND_QUEUED_WORK",
+      "VERIFY_NEW_FAN_IN_PERSISTS_NEURAL_SHADOW_EVIDENCE",
+      "MEASURE_QUEUE_DRAIN_WITHOUT_REDUCING_QA_OR_LOCK_SAFETY"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -6318,7 +6321,10 @@
       "phase2ReviewRequiresQualityAndVolume": true,
       "sampleVolumeAloneCannotQualifyPhase2Review": true,
       "duplicateRootCauseSamplesCannotInflateReadiness": true,
-      "conflictingRootCauseSampleEvidenceBlocksReview": true
+      "conflictingRootCauseSampleEvidenceBlocksReview": true,
+      "independentProductionRefillMustNotWaitForGlobalWaveDrain": true,
+      "sourceAndResponsibleFileLocksStillMandatory": true,
+      "learningAndStudyRemainBehindZeroActiveGameBarrier": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6677,6 +6683,36 @@
       "neuralAutomaticPromotionAuthority": false,
       "readinessMeaning": "REVIEW_ELIGIBILITY_ONLY",
       "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY"
+    },
+    "schedulerBridge": {
+      "version": 1,
+      "mode": "WAVE_EXECUTION_WITH_NONBLOCKING_INDEPENDENT_REFILL",
+      "existingWaveSchedulerRemainsAuthoritative": true,
+      "globalWaveDrainRequiredForIndependentGamePrimaryRefill": false,
+      "gamePrimaryRefillWhenIndependentQueuedWorkExists": true,
+      "queueContinueSignalRequired": true,
+      "sourceRootExclusive": true,
+      "responsibleFileExclusive": true,
+      "learningIdleRequiresZeroActiveGameWorkers": true,
+      "gameStudyRequiresZeroActiveGameWorkers": true,
+      "neuralExecutionAuthorityGranted": false,
+      "observedBottleneck": {
+        "runId": 35482496037,
+        "observedAt": "2026-09-20",
+        "activeGameWorkers": 8,
+        "gamePrimaryQueued": 7,
+        "freeSlots": 248,
+        "waveReady": "NO",
+        "continuousJob": "SKIPPED",
+        "diagnosis": "GLOBAL_WAVE_READY_BARRIER_STALLED_INDEPENDENT_QUEUED_WORK_DESPITE_AVAILABLE_CAPACITY"
+      },
+      "repair": {
+        "branch": "assistant/vibe2-nonblocking-refill-v1",
+        "workflow": ".github/workflows/vibe2-24h-runner.yml",
+        "test": "qa/vibe2-parallelism-main-contract.test.mjs",
+        "continuousCondition": "QUEUE_CONTINUE_AND_GAME_PRIMARY_QUEUED",
+        "refillCondition": "SUCCESSFUL_PRODUCTION_OR_IDLE_LEARNING_WITHOUT_GLOBAL_WAVE_READY_REQUIREMENT"
+      }
     }
   }
 }
