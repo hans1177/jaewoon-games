@@ -78,6 +78,30 @@ test('reproduced touch-action diagnostic is anchored to interactive CSS before i
   assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'index.html',find:spec.find,replace:'.scope-action,button{min-height:54px;border:0;touch-action:manipulation}'}]},exploration}).pass,true);
 });
 
+test('reproduced DOM null event bind must repair the exact unsafe chain before incremental QA',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const unsafe="document.getElementById('play').addEventListener('click',startGame);";
+  write(path.join(sourceRoot,'index.html'),'<button id="play">Play</button><script>'+unsafe+'function startGame(){}</script>');
+  const exploration={editContract:{causalReplay:{
+    required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'DOM_NULL_EVENT_BIND',diagnosticFile:'index.html',
+    diagnosticLine:1,diagnosticNeedle:unsafe,diagnosticMicroTask:'DOM 이벤트 연결 1곳에 존재 확인을 추가한다.'
+  }}};
+  const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(spec);
+  assert.match(spec.find,/getElementById/);
+  const focused=buildDiagnosticFocusedReplaceOnlyPrompt('Goal: [WEB_REPAIR] repair event binding',{exploration,sourceRoot,responsibleFiles:['index.html']});
+  assert.match(focused.prompt,/null-safe guard|optional chaining/);
+  const unrelated={edits:[{path:'index.html',find:'<button id="play">Play</button>',replace:'<button id="play">Start</button>'}]};
+  assert.equal(evaluateDiagnosticPostcondition({candidate:unrelated,exploration}).pass,false);
+  const stillUnsafe={edits:[{path:'index.html',find:spec.find,replace:"document.getElementById('play').addEventListener('click',startGame);"}]};
+  assert.equal(evaluateDiagnosticPostcondition({candidate:stillUnsafe,exploration}).pass,false);
+  const repaired={edits:[{path:'index.html',find:spec.find,replace:"document.getElementById('play')?.addEventListener('click',startGame);"}]};
+  const result=evaluateDiagnosticPostcondition({candidate:repaired,exploration});
+  assert.equal(result.pass,true);
+  assert.equal(result.reason,null);
+});
+
 test('missing diagnostic postcondition is a retryable generation failure',()=>{
   const error=new Error('DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:rpg.html:CLEAR_INTERVAL_LIFECYCLE_MISSING');
   assert.equal(generationFailureClass(error),'DIAGNOSTIC_POSTCONDITION');
