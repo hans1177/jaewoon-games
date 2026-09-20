@@ -3303,7 +3303,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T01:04:39.905Z"
+      "updatedAt": "2026-09-20T01:11:58.518Z"
     },
     {
       "id": "recovery-30d0f7d9f4575fe5f49d",
@@ -3325,7 +3325,7 @@
       ],
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
-      "blastRadius": "portfolio:10",
+      "blastRadius": "portfolio:9",
       "checkpoint": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
@@ -3812,7 +3812,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T01:04:09.073Z",
-      "updatedAt": "2026-09-20T01:04:39.904Z"
+      "updatedAt": "2026-09-20T01:11:58.517Z"
     },
     {
       "id": "recovery-e47b9cce83eaad34ba1d",
@@ -4447,7 +4447,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T01:04:09.073Z",
-      "updatedAt": "2026-09-20T01:04:39.903Z"
+      "updatedAt": "2026-09-20T01:11:58.516Z"
     },
     {
       "id": "recovery-8aa83fdfc1e593ab4d99",
@@ -4705,6 +4705,48 @@
       "maxRetries": 5,
       "createdAt": "2026-09-20T01:04:09.074Z",
       "updatedAt": "2026-09-20T01:04:09.111Z"
+    },
+    {
+      "id": "recovery-9fce20c4cf29f0380341",
+      "status": "queued",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "sys-verify-web-platform-handoff-v1",
+      "relatedTaskIds": [],
+      "failureStage": "system-ai-implementation-failed",
+      "failureSignature": "system-ai-implementation-failed",
+      "blastRadius": "single-task",
+      "checkpoint": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier",
+        "actions-run:35479816000",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "verification-rebound-to-existing-independent-contracts:2026-09-20",
+        "actions-run:35480075259",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "maxRetries": 5,
+      "createdAt": "2026-09-20T01:11:58.518Z",
+      "updatedAt": "2026-09-20T01:11:58.518Z"
     }
   ]
 }

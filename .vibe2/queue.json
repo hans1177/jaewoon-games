@@ -20150,6 +20150,141 @@
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
       "shard": "web"
+    },
+    {
+      "id": "seed-action-survival-rogu-echoes-of-the-lost-star-presentation-asset-adaptation-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "executionLane": "GAME_PRIMARY",
+      "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다.",
+      "responsibleFiles": [
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "productionMode": "SUPERVISED_VIBE_COAUTHORING",
+      "supervisionApproved": false,
+      "supervisionContract": {
+        "version": 1,
+        "mode": "ASSISTANT_SUPERVISED_VIBE_COAUTHORING",
+        "required": true,
+        "status": "REVIEW_REQUIRED",
+        "candidateGenerationAllowed": true,
+        "automaticPromotionAllowed": false,
+        "approvalField": "supervisionApproved",
+        "stages": [
+          "SOURCE_AND_DESIGN_READ",
+          "GAMEPLAY_LOOP_DECOMPOSITION",
+          "SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK",
+          "VIBE_IMPLEMENTATION_CANDIDATE",
+          "SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW",
+          "MOBILE_AND_RUNTIME_QA",
+          "SUPERVISED_PROMOTION"
+        ],
+        "protectedSemantics": [
+          "GAME_IDENTITY",
+          "SAVE_KEY_AND_SAVE_MEANING",
+          "CORE_LOOP",
+          "PROGRESSION",
+          "MOBILE_INPUT",
+          "EXISTING_VALID_FEATURES"
+        ],
+        "hardReject": [
+          "PLACEHOLDER_SOURCE",
+          "FAKE_GAMEPLAY",
+          "VALIDATION_ONLY_PATCH",
+          "UNRELATED_FULL_REWRITE",
+          "SAVE_RESET_WITHOUT_MIGRATION",
+          "BROKEN_MOBILE_INPUT"
+        ]
+      },
+      "supervisionReview": null,
+      "blocker": null,
+      "evidence": [
+        "central-policy:company-learning/platform-release-roadmap.json",
+        "vibe2-auto-planner:company-development-queue",
+        "release-state:development-confirmed",
+        "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "presentation-quality-pipeline:v1",
+        "presentation-pass:ASSET_ADAPTATION",
+        "quality-contract:livingMotionVisualQualityContract",
+        "quality-contract:audioMusicQualityContract",
+        "presentation-preserve-gameplay-semantics",
+        "presentation-runtime-qa-required",
+        "mobile-performance-qa-required",
+        "supervised-web-build:required",
+        "automatic-promotion:blocked-until-supervised-approval",
+        "work-package:seed-action-survival-rogu-echoes-of-the-lost-star-wp-pnpm86",
+        "task-work-units:4",
+        "package-work-units:4",
+        "package-related-improvements:0",
+        "package-role-separation:exploration|implementation|test|performance|regression|review",
+        "package-quantity-goal:FEATURE_COMPLETION"
+      ],
+      "lastOutcome": null,
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
+      "companyContext": null,
+      "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "taskWorkUnits": 4,
+      "packageId": "seed-action-survival-rogu-echoes-of-the-lost-star-wp-pnpm86",
+      "packageGoal": "잃어버린 별의 메아리: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.",
+      "packageRole": "implementation-owner",
+      "packageOwner": "feature-owner:seed-action-survival-rogu-echoes-of-the-lost-star",
+      "packageWorkUnits": 4,
+      "packageSize": 1,
+      "packageMinWorkUnits": 4,
+      "packageLongWorkProtected": false,
+      "postReleaseFocused": false,
+      "historicalDeploymentRecovery": false,
+      "focusCycle": 0,
+      "focusPolicyRef": null,
+      "recoveryGeneration": 0,
+      "systemSteward": false,
+      "ownerFocusedCaretaker": false,
+      "packageContext": {
+        "explorationMode": "task-local-exploration-handoff",
+        "explorationRequired": true,
+        "sharedPreparation": false,
+        "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "responsibleFiles": [
+          "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+        ],
+        "diagnosticEvidence": [],
+        "roles": {
+          "owner": "work-package-owner",
+          "exploration": "read-only-exploration-worker",
+          "implementation": "parallel-implementation-workers",
+          "test": "incremental-qa-worker",
+          "performance": "performance-sanity-worker",
+          "regression": "single-fan-in-regression-worker",
+          "review": "fan-in-package-review-worker"
+        }
+      },
+      "completionCriteria": [
+        "task-local-exploration-handoff-produced-and-reused",
+        "functional-scope-implemented",
+        "all-package-task-incremental-qa-pass",
+        "performance-sanity-pass",
+        "full-core-regression-once-at-fan-in",
+        "fan-in-package-review-pass",
+        "machine-contract-and-central-doc-synced-when-architecture-changes"
+      ],
+      "shard": "web"
     }
   ]
 }
