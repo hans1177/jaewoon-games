@@ -355,6 +355,34 @@ jobs:
           const screenshot=path.join(workDir,'web-gameplay.png');
           fs.mkdirSync(workDir,{recursive:true});
           let finalEvidencePersisted=false;
+          const externalAiCandidateFromBootstrap=()=>{
+            try{
+              if(!fs.existsSync(bootstrapEvidence))return null;
+              const payload=JSON.parse(fs.readFileSync(bootstrapEvidence,'utf8'));
+              const advisory=payload?.externalAiAdvisory||{};
+              if(advisory?.used!==true||!String(advisory.provider||'').trim()||!String(advisory.model||'').trim()||!/^[a-f0-9]{64}$/i.test(String(advisory.rawOutputSha256||'')))return null;
+              const adapter=payload?.webContractAdapter||{};
+              const families=[...new Set([...(adapter.bindings||[]),...(adapter.ambiguous||[]),...(adapter.unmapped||[])].map(row=>String(row?.family||'').trim()).filter(Boolean))].slice(0,8);
+              const patterns=[
+                families.length?`Resolve ambiguous approved gameplay scope by matching real ${families.join('/')} controls to existing handlers and observable state changes before adding new controls.`:'Resolve ambiguous approved gameplay scope by matching existing real controls to handlers and observable state changes before adding new controls.',
+                'When a real gameplay mechanic already exists, bind verification metadata to that mechanic instead of creating validation-only buttons or no-op state.'
+              ];
+              return{
+                version:1,
+                id:`${item.gameId}-web-contract-${String(advisory.rawOutputSha256).slice(0,12)}`,
+                sourceKind:'external-ai',
+                provider:String(advisory.provider),
+                model:String(advisory.model),
+                rawOutputSha256:String(advisory.rawOutputSha256).toLowerCase(),
+                engine:'web',
+                gameId:item.gameId,
+                domains:['WEB_RUNTIME','MOBILE_INPUT','UI_STATE',...families].slice(0,12),
+                distilledPatterns:patterns.map(x=>String(x).slice(0,240)),
+                cautions:['External AI mapping is advisory only; require deterministic scope checks and real runtime interaction.','Do not persist or reuse raw external AI output.'],
+                sourceWrite:false,productionPass:false,authorityExpanded:false
+              };
+            }catch{return null;}
+          };
           let result;
           try{
             if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
@@ -412,6 +440,7 @@ jobs:
                 webInitialCycleValidationSchemaVersion:Number(initialReport.validationSchemaVersion||initialReport.version||0)||null,
                 webInitialCycleStrictScore:initialScore,webInitialCycleStrictReviewPath:initialStrictRelative,
                 webInitialCycleSourceRevision:process.env.GITHUB_SHA,webInitialCycleMusicValidationPassed:true,
+                webExternalAiLearningCandidate:externalAiCandidateFromBootstrap()||item.webExternalAiLearningCandidate||null,
                 webValidationPassedAt:null,musicValidationPassed:false,webValidationEvidencePath:null,
                 webFinalContentDepthEvidencePath:null,webFinalContentDepthPassedAt:null,
                 homepageTestEligible:false,homepageTestCandidate:false,homepageTestScore:null,homepageTestVerdict:'WAITING_FINAL_CONTENT_DEPTH',
@@ -556,6 +585,7 @@ jobs:
                 homepageTestVerdict:repairState,
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
                 vibeWebImplementationRequired:Boolean(vibeImplementationSignal),vibeWebRequestedStage:vibeRequestedStage,vibeWebImplementationReason:vibeRequestedReason,sourceRootBootstrapRequired,
+                webExternalAiLearningCandidate:externalAiCandidateFromBootstrap()||item.webExternalAiLearningCandidate||null,
                 routingBlockers:[routingBlocker],webValidationLastAttemptAt:stamp,updatedAt:stamp,
               }};
               console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
