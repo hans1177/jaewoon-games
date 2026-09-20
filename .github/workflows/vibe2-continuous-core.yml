@@ -370,7 +370,7 @@ jobs:
             matrix:[],
             scheduler:{requestedMaxConcurrentTasks:0,effectiveMaxConcurrentTasks:0,longWorkProtectedSlotUsed:false}
           };
-          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\\n');
+          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
           NODE
             if [ "$neuron_refill" = '1' ]; then
               payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'atomic-task-micro-fanin-complete'}}))")"
