@@ -603,6 +603,13 @@ export function applyVibeFanInResults(queueInput, results = []) {
     queue = settled.queue;
     applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback });
   }
+  const acceptedTaskIds=new Set(applied.filter(row=>clean(row?.outcome)!=='STALE_RESULT_SKIPPED').map(row=>clean(row?.taskId)).filter(Boolean));
+  if(acceptedTaskIds.size){
+    queue=createVibeContinuousQueue({
+      maxConcurrentTasks:queue.maxConcurrentTasks,
+      tasks:queue.tasks.map(task=>acceptedTaskIds.has(task.id)?{...task,neuronExpectedVariants:0,neuronResults:[]}:task)
+    });
+  }
   const durableEvidence=queue.tasks.flatMap(task=>Array.isArray(task.evidence)?task.evidence:[]);
   const neuralCalibration=summarizeNeuralFeedbackEvidence(durableEvidence);
   const neuralEventTelemetry=summarizeNeuralEventShadowEvidence(durableEvidence);
