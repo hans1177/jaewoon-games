@@ -63,3 +63,29 @@ test('critic support remains non-authoritative while root cause is unverified',(
   assert.equal(payload.confidenceMutationAllowed,false);
   assert.equal(payload.actionFiringAllowed,false);
 });
+
+
+test('critic recognizes prepatch reproduction plus executed causal replay without claiming root cause',()=>{
+  const critic=critiqueNeuralShadow({
+    diagnosis,
+    feedback:{
+      mode:'PHASE1_SHADOW_FEEDBACK',
+      matchState:'UNKNOWN',
+      predicted:{responsibility:'GAME_RUNTIME'},
+      observed:{stage:'REPAIR_PATH_PASSED',responsibility:null},
+      rootCauseVerified:false
+    },
+    evidence:[
+      'causal-replay-status:EXECUTED_PASS',
+      'causal-replay-executed:YES',
+      'causal-replay-prepatch-reproduced:YES'
+    ]
+  });
+  assert.equal(critic.causalRepairVerified,true);
+  assert.equal(critic.prePatchReproduced,true);
+  assert.equal(critic.causalReplayPass,true);
+  assert.equal(critic.rootCauseVerified,false);
+  assert.equal(critic.actionFiringAllowed,false);
+  assert.ok(critic.nextEvidenceRequired.includes('RUNTIME_OR_INDEPENDENT_QA_CONFIRMATION'));
+  assert.ok(critic.nextEvidenceRequired.includes('MAP_CAUSALLY_VERIFIED_REPAIR_TO_RESPONSIBLE_SYSTEM_BEFORE_ROOT_CAUSE_CLAIM'));
+});
