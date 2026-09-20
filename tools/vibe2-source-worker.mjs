@@ -218,6 +218,111 @@ function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
     || evidence.has('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED')
     || evidence.has('recovery-exact-stage:SOURCE_CANDIDATE_GENERATION');
 }
+function exactDiagnosticAnchor(source='',needle=''){
+  const text=String(source??''),target=String(needle??'');
+  if(!target)return'';
+  const at=text.indexOf(target);
+  if(at<0)return'';
+  let start=text.lastIndexOf('\n',at)+1,end=text.indexOf('\n',at);
+  if(end<0)end=text.length;
+  const line=text.slice(start,end);
+  if(line.trim().length>=10&&line.length<=700&&text.split(line).length-1===1)return line;
+  start=Math.max(0,Math.max(text.lastIndexOf(';',at-1)+1,text.lastIndexOf('}',at-1)+1,text.lastIndexOf('{',at-1)+1,at-180));
+  const semicolon=text.indexOf(';',at+target.length),brace=text.indexOf('}',at+target.length),newline=text.indexOf('\n',at+target.length);
+  const candidates=[semicolon>=0?semicolon+1:-1,brace>=0?brace+1:-1,newline>=0?newline:-1,Math.min(text.length,at+target.length+420)].filter(value=>value>at);
+  end=Math.min(...candidates);
+  let snippet=text.slice(start,end).trim();
+  if(snippet.length>700)snippet=snippet.slice(0,700).trim();
+  if(snippet.length<10||text.split(snippet).length-1!==1)return'';
+  return snippet;
+}
+function interactiveCssDiagnosticAnchor(source=''){
+  const text=String(source??''),styleStart=text.indexOf('<style'),styleOpenEnd=styleStart>=0?text.indexOf('>',styleStart):-1,styleEnd=styleOpenEnd>=0?text.indexOf('</style>',styleOpenEnd):-1;
+  if(styleOpenEnd<0||styleEnd<0)return'';
+  const style=text.slice(styleOpenEnd+1,styleEnd);
+  const rows=[];
+  for(const match of style.matchAll(/([^{}]{1,220}\{[^{}]{1,650}\})/g)){
+    const rule=match[0].trim(),selector=rule.slice(0,rule.indexOf('{')).trim();
+    if(!rule||/@(?:keyframes|font-face)/i.test(selector)||/touch-action\s*:/i.test(rule))continue;
+    let score=0;
+    if(/button|canvas|\.scope-action|\.session-phase|\.controls?\b|\.game\b|\.arena\b/i.test(selector))score+=8;
+    if(/button|canvas/i.test(selector))score+=3;
+    if(rule.length>=20&&rule.length<=420)score+=2;
+    if(text.split(rule).length-1===1)rows.push({rule,score});
+  }
+  return rows.sort((a,b)=>b.score-a.score||a.rule.length-b.rule.length)[0]?.rule||'';
+}
+export function diagnosticFocusedReplaceOnlySpec({exploration={},sourceRoot='',responsibleFiles=[]}={}){
+  const replay=exploration?.editContract?.causalReplay||{};
+  if(replay.executable!==true||clean(replay.mode).toUpperCase()!=='DIAGNOSTIC_RESCAN')return null;
+  const exactResponsible=unique(responsibleFiles);
+  const diagnosticFile=posix(replay.diagnosticFile);
+  if(exactResponsible.length!==1||!diagnosticFile||!exactResponsible.includes(diagnosticFile)||!clean(sourceRoot))return null;
+  try{
+    const root=path.resolve(sourceRoot),file=path.resolve(root,diagnosticFile);
+    if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return null;
+    const source=fs.readFileSync(file,'utf8'),type=clean(replay.diagnosticType).toUpperCase(),needle=clean(replay.diagnosticNeedle);
+    let find='';
+    if(type==='TOUCH_ACTION_UNSPECIFIED')find=interactiveCssDiagnosticAnchor(source);
+    if(!find&&needle&&source.includes(needle))find=exactDiagnosticAnchor(source,needle);
+    if(!find&&type==='INTERVAL_CLEANUP_RISK'&&source.includes('setInterval('))find=exactDiagnosticAnchor(source,'setInterval(');
+    if(!find&&type==='TOUCH_ACTION_UNSPECIFIED'&&source.split('<style>').length-1===1)find='<style>';
+    if(!find||source.split(find).length-1!==1)return null;
+    const at=source.indexOf(find),radius=1800,context=source.slice(Math.max(0,at-radius),Math.min(source.length,at+find.length+radius)).trim();
+    return{
+      path:diagnosticFile,find,context,
+      diagnosticType:type,
+      diagnosticLine:replay.diagnosticLine??null,
+      diagnosticNeedle:needle||null,
+      diagnosticMicroTask:clean(replay.diagnosticMicroTask)||null
+    };
+  }catch{return null;}
+}
+export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},sourceRoot='',responsibleFiles=[],error=null}={}){
+  const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
+  if(!spec)return null;
+  const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: repair the reproduced diagnostic';
+  const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+  const hardRule=spec.diagnosticType==='INTERVAL_CLEANUP_RISK'
+    ?'HARD POSTCONDITION: replacement source must add a real clearInterval(...) lifecycle path so the exact INTERVAL_CLEANUP_RISK rescan is absent. Do not merely rename or move setInterval.'
+    :spec.diagnosticType==='TOUCH_ACTION_UNSPECIFIED'
+      ?'HARD POSTCONDITION: replacement source must add a real touch-action: CSS declaration to the actual interactive control/arena selector while preserving intended page scrolling. Do not satisfy this with a comment or data attribute.'
+      :'HARD POSTCONDITION: the replacement must directly eliminate the reproduced diagnostic target before any unrelated improvement.';
+  return{
+    spec,
+    prompt:[
+      'You are the Vibe2 causal diagnostic source repair worker. Return JSON only.',
+      goal,
+      `Reproduced diagnostic: ${spec.diagnosticType}:${spec.path}; line=${spec.diagnosticLine??'UNKNOWN'}; needle=${spec.diagnosticNeedle||'UNKNOWN'}`,
+      spec.diagnosticMicroTask?`Required repair: ${spec.diagnosticMicroTask}`:'',
+      hardRule,
+      reason?'Previous failure: '+reason:'',
+      'Exact writable path: '+JSON.stringify(spec.path),
+      'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
+      'Do NOT return path or find. The worker will apply them exactly.',
+      'Return exactly one JSON object with one key: {"replace":"COMPLETE_REPLACEMENT_SOURCE_SNIPPET"}',
+      'replace must be the smallest syntactically valid coherent source replacement that satisfies the diagnostic postcondition and preserves unrelated behavior.',
+      'No markdown, prose, placeholders, ellipsis, or extra keys.',
+      'SOURCE CONTEXT AROUND DIAGNOSTIC ANCHOR:',
+      spec.context
+    ].filter(Boolean).join('\n')
+  };
+}
+export function evaluateDiagnosticPostcondition({candidate={},exploration={}}={}){
+  const replay=exploration?.editContract?.causalReplay||{};
+  if(replay.executable!==true||clean(replay.mode).toUpperCase()!=='DIAGNOSTIC_RESCAN')return{required:false,pass:true,type:null,file:null,reason:null};
+  const type=clean(replay.diagnosticType).toUpperCase(),file=posix(replay.diagnosticFile);
+  const changed=[
+    ...(candidate.edits||[]).filter(row=>posix(row?.path)===file).map(row=>String(row?.replace??'')),
+    ...(candidate.newFiles||[]).filter(row=>posix(row?.path)===file).map(row=>String(row?.content??'')),
+    ...(candidate.replaceFiles||[]).filter(row=>posix(row?.path)===file).map(row=>String(row?.content??''))
+  ].join('\n');
+  let pass=Boolean(changed.trim()),reason=pass?null:'DIAGNOSTIC_FILE_NOT_CHANGED';
+  if(pass&&type==='INTERVAL_CLEANUP_RISK'&&!/\bclearInterval\s*\(/.test(changed)){pass=false;reason='CLEAR_INTERVAL_LIFECYCLE_MISSING';}
+  if(pass&&type==='TOUCH_ACTION_UNSPECIFIED'&&!/touch-action\s*:/i.test(changed)){pass=false;reason='TOUCH_ACTION_POLICY_MISSING';}
+  return{required:true,pass,type,file,reason,needle:clean(replay.diagnosticNeedle)||null,authorityExpanded:false};
+}
+
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
 export function recoverPartialJsonEdit(raw,{reason='timeout'}={}){
   const text=String(raw??'');
@@ -556,6 +661,7 @@ export function generationFailureClass(error){
   const message=clean(error?.message||error);
   if(/실제 source 변경|변경 없는 edit/i.test(message))return'NO_OP';
   if(/시간 초과|timeout|prediction aborted|token repeat limit/i.test(message))return'TIMEOUT';
+  if(/DIAGNOSTIC_POSTCONDITION_MISSING/i.test(message))return'DIAGNOSTIC_POSTCONDITION';
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
   if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
@@ -563,11 +669,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','DIAGNOSTIC_POSTCONDITION'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|SEMANTIC_DIFF_BUDGET_VIOLATION|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|SEMANTIC_DIFF_BUDGET_VIOLATION|DIAGNOSTIC_POSTCONDITION_MISSING|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[]}={}){
   const raw=String(prompt??'');
@@ -904,7 +1010,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary'}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary'}={}){
   let lastError=null;
   let lastRaw='';
   let accumulatedFullWeb=null;
@@ -946,9 +1052,12 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const focusedReplaceOnly=focusedFinal
-      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor})
+    const diagnosticFocusedReplaceOnly=!allowFullRewrite
+      ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
+    const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor})
+      :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
@@ -1210,10 +1319,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const candidateValidator=candidate=>{
     const result=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
     if(!result.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+result.violations.join('|'));
-    return result;
+    const diagnosticPostcondition=evaluateDiagnosticPostcondition({candidate,exploration});
+    if(!diagnosticPostcondition.pass)throw new Error('DIAGNOSTIC_POSTCONDITION_MISSING:'+diagnosticPostcondition.type+':'+diagnosticPostcondition.file+':'+diagnosticPostcondition.reason);
+    return{...result,diagnosticPostcondition};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
-  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant});
+  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
