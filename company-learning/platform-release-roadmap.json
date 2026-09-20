@@ -9892,7 +9892,29 @@
       "isolateOnlyOwnedRepositoryCiCandidateAndExecutionContext": true,
       "authorityExpansion": false,
       "gateWeakening": false,
-      "existingPipelinesOnly": true
+      "existingPipelinesOnly": true,
+      "operationalStatus": "IMPLEMENTED_PENDING_BRANCH_QA",
+      "mergedPrProvenanceCapture": "tools/vibe2-merged-pr-provenance.mjs",
+      "mergedPrProvenanceWorkflow": ".github/workflows/vibe2-merged-pr-provenance.yml",
+      "externalAiDistillation": "tools/vibe2-external-ai-distillation.mjs",
+      "securitySteward": "tools/company-security-steward.mjs",
+      "securityLearning": "tools/company-security-learning.mjs",
+      "assistantAtomicNeuronBinding": {
+        "source": "tools/vibe2-fan-in-review.mjs",
+        "eventType": "SUPERVISOR_RESULT",
+        "verifiedSupervisionRequired": true,
+        "rawOutputStored": false,
+        "queueMutationAuthority": false,
+        "executionAuthority": false,
+        "automaticPromotionAuthority": false
+      },
+      "provenanceGapResolution": {
+        "externalAssistantMergedPrDurablyCaptured": true,
+        "humanMergedPrDurablyCapturedAsProvenanceOnly": true,
+        "otherAiMergedPrDurablyCapturedWhenObservable": true,
+        "mergeDoesNotEqualCapabilityVerification": true,
+        "freshIndependentQaRequiredBeforeReuse": true
+      }
     },
     "rule4": {
       "id": "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION",
