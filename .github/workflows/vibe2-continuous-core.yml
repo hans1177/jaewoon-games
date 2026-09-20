@@ -527,9 +527,9 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
-      - name: Run source-free learning practice
+      - name: Run isolated learning practice
         id: practice
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'analysis-only'
+        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
         continue-on-error: true
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -547,10 +547,16 @@ jobs:
           if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
             ollama pull "$VIBE2_LOCAL_MODEL"
           fi
+          practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
+          artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
           node tools/vibe2-learning-practice-worker.mjs \
             --order=/tmp/vibe2-work-order.json \
-            --output=/tmp/vibe2-learning-practice-result.json
+            --output=/tmp/vibe2-learning-practice-result.json \
+            --artifact-dir="$artifact_dir"
           test -f /tmp/vibe2-learning-practice-result.json
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            test -s "$artifact_dir/index.html"
+          fi
           node tools/vibe2-practice-distillation.mjs \
             --result=/tmp/vibe2-learning-practice-result.json \
             --order=/tmp/vibe2-work-order.json \
@@ -561,7 +567,23 @@ jobs:
           test -f /tmp/vibe2-practice-distillation.json
           echo 'VIBE2_ANALYSIS_WORKER=PRACTICE_ONLY'
           echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
-          echo 'VIBE2_PRACTICE_RAW_CANDIDATE_PERSISTED=NO'
+          echo 'VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO'
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=YES'
+          else
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=NO'
+          fi
+
+      - name: Upload ephemeral Web practice artifact
+        if: always() && steps.order.outputs.route == 'learning-web-artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}
+          path: |
+            /tmp/vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}/index.html
+            /tmp/vibe2-learning-practice-result.json
+          if-no-files-found: warn
+          retention-days: 1
 
       - name: Build task-local exploration handoff
         id: local_exploration
