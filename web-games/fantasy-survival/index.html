@@ -1238,7 +1238,7 @@ function hostApplyRemoteAttack(a){
   const dot=(dx*(a.faceX||1)+dy*(a.faceY||0))/(d||1);if(dot<-.18)continue;
   let dmg=Number(a.damage)||0;if(a.neutralDouble&&e.type.mood==='neutral')dmg*=2;
   if(e.type.burrower)e.provokedByPlayer=true;
-  e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')e.hostile=true;
+  dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')e.hostile=true;
   if(a.bind&&Math.random()<a.bind)e.stunnedUntil=now+2000;
   if(e.hp<=0){
    queueDeathAnimation(e,now);
@@ -1341,13 +1341,13 @@ function finishPetEnemyKill(e,ownerId=multiplayer.playerId){
  state.pet.targetId=null;state.dirty=true
 }
 function hostApplyPetAttack(a){
- if(!multiIsHost()||!a)return;const e=state.enemies.find(x=>x.netId===a.targetId&&x.hp>0);if(!e)return;e.hp-=42;e.hitAt=performance.now()+110;if(e.type.mood==='neutral')e.hostile=true;if(e.hp<=0)finishPetEnemyKill(e,a.ownerId)
+ if(!multiIsHost()||!a)return;const e=state.enemies.find(x=>x.netId===a.targetId&&x.hp>0);if(!e)return;const dmg=enemyIncomingDamage(e,42,performance.now());e.hp-=dmg;e.hitAt=performance.now()+110;if(e.type.mood==='neutral')e.hostile=true;if(e.hp<=0)finishPetEnemyKill(e,a.ownerId)
 }
 function petStrike(e,manual=false){
  if(!petAlive()||!e||e.hp<=0)return false;const now=performance.now();if(now-state.pet.attackAt<750)return false;
  if(dist(state.pet.x,state.pet.y,e.x,e.y)>105+e.type.r)return false;state.pet.attackAt=now;
  if(multiplayer.connected&&!multiIsHost())multiSend('pet-attack',{ownerId:multiplayer.playerId,targetId:e.netId});
- else{e.hp-=42;e.hitAt=now+110;if(e.type.mood==='neutral')e.hostile=true;if(e.hp<=0)finishPetEnemyKill(e,multiplayer.playerId)}
+ else{const dmg=enemyIncomingDamage(e,42,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')e.hostile=true;if(e.hp<=0)finishPetEnemyKill(e,multiplayer.playerId)}
  if(manual)showNotice('그림자 늑대 공격 · 42');return true
 }
 function petMountedAttack(){
@@ -1395,7 +1395,7 @@ function attack(){
      dmg=(15+bonus)+(25+bonus)+(30+bonus);
      showNotice('곰 창 3연타 · 15 / 25 / 30')
    }
-   e.hp-=dmg;e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral')e.hostile=true;
+   dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral')e.hostile=true;
    if(w?.bindChance&&Math.random()<w.bindChance){e.stunnedUntil=now+2000;showNotice(e.type.name+' 속박 · 2초')}
    if(e.hp<=0){
      queueDeathAnimation(e,now);
@@ -1697,8 +1697,12 @@ function monsterTargetForIronSpirit(e){
   }
   return best?{target:best,d:bestD}:null
 }
+function enemyIncomingDamage(target,amount,now=performance.now()){
+ return target?.type?.id==='lakecroc'&&now<(target.stunnedUntil||0)?amount*2:amount
+}
 function damageMonster(target,amount,attacker,now){
   if(!target||target.hp<=0)return;
+  amount=enemyIncomingDamage(target,amount,now);
   target.hp-=amount;
   target.hitAt=now+110;
   if(attacker&&attacker!==target)target.enemyTarget=attacker;
@@ -1750,17 +1754,33 @@ function updateGrabbedPlayer(now){
 }
 function updateCrocodileSpecial(e,targetP,now,playerD){
  if(e.type.id!=='lakecroc'||!e.hostile)return null;
+ if(now<(e.stunnedUntil||0))return{vx:0,vy:0,active:true};
  const s=e.crocState;
  if(s){
   if(s.kind==='retreat'){
-   if(now>=s.until){e.crocState={kind:'charge',until:now+5000};return{vx:0,vy:0,active:true}}
+   if(now>=s.until){
+    const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
+    e.crocState={kind:'charge',until:now+4000,dirX:dx/d,dirY:dy/d};
+    return{vx:0,vy:0,active:true}
+   }
    return{vx:(e.x-targetP.x)/(playerD||1)*e.type.speed*.9,vy:(e.y-targetP.y)/(playerD||1)*e.type.speed*.9,active:true}
   }
   if(s.kind==='charge'){
-   if(now>=s.until){e.crocState=null;return null}
-   if(playerD<e.type.r+28){e.crocState={kind:'drag',until:now+3000};applyEnemyEffectTarget(e,targetP,'grab',3000);showNotice('악어에게 붙잡혔다 · 3초 끌림');return{vx:0,vy:0,active:true}}
-   const chargeSpeed=(Number(targetP.speed)||state.player.speed||185)*3.5;
-   return{vx:(targetP.x-e.x)/(playerD||1)*chargeSpeed,vy:(targetP.y-e.y)/(playerD||1)*chargeSpeed,active:true}
+   if(now>=s.until){
+    e.crocState=null;
+    e.stunnedUntil=now+4000;
+    e.nextCrocCheck=e.stunnedUntil+3000;
+    showNotice('악어 돌진 실패 · 악어 4초 기절 · 받는 피해 2배');
+    return{vx:0,vy:0,active:true}
+   }
+   if(playerD<e.type.r+28){
+    e.crocState={kind:'drag',until:now+3000};
+    applyEnemyEffectTarget(e,targetP,'grab',3000);
+    showNotice('악어에게 붙잡혔다 · 3초 끌림');
+    return{vx:0,vy:0,active:true}
+   }
+   const chargeSpeed=(Number(targetP.speed)||state.player.speed||185)*3;
+   return{vx:(s.dirX||e.faceX||1)*chargeSpeed,vy:(s.dirY||e.faceY||0)*chargeSpeed,active:true}
   }
   if(s.kind==='drag'){
    if(now>=s.until){e.crocState=null;enemyDamageTarget(e,70,true);applyEnemyEffectTarget(e,targetP,'stun',2000);showNotice('악어 뒤집기 · 70 피해 · 2초 기절');return{vx:0,vy:0,active:true}}
@@ -1772,7 +1792,14 @@ function updateCrocodileSpecial(e,targetP,now,playerD){
   }
  }
  if(!e.nextCrocCheck)e.nextCrocCheck=now+3000;
- if(now>=e.nextCrocCheck){e.nextCrocCheck=now+3000;if(playerD<(e.type.detect||760)&&Math.random()<.30){e.crocState={kind:'retreat',until:now+2500};showNotice('악어 · 끌고 뒤집기 준비');return{vx:0,vy:0,active:true}}}
+ if(now>=e.nextCrocCheck){
+  e.nextCrocCheck=now+3000;
+  if(playerD<(e.type.detect||760)&&Math.random()<.30){
+   e.crocState={kind:'retreat',until:now+2500};
+   showNotice('악어 · 끌고 뒤집기 준비');
+   return{vx:0,vy:0,active:true}
+  }
+ }
  return null
 }
 function updateSharkCombo(e,targetP,now,playerD){
