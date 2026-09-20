@@ -46,7 +46,7 @@ function hypothesisCandidates(text=''){
   add('source-generation-path','SOURCE_GENERATION',0.86,/SOURCE_CANDIDATE_GENERATION_FAILED|MALFORMED_OUTPUT|EDIT_MATCH|NO_OP|TIMEOUT/i,'모델 출력 형식·anchor·generation 경로 문제 가능성');
   add('pipeline-or-runner','INFRA',0.82,/WORKFLOW|RUNNER|CHECKOUT|ARTIFACT|CI_FAILURE|INFRA/i,'게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성');
   add('save-compatibility','SAVE_SYSTEM',0.9,/SAVE|LOCALSTORAGE|PERSIST|RESTORE/i,'저장키·저장 의미·복구 경로 호환성 문제 가능성');
-  if(!rows.length)rows.push({id:'responsible-system-unknown','UNKNOWN',confidence:0.35,reason:'명시적 실패 시그니처가 충분하지 않아 추가 증거 필요'});
+  if(!rows.length)rows.push({id:'responsible-system-unknown',system:'UNKNOWN',confidence:0.35,reason:'명시적 실패 시그니처가 충분하지 않아 추가 증거 필요'});
   return rows
     .sort((a,b)=>b.confidence-a.confidence||a.id.localeCompare(b.id))
     .slice(0,6);
