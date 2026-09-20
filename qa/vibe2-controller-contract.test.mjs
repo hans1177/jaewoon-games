@@ -6,15 +6,50 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 import { queueReleaseBaselineGap } from '../tools/vibe2-release-baseline-queue.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
+import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
+
+
+test('performance sanity budgets candidate growth instead of pre-existing file size',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-performance-growth-'));
+  try{
+    const sourceRoot=path.join(root,'web-games','demo');
+    fs.mkdirSync(sourceRoot,{recursive:true});
+    const indexFile=path.join(sourceRoot,'index.html');
+    fs.writeFileSync(indexFile,'a'.repeat(882000),'utf8');
+    execFileSync('git',['init','-q'],{cwd:root});
+    execFileSync('git',['config','user.email','vibe2-test@example.invalid'],{cwd:root});
+    execFileSync('git',['config','user.name','Vibe2 Test'],{cwd:root});
+    execFileSync('git',['add','.'],{cwd:root});
+    execFileSync('git',['commit','-qm','baseline'],{cwd:root});
+    const baseMainSha=String(execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'})).trim();
+    const manifest={sourceRoot:'web-games/demo',changedFiles:['index.html'],baseMainSha,exploration:{reuseKey:'demo',sourceWrite:false}};
+
+    fs.appendFileSync(indexFile,'b'.repeat(50000),'utf8');
+    const allowed=verifyPerformanceSanity({root,manifest});
+    assert.equal(allowed.pass,true);
+    assert.equal(allowed.fileGrowth[0].baseBytes,882000);
+    assert.equal(allowed.fileGrowth[0].growthBytes,50000);
+    assert.equal(allowed.checks.find(row=>row.name==='single-file-growth-budget')?.pass,true);
+
+    fs.appendFileSync(indexFile,'c'.repeat(260001),'utf8');
+    const blocked=verifyPerformanceSanity({root,manifest});
+    assert.equal(blocked.pass,false);
+    assert.equal(blocked.fileGrowth[0].growthBytes,310001);
+    assert.equal(blocked.checks.find(row=>row.name==='single-file-growth-budget')?.pass,false);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
 
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
   const adapter=createVibeEngineAdapter({target:'unreal',gameSlug:'demo'});
