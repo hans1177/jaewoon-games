@@ -1,5 +1,5 @@
 {
-  "version": 187,
+  "version": 188,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6321,7 +6321,8 @@
       "conflictingRootCauseSampleEvidenceBlocksReview": true,
       "duplicateReadinessSamplesCannotInflateVolume": true,
       "conflictingReadinessSampleEvidenceBlocksReview": true,
-      "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true
+      "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true,
+      "legacyUnidentifiedReadinessEvidenceCannotSatisfyQualityMetrics": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6653,7 +6654,10 @@
           "readinessEvidenceDeduplicatedByIdentity": true,
           "conflictingFeedbackEventOrAuditSampleEvidenceBlocksReview": true,
           "identifiedVolumeRequiredForReview": true,
-          "legacyUnidentifiedEvidenceCannotSatisfyVolumeThresholds": true
+          "legacyUnidentifiedEvidenceCannotSatisfyVolumeThresholds": true,
+          "rootCausePredictionQualityUsesIdentifiedSamplesOnly": true,
+          "waveAuditVolumeRequiresDistinctSampleIdentity": true,
+          "legacyUnidentifiedEvidenceCannotAffectReadinessQualityPass": true
         },
         "sampleIdentity": {
           "source": "neural-root-cause.sampleId",
@@ -6675,6 +6679,12 @@
             "calibrationEligible": "DISTINCT_sampleId_WITH_sampleEligible",
             "verifiedRootCause": "DISTINCT_sampleId_WITH_rootCauseVerified",
             "waveAuditSamples": "DISTINCT_sampleId"
+          },
+          "identifiedQualityMetricSources": {
+            "calibrationAccuracy": "DISTINCT_sampleId",
+            "rootCausePredictionCoverage": "DISTINCT_verified_sampleId",
+            "rootCausePredictionContradictionRate": "DISTINCT_verified_sampleId",
+            "waveAuditVolume": "DISTINCT_sampleId"
           }
         },
         "hardening": {
