@@ -50964,6 +50964,1044 @@
             "ollamaCacheHit": true,
             "ollamaRuntimeSource": "CACHE"
           }
+        },
+        {
+          "version": 13,
+          "taskId": "monster-adventure-web-runtime-repair-v1",
+          "reservationId": "35522892888:1",
+          "variant": "speculative-2",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "aec03640e6f6b81f3414418d41e02e02c1f3d61d",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "OTHER",
+            "message": null
+          },
+          "evidence": [
+            "base-main:aec03640e6f6b81f3414418d41e02e02c1f3d61d",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-generation-attempts:3",
+            "coding-generation-attempt-budget:2",
+            "coding-speculative-attempt-budget:YES",
+            "coding-focused-final-retry:YES",
+            "coding-focused-replace-only:YES",
+            "coding-focused-minimal-json:YES",
+            "coding-context-mode:PRIMARY_SYMBOL_WINDOWS",
+            "coding-context-bytes:5406",
+            "coding-focused-symbol-count:2",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:2",
+            "coding-primary-targets:%5B%22gameLoop%22%2C%22updateGameState%22%5D",
+            "coding-primary-systems:%5B%22CORE_STATE%22%2C%22SAVE%22%2C%22PROGRESSION%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22WORLD%22%5D",
+            "coding-semantic-system-budget:3",
+            "coding-semantic-diff-mode:OBSERVE_ONLY",
+            "coding-semantic-diff-pass:YES",
+            "coding-failure-fingerprint:web|MALFORMED_OUTPUT|OTHER",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_104gf8i%22%2C%22CODE_PATTERN%3Apat_14mfn8n%22%2C%22CODE_PATTERN%3Apat_1dffmam%22%2C%22CODE_PATTERN%3Apat_5g68pi%22%2C%22CODE_PATTERN%3Apat_7a30sr%22%2C%22CODE_PATTERN%3Apat_83szfq%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A73a2ceb29bb96077cecf%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9c328ab0d2941e9c1b3c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_d5f1596f6da4a12df001d268%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_cd82f46339f60a9d3d87c01f%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_f0745bd93fed2fbb7993e548%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_3e635acf3cd0fee25dd73fa7%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7636b423561193400bbaf0e6%22%5D",
+            "actions-run:35522892888",
+            "reservation-id:35522892888:1",
+            "variant:speculative-2",
+            "shared-context-policy:81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+            "shared-context-log-map:340b6653b3adf2b4fff3aa2094d4e38d3fd787726acf3504e51d658d2c4ab417",
+            "shared-context-architecture:63ae6cce3ea91b2bf8cd0072fac9610caaeb8dcbe65f085929c71ef49a05d78b",
+            "shared-context-sync:PASS"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": true,
+            "taskId": "monster-adventure-web-runtime-repair-v1",
+            "packageId": "monster-adventure-wp-12l6n8m",
+            "target": "web",
+            "sourceRoot": "web-games/monster-adventure",
+            "baseMainSha": "aec03640e6f6b81f3414418d41e02e02c1f3d61d",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "impactFiles": [
+              "index.html"
+            ],
+            "contextFiles": [
+              "index.html"
+            ],
+            "relatedFiles": [],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "PARTIAL_REPAIR",
+              "confidence": "HIGH",
+              "reasons": [
+                "WORKING_GAMEPLAY_REUSABLE",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 13439,
+                "sourceSha256": "2786176b2e29e03542812371e0243e2eec92c9506f33fc860dad3c3a8164625d",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 6,
+                "gameplaySignals": {
+                  "input": true,
+                  "runtimeLoop": true,
+                  "mutableState": true,
+                  "gameplayOutcome": true,
+                  "progression": true,
+                  "combat": true,
+                  "spatial": false,
+                  "persistence": false,
+                  "mobile": false,
+                  "audio": false
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "monster-adventure",
+              "sourceRoot": "web-games/monster-adventure",
+              "sourcePath": "web-games/monster-adventure/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "index.html",
+                "hash": "2786176b2e29e035",
+                "bytes": 13439
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [
+                  {
+                    "gameId": "monster-adventure",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "gameLoop",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_1c704e6",
+                    "lastUpdatedAt": "2026-09-19T20:57:41.781Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "monster-adventure",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "PROGRESSION",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_1c704e6",
+                    "lastUpdatedAt": "2026-09-19T20:57:41.781Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "monster-adventure",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "CORE_STATE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_1c704e6",
+                    "lastUpdatedAt": "2026-09-19T20:57:41.781Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "monster-adventure",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "updateGameState",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_1c704e6",
+                    "lastUpdatedAt": "2026-09-19T20:57:41.781Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "monster-adventure",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "SAVE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_1c704e6",
+                    "lastUpdatedAt": "2026-09-19T20:57:41.781Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  }
+                ],
+                "focusedChecksAdded": [
+                  "HOTSPOT_RECHECK:SYMBOL:gameLoop",
+                  "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYMBOL:updateGameState",
+                  "HOTSPOT_RECHECK:SYSTEM:SAVE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+                ],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "gameLoop",
+                "updateGameState"
+              ],
+              "allowedResponsibleFiles": [
+                "index.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "gameLoop",
+                "updateGameState",
+                "CORE_STATE",
+                "SAVE",
+                "PROGRESSION"
+              ],
+              "primarySystems": [
+                "CORE_STATE",
+                "SAVE",
+                "PROGRESSION"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "WORLD"
+              ],
+              "directDependentSystems": [
+                "CORE_STATE",
+                "SAVE",
+                "PROGRESSION"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "WORLD"
+              ],
+              "ownedState": [],
+              "readState": [],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBILITY_NOT_RESOLVED",
+                "RESPONSIBLE_FUNCTION:gameLoop",
+                "DOWNSTREAM:updateGameState",
+                "RESPONSIBLE_FUNCTION:updateGameState"
+              ],
+              "requiredObservableResult": "[WEB_REPAIR] 게임: 몬스터 어드벤처\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-3d162bbbec|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-c6398c898e|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-5bae1b38a2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-79f736cab9|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-f8e0f864a6|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|MOBILE_VIEWPORT_REQUIRED|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - UNMAPPED scope-corefun-3d162bbbec | COMBAT/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-coreloop-0-c6398c898e | MOVEMENT/SPATIAL_WORLD | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-coreloop-1-5bae1b38a2 | COMBAT/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-coreloop-2-79f736cab9 | INTERACTION/ENTITY_INTERACTION | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-mobileux-f8e0f864a6 | COMBAT/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. EXTERNAL_AI_ADVISORY=AMBIGUOUS_ONLY; 외부 AI는 제안만 하며 실제 소스/런타임 QA가 최종 확인한다.\nlast-validation-at=2026-09-20T16:16:30.845Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "CORE_STATE",
+                  "SAVE",
+                  "PROGRESSION"
+                ],
+                "preferredPrimarySymbols": [
+                  "gameLoop",
+                  "updateGameState"
+                ],
+                "maxSystemCount": 3,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "WORLD"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PROGRESSION",
+                "HOTSPOT_RECHECK:SYMBOL:gameLoop",
+                "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                "HOTSPOT_RECHECK:SYMBOL:updateGameState",
+                "HOTSPOT_RECHECK:SYSTEM:SAVE"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": false,
+                "nodeTestTargets": [],
+                "executable": false,
+                "mode": "PLAN_ONLY",
+                "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+                "diagnosticType": null,
+                "diagnosticFile": null,
+                "diagnosticLine": null,
+                "diagnosticNeedle": null,
+                "diagnosticMicroTask": null,
+                "verifiedResponsibleSystem": null,
+                "diagnosticVerifier": null,
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|MALFORMED_OUTPUT|OTHER",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "gameLoop",
+                  "updateGameState"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "gameLoop",
+                  "updateGameState",
+                  "CORE_STATE",
+                  "SAVE",
+                  "PROGRESSION"
+                ],
+                "ownedState": [],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PROGRESSION",
+                  "HOTSPOT_RECHECK:SYMBOL:gameLoop",
+                  "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "HOTSPOT_RECHECK:SYMBOL:updateGameState",
+                  "HOTSPOT_RECHECK:SYSTEM:SAVE"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 2,
+                "edgeCount": 1,
+                "maxFunctionBodyBytes": 124,
+                "maxCallsPerFunction": 1,
+                "maxCalledByPerFunction": 1,
+                "maxStateWritesPerFunction": 0,
+                "maxSystemsPerFunction": 3,
+                "multiWriterStateCount": 0,
+                "stateWriterLinkCount": 0,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 1,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 0
+              },
+              "responsibilityGraph": {
+                "nodeCount": 2,
+                "relevantNodes": [
+                  {
+                    "name": "updateGameState",
+                    "systems": [
+                      "CORE_STATE",
+                      "SAVE",
+                      "PROGRESSION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "gameLoop"
+                    ],
+                    "stateReads": [],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "gameLoop",
+                    "systems": [
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "updateGameState"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "gameLoop",
+                    "to": "updateGameState",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 100,
+                "hardBlockers": [],
+                "issues": []
+              },
+              "failureEvidence": [
+                "FAIL",
+                "web-stage:WEB_REPAIR",
+                "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "recovery-exact-stage:WEB_REPAIR",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "coding-failure-fingerprint:web|NO_OP|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|PERFORMANCE|PROGRESSION|QUEST_DESIGN|STATE_MACHINE|WEB_RUNTIME",
+                "failure-cause:source-candidate-generation-failed",
+                "vibe2/candidate/monster-adventure-web-runtime-repair-v1-primary-35460522223-1",
+                "coding-failure-fingerprint:web|NO_OP|MOBILE_INPUT|SAVE_RESTORE|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_PRODUCTION|COMBAT|CORE_LOOP|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|STATE_MACHINE|WEB_RUNTIME",
+                "source-generation-failure:MALFORMED_OUTPUT",
+                "coding-failure-fingerprint:web|NO_OP|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_PRODUCTION|COMBAT|CORE_LOOP|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|STATE_MACHINE|WEB_RUNTIME",
+                "shared-context-sync:MISSING",
+                "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CNO_OP%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CQUEST_DESIGN%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35468182508%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+                "coding-failure-fingerprint:web|MALFORMED_OUTPUT"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "12ba44d12945906327ad3edb",
+            "generatedAt": "2026-09-20T16:34:50.363Z",
+            "reusedFrom": ".vibe2/exploration.json"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "CAUSAL_TRACE_CROSSCHECK",
+            "compiledStrategyHint": "CAUSAL_TRACE_FIRST",
+            "candidateVariant": "speculative-2",
+            "generationAttemptBudget": 2,
+            "speculativeAttemptBudgetApplied": true,
+            "fullWebInitialSeedStrategy": false,
+            "fullWebInitialSeedTargetBytes": [],
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "gameLoop",
+              "updateGameState"
+            ],
+            "primarySystems": [
+              "CORE_STATE",
+              "SAVE",
+              "PROGRESSION"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "WORLD"
+            ],
+            "ownedState": [],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "CORE_STATE",
+                "SAVE",
+                "PROGRESSION"
+              ],
+              "preferredPrimarySymbols": [
+                "gameLoop",
+                "updateGameState"
+              ],
+              "maxSystemCount": 3,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "WORLD"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": {
+              "version": 1,
+              "mode": "OBSERVE_ONLY",
+              "hardGate": false,
+              "pass": true,
+              "confidence": "MEDIUM",
+              "developmentMode": "PRESERVE_PATCH",
+              "markerCount": 5,
+              "editCount": 1,
+              "touchedSystems": [
+                "SAVE",
+                "COMBAT"
+              ],
+              "allowedSystems": [
+                "CORE_STATE",
+                "SAVE",
+                "PROGRESSION"
+              ],
+              "unexpectedSystems": [
+                "COMBAT"
+              ],
+              "unprovenEditPaths": [],
+              "protectedSaveKeyCount": 0,
+              "saveKeyViolations": [],
+              "violations": [],
+              "ambiguousClassificationObserved": true,
+              "writableScopeExpansionAllowed": false,
+              "authorityExpanded": false,
+              "diagnosticPostcondition": {
+                "required": false,
+                "pass": true,
+                "type": null,
+                "file": null,
+                "reason": null
+              }
+            },
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": false,
+              "nodeTestTargets": [],
+              "executable": false,
+              "mode": "PLAN_ONLY",
+              "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+              "diagnosticType": null,
+              "diagnosticFile": null,
+              "diagnosticLine": null,
+              "diagnosticNeedle": null,
+              "diagnosticMicroTask": null,
+              "verifiedResponsibleSystem": null,
+              "diagnosticVerifier": null,
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "requiredFocusedChecks": [
+              "OWNER_STATE_INVARIANTS",
+              "MICRO_CORE_STATE",
+              "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+              "MICRO_PROGRESSION",
+              "HOTSPOT_RECHECK:SYMBOL:gameLoop",
+              "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+              "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+              "HOTSPOT_RECHECK:SYMBOL:updateGameState",
+              "HOTSPOT_RECHECK:SYSTEM:SAVE"
+            ],
+            "failureFingerprint": "web|MALFORMED_OUTPUT|OTHER",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "contextFiles": 1,
+            "contextBytes": 5406,
+            "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+            "contextPreferenceRequested": null,
+            "contextPreferenceApplied": false,
+            "focusedSymbolCount": 2,
+            "exactSourceWindows": true,
+            "fullFileContextFallback": false,
+            "fullWebExpansionStages": 0,
+            "fullWebExpansionDocumentSeedRecoveries": 0,
+            "fullWebClosedHtmlEarlyStop": false,
+            "fullWebFinalAdditiveExpansion": false,
+            "fullWebAdditiveAttemptCreditUsed": false,
+            "fullWebProgressCreditCount": 0,
+            "fullWebProgressCreditUsed": false,
+            "baseAttemptBudget": 2,
+            "effectiveAttemptBudget": 3,
+            "fullWebRetryPromptCompacted": false,
+            "fullWebRetryPromptBytes": 0,
+            "fullWebFallbackBestPartialBytes": 0,
+            "intermediateGrowthBytes": [],
+            "intermediateGrowthTotalBytes": 0,
+            "repeatedIntermediateOutputs": 0,
+            "expansionStageTargets": [],
+            "generationAttempts": 3,
+            "generationRecoveryUsed": true,
+            "partialTimeoutRecovery": false,
+            "partialMalformedRecovery": false,
+            "streamedPartialEditRecovery": false,
+            "focusedFirstEditEarlyStop": false,
+            "focusedFinalRetry": true,
+            "focusedReplaceOnly": true,
+            "focusedReplaceStringRecovery": false,
+            "focusedFirstAttemptFastPath": false,
+            "malformedFastEscalation": false,
+            "focusedReplaceAnchorRotations": 1,
+            "focusedReplaceNoOpCreditUsed": true,
+            "focusedMinimalJsonContract": true,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "CANDIDATE_MANIFEST"
+          },
+          "presentationQuality": {
+            "required": false,
+            "pass": null,
+            "authorityExpanded": false,
+            "staticQaStatus": "NOT_REQUIRED",
+            "staticQaPass": null,
+            "runtimeQaRequired": false
+          },
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/monster-adventure",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "web-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "recovery-exact-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-7",
+                "value": "recovery-exact-stage:UNKNOWN_STAGE",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "validator-classification-or-contract",
+                "system": "VALIDATOR",
+                "confidence": 0.92,
+                "reason": "검증 분류·scope 계약이 실제 게임 요구와 어긋났을 가능성"
+              },
+              {
+                "id": "runtime-gameplay-cycle",
+                "system": "GAME_RUNTIME",
+                "confidence": 0.9,
+                "reason": "실제 플레이 사이클 또는 결과 상태 연결 누락 가능성"
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "audio-runtime-binding",
+                "system": "GAME_AUDIO",
+                "confidence": 0.86,
+                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              },
+              {
+                "id": "pipeline-or-runner",
+                "system": "INFRA",
+                "confidence": 0.82,
+                "reason": "게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "validator-classification-or-contract",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.92,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "runtime-gameplay-cycle",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "save-compatibility",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 3
+              },
+              {
+                "from": "audio-runtime-binding",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 4
+              }
+            ],
+            "responsibility": {
+              "system": "VALIDATOR",
+              "confidence": 0.17490494296577946,
+              "alternatives": [
+                {
+                  "system": "GAME_RUNTIME",
+                  "confidence": 0.17110266159695817
+                },
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.17110266159695817
+                },
+                {
+                  "system": "GAME_AUDIO",
+                  "confidence": 0.16349809885931557
+                }
+              ],
+              "basis": "WEIGHTED_SHADOW_HYPOTHESES",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 6,
+                "recurrence": 2,
+                "sharedScope": 3,
+                "priority": 1,
+                "evidenceConfidence": 0.92
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "WEB_REPAIR",
+              "responsibleSystem": "VALIDATOR",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "SECURITY_POLICY_BLOCK"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_d5f1596f6da4a12df001d268",
+              "capability_ctrace_cd82f46339f60a9d3d87c01f",
+              "capability_ctrace_f0745bd93fed2fbb7993e548",
+              "capability_ctrace_3e635acf3cd0fee25dd73fa7",
+              "capability_ctrace_7636b423561193400bbaf0e6"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_d5f1596f6da4a12df001d268",
+              "capability_ctrace_cd82f46339f60a9d3d87c01f",
+              "capability_ctrace_f0745bd93fed2fbb7993e548",
+              "capability_ctrace_3e635acf3cd0fee25dd73fa7",
+              "capability_ctrace_7636b423561193400bbaf0e6"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 204487,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "CODE_PATTERN:pat_104gf8i",
+              "CODE_PATTERN:pat_14mfn8n",
+              "CODE_PATTERN:pat_1dffmam",
+              "CODE_PATTERN:pat_5g68pi",
+              "CODE_PATTERN:pat_7a30sr",
+              "CODE_PATTERN:pat_83szfq",
+              "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf",
+              "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c",
+              "VERIFIED_CAPABILITY:capability_ctrace_d5f1596f6da4a12df001d268",
+              "VERIFIED_CAPABILITY:capability_ctrace_cd82f46339f60a9d3d87c01f",
+              "VERIFIED_CAPABILITY:capability_ctrace_f0745bd93fed2fbb7993e548",
+              "VERIFIED_CAPABILITY:capability_ctrace_3e635acf3cd0fee25dd73fa7",
+              "VERIFIED_CAPABILITY:capability_ctrace_7636b423561193400bbaf0e6"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35522892888:1",
+            "reservedAt": "2026-09-20T16:31:42Z",
+            "workerStartedAt": 1789922044227,
+            "workerFinishedAt": 1789922248714,
+            "checkoutMs": 4692,
+            "modelPrepMs": 7487,
+            "candidateMs": 157529,
+            "qaMs": 0,
+            "workerTotalMs": 204487,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
         }
       ],
       "companyContext": null,
