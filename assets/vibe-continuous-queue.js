@@ -33,6 +33,25 @@ function normalizeConcurrencyLimit(value, fallback = DEFAULT_MAX_CONCURRENT_TASK
   return Math.max(1, Math.floor(raw));
 }
 
+const UNLIMITED_RETRY_POLICY='UNLIMITED_CAUSAL_REPAIR';
+function unlimitedRetryEligible(input = {}) {
+  const explicit=clean(input.retryPolicy).toUpperCase();
+  if(explicit===UNLIMITED_RETRY_POLICY)return true;
+  if(explicit==='BOUNDED')return false;
+  const department=clean(input.department).toLowerCase();
+  const type=clean(input.type||'implementation').toLowerCase();
+  return department==='development'
+    &&type==='implementation'
+    &&input.requiresOwnerDecision!==true
+    &&input.protectedChange!==true
+    &&input.paidResourceRequired!==true;
+}
+function retryLimitAllows(task={},nextRetries=0){
+  if(clean(task.retryPolicy).toUpperCase()===UNLIMITED_RETRY_POLICY)return true;
+  const limit=Number(task.maxRetries);
+  return Number.isFinite(limit)&&nextRetries<=limit;
+}
+
 const VIBE_EXECUTION_LANES = Object.freeze(['GAME_PRIMARY','RECOVERY_FAST','CONTROL_FAST','LEARNING_IDLE','RELEASE_WAIT']);
 function inferExecutionLane(input = {}) {
   const status=clean(input.status).toLowerCase();
@@ -167,6 +186,8 @@ function normalizeTask(input = {}, index = 0) {
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
   const supervisionContract = normalizeSupervisionContract(input.supervisionContract) || (supervisionEvidenceRequired(input)?defaultSupervisionContract():null);
   const supervised = supervisionContract?.required===true;
+  const unlimitedRetry=unlimitedRetryEligible(input);
+  const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
   const task = {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
@@ -181,7 +202,8 @@ function normalizeTask(input = {}, index = 0) {
     releaseState: normalizeReleaseState(input.releaseState || input.homepageCategory),
     status,
     retries: clampInt(input.retries),
-    maxRetries: Math.max(0, clampInt(input.maxRetries ?? 2)),
+    retryPolicy,
+    maxRetries: unlimitedRetry ? null : Math.max(0, clampInt(input.maxRetries ?? 2)),
     ownerDirective: Boolean(input.ownerDirective),
     requiresOwnerDecision: Boolean(input.requiresOwnerDecision),
     protectedChange: Boolean(input.protectedChange),
@@ -258,7 +280,8 @@ export function createVibeContinuousQueue(seed = {}) {
       longWorkPackagePriority: true,
       minimumWorkloadGate: true
     }),
-    defaultMaxRetries: 2,
+    defaultMaxRetries: null,
+    defaultRetryPolicy: UNLIMITED_RETRY_POLICY,
     tasks: freeze(tasks)
   });
 }
@@ -273,7 +296,7 @@ function taskBlockedReasons(task, completed) {
   if (task.protectedChange) reasons.push('protected-change-requires-authorization');
   if (task.paidResourceRequired) reasons.push('paid-resource-forbidden');
   if (task.blocker && task.status !== 'running') reasons.push(`explicit-blocker:${task.blocker}`);
-  if (task.retries > task.maxRetries) reasons.push('retry-limit-exceeded');
+  if (clean(task.retryPolicy).toUpperCase()!==UNLIMITED_RETRY_POLICY && Number.isFinite(Number(task.maxRetries)) && task.retries > Number(task.maxRetries)) reasons.push('retry-limit-exceeded');
   for (const dependency of task.dependencies) if (!completed.has(dependency)) reasons.push(`dependency-not-complete:${dependency}`);
   return freezeList(reasons);
 }
@@ -366,7 +389,7 @@ function dynamicConcurrency(queue, requested = null) {
     task.status === 'queued' &&
     task.lastOutcome === 'FAIL' &&
     task.retries > 0 &&
-    task.retries <= task.maxRetries
+    retryLimitAllows(task,task.retries)
   ).length;
   // Queue-local pressure is observed but must not collapse unrelated lanes.
   // Persistent adaptive control reacts to verified runner/system pressure; waiting QA/quota/runtime work already releases capacity.
@@ -577,8 +600,10 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
     if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
     const nextRetries = task.retries + 1;
-    const canRetry = Boolean(retryable && nextRetries <= task.maxRetries);
-    return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: mergedEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
+    const canRetry = Boolean(retryable && retryLimitAllows(task,nextRetries));
+    const failureSignature=clean(blocker)||'retryable-failure';
+    const failureEvidence=freezeList([...mergedEvidence,`retry-failure-signature:${failureSignature}`,canRetry?'retry-policy:UNLIMITED_OR_WITHIN_BOUND':'retry-policy:TERMINAL']);
+    return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: failureEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
   });
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
   const next = selectVibeQueueBatch(nextQueue);
