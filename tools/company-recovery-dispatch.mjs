@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isSafeSecurityRepairFile } from './company-recovery-queue.mjs';
 
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
@@ -12,6 +13,13 @@ function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function clearReservation(t){return{...t,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null};}
+function securityRepairFiles(rec={}){
+  return uniq((rec.evidence||[])
+    .map(clean)
+    .filter(x=>x.startsWith('security-repair-file:'))
+    .map(x=>clean(x.slice('security-repair-file:'.length)))
+    .filter(isSafeSecurityRepairFile));
+}
 
 export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQueueInput={},route='all'}={}){
   const stamp=now(), mode=clean(route).toLowerCase();
@@ -66,10 +74,16 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     }else return rec;
     if(touched===0){
       if(owner==='SYSTEM_AI'&&clean(rec.sourceQueue).toLowerCase()==='security'){
+        const repairFiles=securityRepairFiles(rec);
         return{
           ...rec,
-          status:'blocked-executor-missing',
-          dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'security-recovery-executor-missing','recovery-dispatch-blocked-at:'+stamp]),
+          status:repairFiles.length?'blocked-primary-ai-assignment-required':'blocked-executor-missing',
+          dispatchEvidence:uniq([
+            ...(rec.dispatchEvidence||[]),
+            'security-recovery-executor-missing',
+            ...(repairFiles.length?['primary-ai-assignment-required',...repairFiles.map(file=>'primary-ai-repair-file:'+file)]:[]),
+            'recovery-dispatch-blocked-at:'+stamp
+          ]),
           updatedAt:stamp
         };
       }
