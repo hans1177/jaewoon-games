@@ -393,6 +393,9 @@ test('fan-in release requires exact candidate manifest identity',()=>{
   assert.equal(pass.pass,true);
   assert.equal(pass.releaseCandidates.length,1);
   assert.ok(pass.queue.tasks[0].evidence.includes('candidate-identity:PASS'));
+  assert.equal(pass.codingTraces.length,1);
+  assert.equal(pass.codingTraces[0].verification.fullRegressionPass,true);
+  assert.equal(pass.codingTraces[0].verification.reviewPass,true);
 
   const stale=structuredClone(valid);
   stale.candidateIdentity.sourceRoot='web-games/other-game';
@@ -401,6 +404,8 @@ test('fan-in release requires exact candidate manifest identity',()=>{
   assert.equal(blocked.releaseCandidates.length,0);
   assert.ok(blocked.reviewed[0].missing.includes('candidate-identity-source-root'));
   assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
+  assert.equal(blocked.codingTraces[0].verification.fullRegressionPass,false);
+  assert.equal(blocked.codingTraces[0].verification.reviewPass,false);
 });
 
 test('supervised Web candidates learn review decisions and stay unreleased until verified PASS approval',()=>{
