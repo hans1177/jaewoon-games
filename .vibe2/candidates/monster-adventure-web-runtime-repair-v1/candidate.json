@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "        function updateGameState() {",
+      "replace": "function updateGameState() { game.player.health -= 10; game.progress += 1; game.saveState = JSON.parse(JSON.stringify(game)); }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

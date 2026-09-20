@@ -41,7 +41,7 @@ Player</div><div id="enemies">Enemies</div><div id="progress"></div><div id="sav
         `;
 
         // Game state update function
-        function updateGameState() {
+function updateGameState() { game.player.health -= 10; game.progress += 1; game.saveState = JSON.parse(JSON.stringify(game)); }
             // Update player health and position
             // Add enemies and progress
             // Save state
