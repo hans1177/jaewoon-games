@@ -1826,7 +1826,7 @@ function damageMonster(target,amount,attacker,now){
     queueDeathAnimation(target,now);
     target.hp=0;
     target.enemyTarget=null;
-    if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+enemyRespawnDelay(e.type)});
+    if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+enemyRespawnDelay(target.type)});
   }
 }
 function enemyFastAttackException(type){
