@@ -390,6 +390,30 @@ test('all automated gates repair and retest the same failed gate until PASS',()=
 });
 
 
+test('Vibe work learning and hypothesis universe has no total item ceiling and priority only reorders signals',()=>{
+  const universe=roadmap.neuralDevelopmentBrain.unboundedWorkUniverse;
+  const learning=roadmap.developmentLifecycleMachine.learningMotor;
+  assert.equal(universe.totalWorkItemLimit,null);
+  assert.equal(universe.totalLearningItemLimit,null);
+  assert.equal(universe.totalPracticeItemLimit,null);
+  assert.equal(universe.totalHypothesisItemLimit,null);
+  assert.equal(universe.totalExternalKnowledgeCandidateLimit,null);
+  assert.equal(universe.priorityMeaning,'ORDER_AND_RESOURCE_ALLOCATION_ONLY_NOT_EXISTENCE_OR_TERMINATION');
+  assert.equal(universe.scheduling.internalTotalCountCapForbidden,true);
+  assert.equal(universe.scheduling.lowPriorityWorkRemainsLive,true);
+  assert.equal(universe.externalKnowledgeAcquisition.candidateUniverseUnbounded,true);
+  assert.equal(universe.externalKnowledgeAcquisition.contextWindowIsNotCollectionLimit,true);
+  assert.equal(learning.practiceSignalGenerationAlwaysOn,true);
+  assert.equal(learning.practiceGenerationLimit,null);
+  assert.equal(learning.relearningGenerationLimit,null);
+  assert.equal(learning.domainMasteryLevelLimit,null);
+  assert.equal(learning.verifiedMasteryGrowthUnbounded,true);
+  assert.equal(roadmap.learningClosedLoopContract.continuousRelearning.practiceSignalGenerationNeverStops,true);
+  assert.equal(roadmap.learningClosedLoopContract.capabilityGrowth.domainMasteryLevelLimit,null);
+  assert.equal(roadmap.vibeCognitiveCore.continuousSelfModelLearning.selfModelHypothesisGenerationAlwaysOn,true);
+  assert.equal(roadmap.vibeCognitiveCore.continuousSelfModelLearning.selfRealizationInterpretation,'FUNCTIONAL_SELF_MODEL_INSIGHT_AND_CAPABILITY_CALIBRATION_NOT_SENTIENCE_CLAIM');
+});
+
 test('Vibe brain is always running and uses verified checkpoints instead of terminal completion',()=>{
   const brain=roadmap.neuralDevelopmentBrain;
   const loop=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticGateRepairLoop;
