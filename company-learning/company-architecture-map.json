@@ -1,5 +1,5 @@
 {
-  "version": 36,
+  "version": 37,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -329,7 +329,15 @@
         "consumer": "tools/vibe2-neural-critic.mjs",
         "prePatchReproductionRequired": true,
         "executedReplayPassRequired": true,
-        "rootCauseAuthority": "NONE"
+        "rootCauseAuthority": "NONE",
+        "failedReplayTelemetryHardening": {
+          "state": "MERGED_MAIN",
+          "sourcePr": 1854,
+          "mergedCommit": "a2f751e0c5f46450da6fd10b45744a825af0bee1",
+          "executedFailTelemetryPreserved": true,
+          "executedFailResponsibleSystemVerification": false,
+          "executionAuthority": "NONE"
+        }
       },
       "rootCauseVerifier": "tools/vibe2-neural-root-cause.mjs",
       "rootCauseFanInBinding": "tools/vibe2-fan-in-review.mjs",
@@ -476,7 +484,7 @@
           "system": "BOTTLENECK_DIAGNOSIS"
         }
       ],
-      "currentStage": "NEXT_PRODUCTION_WAVE_CAUSAL_VALIDATION",
+      "currentStage": "POST_V2_PRODUCTION_SHADOW_OBSERVATION",
       "mergedRepairPRs": [
         1815,
         1817
@@ -486,7 +494,84 @@
       "mergedSecurityFollowupPR": 1826,
       "mergedSecurityFollowupCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3",
       "mergedReadinessHardeningPR": 1825,
-      "mergedReadinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
+      "mergedReadinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d",
+      "latestProductionRuntimeObservation": {
+        "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
+        "dedupeKey": "neural-production-shadow-runtime-observation",
+        "observedAt": "2026-09-20T03:15:00Z",
+        "documentSyncBaseMainHead": "8847217bc22b6135f6eec6e3cdb3d6b0666527cf",
+        "queueBranch": "vibe2-unreal-core",
+        "queueBlobSha": "1d259511f7cf10b520cc1c30a0da9a10fa62a7b0",
+        "currentQueueSnapshot": {
+          "totalTasks": 105,
+          "statusCounts": {
+            "cancelled": 63,
+            "done": 32,
+            "blocked": 1,
+            "running": 5,
+            "queued": 4
+          },
+          "latestInProgressWave": {
+            "runId": 35485977606,
+            "state": "WORKERS_IN_PROGRESS_AT_OBSERVATION",
+            "reservedTaskCount": 1,
+            "workerFanOut": 3,
+            "reservePassed": true,
+            "modelCachePassed": true,
+            "fanInObserved": false
+          }
+        },
+        "latestCompletedPostV2Wave": {
+          "runId": 35485554432,
+          "fanInPassed": true,
+          "workerCount": 12,
+          "effectiveMax": 20,
+          "actualPeakConcurrency": 12,
+          "effectivePeakUtilizationPct": 60,
+          "failureRatePct": 16.67,
+          "pressureLevel": "MEDIUM",
+          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "shadowEventIdentityVersion": 2,
+          "shadowEventRows": 16,
+          "shadowEventTypes": {
+            "WORKER_RESULT": 12,
+            "CI_RESULT": 4
+          },
+          "normalizedEventIdentityDuplicateKeys": 0,
+          "waveAuditRows": 4,
+          "waveAuditDuplicateSampleKeys": 0,
+          "calibrationFeedbackRows": 12,
+          "calibrationEligibleRows": 2,
+          "calibrationStates": {
+            "UNKNOWN": 10,
+            "MISMATCH": 2
+          },
+          "unauthorizedAuthorityBitFireCount": 0
+        },
+        "durableQueueEvidenceSnapshot": {
+          "shadowEventRows": 255,
+          "rawVersion1EventRows": 239,
+          "eventIdentityVersion2Rows": 16,
+          "legacyV1SampleOnlyEventIdCollisionKeys": 47,
+          "normalizedEventIdentityDuplicateKeys": 0,
+          "waveAuditRows": 51,
+          "waveAuditDuplicateSampleKeys": 0,
+          "exactPerTaskEvidenceDuplicateRows": 0,
+          "unauthorizedAuthorityBitFireCount": 0,
+          "interpretation": "LEGACY_V1_SAMPLE_ONLY_EVENT_ID_COLLISIONS_REMAIN_AUDITABLE_BUT_EVENT_TYPE_NORMALIZATION_AND_V2_EVENT_IDS_SHOW_ZERO_TRUE_EVENT_DUPLICATES"
+        },
+        "authoritySafety": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "neuralExecutionAuthority": false,
+          "neuralWorkerCreationAuthority": false,
+          "neuralQueueMutationAuthority": false,
+          "neuralWaveReorderAuthority": false,
+          "neuralLockOrPolicyMutationAuthority": false,
+          "neuralAutomaticLearningTuningPromotion": false
+        },
+        "nextGate": "CONTINUE_PRODUCTION_SHADOW_OBSERVATION_AND_VERIFY_SOURCE_CANDIDATE_GENERATION_BOTTLENECK_AND_ZERO_UNAUTHORIZED_FIRE",
+        "authority": "OBSERVE_COMPARE_ONLY_NO_EXECUTION_AUTHORITY"
+      }
     }
   },
   "roadmapAssistantOrchestration": {
