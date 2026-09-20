@@ -51,6 +51,8 @@ test('reproduced interval diagnostic is anchored before incremental QA',()=>{
   const focused=buildDiagnosticFocusedReplaceOnlyPrompt('Goal: [DIAGNOSTIC_BUNDLE] interval cleanup',{exploration,sourceRoot,responsibleFiles:['rpg.html']});
   assert.ok(focused);
   assert.match(focused.prompt,/clearInterval/);
+  assert.doesNotMatch(focused.prompt,/COMPLETE_REPLACEMENT_SOURCE_SNIPPET/);
+  assert.match(focused.prompt,/exactly one key named "replace"/);
   assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:'function start(){ AUDIO.timer=setInterval(()=>tick(),285); }'}]},exploration}).pass,false);
   const repaired='function stop(){ if(AUDIO.timer){ clearInterval(AUDIO.timer); AUDIO.timer=null; } }\nfunction start(){ stop(); AUDIO.timer=setInterval(()=>tick(),285); }';
   assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:repaired}]},exploration}).pass,true);
