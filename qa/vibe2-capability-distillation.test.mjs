@@ -5,6 +5,8 @@ import fs from 'node:fs';
 import {
   buildObservableCodingTrace,
   buildVerifiedCapabilityExperienceReview,
+  buildCapabilityApplicationReviews,
+  applyCapabilityApplicationReviews,
   mergeCodingTraceLedger,
   retrieveVerifiedCapabilities,
   verifiedCapabilityGuidance
@@ -263,6 +265,91 @@ test('explicit capability retrieval selects only verified reusable capability ex
   assert.match(guidance,/MUST NOT expand writable scope/);
 });
 
+
+test('phase 3 binds exact injected capability ids to fresh qa and only repeated independent passes raise capability confidence',()=>{
+  const memory={records:[{
+    id:'cap_verified',
+    gameId:'bug-defense',
+    engine:'web',
+    departments:['development','qa'],
+    taskType:'coding-capability-distillation',
+    problem:'save restore bug',
+    goal:'repair save flow',
+    change:'strategy RESPONSIBILITY_FIRST',
+    outcome:'PASS',
+    qa:['full-fan-in-regression-pass'],
+    evidence:['actions-run:200','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:CODING_STRATEGY:RESPONSIBILITY_FIRST'],
+    verified:true
+  }]};
+  const task1={...task,id:'task-capability-app-1',compiledWorkContract:{...task.compiledWorkContract,workKey:'bug-defense:web:save:1'}};
+  const result1={
+    ...passResult,
+    taskId:task1.id,
+    reservationId:'reservation-app-1',
+    candidateBranch:'vibe2/candidate/bug-defense-app-1',
+    capabilityApplication:{
+      version:1,
+      injected:true,
+      exactInjectedCapabilityIds:['cap_verified'],
+      workKey:task1.compiledWorkContract.workKey
+    }
+  };
+  const reviews1=buildCapabilityApplicationReviews({task:task1,result:result1,finalReviewPass:true,selected:true});
+  assert.equal(reviews1.length,1);
+  assert.equal(reviews1[0].capabilityId,'cap_verified');
+  assert.equal(reviews1[0].freshTaskQaPass,true);
+  assert.deepEqual(reviews1[0].coAppliedCapabilityIds,['cap_verified']);
+  assert.equal(reviews1[0].rawCodeStored,false);
+  const applied1=applyCapabilityApplicationReviews(memory,reviews1);
+  assert.equal(applied1.applied,1);
+  const first=applied1.memory.records.find(row=>row.id==='cap_verified');
+  assert.equal(first.capabilityLifecycle.state,'APPLICATION_OBSERVED');
+  assert.equal(first.capabilityLifecycle.independentPassCount,1);
+  assert.equal(first.capabilityConfidence,0.5);
+
+  const duplicate=applyCapabilityApplicationReviews(applied1.memory,reviews1);
+  assert.equal(duplicate.applied,0);
+  assert.equal(duplicate.duplicates,1);
+  assert.equal(duplicate.memory.records.find(row=>row.id==='cap_verified').capabilityLifecycle.independentPassCount,1);
+
+  const task2={...task,id:'task-capability-app-2',compiledWorkContract:{...task.compiledWorkContract,workKey:'bug-defense:web:save:2'}};
+  const result2={
+    ...passResult,
+    taskId:task2.id,
+    reservationId:'reservation-app-2',
+    candidateBranch:'vibe2/candidate/bug-defense-app-2',
+    capabilityApplication:{version:1,injected:true,exactInjectedCapabilityIds:['cap_verified'],workKey:task2.compiledWorkContract.workKey}
+  };
+  const applied2=applyCapabilityApplicationReviews(duplicate.memory,buildCapabilityApplicationReviews({task:task2,result:result2,finalReviewPass:true,selected:true}));
+  const second=applied2.memory.records.find(row=>row.id==='cap_verified');
+  assert.equal(second.capabilityLifecycle.state,'REPEATED_APPLICATION_VERIFIED');
+  assert.equal(second.capabilityLifecycle.independentPassCount,2);
+  assert.equal(second.capabilityConfidence,0.75);
+
+  const task3={...task,id:'task-capability-app-fail',compiledWorkContract:{...task.compiledWorkContract,workKey:'bug-defense:web:save:fail'}};
+  const failed={
+    ...passResult,
+    taskId:task3.id,
+    reservationId:'reservation-app-fail',
+    candidateBranch:null,
+    outcome:'FAIL',
+    roleResults:{exploration:'PASS',implementation:'FAIL',test:'FAIL',performance:'FAIL',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
+    capabilityApplication:{version:1,injected:true,exactInjectedCapabilityIds:['cap_verified'],workKey:task3.compiledWorkContract.workKey}
+  };
+  const appliedFailure=applyCapabilityApplicationReviews(applied2.memory,buildCapabilityApplicationReviews({task:task3,result:failed,finalReviewPass:false,selected:false}));
+  const afterFailure=appliedFailure.memory.records.find(row=>row.id==='cap_verified');
+  assert.equal(afterFailure.capabilityLifecycle.independentPassCount,2);
+  assert.equal(afterFailure.capabilityLifecycle.contradictionCount,0);
+  assert.equal(afterFailure.capabilityConfidence,0.75);
+  assert.equal(afterFailure.capabilityLifecycle.unrelatedFailurePenaltyApplied,false);
+});
+
+test('phase 3 ignores capability application when no capability was actually injected',()=>{
+  const result={...passResult,capabilityApplication:{version:1,injected:false,exactInjectedCapabilityIds:['cap_verified']}};
+  assert.deepEqual(buildCapabilityApplicationReviews({task,result,finalReviewPass:true,selected:true}),[]);
+});
+
 test('capability guidance is empty when no verified capability matches exist',()=>{
   const retrieval=retrieveVerifiedCapabilities({
     experienceInput:{records:[]},
@@ -285,6 +372,9 @@ test('continuous runner injects verified capability memory once and partitions i
   assert.match(source,/executionGoal = \[.*verifiedCapabilityMemoryGuidance/s);
   assert.match(source,/duplicateInjectionAllowed:false/);
   assert.match(source,/verifiedCapabilityMemoryAppliedToWorkerGoal/);
+  assert.match(source,/capabilityApplicationContract/);
+  assert.match(source,/exactInjectedCapabilityIds/);
+  assert.match(source,/SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA/);
   assert.match(source,/VIBE2_VERIFIED_CAPABILITY_COUNT/);
   assert.match(source,/VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED/);
 });
