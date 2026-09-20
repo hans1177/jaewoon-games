@@ -28623,8 +28623,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": true,
@@ -29617,13 +29617,16 @@
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1%7C35517939015%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fseed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1-primary-35517939015-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
         "release-dispatch-recovery-requested:vibe2/candidate/seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1-primary-35517939015-1",
         "release-dispatch-recovery-at:1789918671672",
-        "release-dispatch-recovery-candidate-sha:02c67530369ee72ea95dd79f82475d02097f61e6"
+        "release-dispatch-recovery-candidate-sha:02c67530369ee72ea95dd79f82475d02097f61e6",
+        "actions-run-35520199497",
+        "retry-failure-signature:web-qa-or-promotion-failed",
+        "retry-policy:UNLIMITED_OR_WITHIN_BOUND"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35520328070:1",
-      "reservationRunId": "35520328070",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T15:43:14Z",
+      "lastOutcome": "FAIL",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 3,
       "neuronResults": [
         {
