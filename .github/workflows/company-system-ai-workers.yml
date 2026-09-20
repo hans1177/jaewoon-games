@@ -214,6 +214,29 @@ jobs:
           node tools/company-shared-context.mjs --output=/tmp/system-ai-context-before.json
           node tools/company-system-ai-worker.mjs             --task=/tmp/system-ai-task.json             --output=/tmp/system-ai-worker-result.json 2>&1 | tee /tmp/system-ai-worker.log
 
+      - name: Verify no-change assignment against current main
+        id: current_main
+        if: steps.implement.outcome == 'failure'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'SYSTEM_AI_NO_CHANGE' /tmp/system-ai-worker.log
+          git diff --quiet
+          node - <<'NODE' > /tmp/system-ai-current-main-verification-commands.txt
+          const fs=require('fs');
+          const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
+          const commands=Array.isArray(task.verificationCommands)?task.verificationCommands:[];
+          if(!commands.length)throw new Error('SYSTEM_AI_CURRENT_MAIN_VERIFICATION_REQUIRED');
+          for(const cmd of commands)process.stdout.write(String(cmd).replace(/[\r\n]+/g,' ')+'\n');
+          NODE
+          while IFS= read -r cmd; do
+            [ -n "$cmd" ] || continue
+            echo "COMPANY_SYSTEM_AI_CURRENT_MAIN_VERIFY=$cmd"
+            timeout 240s bash -lc "$cmd"
+          done < /tmp/system-ai-current-main-verification-commands.txt
+          echo 'COMPANY_SYSTEM_AI_CURRENT_MAIN_SATISFIED=YES'
+
       - name: Verify external AI candidate
         id: verify
         if: steps.implement.outcome == 'success'
@@ -273,6 +296,7 @@ jobs:
           IMPLEMENT_OUTCOME: ${{ steps.implement.outcome }}
           VERIFY_OUTCOME: ${{ steps.verify.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          CURRENT_MAIN_OUTCOME: ${{ steps.current_main.outcome }}
           PR_URL: ${{ steps.publish.outputs.pr_url }}
         shell: bash
         run: |
@@ -291,16 +315,19 @@ jobs:
               findings:(report.findings||[]).map(x=>({rule:x.rule,severity:x.severity,category:x.category,file:x.file,line:x.line,evidenceSha256:x.evidenceSha256,disposition:x.disposition||'QUARANTINE'}))
             };
           }
-          const ok=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
-          const blocker=ok?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
+          const currentMainSatisfied=process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success';
+          const candidateOk=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
+          const blocker=currentMainSatisfied||candidateOk?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
           const row={
-            version:2,taskId:process.env.TASK_ID,outcome:ok?'PASS':'FAIL',blocker,security,
-            candidateBranch:ok?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:ok?(process.env.PR_URL||null):null,
+            version:3,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,
+            candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
             evidence:[
               `actions-run:${process.env.GITHUB_RUN_ID}`,
               `implementation:${process.env.IMPLEMENT_OUTCOME||'unknown'}`,
               `verification:${process.env.VERIFY_OUTCOME||'unknown'}`,
               `publish:${process.env.PUBLISH_OUTCOME||'unknown'}`,
+              `current-main-verification:${process.env.CURRENT_MAIN_OUTCOME||'unknown'}`,
+              ...(currentMainSatisfied?['no-candidate-required:current-main-already-satisfies-task']:[]),
               ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
               worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
               'worker-self-acceptance:NO',
