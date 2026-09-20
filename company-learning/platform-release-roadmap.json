@@ -8661,7 +8661,7 @@
         "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS"
       },
       "vibeBottleneckCentralCheckpoint": {
-        "state": "ACTIVE_BOTTLENECK_FIRST_REPAIR",
+        "state": "ACTIVE_BOTTLENECK_FIRST_REPAIR_PR_2013_PENDING_MERGE",
         "recordedAt": "2026-09-20T17:55:00+09:00",
         "syncedMainHead": "674c755a9c20d761c47306089abffb548b86aa70",
         "completedRepairs": [
@@ -8760,7 +8760,8 @@
           "noWaveReorderAuthorityExpansion": true,
           "noDirectMainAuthorityExpansion": true,
           "noQaBypass": true
-        }
+        },
+        "sourcePr": 2013
       }
     }
   },
