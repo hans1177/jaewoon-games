@@ -677,12 +677,15 @@ jobs:
           mkdir -p /tmp/vibe2-qa-cache
           manifest="$CANDIDATE_MANIFEST"
           test -f "$manifest"
+          set +e
           node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-incremental-qa.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
             --cache=/tmp/vibe2-qa-cache/cache.json \
             --namespace="$CACHE_NAMESPACE" \
-            --output=/tmp/vibe2-incremental-qa.json | tee /tmp/vibe2-incremental-qa.log
+            --output=/tmp/vibe2-incremental-qa.json 2>&1 | tee /tmp/vibe2-incremental-qa.log
+          qa_rc=${PIPESTATUS[0]}
+          set -e
           hash="$(sed -n 's/^VIBE2_INCREMENTAL_QA_HASH=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           cache="$(sed -n 's/^VIBE2_INCREMENTAL_QA_CACHE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_status="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
@@ -694,6 +697,8 @@ jobs:
           presentation_status="$(sed -n 's/^VIBE2_PRESENTATION_QA_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           presentation_pass="$(sed -n 's/^VIBE2_PRESENTATION_QA_PASS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           presentation_runtime_required="$(sed -n 's/^VIBE2_PRESENTATION_RUNTIME_REQUIRED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          failure_signature="$(sed -n 's/^VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          failure_message="$(sed -n 's/^VIBE2_INCREMENTAL_QA_FAILURE_MESSAGE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
           echo "cache=$cache" >> "$GITHUB_OUTPUT"
           echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
@@ -705,8 +710,15 @@ jobs:
           echo "presentation_status=$presentation_status" >> "$GITHUB_OUTPUT"
           echo "presentation_pass=$presentation_pass" >> "$GITHUB_OUTPUT"
           echo "presentation_runtime_required=$presentation_runtime_required" >> "$GITHUB_OUTPUT"
+          echo "failure_signature=$failure_signature" >> "$GITHUB_OUTPUT"
+          echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
           qa_finished="$(date +%s%3N)"
           echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
+          if [ "$qa_rc" -ne 0 ]; then
+            echo 'VIBE2_TEST_ROLE=FAIL'
+            echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
+            exit "$qa_rc"
+          fi
           echo 'VIBE2_TEST_ROLE=PASS'
           echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
 
@@ -753,6 +765,7 @@ jobs:
           IQA_OUTCOME: ${{ steps.incremental_qa.outcome }}
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
+          IQA_FAILURE_SIGNATURE: ${{ steps.incremental_qa.outputs.failure_signature }}
           IQA_CAUSAL_REPLAY_STATUS: ${{ steps.incremental_qa.outputs.causal_replay_status }}
           IQA_CAUSAL_REPLAY_EXECUTED: ${{ steps.incremental_qa.outputs.causal_replay_executed }}
           IQA_ARCHITECTURE_DRIFT_STATUS: ${{ steps.incremental_qa.outputs.architecture_drift_status }}
@@ -853,6 +866,7 @@ jobs:
             clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
             clean(process.env.IQA_HASH)&&`incremental-qa-hash:${clean(process.env.IQA_HASH)}`,
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
+            clean(process.env.IQA_FAILURE_SIGNATURE)&&`incremental-qa-failure-signature:${clean(process.env.IQA_FAILURE_SIGNATURE)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_STATUS)&&`causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)&&`architecture-drift-status:${clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)}`,
