@@ -1125,6 +1125,22 @@ test('atomic neuron completion is idempotent for duplicate variant callbacks',()
   assert.equal(duplicate.resultCount,1);
 });
 
+test('completed atomic neuron ignores late duplicate callbacks after micro fan-in',()=>{
+  const reservation={id:'atomic-done:1',runId:'atomic-done',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
+  const queue=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'done',gameId:'done',target:'web',department:'development',type:'implementation',goal:'done',status:'queued',sourceRoot:'web-games/done',responsibleFiles:['index.html']}
+  ]}),{maxConcurrentTasks:1,lane:'game-primary',reservation}).queue;
+  const row={taskId:'done',variant:'primary',outcome:'PASS',reservationId:'atomic-done:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
+  const completed=recordVibeNeuronResult(queue,row,{expectedVariants:1});
+  assert.equal(completed.ready,true);
+  const late=recordVibeNeuronResult(completed.queue,row,{expectedVariants:1});
+  assert.equal(late.updated,false);
+  assert.equal(late.slotReleased,true);
+  assert.equal(late.reason,'TASK_ALREADY_MICRO_FANIN_COMPLETE');
+  assert.equal(late.queue.tasks.find(task=>task.id==='done').neuronExpectedVariants,0);
+  assert.deepEqual(late.queue.tasks.find(task=>task.id==='done').neuronResults,[]);
+});
+
 test('cohort fan-in clears atomic transition state only for accepted reservation results',()=>{
   const reservation={id:'transition:1',runId:'transition',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
   const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
@@ -1206,11 +1222,19 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
-test('continuous core workflow distinguishes pending neuron results from completed micro fan-in',()=>{
+test('continuous core keeps pending neuron callbacks out of heavy reserve and refills once after task micro fan-in',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
-  assert.doesNotMatch(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS/);
+  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_REFILL_RETRY/);
+  assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS/);
+  assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE/);
+  assert.match(workflow,/event_type:'vibe2-fanin-refill'/);
+  assert.match(workflow,/contract_sha:String\(process\.env\.VIBE2_NEURON_CONTRACT_SHA\|\|''\)/);
+  assert.match(workflow,/requested_contract_sha=.*client_payload\?\.contract_sha/);
+  assert.match(workflow,/Fast scheduler preflight\n\s+if: github\.event_name != 'repository_dispatch' \|\| github\.event\.action != 'vibe2-neuron-complete'/);
+  assert.doesNotMatch(workflow,/VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS/);
+  assert.doesNotMatch(workflow,/\[ "\$callback_kind" = 'fanin' \] \|\| \[ "\$callback_kind" = 'neuron' \]/);
 });
 
 

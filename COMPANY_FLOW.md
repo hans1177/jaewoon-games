@@ -226,19 +226,23 @@ ownerCurrentProductionContract:
   developmentConcurrency:
     scope: DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION
     concurrentGameWipTarget: 20
-    concurrentGameWipMax: 20
+    concurrentGameWipMax: null
+    externalProviderBoundary: 256
     globalAcrossConfiguredSelectedPlatformExecutors: true
     parallelExecutionDefault: true
     webValidationParallelismTarget: 20
-    webValidationParallelismMax: 20
-    adaptiveBackpressureSteps: [20, 16, 12, 8, 4]
+    webValidationParallelismMax: null
+    adaptiveExpansionSteps: [20, 32, 64, 128, 256]
     independentGamesMustRunInParallelWhenCapacityExists: true
     sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true
     sameResponsibleFileParallelForbidden: true
     sharedSaveSchemaWritesExclusive: true
     centralPolicyWritesExclusive: true
     parallelismContractGateRequired: true
-    sharedRuntimeStatePersistedBySingleAggregationStep: true
+    atomicNeuronIngressLightweight: true
+    pendingVariantCallbackRunsHeavyReserve: false
+    taskMicroFanInDispatchesSingleRefill: true
+    sharedRuntimeStatePersistedByOptimisticAtomicCommit: true
     validationTiers:
       - MICRO_TARGETED_CHECK
       - FAST_INITIAL_INTEGRATION
@@ -743,10 +747,11 @@ ownerCurrentProductionContract:
   productionThroughput:
     totalWebTestCandidateCountCap: null
     totalGameProductionCountCap: null
-    concurrentGameWipMax: 20
+    concurrentGameWipMax: null
     concurrentGameWipScope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
+    externalProviderBoundary: 256
     webValidationParallelismTarget: 20
-    webValidationParallelismMax: 20
+    webValidationParallelismMax: null
     webValidationParallelFirst: true
     runtimeCapacityMayReduceActualConcurrency: true
     idleAutonomousProduction:
