@@ -11,7 +11,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const motor=json('company-learning/vibe2-learning-motor.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
-  assert.equal(motor.version,5);
+  assert.equal(motor.version,6);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedCodePatterns,57);
@@ -24,6 +24,13 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.closedLoop.externalAiDistilledRetrievalRequired,true);
   assert.equal(motor.closedLoop.exactInjectedKnowledgeIdTraceRequired,true);
   assert.equal(motor.closedLoop.productionConfidenceSeparateFromMastery,true);
+  assert.equal(motor.mastery.domainMasteryLevelLimit,null);
+  assert.equal(motor.mastery.verifiedGrowthUnbounded,true);
+  assert.equal(motor.benchmarkLadder.levels,null);
+  assert.equal(motor.benchmarkLadder.repeatForever,true);
+  assert.equal(motor.idleTraining.practiceSignalGenerationAlwaysOn,true);
+  assert.equal(motor.idleTraining.practiceGenerationLimit,null);
+  assert.equal(motor.idleTraining.productionPresenceDoesNotSuppressPracticeGeneration,true);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{
