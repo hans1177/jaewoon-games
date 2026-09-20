@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 9,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -15,7 +15,11 @@
     "MAIN_AND_RUNTIME_BRANCH_WRITE_PATHS",
     "DEPENDENCY_AND_INSTALL_PATHS",
     "SECRETS_AND_CREDENTIAL_REFERENCES",
-    "RECOVERY_AND_LEARNING_STORES"
+    "RECOVERY_AND_LEARNING_STORES",
+    "ROBLOX_GAME_SERVER_AUTHORITY",
+    "ROBLOX_REMOTE_INPUT_BOUNDARIES",
+    "GAME_SAVE_ECONOMY_REWARD_INTEGRITY",
+    "POST_RELEASE_GAME_SECURITY_REVIEW"
   ],
   "mainThreatClasses": [
     "UNAUTHORIZED_REPOSITORY_WRITE",
@@ -28,7 +32,11 @@
     "UNAPPROVED_NETWORK_EXFILTRATION",
     "POLICY_LOG_ARCHITECTURE_TAMPERING",
     "SECURITY_GATE_BYPASS",
-    "PERSISTENCE_OR_BACKDOOR_BEHAVIOR"
+    "PERSISTENCE_OR_BACKDOOR_BEHAVIOR",
+    "CLIENT_TRUSTED_FOR_SERVER_AUTHORITY",
+    "UNVALIDATED_OR_UNRATE_LIMITED_REMOTE_INPUT",
+    "CLIENT_CONTROLLED_REWARD_DAMAGE_OR_SAVE_AUTHORITY",
+    "GAME_LEVEL_EXPLOIT_OR_DUPLICATION_PATH"
   ],
   "responseLifecycle": [
     "DETECT",
@@ -95,7 +103,9 @@
   },
   "limits": {
     "repositoryAndCiSecurityOnlyUnlessAdditionalInfrastructureTelemetryIsConnected": true,
-    "doesNotClaimHostNetworkFirewallVisibilityWithoutTelemetry": true
+    "doesNotClaimHostNetworkFirewallVisibilityWithoutTelemetry": true,
+    "gameRuntimeSecurityTelemetry": "ONLY_WHEN_PLATFORM_OR_GAME_TELEMETRY_IS_ACTUALLY_CONNECTED",
+    "platformProviderAntiCheatVisibilityNotClaimed": true
   },
   "centralRoadmapBinding": {
     "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -172,5 +182,61 @@
     "rawHostilePayloadStored": false,
     "externalProviderAttackForbidden": true,
     "authorityExpansion": false
+  },
+  "gameSecurityStewardship": {
+    "version": 1,
+    "role": "VIBE_SECURITY_STEWARD",
+    "platforms": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "purpose": "REUSE_EXISTING_SECURITY_OWNER_FOR_GAME_LEVEL_SECURITY_WITHOUT_DUPLICATING_PLATFORM_ANTI_CHEAT",
+    "platformResponsibilityBoundary": {
+      "platformProvider": "PLATFORM_LEVEL_ANTI_TAMPER_ABUSE_AND_GLOBAL_EXPLOIT_DETECTION",
+      "companySecurity": "GAME_SPECIFIC_SERVER_AUTHORITY_REMOTE_INPUT_SAVE_ECONOMY_REWARD_DAMAGE_AND_RELEASE_SECURITY",
+      "duplicatePlatformAntiCheatImplementation": false
+    },
+    "roblox": {
+      "existingStaticGate": "tools/company-development-roblox-bootstrap.mjs",
+      "existingStaticChecks": [
+        "SERVER_REMOTE_BOUNDARY_REQUIRED",
+        "SERVER_REMOTE_INPUT_VALIDATION_REQUIRED",
+        "SERVER_REMOTE_RATE_LIMIT_REQUIRED",
+        "SERVER_LOADSTRING_FORBIDDEN",
+        "SERVER_ASSET_REQUIRE_FORBIDDEN"
+      ],
+      "existingRuntimeEvidence": [
+        "robloxServerClientBoundaryPassed",
+        "robloxIndependentQaPassed",
+        "robloxRegressionPassed"
+      ],
+      "sourceSecurityWorkflow": ".github/workflows/company-security-immune.yml",
+      "sourcePathScope": "roblox-games/**",
+      "postRuntimeQa": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "releasePromotion": ".github/workflows/company-development-roblox-release-promotion.yml"
+    },
+    "checkpoints": [
+      "SOURCE_CANDIDATE_SECURITY_SCAN",
+      "SERVER_AUTHORITY_AND_REMOTE_BOUNDARY_STATIC_GATE",
+      "TARGET_RUNTIME_SERVER_CLIENT_BOUNDARY",
+      "INDEPENDENT_QA_AND_REGRESSION",
+      "FINAL_RELEASE_SECURITY_REVIEW",
+      "POST_RELEASE_SECURITY_FINDING_TRIAGE"
+    ],
+    "postReleaseFindingRoute": {
+      "confirmedExploitOrSecurityBug": "HOTFIX",
+      "releaseBlocking": true,
+      "preemptsMinorAndMajor": true,
+      "requiresSecurityRescan": true,
+      "requiresFocusedRegression": true,
+      "exactArtifactGateRequired": true
+    },
+    "learning": {
+      "verifiedSecurityFindingReturnsToExistingSecurityLearning": true,
+      "rawExploitPayloadStored": false,
+      "rawSecretStored": false,
+      "newTrainerForbidden": true
+    }
   }
 }
