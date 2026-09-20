@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": "function spawnCave(){",
+      "replace": "spawnCaveMonster(CAVE.giant,CAVE.chest.x-120,CAVE.chest.y)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
