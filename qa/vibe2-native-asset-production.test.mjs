@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
-import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
+import {findPresentationQualityTask,findPresentationQualityTasks,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 
 function writePolicy(root,{pilot='fantasy-survival'}={}){
@@ -83,9 +83,37 @@ test('native presentation pass exists only for the central first-adoption game',
       projectPath:'unity-games/other-game',source:'company-status'
     },root,{tasks:[]});
     assert.ok(fantasy);
-    assert.equal(fantasy.id,'fantasy-survival-unity-presentation-asset-adaptation-v1');
+    assert.equal(fantasy.atomicPresentationTask,true);
+    assert.match(fantasy.id,/^fantasy-survival-unity-presentation-atomic-[a-z0-9]+-v2$/);
     assert.equal(fantasy.priority,'owner-immediate');
+    assert.ok(fantasy.evidence.includes('presentation-execution:ATOMIC_FAN_OUT'));
+    assert.ok(fantasy.evidence.includes('presentation-legacy-serial-chain:REMOVED'));
     assert.equal(other,null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('native presentation files fan out atomically when responsibilities are disjoint',()=>{
+  const root=tempRoot();
+  try{
+    const scripts=path.join(root,'unity-games','fantasy-survival','Assets','Scripts');
+    fs.mkdirSync(path.join(scripts,'UI'),{recursive:true});
+    fs.mkdirSync(path.join(scripts,'Vfx'),{recursive:true});
+    fs.mkdirSync(path.join(scripts,'Camera'),{recursive:true});
+    fs.writeFileSync(path.join(scripts,'PrototypeAnimatedVisuals.cs'),'using UnityEngine; public class PrototypeAnimatedVisuals:MonoBehaviour { void Update(){ transform.localScale=Vector3.one; } }\n');
+    fs.writeFileSync(path.join(scripts,'UI','HudView.cs'),'using UnityEngine; public class HudView:MonoBehaviour { }\n');
+    fs.writeFileSync(path.join(scripts,'Vfx','HitEffect.cs'),'using UnityEngine; public class HitEffect:MonoBehaviour { ParticleSystem fx; }\n');
+    fs.writeFileSync(path.join(scripts,'Camera','CameraRig.cs'),'using UnityEngine; public class CameraRig:MonoBehaviour { Camera cam; }\n');
+    const tasks=findPresentationQualityTasks({
+      gameId:'fantasy-survival',engine:'unity',releaseState:'development-confirmed',
+      projectPath:'unity-games/fantasy-survival',source:'company-status'
+    },root,{tasks:[]});
+    assert.ok(tasks.length>=4);
+    assert.ok(tasks.every(row=>row.atomicPresentationTask===true));
+    assert.equal(new Set(tasks.map(row=>row.responsibleFiles[0])).size,tasks.length);
+    assert.ok(tasks.some(row=>row.evidence.includes('presentation-pass:VFX')));
+    assert.ok(tasks.some(row=>row.evidence.includes('presentation-pass:CAMERA_LANGUAGE')));
+    assert.ok(tasks.some(row=>row.evidence.includes('presentation-pass:UI_ART')));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
