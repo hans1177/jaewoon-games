@@ -7860,7 +7860,7 @@
           "mergedCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
         },
         "rootCauseAndCalibrationQualityHardening": {
-          "state": "MERGED_MAIN_CI_VERIFIED_PRODUCTION_REVALIDATION_PENDING",
+          "state": "MERGED_MAIN_CI_VERIFIED_PRODUCTION_RECHECK_AFTER_COVERAGE_FIX",
           "sourcePr": 2054,
           "mergedCommit": "b28abcdaf3c42bd0d529938e7dc6b7418c3b8244",
           "rootCauseEvidenceVersion": 2,
@@ -7893,6 +7893,27 @@
           "automaticPromotionAllowed": false,
           "automaticLearningAllowed": false,
           "automaticTuningAllowed": false,
+          "coverageQualityFix": {
+            "state": "MERGED_MAIN_CI_VERIFIED_PRODUCTION_RECHECK_REQUIRED",
+            "sourcePr": 2058,
+            "mergedCommit": "864e1fafdc63e3dc7b88ff22290e3ae9b0dcdb94",
+            "preFixProductionRun": 35504842647,
+            "preFixFanIn": "PASS",
+            "rootCauseSampleConflicts": 0,
+            "rootCauseLifecycleProgressions": 180,
+            "calibrationContractVersion": 2,
+            "calibrationEligible": 2,
+            "calibrationAccuracy": 1,
+            "verifiedRootCauseCount": 3,
+            "rawRootPredictionCoverage": 2.3333333333333335,
+            "rawCoverageInvalidAboveOne": true,
+            "coverageCalculationFix": "VERIFIED_IDENTIFIED_ROOT_SAMPLES_ONLY",
+            "unexpectedPermissionBits": 0,
+            "unexpectedFireCount": 0,
+            "workGraphCount": 49,
+            "workGraphConflicts": 0,
+            "next": "FRESH_PRODUCTION_FAN_IN_WITH_COVERAGE_FIX"
+          },
           "productionVerificationRequired": true
         },
         "eventIdentityHardening": {
