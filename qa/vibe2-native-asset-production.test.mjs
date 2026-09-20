@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {findPresentationQualityTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -33,6 +34,7 @@ function writePolicy(root,{pilot='fantasy-survival'}={}){
 
 function tempRoot(opts={}){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-native-weather-'));
+  execFileSync('git',['init','-q'],{cwd:root});
   writePolicy(root,opts);
   return root;
 }
