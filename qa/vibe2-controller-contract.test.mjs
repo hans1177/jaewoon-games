@@ -52,7 +52,7 @@ test('fan-in controller contract directly verifies design intelligence stages an
 
 test('runtime enables DAG sharding work stealing with policy-unbounded external-capacity waves',()=>{
   assert(runtime.version>=14);
-  assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
+  assert.equal(runtime.continuous.strategy,'atomic-neuron-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.parallelismPolicy,'UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY');
   assert.equal(runtime.continuous.externalMatrixBatchMax,256);
@@ -237,6 +237,9 @@ test('controller allows approved source root but enforces candidate boundary',()
 });
 
 test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{
+  const reserveStart=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const reserveEnd=workflow.indexOf('  model_cache:',reserveStart);
+  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
   assert(workflow.includes('repository_dispatch:'));
   assert(workflow.includes('types: [vibe2-neuron-complete, vibe2-fanin-refill]'));
   assert(workflow.includes('Dispatch atomic neuron completion'));
@@ -356,7 +359,7 @@ test('worker never mutates shared queue state and only emits an atomic completio
   assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
   assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
   assert(!workerPart.includes('HEAD:refs/heads/vibe2/refill/'));
-  assert(!workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
+  assert(workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
   assert(!workerPart.includes("event_type:'vibe2-slot-refill'"));
   assert(workerPart.includes("event_type:'vibe2-neuron-complete'"));
   assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
