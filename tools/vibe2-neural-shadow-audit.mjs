@@ -29,6 +29,7 @@ export function buildNeuralShadowAudit({reviewed=[]}={}){
       const actual=actualWaveOutcome(row);
       return{
         taskId:clean(row.taskId)||null,
+        sampleId:clean(row.sampleId)||clean(row.taskId)||null,
         actualWaveOutcome:actual,
         proposedAction:clean(route?.proposedAction?.kind)||'NO_ROUTE',
         proposedReason:clean(route?.proposedAction?.reason)||null,
@@ -64,6 +65,7 @@ export function neuralShadowAuditEvidence(audit={}){
     const payload={
       version:1,
       taskId:clean(row.taskId)||null,
+      sampleId:clean(row.sampleId)||clean(row.taskId)||null,
       actualWaveOutcome:clean(row.actualWaveOutcome)||null,
       proposedAction:clean(row.proposedAction)||null,
       proposedReason:clean(row.proposedReason)||null,
