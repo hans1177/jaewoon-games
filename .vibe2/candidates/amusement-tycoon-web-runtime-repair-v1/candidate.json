@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "        return out.reverse();",
+      "replace": "  var ns=adjacentCells(a[0],a[1]);\n  for(var i=0;i<ns.length;i++){\n    var kk=key(ns[i][0],ns[i][1]);\n    if(!paths[kk]||prev.hasOwnProperty(kk))continue;\n    prev[kk]=cur;\n    if(kk===endKey){\n      var out=[kk],x=cur;\n      while(x){out.push(x);x=prev[x];}\n      return out.reverse();\n    }\n    q.push(kk);}\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
