@@ -229,3 +229,39 @@ test('mobile canvas rendering degrades pixel density without changing gameplay r
   assert.match(resize,/canvas\.style\.height=innerHeight\+'px'/);
   assert.match(source,/jaewoon_fantasy_survival_v1/);
 });
+
+test('audio feel reuses the existing bounded WebAudio primitives without a parallel sound queue',()=>{
+  const combat=functionBody('playCombatAudio');
+  assert.match(combat,/music\.enabled/);
+  assert.match(combat,/music\.started/);
+  assert.match(combat,/noiseBrush\(/);
+  assert.match(combat,/smoothVoice\(/);
+  assert.match(combat,/lowDrum\(/);
+  assert.doesNotMatch(combat,/push\(|splice\(|new Array|\[\]/);
+  const reward=functionBody('playRewardAudio');
+  assert.match(reward,/smoothVoice\(/);
+  assert.match(reward,/lowDrum\(/);
+  assert.doesNotMatch(reward,/push\(|splice\(|new Array|\[\]/);
+  assert.doesNotMatch(source,/(?:audioFx|sfxQueue|soundQueue)\s*=\s*\[/);
+});
+
+test('combat audio references the same authoritative attack and hit moments as animation vfx and camera',()=>{
+  const attack=functionBody('attack');
+  assert.match(attack,/p\.attackAt=now;p\.attackFx=now\+150/);
+  assert.match(attack,/playCombatAudio\('swing',audioWeight\)/);
+  assert.match(attack,/e\.hitAt=now\+110/);
+  assert.match(attack,/playCombatAudio\('hit',audioWeight\)/);
+  const damage=functionBody('damagePlayer');
+  assert.match(damage,/p\.invuln=now\+520;playCombatAudio\('hurt'/);
+  assert.match(functionBody('updateCameraPresentation'),/p\.attackAt/);
+  assert.match(functionBody('drawEnemyCombatVfx'),/e\.hitAt/);
+});
+
+test('boss reward audio is presentation-only and preserves existing reward ownership',()=>{
+  const rewardBoss=functionBody('rewardBoss');
+  assert.match(rewardBoss,/addInv\('forest-wooden-sword',1\)/);
+  assert.match(rewardBoss,/playRewardAudio\('boss'\)/);
+  const labBoss=functionBody('finishStoryLabBoss');
+  assert.match(labBoss,/playRewardAudio\('boss'\)/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+});
