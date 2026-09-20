@@ -127,7 +127,8 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   return {action,actions:uniq(actions),
     changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256','ENQUEUE_SELF_ARCHITECTURE_EVOLUTION'].includes(x)),
     changedControl:actions.some(x=>['RESET_INVALID_PARALLELISM_STATE','RESET_STALE_PARALLELISM_PRESSURE'].includes(x)),
-    taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control};
+    taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control,
+    neuralExpansionReadiness:evolution.neuralExpansionReadiness};
 }
 
 export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',neuralReadinessFile='',now=new Date().toISOString()}={}){
@@ -157,6 +158,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('VIBE2_SYSTEM_STEWARD_CONTROL_CHANGED='+(result.changedControl?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_MAX='+result.queue.maxConcurrentTasks);
   console.log('VIBE2_SYSTEM_STEWARD_ADAPTIVE_MAX='+result.control.currentMax);
-  const neuralReady=result.queue.tasks.some(task=>(task.evidence||[]).includes('architecture-neural-expansion-readiness:PASS'));
+  const neuralReady=result.neuralExpansionReadiness?.pass===true;
   console.log('VIBE2_NEURAL_EXPANSION_READINESS='+(neuralReady?'PASS':'PENDING'));
+  console.log('VIBE2_NEURAL_EXPANSION_MISSING='+(result.neuralExpansionReadiness?.missing||[]).join(',')||'NONE');
 }
