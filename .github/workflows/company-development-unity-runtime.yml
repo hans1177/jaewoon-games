@@ -78,21 +78,23 @@ jobs:
           import {DEVELOPMENT_GAME_WIP_MAX,resolveSelectedPlatform,selectRepresentativeCanary,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
-          const windowIds=new Set(globalWindow.map(item=>item.gameId));
-          const rows=(q.items||[]).filter(item=>{
-            if(!windowIds.has(item.gameId))return false;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
-            if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
+          const rows=globalWindow.filter(item=>{
+            const development=String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED';
+            const propagation=item.webNativePropagation===true&&String(item.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED';
+            if(!development&&!propagation)return false;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE'&&String(item.status||'').toUpperCase()!=='PENDING')return false;
             if(resolveSelectedPlatform(item)!=='UNITY')return false;
             const step=String(item.currentStep||'').toUpperCase();
             const state=String(item.canonicalState||'').toUpperCase();
-            return step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||step==='UNITY_ANDROID_TECHNICAL_VALIDATION'||
+            return propagation||step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||step==='UNITY_ANDROID_TECHNICAL_VALIDATION'||
               state==='WAITING_TARGET_PLATFORM_VALIDATION'||state==='WAITING_TARGET_PLATFORM_REVALIDATION'||state==='WAITING_UNITY_VALIDATION'||state==='WAITING_UNITY_REVALIDATION'||
               Boolean(item.executionEvidence?.failureStage);
           }).map(item=>({
             gameId:item.gameId,gameName:item.gameName,designBaselineSource:item.designBaselineSource,
-            sourcePath:item.targetSourcePath||item.sourcePath,
+            sourcePath:item.targetSourcePath||item.sourcePath||`unity-games/${item.gameId}`,
             selectedPlatform:'UNITY',
+            webNativePropagation:item.webNativePropagation===true,
+            webNativePropagationWebSourceIndexSha256:item.webNativePropagationWebSourceIndexSha256||null,
             unityCandidateBranch:item.unityCandidateBranch||null,
             unitySourceCommit:item.unitySourceCommit||null,
             unityBuildRunId:Number(item.unityBuildRunId||0)||null,
@@ -152,6 +154,8 @@ jobs:
         env:
           GAME_ID: ${{ matrix.item.gameId }}
           DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
+          WEB_NATIVE_PROPAGATION: ${{ matrix.item.webNativePropagation }}
+          WEB_PROPAGATION_SHA: ${{ matrix.item.webNativePropagationWebSourceIndexSha256 }}
         shell: bash
         run: |
           set -euo pipefail
@@ -186,7 +190,7 @@ jobs:
         run: |
           set -euo pipefail
           bind_catalog() {
-            node -e 'const fs=require("fs");const project=process.argv[1];const catalog=JSON.parse(fs.readFileSync("game-catalog.json","utf8"));const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);game.selectedPlatform="UNITY";game.targetPlatform="UNITY";game.unityProjectPath=project;game.productionClass="DEVELOPMENT_CONFIRMED";game.homepagePublicationApproved=false;game.publishTestBuildWhenReady=false;fs.writeFileSync("game-catalog.json",JSON.stringify(catalog,null,2)+"\n");' "$PROJECT"
+            node -e 'const fs=require("fs");const project=process.argv[1];const catalog=JSON.parse(fs.readFileSync("game-catalog.json","utf8"));const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);const propagation=String(process.env.WEB_NATIVE_PROPAGATION||"").toLowerCase()==="true";game.unityProjectPath=project;if(!propagation){game.selectedPlatform="UNITY";game.targetPlatform="UNITY";game.productionClass="DEVELOPMENT_CONFIRMED";game.homepagePublicationApproved=false;game.publishTestBuildWhenReady=false;}fs.writeFileSync("game-catalog.json",JSON.stringify(catalog,null,2)+"\n");' "$PROJECT"
           }
 
           reuse_branch=''
