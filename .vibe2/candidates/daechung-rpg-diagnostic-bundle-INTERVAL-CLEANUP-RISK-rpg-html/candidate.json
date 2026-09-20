@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": "function toggleSound(){",
+      "replace": "AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
