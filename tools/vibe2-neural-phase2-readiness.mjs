@@ -111,7 +111,7 @@ export function evaluatePhase2Readiness({
     rootCausePredictionCoverage:predictionCoverage>=required.rootCausePredictionCoverage,
     rootCausePredictionContradictionRate:rootCause.predictionContradictionRate!==null
       &&rootCause.predictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
-    waveAuditVolume:Number(audit.sampleCount||0)>=required.waveAuditSamples,
+    waveAuditVolume:identifiedWaveAuditSamples>=required.waveAuditSamples,
     zeroUnauthorizedFire:events.unauthorizedFireCount===0,
     shadowSafetyInvariant:events.safetyInvariantPass===true
   };
