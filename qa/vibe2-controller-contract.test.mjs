@@ -443,9 +443,13 @@ test('supervised Web candidates learn review decisions and stay unreleased until
   };
   const approved=finalizeVibe2FanInReview({queue:{tasks:[approvedTask]},results:[valid]});
   assert.equal(approved.releaseCandidates.length,1);
-  assert.equal(approved.experienceReviews.length,1);
-  assert.equal(approved.experienceReviews[0].outcome,'PASS');
-  assert.ok(approved.experienceReviews[0].reusablePatterns.includes('기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'));
+  assert.equal(approved.experienceReviews.length,2);
+  const supervisedReview=approved.experienceReviews.find(row=>row.taskType==='supervised-web-coauthoring');
+  const capabilityReview=approved.experienceReviews.find(row=>row.taskType==='coding-capability-distillation');
+  assert.equal(supervisedReview?.outcome,'PASS');
+  assert.ok(supervisedReview?.reusablePatterns.includes('기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'));
+  assert.equal(capabilityReview?.outcome,'PASS');
+  assert.equal(capabilityReview?.engineQaVerified,true);
 });
 
 test('fan-in blocks release when only durable supervised evidence survives queue normalization',()=>{
@@ -474,7 +478,7 @@ test('fan-in review persists neural shadow versus wave audit without authority',
   const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(source,/buildNeuralShadowAudit/);
   assert.match(source,/neuralShadowAudit/);
-  assert.match(source,/version:4,role:'review'/);
+  assert.match(source,/version:5,role:'review'/);
   assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
 });
 

@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
+import { buildObservableCodingTrace, buildVerifiedCapabilityExperienceReview, mergeCodingTraceLedger } from './vibe2-capability-distillation.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
@@ -55,7 +56,10 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const skipped=[];
   const releaseCandidates=[];
   const experienceReviews=[];
-  const tasks=(Array.isArray(queue.tasks)?queue.tasks:[]).map(task=>{
+  const queueTasks=Array.isArray(queue.tasks)?queue.tasks:[];
+  const taskById=new Map(queueTasks.map(task=>[clean(task?.id),task]));
+  const codingTraces=resultRows.map(row=>buildObservableCodingTrace({task:taskById.get(clean(row?.taskId))||{},result:row}));
+  const tasks=queueTasks.map(task=>{
     if(!ids.has(clean(task.id)))return task;
     if(!reviewReady(task)){skipped.push({taskId:task.id,status:clean(task.status),blocker:clean(task.blocker)||null});return task;}
     const evidence=new Set((task.evidence||[]).map(clean).filter(Boolean));
@@ -120,11 +124,20 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
+      const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
+      if(capabilityReview)experienceReviews.push(capabilityReview);
       reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
   });
+  const experienceIds=new Set(experienceReviews.map(row=>clean(row?.id)).filter(Boolean));
+  for(const row of resultRows){
+    if(clean(row?.outcome).toUpperCase()!=='FAIL')continue;
+    const task=taskById.get(clean(row?.taskId))||{};
+    const review=buildVerifiedCapabilityExperienceReview({task,result:row,finalReviewPass:false,selected:false});
+    if(review&&!experienceIds.has(clean(review.id))){experienceReviews.push(review);experienceIds.add(clean(review.id));}
+  }
   const neuralShadowAudit=buildNeuralShadowAudit({reviewed});
   const auditEvidenceByTask=new Map();
   for(const row of neuralShadowAudit.rows||[]){
@@ -142,18 +155,23 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     evidence:durableNeuralEvidence,
     shadowAudit:neuralDurableShadowAudit
   });
-  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,neuralShadowAudit,neuralDurableShadowAudit,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
+  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
 }
 
-export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile=''}={}){
+export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile='',traceLedgerFile=''}={}){
   if(!clean(inputFile))throw new Error('fan-in input required');
   const queue=readJson(queueFile,{tasks:[]});
   const payload=readJson(inputFile,{results:[]});
   const results=resultsFromPayload(payload);
   const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload)});
   writeJson(queueFile,result.queue);
-  if(clean(outputFile))writeJson(outputFile,{version:4,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
-  return result;
+  let codingTraceLedger=null;
+  if(clean(traceLedgerFile)){
+    codingTraceLedger=mergeCodingTraceLedger(readJson(traceLedgerFile,{traces:[]}),result.codingTraces);
+    writeJson(traceLedgerFile,codingTraceLedger);
+  }
+  if(clean(outputFile))writeJson(outputFile,{version:5,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
+  return{...result,codingTraceLedger};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -161,7 +179,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=runVibe2FanInReview({
     queueFile:clean(args.queue)||'.vibe2/queue.json',
     inputFile:clean(args.input),
-    outputFile:clean(args.output)
+    outputFile:clean(args.output),
+    traceLedgerFile:clean(args['trace-ledger'])
   });
   const readiness=result.neuralPhase2Readiness;
   const summary=readiness.evidenceSummary;
@@ -169,6 +188,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_FAN_IN_REVIEW_COUNT=${result.reviewed.length}`);
   console.log(`VIBE2_FAN_IN_REVIEW_SKIPPED=${result.skipped.length}`);
   console.log(`VIBE2_FAN_IN_RELEASE_CANDIDATES=${result.releaseCandidates.length}`);
+  console.log(`VIBE2_CODING_TRACE_COUNT=${result.codingTraces.length}`);
+  console.log(`VIBE2_CODING_TRACE_LEDGER_TOTAL=${result.codingTraceLedger?.stats?.total||0}`);
+  console.log(`VIBE2_CAPABILITY_EXPERIENCE_REVIEWS=${result.experienceReviews.length}`);
   console.log(`VIBE2_NEURAL_PHASE2_REVIEW_ELIGIBLE=${readiness.reviewEligible?'YES':'NO'}`);
   console.log(`VIBE2_NEURAL_PHASE2_REASON=${readiness.reason}`);
   console.log(`VIBE2_NEURAL_PHASE2_GATES=${JSON.stringify(readiness.gates)}`);
