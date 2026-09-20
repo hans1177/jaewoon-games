@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
+  "status": "ACTIVE",
+  "recordedAt": "2026-09-20",
+  "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
+  "policy": {
+    "everyAssistantCoauthoringActionMustBeRecorded": true,
+    "requiredActionTypes": [
+      "SOURCE_REVIEW",
+      "DESIGN_TO_SOURCE_GAP_ANALYSIS",
+      "SOURCE_CHANGE",
+      "PIPELINE_BOTTLENECK_REPAIR",
+      "QA_OR_REGRESSION_RESULT",
+      "SUPERVISOR_PASS_REVISE_DROP",
+      "RELEASE_OR_PROMOTION_DECISION"
+    ],
+    "minimumFields": [
+      "id",
+      "date",
+      "gameId",
+      "actionType",
+      "problem",
+      "decision",
+      "change",
+      "evidence",
+      "learningState"
+    ],
+    "rawTraceAuthority": "PROVENANCE_ONLY",
+    "rawTraceMayAutoPromote": false,
+    "verifiedPositivePromotion": "EXISTING_SUPERVISION_REVIEW_TO_VIBE_EXPERIENCE_MEMORY_ONLY",
+    "verifiedNegativePromotion": "EXISTING_SUPERVISION_REVIEW_TO_VIBE_EXPERIENCE_MEMORY_ONLY",
+    "experienceStore": ".vibe2/experience.json",
+    "canonicalTrainingPipeline": "company-learning/canonical-learning-pipeline.json",
+    "positiveLearningRequiresVerifiedPass": true,
+    "negativeLearningRequiresVerifiedFailureCause": true,
+    "candidateGenerationAloneIsNotLearning": true,
+    "qaGateWeakeningForbidden": true,
+    "authorityExpansionForbidden": true,
+    "protectedGameplayMutationRequiresOwnerAuthorization": true
+  },
+  "reusableFields": {
+    "reusablePatterns": "Patterns verified safe and useful for future same-game/same-engine retrieval.",
+    "avoidPatterns": "Patterns verified harmful, fake, no-op, corrupting, or regression-prone.",
+    "qa": "Exact QA, regression, fan-in, runtime, or source-backed checks.",
+    "evidence": "Commit SHA, PR, run ID, candidate identity, file path, or verified source finding.",
+    "learningState": [
+      "TRACE_ONLY",
+      "VERIFIED_NEGATIVE_READY_FOR_EXPERIENCE",
+      "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
+      "PROMOTED_TO_EXPERIENCE"
+    ]
+  },
+  "records": [
+    {
+      "id": "assistant_source_generation_recovery_20260920",
+      "date": "2026-09-20",
+      "gameId": "MULTI_GAME_WEB",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "SOURCE_CANDIDATE_GENERATION was the dominant bottleneck; prior baseline candidate success rate was 25 percent with repeated TIMEOUT and EDIT_MATCH failures.",
+      "decision": "Preserve responsibility-selected first attempt, use causal worker-owned replace-only recovery after TIMEOUT/EDIT_MATCH, remove duplicate reserve full regression, and verify on a clean parallel wave.",
+      "change": "Source generation recovery path, telemetry, reserve QA policy, and regression alignment were repaired without lowering QA or full-Web size gates.",
+      "evidence": [
+        "run:35476177742",
+        "observed-success-rate:80-percent",
+        "parallel-peak:20",
+        "cache-hit-rate:100-percent",
+        "source-generation-final-failures:MALFORMED_OUTPUT:4",
+        "fan-in:PASS",
+        "regression:PASS",
+        "commit:8de42ed22bead6feae8ffee915968b2264d15fd7",
+        "commit:cd1274152c27d5e858cbfbc674322ae73217b378"
+      ],
+      "reusablePatterns": [
+        "KEEP_FIRST_ATTEMPT_TARGET_SELECTION_CAUSAL",
+        "ESCALATE_TIMEOUT_OR_EDIT_MATCH_TO_WORKER_PINNED_REPLACE_ONLY",
+        "DO_NOT_DUPLICATE_FULL_REGRESSION_BEFORE_RESERVE",
+        "MEASURE_EFFECTIVENESS_ON_CLEAN_PARALLEL_WAVE"
+      ],
+      "avoidPatterns": [
+        "FORCING_UNRELATED_GENERIC_ANCHOR_ON_FIRST_ATTEMPT",
+        "USING_STALE_RUNS_TO_CLAIM_NEW_CODE_EFFECTIVENESS",
+        "DUPLICATE_EXPENSIVE_REGRESSION_BEFORE_WORKER_RESERVE"
+      ],
+      "qa": [
+        "Vibe2 Core QA run 35476535607 PASS",
+        "fan-in regression PASS in run 35476177742"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_focused_first_edit_early_stop_20260920",
+      "date": "2026-09-20",
+      "gameId": "MULTI_GAME_WEB",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Most passing focused Web repair candidates still spent the full 240 second first-generation window before causal recovery, causing long package cycles.",
+      "decision": "Keep the timeout budget and model-owned target choice, but end streaming as soon as the first complete exact edit object is available.",
+      "change": "Added focused first-complete-edit early stop, telemetry, regression coverage, and placeholder rejection.",
+      "evidence": [
+        "source-commit:9e07112fb9a49bad49328981a00a01d8eaddf845",
+        "test-commit:179d4de63a0759c864db39d3099c20ecbae2ae80",
+        "telemetry-commit:72e35fb9ff24d4e91f7bd1a72e813d22f932a7e1",
+        "test-alignment-commit:a066a13071bbefbc195edcde6e2b39c834330ddd",
+        "placeholder-guard-commit:e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
+        "qa-run:35476535607:PASS"
+      ],
+      "reusablePatterns": [
+        "EARLY_STOP_ONLY_AFTER_COMPLETE_PARSEABLE_EDIT",
+        "PRESERVE_MODEL_TARGET_SELECTION_ON_FIRST_ATTEMPT",
+        "REJECT_PLACEHOLDER_REPLACEMENT_SOURCE"
+      ],
+      "avoidPatterns": [
+        "SHORTENING_TIMEOUT_WITHOUT_MEASUREMENT",
+        "TREATING_PARTIAL_OR_PLACEHOLDER_TEXT_AS_SOURCE"
+      ],
+      "qa": [
+        "focused first-edit regression coverage",
+        "placeholder rejection regression coverage",
+        "Vibe2 Core QA PASS"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_bug_defense_supervisor_revise_20260920",
+      "date": "2026-09-20",
+      "gameId": "bug-defense",
+      "actionType": "SUPERVISOR_PASS_REVISE_DROP",
+      "problem": "The generated candidate source was identical to main and remained a validation harness rather than a playable insect defense game.",
+      "decision": "REVISE",
+      "change": "Rejected automatic promotion and requeued the same game under supervised Vibe coauthoring.",
+      "evidence": [
+        "candidate:b90fe9c4045635244c320698b90ba869af72b947",
+        "main-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "candidate-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "experience-id:supervised_bug-defense_35476177742_revise",
+        "roadmap-commit:eb853f4f8e5301165958c378559eae2fa524551e"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "VALIDATION_HARNESS_AS_GAMEPLAY",
+        "UNCHANGED_SOURCE_CANDIDATE_PROMOTION",
+        "BUTTON_ONLY_SCOPE_COVERAGE",
+        "NO_SPATIAL_ENEMY_LOOP",
+        "NO_REACHABLE_WIN_OR_LOSS",
+        "DUPLICATE_EVENT_HANDLER_IMPLEMENTATION"
+      ],
+      "qa": [
+        "source blob identity comparison",
+        "design-to-source gap review"
+      ],
+      "learningState": "PROMOTED_TO_EXPERIENCE"
+    },
+    {
+      "id": "assistant_bug_defense_playable_candidate_v1_20260920",
+      "date": "2026-09-20",
+      "gameId": "bug-defense",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Approved strict design required real wave preview, spatial placement, habitat adaptation, ecological counters, economy/evolution, enemy movement, status effects, win/loss, retry, persistence, and mobile one-hand play; main source had none of these as real gameplay.",
+      "decision": "Build an isolated supervised candidate instead of mutating main directly.",
+      "change": "Replaced the validation harness on an isolated assistant branch with a 26KB playable canvas wave-defense candidate implementing touch/pointer placement, leaf/stem/flower habitats, three defender species, swarm/shell/flyer counters, damage multipliers, poison/slow, enemy movement and targeting, pollen economy, evolution, pheromone skill, six waves, boss, reachable win/loss, same-wave retry, speed control, pause, audio toggle, and versioned local meta/settings persistence.",
+      "evidence": [
+        "branch:assistant/supervised-bug-defense-v1",
+        "candidate-commit:185c418c5458e14147b360af4bf3f2f01d6577fc",
+        "draft-pr:1743",
+        "source:web-games/bug-defense/index.html",
+        "approved-design:company-runtime:design/bug-defense/2026-09-19/design-revised.json",
+        "approved-design-score:94.6",
+        "static-check:validation-harness-absent",
+        "static-check:pointer-touch-placement-present",
+        "static-check:habitat-position-state-present",
+        "static-check:counter-damage-status-present",
+        "static-check:enemy-movement-targeting-present",
+        "static-check:pollen-economy-evolution-present",
+        "static-check:win-loss-retry-present",
+        "static-check:versioned-persistence-present",
+        "static-check:no-duplicate-function-declarations"
+      ],
+      "reusablePatterns": [
+        "ISOLATED_SUPERVISED_BRANCH_BEFORE_MAIN_PROMOTION",
+        "DESIGN_TRACEABILITY_TO_REAL_RUNTIME_MECHANICS",
+        "MOBILE_POINTER_PLACEMENT_ON_LARGE_TOUCH_TARGETS",
+        "COLOR_PLUS_SHAPE_ENEMY_ATTRIBUTE_READABILITY",
+        "WAVE_CHECKPOINT_RETRY_WITH_META_PROGRESS_PRESERVED"
+      ],
+      "avoidPatterns": [
+        "DIRECT_MAIN_PROMOTION_BEFORE_RUNTIME_QA",
+        "CLAIMING_PLAYABILITY_FROM_STATIC_SOURCE_CHECKS_ONLY"
+      ],
+      "qa": [
+        "static source-backed contract review PASS",
+        "PR workflows queued: Company Security Immune System, Homepage Manager, Company Evolution QA, Vibe QA, Vibe Integrated Regression, Vibe3 Engine Contract",
+        "runtime/supervisor final decision still pending"
+      ],
+      "learningState": "TRACE_ONLY"
+    }
+  ]
+}
