@@ -1255,7 +1255,8 @@
       "coding_1m0tdid",
       "coding_cylkry",
       "coding_1otthbp",
-      "coding_10yc5it"
+      "coding_10yc5it",
+      "coding_1ek961c"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4007,12 +4008,12 @@
         "lastUpdatedAt": "2026-09-20T22:01:10.967Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 388,
+        "verifiedApplications": 389,
         "firstCandidatePasses": 42,
-        "totalGenerationAttempts": 894,
+        "totalGenerationAttempts": 897,
         "verifiedFailures": 295,
         "games": {
-          "seed-single-defense-strat-celestial-bastion": 47,
+          "seed-single-defense-strat-celestial-bastion": 48,
           "seed-idle-growth-rpg-crystal-bloom": 5,
           "seed-puzzle-chromatic-cascade": 28,
           "crystal-defense": 4,
@@ -4033,7 +4034,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 388
+          "web": 389
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -4047,14 +4048,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 357,
+            "verifiedApplications": 358,
             "verifiedFailures": 157,
             "firstCandidatePasses": 42,
-            "totalGenerationAttempts": 816,
-            "totalContextBytes": 6693580,
-            "lastEvidence": "coding_10yc5it",
+            "totalGenerationAttempts": 819,
+            "totalContextBytes": 6714215,
+            "lastEvidence": "coding_1ek961c",
             "lastFailureEvidence": "coding_negative_1enni0i",
-            "lastUpdatedAt": "2026-09-20T22:04:36.420Z"
+            "lastUpdatedAt": "2026-09-20T22:10:46.978Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 6,
@@ -4139,18 +4140,18 @@
             "lastUpdatedAt": "2026-09-20T22:03:58.153Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 134,
+            "verifiedApplications": 135,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 361,
+            "totalGenerationAttempts": 364,
             "verifiedFailures": 66,
             "games": {
-              "seed-single-defense-strat-celestial-bastion": 47,
+              "seed-single-defense-strat-celestial-bastion": 48,
               "bug-defense": 18,
               "village-dungeons": 49,
               "seed-puzzle-chromatic-cascade": 20
             },
             "targets": {
-              "web": 134
+              "web": 135
             },
             "failureGames": {
               "bug-defense": 22,
@@ -4166,9 +4167,9 @@
               "NO_OP": 31,
               "INCREMENTAL_QA": 12
             },
-            "lastEvidence": "coding_pri277",
+            "lastEvidence": "coding_1ek961c",
             "lastFailureEvidence": "coding_negative_1enni0i",
-            "lastUpdatedAt": "2026-09-20T21:56:38.168Z"
+            "lastUpdatedAt": "2026-09-20T22:10:46.978Z"
           },
           "web|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
             "verifiedApplications": 4,
@@ -4679,9 +4680,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_10yc5it",
+        "lastEvidence": "coding_1ek961c",
         "lastFailureEvidence": "coding_negative_1enni0i",
-        "lastUpdatedAt": "2026-09-20T22:04:36.420Z"
+        "lastUpdatedAt": "2026-09-20T22:10:46.978Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 69,
@@ -7510,7 +7511,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T22:05:11.447Z",
+    "lastBuiltAt": "2026-09-20T22:10:47.013Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10009,5 +10010,5 @@
       "knowledge_n81bwp"
     ]
   },
-  "updatedAt": "2026-09-20T22:05:11.447Z"
+  "updatedAt": "2026-09-20T22:10:47.013Z"
 }
