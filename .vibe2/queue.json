@@ -8293,7 +8293,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
       "responsibleFiles": [
         "web-games/daechung-rpg/rpg.html"
@@ -8301,8 +8301,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 5,
+      "status": "queued",
+      "retries": 6,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": false,
@@ -8313,7 +8313,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -10248,13 +10248,14 @@
         "release-dispatch-recovery-requested:vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35511265495-1",
         "release-dispatch-recovery-at:1789909268545",
         "release-dispatch-recovery-candidate-sha:c8d05bbc565ee93ea51007ad5bdeb466177d8bf3",
-        "release-dispatch-recovery-at:1789910397281"
+        "release-dispatch-recovery-at:1789910397281",
+        "actions-run-35513191428"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": "35511265495:1",
-      "reservationRunId": "35511265495",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T12:40:20Z",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
