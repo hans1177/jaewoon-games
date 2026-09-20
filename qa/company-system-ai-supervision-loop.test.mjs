@@ -38,3 +38,14 @@ test('cached local model and security scan remain mandatory before PR publicatio
   assert.match(workflow,/node tools\/company-security-steward\.mjs --output=\/tmp\/system-ai-security-report\.json/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_VERIFICATION=PASS/);
 });
+
+test('System AI reserve self-heals recurring failed sources before reservation',()=>{
+  const escalation=workflow.indexOf('node tools/company-recovery-escalation.mjs');
+  const dispatch=workflow.indexOf('node tools/company-recovery-dispatch.mjs');
+  const reserve=workflow.indexOf('node tools/company-system-ai-queue.mjs');
+  assert.ok(escalation>=0&&dispatch>escalation&&reserve>dispatch);
+  assert.match(workflow,/tools\/company-recovery-escalation\.mjs/);
+  assert.match(workflow,/tools\/company-recovery-queue\.mjs/);
+  assert.match(workflow,/qa\/company-recovery-learning\.test\.mjs/);
+  assert.match(workflow,/git diff --quiet -- \.vibe2\/system-ai-queue\.json \.vibe2\/recovery-queue\.json/);
+});
