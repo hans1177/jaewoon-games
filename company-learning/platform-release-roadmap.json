@@ -3084,7 +3084,7 @@
         "refreshBeforeCandidateWrite": true,
         "fetchOrValidationFailure": "FAIL_CLOSED",
         "fingerprintMismatch": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
-        "implementationState": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "implementationState": "MERGED_MAIN_PR_1984",
         "executionPolicyProjection": "WORKER_EXECUTION_POLICY_V1",
         "fullDocumentShaRecorded": true,
         "fullDocumentShaBoundToExecutionEvidence": true,
@@ -8492,7 +8492,7 @@
         },
         "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED",
         "bottleneckRepair": {
-          "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+          "state": "MERGED_MAIN_PR_1984",
           "triggerRunId": 35496729551,
           "observedWorkerCount": 12,
           "observedFailureRatePct": 100,
@@ -8522,7 +8522,8 @@
           "code": [
             "tools/vibe2-central-work-contract.mjs",
             "qa/vibe2-central-work-contract.test.mjs"
-          ]
+          ],
+          "sourcePr": 1984
         }
       }
     }
