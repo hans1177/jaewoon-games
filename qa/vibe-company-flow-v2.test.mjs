@@ -32,6 +32,14 @@ assert.equal(flow.proposalPolicy.gameMajorDelegatedToDirector,true);
 assert.equal(flow.proposalPolicy.finalPublicReleaseRequiresOwnerApproval,true);
 assert.equal(flow.vibe2Policy.stableAProtected,true);
 assert.equal(flow.graphicsPolicy.motionEngine,'Jaewoon Motion Engine');
+const playableDraft=flow.stages.find(stage=>stage.id==='playable-draft');
+const graphicsUpgrade=flow.stages.find(stage=>stage.id==='graphics-upgrade');
+assert.ok(playableDraft.outputs.includes('concept-visuals'));
+assert.ok(playableDraft.outputs.includes('action-motion'));
+assert.ok(playableDraft.outputs.includes('vfx-sfx-bgm'));
+assert.ok(playableDraft.outputs.includes('mobile-ui-layout'));
+assert.match(playableDraft.purpose,/Web.*액션 모션.*VFX\/SFX\/BGM.*모바일 UI/);
+assert.match(graphicsUpgrade.purpose,/Web 개발판에서 이미 성립한/);
 pass('company flow v4');
 
 const review={ready:true,decision:'PASS'};
