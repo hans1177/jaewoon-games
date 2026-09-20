@@ -452,6 +452,7 @@ jobs:
           git worktree prune
           git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
           node tools/company-system-ai-queue.mjs --command=fan-in --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
+          node tools/company-recovery-queue.mjs --command=fan-in-system-ai --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
 
           node - <<'NODE' > /tmp/system-ai-security.tsv
           const fs=require('fs'),path=require('path');
