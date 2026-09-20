@@ -2056,7 +2056,7 @@ learning:
 ```
 
 assetProductionParallel:
-  version: 1
+  version: 2
   authority: OWNER_DIRECTIVE_2026-09-20
   enabled: true
   purpose: REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY
@@ -2142,4 +2142,98 @@ assetProductionParallel:
     assetOnlyWorkMustNotChangeGameplayBalanceSaveProgressionOrHitSemantics: true
     reuseExistingAssetLicenseAndProvenancePolicy: true
     qualitySecurityEvidenceAndSaveCompatibilityGatesUnchanged: true
+
+platformPresentationAndWeather:
+  version: 1
+  authority: OWNER_DIRECTIVE_2026-09-20
+  canonicalMachinePolicy: company-learning/platform-release-roadmap.json
+  firstAdoption:
+    gameId: fantasy-survival
+    name: 마력숲 생존기
+    surfaces:
+      - WEB_COMPANION
+      - UNITY
+      - ROBLOX
+  webPresentationQuality:
+    target: POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D
+    prototypeOnlyGraphicsForbiddenAtFinalPass: true
+    primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass: true
+    characterEnemyAndCoreObjectVisualIdentityRequired: true
+    regionalAtmosphereDifferentiationRequired: true
+    animationVfxUiAndCameraPolishRequired: true
+    mobileTouchReadabilityRequired: true
+    mobilePerformanceBudgetRequired: true
+    webDoesNotNeedToImitateHighEndNative3D: true
+  platformAssetSeparation:
+    webRole: PLAYABLE_GAMEPLAY_AND_ART_DIRECTION_REFERENCE_SURFACE
+    webAssetDirectReuseIntoUnityForbidden: true
+    webAssetDirectReuseIntoRobloxForbidden: true
+    unityAssetsMustBeUnityNativeOrExplicitlyUnityCompatible: true
+    robloxAssetsMustBeRobloxNativeOrExplicitlyRobloxCompatible: true
+    unityRobloxDirectCrossReuseForbiddenUnlessExplicitCompatibilityVerified: true
+    platformSpecificReauthoringExpected: true
+    sharedStyleIdentityOnly:
+      - GAME_STYLE_LOCK
+      - PALETTE
+      - SILHOUETTE_LANGUAGE
+      - CHARACTER_AND_MONSTER_IDENTITY
+      - REGION_IDENTITY
+      - MATERIAL_AND_LIGHTING_LANGUAGE
+      - VFX_LANGUAGE
+      - UI_MOTION_LANGUAGE
+  weather:
+    presentationOnlyByDefault: true
+    canonicalStates:
+      - CLEAR
+      - RAIN
+      - FOG
+      - SNOW
+      - STORM
+    regionalExtensions:
+      - VOLCANIC_ASH
+      - HEAT_HAZE
+    gameplaySemanticsUnchanged:
+      - ATTACK
+      - HEALTH
+      - DROP_RATE
+      - MOVEMENT_SPEED
+      - ECONOMY
+      - PROGRESSION
+    futureGameplayWeatherEffectsRequireApprovedDesignChange: true
+    transitionControllerRequired: true
+    timedOrRegionDrivenTransitionsAllowed: true
+    visualAudio:
+      skyAndSceneTone: true
+      precipitationParticles: true
+      fogOrAtmosphere: true
+      windAndFoliageMotion: true
+      stormLightningFlash: true
+      ambientWeatherAudio: true
+      criticalGameplaySignalsMustRemainReadable: true
+    multiplayer:
+      canonicalWeatherStateSharedByAllPlayers: true
+      hostOrAuthoritativeRuntimeOwnsWeatherState: true
+      clientsObserveSameSemanticWeatherState: true
+      joinInProgressReceivesCurrentWeatherState: true
+      localPerformanceMayReduceDensityNotMeaning: true
+    platformImplementation:
+      WEB: CANVAS_DOM_CSS_WEB_AUDIO_OR_EXISTING_RENDER_PIPELINE
+      UNITY: UNITY_NATIVE_PARTICLES_FOG_LIGHTING_MATERIALS_AUDIO
+      ROBLOX: ROBLOX_NATIVE_PARTICLEEMITTER_ATMOSPHERE_LIGHTING_COLORCORRECTION_SOUND
+    mobilePerformance:
+      adaptiveEffectDensityRequired: true
+      particleCapsRequired: true
+      unboundedWeatherEffectsForbidden: true
+      lowEndModeMayReduceVisualDensityOnly: true
+      criticalTouchAndHazardReadabilityMustRemain: true
+    qa:
+      actualRuntimeVisualEvidenceRequired: true
+      actualRuntimeAudioEvidenceWhenAudioPresent: true
+      multiplayerSynchronizationEvidenceRequiredForMultiplayerGames: true
+      mobilePerformanceEvidenceRequired: true
+      gameplaySemanticsRegressionRequired: true
+      weatherTextOrSpecAloneCannotPass: true
+      failedWeatherScopeRoutesTo: ASSET_REPAIR_REQUIRED
+  executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
+  authorityExpansion: false
 
