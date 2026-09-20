@@ -417,7 +417,8 @@ function neuralWorkerFeedback(row = {}) {
     outcome:row?.outcome,
     blocker:row?.blocker,
     candidateFailure:row?.candidateFailure||null,
-    roleResults:row?.roleResults||{}
+    roleResults:row?.roleResults||{},
+    evidence:Array.isArray(row?.evidence)?row.evidence:[]
   });
 }
 function neuralWorkerEvidence(row = {}) {
