@@ -144,7 +144,7 @@ motion_capture_pid=''
 adb shell rm -f "$motion_remote" >/dev/null 2>&1 || true
 if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
   if adb shell 'command -v screenrecord >/dev/null 2>&1'; then
-    adb shell screenrecord --time-limit 8 "$motion_remote" >/dev/null 2>&1 &
+    adb shell screenrecord --bit-rate 4000000 --time-limit 8 "$motion_remote" >/dev/null 2>&1 &
     motion_capture_pid=$!
     motion_capture_started=true
     sleep 1
