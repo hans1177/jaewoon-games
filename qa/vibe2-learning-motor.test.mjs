@@ -674,3 +674,79 @@ test('presentation learning policy requires verified runtime outcome and preserv
   assert.ok(policy.presentationLearning?.invariants?.includes('SAVE_MEANING_UNCHANGED'));
   assert.ok(policy.presentationLearning?.invariants?.includes('HIT_SEMANTICS_UNCHANGED'));
 });
+
+
+test('phase 4 generalization candidate enters existing idle practice as paired control then challenger screen',()=>{
+  const capability={
+    id:'cap-phase4-practice',
+    gameId:'source-game',
+    engine:'web',
+    departments:['development','qa'],
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore flow',
+    change:'verified save restore strategy',
+    outcome:'PASS',
+    evidence:['actions-run:500','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE'],
+    verified:true,
+    capabilityApplications:[
+      {applicationId:'p4-app-1',taskId:'a1',workKey:'game-a:web:save',gameId:'game-a',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:'p4-app-2',taskId:'a2',workKey:'game-b:web:save',gameId:'game-b',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  };
+  const experience={records:[capability]};
+  const companyQueue={items:[
+    {gameId:'source-game'},
+    {gameId:'game-a'},
+    {gameId:'game-b'},
+    {gameId:'holdout-game'}
+  ]};
+  const benchmark=buildBenchmarkLadder({},experience,companyQueue);
+  assert.equal(benchmark.phase4GeneralizationCases,1);
+  const phase4Case=benchmark.cases.find(row=>row.track==='CAPABILITY_GENERALIZATION');
+  assert.equal(phase4Case.capabilityId,'cap-phase4-practice');
+  assert.equal(phase4Case.holdoutGameId,'holdout-game');
+  assert.equal(phase4Case.state,'READY_FOR_UNSEEN_SCREEN');
+  assert.equal(phase4Case.screenOnly,true);
+  assert.equal(phase4Case.mayPromoteGeneralization,false);
+
+  const practice=buildIdlePracticeQueue({},benchmark);
+  const pair=practice.drills.filter(row=>row.phase4Benchmark===true);
+  assert.equal(practice.phase4GeneralizationDrills,2);
+  assert.deepEqual(pair.map(row=>row.phase4Role),['CONTROL','CHALLENGER']);
+  assert.equal(pair[0].phase4PairId,pair[1].phase4PairId);
+  assert.equal(pair[0].unseenProblemFingerprint,pair[1].unseenProblemFingerprint);
+
+  const control=injectIdlePracticeTask({tasks:[]},practice);
+  assert.equal(control.added,true);
+  assert.ok(control.task.evidence.includes('phase4-benchmark-role:CONTROL'));
+  assert.ok(control.task.evidence.includes('phase4-strong-generalization-evidence:NO'));
+  assert.equal(control.task.gameId,'holdout-game');
+  assert.equal(control.task.target,'web');
+  assert.ok(control.task.completionCriteria.includes('PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION'));
+
+  const completedControl={...control.task,status:'done'};
+  const challenger=injectIdlePracticeTask({tasks:[completedControl]},practice);
+  assert.equal(challenger.added,true);
+  assert.ok(challenger.task.evidence.includes('phase4-benchmark-role:CHALLENGER'));
+  const controlPair=control.task.evidence.find(x=>x.startsWith('phase4-benchmark-pair:'));
+  const challengerPair=challenger.task.evidence.find(x=>x.startsWith('phase4-benchmark-pair:'));
+  assert.equal(controlPair,challengerPair);
+});
+
+test('phase 4 practice waits when no unseen catalog game exists',()=>{
+  const experience={records:[{
+    id:'cap-no-holdout',gameId:'g1',engine:'web',taskType:'coding-capability-distillation',
+    problem:'save',goal:'save',change:'save',outcome:'PASS',evidence:['a','b'],reusablePatterns:['save'],verified:true,
+    capabilityApplications:[
+      {applicationId:'nh-1',taskId:'1',workKey:'g1:w',gameId:'g1',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:'nh-2',taskId:'2',workKey:'g2:w',gameId:'g2',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  }]};
+  const benchmark=buildBenchmarkLadder({},experience,{items:[{gameId:'g1'},{gameId:'g2'}]});
+  const phase4Case=benchmark.cases.find(row=>row.track==='CAPABILITY_GENERALIZATION');
+  assert.equal(phase4Case.state,'WAITING_FOR_UNSEEN_GAME');
+  const practice=buildIdlePracticeQueue({},benchmark);
+  assert.equal(practice.phase4GeneralizationDrills,0);
+});
