@@ -932,16 +932,6 @@
       ]
     },
     {
-      "id": "gap-animation_feel-l10",
-      "kind": "ANIMATION_FEEL_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ANIMATION_FEEL"
-      ]
-    },
-    {
       "id": "gap-mobile_input-l10",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -952,13 +942,13 @@
       ]
     },
     {
-      "id": "gap-combat-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-animation_feel-l11",
+      "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "COMBAT"
+        "ANIMATION_FEEL"
       ]
     },
     {
@@ -982,16 +972,6 @@
       ]
     },
     {
-      "id": "gap-quest_design-l11",
-      "kind": "QUEST_CAUSALITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "QUEST_DESIGN"
-      ]
-    },
-    {
       "id": "gap-recovery-l11",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -999,6 +979,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "RECOVERY"
+      ]
+    },
+    {
+      "id": "gap-combat-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "COMBAT"
       ]
     },
     {
@@ -1012,13 +1002,13 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l12",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-quest_design-l12",
+      "kind": "QUEST_CAUSALITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "WEB_RUNTIME"
+        "QUEST_DESIGN"
       ]
     },
     {
@@ -1039,6 +1029,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l13",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
       ]
     }
   ]
