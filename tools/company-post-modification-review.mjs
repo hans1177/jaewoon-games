@@ -9,7 +9,7 @@ import {
 } from '../assets/company-department-standards.js';
 
 const ROLES=['planning','development','qa','graphics','balance'];
-const NAMES={planning:'기획',development:'개발',qa:'QA',graphics:'그래픽',balance:'밸런스',director:'총괄'};
+const NAMES={planning:'기획·성장마케팅',development:'개발',qa:'QA',graphics:'그래픽',balance:'밸런스',director:'총괄'};
 const clean=v=>String(v??'').trim();
 const readText=(f,max=120000)=>{try{const b=fs.readFileSync(f);return b.subarray(0,Math.min(max,b.length)).toString('utf8');}catch{return'';}};
 const readJson=(f,d=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return d;}};
@@ -51,7 +51,7 @@ if(role!=='director'){
   const standard=getDepartmentStandard(role);
   const runtimeEvidence=extractRuntimeEvidence(req);
   const guides={
-    planning:'핵심 재미·게임 루프·스토리/콘티 연결이 이번 수정으로 훼손되는지 평가한다. 기술 수정만으로 기획 내용을 새로 만들지 않는다.',
+    planning:'핵심 재미·게임 루프·스토리/콘티 연결과 함께, 변경이 유저 유입·리텐션·수익화·가격·스토어 발견성·홍보 타이밍에 영향을 주는지 근거로 평가한다. 연구와 피드백만 제공하며 적용을 강제하지 않는다. 적용 여부·범위·시기는 Vibe 판단으로 남긴다. 기술 수정만으로 기획 내용을 새로 만들지 않는다.',
     development:'실제 수정 파일, Unity 빌드 구조, 재현성, 의존성, 저장/데이터 호환성과 구현 위험을 평가한다. 성공한 컴파일/빌드 근거 없이는 PASS하지 않는다.',
     qa:'코드 리뷰가 아니라 게임 테스터 관점으로 평가한다. 빌드 성공뿐 아니라 실제 실행/플레이 스모크 증거, 재현 조건, 회귀 범위, 수정 후 재검증을 확인한다. 실행 증거 없이는 PASS하지 않는다.',
     graphics:'시각 자산·가독성·화면 구성·아트북 정체성·모션/에셋 규칙에 이번 수정이 미치는 영향을 실제 수정 범위 근거로 평가한다.',
