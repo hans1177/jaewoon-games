@@ -25,6 +25,7 @@ on:
       - 'tools/vibe2-neural-event-router.mjs'
       - 'tools/vibe2-neural-shadow-audit.mjs'
       - 'tools/vibe2-neural-event-telemetry.mjs'
+      - 'tools/vibe2-neural-phase2-readiness.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
@@ -95,6 +96,7 @@ on:
       - 'tools/vibe2-neural-event-router.mjs'
       - 'tools/vibe2-neural-shadow-audit.mjs'
       - 'tools/vibe2-neural-event-telemetry.mjs'
+      - 'tools/vibe2-neural-phase2-readiness.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
@@ -161,6 +163,7 @@ jobs:
           node --check tools/vibe2-neural-event-router.mjs
           node --check tools/vibe2-neural-shadow-audit.mjs
           node --check tools/vibe2-neural-event-telemetry.mjs
+          node --check tools/vibe2-neural-phase2-readiness.mjs
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
@@ -197,6 +200,7 @@ jobs:
           node --check qa/vibe2-neural-event-router.test.mjs
           node --check qa/vibe2-neural-shadow-audit.test.mjs
           node --check qa/vibe2-neural-event-telemetry.test.mjs
+          node --check qa/vibe2-neural-phase2-readiness.test.mjs
           node --check qa/vibe2-neural-fanin-root-cause.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
@@ -224,6 +228,7 @@ jobs:
           node --test qa/vibe2-neural-event-router.test.mjs
           node --test qa/vibe2-neural-shadow-audit.test.mjs
           node --test qa/vibe2-neural-event-telemetry.test.mjs
+          node --test qa/vibe2-neural-phase2-readiness.test.mjs
           node --test qa/vibe2-neural-fanin-root-cause.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
