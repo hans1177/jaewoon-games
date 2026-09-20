@@ -77,6 +77,7 @@ on:
       - 'qa/vibe2-release-dispatch-recovery.test.mjs'
       - 'qa/vibe2-continuous-release-dispatch.test.mjs'
       - 'qa/vibe2-learning-motor.test.mjs'
+      - 'qa/vibe2-learning-closed-loop.test.mjs'
       - 'qa/vibe2-code-pattern-ingest.test.mjs'
       - 'qa/vibe2-learning-practice-worker.test.mjs'
       - 'qa/vibe2-external-ai-distillation.test.mjs'
@@ -205,6 +206,7 @@ jobs:
           node --check qa/vibe2-release-dispatch-recovery.test.mjs
           node --check qa/vibe2-continuous-release-dispatch.test.mjs
           node --check qa/vibe2-learning-motor.test.mjs
+          node --check qa/vibe2-learning-closed-loop.test.mjs
           node --check qa/vibe2-code-pattern-ingest.test.mjs
           node --check qa/vibe2-learning-practice-worker.test.mjs
           node --check qa/vibe2-external-ai-distillation.test.mjs
@@ -274,6 +276,7 @@ jobs:
           node --test qa/vibe2-release-dispatch-recovery.test.mjs
           node --test qa/vibe2-continuous-release-dispatch.test.mjs
           node --test qa/vibe2-learning-motor.test.mjs
+          node --test qa/vibe2-learning-closed-loop.test.mjs
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test qa/vibe2-practice-distillation.test.mjs
