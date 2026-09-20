@@ -13,8 +13,9 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
   actions: read
+  pull-requests: write
 
 concurrency:
   group: unity-android-runtime-smoke-${{ inputs.run_id || github.event.workflow_run.id }}
@@ -63,14 +64,17 @@ jobs:
           expected="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sha256"])' "$info")"
           source_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sourceCommit"])' "$info")"
           source_tree="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig")).get("sourceTreeSha", ""))' "$info")"
+          game_id="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["gameId"])' "$info")"
           actual="$(sha256sum "$apk" | awk '{print $1}')"
           [[ "$expected" =~ ^[0-9a-f]{64}$ && "$actual" == "$expected" ]] || { echo "[JAEWOON_BUILD_ERROR:RUNTIME_SMOKE_APK_SHA_MISMATCH] expected=$expected actual=$actual" >&2; exit 5; }
           [[ "$source_commit" =~ ^[0-9a-f]{40}$ ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_SMOKE_SOURCE_COMMIT_INVALID] invalid exact source commit' >&2; exit 6; }
           [[ -z "$source_tree" || "$source_tree" =~ ^[0-9a-f]{40}$ ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_SMOKE_SOURCE_TREE_INVALID] invalid source tree sha' >&2; exit 7; }
+          [[ "$game_id" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_SMOKE_GAME_ID_INVALID] invalid gameId' >&2; exit 7; }
           echo "path=$apk" >> "$GITHUB_OUTPUT"
           echo "sha256=$actual" >> "$GITHUB_OUTPUT"
           echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
           echo "source_tree=$source_tree" >> "$GITHUB_OUTPUT"
+          echo "game_id=$game_id" >> "$GITHUB_OUTPUT"
           echo "UNITY_RUNTIME_APK=$apk"
           echo "UNITY_RUNTIME_BUILD_ID=$actual"
           echo "UNITY_RUNTIME_SOURCE_COMMIT=$source_commit"
@@ -184,6 +188,44 @@ jobs:
           echo "UNITY_RUNTIME_EVIDENCE=PASS"
           echo "UNITY_RUNTIME_BUILD_ID=$BUILD_ID"
           echo "UNITY_RUNTIME_SOURCE_COMMIT=$SOURCE_COMMIT"
+
+      - name: Propose verified Unity gameplay media through reviewed PR
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.apk.outputs.game_id }}
+          SOURCE_REVISION: ${{ steps.apk.outputs.source_commit }}
+          APK_SHA256: ${{ steps.apk.outputs.sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          still='qa-artifacts/unity-runtime-smoke/screenshot.png'
+          motion='qa-artifacts/unity-runtime-smoke/gameplay-motion.mp4'
+          [ -s "$still" ] || { echo 'UNITY_RUNTIME_MEDIA_STILL=SKIP_MISSING'; exit 0; }
+          capture_at="$(node -p "JSON.parse(require('fs').readFileSync('qa-artifacts/unity-runtime-smoke/evidence.json','utf8')).checkedAt")"
+          artifact_identity="sha256:$APK_SHA256"
+          node tools/runtime-gameplay-media-record.mjs --game-id="$GAME_ID" --platform=UNITY --source-revision="$SOURCE_REVISION" --artifact-identity="$artifact_identity" --input="$still" --media-kind=STILL --producer=UNITY_RUNTIME_QA --authority=ACTUAL_ANDROID_RUNTIME --capture-at="$capture_at"
+          if [ -s "$motion" ]; then
+            node tools/runtime-gameplay-media-record.mjs --game-id="$GAME_ID" --platform=UNITY --source-revision="$SOURCE_REVISION" --artifact-identity="$artifact_identity" --input="$motion" --media-kind=MOTION --motion-focus=PLAYER_LOCOMOTION --producer=UNITY_RUNTIME_QA --authority=ACTUAL_ANDROID_RUNTIME --capture-at="$capture_at"
+          fi
+          node tools/company-records-governance.mjs --scan
+          git add assets/runtime-evidence company-records/runtime-media homepage-runtime-media.json
+          if git diff --cached --quiet; then
+            echo 'UNITY_RUNTIME_MEDIA_PROMOTION=NO_CHANGE'
+            exit 0
+          fi
+          safe_game="$(printf '%s' "$GAME_ID" | tr -cs 'a-zA-Z0-9._-' '-')"
+          branch="automation/unity-runtime-media-${safe_game}-${GITHUB_RUN_ID}"
+          git config user.name 'jaewoon-unity-runtime-media'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -b "$branch"
+          git commit -m "media: publish verified Unity gameplay ${GAME_ID}"
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "media: publish verified Unity gameplay ${GAME_ID}" --body "Actual Android runtime gameplay media. Source revision: ${SOURCE_REVISION}. APK identity: ${artifact_identity}. Includes verified still and, when available, a short core gameplay motion clip. Web screenshots are not used. Direct main write: NO.")"
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          echo "UNITY_RUNTIME_MEDIA_PR=$pr_url"
+          echo 'UNITY_RUNTIME_MEDIA_PROMOTION=PASS'
 
       - name: Upload Unity runtime QA evidence
         if: always()
