@@ -30,6 +30,10 @@ function signatureOf(task={}){
 }
 function responsibilityFor(signature=''){
   const s=lower(signature);
+  if(/neural|neuron|micro.?fan.?in|fan.?in.*root|event.?router|shadow.?event|learning.?routing/.test(s))return[
+    'tools/vibe2-neural-event-router.mjs','tools/vibe2-fan-in-review.mjs',
+    'qa/vibe2-neural-event-router.test.mjs','qa/vibe2-neural-fanin-root-cause.test.mjs'
+  ];
   if(/source-candidate-generation|parallel-candidate-generation|edit.?match|model.*candidate/.test(s))return[
     'tools/vibe2-source-worker.mjs','qa/vibe2-source-worker.test.mjs'
   ];
