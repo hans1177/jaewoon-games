@@ -39,7 +39,7 @@ const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y:8500},{x:11550,y:7000}];
-const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},MAP_CELL=400;
+const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},SHADOW_WOLF_EGG_2={x:11480,y:9750,r:30},MAP_CELL=400;
 const VOLCANO_POLY=[{x:2400,y:2000},{x:14400,y:2000},{x:14400,y:5200},{x:2400,y:5200}];
 const COLOSSEUM={x:6800,y:2120,w:3600,h:900},CONSTRUCTION={x:6800,y:4380,w:3600,h:700},WASTELAND={x:2580,y:2180,w:3800,h:2820},VOLCANO_CORE={x:7200,y:3120,w:2800,h:1100};
 const OASIS={x:4300,y:3650,r:470},LAB={x:8600,y:2900},LAB_RECORDER={x:8600,y:2845},CONSTRUCTION_DIARY={x:8600,y:4710};
@@ -113,7 +113,7 @@ const recipes=[
 {id:'crystal-core-greatsword',name:'수정 코어 대검',where:'goldbench',cost:{hardShell:4,crystalCore:3,essence:5,goldIngot:4,wood:3},desc:'공격력 119 · 장착 중 최대 체력 +10',kind:'weapon',power:119,range:106,cooldown:900,maxHp:10},
 {id:'cooking-station',name:'요리대',where:'hand',cost:{wood:4,stone:4,ironIngot:4},desc:'보유 음식 2개를 골라 합성 요리 제작',kind:'structure'},
 {id:'shadow-wolf-incubator',name:'그림자 늑대 부화기',where:'hand',cost:{wood:3,stone:5,ironIngot:4},desc:'그림자 늑대 알을 넣으면 5분 뒤 부화',kind:'structure'},
-{id:'shadow-wolf-egg',name:'그림자 늑대 알',where:'egg',cost:{},desc:'세계수 동쪽 끝에서 플레이어당 1개만 획득 가능',kind:'ingredient'},
+{id:'shadow-wolf-egg',name:'그림자 늑대 알',where:'egg',cost:{},desc:'세계수 동쪽 끝 · 솔로 1개 / 멀티 2개 · 플레이어당 1개',kind:'ingredient'},
 {id:'raw-deer-meat',name:'수액사슴고기',where:'loot',cost:{},desc:'화로에서 10초 구우면 구운 사슴고기가 됨',kind:'ingredient'},
 {id:'raw-bug-meat',name:'초거대 벌레고기',where:'loot',cost:{},desc:'화로에서 15초 구우면 구운 벌레고기가 됨',kind:'ingredient'},
 {id:'carrot',name:'당근',where:'gather',cost:{},desc:'먹으면 밥 게이지 +10',kind:'consumable',hunger:10},
@@ -512,6 +512,14 @@ function drawMap(){
  if(state.discovered.canyon){m.strokeStyle='#a27750';m.lineWidth=2;m.beginPath();m.moveTo(CANYON_POLY[0].x*sx,CANYON_POLY[0].y*sy);for(let i=1;i<CANYON_POLY.length;i++)m.lineTo(CANYON_POLY[i].x*sx,CANYON_POLY[i].y*sy);m.closePath();m.stroke();m.fillStyle='#e0b990';m.font='bold 11px system-ui';m.fillText('협곡',12900*sx,7000*sy)}
  if(state.discovered.worldtree){m.strokeStyle='#3d7c4c';m.lineWidth=2;m.strokeRect(6180*sx,9150*sy,5640*sx,850*sy);m.fillStyle='#9bd09e';m.font='bold 11px system-ui';m.fillText('세계수',WORLD_TREE.x*sx-16,WORLD_TREE.y*sy-8);m.fillStyle='#78b96f';m.beginPath();m.arc(WORLD_TREE.x*sx,WORLD_TREE.y*sy,6,0,Math.PI*2);m.fill()}
  for(const flag of state.flags){const x=flag.x*sx,y=flag.y*sy;m.strokeStyle='#f2f2e8';m.lineWidth=1.5;m.beginPath();m.moveTo(x,y+5);m.lineTo(x,y-6);m.stroke();m.fillStyle='#ffdb58';m.beginPath();m.moveTo(x,y-6);m.lineTo(x+7,y-3);m.lineTo(x,y);m.closePath();m.fill()}
+ if(multiplayer.connected){
+   const now=performance.now();m.font='bold 9px system-ui';m.textAlign='center';
+   for(const r of multiplayer.remote.values()){
+     if(!r||r.area!=='surface'||now-(r.seenAt||0)>2500)continue;
+     const x=Number(r.x)*sx,y=Number(r.y)*sy;if(!Number.isFinite(x)||!Number.isFinite(y))continue;
+     m.fillStyle='#54d8ff';m.beginPath();m.arc(x,y,5,0,Math.PI*2);m.fill();m.fillText('동료',x,y-7)
+   }
+ }
  m.fillStyle='#ffffff';m.beginPath();m.arc(state.player.x*sx,state.player.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){tabState();ui.sheetBody.innerHTML='<div class="info"><b>지도</b><br>직접 가본 곳만 표시돼. 아직 탐험하지 않은 곳은 비어 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';drawMap()}
@@ -804,7 +812,8 @@ function syncMultiPresence(){
 }
 function remotePlayerState(payload){
  if(!payload||payload.id===multiplayer.playerId)return;
- multiplayer.remote.set(payload.id,{...payload,seenAt:performance.now()})
+ multiplayer.remote.set(payload.id,{...payload,seenAt:performance.now()});
+ if(state.panelMode==='map'&&ui.sheet.classList.contains('open'))drawMap()
 }
 function sharedStructurePos(v){
  if(!v||!Number.isFinite(Number(v.x))||!Number.isFinite(Number(v.y)))return null;
@@ -1281,8 +1290,9 @@ function handleWorldTap(e){
   return
  }
  if(state.area!=='storylab1'&&state.area!=='storylab2'&&petAlive()&&dist(wx,wy,state.pet.x,state.pet.y)<55){doubleTapTarget('shadow-pet',now,mountPet);return}
- if(state.area==='surface'&&!state.shadowEggTaken&&dist(wx,wy,SHADOW_WOLF_EGG.x,SHADOW_WOLF_EGG.y)<55){
-  doubleTapTarget('shadow-wolf-egg',now,()=>{if(state.shadowEggTaken)return;state.shadowEggTaken=true;addInv('shadow-wolf-egg',1);state.dirty=true;showNotice('그림자 늑대 알 획득 · 플레이어당 1개');saveGame(false)});return
+ const eggSpots=multiplayer.connected?[SHADOW_WOLF_EGG,SHADOW_WOLF_EGG_2]:[SHADOW_WOLF_EGG],eggIndex=state.area==='surface'&&!state.shadowEggTaken?eggSpots.findIndex(egg=>dist(wx,wy,egg.x,egg.y)<55):-1;
+ if(eggIndex>=0){
+  doubleTapTarget('shadow-wolf-egg:'+eggIndex,now,()=>{if(state.shadowEggTaken)return;state.shadowEggTaken=true;addInv('shadow-wolf-egg',1);state.dirty=true;showNotice(multiplayer.connected?'그림자 늑대 알 획득 · 멀티 총 2개 · 플레이어당 1개':'그림자 늑대 알 획득');saveGame(false)});return
  }
  if(state.area==='surface'&&state.incubator&&dist(wx,wy,state.incubator.x,state.incubator.y)<65){doubleTapTarget('shadow-incubator',now,interactIncubator);return}
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
@@ -1735,8 +1745,12 @@ function drawProjectiles(cx,cy){
 }
 function drawPlayer(cx,cy,now){const p=state.player,x=p.x-cx,y=p.y-cy;ctx.save();if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;ctx.fillStyle='#e0c4a4';ctx.beginPath();ctx.arc(x,y-11,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4d7398';roundRect(x-11,y-2,22,25,6);ctx.fill();ctx.fillStyle='#302c36';ctx.fillRect(x-9,y+21,6,12);ctx.fillRect(x+3,y+21,6,12);if(p.torchEquipped&&p.torch&&p.torchDurability>0){ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill()}if(p.weapon){ctx.strokeStyle=p.weapon.startsWith('gold-')?'#f3cf52':p.weapon.startsWith('iron-')?'#d8e3e8':p.weapon==='stone-sword'?'#c9d0d2':'#b78652';ctx.lineWidth=p.weapon==='iron-axe'?7:5;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+p.faceX*27,y+4+p.faceY*27);ctx.stroke()}if(now<(p.weakenedUntil||0))ctx.globalAlpha=Math.min(ctx.globalAlpha,.72);if(now<(p.stunnedUntil||0)){ctx.strokeStyle='#f4e76e';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-28,18,0,Math.PI*2);ctx.stroke()}if(p.armor){ctx.strokeStyle='#d5cf9b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y+8,14,0,Math.PI);ctx.stroke()}if(now<p.attackFx){ctx.strokeStyle='#f7e699';ctx.lineWidth=4;ctx.beginPath();const a=Math.atan2(p.faceY,p.faceX);ctx.arc(x,y,currentRange()*.72,a-.55,a+.55);ctx.stroke()}ctx.restore()}
 function drawShadowEgg(cx,cy){
- if(state.shadowEggTaken||state.area!=='surface')return;const x=SHADOW_WOLF_EGG.x-cx,y=SHADOW_WOLF_EGG.y-cy;if(x<-50||y<-50||x>innerWidth+50||y>innerHeight+50)return;
- ctx.save();ctx.fillStyle='#242033';ctx.strokeStyle='#796796';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(x,y,19,26,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.strokeStyle='#a18bbf';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-10,y-5);ctx.lineTo(x+4,y+2);ctx.lineTo(x-5,y+13);ctx.stroke();ctx.fillStyle='#ded4ef';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('그림자 늑대 알 · 두 번 누르기',x,y+42);ctx.restore()
+ if(state.shadowEggTaken||state.area!=='surface')return;
+ const spots=multiplayer.connected?[SHADOW_WOLF_EGG,SHADOW_WOLF_EGG_2]:[SHADOW_WOLF_EGG];
+ for(const egg of spots){
+  const x=egg.x-cx,y=egg.y-cy;if(x<-50||y<-50||x>innerWidth+50||y>innerHeight+50)continue;
+  ctx.save();ctx.fillStyle='#242033';ctx.strokeStyle='#796796';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(x,y,19,26,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.strokeStyle='#a18bbf';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-10,y-5);ctx.lineTo(x+4,y+2);ctx.lineTo(x-5,y+13);ctx.stroke();ctx.fillStyle='#ded4ef';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('그림자 늑대 알 · 두 번 누르기',x,y+42);ctx.restore()
+ }
 }
 function drawPet(cx,cy){
  if(state.area==='storylab1'||state.area==='storylab2')return;
