@@ -1,5 +1,5 @@
 {
-  "version": 165,
+  "version": 166,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3790,28 +3790,34 @@
     }
   },
   "changeRecord": {
-    "id": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_ALL_PASS_RUNTIME_VALIDATION_QUEUED_2026-09-20",
+    "id": "BUG_DEFENSE_SUPERVISED_WORKER_CONTEXT_SYNC_RUNTIME_V3_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_PARTIAL_PASS_2026-09-20",
-    "reason": "SYNC EXACT ASSISTANT+VIBE BUG-DEFENSE CANDIDATE AFTER ALL PR CI PASSED. CANONICAL SCHEMA15 PLAYWRIGHT RUNTIME VALIDATION IS RUNNING AGAINST CURRENT MAIN PLUS THE COMPANY-RUNTIME APPROVED DESIGN BASELINE. SUPERVISOR DECISION, REUSABLE LEARNING, AND MAIN PROMOTION REMAIN BLOCKED UNTIL VERIFIED RUNTIME EVIDENCE PASSES.",
+    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_ALL_PASS_RUNTIME_VALIDATION_QUEUED_2026-09-20",
+    "reason": "SYNC ALL WORKERS TO THE LATEST SUPERVISED BUG-DEFENSE SOURCE AND RUNTIME EVIDENCE. THE CANDIDATE ADVANCED PAST 55DB74A TO 0981354. RUNTIME V1 FAILED ON MISCLASSIFIED AVATAR-MOVEMENT AND SCOPE SPATIAL INPUT, V2 REDUCED TO COMPLETE-PLAYABLE-CYCLE ONLY, AND V3 IS RUNNING AFTER RETRY-ACTION LOOP REPAIR. SUPERVISOR PASS, REUSABLE LEARNING, AND MAIN PROMOTION REMAIN BLOCKED.",
     "invariants": {
-      "exactCandidateCommit": "55db74ac0d4f876f3ca28d569a3dc9d754811590",
+      "sharedWorkerContextRequired": true,
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "exactCandidateCommit": "098135434c96e6396b7f20be52763789cc6b3531",
       "draftPr": 1743,
-      "prCiAllPassed": true,
-      "canonicalRuntimeValidationRequired": true,
-      "canonicalRuntimeValidationRunId": 35478451968,
-      "validationDraftPr": 1756,
-      "runtimeOrSupervisorEvidenceNotInvented": true,
+      "validatorFixDraftPr": 1758,
+      "validatorFixCiCorePass": true,
+      "runtimeV1RunId": 35478451968,
+      "runtimeV1Conclusion": "failure",
+      "runtimeV2RunId": 35478752746,
+      "runtimeV2Conclusion": "failure",
+      "runtimeV2RemainingPrimaryBlocker": "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED",
+      "runtimeV3RunId": 35479492190,
+      "runtimeV3Status": "in_progress",
       "finalSupervisorDecisionRequired": true,
       "reusableLearningBeforeSupervisorPassForbidden": true,
       "automaticPromotionBlocked": true,
       "parallelGameWorkPreserved": true
     },
     "next": [
-      "INSPECT_CANONICAL_SCHEMA15_RUNTIME_RUN_35478451968",
-      "REPAIR_ONLY_ASSISTANT_SUPERVISED_BUG_DEFENSE_BRANCH_IF_RUNTIME_FAILS",
-      "WRITE_VERIFIED_PASS_OR_REVISE_ONLY_FROM_RUNTIME_AND_SOURCE_EVIDENCE",
+      "INSPECT_RUNTIME_V3_RUN_35479492190",
+      "REPAIR_ONLY_CAUSAL_GAME_OR_VALIDATOR_RESPONSIBILITY_ON_FAILURE",
+      "KEEP_ALL_WORKERS_ON_LATEST_ROADMAP_CONTEXT",
       "PROMOTE_REUSABLE_LEARNING_AND_MAIN_ONLY_AFTER_VERIFIED_SUPERVISOR_PASS"
     ]
   },
@@ -5953,9 +5959,9 @@
       ],
       "assistantCandidate": {
         "branch": "assistant/supervised-bug-defense-v1",
-        "candidateCommit": "55db74ac0d4f876f3ca28d569a3dc9d754811590",
+        "candidateCommit": "098135434c96e6396b7f20be52763789cc6b3531",
         "draftPr": 1743,
-        "state": "CI_ALL_PASS_CANONICAL_RUNTIME_VALIDATION_QUEUED_SUPERVISOR_REVIEW_PENDING",
+        "state": "RUNTIME_V3_IN_PROGRESS_SUPERVISOR_REVIEW_PENDING",
         "mainPromotionAllowed": false,
         "staticSourceReview": {
           "validationHarnessAbsent": true,
@@ -5994,6 +6000,33 @@
             "runId": 35478053075,
             "conclusion": "success",
             "releaseAuthority": "NOT_APPLICABLE_UNTIL_SUPERVISOR_PASS"
+          },
+          "latestCandidate": {
+            "vibeQa": {
+              "runId": 35478799283,
+              "conclusion": "success"
+            },
+            "vibe3EngineContract": {
+              "runId": 35478799222,
+              "conclusion": "success"
+            },
+            "securityImmuneSystem": {
+              "runId": 35478799169,
+              "conclusion": "success"
+            },
+            "integratedRegression": {
+              "runId": 35478799263,
+              "conclusion": "success"
+            },
+            "homepageManager": {
+              "runId": 35478799275,
+              "conclusion": "success",
+              "releaseAuthority": "NOT_APPLICABLE_UNTIL_SUPERVISOR_PASS"
+            },
+            "companyEvolutionQa": {
+              "runId": 35478799287,
+              "conclusion": "failure"
+            }
           }
         },
         "finalSupervisorDecision": "PENDING",
@@ -6006,21 +6039,58 @@
         "candidateCommits": [
           "9066566bbfc15028dd7cc8530735471ba1ff3519",
           "9d4aa29fc3044bb74d8248730ac6fb56a38ac59e",
-          "55db74ac0d4f876f3ca28d569a3dc9d754811590"
+          "55db74ac0d4f876f3ca28d569a3dc9d754811590",
+          "0755547e740bd22e91f080682ebfa8b5d1c428cd",
+          "098135434c96e6396b7f20be52763789cc6b3531"
         ],
         "reusableLearningAllowed": false,
         "learningState": "TRACE_ONLY_UNTIL_SUPERVISOR_PASS",
         "runtimeValidation": {
           "validator": "tools/company-development-web-gameplay-validation.mjs",
           "schemaVersion": 15,
-          "sourceCommit": "55db74ac0d4f876f3ca28d569a3dc9d754811590",
+          "sourceCommit": "098135434c96e6396b7f20be52763789cc6b3531",
           "designBaseline": "company-runtime:design/bug-defense/2026-09-19/design-revised.json",
-          "validationBranch": "assistant/validate-bug-defense-v1",
-          "validationDraftPr": 1756,
-          "runId": 35478451968,
-          "status": "queued",
-          "conclusion": null,
-          "currentMainValidator": true
+          "validationBranch": "assistant/validate-bug-defense-v2",
+          "validationDraftPr": 1760,
+          "currentMainValidator": true,
+          "history": [
+            {
+              "runId": 35478451968,
+              "conclusion": "failure",
+              "blockers": [
+                "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED",
+                "REAL_2D_PLAYER_XY_MOVEMENT_REQUIRED",
+                "REAL_2D_PLAYER_VISUAL_MOVEMENT_REQUIRED",
+                "ANTI_FAKE_PLAYER_MOVEMENT_REQUIRED",
+                "REAL_2D_COLLISION_RUNTIME_REQUIRED",
+                "SCOPE:APPROVED_SCOPE_SPATIAL_WORLD_RESULT_REQUIRED:scope-coreloop-0-db6dafda13"
+              ]
+            },
+            {
+              "runId": 35478752746,
+              "conclusion": "failure",
+              "blockers": [
+                "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED"
+              ],
+              "preplatformReadiness": true,
+              "saveRestore": "PASS"
+            },
+            {
+              "runId": 35479492190,
+              "status": "in_progress",
+              "conclusion": null
+            }
+          ]
+        },
+        "validatorFix": {
+          "branch": "assistant/bug-defense-validator-fix-v1",
+          "draftPr": 1758,
+          "commits": [
+            "3da5a3415931c8fb22fa20f12a88176a61461a1c",
+            "b56efabce27f9dd0c2e0e089ab1f89317b0b2c48"
+          ],
+          "reason": "BUG_DEFENSE_WAS_MISCLASSIFIED_AS_AVATAR_MOVEMENT_GAME",
+          "coreCi": "PASS"
         }
       }
     }
