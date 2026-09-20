@@ -1,5 +1,5 @@
 {
-  "version": 28,
+  "version": 29,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -409,7 +409,7 @@
       "promotionAuthority": "EXPLICIT_CENTRAL_POLICY_ONLY",
       "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
       "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
-      "syncedMainHead": "8364271ffd77979e34d240252dc63789645067e0"
+      "syncedMainHead": "d4588b5509a2adcdb95b441c27074bdfd8a86490"
     },
     "currentWaveExecution": {
       "outerReadiness": ".github/workflows/vibe2-24h-runner.yml::game_refill_ready",
@@ -458,7 +458,13 @@
           "system": "BOTTLENECK_DIAGNOSIS"
         }
       ],
-      "currentStage": "NEXT_PRODUCTION_WAVE_CAUSAL_VALIDATION"
+      "currentStage": "NEXT_PRODUCTION_WAVE_CAUSAL_VALIDATION",
+      "mergedRepairPRs": [
+        1815,
+        1817
+      ],
+      "activeSecurityFollowupPR": 1826,
+      "currentReadinessHardeningPR": 1825
     }
   }
 }
