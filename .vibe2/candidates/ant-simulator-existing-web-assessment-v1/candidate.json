@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function spawnWorld(){",
+      "replace": "const state={started:false,faction:'red',classId:'worker',player:{x:1400,y:3300,hp:100,maxHp:100,carry:0,faceX:1,faceY:0,attackAt:0,deadUntil:0,depositAt:0},ants:[],queens:[],bugs:[],food:[],colonyFood:{red:20,blue:20,yellow:20},camera:{x:0,y:0},last:performance.now()};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
