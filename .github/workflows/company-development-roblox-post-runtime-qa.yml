@@ -5,6 +5,16 @@ on:
     workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      studio_qa_approved:
+        description: 'Explicit human approval to run one local-place Roblox Studio mobile/regression QA session'
+        required: true
+        default: false
+        type: boolean
+      game_id:
+        description: 'Exact gameId allowed for this Studio QA session; required when studio_qa_approved=true'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -47,6 +57,9 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - name: Resolve exact-artifact post-runtime QA targets
         id: targets
+        env:
+          STUDIO_QA_APPROVED: ${{ inputs.studio_qa_approved }}
+          MANUAL_GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -55,8 +68,23 @@ jobs:
           import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const humanApproved=process.env.GITHUB_EVENT_NAME==='workflow_dispatch'
+            &&String(process.env.STUDIO_QA_APPROVED||'').toLowerCase()==='true'
+            &&String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]';
+          const manualGameId=String(process.env.MANUAL_GAME_ID||'').trim();
           const rows=[];
+          if(!humanApproved||!manualGameId){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'count=0\n');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:[]})}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json=[]\n');
+            console.log('ROBLOX_STUDIO_QA_UNATTENDED_AUTORUN=FORBIDDEN');
+            console.log('ROBLOX_STUDIO_QA_MANUAL_APPROVAL_REQUIRED=YES');
+            console.log(`ROBLOX_STUDIO_QA_APPROVAL_PRESENT=${humanApproved?'YES':'NO'}`);
+            console.log(`ROBLOX_STUDIO_QA_EXACT_GAME_ID_PRESENT=${manualGameId?'YES':'NO'}`);
+            process.exit(0);
+          }
           for(const item of q.items||[]){
+            if(item.gameId!==manualGameId)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
@@ -80,8 +108,8 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3');
-          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES');
+          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1');
+          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION');
           NODE
 
   qa-worker:
@@ -90,7 +118,7 @@ jobs:
     if: needs.qa-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 1
       matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 45
@@ -500,8 +528,8 @@ jobs:
       - name: Final summary
         run: |
           echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
-          echo 'ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3'
-          echo 'ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES'
+          echo 'ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1'
+          echo 'ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION'
           echo 'ROBLOX_MOBILE_CONTROL_UI_REAL_DEVICE_SIMULATION_REQUIRED=YES'
           echo 'ROBLOX_INDEPENDENT_QA_REAL_STUDIO_REQUIRED=YES'
           echo 'ROBLOX_REGRESSION_EXACT_ARTIFACT_REQUIRED=YES'
