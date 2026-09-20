@@ -6090,7 +6090,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE_LIVE_REPAIR_LOOP",
+    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE_POST_REPAIR_VALIDATION",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6758,23 +6758,45 @@
           "pr": 1815,
           "branch": "assistant/vibe2-focused-replace-recovery-v1",
           "purpose": "RECOVER_COMPLETE_FOCUSED_REPLACE_STRING_FROM_MALFORMED_OUTER_JSON_AFTER_TIMEOUT_ESCALATION",
-          "status": "CI_PENDING"
+          "status": "MERGED",
+          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966"
         },
         {
           "pr": 1817,
           "branch": "assistant/vibe2-evidence-ranked-bottlenecks-v1",
           "purpose": "RANK_DIRECT_SOURCE_FAILURE_EVIDENCE_AS_PRIMARY_AND_PRESERVE_RUNNER_AS_SECONDARY_BOTTLENECK",
-          "status": "CI_PENDING"
+          "status": "MERGED",
+          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7"
         }
       ],
       "nextVerification": [
-        "MERGE_ONLY_AFTER_REQUIRED_CI_PASS",
         "OBSERVE_NEXT_PRODUCTION_WAVE_SOURCE_GENERATION_FAILURE_COUNT_AND_CLASSES",
         "VERIFY_CODING_FOCUSED_REPLACE_STRING_RECOVERY_MARKER_WHEN_APPLICABLE",
         "VERIFY_PRIMARY_AND_SECONDARY_BOTTLENECK_LABELS_MATCH_DIRECT_EVIDENCE",
+        "VERIFY_CURRENT_WAVE_THROUGHPUT_DOES_NOT_REGRESS",
         "KEEP_UNAUTHORIZED_SHADOW_FIRE_COUNT_AT_ZERO",
-        "DO_NOT_GRANT_PHASE2_EXECUTION_AUTHORITY_FROM_THIS_WAVE"
-      ]
+        "DO_NOT_GRANT_PHASE2_EXECUTION_AUTHORITY_FROM_REPAIR_SUCCESS"
+      ],
+      "repairIntegration": {
+        "focusedReplaceRecovery": {
+          "pr": 1815,
+          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
+          "verifiedBeforeMerge": [
+            "VIBE2_CORE_QA_PASS",
+            "VIBE_INTEGRATED_REGRESSION_PASS",
+            "COMPANY_SECURITY_IMMUNE_PASS",
+            "CENTRAL_POLICY_CONTRACT_PASS"
+          ],
+          "expectedNextWaveSignal": "coding-focused-replace-string-recovery:YES"
+        },
+        "evidenceRankedBottlenecks": {
+          "pr": 1817,
+          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
+          "primaryRule": "DIRECT_DOMINANT_SOURCE_GENERATION_FAILURE_EVIDENCE_PRECEDES_RUNNER_UNDERUTILIZATION",
+          "secondaryEvidencePreserved": true,
+          "expectedNextWaveSignal": "VIBE2_PARALLEL_SECONDARY_BOTTLENECKS"
+        }
+      }
     }
   }
 }
