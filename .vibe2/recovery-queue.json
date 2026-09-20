@@ -1660,7 +1660,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-20T00:30:48.410Z"
+      "updatedAt": "2026-09-20T00:31:37.511Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
@@ -3045,7 +3045,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "performance-sanity-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T00:16:35Z",
+      "checkpoint": "2026-09-20T00:31:26Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -3198,7 +3198,29 @@
         "candidate-sha:aeb1ef26fbb36824683d09b089704df829c16d5d",
         "workload:prep-ms:10225",
         "workload:cycle-ms:307812",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35477988488%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35477988488%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-primary-35478328889-1",
+        "candidate-sha:db46ada44f0ff493f71384a0605d61cc7c60bc0e",
+        "base-main:96eca9c29a6a9d68956871e92da6cf40fc0b6155",
+        "actions-run:35478328889",
+        "reservation-id:35478328889:1",
+        "shared-context-policy:8039b53274b2776b518e983239246acb7a378b24a1992fb8bac003b9b36dcaa1",
+        "workload:prep-ms:9683",
+        "workload:cycle-ms:305587",
+        "exploration-reuse:b627796abb40c833db17b9e5",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35478328889%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-1-35478328889-1",
+        "candidate-sha:fd22126edd9c45a01830db57415141f50a0dbe60",
+        "workload:prep-ms:6433",
+        "workload:cycle-ms:299623",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35478328889%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-2-35478328889-1",
+        "candidate-sha:9c1ccac15acad86d1c73d0c69a5dcb1ec37dad9d",
+        "workload:prep-ms:6618",
+        "workload:cycle-ms:299325",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35478328889%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -3214,7 +3236,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T00:30:48.411Z"
+      "updatedAt": "2026-09-20T00:31:37.511Z"
     }
   ]
 }
