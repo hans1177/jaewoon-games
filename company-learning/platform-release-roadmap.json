@@ -1,5 +1,5 @@
 {
-  "version": 203,
+  "version": 204,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4983,7 +4983,7 @@
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
-      "state": "PHASE_2_MERGED_PR_PROVENANCE_AND_VERIFIED_CAPABILITY_RETRIEVAL_MERGED_MAIN",
+      "state": "PHASE_2_HARDENED_PROVENANCE_AND_DISTINCT_CAPABILITY_RETRIEVAL_MERGED_MAIN",
       "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
       "teacherSources": [
         "VIBE_GENERATED_CODING",
@@ -5157,7 +5157,7 @@
         }
       },
       "implementationPhase2": {
-        "state": "MERGED_MAIN",
+        "state": "HARDENED_AND_RUNTIME_MIGRATION_VERIFIED",
         "sourcePr": 1891,
         "mergedCommit": "6dca672e54e03d5766dfbd56cc8bb598100a79c7",
         "scope": "MERGED_MAIN_PR_PROVENANCE_CAPTURE_AND_DISTINCT_VERIFIED_CAPABILITY_WORK_ORDER_RETRIEVAL",
@@ -5172,7 +5172,7 @@
         ],
         "mergedPrProvenance": {
           "trigger": "MERGED_PULL_REQUEST_TO_MAIN",
-          "durableLedger": "vibe2-unreal-core:.vibe2/coding-trace-ledger.json",
+          "durableLedger": "vibe2-unreal-core:.vibe2/merged-pr-provenance-ledger.json",
           "recordsObservableMetadataOnly": true,
           "rawPatchStored": false,
           "rawSourceStored": false,
@@ -5182,7 +5182,9 @@
           "secretsOrCredentialsStored": false,
           "mergeCountsAsCapabilityVerification": false,
           "unverifiedMergedPrReusable": false,
-          "authorshipClassification": "EXPLICIT_BRANCH_CONVENTION_ONLY_UNKNOWN_REMAINS_UNCLASSIFIED"
+          "authorshipClassification": "EXPLICIT_BRANCH_CONVENTION_ONLY_UNKNOWN_REMAINS_UNCLASSIFIED",
+          "rawTitleStored": false,
+          "rawExternalAiOutputStored": false
         },
         "verifiedCapabilityRetrieval": {
           "source": "vibe2-unreal-core:.vibe2/experience.json",
@@ -5211,17 +5213,20 @@
           "mainWriteGuard": "PASS"
         },
         "productionObservation": {
-          "state": "OBSERVED_WITH_HARDENING_REQUIRED",
-          "provenanceWorkflowRunId": 35489360372,
+          "state": "HARDENING_RUNTIME_MIGRATION_VERIFIED",
+          "provenanceWorkflowRunId": 35489811313,
           "provenanceWorkflowConclusion": "PASS",
-          "observedPullRequest": 1891,
-          "observedTraceSource": "MERGED_PULL_REQUEST_PROVENANCE",
-          "observedTraceMergeOnly": true,
+          "observedPullRequest": 1899,
+          "legacyMigratedCount": 2,
+          "dedicatedProvenanceTraceCount": 3,
+          "workerLedgerMergedPrTraceCount": 0,
+          "raw1891TitlePresent": false,
           "observedQueueMutation": false,
-          "observedExperienceMutation": false,
+          "observedWaveReorder": false,
+          "observedLockPolicyMutation": false,
+          "observedAutomaticPromotion": false,
           "observedAuthorityExpansion": false,
-          "observedCapabilityExperienceRecords": 2,
-          "observedCapabilityExperienceKind": "VERIFIED_FAILURE_AVOID_PATTERNS",
+          "observedCapabilityExperienceRecords": 3,
           "retrievalRuntimeEvidencePending": true,
           "verifiedRuntimeClaim": false
         },
@@ -5235,12 +5240,26 @@
           "directMainPromotionAuthority": false,
           "authorityChange": "NONE"
         },
-        "nextGate": "PHASE_2_HARDEN_PROVENANCE_RAW_TEXT_RETENTION_AND_DEDUPED_CAPABILITY_RETRIEVAL_THEN_REOBSERVE",
-        "knownHardeningGap": [
-          "MERGED_PR_TITLE_TEXT_CURRENTLY_COPIED_INTO_TRACE_GOAL_REMOVE_RAW_EXTERNAL_TEXT",
-          "MERGED_PR_PROVENANCE_CURRENTLY_SHARES_CODING_TRACE_LEDGER_SEPARATE_RETENTION_DOMAIN",
-          "DISTINCT_CAPABILITY_LAYER_CAN_DUPLICATE_CAPABILITY_RECORDS_IN_GENERIC_LEARNING_GUIDANCE_PARTITION_CONTEXTS"
-        ]
+        "nextGate": "PHASE_2_OBSERVE_DISTINCT_VERIFIED_CAPABILITY_RETRIEVAL_IN_REAL_WORK_ORDER_WITHOUT_AUTHORITY_EXPANSION",
+        "knownHardeningGap": [],
+        "hardening": {
+          "sourcePr": 1899,
+          "mergedCommit": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+          "scope": "RAW_PR_TEXT_REMOVAL_DEDICATED_PROVENANCE_RETENTION_AND_GENERIC_CAPABILITY_PARTITION",
+          "dedicatedProvenanceLedger": "vibe2-unreal-core:.vibe2/merged-pr-provenance-ledger.json",
+          "workerTraceLedger": "vibe2-unreal-core:.vibe2/coding-trace-ledger.json",
+          "rawPrTitleStored": false,
+          "prBodyStored": false,
+          "rawExternalAiOutputStored": false,
+          "legacyPrTraceMigrationComplete": true,
+          "migratedLegacyPrTraceCount": 2,
+          "dedicatedProvenanceTraceCountAfterRun": 3,
+          "workerLedgerMergedPrTraceCountAfterRun": 0,
+          "genericLearningExcludesCapabilityTaskType": true,
+          "duplicateCapabilityInjectionAllowed": false,
+          "mergeCountsAsCapabilityVerification": false,
+          "authorityChange": "NONE"
+        }
       }
     }
   },
