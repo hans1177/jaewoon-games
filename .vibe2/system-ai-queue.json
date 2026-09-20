@@ -42,7 +42,7 @@
         "all Web gameplay/runtime/strict/promotion gates remain unchanged"
       ],
       "verificationCommands": [
-        "node --test qa/company-development-confirmed-runtime-contract.test.mjs"
+        "node --test qa/company-development-web-runtime.test.mjs"
       ],
       "dependencies": [],
       "retries": 2,
@@ -86,11 +86,13 @@
         "actions-run:35426574813",
         "actions-run:35478923812",
         "actions-run:35479394982",
-        "current-main-verification:failure"
+        "current-main-verification:failure",
+        "verification-command-rebound:qa/company-development-web-runtime.test.mjs",
+        "existing-contract-b2-covers-expected-vibe-signal-routing"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-20T00:50:39.423Z"
+      "updatedAt": "2026-09-20T00:51:07.427Z"
     },
     {
       "id": "sys-vibe-planner-web-repair-routing-v1",
