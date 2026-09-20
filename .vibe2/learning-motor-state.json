@@ -1248,7 +1248,8 @@
       "coding_1bg51wt",
       "coding_pri277",
       "coding_fmvvmp",
-      "coding_15cryal"
+      "coding_15cryal",
+      "coding_1naa8j"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4000,9 +4001,9 @@
         "lastUpdatedAt": "2026-09-20T21:52:50.774Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 385,
-        "firstCandidatePasses": 40,
-        "totalGenerationAttempts": 890,
+        "verifiedApplications": 386,
+        "firstCandidatePasses": 41,
+        "totalGenerationAttempts": 891,
         "verifiedFailures": 295,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 47,
@@ -4012,7 +4013,7 @@
           "amusement-tycoon": 70,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 5,
           "chess-battle": 8,
-          "bug-defense": 34,
+          "bug-defense": 35,
           "village-dungeons": 49,
           "survival2": 7,
           "monster-adventure": 58,
@@ -4026,7 +4027,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 385
+          "web": 386
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -4040,14 +4041,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 354,
+            "verifiedApplications": 355,
             "verifiedFailures": 157,
-            "firstCandidatePasses": 40,
-            "totalGenerationAttempts": 812,
-            "totalContextBytes": 6652560,
-            "lastEvidence": "coding_pri277",
+            "firstCandidatePasses": 41,
+            "totalGenerationAttempts": 813,
+            "totalContextBytes": 6660536,
+            "lastEvidence": "coding_1naa8j",
             "lastFailureEvidence": "coding_negative_1enni0i",
-            "lastUpdatedAt": "2026-09-20T21:56:38.168Z"
+            "lastUpdatedAt": "2026-09-20T21:59:41.509Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 6,
@@ -4531,22 +4532,22 @@
             "lastUpdatedAt": "2026-09-20T14:12:01.183Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 16,
-            "firstCandidatePasses": 16,
-            "totalGenerationAttempts": 16,
+            "verifiedApplications": 17,
+            "firstCandidatePasses": 17,
+            "totalGenerationAttempts": 17,
             "verifiedFailures": 0,
             "games": {
-              "bug-defense": 16
+              "bug-defense": 17
             },
             "targets": {
-              "web": 16
+              "web": 17
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_1xhme8q",
+            "lastEvidence": "coding_1naa8j",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T21:49:06.152Z"
+            "lastUpdatedAt": "2026-09-20T21:59:41.509Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT": {
             "verifiedApplications": 11,
@@ -4672,9 +4673,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_pri277",
+        "lastEvidence": "coding_1naa8j",
         "lastFailureEvidence": "coding_negative_1enni0i",
-        "lastUpdatedAt": "2026-09-20T21:56:38.168Z"
+        "lastUpdatedAt": "2026-09-20T21:59:41.509Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 69,
@@ -7503,7 +7504,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T21:59:27.141Z",
+    "lastBuiltAt": "2026-09-20T21:59:41.532Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10002,5 +10003,5 @@
       "knowledge_n81bwp"
     ]
   },
-  "updatedAt": "2026-09-20T21:59:27.141Z"
+  "updatedAt": "2026-09-20T21:59:41.532Z"
 }
