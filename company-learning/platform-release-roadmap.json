@@ -6162,9 +6162,11 @@
         "tools/vibe2-continuous-runner.mjs",
         "tools/vibe2-source-worker.mjs",
         "qa/vibe2-central-work-contract.test.mjs",
-        ".github/workflows/vibe2-continuous-core.yml"
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-core-qa.yml"
       ]
     },
-    "launcherBinding": ".github/workflows/vibe2-continuous-core.yml"
+    "launcherBinding": ".github/workflows/vibe2-continuous-core.yml",
+    "qaWorkflow": ".github/workflows/vibe2-core-qa.yml"
   }
 }
