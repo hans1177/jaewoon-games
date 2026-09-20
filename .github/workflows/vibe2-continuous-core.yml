@@ -197,10 +197,27 @@ jobs:
             expected_variants="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(Math.max(1,Math.min(5,Number(e.client_payload?.expected_variants)||1))))")"
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs neuron-complete \
               --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
               --lane="$VIBE2_EXECUTION_LANE" \
+              --max="$VIBE2_LANE_MAX" \
+              --min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN" \
               --expected-variants="$expected_variants" \
               --input="$neuron_result_file" | tee /tmp/vibe2-neuron-complete.log
-            echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'
+            neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
+            case "$neuron_reason" in
+              TASK_MICRO_FANIN_COMPLETE)
+                echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'
+                ;;
+              AWAITING_VARIANTS)
+                echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'
+                ;;
+              DUPLICATE_VARIANT)
+                echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=DUPLICATE_VARIANT_NOOP'
+                ;;
+              *)
+                echo "VIBE2_ATOMIC_NEURON_MICRO_FANIN=NOOP:${neuron_reason:-UNKNOWN}"
+                ;;
+            esac
           fi
 
           if [ "$callback_kind" = 'fanin' ] || [ "$callback_kind" = 'neuron' ]; then
@@ -1307,7 +1324,10 @@ jobs:
             --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
           node "$contract_root/tools/vibe2-queue-control.mjs" summary \
             --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-summary.log
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
+            --min="$lane_min" | tee /tmp/vibe2-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${continue_required:-NO}" = 'YES' ]; then
             echo 'refill=1' >> "$GITHUB_OUTPUT"
