@@ -79,3 +79,37 @@ test('interactive world resources and stations use authored visual assets while 
   assert.match(structure,/금 제작대/);
   assert.match(structure,/깃발/);
 });
+
+test('living motion is render-only and smooths turn, locomotion and non-uniform breathing',()=>{
+  assert.match(source,/const fantasyLivingMotionState=new WeakMap\(\)/);
+  const motion=functionBody('fantasyLivingMotion');
+  assert.match(motion,/angleDelta/);
+  assert.match(motion,/moveBlend/);
+  assert.match(motion,/Math\.exp/);
+  assert.match(motion,/breath/);
+  assert.match(motion,/stride/);
+  assert.match(motion,/secondary/);
+  assert.doesNotMatch(motion,/attackAt|attackFx|nextAttackAt|hitAt/);
+  assert.doesNotMatch(motion,/actor\.(?:x|y|faceX|faceY)\s*=/);
+});
+
+test('living motion binds to generic and dedicated creature renderers without replacing combat ownership',()=>{
+  assert.match(functionBody('drawThemedCreatureAsset'),/fantasyLivingMotion\(e,now,targetAngle,!!e\.moving\)/);
+  assert.match(functionBody('drawWolfModel'),/fantasyLivingMotion\(e,now,creatureAngle\(e\),!!e\.moving\)/);
+  assert.match(functionBody('drawBearModel'),/fantasyLivingMotion\(e,now,creatureAngle\(e\),!!e\.moving\)/);
+  assert.match(functionBody('drawFireSnakeModel'),/fantasyLivingMotion\(e,now,creatureAngle\(e\),!!e\.moving\)/);
+  assert.match(functionBody('drawWolfBodyLocal'),/motionBlend/);
+  assert.match(functionBody('drawBearBodyLocal'),/motionBlend/);
+  assert.match(functionBody('enemyAttackPhase'),/e\.attackAt/);
+});
+
+test('player living motion keeps authoritative movement, weapon direction and attack range unchanged',()=>{
+  const player=functionBody('drawPlayer');
+  assert.match(player,/fantasyLivingMotion\(p,now,angle,moveInput\)/);
+  assert.match(player,/motion\.moveBlend/);
+  assert.match(player,/motion\.breath/);
+  assert.match(player,/p\.faceX\*27/);
+  assert.match(player,/p\.faceY\*27/);
+  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
+});
