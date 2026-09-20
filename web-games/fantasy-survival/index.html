@@ -612,7 +612,7 @@ function updateHud(){
  ui.foodfill.style.width=clamp(p.hunger,0,100)+'%';ui.foodtext.textContent=Math.ceil(p.hunger)+'/100';
  ui.weapon.textContent=nameOf(p.weapon,'맨손');ui.tool.textContent=nameOf(p.tool);ui.armor.textContent=nameOf(p.armor);
  const z=state.area==='underwater'?'underwater':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':regionAt(p.x,p.y);
- let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':'마력숲';
+ let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':'마력숲';
  if(z==='underwater')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
  ui.zone.textContent=zoneName;
  ui.mapBtn.classList.toggle('ready',!!p.map);ui.mapTab.hidden=!p.map;ui.kills.textContent=p.kills;ui.wood.textContent=p.wood;ui.stone.textContent=p.stone;ui.fiber.textContent=p.fiber;ui.ironOre.textContent=p.ironOre;ui.ironIngot.textContent=p.ironIngot;ui.goldOre.textContent=p.goldOre;ui.goldIngot.textContent=p.goldIngot;ui.essence.textContent=p.essence;ui.attack.classList.toggle('ready',!!p.weapon||state.pet.mounted);ui.dismount.classList.toggle('ready',state.pet.mounted&&petAlive());ui.attack.disabled=!p.weapon&&!state.pet.mounted;ui.questText.textContent=questObjective()
@@ -815,6 +815,10 @@ const BESTIARY_INFO={
  worldpheasant:{cat:'harmless',desc:'세계수 잎 사이를 돌아다니는 꿩. 고기와 함께 세계수 잎채소를 떨어뜨린다.'},
  canyonlizard:{cat:'neutral',desc:'협곡의 따뜻한 바위 위를 돌아다니는 중립 도마뱀. 사냥하면 협곡도마뱀고기를 얻는다.'},
  crystalgoat:{cat:'neutral',desc:'수정 지대의 마력을 먹고 사는 중립 염소. 사냥하면 수정염소고기를 얻는다.'},
+ giantleech:{cat:'aggressive',desc:'밀림의 3티어 초거대 거머리. 공격이 적중할 때마다 체력을 44 회복한다.'},
+ gorilla:{cat:'neutral',desc:'밀림의 4티어 고릴라. 평소 중립이지만 아나콘다에게는 적대적이며 지면강타와 잡아치기를 사용한다.'},
+ anaconda:{cat:'aggressive',desc:'작은 호수 근처에 나타나는 4티어 아나콘다. 동족을 제외한 모든 몬스터에게 적대적이며 4초 감싸기를 사용한다.'},
+ mudwalker:{cat:'aggressive',desc:'밀림의 3티어 머드 워커. 독 공격과 3초 유도 진흙 포격을 사용한다.'},
  lakecroc:{cat:'aggressive',desc:'거대 호수의 4티어 포식자. 끌고 뒤집기와 수중 데스롤을 사용한다.'},
  lakebuffalo:{cat:'neutral',desc:'거대 호숫가를 돌아다니는 중립 물소. 먼저 공격하지 않으면 조용하다.'},
  crystaldeer:{cat:'neutral',desc:'호수의 마력을 받아 수정이 돋은 중립 사슴. 수정 사슴고기를 얻을 수 있다.'},
@@ -2192,12 +2196,12 @@ function update(dt,now){
           e.enemyTarget=null
         }
       }
-      if(!monsterFight&&e.type.id==='anaconda'){
+      if(!monsterFight&&e.type.id==='anaconda'&&!e.anacondaWrap){
         const pick=jungleMonsterTarget(e,'anaconda');
         if(pick&&pick.d<=playerD){e.enemyTarget=pick.target;const chase=chaseMonster(e,pick.target,now);if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}}
         else if(e.enemyTarget&&e.enemyTarget.type?.id!=='anaconda')e.enemyTarget=null
       }
-      if(!monsterFight&&e.type.id==='gorilla'){
+      if(!monsterFight&&e.type.id==='gorilla'&&!e.gorillaCombo){
         const pick=jungleMonsterTarget(e,'gorilla');
         if(pick){e.enemyTarget=pick.target;const chase=chaseMonster(e,pick.target,now);if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}}
       }
