@@ -156,6 +156,10 @@ function projectSort(a,b){const bottleneck=bottleneckRank(a)-bottleneckRank(b);i
 function centralPresentationPolicy(repoRoot=process.cwd()){
   return readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),{});
 }
+function assetProductionEnabled(repoRoot=process.cwd()){
+  const policy=centralPresentationPolicy(repoRoot),contract=policy?.assetProductionParallelContract||{};
+  return contract?.enabled===true;
+}
 function isAssetProductionPilot(project={},repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot),contract=policy?.assetProductionParallelContract||{},first=contract?.firstAdoption||{};
   return contract?.enabled===true&&clean(first.gameId)===clean(project.gameId)&&['unity','roblox','web'].includes(clean(project.engine).toLowerCase());
@@ -167,7 +171,7 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
-    if(project.releaseState==='development-confirmed')return project.source==='company-status'&&isAssetProductionPilot(project,repoRoot);
+    if(project.releaseState==='development-confirmed')return project.source==='company-status'&&assetProductionEnabled(repoRoot);
     return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
   }
   if(project.releaseState==='development-confirmed')return project.engine==='web';
@@ -419,7 +423,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
   const engine=clean(project.engine).toLowerCase();
   if(!['web','unity','roblox'].includes(engine))return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project.releaseState).toLowerCase()))return null;
-  if(engine!=='web'&&!isAssetProductionPilot(project,repoRoot))return null;
+  if(engine!=='web'&&!assetProductionEnabled(repoRoot))return null;
   const relative=presentationSourceForProject(project,repoRoot);
   if(!relative)return null;
   const stages=presentationStagesForProject(project);
@@ -552,12 +556,23 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
 }
 function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
-  if(project.engine==='roblox')return pilot
-    ?uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)])
-    :uniqueTaskCandidates([scanExplicitMarkerTask(project,repoRoot,queue)]);
-  if(project.engine==='unity')return pilot
-    ?uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)])
-    :uniqueTaskCandidates([findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+  if(project.engine==='roblox')return uniqueTaskCandidates([
+    findWeatherPresentationTask(project,repoRoot,queue),
+    findPresentationQualityTask(project,repoRoot,queue),
+    scanExplicitMarkerTask(project,repoRoot,queue)
+  ]);
+  if(project.engine==='unity'){
+    if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
+      findPresentationQualityTask(project,repoRoot,queue),
+      scanExplicitMarkerTask(project,repoRoot,queue)
+    ]);
+    return uniqueTaskCandidates([
+      findWeatherPresentationTask(project,repoRoot,queue),
+      findPresentationQualityTask(project,repoRoot,queue),
+      findUnityTask(project,repoRoot,queue),
+      scanExplicitMarkerTask(project,repoRoot,queue)
+    ]);
+  }
   if(project.engine==='web'){
     if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWeatherPresentationTask(project,repoRoot,queue),findPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     const owner=findWebAssessmentTask(project,repoRoot,queue);
