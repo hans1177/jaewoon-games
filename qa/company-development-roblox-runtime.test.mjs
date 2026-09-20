@@ -374,19 +374,19 @@ test('development router carries presentation contract without changing canonica
 });
 
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
-  assert.match(workflowSource,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
-  assert.match(workflowSource,/source_revision=\$merge_sha/);
-  assert.match(workflowSource,/sourceRevision:\/\^\[0-9a-f\]\{40\}\$\/i/);
-  assert.match(workflowSource,/ownerFocusRobloxSourceCommit:result\.sourceRevision/);
-  assert.match(workflowSource,/ownerFocusRobloxSourceBootstrapPassedAt:stamp/);
-  assert.match(workflowSource,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
-  assert.match(workflowSource,/ownerFocusRobloxBuildOrPackagePassed===true/);
-  assert.match(workflowSource,/ownerFocusRobloxBuildSourceRevision===sourceRevision/);
-  assert.match(workflowSource,/ownerFocusRobloxAssetPipelineState:'BUILD_READY'/);
-  const secondaryPersistAt=workflowSource.indexOf("const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;");
+  assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
+  assert.match(workflow,/source_revision=\$merge_sha/);
+  assert.match(workflow,/sourceRevision:\/\^\[0-9a-f\]\{40\}\$\/i/);
+  assert.match(workflow,/ownerFocusRobloxSourceCommit:result\.sourceRevision/);
+  assert.match(workflow,/ownerFocusRobloxSourceBootstrapPassedAt:stamp/);
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxBuildOrPackagePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxBuildSourceRevision===sourceRevision/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState:'BUILD_READY'/);
+  const secondaryPersistAt=workflow.indexOf("const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;");
   assert.ok(secondaryPersistAt>=0,'secondary package persist branch missing');
-  const secondaryPersistEnd=workflowSource.indexOf('continue;',secondaryPersistAt);
-  const secondaryPersist=workflowSource.slice(secondaryPersistAt,secondaryPersistEnd);
+  const secondaryPersistEnd=workflow.indexOf('continue;',secondaryPersistAt);
+  const secondaryPersist=workflow.slice(secondaryPersistAt,secondaryPersistEnd);
   assert.doesNotMatch(secondaryPersist,/selectedPlatform:'ROBLOX'/);
   assert.doesNotMatch(secondaryPersist,/targetPlatform:'ROBLOX'/);
   assert.doesNotMatch(secondaryPersist,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
