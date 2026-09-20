@@ -108,6 +108,23 @@ function normalizeCompanyContext(input = {}) {
     reviewRequired: source.reviewRequired !== false
   });
 }
+function supervisionEvidenceRequired(input={}){
+  return (input?.evidence||[]).map(clean).includes('supervised-web-build:required');
+}
+function defaultSupervisionContract(){
+  return freeze({
+    version:1,
+    mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
+    required:true,
+    status:'REVIEW_REQUIRED',
+    candidateGenerationAllowed:true,
+    automaticPromotionAllowed:false,
+    approvalField:'supervisionApproved',
+    stages:freezeList(['SOURCE_AND_DESIGN_READ','GAMEPLAY_LOOP_DECOMPOSITION','SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK','VIBE_IMPLEMENTATION_CANDIDATE','SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW','MOBILE_AND_RUNTIME_QA','SUPERVISED_PROMOTION']),
+    protectedSemantics:freezeList(['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES']),
+    hardReject:freezeList(['PLACEHOLDER_SOURCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BUTTON_OR_LABEL_ONLY_PASS_CHEAT','BROKEN_MOBILE_INPUT'])
+  });
+}
 function normalizeSupervisionContract(input=null){
   if(!input||typeof input!=='object')return null;
   return freeze({
@@ -141,6 +158,8 @@ function normalizeSupervisionReview(input=null){
 function normalizeTask(input = {}, index = 0) {
   const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
+  const supervisionContract = normalizeSupervisionContract(input.supervisionContract) || (supervisionEvidenceRequired(input)?defaultSupervisionContract():null);
+  const supervised = supervisionContract?.required===true;
   const task = {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
@@ -160,9 +179,9 @@ function normalizeTask(input = {}, index = 0) {
     requiresOwnerDecision: Boolean(input.requiresOwnerDecision),
     protectedChange: Boolean(input.protectedChange),
     paidResourceRequired: Boolean(input.paidResourceRequired),
-    productionMode: clean(input.productionMode) || 'AUTONOMOUS_VIBE',
-    supervisionApproved: input.supervisionApproved === true,
-    supervisionContract: normalizeSupervisionContract(input.supervisionContract),
+    productionMode: supervised ? 'SUPERVISED_VIBE_COAUTHORING' : (clean(input.productionMode) || 'AUTONOMOUS_VIBE'),
+    supervisionApproved: supervised && input.supervisionApproved === true,
+    supervisionContract,
     supervisionReview: normalizeSupervisionReview(input.supervisionReview),
     blocker: clean(input.blocker) || null,
     evidence: freezeList(normalizeEvidence(input.evidence || [])),
