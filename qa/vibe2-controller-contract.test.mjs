@@ -521,8 +521,23 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:11'));
+  assert(resultStep.includes('version:12'));
+  assert(resultStep.includes('phase4BenchmarkVerification'));
   assert(resultStep.includes('neuralDiagnosis'));
+});
+
+test('phase 4 passive benchmark reuses existing tournament workers without queue authority expansion',()=>{
+  const runner=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
+  assert.match(runner,/buildPassiveCapabilityBenchmarkContract/);
+  assert.match(runner,/phase4BenchmarkVerification/);
+  assert.match(runner,/PHASE4_FIXED_CONTEXT_CONTROLLED_AB/);
+  assert.match(runner,/workerCreationRequired:false|phase4BenchmarkVerification/);
+  const sourceWorker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(sourceWorker,/explorationOrder=order\?\.phase4BenchmarkVerification\?\.active===true/);
+  assert.match(sourceWorker,/goal:clean\(order\.originalGoal\)\|\|clean\(order\.goal\)/);
+  const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(fanIn,/buildPairedCapabilityBenchmarkReviews/);
+  assert.match(fanIn,/selectedResultByTaskId/);
 });
 
 test('continuous worker transports causal replay prepatch reproduction evidence',()=>{

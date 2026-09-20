@@ -14,7 +14,7 @@ import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candid
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
 import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
-import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance } from './vibe2-capability-distillation.mjs';
+import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance, buildPassiveCapabilityBenchmarkContract } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -339,7 +339,35 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     && task.protectedChange !== true
     && supervisionApproved;
   const learningGuidance = buildLearningGuidance(plan.learning);
-  const verifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
+  const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
+  const normalVerifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
+  const phase4BenchmarkVerification=buildPassiveCapabilityBenchmarkContract({
+    experienceInput:fullExperienceMemory,
+    task:{...task,target:plan.target},
+    retrieval:normalVerifiedCapabilityMemory,
+    variant,
+    candidateCount:tournament.candidateCount,
+    executionRoute:route.route
+  });
+  const phase4RetrievalTask=phase4BenchmarkVerification.active===true
+    ?{
+      ...task,
+      target:plan.target,
+      evidence:[
+        ...(task.evidence||[]),
+        'phase4-benchmark-verification',
+        `phase4-capability-id:${phase4BenchmarkVerification.capabilityId}`,
+        `phase4-benchmark-case:${phase4BenchmarkVerification.caseId}`,
+        `phase4-benchmark-pair:${phase4BenchmarkVerification.pairId}`,
+        `phase4-benchmark-role:${phase4BenchmarkVerification.role}`,
+        `phase4-unseen-game:${phase4BenchmarkVerification.gameId}`,
+        `phase4-unseen-problem-fingerprint:${phase4BenchmarkVerification.unseenProblemFingerprint}`
+      ]
+    }
+    :{...task,target:plan.target};
+  const verifiedCapabilityMemory=phase4BenchmarkVerification.active===true
+    ?retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:phase4RetrievalTask,limit:5})
+    :normalVerifiedCapabilityMemory;
   const verifiedCapabilityMemoryGuidance=verifiedCapabilityGuidance(verifiedCapabilityMemory);
   const unifiedLearning = retrieveUnifiedLearning({
     task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
@@ -356,7 +384,6 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const presentationGuidance = presentationQualityGuidance(presentationQuality);
   const weatherPresentation = buildWeatherPresentationContract(task,plan.target);
   const weatherGuidance = weatherPresentationGuidance(weatherPresentation);
-  const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
   const responsibilityCalibration=responsibilityCalibrationForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
@@ -366,7 +393,14 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const verifiedArchitectureDriftGuidance=architectureDriftGuidance(architectureDriftRisk);
   const codingConstitutionRule=codingConstitutionRuleForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingConstitutionGuidance=codingConstitutionGuidance(codingConstitutionRule);
-  const candidateStrategy=candidateStrategyRole(variant,codingStrategyPreference);
+  const baseCandidateStrategy=candidateStrategyRole(variant,codingStrategyPreference);
+  const candidateStrategy=phase4BenchmarkVerification.active===true
+    ?freeze({
+      variant:'phase4-controlled',
+      strategy:phase4BenchmarkVerification.fixedCandidateStrategy,
+      directive:'Use the original task responsibility and the same bounded implementation strategy for this controlled pair. Do not widen scope, QA, context selection, or model budget.'
+    })
+    :baseCandidateStrategy;
   const candidateStrategyGuidance=[
     '[CANDIDATE STRATEGY ROLE]',
     `variant=${candidateStrategy.variant}`,
@@ -374,6 +408,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     candidateStrategy.directive,
     'This role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.'
   ].join('\n');
+  const phase4BenchmarkGuidance=phase4BenchmarkVerification.active===true?[
+    '[PHASE4 PASSIVE CONTROLLED BENCHMARK]',
+    'This remains the existing production task and existing candidate tournament; no extra worker, queue priority, writable scope, or QA authority is created.',
+    'Keep non-target context, writable scope, model budget, and QA contract fixed. The only intended A/B difference is the designated verified capability memory layer.',
+    'Benchmark observation never bypasses normal candidate selection, fresh QA, fan-in regression, release, or native runtime gates.'
+  ].join('\n'):'';
   const reusedContexts = reusableContextsForTask(handoff || {}, task);
   const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
   const workPackage=freeze({
@@ -425,7 +465,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
@@ -465,6 +505,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
+    phase4BenchmarkVerification:phase4BenchmarkVerification.active===true?phase4BenchmarkVerification:null,
     verifiedCapabilityMemory,
     capabilityApplicationContract:freeze({
       version:1,
@@ -570,6 +611,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_VERIFIED_CAPABILITY_APPLIED=${order.verifiedCapabilityMemoryAppliedToWorkerGoal?'YES':'NO'}`);
     console.log(`VIBE2_CAPABILITY_APPLICATION_IDS=${(order.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).join(',')||'NONE'}`);
     console.log(`VIBE2_CAPABILITY_APPLICATION_BINDING=${order.capabilityApplicationContract?.binding||'NONE'}`);
+    console.log(`VIBE2_PHASE4_BENCHMARK_ROLE=${order.phase4BenchmarkVerification?.role||'NONE'}`);
+    console.log(`VIBE2_PHASE4_BENCHMARK_PAIR=${order.phase4BenchmarkVerification?.pairId||'NONE'}`);
     console.log(`VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED=${order.capabilityMemoryPartition?.excludedRecordCount||0}`);
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);

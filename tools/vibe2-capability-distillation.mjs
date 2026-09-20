@@ -280,6 +280,223 @@ export function mergeCodingTraceLedger(ledgerInput={},traces=[]){
 }
 
 
+
+export function buildPassiveCapabilityBenchmarkContract({experienceInput={},task={},retrieval={},variant='primary',candidateCount=1,executionRoute=''}={}){
+  const normalizedVariant=clean(variant)||'primary';
+  const role=normalizedVariant==='primary'?'CONTROL':normalizedVariant==='speculative-1'?'CHALLENGER':null;
+  const gameId=clean(task.gameId);
+  const target=clean(task.target||task.engine).toLowerCase();
+  const inactive=(reason)=>Object.freeze({
+    version:1,active:false,reason,role:null,capabilityId:null,caseId:null,pairId:null,
+    gameId:gameId||null,engine:target||null,unseenProblemFingerprint:null,
+    controlVariant:'primary',challengerVariant:'speculative-1',
+    naturalProductionOverlay:true,screenOnly:false,authorityExpanded:false
+  });
+  if(clean(executionRoute)!=='text-source-worker')return inactive('TEXT_SOURCE_ROUTE_REQUIRED');
+  if(clean(task.type).toLowerCase()!=='implementation')return inactive('IMPLEMENTATION_TASK_REQUIRED');
+  if(Number(candidateCount||0)<2)return inactive('EXISTING_CANDIDATE_TOURNAMENT_REQUIRED');
+  if(!role)return inactive('PAIR_VARIANT_NOT_SELECTED');
+  if(!gameId)return inactive('GAME_ID_REQUIRED');
+
+  const memory=createVibeExperienceMemory(experienceInput);
+  const normalRecords=Array.isArray(retrieval?.records)?retrieval.records:[];
+  const recordById=new Map((memory.records||[]).map(record=>[clean(record.id),record]));
+  let selected=null;
+  for(const retrieved of normalRecords){
+    const record=recordById.get(clean(retrieved?.id));
+    if(!record)continue;
+    const lifecycle=record.capabilityLifecycle||{};
+    if(lifecycle.generalizationCandidate!==true||lifecycle.strongGeneralizationVerified===true||lifecycle.retrievalEligible===false)continue;
+    if(Number(lifecycle.contradictionCount||0)>0||Number(lifecycle.benchmarkContradictionCount||0)>0)continue;
+    const seenGames=new Set([
+      clean(record.gameId),
+      ...(record.capabilityApplications||[]).map(row=>clean(row?.gameId)),
+      ...(record.capabilityBenchmarks||[]).map(row=>clean(row?.gameId))
+    ].filter(Boolean));
+    if(seenGames.has(gameId))continue;
+    if((record.capabilityApplications||[]).some(row=>clean(row?.taskId)===clean(task.id)))continue;
+    selected=record;
+    break;
+  }
+  if(!selected)return inactive('NO_RELEVANT_UNSEEN_GENERALIZATION_CANDIDATE');
+
+  const responsibleFiles=safeArray(task.responsibleFiles,16).sort();
+  const unseenProblemFingerprint='phase4-runtime-'+hashObject([
+    gameId,target,clean(task.goal),responsibleFiles.join('|')
+  ].join('|')).slice(0,24);
+  if((selected.capabilityBenchmarks||[]).some(row=>
+    clean(row?.gameId)===gameId||clean(row?.unseenProblemFingerprint)===unseenProblemFingerprint
+  ))return inactive('BENCHMARK_HOLDOUT_ALREADY_OBSERVED');
+
+  const capabilityId=clean(selected.id);
+  const caseId='phase4-runtime-case-'+hashObject([capabilityId,gameId,unseenProblemFingerprint].join('|')).slice(0,24);
+  const pairId='phase4-runtime-pair-'+hashObject([capabilityId,caseId].join('|')).slice(0,24);
+  const fixedContextFingerprint='phase4-context-'+hashObject([
+    clean(task.id),gameId,target,clean(task.goal),responsibleFiles.join('|'),
+    safeArray(task.completionCriteria,16).sort().join('|')
+  ].join('|')).slice(0,24);
+  return Object.freeze({
+    version:1,
+    active:true,
+    reason:'RELEVANT_UNSEEN_GENERALIZATION_CANDIDATE',
+    role,
+    capabilityId,
+    caseId,
+    pairId,
+    gameId,
+    engine:target||null,
+    sourceGameId:clean(selected.gameId)||null,
+    unseenGame:true,
+    unseenProblemFingerprint,
+    fixedContextFingerprint,
+    controlVariant:'primary',
+    challengerVariant:'speculative-1',
+    fixedCandidateStrategy:'PHASE4_FIXED_CONTEXT_CONTROLLED_AB',
+    nonTargetContextFixed:true,
+    writableScopeFixed:true,
+    modelBudgetFixed:true,
+    qaContractFixed:true,
+    exactCapabilityIsolation:true,
+    nativeRuntimeRequired:['roblox','unity','fortnite_uefn','uefn'].includes(target),
+    naturalProductionOverlay:true,
+    screenOnly:false,
+    productionPriorityChanged:false,
+    queueMutationRequired:false,
+    workerCreationRequired:false,
+    benchmarkMayPromoteByItself:false,
+    authorityExpanded:false
+  });
+}
+
+function benchmarkResultIdentity(row={}){
+  return [
+    clean(row?.taskId),
+    clean(row?.reservationId||row?.metrics?.reservationId),
+    clean(row?.variant)||'primary',
+    clean(row?.candidateBranch)
+  ].filter(Boolean).join('|');
+}
+function benchmarkWorkerFreshQaPass(row={}){
+  const roles=normalizeRoleResults(row?.roleResults||{});
+  return upper(row?.outcome)==='PASS'
+    &&roles.test==='PASS'
+    &&roles.performance==='PASS'
+    &&Boolean(clean(row?.taskId))
+    &&Boolean(clean(row?.reservationId||row?.metrics?.reservationId))
+    &&Boolean(clean(row?.candidateBranch));
+}
+function benchmarkNativeRuntimePass(row={},required=false){
+  if(!required)return true;
+  const evidence=safeArray(row?.evidence,160);
+  return row?.nativeRuntimeVerified===true
+    ||row?.runtimeVerification?.nativePass===true
+    ||evidence.includes('phase4-native-runtime:PASS');
+}
+
+export function buildPairedCapabilityBenchmarkReviews({task={},results=[],selectedResult=null,fullRegressionPass=false}={}){
+  const rows=(Array.isArray(results)?results:[]).filter(row=>row&&row.phase4BenchmarkVerification?.active===true);
+  if(rows.length<2)return Object.freeze([]);
+  const groups=new Map();
+  for(const row of rows){
+    const contract=row.phase4BenchmarkVerification||{};
+    const key=[clean(contract.capabilityId),clean(contract.caseId),clean(contract.pairId)].join('|');
+    if(!clean(contract.capabilityId)||!clean(contract.caseId)||!clean(contract.pairId))continue;
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(row);
+  }
+  const out=[];
+  for(const group of groups.values()){
+    const control=group.find(row=>upper(row?.phase4BenchmarkVerification?.role)==='CONTROL');
+    const challenger=group.find(row=>upper(row?.phase4BenchmarkVerification?.role)==='CHALLENGER');
+    if(!control||!challenger)continue;
+    const cc=control.phase4BenchmarkVerification||{},ch=challenger.phase4BenchmarkVerification||{};
+    const capabilityId=clean(ch.capabilityId);
+    const contractMatches=[
+      'capabilityId','caseId','pairId','gameId','engine','unseenProblemFingerprint','fixedContextFingerprint'
+    ].every(key=>clean(cc?.[key])===clean(ch?.[key])&&Boolean(clean(ch?.[key])));
+    const controlIds=unique(safeArray(control?.capabilityApplication?.exactInjectedCapabilityIds,8));
+    const challengerIds=unique(safeArray(challenger?.capabilityApplication?.exactInjectedCapabilityIds,8));
+    const exactIsolation=contractMatches
+      &&control?.capabilityApplication?.injected!==true
+      &&controlIds.length===0
+      &&challenger?.capabilityApplication?.injected===true
+      &&challengerIds.length===1
+      &&challengerIds[0]===capabilityId;
+    const controlFreshQaPass=benchmarkWorkerFreshQaPass(control);
+    const challengerFreshQaPass=benchmarkWorkerFreshQaPass(challenger);
+    const controlSample=benchmarkResultIdentity(control);
+    const challengerSample=benchmarkResultIdentity(challenger);
+    const independent=Boolean(controlSample&&challengerSample&&controlSample!==challengerSample);
+    const selectedSample=benchmarkResultIdentity(selectedResult||{});
+    const challengerSelected=Boolean(selectedSample&&selectedSample===challengerSample);
+    const combinedEvidence=unique([
+      ...(control.evidence||[]),
+      ...(challenger.evidence||[])
+    ]);
+    const capabilitySpecificContradiction=combinedEvidence.includes('capability-contradiction:'+capabilityId);
+    const capabilitySpecificPositiveSupport=exactIsolation
+      &&controlFreshQaPass
+      &&challengerFreshQaPass
+      &&challengerSelected
+      &&fullRegressionPass===true
+      &&!capabilitySpecificContradiction;
+    const nativeRuntimeRequired=ch.nativeRuntimeRequired===true;
+    const nativeRuntimePass=benchmarkNativeRuntimePass(challenger,nativeRuntimeRequired);
+    const pairedControlChallenger=exactIsolation&&independent;
+    const freshIndependentQaPass=pairedControlChallenger
+      &&controlFreshQaPass
+      &&challengerFreshQaPass
+      &&challengerSelected
+      &&fullRegressionPass===true;
+    const evidence=unique([
+      ...combinedEvidence.filter(value=>/^(actions-run:|reservation-id:|candidate-sha:|base-main:|incremental-qa-hash:|phase4-|capability-support:|capability-contradiction:)/.test(clean(value))),
+      controlSample?'phase4-control-sample:'+hashObject(controlSample).slice(0,20):'',
+      challengerSample?'phase4-challenger-sample:'+hashObject(challengerSample).slice(0,20):'',
+      pairedControlChallenger?'phase4-paired-control-challenger:PASS':'phase4-paired-control-challenger:FAIL',
+      controlFreshQaPass?'phase4-control-fresh-qa:PASS':'phase4-control-fresh-qa:FAIL',
+      challengerFreshQaPass?'phase4-challenger-fresh-qa:PASS':'phase4-challenger-fresh-qa:FAIL',
+      fullRegressionPass===true?'phase4-full-regression:PASS':'phase4-full-regression:FAIL',
+      challengerSelected?'phase4-challenger-selected:PASS':'phase4-challenger-selected:NO',
+      capabilitySpecificPositiveSupport?'capability-support:'+capabilityId:'',
+      nativeRuntimePass?'phase4-native-runtime-bound:PASS':''
+    ]).filter(Boolean);
+    out.push(Object.freeze({
+      version:1,
+      capabilityId,
+      benchmarkId:'cbench_'+hashObject([
+        capabilityId,clean(ch.caseId),clean(ch.pairId),controlSample,challengerSample,selectedSample
+      ].join('|')).slice(0,24),
+      caseId:clean(ch.caseId),
+      pairId:clean(ch.pairId),
+      gameId:clean(ch.gameId||task.gameId)||null,
+      engine:clean(ch.engine||task.target||task.engine).toLowerCase()||null,
+      unseenGame:ch.unseenGame===true,
+      unseenProblemFingerprint:clean(ch.unseenProblemFingerprint)||null,
+      independent,
+      pairedControlChallenger,
+      controlFreshQaPass,
+      challengerFreshQaPass,
+      freshIndependentQaPass,
+      fullRegressionPass:fullRegressionPass===true,
+      nativeRuntimeRequired,
+      nativeRuntimePass,
+      nonTargetContextFixed:exactIsolation&&cc.nonTargetContextFixed===true&&ch.nonTargetContextFixed===true,
+      writableScopeFixed:exactIsolation&&cc.writableScopeFixed===true&&ch.writableScopeFixed===true,
+      modelBudgetFixed:exactIsolation&&cc.modelBudgetFixed===true&&ch.modelBudgetFixed===true,
+      qaContractFixed:exactIsolation&&cc.qaContractFixed===true&&ch.qaContractFixed===true,
+      capabilitySpecificPositiveSupport,
+      capabilitySpecificContradiction,
+      evidence:Object.freeze(evidence),
+      observedAt:null,
+      rawCodeStored:false,
+      rawModelOutputStored:false,
+      hiddenChainOfThoughtStored:false,
+      authorityExpanded:false
+    }));
+  }
+  return Object.freeze(out);
+}
+
 export function buildCapabilityApplicationReviews({task={},result={},finalReviewPass=false,selected=false}={}){
   const application=result?.capabilityApplication&&typeof result.capabilityApplication==='object'?result.capabilityApplication:{};
   const injected=application.injected===true;
@@ -505,8 +722,10 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
   const phase4Role=upper(evidenceValue(taskEvidence,'phase4-benchmark-role:'));
   const phase4CapabilityId=clean(evidenceValue(taskEvidence,'phase4-capability-id:'));
   const phase4ScreenOnly=taskEvidence.includes('phase4-generalization-screen-only');
+  const phase4BenchmarkVerification=taskEvidence.includes('phase4-benchmark-verification');
+  const phase4Isolation=phase4ScreenOnly||phase4BenchmarkVerification;
 
-  if(phase4ScreenOnly&&phase4Role==='CONTROL'){
+  if(phase4Isolation&&phase4Role==='CONTROL'){
     return Object.freeze({
       version:1,
       kind:'verified-coding-capability-retrieval',
@@ -523,7 +742,8 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
       writableScopeExpansionAllowed:false,
       qaBypassAllowed:false,
       authorityExpanded:false,
-      phase4BenchmarkScreen:true,
+      phase4BenchmarkScreen:phase4ScreenOnly,
+      phase4BenchmarkVerification,
       phase4BenchmarkRole:'CONTROL',
       phase4ExactCapabilityIsolation:true
     });
@@ -536,7 +756,7 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     &&record?.capabilityLifecycle?.retrievalEligible!==false
   );
 
-  if(phase4ScreenOnly&&phase4Role==='CHALLENGER'){
+  if(phase4Isolation&&phase4Role==='CHALLENGER'){
     records=records.filter(record=>
       clean(record?.id)===phase4CapabilityId
       &&record?.capabilityLifecycle?.generalizationCandidate===true
@@ -583,7 +803,8 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
       writableScopeExpansionAllowed:false,
       qaBypassAllowed:false,
       authorityExpanded:false,
-      phase4BenchmarkScreen:true,
+      phase4BenchmarkScreen:phase4ScreenOnly,
+      phase4BenchmarkVerification,
       phase4BenchmarkRole:'CHALLENGER',
       phase4ExactCapabilityIsolation:true
     });
@@ -652,6 +873,7 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     qaBypassAllowed:false,
     authorityExpanded:false,
     phase4BenchmarkScreen:false,
+    phase4BenchmarkVerification:false,
     phase4BenchmarkRole:null,
     phase4ExactCapabilityIsolation:false
   });
