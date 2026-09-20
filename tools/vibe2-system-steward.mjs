@@ -116,7 +116,7 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
   actions.push(...machineRepairActions);
 
   const evolution=injectSelfArchitectureEvolutionTasks(queue,{...control,neuralExpansionReadiness});
-  if(evolution.changed){
+  if(causalRepair.length){
     queue=evolution.queue;
     actions.push('ENQUEUE_SELF_ARCHITECTURE_EVOLUTION');
     taskIds.push(...evolution.added.map(task=>task.id));
