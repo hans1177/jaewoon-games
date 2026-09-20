@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -35,6 +35,50 @@ test('JSON source generation uses bounded context and structured output mode',()
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
 });
 
+test('deterministic diagnostic repair handles interval cleanup without model generation',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source=['<!doctype html><html><body><script>','const AUDIO={timer:null};',"function start(){ if(AUDIO.timer)return; AUDIO.timer=setInterval(()=>tick(),285); }",'function tick(){}','</script></body></html>'].join('\n');
+  write(path.join(sourceRoot,'rpg.html'),source);
+  const exploration={editContract:{causalReplay:{required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'INTERVAL_CLEANUP_RISK',diagnosticFile:'rpg.html',diagnosticLine:3,diagnosticNeedle:'setInterval(',diagnosticMicroTask:'clear interval lifecycle'}}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles:['rpg.html']});
+  assert.ok(candidate);
+  assert.match(candidate.edits[0].replace,/pagehide/);
+  assert.match(candidate.edits[0].replace,/clearInterval\(AUDIO\.timer\)/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+});
+
+test('deterministic diagnostic repair makes DOM event binding null-safe',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const unsafe="document.getElementById('play').addEventListener('click',startGame);";
+  write(path.join(sourceRoot,'index.html'),'<button id="play">Play</button><script>'+unsafe+'function startGame(){}</script>');
+  const exploration={editContract:{causalReplay:{required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'DOM_NULL_EVENT_BIND',diagnosticFile:'index.html',diagnosticLine:1,diagnosticNeedle:unsafe}}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(candidate);
+  assert.match(candidate.edits[0].replace,/\?\.addEventListener/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+});
+
+test('deterministic diagnostic repair adds touch-action to the actual interactive rule',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source='<!doctype html><html><head><style>.scope-action,button{min-height:54px;border:0}</style></head><body><button class="scope-action">Play</button></body></html>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const exploration={editContract:{causalReplay:{required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'TOUCH_ACTION_UNSPECIFIED',diagnosticFile:'index.html',diagnosticLine:1,diagnosticNeedle:'touch-action'}}};
+  const candidate=deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(candidate);
+  assert.match(candidate.edits[0].replace,/touch-action:manipulation/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate,exploration}).pass,true);
+});
+
+test('source worker wires deterministic diagnostic before model recovery',()=>{
+  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const deterministicAt=source.indexOf('const deterministicDiagnostic=!allowFullRewrite?deterministicDiagnosticCandidate');
+  const modelAt=source.indexOf('if(!generated)generated=await generateCandidateWithRecovery');
+  assert.ok(deterministicAt>0&&modelAt>deterministicAt);
+  assert.match(source,/VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=PASS/);
+});
 test('reproduced interval diagnostic is anchored before incremental QA',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'web-games/demo');

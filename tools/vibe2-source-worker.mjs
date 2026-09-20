@@ -284,6 +284,35 @@ export function diagnosticFocusedReplaceOnlySpec({exploration={},sourceRoot='',r
     };
   }catch{return null;}
 }
+export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',responsibleFiles=[]}={}){
+  const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
+  if(!spec)return null;
+  let replace='';
+  if(spec.diagnosticType==='DOM_NULL_EVENT_BIND'){
+    const unsafe=/(document\.getElementById\s*\([^\n;]+\))\s*\.addEventListener\s*\(/;
+    if(!unsafe.test(spec.find))return null;
+    replace=spec.find.replace(unsafe,(_match,call)=>call+'?.addEventListener(');
+  }else if(spec.diagnosticType==='INTERVAL_CLEANUP_RISK'){
+    if(/\bclearInterval\s*\(/.test(spec.find))return null;
+    const timerAssign=/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*=\s*setInterval\s*\(/;
+    const match=timerAssign.exec(spec.find);
+    if(!match)return null;
+    const timer=match[1];
+    const cleanup="window.addEventListener('pagehide',()=>{if("+timer+"){clearInterval("+timer+");"+timer+"=null;}},{once:true}); ";
+    replace=spec.find.replace(timerAssign,value=>cleanup+value);
+  }else if(spec.diagnosticType==='TOUCH_ACTION_UNSPECIFIED'){
+    if(/touch-action\s*:/i.test(spec.find))return null;
+    if(spec.find==='<style>')replace='<style>\nbutton,[data-gameplay-action]{touch-action:manipulation;}';
+    else{
+      const close=spec.find.lastIndexOf('}');
+      if(close<0)return null;
+      const head=spec.find.slice(0,close).replace(/\s*$/,'');
+      replace=head+(/;\s*$/.test(head)?'':';')+'touch-action:manipulation;'+spec.find.slice(close);
+    }
+  }else return null;
+  if(!replace||replace===spec.find)return null;
+  return{summary:'Vibe2 deterministic diagnostic repair',expectedEffect:'eliminate reproduced '+spec.diagnosticType+' before model generation',edits:[{path:spec.path,find:spec.find,replace}],newFiles:[],replaceFiles:[],tests:[],deterministicDiagnosticType:spec.diagnosticType};
+}
 export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},sourceRoot='',responsibleFiles=[],error=null}={}){
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
   if(!spec)return null;
@@ -1577,7 +1606,20 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     return{...result,diagnosticPostcondition};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
-  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired});
+  const deterministicDiagnostic=!allowFullRewrite?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;
+  let generated=null;
+  if(deterministicDiagnostic){
+    try{
+      const candidate=normalizeCandidate(deterministicDiagnostic,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES});
+      if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=candidateValidator(candidate);
+      generated={candidate,candidateValidation,generation:{attempts:1,recoveryUsed:false,deterministicDiagnosticRepair:true,deterministicDiagnosticType:deterministicDiagnostic.deterministicDiagnosticType,mode:'DETERMINISTIC_DIAGNOSTIC',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_DIAGNOSTIC'}};
+      console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=PASS:'+deterministicDiagnostic.deterministicDiagnosticType+':'+candidate.edits[0]?.path);
+    }catch(error){
+      console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
+    }
+  }
+  if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
@@ -1654,6 +1696,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     focusedReplaceNoOpCreditUsed:generation.focusedReplaceNoOpCreditUsed===true,
     focusedMinimalJsonContract:generation.focusedFinalRetry===true&&!allowFullRewrite,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
+    deterministicDiagnosticRepair:generation.deterministicDiagnosticRepair===true,
+    deterministicDiagnosticType:clean(generation.deterministicDiagnosticType)||null,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
