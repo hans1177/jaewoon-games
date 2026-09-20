@@ -973,3 +973,35 @@ test('cohort fan-in clears atomic transition state only for accepted reservation
   assert.equal(preserved.neuronExpectedVariants,2);
   assert.equal(preserved.neuronResults.length,1);
 });
+
+test('reserve-batch heals downgraded atomic queue schema even when no work is reservable',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-atomic-schema-heal-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const downgraded={
+    version:5,
+    mode:'hierarchical-dag-sharded-work-stealing-queue',
+    maxConcurrentTasks:256,
+    scheduling:{dynamicBackpressure:true},
+    tasks:[{
+      id:'already-done',
+      gameId:'done',
+      target:'web',
+      department:'development',
+      type:'implementation',
+      goal:'done',
+      status:'done',
+      sourceRoot:'web-games/done',
+      responsibleFiles:['index.html']
+    }]
+  };
+  fs.writeFileSync(queueFile,JSON.stringify(downgraded,null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
+  const result=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'20',min:'20'});
+  assert.equal(result.reserved,false);
+  assert.equal(result.schemaMigrated,true);
+  const healed=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  assert.equal(healed.scheduling.atomicNeuronCompletion,true);
+  assert.equal(healed.tasks[0].neuronExpectedVariants,0);
+  assert.deepEqual(healed.tasks[0].neuronResults,[]);
+});
