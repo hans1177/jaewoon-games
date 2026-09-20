@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -33,6 +33,56 @@ test('JSON source generation uses bounded context and structured output mode',()
   assert.match(source,/\^JSON_\/\.test\(completionMode\)\?\{format:'json'\}/);
   assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;/);
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
+});
+
+test('reproduced interval diagnostic is anchored before incremental QA',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source=['<!doctype html><html><body><script>','const AUDIO={timer:null};','function start(){ AUDIO.timer=setInterval(()=>tick(),285); }','function tick(){}','</script></body></html>'].join('\n');
+  write(path.join(sourceRoot,'rpg.html'),source);
+  const exploration={editContract:{causalReplay:{
+    required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'INTERVAL_CLEANUP_RISK',diagnosticFile:'rpg.html',
+    diagnosticLine:3,diagnosticNeedle:'setInterval(',diagnosticMicroTask:'반복 타이머의 실제 clearInterval 해제 경로를 추가한다.'
+  }}};
+  const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles:['rpg.html']});
+  assert.ok(spec);
+  assert.equal(spec.path,'rpg.html');
+  assert.match(spec.find,/setInterval/);
+  const focused=buildDiagnosticFocusedReplaceOnlyPrompt('Goal: [DIAGNOSTIC_BUNDLE] interval cleanup',{exploration,sourceRoot,responsibleFiles:['rpg.html']});
+  assert.ok(focused);
+  assert.match(focused.prompt,/clearInterval/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:'function start(){ AUDIO.timer=setInterval(()=>tick(),285); }'}]},exploration}).pass,false);
+  const repaired='function stop(){ if(AUDIO.timer){ clearInterval(AUDIO.timer); AUDIO.timer=null; } }\nfunction start(){ stop(); AUDIO.timer=setInterval(()=>tick(),285); }';
+  assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:repaired}]},exploration}).pass,true);
+});
+
+test('reproduced touch-action diagnostic is anchored to interactive CSS before incremental QA',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source='<!doctype html><html><head><style>.game{min-height:100vh}.scope-action,button{min-height:54px;border:0}</style></head><body><button class="scope-action">Play</button></body></html>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const exploration={editContract:{causalReplay:{
+    required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'TOUCH_ACTION_UNSPECIFIED',diagnosticFile:'index.html',
+    diagnosticLine:1,diagnosticNeedle:'touch-action',diagnosticMicroTask:'실제 조작 영역에 모바일 스크롤 충돌을 막는 touch-action 정책을 추가한다.'
+  }}};
+  const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(spec);
+  assert.equal(spec.path,'index.html');
+  assert.match(spec.find,/scope-action|button/);
+  const focused=buildDiagnosticFocusedReplaceOnlyPrompt('Goal: [WEB_REPAIR] mobile input',{exploration,sourceRoot,responsibleFiles:['index.html']});
+  assert.ok(focused);
+  assert.match(focused.prompt,/touch-action:/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'index.html',find:spec.find,replace:'.scope-action,button{min-height:54px;border:0}'}]},exploration}).pass,false);
+  assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'index.html',find:spec.find,replace:'.scope-action,button{min-height:54px;border:0;touch-action:manipulation}'}]},exploration}).pass,true);
+});
+
+test('missing diagnostic postcondition is a retryable generation failure',()=>{
+  const error=new Error('DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:rpg.html:CLEAR_INTERVAL_LIFECYCLE_MISSING');
+  assert.equal(generationFailureClass(error),'DIAGNOSTIC_POSTCONDITION');
+  assert.equal(shouldRetryGenerationError(error),true);
+  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(source,/const diagnosticFocusedReplaceOnly=!allowFullRewrite/);
+  assert.match(source,/diagnosticFocusedReplaceOnly\|\|\(focusedFinal/);
 });
 
 test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{

@@ -109,12 +109,16 @@ function verifyDiagnosticReplayBaseline({order={},target='',root=''}={}){
   const identity=diagnosticReplayIdentity(order);
   if(!identity)return null;
   const report=diagnoseGame(root,{maxIssues:200});
-  const reproduced=(report.issues||[]).some(row=>clean(row?.type).toUpperCase()===identity.type&&posix(row?.file)===identity.file);
+  const matched=(report.issues||[]).find(row=>clean(row?.type).toUpperCase()===identity.type&&posix(row?.file)===identity.file)||null;
+  const reproduced=Boolean(matched);
   return{
-    version:1,
+    version:2,
     type:identity.type,
     file:identity.file,
     reproduced,
+    line:Number.isInteger(Number(matched?.line))?Number(matched.line):null,
+    needle:clean(matched?.needle)||null,
+    microTask:clean(matched?.microTask)||null,
     verifiedResponsibleSystem:reproduced?diagnosticResponsibleSystem(identity.type):null,
     verifier:'AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN',
     sourceWrite:false,
@@ -149,6 +153,9 @@ function compileCausalReplayPlan({order={},failures=[],testTargets=[],diagnostic
     version:2,required,prePatchReproduced:effectivePrePatchReproduced,nodeTestTargets:declaredTargets,executable,mode,status,
     diagnosticType:diagnosticReplay?.type||null,
     diagnosticFile:diagnosticReplay?.file||null,
+    diagnosticLine:diagnosticReplay?.line??null,
+    diagnosticNeedle:diagnosticReplay?.needle||null,
+    diagnosticMicroTask:diagnosticReplay?.microTask||null,
     verifiedResponsibleSystem:diagnosticReplay?.verifiedResponsibleSystem||null,
     diagnosticVerifier:diagnosticReplay?.verifier||null,
     identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false
@@ -446,7 +453,8 @@ export function explorationGuidance(handoff={}){
       ...(handoff.editContract.causalReplay?.required===true?[
         `[CAUSAL REPLAY CONTRACT] mode=${handoff.editContract.causalReplay.mode||'PLAN_ONLY'}; prepatch=${handoff.editContract.causalReplay.prePatchReproduced===true?'REPRODUCED':'NOT_REPRODUCED'}; executable=${handoff.editContract.causalReplay.executable===true?'YES':'NO'}`,
         ...(handoff.editContract.causalReplay.mode==='DIAGNOSTIC_RESCAN'&&handoff.editContract.causalReplay.executable===true?[
-          `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
+          `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; line=${handoff.editContract.causalReplay.diagnosticLine??'UNKNOWN'}; needle=${handoff.editContract.causalReplay.diagnosticNeedle||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
+          handoff.editContract.causalReplay.diagnosticMicroTask?`CAUSAL DIAGNOSTIC REPAIR=${handoff.editContract.causalReplay.diagnosticMicroTask}`:'' ,
           'HARD IMPLEMENTATION POSTCONDITION: the first source edit must directly address the exact diagnostic target above, and the same deterministic postpatch rescan must no longer report that diagnostic. Do not spend the first edit on an unrelated symbol while the exact diagnostic remains.',
           'This postcondition does not weaken or replace canonical QA; it only constrains the implementation to the independently reproduced failure.'
         ]:[])
