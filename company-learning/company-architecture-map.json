@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -344,7 +344,27 @@
       "rootCauseAuthority": "VERIFICATION_ONLY",
       "rootCauseSystemRequiresIndependentExplicitEvidence": true,
       "causalRepairDoesNotImplyRootCause": true,
-      "phase2Authority": "NONE"
+      "phase2Authority": "NONE",
+      "centralWorkContractFreshness": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1877,
+        "mergedCommit": "6bfccbfa279b86143d0ba4038845e658bb6be877",
+        "compiler": "tools/vibe2-central-work-contract.mjs::compileVibeCentralWorkContract",
+        "verifier": "tools/vibe2-central-work-contract.mjs::assertCompiledWorkContractFresh",
+        "livePolicyLoader": "tools/vibe2-central-work-contract.mjs::loadCentralPolicySnapshotFromGitRef",
+        "liveMainRef": "origin/main",
+        "liveMainPolicyPath": "company-learning/platform-release-roadmap.json",
+        "checks": [
+          "PRE_SOURCE_GENERATION",
+          "PRE_CANDIDATE_WRITE"
+        ],
+        "compare": "SHA256_LOCAL_AND_LIVE_MAIN",
+        "fetchFailure": "FAIL_CLOSED",
+        "mismatchFailure": "CENTRAL_POLICY_STALE",
+        "productionReproductionRun": 35487156349,
+        "authorityChange": "NONE",
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY"
+      }
     },
     "phase2Shadow": {
       "eventRouter": "tools/vibe2-neural-event-router.mjs",
@@ -484,7 +504,7 @@
           "system": "BOTTLENECK_DIAGNOSIS"
         }
       ],
-      "currentStage": "POST_1864_PRODUCTION_TELEMETRY_VERIFIED",
+      "currentStage": "POST_1877_LIVE_CENTRAL_POLICY_FRESHNESS_VERIFICATION",
       "mergedRepairPRs": [
         1815,
         1817
@@ -498,8 +518,8 @@
       "latestProductionRuntimeObservation": {
         "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
         "dedupeKey": "neural-production-shadow-runtime-observation",
-        "observedAt": "2026-09-20T03:39:00Z",
-        "documentSyncBaseMainHead": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+        "observedAt": "2026-09-20T03:52:00Z",
+        "documentSyncBaseMainHead": "6bfccbfa279b86143d0ba4038845e658bb6be877",
         "queueBranch": "vibe2-unreal-core",
         "queueBlobSha": "edf890524c3060011180e1cc76f68e4760692a52",
         "currentQueueSnapshot": {
@@ -581,7 +601,7 @@
           "neuralLockOrPolicyMutationAuthority": false,
           "neuralAutomaticLearningTuningPromotion": false
         },
-        "nextGate": "OBSERVE_FIRST_PRODUCTION_WAVE_USING_POST_1870_CENTRAL_WORK_CONTRACT_AND_VERIFY_CLASSIFICATION_DUPLICATE_ZERO_AND_UNAUTHORIZED_FIRE_ZERO",
+        "nextGate": "VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_DUPLICATE_AND_UNAUTHORIZED_FIRE_ZERO",
         "authority": "OBSERVE_COMPARE_ONLY_NO_EXECUTION_AUTHORITY",
         "latestCompletedTelemetryBeforeRepair": {
           "runId": 35485904220,
@@ -707,6 +727,80 @@
             "normalizedEventIdentityDuplicateKeys": 0,
             "unauthorizedAuthorityBitFireCount": 0
           }
+        },
+        "centralWorkContractLiveFreshnessIncident": {
+          "runId": 35487156349,
+          "pinnedContractSha": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+          "pinnedRoadmapVersion": 196,
+          "liveRoadmapVersionDuringWork": 197,
+          "liveRoadmapAdvanceSourcePr": 1872,
+          "candidateBranchesCreatedAfterLivePolicyAdvance": true,
+          "primaryCandidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35487156349-1",
+          "primaryManifest": {
+            "compiledPolicyVersion": 196,
+            "preSourceGenerationFreshness": "PASS_VERSION_196",
+            "preCandidateWriteFreshness": "PASS_VERSION_196"
+          },
+          "priorImplementationResult": "REMOTE_ONLY_POLICY_DRIFT_NOT_DETECTED",
+          "rootCause": "FRESHNESS_CHECK_RE_READ_PINNED_WORKTREE_ONLY_AND_DID_NOT_REFRESH_LIVE_MAIN_POLICY_REF"
+        },
+        "centralWorkContractLiveFreshnessRepair": {
+          "state": "MERGED_MAIN",
+          "sourcePr": 1877,
+          "mergedCommit": "6bfccbfa279b86143d0ba4038845e658bb6be877",
+          "responsibleSystems": [
+            "tools/vibe2-central-work-contract.mjs::assertCompiledWorkContractFresh",
+            "tools/vibe2-continuous-runner.mjs::runVibeContinuousRunner"
+          ],
+          "productionReproduction": {
+            "runId": 35487156349,
+            "pinnedContractSha": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+            "pinnedRoadmapVersion": 196,
+            "liveRoadmapVersionDuringWork": 197,
+            "liveRoadmapAdvanceSourcePr": 1872,
+            "candidateBranchesCreatedAfterLivePolicyAdvance": true,
+            "primaryCandidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35487156349-1",
+            "primaryManifest": {
+              "compiledPolicyVersion": 196,
+              "preSourceGenerationFreshness": "PASS_VERSION_196",
+              "preCandidateWriteFreshness": "PASS_VERSION_196"
+            },
+            "priorImplementationResult": "REMOTE_ONLY_POLICY_DRIFT_NOT_DETECTED",
+            "rootCause": "FRESHNESS_CHECK_RE_READ_PINNED_WORKTREE_ONLY_AND_DID_NOT_REFRESH_LIVE_MAIN_POLICY_REF"
+          },
+          "correction": {
+            "localPinnedFingerprintCheckPreserved": true,
+            "liveMainRef": "origin/main",
+            "liveMainRefreshBeforeEachFreshnessCheck": true,
+            "liveMainPolicyPath": "company-learning/platform-release-roadmap.json",
+            "compareMode": "SHA256_LOCAL_AND_LIVE_MAIN",
+            "preSourceGenerationLiveCheck": true,
+            "preCandidateWriteLiveCheck": true,
+            "liveFetchOrParseFailureAction": "FAIL_CLOSED",
+            "liveFingerprintMismatchAction": "CENTRAL_POLICY_STALE",
+            "sourceOrMainWriteAuthorityAdded": false,
+            "queueMutationAuthorityChanged": false,
+            "workerCreationAuthorityChanged": false,
+            "executionAuthorityChanged": false
+          },
+          "ci": {
+            "vibe2CoreQa": "PASS",
+            "integratedRegression": "PASS",
+            "vibeQa": "PASS",
+            "vibe3EngineContract": "PASS",
+            "companyEvolutionQa": "PASS",
+            "companySecurityImmuneSystem": "PASS"
+          },
+          "authority": {
+            "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+            "neuralExecutionAuthority": false,
+            "workerCreationAuthority": false,
+            "queueMutationAuthority": false,
+            "waveReorderAuthority": false,
+            "lockPolicyMutationAuthority": false,
+            "automaticLearningTuningPromotionAuthority": false
+          },
+          "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
         }
       },
       "mixedWorkerBottleneckClassification": {
@@ -804,6 +898,64 @@
             "unauthorizedAuthorityBitFireCount": 0
           }
         }
+      },
+      "centralWorkContractLiveFreshness": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1877,
+        "mergedCommit": "6bfccbfa279b86143d0ba4038845e658bb6be877",
+        "responsibleSystems": [
+          "tools/vibe2-central-work-contract.mjs::assertCompiledWorkContractFresh",
+          "tools/vibe2-continuous-runner.mjs::runVibeContinuousRunner"
+        ],
+        "productionReproduction": {
+          "runId": 35487156349,
+          "pinnedContractSha": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+          "pinnedRoadmapVersion": 196,
+          "liveRoadmapVersionDuringWork": 197,
+          "liveRoadmapAdvanceSourcePr": 1872,
+          "candidateBranchesCreatedAfterLivePolicyAdvance": true,
+          "primaryCandidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35487156349-1",
+          "primaryManifest": {
+            "compiledPolicyVersion": 196,
+            "preSourceGenerationFreshness": "PASS_VERSION_196",
+            "preCandidateWriteFreshness": "PASS_VERSION_196"
+          },
+          "priorImplementationResult": "REMOTE_ONLY_POLICY_DRIFT_NOT_DETECTED",
+          "rootCause": "FRESHNESS_CHECK_RE_READ_PINNED_WORKTREE_ONLY_AND_DID_NOT_REFRESH_LIVE_MAIN_POLICY_REF"
+        },
+        "correction": {
+          "localPinnedFingerprintCheckPreserved": true,
+          "liveMainRef": "origin/main",
+          "liveMainRefreshBeforeEachFreshnessCheck": true,
+          "liveMainPolicyPath": "company-learning/platform-release-roadmap.json",
+          "compareMode": "SHA256_LOCAL_AND_LIVE_MAIN",
+          "preSourceGenerationLiveCheck": true,
+          "preCandidateWriteLiveCheck": true,
+          "liveFetchOrParseFailureAction": "FAIL_CLOSED",
+          "liveFingerprintMismatchAction": "CENTRAL_POLICY_STALE",
+          "sourceOrMainWriteAuthorityAdded": false,
+          "queueMutationAuthorityChanged": false,
+          "workerCreationAuthorityChanged": false,
+          "executionAuthorityChanged": false
+        },
+        "ci": {
+          "vibe2CoreQa": "PASS",
+          "integratedRegression": "PASS",
+          "vibeQa": "PASS",
+          "vibe3EngineContract": "PASS",
+          "companyEvolutionQa": "PASS",
+          "companySecurityImmuneSystem": "PASS"
+        },
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "neuralExecutionAuthority": false,
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false
+        },
+        "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
       }
     }
   },
