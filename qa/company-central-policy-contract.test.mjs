@@ -639,3 +639,24 @@ test('company records use one canonical format, path, retention and runtime-medi
   assert.equal(architecture.recordsGovernance.legacyMigration,'MIGRATE_ON_TOUCH');
   assert.ok(architecture.executionTopology.recordsGovernance.includes('SCHEDULED_HYGIENE_SCAN'));
 });
+
+
+test('homepage current release media must be exact verified actual runtime evidence',()=>{
+  const h=roadmap.homepageRuntimeReleaseMediaContract;
+  assert.equal(h.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(h.runtimeMediaIndexer,'tools/homepage-runtime-media-index.mjs');
+  assert.equal(h.runtimeScreenshotPolicy.actualRuntimeOnly,true);
+  assert.equal(h.runtimeScreenshotPolicy.generatedMarketingMockCannotBeGameplayScreenshot,true);
+  assert.equal(h.runtimeScreenshotPolicy.exactCurrentSourceOrArtifactBindingRequired,true);
+  assert.deepEqual(h.runtimeScreenshotPolicy.supportedCurrentRepresentativePlatforms,['UNITY','ROBLOX']);
+  assert.equal(h.graphicsUpdateRefresh.previousCaptureMayNotRepresentNewArtifact,true);
+  assert.equal(h.graphicsUpdateRefresh.newActualRuntimeCaptureRequiredForCurrentRepresentative,true);
+  assert.equal(h.graphicsUpdateRefresh.verifiedCaptureImmediatelyEligibleForHomepageIndex,true);
+  assert.ok(h.releaseLinkPolicy.homepageRefreshAfterReleaseWorkflows.includes('Vibe2 Unity Release Result'));
+  assert.ok(h.releaseLinkPolicy.homepageRefreshAfterReleaseWorkflows.includes('Company DEVELOPMENT_CONFIRMED Roblox Release Promotion'));
+  assert.equal(h.captureSources.roblox.unattendedStudioCaptureForbidden,true);
+  assert.equal(h.captureSources.roblox.ownerProvidedDedicatedCaptureAccountSupportedAfterAuthorization,true);
+  assert.equal(h.captureSources.roblox.credentialStorageInRepositoryForbidden,true);
+  assert.equal(h.captureSources.roblox.exploitOrAbusiveMovementForbidden,true);
+  assert.equal(h.securityAndPrivacy.rawLoginCredentialsInGitForbidden,true);
+});
