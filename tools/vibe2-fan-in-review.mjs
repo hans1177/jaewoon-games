@@ -11,6 +11,7 @@ import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-r
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
 import { evaluatePhase2Readiness } from './vibe2-neural-phase2-readiness.mjs';
+import { summarizeNeuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -197,11 +198,12 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   });
   const durableNeuralEvidence=tasksWithNeuralAudit.flatMap(task=>Array.isArray(task.evidence)?task.evidence:[]);
   const neuralDurableShadowAudit=summarizeDurableNeuralShadowAudit(durableNeuralEvidence);
+  const neuralWorkGraphSummary=summarizeNeuralWorkGraphEvidence(durableNeuralEvidence);
   const neuralPhase2Readiness=evaluatePhase2Readiness({
     evidence:durableNeuralEvidence,
     shadowAudit:neuralDurableShadowAudit
   });
-  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,capabilityBenchmarkReviews,codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
+  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,capabilityBenchmarkReviews,codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralWorkGraphSummary,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile='',traceLedgerFile=''}={}){
@@ -216,7 +218,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
     codingTraceLedger=mergeCodingTraceLedger(readJson(traceLedgerFile,{traces:[]}),result.codingTraces);
     writeJson(traceLedgerFile,codingTraceLedger);
   }
-  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
   return{...result,codingTraceLedger};
 }
 
@@ -251,6 +253,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_NEURAL_ROOT_CONTRADICTION_RATE=${summary.rootCause.predictionContradictionRate??'NA'}`);
   console.log(`VIBE2_NEURAL_ROOT_SAMPLE_CONFLICTS=${summary.rootCause.sampleConflicts}`);
   console.log(`VIBE2_NEURAL_WAVE_AUDIT_SAMPLES=${summary.shadowAuditSamples}`);
+  console.log(`VIBE2_NEURAL_WORK_GRAPH_COUNT=${result.neuralWorkGraphSummary?.distinctGraphs||0}`);
+  console.log(`VIBE2_NEURAL_WORK_GRAPH_CONFLICTS=${result.neuralWorkGraphSummary?.conflicts||0}`);
+  console.log(`VIBE2_NEURAL_WORK_GRAPH_UNAUTHORIZED_AUTHORITY_BITS=${result.neuralWorkGraphSummary?.unauthorizedAuthorityBitCount||0}`);
   console.log(`VIBE2_NEURAL_UNAUTHORIZED_FIRE=${summary.events.unauthorizedFireCount}`);
   console.log(`VIBE2_NEURAL_PHASE2_EXECUTION_AUTHORITY=${readiness.executionAuthorityGranted?'YES':'NO'}`);
   console.log(`VIBE2_NEURAL_PHASE2_AUTOMATIC_PROMOTION=${readiness.automaticPromotionAllowed?'YES':'NO'}`);
