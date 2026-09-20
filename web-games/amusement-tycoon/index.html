@@ -222,7 +222,7 @@ function adjacentCells(gx,gz){
 }
 
 var visualById={},buildingByCell={},paths={},runtime={};
-var cleanerMeshes=[];
+function burger(fr){var baseColor=0xe69b54;g.add(box(1.6,1.1,1.5,baseColor));var fr=box(1.75,0.2,1.6,0x3b7657);fr.position.y=1.22;g.add(fr);}
 function registerObject(group,id){
   group.traverse(function(o){if(o.isMesh)o.userData.buildingId=id;});
 }
