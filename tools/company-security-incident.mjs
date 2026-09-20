@@ -213,7 +213,11 @@ export function resolveSecurityIncident(storeInput={},{
       if(!Number.isInteger(prNumber)||prNumber<1||!Number.isInteger(securityRunId)||securityRunId<1||!Number.isInteger(securityArtifactId)||securityArtifactId<1){
         throw new Error('SECURITY_POLICY_REVIEW_IDENTITY_REQUIRED');
       }
-      const sourceUrlPattern=new RegExp('^https://github\\.com/hans1177/jaewoon-games/pull/'+prNumber+'(?:#pullrequestreview-[0-9]+)?
+      const sourceUrlBase='https://github.com/hans1177/jaewoon-games/pull/'+prNumber;
+      const reviewAnchorPrefix=sourceUrlBase+'#pullrequestreview-';
+      const reviewAnchorId=sourceUrl.startsWith(reviewAnchorPrefix)?sourceUrl.slice(reviewAnchorPrefix.length):'';
+      const exactSourceUrl=sourceUrl===sourceUrlBase||(Boolean(reviewAnchorId)&&[...reviewAnchorId].every(ch=>ch>='0'&&ch<='9'));
+      if(!exactSourceUrl)throw new Error('SECURITY_POLICY_REVIEW_SOURCE_MISMATCH');
       const scanKey=scanDetectedAt.slice(0,19),rowScanKey=(clean(row.firstDetectedAt)||clean(row.lastDetectedAt)).slice(0,19);
       if(scanKey.length!==19||rowScanKey!==scanKey)throw new Error('SECURITY_POLICY_REVIEW_SCAN_MISMATCH');
       const scanRows=store.incidents.filter(candidate=>clean(candidate.rule)===POLICY_REVIEW_RULE
