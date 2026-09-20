@@ -127,7 +127,8 @@ export function simulateNeuralEventRoute({
 export function neuralEventRouteEvidence(route={}){
   if(clean(route.mode)!=='PHASE2_SHADOW_EVENT_ROUTER')return[];
   const payload={
-    version:1,
+    version:2,
+    eventIdentityVersion:2,
     eventId:clean(route?.event?.id)||null,
     eventType:clean(route?.event?.type)||'UNKNOWN',
     actionKind:clean(route?.proposedAction?.kind)||'OBSERVE_ONLY',
