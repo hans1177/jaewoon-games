@@ -415,13 +415,8 @@ jobs:
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
-  micro_payload:
-    needs: reserve
-    if: needs.reserve.outputs.neuron_ready == 'YES'
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
       - name: Upload completed task micro fan-in
+        if: steps.batch.outputs.neuron_ready == 'YES'
         uses: actions/upload-artifact@v4
         with:
           name: vibe2-micro-fanin-${{ github.run_id }}
@@ -1333,7 +1328,7 @@ jobs:
           echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'
 
   micro_finalize:
-    needs: [reserve, micro_payload]
+    needs: reserve
     if: needs.reserve.outputs.neuron_ready == 'YES' && env.VIBE2_EXECUTION_LANE == 'game-primary'
     runs-on: ubuntu-latest
     timeout-minutes: 8
