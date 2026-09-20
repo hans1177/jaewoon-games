@@ -18,6 +18,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
       - 'tools/vibe2-neural-critic.mjs'
@@ -56,6 +57,7 @@ on:
       - 'qa/vibe2-exploration-worker.test.mjs'
       - 'qa/vibe2-existing-web-assessment.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-work-package.test.mjs'
       - 'qa/vibe2-incremental-qa.test.mjs'
@@ -89,6 +91,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
       - 'tools/vibe2-neural-critic.mjs'
@@ -156,6 +159,7 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-central-work-contract.mjs
           node --check tools/vibe2-neural-diagnosis.mjs
           node --check tools/vibe2-neural-feedback.mjs
           node --check tools/vibe2-neural-critic.mjs
@@ -207,6 +211,7 @@ jobs:
           node --check qa/vibe2-exploration-worker.test.mjs
           node --check qa/vibe2-existing-web-assessment.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
+          node --check qa/vibe2-central-work-contract.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-work-package.test.mjs
           node --check qa/vibe2-incremental-qa.test.mjs
@@ -235,6 +240,7 @@ jobs:
           node --test qa/vibe2-exploration-worker.test.mjs
           node --test qa/vibe2-existing-web-assessment.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe2-central-work-contract.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-work-package.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
