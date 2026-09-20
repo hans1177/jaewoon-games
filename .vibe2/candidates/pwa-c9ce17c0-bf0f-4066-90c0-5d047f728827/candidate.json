@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "Assets/Editor/AndroidTestBuild.cs",
+      "find": "    var runNumber = ResolveRunNumber();",
+      "replace": "    var runNumber = Environment.GetEnvironmentVariable(\"GITHUB_RUN_NUMBER\") ?? 1;\n    var minRun = 20000;\n    var maxRun = int.MaxValue - 20000;\n    var finalRun = Math.Min(runNumber, maxRun);\n    PlayerSettings.Android.bundleVersionCode = 20000 + finalRun;\n    PlayerSettings.bundleVersion = \"0.2.{finalRun}\"\n    ;"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
