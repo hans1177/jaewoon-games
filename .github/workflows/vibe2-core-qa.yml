@@ -18,6 +18,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
@@ -81,6 +82,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
@@ -140,6 +142,7 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-neural-diagnosis.mjs
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
@@ -169,6 +172,7 @@ jobs:
           node --check qa/vibe2-web-experience-ingest.test.mjs
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
+          node --check qa/vibe2-neural-diagnosis.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -188,6 +192,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
