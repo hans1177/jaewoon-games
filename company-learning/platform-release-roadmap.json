@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -11173,6 +11173,81 @@
       "security": "SECURITY_FINDING_REMEDIATION_AND_RESCAN_EVIDENCE",
       "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
       "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
+    }
+  },
+  "homepageRuntimeReleaseMediaContract": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "objective": "BIND_HOMEPAGE_RELEASE_ACTIONS_AND_REPRESENTATIVE_IMAGES_TO_THE_EXACT_VERIFIED_NATIVE_RELEASE_AND_ACTUAL_RUNTIME_MEDIA",
+    "homepageRenderer": "assets/homepage-enhancements.js",
+    "runtimeMediaIndex": "assets/runtime-evidence/index.json",
+    "runtimeMediaIndexer": "tools/homepage-runtime-media-index.mjs",
+    "recordContract": "company-records/record-contract.json",
+    "releaseLinkPolicy": {
+      "unity": "ONLY_RUNTIME_VERIFIED_HOMEPAGE_PUBLISHED_SIGNED_BUILD_DOWNLOAD",
+      "roblox": "ONLY_VERIFIED_CURRENT_PUBLICATION_PLACE_ID_FOR_CURRENT_RELEASE; HISTORICAL_TARGET_REMAINS_LABELED_HISTORY",
+      "falseCurrentReleaseClaimForbidden": true,
+      "homepageRefreshAfterReleaseWorkflows": [
+        "Vibe2 Unity Release Result",
+        "Company DEVELOPMENT_CONFIRMED Roblox Release Promotion"
+      ]
+    },
+    "runtimeScreenshotPolicy": {
+      "actualRuntimeOnly": true,
+      "generatedMarketingMockCannotBeGameplayScreenshot": true,
+      "runtimeManifestStatusRequired": "VERIFIED",
+      "runtimeVerificationRequired": "PASS",
+      "exactGameAndPlatformRequired": true,
+      "exactCurrentSourceOrArtifactBindingRequired": true,
+      "homepageRepresentativeFlagRequiredUnlessDefaultTrue": true,
+      "supportedCurrentRepresentativePlatforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "fallbackWhenNoExactCurrentCapture": "KEEP_NON_GAMEPLAY_COVER_DO_NOT_FAKE_CURRENT_SCREENSHOT",
+      "label": "실제 플레이"
+    },
+    "graphicsUpdateRefresh": {
+      "required": true,
+      "trigger": "GRAPHICS_OR_MOTION_CHANGE_REACHES_VERIFIED_NATIVE_BUILD",
+      "previousRuntimeCaptureMayRemainHistoricalEvidence": true,
+      "previousCaptureMayNotRepresentNewArtifact": true,
+      "newActualRuntimeCaptureRequiredForCurrentRepresentative": true,
+      "verifiedCaptureImmediatelyEligibleForHomepageIndex": true,
+      "homepageRefreshOnRuntimeMediaPush": true
+    },
+    "captureSources": {
+      "unity": {
+        "source": "ACTUAL_ANDROID_OR_TARGET_RUNTIME",
+        "buildAndCaptureMustShareArtifactIdentity": true
+      },
+      "roblox": {
+        "source": "APPROVED_ACTUAL_RUNTIME_SESSION",
+        "unattendedStudioCaptureForbidden": true,
+        "ownerProvidedDedicatedCaptureAccountSupportedAfterAuthorization": true,
+        "accountState": "NOT_CONNECTED_OWNER_WILL_PROVIDE_LATER",
+        "credentialStorageInRepositoryForbidden": true,
+        "exploitOrAbusiveMovementForbidden": true,
+        "capturePurpose": "NORMAL_GAMEPLAY_VISUAL_EVIDENCE_ONLY",
+        "enableAutomatedLoginOnlyAfterPlatformPolicyAndAccountAuthorizationReview": true
+      }
+    },
+    "mediaRefreshFlow": [
+      "GRAPHICS_OR_MOTION_UPDATE_VERIFIED",
+      "BUILD_EXACT_NATIVE_ARTIFACT",
+      "RUN_ACTUAL_TARGET_RUNTIME",
+      "CAPTURE_NORMAL_GAMEPLAY_FRAME",
+      "HASH_MEDIA_AND_CREATE_RUNTIME_MEDIA_MANIFEST",
+      "VERIFY_SOURCE_AND_ARTIFACT_BINDING",
+      "REBUILD_HOMEPAGE_RUNTIME_MEDIA_INDEX",
+      "HOMEPAGE_USES_NEW_EXACT_MATCH_CAPTURE",
+      "KEEP_OLDER_CAPTURE_AS_HISTORICAL_EVIDENCE"
+    ],
+    "securityAndPrivacy": {
+      "rawLoginCredentialsInGitForbidden": true,
+      "screenshotsMustNotExposeSecretsOrPrivateUserData": true,
+      "testAccountSessionShouldUseLeastPrivilege": true,
+      "accountTokenOrCookieInRuntimeMediaManifestForbidden": true
     }
   }
 }
