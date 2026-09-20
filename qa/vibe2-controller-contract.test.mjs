@@ -32,6 +32,18 @@ test('non-write QA routes to analysis only',()=>{
   assert.equal(classifyVibeExecutionRoute({target:'unity',task:{type:'qa',goal:'빌드 오류 조사',responsibleFiles:[]},adapter}).route,'analysis-only');
 });
 
+test('learning Web artifact practice routes to isolated artifact execution instead of production source work',()=>{
+  const adapter=createVibeEngineAdapter({target:'web',gameSlug:'practice-demo'});
+  const route=classifyVibeExecutionRoute({
+    target:'web',
+    task:{type:'research',department:'learning',goal:'[VIBE_LEARNING_PRACTICE] practiceMode=WEB_ARTIFACT',responsibleFiles:[],evidence:['learning-practice-only','learning-web-artifact-practice']},
+    adapter
+  });
+  assert.equal(route.route,'learning-web-artifact');
+  assert.equal(route.repositorySourceWrite,false);
+  assert.equal(route.artifactWrite,true);
+});
+
 test('fan-in controller contract directly verifies design intelligence stages and evidence gating',()=>{
   assert.deepEqual([...DESIGN_INTELLIGENCE_STAGES],[
     'DESIGNER','CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL','COMBAT_ECONOMY_SIMULATOR',
@@ -751,4 +763,17 @@ test('central runtime enables functional work packages and adaptive workload tel
   }
   assert.equal(runtime.workPackages.efficiencyAdaptation.lowEfficiencyStreakThreshold,2);
   assert.equal(runtime.workPackages.efficiencyAdaptation.neverReduceSafetyOrQa,true);
+});
+
+
+test('continuous worker runs Web practice artifacts and returns improvement evidence without production promotion',()=>{
+  assert.match(workflow,/Run isolated learning practice/);
+  assert.match(workflow,/learning-web-artifact/);
+  assert.match(workflow,/Upload ephemeral Web practice artifact/);
+  assert.match(workflow,/practice-artifact-score:/);
+  assert.match(workflow,/practice-artifact-improved:/);
+  assert.match(workflow,/practice-next-signal:/);
+  assert.match(workflow,/practiceArtifact/);
+  assert.match(workflow,/VIBE2_PRACTICE_PRODUCTION_PASS=NO/);
+  assert.match(workflow,/VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO/);
 });
