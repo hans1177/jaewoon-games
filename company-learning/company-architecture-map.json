@@ -1,5 +1,5 @@
 {
-  "version": 68,
+  "version": 69,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -74,7 +74,8 @@
     "OLLAMA": "LOCAL_GAME_SOURCE_GENERATION_PROVIDER",
     "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY",
     "PRIMARY_AI_ORCHESTRATOR": "NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR",
-    "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS"
+    "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS",
+    "CHATGPT_ASSISTANT": "OWNER_AUTHORIZED_ISOLATED_CANDIDATE_GAME_AND_SYSTEM_COLLABORATOR"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -145,7 +146,16 @@
     "externalProviderCapacityOnly": true,
     "mayExecuteCanonicalQueuedWorkWithoutSupervisor": true,
     "centralContractDefaultAuthority": true,
-    "deterministicGateMayCompleteWorkWithoutPrimaryAi": true
+    "deterministicGateMayCompleteWorkWithoutPrimaryAi": true,
+    "ownerAuthorizedGameCandidateAuthoringAllowed": true,
+    "platformNativeCandidateAuthoringAllowed": true,
+    "isolatedCandidateBranchRequired": true,
+    "directMainGameSourceWriteForbidden": true,
+    "productionPassAuthorityForbidden": true,
+    "releaseAuthorityForbidden": true,
+    "verifiedOutcomeFeedsVibeLearning": true,
+    "mergedPrProvenanceCollector": "tools/vibe2-merged-pr-provenance.mjs",
+    "rawModelOutputReusableBeforeVerification": false
   },
   "primaryAiSupervisionDomains": [
     "ROADMAP_IMPLEMENTATION",
@@ -2073,5 +2083,31 @@
     "rawHostilePayloadRetention": false,
     "externalProviderAttack": false,
     "authorityChange": "NONE"
+  },
+  "externalAiCollaborationTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json::developmentLifecycleMachine.developmentToolAuthority",
+    "flow": [
+      "OWNER_OR_CANONICAL_TASK_ASSIGNMENT",
+      "CHATGPT_OR_EXTERNAL_AI_ISOLATED_CANDIDATE_AUTHORING",
+      "PULL_REQUEST",
+      "EXISTING_DETERMINISTIC_QA_SECURITY_RUNTIME_REGRESSION",
+      "CANONICAL_MERGE_WHEN_GATES_PASS",
+      "MERGED_PR_PROVENANCE_CAPTURE",
+      "VERIFIED_OUTCOME_DISTILLATION_AND_EXPERIENCE_ATTRIBUTION",
+      "VIBE_RETRIEVAL_AND_REAPPLICATION",
+      "FRESH_QA_ATTRIBUTION"
+    ],
+    "vibeRemainsGameImplementationOwner": true,
+    "rawExternalAiOutputAuthority": "NONE",
+    "candidateSourceAuthority": "ISOLATED_BRANCH_ONLY",
+    "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
+    "directMainWrite": false,
+    "automaticReleaseAuthority": false,
+    "learningRoute": [
+      ".vibe2/merged-pr-provenance-ledger.json",
+      ".vibe2/external-ai-distilled-knowledge.json",
+      ".vibe2/experience.json"
+    ]
   }
 }
