@@ -34,11 +34,11 @@ function localScriptSources(html){const out=[];for(const match of String(html).m
 function sourceBundle(source){const indexFile=path.join(source,'index.html'),html=fs.readFileSync(indexFile,'utf8');return {html,text:[html,...localScriptSources(html)].join('\n')};}
 function countStateVariables(text){const names=['hp','health','score','res','resource','coins','gold','wave','level','xp','wood','food','stone','mana','pop','combo','stage','progress','day','power','chapter','towers','heat','factory','drones','zone'];return names.filter(name=>new RegExp(`\\b${name}\\b`,'i').test(text)).length;}
 function countSystemDependencies(text){const groups=[/resource|coin|gold|wood|food|ore|mana|자원|코인|골드|목재|식량|광석/i,/upgrade|power|level|craft|build|강화|레벨|제작|건설/i,/enemy|wave|combat|attack|damage|적|웨이브|전투|공격|피해/i,/reward|score|xp|unlock|보상|점수|경험치|해금/i,/health|hp|risk|fail|defeat|체력|위험|실패|패배/i,/world|zone|map|chapter|quest|세계|구역|맵|챕터|퀘스트/i];return groups.filter(re=>re.test(text)).length;}
-function baselineFeatureRequirements(baselineData={},inventory=[]){
-  const categoryText=clean(baselineData?.GAME_CATEGORY||baselineData?.gameSeed?.GAME_CATEGORY||baselineData?.content?.GAME_CATEGORY||baselineData?.content?.category||baselineData?.gameSeedId||baselineData?.seedId);
+export function baselineFeatureRequirements(baselineData={},inventory=[]){
+  const categoryText=[clean(baselineData?.GAME_CATEGORY||baselineData?.gameSeed?.GAME_CATEGORY||baselineData?.content?.GAME_CATEGORY||baselineData?.content?.category||baselineData?.gameSeedId||baselineData?.seedId),clean(baselineData?.gameId),clean(baselineData?.content?.identity)].filter(Boolean).join(' ');
   const scopeText=(inventory||[]).map(row=>`${clean(row?.path)} ${clean(row?.label)}`).join(' ');
   const designText=`${categoryText} ${scopeText} ${JSON.stringify(baselineData?.content||{})}`;
-  const towerDefense=/(?:tower.?defense|single_defense_strategy|tower|turret|타워|포탑)/i.test(categoryText)||/(?:tower|turret|타워|포탑)/i.test(scopeText);
+  const towerDefense=/(?:tower.?defense|single_defense_strategy|bug[-_ ]?defense|tower|turret|타워|포탑|디펜스)/i.test(categoryText)||/(?:tower|turret|타워|포탑|포식자[^\n]{0,24}배치|방어[^\n]{0,24}배치|배치[^\n]{0,24}방어)/i.test(scopeText);
   const avatarMovementRequired=!towerDefense&&/(?:rpg|adventure|survival|horror|action|battleground|fighting|shooter|roleplay|life.?avatar|move|walk|explor|open.?world|캐릭터.?이동|이동|탐험|생존|모험)/i.test(designText);
   const worldRequired=/(?:map|world|zone|area|region|biome|route|path|explor|open.?world|adventure|survival|roleplay|맵|월드|구역|지역|경로|탐험|모험|생존)/i.test(designText);
   const explorationRequired=/(?:explor|discover|hidden|secret|treasure|landmark|adventure|survival|탐험|발견|숨겨|비밀|보물|랜드마크|모험|생존)/i.test(designText);

@@ -1,0 +1,45 @@
+name: Supervised Bug Defense Runtime Validation V2
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run validator regression
+        run: node --test qa/company-development-web-runtime.test.mjs
+      - name: Install gameplay validation runtime
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Validate latest supervised candidate
+        env:
+          DESIGN_BASELINE_SOURCE: .supervised/bug-defense-design.json
+        run: |
+          mkdir -p qa-artifacts
+          node tools/company-development-web-gameplay-validation.mjs \
+            --game-id=bug-defense \
+            --source=web-games/bug-defense \
+            --port=4181 \
+            --output=qa-artifacts/bug-defense-runtime-v2.json \
+            --screenshot=qa-artifacts/bug-defense-runtime-v2.png
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supervised-bug-defense-runtime-v2
+          path: qa-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
