@@ -1293,8 +1293,18 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
+  const phase4BenchmarkVerification=order?.phase4BenchmarkVerification?.active===true?{
+    version:1,active:true,role:clean(order.phase4BenchmarkVerification.role),capabilityId:clean(order.phase4BenchmarkVerification.capabilityId),
+    caseId:clean(order.phase4BenchmarkVerification.caseId),pairId:clean(order.phase4BenchmarkVerification.pairId),
+    gameId:clean(order.phase4BenchmarkVerification.gameId),engine:clean(order.phase4BenchmarkVerification.engine),
+    unseenGame:order.phase4BenchmarkVerification.unseenGame===true,
+    unseenProblemFingerprint:clean(order.phase4BenchmarkVerification.unseenProblemFingerprint),
+    fixedContextFingerprint:clean(order.phase4BenchmarkVerification.fixedContextFingerprint),
+    nativeRuntimeRequired:order.phase4BenchmarkVerification.nativeRuntimeRequired===true,
+    naturalProductionOverlay:true,screenOnly:false,authorityExpanded:false
+  }:null;
   const manifest={
-    version:6,
+    version:7,
     taskId:order.taskId,
     gameId:order.gameId||null,
     target,
@@ -1323,6 +1333,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
+    phase4BenchmarkVerification,
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
     binaryAssetsDirectTextEditForbidden:true,
