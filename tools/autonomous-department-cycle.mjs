@@ -15,14 +15,14 @@ const FAST_REVIEW_ROLES=['development','qa'];
 const FINAL_ROLE='planning-final';
 const ROLES=[...CORE_ROLES,FINAL_ROLE];
 const ROLE_AGENT={planning:'planning',development:'development',graphics:'graphics',qa:'qa',balance:'balance','planning-final':'planning'};
-const ROLE_NAME={planning:'기획부',development:'개발부',graphics:'그래픽부',qa:'QA부',balance:'밸런스부','planning-final':'기획부 최종확인'};
+const ROLE_NAME={planning:'기획·성장마케팅부',development:'개발부',graphics:'그래픽부',qa:'QA부',balance:'밸런스부','planning-final':'기획·성장마케팅부 최종확인'};
 const ROLE_TASK={
-  planning:'완성 아트북과 현재 작은 목표, Vibe 실행 제안을 비교하고 이번 개발 플로어의 목적과 범위를 좁힌다.',
+  planning:'완성 아트북과 현재 작은 목표, Vibe 실행 제안을 비교하고 이번 개발 플로어의 목적과 범위를 좁힌다. 수익화·판매 아이템·가격·광고·홍보·스토어 발견성·적용 시기 영향이 있는 작업이면 플레이어 가치, 수익/성장 가설, 적용 범위, 측정 지표와 롤백 조건까지 검토하되 일반 피드백을 구현 강제로 만들지 않는다.',
   development:'Vibe 실행 제안을 실제 구현 가능한 최소 변경으로 독립 검토하고 기술 위험을 지적한다.',
   graphics:'이번 변경과 Vibe 제안이 화면·UI·애니메이션·에셋 정체성에 미치는 영향을 독립 검토한다. 에셋 규칙을 우회하지 않는다.',
   qa:'이번 플로어와 Vibe 제안이 통과해야 할 재현 가능한 테스트와 실패 조건을 독립적으로 정한다.',
   balance:'난이도·보상·전투감·성장·경제가 흔들리는지 독립 검토하고 필요한 측정 항목을 정한다.',
-  'planning-final':'다섯 부서의 독립 의견을 통합해 Vibe 제안의 오류·누락을 교정하고 원래 작은 목표를 벗어나지 않는 최종 실행 제약을 확정한다.',
+  'planning-final':'다섯 부서의 독립 의견을 통합해 Vibe 제안의 오류·누락을 교정하고 원래 작은 목표를 벗어나지 않는 최종 실행 제약을 확정한다. 수익화/마케팅 관련 제안은 Vibe의 수용 여부·적용 범위·시기 판단을 보존하고 외부 유료 집행은 owner 승인 경계를 유지한다.',
 };
 const SCHEMA={type:'object',required:['decision','summary','nextAction','checks','risks'],additionalProperties:false,properties:{decision:{type:'string',enum:['PROCEED','ADJUST','BLOCK']},summary:{type:'string'},nextAction:{type:'string'},checks:{type:'array',maxItems:4,items:{type:'string'}},risks:{type:'array',maxItems:4,items:{type:'string'}}}};
 
