@@ -3,7 +3,7 @@
 
 export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
-export const DEFAULT_ADAPTIVE_TARGET = 256;
+export const DEFAULT_ADAPTIVE_TARGET = 20;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -37,10 +37,10 @@ export function createParallelismControl(input = {}) {
   });
 }
 
-export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX, { minimumMax = 4 } = {}) {
+export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX, { minimumMax = DEFAULT_ADAPTIVE_TARGET } = {}) {
   const control = createParallelismControl(controlInput);
   const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, DEFAULT_ADAPTIVE_MAX);
-  const floor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
+  const floor = clamp(Math.floor(num(minimumMax) || DEFAULT_ADAPTIVE_TARGET), 1, DEFAULT_ADAPTIVE_MAX);
   return Math.max(1, Math.min(requested, Math.max(control.currentMax, floor)));
 }
 
@@ -80,7 +80,7 @@ function isHealthy(telemetry = {}) {
     && num(telemetry.checkout?.p95Ms) < 15000;
 }
 
-export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = 4 } = {}) {
+export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = DEFAULT_ADAPTIVE_TARGET } = {}) {
   let control = createParallelismControl(controlInput);
   const nowMs = Date.parse(now);
   const previousAt = Date.parse(clean(control.lastUpdatedAt));
@@ -107,7 +107,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     });
   }
 
-  const configuredFloor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
+  const configuredFloor = clamp(Math.floor(num(minimumMax) || DEFAULT_ADAPTIVE_TARGET), 1, DEFAULT_ADAPTIVE_MAX);
   const originalCurrent = control.currentMax;
   const current = Math.max(originalCurrent, configuredFloor);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
