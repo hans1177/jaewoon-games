@@ -27,6 +27,47 @@ function neuralExpansionReadiness(controlInput={}){
   });
 }
 
+const NEURAL_READY_GOAL='제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.';
+const NEURAL_PENDING_GOAL='신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.';
+function refreshQueuedArchitectureReadiness(queueInput={},readiness={}){
+  const refreshed=[];
+  const tasks=(queueInput.tasks||[]).map(task=>{
+    const status=lower(task?.status),isArchitecture=task?.systemSteward===true&&lower(task?.department)==='system-architecture'&&lower(task?.target)==='system';
+    if(!isArchitecture||!['queued','blocked'].includes(status))return task;
+    const priorEvidence=(task.evidence||[]).map(clean).filter(Boolean);
+    const evidence=priorEvidence.filter(value=>
+      !value.startsWith('architecture-neural-expansion-phase:')&&
+      !value.startsWith('architecture-neural-expansion-mode:')&&
+      !value.startsWith('architecture-neural-expansion-readiness:')&&
+      !value.startsWith('architecture-neural-expansion-allowed:')&&
+      !value.startsWith('architecture-neural-expansion-missing:')
+    );
+    evidence.push(
+      'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
+      'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
+      `architecture-neural-expansion-readiness:${readiness.pass?'PASS':'PENDING'}`,
+      `architecture-neural-expansion-allowed:${readiness.pass?'YES':'NO'}`,
+      ...(readiness.missing||[]).map(key=>`architecture-neural-expansion-missing:${key}`)
+    );
+    const completionCriteria=(task.completionCriteria||[])
+      .map(clean).filter(Boolean)
+      .filter(value=>!value.startsWith('NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_'));
+    if(readiness.pass)completionCriteria.push(
+      'NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF',
+      'NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT'
+    );
+    let goal=clean(task.goal);
+    if(goal.includes(NEURAL_READY_GOAL)||goal.includes(NEURAL_PENDING_GOAL)){
+      goal=goal.replace(NEURAL_READY_GOAL,readiness.pass?NEURAL_READY_GOAL:NEURAL_PENDING_GOAL)
+        .replace(NEURAL_PENDING_GOAL,readiness.pass?NEURAL_READY_GOAL:NEURAL_PENDING_GOAL);
+    }
+    const next={...task,goal,evidence:uniq(evidence),completionCriteria:uniq(completionCriteria)};
+    if(JSON.stringify(next)!==JSON.stringify(task))refreshed.push(clean(task.id));
+    return next;
+  });
+  return{queue:{...queueInput,tasks},refreshed:uniq(refreshed)};
+}
+
 function signatureOf(task={}){
   const blocker=clean(task.blocker),outcome=clean(task.lastOutcome);
   if(blocker)return blocker;
@@ -88,7 +129,14 @@ function nextGeneration(queue,signature,count){
 }
 export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput={}){
   let queue=createVibeContinuousQueue(queueInput);
+  const readinessInput=controlInput?.neuralExpansionReadiness&&typeof controlInput.neuralExpansionReadiness==='object'
+    ?controlInput.neuralExpansionReadiness:null;
   const readiness=neuralExpansionReadiness(controlInput);
+  const readinessExplicit=Boolean(readinessInput&&Object.keys(readinessInput).length);
+  const rebound=readinessExplicit
+    ?refreshQueuedArchitectureReadiness(queue,readiness)
+    :{queue,refreshed:[]};
+  if(rebound.refreshed.length)queue=createVibeContinuousQueue(rebound.queue);
   const signals=structuralSignals(queue),added=[];
   for(const signal of signals){
     const generation=nextGeneration(queue,signal.signature,signal.count);
@@ -134,5 +182,10 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
     });
   }
   if(added.length)queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:[...(queue.tasks||[]),...added]});
-  return{queue,signals,added,changed:added.length>0,totalGenerationLimit:null,proposalGenerationLimit:null,neuralExpansionReadiness:readiness};
+  return{
+    queue,signals,added,refreshed:rebound.refreshed,
+    changed:added.length>0||rebound.refreshed.length>0,
+    totalGenerationLimit:null,proposalGenerationLimit:null,
+    neuralExpansionReadiness:readiness
+  };
 }
