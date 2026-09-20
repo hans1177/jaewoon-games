@@ -24,18 +24,40 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
   const parsedRows=parseNeuralRootCauseEvidence(values);
   const bySample=new Map();
   const legacyRows=[];
-  let duplicateSampleRows=0,sampleConflicts=0;
+  let duplicateSampleRows=0,sampleConflicts=0,lifecycleProgressionRows=0;
+  const stageOf=row=>{
+    const explicit=clean(row?.verificationStage).toUpperCase();
+    if(explicit)return explicit;
+    return row?.independentConfirmation===true?'FAN_IN_REVIEW':'WORKER_RESULT';
+  };
+  const stageRank=stage=>{
+    if(stage==='FAN_IN_REVIEW')return 3;
+    if(stage==='CI_RESULT')return 2;
+    if(stage==='WORKER_RESULT')return 1;
+    return 0;
+  };
   for(const row of parsedRows){
     const sampleId=clean(row.sampleId);
     if(!sampleId){legacyRows.push(row);continue;}
-    if(bySample.has(sampleId)){
-      duplicateSampleRows+=1;
-      if(JSON.stringify(bySample.get(sampleId))!==JSON.stringify(row))sampleConflicts+=1;
+    const stage=stageOf(row);
+    if(!bySample.has(sampleId)){
+      bySample.set(sampleId,{stages:new Map([[stage,row]])});
       continue;
     }
-    bySample.set(sampleId,row);
+    duplicateSampleRows+=1;
+    const sample=bySample.get(sampleId);
+    if(sample.stages.has(stage)){
+      if(JSON.stringify(sample.stages.get(stage))!==JSON.stringify(row))sampleConflicts+=1;
+      continue;
+    }
+    sample.stages.set(stage,row);
+    lifecycleProgressionRows+=1;
   }
-  const identifiedRows=[...bySample.values()];
+  const identifiedRows=[...bySample.values()].map(sample=>{
+    const rows=[...sample.stages.entries()]
+      .sort((a,b)=>stageRank(b[0])-stageRank(a[0]));
+    return rows[0]?.[1]||null;
+  }).filter(Boolean);
   const rows=[...identifiedRows,...legacyRows];
   const states={};
   let verified=0,systemVerified=0,predictionConsistent=0,predictionContradicted=0,sampleIdentified=0,verifiedSampleIdentified=0;
@@ -62,12 +84,13 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
   const predictionEvaluated=predictionConsistent+predictionContradicted;
   const identifiedPredictionEvaluated=identifiedPredictionConsistent+identifiedPredictionContradicted;
   return{
-    version:2,
+    version:3,
     rawEvidenceRows:parsedRows.length,
     total:rows.length,
     distinctSampleIds:bySample.size,
     legacyUnidentifiedRows:legacyRows.length,
     duplicateSampleRows,
+    lifecycleProgressionRows,
     sampleConflicts,
     sampleIdentified,
     verified,
@@ -111,8 +134,9 @@ export function evaluatePhase2Readiness({
     ?rootCause.identifiedPredictionEvaluated/rootCause.verifiedSampleIdentified
     :0;
   const identifiedShadowEvents=Number(events.identifiedEventCount||0);
-  const identifiedCalibrationEligible=Number(feedback.identifiedCalibrationEligible||0);
-  const identifiedCalibrationAccuracy=feedback.identifiedObservedAccuracy;
+  const calibrationPredictionContractVersion=Number(feedback.currentPredictionContractVersion||1);
+  const identifiedCalibrationEligible=Number(feedback.currentContractIdentifiedCalibrationEligible??feedback.identifiedCalibrationEligible||0);
+  const identifiedCalibrationAccuracy=feedback.currentContractIdentifiedObservedAccuracy??feedback.identifiedObservedAccuracy;
   const identifiedWaveAuditSamples=Number(audit.distinctSampleIds??audit.identifiedSampleCount??0);
   const gates={
     shadowEventVolume:identifiedShadowEvents>=required.shadowEvents,
@@ -145,6 +169,7 @@ export function evaluatePhase2Readiness({
       rootCause,
       rootCausePredictionCoverage:predictionCoverage,
       identifiedShadowEvents,
+      calibrationPredictionContractVersion,
       identifiedCalibrationEligible,
       identifiedCalibrationAccuracy,
       shadowAuditSamples:Number(audit.sampleCount||0),
