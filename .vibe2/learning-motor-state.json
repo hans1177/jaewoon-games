@@ -1007,7 +1007,8 @@
       "coding_81g5sf",
       "coding_17z2x0l",
       "coding_1ecds8o",
-      "coding_embbgk"
+      "coding_embbgk",
+      "coding_1mg84p1"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -1864,13 +1865,14 @@
       "coding_negative_1m6lwjg",
       "coding_negative_1ylwfad",
       "coding_negative_1b03kxc",
-      "coding_negative_1yjgims"
+      "coding_negative_1yjgims",
+      "coding_negative_1uuhjru"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 36,
+        "verifiedApplications": 37,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 98,
+        "totalGenerationAttempts": 100,
         "verifiedFailures": 313,
         "games": {
           "territory-war": 2,
@@ -1885,11 +1887,11 @@
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
           "village-dungeons": 3,
-          "survival": 2,
+          "survival": 3,
           "line-defense": 1
         },
         "targets": {
-          "web": 36
+          "web": 37
         },
         "contextModes": {
           "UNKNOWN": {
@@ -1913,14 +1915,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 25,
+            "verifiedApplications": 26,
             "verifiedFailures": 159,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 56,
-            "totalContextBytes": 424853,
-            "lastEvidence": "coding_1ecds8o",
+            "totalGenerationAttempts": 58,
+            "totalContextBytes": 432545,
+            "lastEvidence": "coding_1mg84p1",
             "lastFailureEvidence": "coding_negative_a23x11",
-            "lastUpdatedAt": "2026-09-20T16:15:22.971Z"
+            "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 2,
@@ -2530,34 +2532,34 @@
             "lastUpdatedAt": "2026-09-20T14:12:01.167Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 4,
+            "totalGenerationAttempts": 6,
             "verifiedFailures": 0,
             "games": {
-              "survival": 2
+              "survival": 3
             },
             "targets": {
-              "web": 2
+              "web": 3
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_1ahi6ww",
+            "lastEvidence": "coding_1mg84p1",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T16:06:37.730Z"
+            "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1ecds8o",
+        "lastEvidence": "coding_1mg84p1",
         "lastFailureEvidence": "coding_negative_1yjgims",
-        "lastUpdatedAt": "2026-09-20T16:15:22.972Z"
+        "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 45,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 98,
-        "verifiedFailures": 272,
+        "verifiedFailures": 273,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -2599,13 +2601,13 @@
           },
           "PRIMARY_SYMBOL_WINDOWS": {
             "verifiedApplications": 24,
-            "verifiedFailures": 96,
+            "verifiedFailures": 97,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 48,
             "totalContextBytes": 249551,
             "lastEvidence": "coding_8o7skt",
-            "lastFailureEvidence": "coding_negative_2de6dy",
-            "lastUpdatedAt": "2026-09-20T15:48:24.781Z"
+            "lastFailureEvidence": "coding_negative_1uuhjru",
+            "lastUpdatedAt": "2026-09-20T16:16:51.967Z"
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 2,
@@ -2715,7 +2717,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 3,
+            "verifiedFailures": 4,
             "games": {
               "bug-defense": 1,
               "survival": 1
@@ -2725,18 +2727,18 @@
             },
             "failureGames": {
               "bug-defense": 2,
-              "survival": 1
+              "survival": 2
             },
             "failureTargets": {
-              "web": 3
+              "web": 4
             },
             "failureClasses": {
               "EDIT_MATCH": 2,
-              "NO_OP": 1
+              "NO_OP": 2
             },
             "lastEvidence": "coding_15r57ty",
-            "lastFailureEvidence": "coding_negative_2fhngp",
-            "lastUpdatedAt": "2026-09-19T12:08:34.205Z"
+            "lastFailureEvidence": "coding_negative_1uuhjru",
+            "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
           },
           "web|TIMEOUT": {
             "verifiedApplications": 20,
@@ -3525,8 +3527,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_zf22d0",
-        "lastFailureEvidence": "coding_negative_2de6dy",
-        "lastUpdatedAt": "2026-09-20T15:48:24.781Z"
+        "lastFailureEvidence": "coding_negative_1uuhjru",
+        "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 326,
@@ -7011,7 +7013,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T16:16:21.896Z",
+    "lastBuiltAt": "2026-09-20T16:16:51.994Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9118,5 +9120,5 @@
       "knowledge_mvzgkz"
     ]
   },
-  "updatedAt": "2026-09-20T16:16:21.896Z"
+  "updatedAt": "2026-09-20T16:16:51.994Z"
 }
