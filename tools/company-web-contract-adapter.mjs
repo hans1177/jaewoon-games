@@ -96,6 +96,7 @@ export function extractWebGameplayCandidates(html=''){
       existingScopeId:clean(attrs['data-scope-id'])||null,
       existingMechanicId:clean(attrs['data-mechanic-id'])||null,
       gameplayAction:attrs['data-gameplay-action']!=null,
+      gameplayActionValue:clean(attrs['data-gameplay-action']),
       spatialControl,
       directFamilies:familyRows(directText),
       families:familyRows(semanticText),
@@ -127,10 +128,14 @@ function scoreCandidate(item,candidate){
     score+=18+Math.min(9,(candidateFamilies.get(family)||0)*2);
     evidence.push('nearby-family:'+family);
   }
-  if(family==='PROGRESSION'&&directFamilies.has('INVENTORY')){score+=58;evidence.push('build-selection-inventory');}
+  const itemText=lower(clean(item.path)+' '+clean(item.label)),action=lower(candidate.gameplayActionValue);
+  if(family==='PROGRESSION'&&/(?:choose upgrades|choose.*perks|choose.*weapons|choose.*skills|current build|장비.*선택|무기.*선택|스킬.*선택)/i.test(itemText)&&action==='inventory'){score+=140;evidence.push('semantic-build-selection-inventory');}
+  else if(family==='PROGRESSION'&&/(?:combine upgrades|stronger build|next progression choice|업그레이드.*조합|강한.*빌드|다음.*성장)/i.test(itemText)&&action==='craft'){score+=140;evidence.push('semantic-build-combination-craft');}
+  else if(family==='PROGRESSION'&&directFamilies.has('INVENTORY')){score+=58;evidence.push('build-selection-inventory');}
   else if(family==='PROGRESSION'&&directFamilies.has('CRAFT')){score+=48;evidence.push('build-progression-craft');}
   else if(family==='PROGRESSION'&&directFamilies.has('GATHER')&&/(?:collect|reward|resource|수집|보상|자원)/i.test(lower(item.label))){score+=34;evidence.push('progression-resource-collection');}
   if(family==='PROGRESSION'&&candidate.gameplayAction){score+=28;evidence.push('direct-gameplay-progression-control');}
+  if(family==='PROGRESSION'&&!candidate.gameplayAction){score-=18;evidence.push('secondary-control-penalty');}
   if(family==='PROGRESSION'&&/(?:close|cancel|back|닫기|닫|취소|뒤로)/i.test(lower(candidate.directSemanticText))){score-=70;evidence.push('modal-navigation-penalty');}
   if((family==='PROGRESSION'||family==='CORE')&&(directFamilies.has('AUDIO')||directFamilies.has('MULTIPLAYER'))){score-=44;evidence.push('non-core-utility-penalty');}
   const shared=tokenList(clean(item.path)+' '+clean(item.label)).filter(token=>lower(candidate.semanticText).includes(token));
