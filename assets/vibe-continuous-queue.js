@@ -606,8 +606,23 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: failureEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
   });
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
+  const completedIds=new Set(nextQueue.tasks.filter(task=>task.status==='done').map(task=>task.id));
+  const dependencyReadyTaskIds=normalizedOutcome==='PASS'
+    ? freezeList(nextQueue.tasks
+      .filter(task=>task.status==='queued'&&(task.dependencies||[]).includes(id)&&(task.dependencies||[]).every(dep=>completedIds.has(dep)))
+      .map(task=>task.id))
+    : freeze([]);
   const next = selectVibeQueueBatch(nextQueue);
-  return freeze({ updated: found, outcome: normalizedOutcome, queue: nextQueue, next, dispatchNext: next.continueRequired, longRunningProcessRequired: false });
+  return freeze({
+    updated: found,
+    outcome: normalizedOutcome,
+    queue: nextQueue,
+    next,
+    dependencyReadyTaskIds,
+    dependencyEventRequired:Boolean(found&&normalizedOutcome==='PASS'&&dependencyReadyTaskIds.length),
+    dispatchNext: next.continueRequired,
+    longRunningProcessRequired: false
+  });
 }
 
 export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
