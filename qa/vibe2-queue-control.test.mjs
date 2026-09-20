@@ -28,6 +28,64 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('queue ingress preserves explicit atomic graphics metadata and evidence',()=>{
+  const queue=enqueueVibeTask(createVibeContinuousQueue(),{
+    id:'atomic-ingress',
+    gameId:'g',
+    target:'web',
+    department:'development',
+    type:'implementation',
+    goal:'그래픽 표현 개선',
+    sourceRoot:'web-games/g',
+    responsibleFiles:['web-games/g/index.html'],
+    estimatedRisk:'high',
+    speculativeEligible:true,
+    atomicNeuronMode:'PER_TASK_MICRO_FANIN',
+    atomicCompletionRequired:true,
+    evidence:['presentation-pass:LIVING_MOTION','atomic-neuron-stream:presentation']
+  });
+  const task=queue.tasks[0];
+  assert.equal(task.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
+  assert.equal(task.atomicCompletionRequired,true);
+  assert.equal(task.estimatedRisk,'high');
+  assert.equal(task.speculativeEligible,true);
+  assert.ok(task.evidence.includes('presentation-pass:LIVING_MOTION'));
+  assert.ok(task.evidence.includes('atomic-neuron-stream:presentation'));
+});
+
+test('reserve persists atomic graphics schema migration even when no task can be newly reserved',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-atomic-graphics-migration-'));
+  const queueFile=path.join(dir,'queue.json');
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,scheduling:{atomicNeuronCompletion:true},tasks:[{
+    id:'legacy-running-presentation',
+    gameId:'fantasy-survival',
+    target:'web',
+    department:'development',
+    type:'implementation',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 그래픽 개선',
+    status:'running',
+    sourceRoot:'web-games/fantasy-survival',
+    responsibleFiles:['web-games/fantasy-survival/index.html'],
+    reservationId:'prior:1',
+    reservationRunId:'prior',
+    reservedAt:new Date().toISOString(),
+    neuronExpectedVariants:3,
+    neuronResults:[],
+    evidence:['presentation-pass:ASSET_ADAPTATION']
+  }]},null,2));
+  const result=runQueueCommand({command:'reserve',queue:queueFile,max:'20',min:'20'});
+  const persisted=JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks[0];
+  assert.equal(result.reserved,false);
+  assert.equal(result.schemaMigrated,true);
+  assert.equal(persisted.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
+  assert.equal(persisted.atomicCompletionRequired,true);
+  assert.equal(persisted.estimatedRisk,'high');
+  assert.equal(persisted.speculativeEligible,true);
+  assert.ok(persisted.evidence.includes('atomic-neuron-stream:presentation'));
+  assert.ok(persisted.evidence.includes('atomic-neuron-micro-fanin:per-task'));
+  assert.ok(persisted.evidence.includes('graphics-atomic-candidate-isolation-required'));
+});
+
 test('legacy presentation tasks migrate into atomic graphics neuron metadata on queue normalization',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[{
     id:'legacy-presentation',
