@@ -123,6 +123,77 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
+test('system architecture worker filters control metadata from source context without widening writes', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
+  const responsibleFile = 'tools/demo-system.mjs';
+  const selectedTask = {
+    id: 'SYS-ARCH-context-boundary-v1',
+    gameId: '__vibe_system__',
+    target: 'system',
+    department: 'system-architecture',
+    type: 'implementation',
+    executionLane: 'RECOVERY_FAST',
+    sourceRoot: '.',
+    responsibleFiles: [responsibleFile],
+    priority: 'high',
+    releaseState: 'other',
+    status: 'running',
+    retryPolicy: 'UNLIMITED_CAUSAL_REPAIR',
+    maxRetries: null,
+    systemSteward: true,
+    goal: 'repair repeated system work-order context path failure',
+    evidence: [
+      'vibe-self-architecture-evolution',
+      'architecture-authority-expansion:NO',
+      'architecture-gate-weakening:NO',
+      'architecture-system-construction-allowed',
+      'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
+      'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
+      'architecture-neural-expansion-readiness:PENDING',
+      'architecture-neural-expansion-allowed:NO'
+    ],
+    completionCriteria: [
+      'STRUCTURAL_CAUSE_VERIFIED',
+      'RELATED_REGRESSION_PASS',
+      'SECURITY_PASS',
+      'BEFORE_AFTER_METRIC_IMPROVED',
+      'AUTHORITY_UNCHANGED',
+      'GATES_UNCHANGED',
+      'NEURAL_EXECUTION_AUTHORITY_UNCHANGED'
+    ]
+  };
+  const workOrder = {
+    ...order({ target: 'system', root: '.', responsibleFiles: [responsibleFile], taskId: selectedTask.id }),
+    gameId: '__vibe_system__',
+    department: 'system-architecture',
+    goal: '[VIBE_SELF_ARCHITECTURE_EVOLUTION] inspect work-order context and repair structural routing',
+    selectedTask,
+    workerPolicy: {
+      directMainWrite: false,
+      systemArchitectureEvolution: true,
+      authorityExpansionAllowed: false,
+      gateWeakeningAllowed: false,
+      neuralExpansionPhase: 'LAST_STAGE_ONLY',
+      neuralExpansionAllowed: false,
+      neuralExecutionAuthorityExpansionAllowed: false
+    }
+  };
+  write(path.join(cwd, responsibleFile), 'export const systemValue = 1;\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, JSON.stringify({
+    edits: [{ path: responsibleFile, find: 'systemValue = 1', replace: 'systemValue = 2' }],
+    newFiles: []
+  }));
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  assert.deepEqual(result.changedFiles, [responsibleFile]);
+  assert.equal(result.developmentAuthority.authorityExpanded, false);
+  assert.equal(result.developmentAuthority.gateWeakening, false);
+  assert.equal(result.developmentAuthority.neuralExpansionAllowed, false);
+  assert.match(fs.readFileSync(path.join(cwd, responsibleFile), 'utf8'), /systemValue = 1/);
+  assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/SYS-ARCH-context-boundary-v1/files', responsibleFile), 'utf8'), /systemValue = 2/);
+});
+
 test('unappliable edit is retried inside generation before candidate write', async () => {
   const cwd = tempRoot();
   const bad = path.join(cwd, 'bad-edit.json');
