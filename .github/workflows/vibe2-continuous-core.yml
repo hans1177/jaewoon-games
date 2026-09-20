@@ -1151,7 +1151,7 @@ jobs:
           const candidateBranch=clean(process.env.CANDIDATE_BRANCH)||null;
           const baseMainSha=clean(process.env.BASE_SHA)||null;
           const changedFiles=candidateOk&&Array.isArray(manifest.changedFiles)
-            ?[...new Set(manifest.changedFiles.map(file=>clean(file).replaceAll('\\\\','/').replace(/^\.\//,'')).filter(Boolean))]
+            ?[...new Set(manifest.changedFiles.map(file=>clean(file).replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))]
             :[];
           const candidateIdentity=candidateOk?{
             taskId:clean(manifest.taskId)||null,
