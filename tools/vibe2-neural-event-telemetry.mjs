@@ -40,10 +40,20 @@ export function summarizeNeuralEventShadowEvidence(values=[]){
   const rows=[...byEventId.values(),...legacyRows];
   const byEventType={},byAction={},byInhibitor={};
   let hypotheticalFireCount=0;
-  let unauthorizedFireCount=0;
+  let unauthorizedAuthorityCount=0;
   for(const row of parsedRows){
-    if(row.fireAllowed===true||row.workerCreationAllowed===true||row.queueMutationAllowed===true||row.waveReorderAllowed===true)unauthorizedFireCount+=1;
+    if(
+      row.fireAllowed===true
+      ||row.workerCreationAllowed===true
+      ||row.queueMutationAllowed===true
+      ||row.waveReorderAllowed===true
+      ||row.lockAcquisitionAllowed===true
+      ||row.policyMutationAllowed===true
+      ||row.learningEligible===true
+      ||row.authorityPromotionEligible===true
+    )unauthorizedAuthorityCount+=1;
   }
+  const unauthorizedFireCount=unauthorizedAuthorityCount;
   for(const row of rows){
     increment(byEventType,row.eventType);
     increment(byAction,row.actionKind);
