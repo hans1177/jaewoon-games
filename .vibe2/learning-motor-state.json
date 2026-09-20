@@ -1110,7 +1110,8 @@
       "coding_u8tew2",
       "coding_tr5dz3",
       "coding_1llmevg",
-      "coding_45ilbr"
+      "coding_45ilbr",
+      "coding_1uonnk4"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3732,16 +3733,16 @@
         "lastUpdatedAt": "2026-09-20T17:17:49.094Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 348,
+        "verifiedApplications": 349,
         "firstCandidatePasses": 23,
-        "totalGenerationAttempts": 821,
+        "totalGenerationAttempts": 823,
         "verifiedFailures": 272,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 41,
           "seed-idle-growth-rpg-crystal-bloom": 4,
           "seed-puzzle-chromatic-cascade": 28,
           "crystal-defense": 4,
-          "amusement-tycoon": 63,
+          "amusement-tycoon": 64,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 5,
           "chess-battle": 8,
           "bug-defense": 27,
@@ -3758,7 +3759,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 348
+          "web": 349
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -3772,14 +3773,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 323,
+            "verifiedApplications": 324,
             "verifiedFailures": 140,
             "firstCandidatePasses": 23,
-            "totalGenerationAttempts": 760,
-            "totalContextBytes": 6135662,
-            "lastEvidence": "coding_tr5dz3",
+            "totalGenerationAttempts": 762,
+            "totalContextBytes": 6163300,
+            "lastEvidence": "coding_1uonnk4",
             "lastFailureEvidence": "coding_negative_p9uuh6",
-            "lastUpdatedAt": "2026-09-20T17:30:40.914Z"
+            "lastUpdatedAt": "2026-09-20T17:41:39.089Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 5,
@@ -3834,17 +3835,17 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 76,
+            "verifiedApplications": 77,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 157,
+            "totalGenerationAttempts": 159,
             "verifiedFailures": 33,
             "games": {
               "seed-puzzle-chromatic-cascade": 8,
-              "amusement-tycoon": 63,
+              "amusement-tycoon": 64,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 5
             },
             "targets": {
-              "web": 76
+              "web": 77
             },
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 6,
@@ -3859,9 +3860,9 @@
               "MALFORMED_OUTPUT": 7,
               "INCREMENTAL_QA": 23
             },
-            "lastEvidence": "coding_u8tew2",
+            "lastEvidence": "coding_1uonnk4",
             "lastFailureEvidence": "coding_negative_p9uuh6",
-            "lastUpdatedAt": "2026-09-20T17:30:23.089Z"
+            "lastUpdatedAt": "2026-09-20T17:41:39.089Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 127,
@@ -4404,9 +4405,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_tr5dz3",
+        "lastEvidence": "coding_1uonnk4",
         "lastFailureEvidence": "coding_negative_a6z4qy",
-        "lastUpdatedAt": "2026-09-20T17:34:09.600Z"
+        "lastUpdatedAt": "2026-09-20T17:41:39.089Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 41,
@@ -7214,7 +7215,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T17:41:28.288Z",
+    "lastBuiltAt": "2026-09-20T17:41:39.125Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9592,5 +9593,5 @@
       "knowledge_1fb22fu"
     ]
   },
-  "updatedAt": "2026-09-20T17:41:28.288Z"
+  "updatedAt": "2026-09-20T17:41:39.125Z"
 }
