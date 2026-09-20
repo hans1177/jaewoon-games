@@ -297,7 +297,7 @@ test('security workflow persists the upload artifact id and run id with every re
 test('policy REVIEW passes only through exact-head owner Primary-AI approval while quarantine remains blocking',()=>{
   assert.ok(securityWorkflow.includes('pull-requests: read'));
   assert.ok(securityWorkflow.includes("review_only: ${{ steps.scan.outputs.review_only }}"));
-  assert.ok(securityWorkflow.includes("String(row.state||'').toUpperCase()==='APPROVED'"));
+  assert.ok(securityWorkflow.includes("['APPROVED','COMMENTED'].includes(String(row.state||'').toUpperCase())"));
   assert.ok(securityWorkflow.includes("String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS'"));
   assert.ok(securityWorkflow.includes("String(row.commit_id||'')===head"));
   assert.ok(securityWorkflow.includes("String(row.user?.login||'').toLowerCase()===owner"));
