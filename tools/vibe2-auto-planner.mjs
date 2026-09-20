@@ -220,7 +220,7 @@ function nextCausalGenerationId(queue,basePrefix){
   const latest=rows[rows.length-1];
   const status=clean(latest.item.status).toLowerCase();
   if(['queued','running','blocked','failed'].includes(status))return null;
-  if(status==='verified'||status==='done')return `${basePrefix}-v${latest.version+1}`;
+  if(status==='verified')return `${basePrefix}-v${latest.version+1}`;
   return null;
 }
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
