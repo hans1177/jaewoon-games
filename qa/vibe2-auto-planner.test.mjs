@@ -872,6 +872,13 @@ test('presentation quality passes are queued in canonical order',()=>{
   const first=findWebPresentationQualityTask(project,root,queue);
   assert.equal(first.id,`${gameId}-presentation-asset-adaptation-v1`);
   assert.ok(first.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
+  assert.equal(first.estimatedRisk,'high');
+  assert.equal(first.speculativeEligible,true);
+  assert.equal(first.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
+  assert.equal(first.atomicCompletionRequired,true);
+  assert.ok(first.evidence.includes('atomic-neuron-stream:presentation'));
+  assert.ok(first.evidence.includes('atomic-neuron-micro-fanin:per-task'));
+  assert.ok(first.evidence.includes('graphics-atomic-candidate-isolation-required'));
   queue={tasks:[done(first.id)]};
   const second=findWebPresentationQualityTask(project,root,queue);
   assert.equal(second.id,`${gameId}-presentation-living-motion-v1`);
@@ -891,6 +898,9 @@ test('presentation quality passes are queued in canonical order',()=>{
   const finalPass=findWebPresentationQualityTask(project,root,queue);
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
   assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
+  assert.equal(finalPass.estimatedRisk,'high');
+  assert.equal(finalPass.speculativeEligible,true);
+  assert.equal(finalPass.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
 });
 
 

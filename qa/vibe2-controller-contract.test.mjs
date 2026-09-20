@@ -17,6 +17,7 @@ const coreQaWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa
 const candidateReleaseWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
 const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
+const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
 
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
@@ -81,6 +82,26 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,20);
   assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,20);
   assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
+});
+
+test('graphics presentation uses atomic neuron task micro-fan-in without expanding authority',()=>{
+  const presentation=roadmap.presentationPipelineImplementation;
+  const assets=roadmap.assetProductionParallelContract;
+  assert.equal(presentation.version>=4,true);
+  assert.equal(presentation.rules.graphicsAtomicNeuronExecutionRequired,true);
+  assert.equal(presentation.rules.graphicsTaskMicroFanInRequired,true);
+  assert.equal(presentation.rules.graphicsGlobalWaveBarrierForbidden,true);
+  assert.equal(assets.version>=3,true);
+  assert.equal(assets.parallelism.executionAuthority,'EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK');
+  assert.equal(assets.parallelism.graphicsAtomicNeuronMode,'PER_TASK_MICRO_FANIN');
+  assert.equal(assets.parallelism.completionEvent,'vibe2-neuron-complete');
+  assert.equal(assets.parallelism.speculativeVariantsJoinScope,'PER_GRAPHICS_TASK');
+  assert.equal(assets.parallelism.isolatedCandidateBranchesRequired,true);
+  assert.equal(assets.parallelism.globalWaveBarrierForbidden,true);
+  assert.equal(assets.parallelism.phase2NeuralExecutionAuthorityCreated,false);
+  assert.match(continuousRunnerSource,/mode:'PER_TASK_MICRO_FANIN'/);
+  assert.match(continuousRunnerSource,/maxVariants:3/);
+  assert.match(continuousRunnerSource,/task-micro-fanin=required/);
 });
 
 test('work order exposes Web source bootstrap authority only from explicit task evidence',()=>{
