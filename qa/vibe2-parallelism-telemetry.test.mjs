@@ -19,6 +19,13 @@ const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null,evidence=
   }
 });
 
+test('continuous core routes the same game-primary cap through reserve fan-in and telemetry',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'/);
+  assert.equal((workflow.match(/--game-primary-cap="\$VIBE2_GAME_PRIMARY_BASELINE_TARGET"/g)||[]).length,2);
+  assert.match(workflow,/EFFECTIVE_MAX: \$\{\{ needs\.reserve\.outputs\.effective_max \}\}/);
+});
+
 test('19 game-primary workers use the 20-worker execution cap instead of global 256',()=>{
   const results=Array.from({length:19},(_,i)=>row(i,{start:1000+i,end:5000+i,runId:'game-primary-cap',metrics:{requestedMax:256,effectiveMax:256}}));
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:19});
