@@ -137,6 +137,22 @@ export function targetPlatformDevelopmentEligible(item={}){
   );
 }
 
+export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platform=''){
+  const requested=normalizeSelectedPlatform(platform);
+  if(!requested)return false;
+  const contract=roadmap?.assetProductionParallelContract||{};
+  const focus=contract?.firstAdoption||{};
+  if(contract?.enabled!==true)return false;
+  if(clean(focus.gameId)!==clean(item.gameId))return false;
+  const mode=upper(focus.mode);
+  if(!mode.includes('CONCURRENT'))return false;
+  const targets=(Array.isArray(focus.targetPlatforms)?focus.targetPlatforms:[]).map(normalizeSelectedPlatform).filter(Boolean);
+  if(!targets.includes(requested))return false;
+  const selected=resolveSelectedPlatform(item);
+  if(selected===requested)return false;
+  return targetPlatformDevelopmentEligible({...item,selectedPlatform:requested,targetPlatform:requested});
+}
+
 export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
   const limit=Math.max(0,Math.min(DEVELOPMENT_GAME_WIP_MAX,Number(max)||0));
   return Object.freeze(items
