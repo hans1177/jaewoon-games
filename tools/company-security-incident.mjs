@@ -11,6 +11,7 @@ const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
 const now=()=>new Date().toISOString();
 const POLICY_REVIEW_RULE='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW';
+const PRIMARY_AI_DIRECT_REVIEW_PASS='PRIMARY_AI_DIRECT_REVIEW=PASS';
 const severityRank={HIGH:3,CRITICAL:4};
 const boundedUniq=(xs,max=512)=>uniq(xs).slice(-Math.max(1,Number(max)||512));
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
@@ -186,7 +187,8 @@ export function recordSecurityReport(storeInput={},report={}){
   };
 }
 export function resolveSecurityIncident(storeInput={},{
-  id,rootCause,remediation,evidence=[],securityCheckPass=false,regressionPass=false,primaryAiReview='',verificationMode='RESCAN_PASS'
+  id,rootCause,remediation,evidence=[],securityCheckPass=false,regressionPass=false,primaryAiReview='',verificationMode='RESCAN_PASS',
+  policyReviewApproval=null
 }={}){
   const store=normalizeStore(storeInput),target=clean(id),mode=clean(verificationMode).toUpperCase()||'RESCAN_PASS';let found=false;
   const incidents=store.incidents.map(row=>{
@@ -197,11 +199,37 @@ export function resolveSecurityIncident(storeInput={},{
     const rescanPass=mode==='RESCAN_PASS';
     if(!authorizedPolicyReview&&!rescanPass)throw new Error('SECURITY_RESOLUTION_MODE_INVALID:'+mode);
     if(rescanPass&&!securityCheckPass)throw new Error('SECURITY_RESOLUTION_VERIFICATION_REQUIRED');
-    if(authorizedPolicyReview&&clean(row.rule)!==POLICY_REVIEW_RULE)throw new Error('SECURITY_AUTHORIZED_POLICY_REVIEW_RULE_MISMATCH');
+    let approval=null;
+    if(authorizedPolicyReview){
+      if(clean(row.rule)!==POLICY_REVIEW_RULE)throw new Error('SECURITY_AUTHORIZED_POLICY_REVIEW_RULE_MISMATCH');
+      if(clean(row.status)!=='REVIEW_REQUIRED')throw new Error('SECURITY_AUTHORIZED_POLICY_REVIEW_STATUS_INVALID');
+      const input=policyReviewApproval&&typeof policyReviewApproval==='object'?policyReviewApproval:{};
+      const decision=clean(input.decision).toUpperCase();
+      const prNumber=Number(input.prNumber||0),securityRunId=Number(input.securityRunId||0),securityArtifactId=Number(input.securityArtifactId||0);
+      const sourceUrl=clean(input.sourceUrl),scanDetectedAt=clean(input.scanDetectedAt),expectedFindingCount=Number(input.findingCount||0);
+      if(decision!==PRIMARY_AI_DIRECT_REVIEW_PASS)throw new Error('SECURITY_POLICY_REVIEW_EXPLICIT_PASS_REQUIRED');
+      if(!Number.isInteger(prNumber)||prNumber<1||!Number.isInteger(securityRunId)||securityRunId<1||!Number.isInteger(securityArtifactId)||securityArtifactId<1){
+        throw new Error('SECURITY_POLICY_REVIEW_IDENTITY_REQUIRED');
+      }
+      if(!sourceUrl.startsWith('https://github.com/hans1177/jaewoon-games/pull/'+prNumber))throw new Error('SECURITY_POLICY_REVIEW_SOURCE_MISMATCH');
+      const scanKey=scanDetectedAt.slice(0,19),rowScanKey=(clean(row.firstDetectedAt)||clean(row.lastDetectedAt)).slice(0,19);
+      if(scanKey.length!==19||rowScanKey!==scanKey)throw new Error('SECURITY_POLICY_REVIEW_SCAN_MISMATCH');
+      const scanRows=store.incidents.filter(candidate=>clean(candidate.rule)===POLICY_REVIEW_RULE
+        &&(clean(candidate.firstDetectedAt)||clean(candidate.lastDetectedAt)).slice(0,19)===scanKey);
+      const actualFindingCount=scanRows.reduce((sum,candidate)=>sum+Math.max(1,Number(candidate.reviewFindingCount||reviewEvidence(candidate).length||1)),0);
+      if(!Number.isInteger(expectedFindingCount)||expectedFindingCount<1||actualFindingCount!==expectedFindingCount){
+        throw new Error('SECURITY_POLICY_REVIEW_FINDING_COUNT_MISMATCH:'+actualFindingCount+':'+expectedFindingCount);
+      }
+      approval={
+        decision:PRIMARY_AI_DIRECT_REVIEW_PASS,source:'GITHUB_PR_REVIEW',prNumber,sourceUrl,
+        securityRunId,securityArtifactId,scanDetectedAt,findingCount:actualFindingCount
+      };
+    }
     const modeEvidence=authorizedPolicyReview?'authorized-policy-review:PASS':'security-rescan:PASS';
     return{...row,status:'RESOLVED_VERIFIED',rootCause:clean(rootCause),remediation:clean(remediation),
       verificationMode:mode,
       verificationEvidence:uniq([...(row.verificationEvidence||[]),...evidence,modeEvidence,'regression:PASS','primary-ai-security-review:PASS']),
+      policyReviewApproval:approval||row.policyReviewApproval||null,
       primaryAiReview:'PASS',resolvedAt:now(),learningPromotion:authorizedPolicyReview?'HOLD_POLICY_REVIEW_ONLY':'PENDING'};
   });
   if(!found)throw new Error('SECURITY_INCIDENT_NOT_FOUND:'+target);
@@ -224,7 +252,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     store=resolveSecurityIncident(store,{
       id:args.id,rootCause:args['root-cause'],remediation:args.remediation,
       evidence:clean(args.evidence).split(','),securityCheckPass:clean(args['security-check-pass']).toUpperCase()==='YES',
-      regressionPass:clean(args['regression-pass']).toUpperCase()==='YES',primaryAiReview:args['primary-ai-review'],verificationMode:args['verification-mode']
+      regressionPass:clean(args['regression-pass']).toUpperCase()==='YES',primaryAiReview:args['primary-ai-review'],verificationMode:args['verification-mode'],
+      policyReviewApproval:{
+        decision:args['policy-review-decision'],prNumber:args['policy-review-pr'],sourceUrl:args['policy-review-url'],
+        securityRunId:args['policy-review-security-run'],securityArtifactId:args['policy-review-security-artifact'],
+        scanDetectedAt:args['policy-review-scan-at'],findingCount:args['policy-review-finding-count']
+      }
     });
     writeJson(file,store);console.log('SECURITY_INCIDENT_RESOLVED='+clean(args.id));
   }else throw new Error('SECURITY_INCIDENT_COMMAND_UNKNOWN:'+cmd);
