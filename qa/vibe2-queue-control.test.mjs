@@ -398,27 +398,30 @@ test('game-primary reserve lane excludes recovery control and learning tasks fro
   assert.deepEqual(new Set(reserved.selection.laneDeferred.map(task=>task.id)),new Set(['control-fast','learning-idle']));
 });
 
-test('recovery-fast lane stays serial to avoid model contention',()=>{
+test('recovery-fast lane runs disjoint system work in parallel while responsible-file locks stay exclusive',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const start=runner.indexOf('\n  recovery_fast:');
   const end=runner.indexOf('\n  continuous:',start);
   assert.ok(start>=0&&end>start);
   const recoveryBlock=runner.slice(start,end);
   assert.match(recoveryBlock,/execution_lane: recovery-fast/);
-  assert.match(recoveryBlock,/lane_max: '1'/);
+  assert.match(recoveryBlock,/lane_max: '5'/);
 
   const tasks=[
     ['sys-a','tools/a.mjs'],
     ['sys-b','tools/b.mjs'],
-    ['sys-c','tools/c.mjs']
+    ['sys-c','tools/c.mjs'],
+    ['sys-a-conflict','tools/a.mjs']
   ].map(([id,file])=>({
     id,gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
     goal:'repair '+id,status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:[file]
   }));
   const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks});
-  const bounded=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'recovery-fast'});
-  assert.equal(bounded.selected.length,1);
-  assert.equal(bounded.selected[0].executionLane,'RECOVERY_FAST');
+  const bounded=selectVibeQueueBatch(queue,{maxConcurrentTasks:5,lane:'recovery-fast'});
+  assert.equal(bounded.selected.length,3);
+  assert.deepEqual(new Set(bounded.selected.map(task=>task.id)),new Set(['sys-a','sys-b','sys-c']));
+  assert.ok(bounded.selected.every(task=>task.executionLane==='RECOVERY_FAST'));
+  assert.ok(bounded.deferredConflicts.some(row=>row.task.id==='sys-a-conflict'&&row.reason==='responsible-file-conflict'));
 });
 
 test('running nondevelopment lane work does not consume game-primary worker capacity',()=>{
