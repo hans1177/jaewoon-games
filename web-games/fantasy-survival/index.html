@@ -1807,6 +1807,16 @@ function chaseMonster(e,target,now,speedMult=1,damageMult=1){
   }
   return{vx,vy}
 }
+function crocodileMonsterTarget(e){
+ let best=null,bestD=Infinity;
+ for(const other of state.enemies){
+  if(!other||other===e||other.hp<=0||other.area!==e.area||other.type.id==='lakecroc')continue;
+  const d=dist(e.x,e.y,other.x,other.y);
+  if(d<(e.type.detect||760)&&d<bestD){best=other;bestD=d}
+ }
+ return best?{target:best,d:bestD}:null
+}
+
 function setBossBanner(text=''){ui.bossBanner.textContent=text;ui.bossBanner.classList.toggle('on',!!text)}
 function updateBoss(e,p,now){
  if(now<(e.stunnedUntil||0)){setBossBanner('녹스바르 · 속박됨');return{vx:0,vy:0}}
@@ -1994,7 +2004,17 @@ function update(dt,now){
       if(e.hp<=0||e.area!==state.area)continue;
       const playerTarget=multiEnemyPlayerTarget(e),targetP=playerTarget.player; e.playerTargetId=playerTarget.id; const playerD=dist(e.x,e.y,targetP.x,targetP.y);
       let vx=0,vy=0,monsterFight=false;
-      const crocMove=updateCrocodileSpecial(e,targetP,now,playerD);if(crocMove){vx=crocMove.vx;vy=crocMove.vy;monsterFight=true}
+      if(e.type.id==='lakecroc'&&!e.crocState){
+        const crocPick=crocodileMonsterTarget(e);
+        if(crocPick&&crocPick.d<=playerD){
+          e.enemyTarget=crocPick.target;
+          const chase=crocPick.target?chaseMonster(e,crocPick.target,now):null;
+          if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}
+        }else if(e.enemyTarget&&e.enemyTarget.type?.id!=='lakecroc'){
+          e.enemyTarget=null
+        }
+      }
+      const crocMove=!monsterFight?updateCrocodileSpecial(e,targetP,now,playerD):null;if(crocMove){vx=crocMove.vx;vy=crocMove.vy;monsterFight=true}
       if(!monsterFight&&e.type.sharkSpecial&&updateSharkCombo(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&tryTimedCommonEnemySpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&e.type.boss){const b=updateBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
