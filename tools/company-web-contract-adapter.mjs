@@ -74,8 +74,9 @@ function directCandidateText(source,tag,attrs,offset,openTagLength){
 }
 export function extractWebGameplayCandidates(html=''){
   const source=String(html??''),rows=[],seen=new Set();
+  const markupOnly=source.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi,match=>' '.repeat(match.length));
   const tagRe=/<(button|input|select|textarea|canvas|a|div)\b([^>]*)>/gi;
-  for(const match of source.matchAll(tagRe)){
+  for(const match of markupOnly.matchAll(tagRe)){
     const tag=lower(match[1]),attrs=attrsOf(match[2]),offset=Number(match.index)||0,id=clean(attrs.id);
     const spatialControl=tag==='div'&&(
       attrs['data-joystick']!=null||attrs['data-dpad']!=null||attrs['data-touch-control']!=null||
@@ -129,6 +130,8 @@ function scoreCandidate(item,candidate){
   if(family==='PROGRESSION'&&directFamilies.has('INVENTORY')){score+=58;evidence.push('build-selection-inventory');}
   else if(family==='PROGRESSION'&&directFamilies.has('CRAFT')){score+=48;evidence.push('build-progression-craft');}
   else if(family==='PROGRESSION'&&directFamilies.has('GATHER')&&/(?:collect|reward|resource|수집|보상|자원)/i.test(lower(item.label))){score+=34;evidence.push('progression-resource-collection');}
+  if(family==='PROGRESSION'&&candidate.gameplayAction){score+=28;evidence.push('direct-gameplay-progression-control');}
+  if(family==='PROGRESSION'&&/(?:close|cancel|back|닫기|닫|취소|뒤로)/i.test(lower(candidate.directSemanticText))){score-=70;evidence.push('modal-navigation-penalty');}
   if((family==='PROGRESSION'||family==='CORE')&&(directFamilies.has('AUDIO')||directFamilies.has('MULTIPLAYER'))){score-=44;evidence.push('non-core-utility-penalty');}
   const shared=tokenList(clean(item.path)+' '+clean(item.label)).filter(token=>lower(candidate.semanticText).includes(token));
   if(shared.length){score+=Math.min(20,shared.length*4);evidence.push('shared:'+shared.slice(0,4).join(','));}
