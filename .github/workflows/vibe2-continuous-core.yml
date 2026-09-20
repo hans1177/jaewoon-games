@@ -213,6 +213,7 @@ jobs:
             --lane="$VIBE2_EXECUTION_LANE" \
             --max="$VIBE2_LANE_MAX" \
             --min="$lane_min" \
+            --game-primary-cap="$VIBE2_GAME_PRIMARY_BASELINE_TARGET" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
@@ -1125,6 +1126,7 @@ jobs:
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
             --min="$lane_min" \
+            --game-primary-cap="$VIBE2_GAME_PRIMARY_BASELINE_TARGET" \
             --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
           # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
