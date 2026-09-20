@@ -81,6 +81,19 @@ test('queue normalization exposes explicit execution lanes and release wait is d
   assert.equal(queue.tasks.find(t=>t.id==='game').executionLane,'RELEASE_WAIT');
 });
 
+test('durable supervised evidence restores a stripped supervision contract',()=>{
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'supervised-recover',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'major web repair',
+    status:'queued',sourceRoot:'web-games/game-a',responsibleFiles:['web-games/game-a/index.html'],
+    evidence:['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']
+  }]});
+  const task=queue.tasks[0];
+  assert.equal(task.productionMode,'SUPERVISED_VIBE_COAUTHORING');
+  assert.equal(task.supervisionApproved,false);
+  assert.equal(task.supervisionContract.required,true);
+  assert.equal(task.supervisionContract.automaticPromotionAllowed,false);
+  assert.ok(task.supervisionContract.hardReject.includes('VALIDATION_ONLY_PATCH'));
+});
 test('supervised review wait preserves supervision state and releases worker capacity',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
     {
