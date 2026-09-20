@@ -419,7 +419,7 @@ function findStructurePlacement(){
 function placeStructure(id,pos=findStructurePlacement()){if(!pos)return false;if(id==='bench')state.bench=pos;if(id==='furnace')state.furnace=pos;if(id==='iron-bench')state.ironBench=pos;if(id==='gold-bench')state.goldBench=pos;if(id==='cooking-station')state.cookingStation=pos;if(id==='shadow-wolf-incubator')state.incubator=pos;if(id==='flag')state.flags.push(pos);return true}
 function structureExists(id){return id==='bench'?!!state.bench:id==='furnace'?!!state.furnace:id==='iron-bench'?!!state.ironBench:id==='gold-bench'?!!state.goldBench:id==='cooking-station'?!!state.cookingStation:id==='shadow-wolf-incubator'?!!state.incubator:false}
 function craftItem(id){
- const r=item(id);if(!r)return;if(!recipeKnown(r)){showNotice('아직 제작법을 발견하지 못했어');return}
+ const r=item(id);if(!r)return
  if(r.where==='bench'&&!nearBench()){showNotice('제작대 가까이 가야 해');return}
  if(r.where==='ironbench'&&!nearIronBench()){showNotice('철 제작대 가까이 가야 해');return}
  if(r.where==='goldbench'&&!nearGoldBench()){showNotice('금 제작대 가까이 가야 해');return}
@@ -439,16 +439,15 @@ function craftItem(id){
  else if(r.kind==='map'){p.map=true;rememberItem(r.id);ui.mapBtn.classList.add('ready');ui.mapTab.hidden=false}
  rememberItem(r.id);showNotice(r.name+' 제작 완료');updateHud();renderPanel();saveGame(false)
 }
-function tabState(){ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');ui.ironBenchTab.textContent=recipeKnown(item('iron-bench'))?'철 제작대':'???';ui.goldBenchTab.textContent=recipeKnown(item('gold-bench'))?'금 제작대':'???'}
+function tabState(){ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');ui.ironBenchTab.textContent='철 제작대';ui.goldBenchTab.textContent='금 제작대'}
 function renderCraft(){
  tabState();const mode=state.craftMode,list=recipes.filter(r=>r.where===mode);
- const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?(recipeKnown(station)?station.name:'???'):'';
+ const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
  let head=mode==='hand'?'맨손 제작 · 어디서든 제작 가능':mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
- let html='<div class="info"><b>'+head+'</b><br>1티어는 처음부터 공개돼. 2티어 이상은 나무·섬유·돌·철·금만 발견해서는 열리지 않고, 그 외 필요 재료를 발견해야 공개돼.</div><div class="grid">';
+ let html='<div class="info"><b>'+head+'</b><br>모든 제작법과 필요 재료가 처음부터 공개돼.</div><div class="grid">';
  for(const r of list){
-   const known=recipeKnown(r),blocked=(r.where==='bench'&&!nearBench())||(r.where==='ironbench'&&!nearIronBench())||(r.where==='goldbench'&&!nearGoldBench())||(r.kind==='structure'&&structureExists(r.id)),disabled=!known||!canPay(r.cost)||blocked;
-   if(known)html+='<button class="recipe" data-id="'+r.id+'" '+(disabled?'disabled':'')+'><b>'+r.name+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="cost">'+costText(r.cost)+'</small></button>';
-   else html+='<button class="recipe" disabled><b>???<span class="tierBadge">?티어</span></b><small>아직 제작법을 발견하지 못했어.</small><small class="cost">재료 ???</small></button>';
+   const blocked=(r.where==='bench'&&!nearBench())||(r.where==='ironbench'&&!nearIronBench())||(r.where==='goldbench'&&!nearGoldBench())||(r.kind==='structure'&&structureExists(r.id)),disabled=!canPay(r.cost)||blocked;
+   html+='<button class="recipe" data-id="'+r.id+'" '+(disabled?'disabled':'')+'><b>'+r.name+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="cost">'+costText(r.cost)+'</small></button>';
  }
  html+='</div>';ui.sheetBody.innerHTML=html;ui.sheetBody.querySelectorAll('.recipe[data-id]').forEach(b=>b.addEventListener('click',()=>craftItem(b.dataset.id)))
 }
