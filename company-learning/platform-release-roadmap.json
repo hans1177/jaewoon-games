@@ -1,5 +1,5 @@
 {
-  "version": 166,
+  "version": 180,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6092,6 +6092,548 @@
           "reason": "BUG_DEFENSE_WAS_MISCLASSIFIED_AS_AVATAR_MOVEMENT_GAME",
           "coreCi": "PASS"
         }
+      }
+    }
+  },
+  "neuralDevelopmentBrain": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "status": "PHASE2_DETERMINISTIC_SHADOW_SAMPLE_ID_CANDIDATE",
+    "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
+    "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
+    "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
+    "targetExecutionMode": "ASYNC_EVENT_DRIVEN_NEURAL_WORK_GRAPH",
+    "waveEndState": "SPECIAL_SYNCHRONIZATION_AND_BATCH_PATTERN_ONLY_NOT_PRIMARY_SCHEDULER",
+    "brainLayers": {
+      "centralConstitution": {
+        "role": "OWNER_GOALS_POLICY_HARD_GATES_AND_LONG_TERM_INVARIANTS",
+        "source": "company-learning/platform-release-roadmap.json",
+        "runtimeMayCreatePolicy": false,
+        "workerMayExpandAuthority": false
+      },
+      "stateGraph": {
+        "role": "CURRENT_WORLD_STATE_AND_RELATIONSHIPS",
+        "requiredNodeClasses": [
+          "GOAL",
+          "FACT",
+          "HYPOTHESIS",
+          "BLOCKER",
+          "DEPENDENCY",
+          "RISK",
+          "ACTION",
+          "EVIDENCE"
+        ],
+        "factHypothesisSeparationRequired": true,
+        "unsupportedHypothesisMayNotBecomeFact": true
+      },
+      "eventStream": {
+        "role": "REAL_TIME_STATE_CHANGE_INPUT",
+        "eventTypes": [
+          "OWNER_DIRECTIVE",
+          "SOURCE_CHANGE",
+          "WORKER_RESULT",
+          "QA_RESULT",
+          "CI_RESULT",
+          "RUNTIME_RESULT",
+          "SUPERVISOR_RESULT",
+          "POLICY_CHANGE",
+          "RESOURCE_OR_LOCK_CHANGE"
+        ],
+        "pollingIsFallbackOnly": true,
+        "eventDrivenProgressionPreferred": true
+      },
+      "longTermMemory": {
+        "role": "VERIFIED_SUCCESS_FAILURE_CAUSAL_PATTERNS",
+        "verifiedEvidenceRequired": true,
+        "rawCandidateLearningForbidden": true,
+        "supervisedTraceOnlyUntilSupervisorPass": true
+      }
+    },
+    "neuronTypes": {
+      "INTENT": "PARSE_OWNER_DIRECTIVE_INTO_CONCRETE_GOALS_AND_CONSTRAINTS",
+      "SENSOR": "INGEST_SOURCE_QA_CI_RUNTIME_POLICY_AND_WORKER_EVENTS",
+      "FACT": "STORE_VERIFIED_OBSERVED_STATE",
+      "HYPOTHESIS": "MAINTAIN_UNVERIFIED_CAUSE_CANDIDATES_WITH_CONFIDENCE",
+      "CAUSAL": "PROPAGATE_CAUSE_EFFECT_RELATIONSHIPS_AND_UPDATE_HYPOTHESIS_CONFIDENCE",
+      "BOTTLENECK": "CALCULATE_DOWNSTREAM_BLOCKING_IMPACT",
+      "RESPONSIBILITY": "ROUTE_FAILURE_TO_GAME_VALIDATOR_INFRA_ASSET_OR_OTHER_RESPONSIBLE_SYSTEM",
+      "PLANNING": "COMPUTE_MINIMUM_COHERENT_REPAIR_PATH",
+      "ACTION": "REQUEST_EXECUTION_ONLY_AFTER_DEPENDENCY_LOCK_AND_GATE_CHECKS",
+      "CRITIC": "COMPARE_EXPECTED_RESULT_WITH_DETERMINISTIC_AND_RUNTIME_EVIDENCE",
+      "MEMORY": "DISTILL_ONLY_VERIFIED_CAUSAL_LEARNING",
+      "SUPERVISOR": "ENFORCE_OWNER_OR_SUPERVISOR_APPROVAL_WHEN_REQUIRED"
+    },
+    "neuronContract": {
+      "requiredFields": [
+        "inputs",
+        "activation",
+        "confidence",
+        "dependencies",
+        "inhibitors",
+        "outputs",
+        "evidence",
+        "lastFiredAt"
+      ],
+      "confidenceRange": [
+        0,
+        1
+      ],
+      "evidenceTraceRequired": true,
+      "deterministicReproducibilityPreferred": true,
+      "activationAloneCannotOverrideInhibitor": true
+    },
+    "hardInhibitors": [
+      "OWNER_OR_SUPERVISOR_APPROVAL_REQUIRED_BUT_MISSING",
+      "CENTRAL_POLICY_STALE_OR_INVALID",
+      "SOURCE_OR_RESOURCE_LOCK_CONFLICT",
+      "RESPONSIBLE_SCOPE_NOT_ESTABLISHED",
+      "PROTECTED_GAMEPLAY_OR_SAVE_SEMANTICS_AT_RISK_WITHOUT_AUTHORITY",
+      "REQUIRED_QA_OR_RUNTIME_GATE_FAILED",
+      "SECURITY_POLICY_BLOCK",
+      "AUTHORITY_EXPANSION_ATTEMPT"
+    ],
+    "causalDiagnosis": {
+      "parallelHypothesesAllowed": true,
+      "singleEarlyGuessMayNotEraseAlternatives": true,
+      "evidenceUpdatesConfidence": true,
+      "responsibleSystemMustBeDistinguishedFromSymptomSurface": true,
+      "validatorFailureMustNotBePatchedByFakeGameplay": true,
+      "gameFailureMustNotBeHiddenByValidatorWeakening": true,
+      "resolvedCauseMustRecordSupportingAndDisconfirmingEvidence": true
+    },
+    "bottleneckPropagation": {
+      "method": "DEPENDENCY_GRAPH_IMPACT_PROPAGATION",
+      "inputs": [
+        "NUMBER_OF_BLOCKED_DOWNSTREAM_NODES",
+        "DOWNSTREAM_DEPENDENCY_DEPTH",
+        "OWNER_OR_RELEASE_PRIORITY",
+        "RECURRENCE_OR_CROSS_GAME_SCOPE",
+        "EVIDENCE_CONFIDENCE",
+        "RESOURCE_CONTENTION"
+      ],
+      "highestScoreMayPrioritizeWorkButCannotOverrideHardInhibitors": true,
+      "portfolioWideSharedFailureMayPreempt_singleGameCosmeticWork": true,
+      "exactNumericWeightsMayBeAdaptiveOnly_AFTER_VERIFIED_TELEMETRY": true
+    },
+    "actionFiring": {
+      "fixedRolePipelineRequired": false,
+      "createWorkerOnlyWhenNeeded": true,
+      "unrelatedIndependentActionsMayFireConcurrently": true,
+      "dependencyBlockedActionMustRemainDormant": true,
+      "actionMustEmitCompiledWorkContract": true,
+      "compiledWorkContractMustContain": [
+        "GOAL",
+        "RESPONSIBLE_SYSTEM",
+        "EXACT_WRITABLE_SCOPE",
+        "PROTECTED_INVARIANTS",
+        "FAILURE_STAGE",
+        "LAST_PASSED_STAGE",
+        "PASS_CONDITIONS",
+        "REVALIDATION_PLAN",
+        "POLICY_FINGERPRINT"
+      ],
+      "directMainWriteByGameWorker": false
+    },
+    "feedbackLoop": [
+      "EVENT",
+      "SENSOR_ACTIVATION",
+      "FACT_AND_HYPOTHESIS_UPDATE",
+      "CAUSAL_PROPAGATION",
+      "BOTTLENECK_AND_RESPONSIBILITY_UPDATE",
+      "ACTION_SELECTION",
+      "WORK_CONTRACT_COMPILE",
+      "WORKER_OR_QA_OR_RUNTIME_EXECUTION",
+      "CRITIC_EVALUATION",
+      "FACT_UPDATE",
+      "VERIFIED_MEMORY_UPDATE",
+      "NEXT_EVENT"
+    ],
+    "migrationPlan": [
+      {
+        "phase": 1,
+        "id": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
+        "executionPrimary": "EXISTING_WAVE_ENGINE",
+        "add": [
+          "FACT_HYPOTHESIS_GRAPH",
+          "CAUSAL_DIAGNOSIS",
+          "RESPONSIBILITY_ROUTING",
+          "BOTTLENECK_PROPAGATION",
+          "HARD_INHIBITORS"
+        ],
+        "exitCriteria": [
+          "NEURAL_DIAGNOSIS_MATCHES_VERIFIED_ROOT_CAUSE_RELIABLY",
+          "NO_AUTHORITY_OR_SAVE_SEMANTIC_REGRESSION",
+          "CURRENT_WAVE_THROUGHPUT_NOT_REDUCED"
+        ]
+      },
+      {
+        "phase": 2,
+        "id": "EVENT_DRIVEN_NEURAL_ROUTING_WITH_WAVE_FALLBACK",
+        "executionPrimary": "NEURAL_EVENT_ROUTER",
+        "waveRole": "CAPACITY_BATCH_AND_RECOVERY_FALLBACK",
+        "add": [
+          "EVENT_TRIGGERED_ACTION_FIRING",
+          "DYNAMIC_WORKER_ROLE_CREATION",
+          "DEPENDENCY_AND_RESOURCE_INHIBITION"
+        ],
+        "exitCriteria": [
+          "EVENT_ROUTING_RECOVERS_EXACT_FAILURE_STAGE",
+          "NO_DUPLICATE_CONFLICTING_ACTIONS",
+          "FAN_IN_AND_LOCK_SAFETY_PRESERVED"
+        ]
+      },
+      {
+        "phase": 3,
+        "id": "ASYNC_NEURAL_WORK_GRAPH_PRIMARY",
+        "executionPrimary": "NEURAL_WORK_GRAPH",
+        "waveRole": "OPTIONAL_BATCH_OPTIMIZATION",
+        "add": [
+          "CONTINUOUS_ASYNC_NODE_FIRING",
+          "PORTFOLIO_WIDE_BOTTLENECK_BACKPROPAGATION",
+          "SELF_FORMING_TASK_SUBGRAPHS"
+        ],
+        "exitCriteria": [
+          "NEURAL_GRAPH_OUTPERFORMS_WAVE_SCHEDULING_ON_VERIFIED_LEAD_TIME_AND_FIRST_PASS_RATE",
+          "DETERMINISTIC_REPLAY_AND_AUDITABILITY_PASS",
+          "SUPERVISOR_AND_SECURITY_GATES_REMAIN_FAIL_CLOSED"
+        ]
+      },
+      {
+        "phase": 4,
+        "id": "WAVE_AS_SPECIAL_SYNCHRONIZATION_PATTERN_ONLY",
+        "executionPrimary": "FULL_EVENT_DRIVEN_NEURAL_WORK_GRAPH",
+        "waveRole": "EXPLICIT_BARRIER_CANARY_OR_BATCH_ONLY",
+        "irreversibleWaveRemovalForbidden": true,
+        "rollbackPathRequired": true
+      }
+    ],
+    "transitionSafety": {
+      "noBigBangRewrite": true,
+      "existingWaveEnginePreservedUntilPhase3EvidencePasses": true,
+      "qualityGateWeakeningForbidden": true,
+      "saveAndGameplaySemanticProtectionRequired": true,
+      "everyPhaseMustHaveRollbackPath": true,
+      "graphDecisionMustRemainAuditable": true,
+      "hiddenChainOfThoughtStorageNotRequired": true,
+      "storeDecisionsEvidenceAndCausalSummariesOnly": true,
+      "shadowAccuracyAloneCannotGrantExecutionAuthority": true,
+      "observedPipelineFailureIsNotEquivalentToVerifiedRootCause": true,
+      "phase2ShadowCannotMutateProductionQueue": true,
+      "phase2ShadowCannotCreateWorkers": true,
+      "phase2ShadowCannotReorderWave": true,
+      "phase2ShadowCannotAcquireLocks": true,
+      "phase2ShadowCannotPromoteItself": true
+    },
+    "changeRecord": {
+      "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
+      "documentedAt": "2026-09-20",
+      "summary": "Vibe evolves from wave-primary execution toward an event-driven neural work graph. Waves remain the safe execution engine during migration and end as an optional synchronization pattern only.",
+      "architectureMap": "company-learning/company-architecture-map.json",
+      "phase1ImplementationCommitState": "CANDIDATE_BRANCH",
+      "phase1Bindings": [
+        "tools/vibe2-neural-diagnosis.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        "tools/vibe2-continuous-runner.mjs",
+        "qa/vibe2-neural-diagnosis.test.mjs",
+        ".github/workflows/vibe2-core-qa.yml",
+        ".github/workflows/vibe2-continuous-core.yml"
+      ],
+      "phase1CalibrationState": "CANDIDATE_BRANCH",
+      "phase1CalibrationBindings": [
+        "tools/vibe2-neural-feedback.mjs",
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-neural-feedback.test.mjs",
+        "qa/vibe2-queue-control.test.mjs"
+      ]
+    },
+    "phase1Implementation": {
+      "mode": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
+      "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+      "diagnosis": "tools/vibe2-neural-diagnosis.mjs",
+      "plannerBinding": "tools/vibe2-auto-planner.mjs",
+      "workOrderBinding": "tools/vibe2-continuous-runner.mjs",
+      "qa": [
+        "qa/vibe2-neural-diagnosis.test.mjs",
+        "qa/vibe2-neural-feedback.test.mjs",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "qaWorkflow": ".github/workflows/vibe2-core-qa.yml",
+      "launcherPreflight": ".github/workflows/vibe2-continuous-core.yml",
+      "outputs": [
+        "FACTS",
+        "HYPOTHESES",
+        "CAUSAL_EDGES",
+        "RESPONSIBILITY",
+        "BOTTLENECK_SIGNAL",
+        "HARD_INHIBITORS",
+        "EXACT_FAILURE_STAGE_ACTION_RECOMMENDATION"
+      ],
+      "waveSchedulerRemainsAuthoritative": true,
+      "neuralMayReorderWave": false,
+      "neuralMayCreateWorker": false,
+      "reusableLearningFromShadowDiagnosis": false,
+      "nextPromotionGate": "VERIFY_DIAGNOSIS_AGAINST_POST_QA_ROOT_CAUSE_BEFORE_EVENT_ROUTING_AUTHORITY",
+      "feedback": "tools/vibe2-neural-feedback.mjs",
+      "immutableWorkerResultVersion": 10,
+      "fanInBinding": "tools/vibe2-queue-control.mjs",
+      "durableEvidencePrefix": "neural-shadow-feedback:",
+      "calibrationSummary": {
+        "metrics": [
+          "DURABLE_EVIDENCE_SAMPLES",
+          "CALIBRATION_ELIGIBLE",
+          "MATCHES",
+          "MISMATCHES",
+          "UNKNOWN",
+          "OBSERVED_ACCURACY"
+        ],
+        "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+        "qaOrPassMayNotBeClaimedAsRootCauseProof": true,
+        "signatureAware": true
+      },
+      "authorityPromotion": {
+        "automaticFromAccuracyForbidden": true,
+        "shadowTelemetryMayNotReorderWave": true,
+        "shadowTelemetryMayNotCreateWorker": true,
+        "shadowTelemetryMayNotBecomeReusableLearning": true,
+        "phase2RequiresExplicitCentralPolicyPromotion": true,
+        "phase2AlsoRequiresPostQaRootCauseVerification": true,
+        "qaSignatureDoesNotGrantAuthority": true
+      },
+      "qaFailureSignature": {
+        "producer": "tools/vibe2-incremental-qa.mjs",
+        "transport": ".github/workflows/vibe2-continuous-core.yml",
+        "evidencePrefix": "incremental-qa-failure-signature:",
+        "consumer": "tools/vibe2-neural-feedback.mjs",
+        "rootCauseClaimAllowed": false,
+        "responsibilityMatchAllowedFromQaSignatureAlone": false
+      },
+      "critic": {
+        "module": "tools/vibe2-neural-critic.mjs",
+        "qa": "qa/vibe2-neural-critic.test.mjs",
+        "fanInBinding": "tools/vibe2-queue-control.mjs",
+        "verdicts": [
+          "PIPELINE_SUPPORTED",
+          "PIPELINE_CONTRADICTED",
+          "UNRESOLVED"
+        ],
+        "confidenceAdjustmentIsHintOnly": true,
+        "confidenceMutationAllowed": false,
+        "actionFiringAllowed": false,
+        "learningEligible": false,
+        "authorityPromotionEligible": false,
+        "unresolvedRequiresMoreEvidence": true,
+        "contradictionMustRemainVisible": true,
+        "causalRepairVerification": {
+          "requires": [
+            "CAUSAL_REPLAY_PREPATCH_REPRODUCED",
+            "CAUSAL_REPLAY_EXECUTED_PASS"
+          ],
+          "result": "CAUSAL_REPAIR_VERIFIED",
+          "rootCauseSystemVerified": false,
+          "runtimeOrIndependentQaStillRequired": true,
+          "responsibleSystemMappingStillRequired": true,
+          "mayGrantExecutionAuthority": false
+        }
+      },
+      "rootCauseVerifier": {
+        "module": "tools/vibe2-neural-root-cause.mjs",
+        "fanInBinding": "tools/vibe2-fan-in-review.mjs",
+        "qa": [
+          "qa/vibe2-neural-root-cause.test.mjs",
+          "qa/vibe2-neural-fanin-root-cause.test.mjs"
+        ],
+        "states": [
+          "UNRESOLVED",
+          "CAUSAL_REPAIR_VERIFIED_AWAITING_INDEPENDENT_CONFIRMATION",
+          "CAUSAL_REPAIR_CONFIRMED_SYSTEM_UNVERIFIED",
+          "ROOT_CAUSE_VERIFIED"
+        ],
+        "causalRepairRequires": [
+          "PREPATCH_FAILURE_REPRODUCTION",
+          "POSTPATCH_CAUSAL_REPLAY_EXECUTED_PASS"
+        ],
+        "independentConfirmationRequires": [
+          "FULL_REGRESSION_PASS",
+          "FAN_IN_REVIEW_PASS"
+        ],
+        "rootCauseRequiresExplicitResponsibleSystemEvidence": true,
+        "acceptedResponsibleSystemEvidencePrefixes": [
+          "verified-responsible-system:",
+          "runtime-verified-responsible-system:",
+          "independent-qa-verified-responsible-system:"
+        ],
+        "predictionMayNotSelfVerifyResponsibility": true,
+        "causalRepairMayNotSelfVerifyResponsibility": true,
+        "learningEligible": false,
+        "actionFiringAllowed": false,
+        "eventRoutingAuthorityAllowed": false,
+        "phase2AuthorityEligible": false
+      }
+    },
+    "phase2": {
+      "mode": "SHADOW_EVENT_ROUTER_ONLY",
+      "module": "tools/vibe2-neural-event-router.mjs",
+      "fanInBinding": "tools/vibe2-fan-in-review.mjs",
+      "qa": [
+        "qa/vibe2-neural-event-router.test.mjs",
+        "qa/vibe2-neural-fanin-root-cause.test.mjs"
+      ],
+      "acceptedEventTypes": [
+        "OWNER_DIRECTIVE",
+        "SOURCE_CHANGE",
+        "WORKER_RESULT",
+        "QA_RESULT",
+        "CI_RESULT",
+        "RUNTIME_RESULT",
+        "SUPERVISOR_RESULT",
+        "POLICY_CHANGE",
+        "RESOURCE_OR_LOCK_CHANGE"
+      ],
+      "outputs": [
+        "PROPOSED_ACTION",
+        "ACTION_REASON",
+        "HARD_INHIBITORS",
+        "WOULD_FIRE_WITHOUT_PHASE2_AUTHORITY",
+        "CURRENT_WAVE_SCHEDULER_COMPARISON_TARGET"
+      ],
+      "authority": {
+        "fireAllowed": false,
+        "workerCreationAllowed": false,
+        "queueMutationAllowed": false,
+        "waveReorderAllowed": false,
+        "lockAcquisitionAllowed": false,
+        "policyMutationAllowed": false,
+        "learningEligible": false,
+        "automaticPromotionAllowed": false,
+        "workerResultEventMayMutateQueue": false,
+        "qaResultEventMayMutateQueue": false
+      },
+      "rootCauseDependency": {
+        "exactRepairProposalRequiresVerifiedRootCause": true,
+        "unverifiedSystemMustRequestEvidenceInsteadOfGuessing": true,
+        "causalRepairWithoutResponsibleSystemMayNotExpandScope": true
+      },
+      "promotionGate": {
+        "status": "NOT_ELIGIBLE",
+        "minimumShadowEvidenceRequired": true,
+        "rootCauseVerifierRequired": true,
+        "securityReviewRequired": true,
+        "centralPolicyExplicitPromotionRequired": true,
+        "automaticPromotionFromAccuracyForbidden": true,
+        "currentWaveSchedulerRemainsAuthoritative": true,
+        "shadowVsWaveAuditRequired": true,
+        "shadowAuditCannotSelfPromote": true,
+        "shadowTelemetryRequired": true,
+        "zeroUnauthorizedFireRequired": true,
+        "readinessReviewMayNotGrantAuthority": true
+      },
+      "audit": {
+        "module": "tools/vibe2-neural-shadow-audit.mjs",
+        "fanInBinding": "tools/vibe2-fan-in-review.mjs",
+        "qa": "qa/vibe2-neural-shadow-audit.test.mjs",
+        "compares": [
+          "SHADOW_PROPOSED_ACTION",
+          "SHADOW_WOULD_FIRE_WITHOUT_AUTHORITY",
+          "CURRENT_WAVE_FAN_IN_OUTCOME",
+          "ROOT_CAUSE_STATE"
+        ],
+        "comparisonClasses": [
+          "BOTH_HOLD_OR_OBSERVE",
+          "BOTH_PROCEED_DIFFERENT_ACTION_SEMANTICS",
+          "NEURAL_WOULD_ACT_WAVE_HOLDS",
+          "WAVE_PROCEEDS_NEURAL_HOLDS"
+        ],
+        "winnerSelectionAllowed": false,
+        "automaticTuningAllowed": false,
+        "automaticLearningAllowed": false,
+        "interpretationAuthority": "NONE",
+        "phase2AuthorityReady": false,
+        "durableEvidencePrefix": "neural-shadow-wave-audit:",
+        "durableAcrossFanInCycles": true,
+        "readinessUsesDurableAuditSamples": true,
+        "currentBatchAuditStillReportedSeparately": true
+      },
+      "eventBindings": {
+        "fanInReview": {
+          "source": "tools/vibe2-fan-in-review.mjs",
+          "eventType": "CI_RESULT",
+          "authority": "OBSERVE_ONLY"
+        },
+        "workerFanIn": {
+          "source": "tools/vibe2-queue-control.mjs",
+          "eventTypes": [
+            "WORKER_RESULT",
+            "QA_RESULT"
+          ],
+          "implementationFailurePrecedesDerivedQaFailure": true,
+          "authority": "OBSERVE_ONLY"
+        }
+      },
+      "eventEvidence": {
+        "rootCause": "neural-root-cause:",
+        "route": "neural-event-shadow:",
+        "routeAction": "neural-event-shadow-action:"
+      },
+      "telemetry": {
+        "module": "tools/vibe2-neural-event-telemetry.mjs",
+        "queueBinding": "tools/vibe2-queue-control.mjs",
+        "qa": "qa/vibe2-neural-event-telemetry.test.mjs",
+        "metrics": [
+          "TOTAL_SHADOW_EVENTS",
+          "EVENT_TYPE_COUNTS",
+          "PROPOSED_ACTION_COUNTS",
+          "INHIBITOR_COUNTS",
+          "HYPOTHETICAL_FIRE_COUNT",
+          "HYPOTHETICAL_FIRE_RATE",
+          "UNAUTHORIZED_FIRE_COUNT",
+          "SAFETY_INVARIANT_PASS"
+        ],
+        "safetyInvariant": "UNAUTHORIZED_FIRE_COUNT_MUST_EQUAL_ZERO",
+        "winnerSelectionAllowed": false,
+        "automaticTuningAllowed": false,
+        "automaticLearningAllowed": false,
+        "phase2AuthorityReady": false
+      },
+      "readinessReview": {
+        "module": "tools/vibe2-neural-phase2-readiness.mjs",
+        "fanInBinding": "tools/vibe2-fan-in-review.mjs",
+        "qa": "qa/vibe2-neural-phase2-readiness.test.mjs",
+        "minimumShadowEvidence": {
+          "shadowEvents": 30,
+          "calibrationEligible": 20,
+          "verifiedRootCause": 10,
+          "waveAuditSamples": 10
+        },
+        "hardSafety": [
+          "UNAUTHORIZED_FIRE_COUNT_EQUALS_ZERO",
+          "SHADOW_SAFETY_INVARIANT_PASS"
+        ],
+        "outcomeOnly": "REVIEW_ELIGIBLE_OR_NOT",
+        "executionAuthorityGranted": false,
+        "phase2AuthorityReady": false,
+        "automaticPromotionAllowed": false,
+        "automaticLearningAllowed": false,
+        "automaticTuningAllowed": false,
+        "explicitPrimaryReviewRequired": true,
+        "securityReviewRequired": true,
+        "explicitCentralPolicyPromotionRequired": true,
+        "disagreementReviewRequired": true,
+        "waveAuditSampleSource": "DURABLE_QUEUE_EVIDENCE",
+        "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true
+      },
+      "sampleIdentity": {
+        "workerAndQa": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
+        "fanInAudit": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
+        "deterministic": true,
+        "randomOrWallClockIdentityForbidden": true,
+        "separateReservationsAreIndependentSamples": true,
+        "identicalRetryOutcomesMayNotCollapseAcrossReservations": true,
+        "evidenceFields": [
+          "neural-shadow-feedback.sampleId",
+          "neural-event-shadow.eventId",
+          "neural-shadow-wave-audit.sampleId"
+        ]
       }
     }
   }

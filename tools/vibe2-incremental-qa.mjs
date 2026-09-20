@@ -299,24 +299,56 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   return result;
 }
 
+export function incrementalQaFailureSignature(error){
+  const message=clean(error?.message||error).replace(/\s+/g,' ');
+  const known=[
+    'CAUSAL_REPLAY_PREPATCH_REPRODUCTION_REQUIRED',
+    'CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET',
+    'PRESENTATION_STATIC_QA_FAILED',
+    'CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT',
+    'CAUSAL_REPLAY_TARGET_MISSING'
+  ];
+  for(const token of known)if(message.includes(token))return message.startsWith(token)?message.slice(0,240):token;
+  if(/SyntaxError/i.test(message))return 'SYNTAX_ERROR';
+  if(/merge conflict marker/i.test(message))return 'MERGE_CONFLICT_MARKER';
+  if(/changed file missing/i.test(message))return 'CHANGED_FILE_MISSING';
+  if(/changed file empty/i.test(message))return 'CHANGED_FILE_EMPTY';
+  if(/JSON/i.test(message)&&/parse|unexpected/i.test(message))return 'JSON_PARSE_ERROR';
+  if(/unbalanced|close before open/i.test(message))return 'STRUCTURE_BALANCE_ERROR';
+  if(/QA path escaped root/i.test(message))return 'QA_PATH_ESCAPED_ROOT';
+  return clean(message.replace(/[^A-Za-z0-9:_|.\-]+/g,'_')).slice(0,160)||'INCREMENTAL_QA_FAILED';
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args=parseArgs();
-  const result=runIncrementalQa({
-    root:clean(args.root)||process.cwd(), files:list(args.files), manifest:clean(args.manifest), cacheFile:clean(args.cache), namespace:clean(args.namespace)||'default', force:String(args.force||'').toLowerCase()==='true'
-  });
-  if (clean(args.output)) writeJson(clean(args.output),result);
-  console.log('VIBE2_INCREMENTAL_QA=PASS');
-  console.log(`VIBE2_INCREMENTAL_QA_CACHE=${result.cached?'HIT':'MISS'}`);
-  console.log(`VIBE2_INCREMENTAL_QA_HASH=${result.contentHash}`);
-  console.log(`VIBE2_INCREMENTAL_QA_FILES=${result.changedFiles.join(',')}`);
-  console.log(`VIBE2_CAUSAL_REPLAY_STATUS=${result.causalReplay?.status||'NOT_REQUIRED'}`);
-  console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
-  console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
-  console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
-  console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);
-  console.log(`VIBE2_ARCHITECTURE_DRIFT_SIGNALS=${(result.architectureDrift?.signals||[]).join(',')||'NONE'}`);
-  console.log(`VIBE2_PRESENTATION_QA_STATUS=${result.presentationQa?.status||'NOT_REQUIRED'}`);
-  console.log(`VIBE2_PRESENTATION_QA_PASS=${result.presentationQa?.pass||'NONE'}`);
-  console.log(`VIBE2_PRESENTATION_RUNTIME_REQUIRED=${result.presentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
-  console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');
+  try{
+    const result=runIncrementalQa({
+      root:clean(args.root)||process.cwd(), files:list(args.files), manifest:clean(args.manifest), cacheFile:clean(args.cache), namespace:clean(args.namespace)||'default', force:String(args.force||'').toLowerCase()==='true'
+    });
+    if (clean(args.output)) writeJson(clean(args.output),result);
+    console.log('VIBE2_INCREMENTAL_QA=PASS');
+    console.log(`VIBE2_INCREMENTAL_QA_CACHE=${result.cached?'HIT':'MISS'}`);
+    console.log(`VIBE2_INCREMENTAL_QA_HASH=${result.contentHash}`);
+    console.log(`VIBE2_INCREMENTAL_QA_FILES=${result.changedFiles.join(',')}`);
+    console.log(`VIBE2_CAUSAL_REPLAY_STATUS=${result.causalReplay?.status||'NOT_REQUIRED'}`);
+    console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
+    console.log(`VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=${result.causalReplay?.prePatchReproduced===true?'YES':'NO'}`);
+    console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
+    console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
+    console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);
+    console.log(`VIBE2_ARCHITECTURE_DRIFT_SIGNALS=${(result.architectureDrift?.signals||[]).join(',')||'NONE'}`);
+    console.log(`VIBE2_PRESENTATION_QA_STATUS=${result.presentationQa?.status||'NOT_REQUIRED'}`);
+    console.log(`VIBE2_PRESENTATION_QA_PASS=${result.presentationQa?.pass||'NONE'}`);
+    console.log(`VIBE2_PRESENTATION_RUNTIME_REQUIRED=${result.presentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
+    console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');
+  }catch(error){
+    const signature=incrementalQaFailureSignature(error);
+    const message=clean(error?.message||error).replace(/\s+/g,' ').slice(0,500);
+    const result={outcome:'FAIL',failure:{signature,message},fullRegressionStillRequired:true};
+    if(clean(args.output))writeJson(clean(args.output),result);
+    console.error('VIBE2_INCREMENTAL_QA=FAIL');
+    console.error(`VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE=${signature}`);
+    console.error(`VIBE2_INCREMENTAL_QA_FAILURE_MESSAGE=${message}`);
+    process.exitCode=1;
+  }
 }

@@ -101,6 +101,14 @@ jobs:
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
             tools/vibe2-continuous-runner.mjs \
+            tools/vibe2-neural-diagnosis.mjs \
+            tools/vibe2-neural-feedback.mjs \
+            tools/vibe2-neural-critic.mjs \
+            tools/vibe2-neural-root-cause.mjs \
+            tools/vibe2-neural-event-router.mjs \
+            tools/vibe2-neural-shadow-audit.mjs \
+            tools/vibe2-neural-event-telemetry.mjs \
+            tools/vibe2-neural-phase2-readiness.mjs \
             tools/vibe2-exploration-worker.mjs \
             tools/vibe2-source-worker.mjs \
             tools/vibe2-performance-sanity.mjs \
@@ -675,16 +683,20 @@ jobs:
           mkdir -p /tmp/vibe2-qa-cache
           manifest="$CANDIDATE_MANIFEST"
           test -f "$manifest"
+          set +e
           node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-incremental-qa.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
             --cache=/tmp/vibe2-qa-cache/cache.json \
             --namespace="$CACHE_NAMESPACE" \
-            --output=/tmp/vibe2-incremental-qa.json | tee /tmp/vibe2-incremental-qa.log
+            --output=/tmp/vibe2-incremental-qa.json 2>&1 | tee /tmp/vibe2-incremental-qa.log
+          qa_rc=${PIPESTATUS[0]}
+          set -e
           hash="$(sed -n 's/^VIBE2_INCREMENTAL_QA_HASH=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           cache="$(sed -n 's/^VIBE2_INCREMENTAL_QA_CACHE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_status="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_executed="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_EXECUTED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_prepatch_reproduced="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_status="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_risk="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_RISK=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_score="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SCORE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
@@ -692,10 +704,13 @@ jobs:
           presentation_status="$(sed -n 's/^VIBE2_PRESENTATION_QA_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           presentation_pass="$(sed -n 's/^VIBE2_PRESENTATION_QA_PASS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           presentation_runtime_required="$(sed -n 's/^VIBE2_PRESENTATION_RUNTIME_REQUIRED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          failure_signature="$(sed -n 's/^VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          failure_message="$(sed -n 's/^VIBE2_INCREMENTAL_QA_FAILURE_MESSAGE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
           echo "cache=$cache" >> "$GITHUB_OUTPUT"
           echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
           echo "causal_replay_executed=$replay_executed" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_prepatch_reproduced=$replay_prepatch_reproduced" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_status=$drift_status" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_risk=$drift_risk" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_score=$drift_score" >> "$GITHUB_OUTPUT"
@@ -703,8 +718,15 @@ jobs:
           echo "presentation_status=$presentation_status" >> "$GITHUB_OUTPUT"
           echo "presentation_pass=$presentation_pass" >> "$GITHUB_OUTPUT"
           echo "presentation_runtime_required=$presentation_runtime_required" >> "$GITHUB_OUTPUT"
+          echo "failure_signature=$failure_signature" >> "$GITHUB_OUTPUT"
+          echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
           qa_finished="$(date +%s%3N)"
           echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
+          if [ "$qa_rc" -ne 0 ]; then
+            echo 'VIBE2_TEST_ROLE=FAIL'
+            echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
+            exit "$qa_rc"
+          fi
           echo 'VIBE2_TEST_ROLE=PASS'
           echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
 
@@ -751,8 +773,10 @@ jobs:
           IQA_OUTCOME: ${{ steps.incremental_qa.outcome }}
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
+          IQA_FAILURE_SIGNATURE: ${{ steps.incremental_qa.outputs.failure_signature }}
           IQA_CAUSAL_REPLAY_STATUS: ${{ steps.incremental_qa.outputs.causal_replay_status }}
           IQA_CAUSAL_REPLAY_EXECUTED: ${{ steps.incremental_qa.outputs.causal_replay_executed }}
+          IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED: ${{ steps.incremental_qa.outputs.causal_replay_prepatch_reproduced }}
           IQA_ARCHITECTURE_DRIFT_STATUS: ${{ steps.incremental_qa.outputs.architecture_drift_status }}
           IQA_ARCHITECTURE_DRIFT_RISK: ${{ steps.incremental_qa.outputs.architecture_drift_risk }}
           IQA_ARCHITECTURE_DRIFT_SCORE: ${{ steps.incremental_qa.outputs.architecture_drift_score }}
@@ -851,8 +875,10 @@ jobs:
             clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
             clean(process.env.IQA_HASH)&&`incremental-qa-hash:${clean(process.env.IQA_HASH)}`,
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
+            clean(process.env.IQA_FAILURE_SIGNATURE)&&`incremental-qa-failure-signature:${clean(process.env.IQA_FAILURE_SIGNATURE)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_STATUS)&&`causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)&&`causal-replay-prepatch-reproduced:${clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)&&`architecture-drift-status:${clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)&&`architecture-drift-risk:${clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)&&`architecture-drift-score:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)}`,
@@ -969,7 +995,8 @@ jobs:
             },
             telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
-          const result={version:9,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
+          const neuralDiagnosis=workOrder?.neuralDiagnosis&&typeof workOrder.neuralDiagnosis==='object'?workOrder.neuralDiagnosis:null;
+          const result={version:10,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,neuralDiagnosis,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
@@ -1079,6 +1106,15 @@ jobs:
             set +e
             (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-neural-diagnosis.test.mjs \
+            qa/vibe2-neural-feedback.test.mjs \
+            qa/vibe2-neural-critic.test.mjs \
+            qa/vibe2-neural-root-cause.test.mjs \
+            qa/vibe2-neural-event-router.test.mjs \
+            qa/vibe2-neural-shadow-audit.test.mjs \
+            qa/vibe2-neural-event-telemetry.test.mjs \
+            qa/vibe2-neural-phase2-readiness.test.mjs \
+            qa/vibe2-neural-fanin-root-cause.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
             qa/vibe2-exploration-worker.test.mjs \

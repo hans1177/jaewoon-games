@@ -6,6 +6,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
+import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
+import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
+import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
+import { evaluatePhase2Readiness } from './vibe2-neural-phase2-readiness.mjs';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -17,6 +21,14 @@ function resultsFromPayload(payload={}){return(Array.isArray(payload)?payload:pa
 function taskIdsFromPayload(payload={}){return[...new Set(resultsFromPayload(payload).map(row=>clean(row?.taskId)).filter(Boolean))];}
 function posix(value){return clean(value).replaceAll('\\\\','/').replace(/^\.\//,'').replace(/\/+$/,'');}
 function resultCandidateBranch(row={}){const explicit=clean(row?.candidateBranch);if(explicit)return explicit;return(row?.evidence||[]).map(clean).filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||null;}
+function resultSampleId(row={}){
+  return[
+    clean(row?.taskId),
+    clean(row?.reservationId||row?.metrics?.reservationId),
+    clean(row?.variant)||'primary',
+    resultCandidateBranch(row)
+  ].filter(Boolean).join('|')||null;
+}
 function candidateIdentityFailures(task={},row={},candidateBranch=null){
   const identity=row?.candidateIdentity&&typeof row.candidateIdentity==='object'?row.candidateIdentity:{};
   const failures=[];
@@ -62,11 +74,33 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     if(uniqueMissing.length){
       evidence.add('role-result:review:BLOCKED');
       evidence.add(`package-review-missing:${uniqueMissing.join('|')}`);
-      reviewed.push({taskId:task.id,pass:false,missing:uniqueMissing});
+      reviewed.push({taskId:task.id,sampleId:selectedResult?resultSampleId(selectedResult):clean(task.id),pass:false,missing:uniqueMissing});
     }else{
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      const rootCause=verifyNeuralRootCause({
+        diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
+        evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))]
+      });
+      for(const marker of neuralRootCauseEvidence(rootCause))evidence.add(marker);
+      const neuralEventRoute=simulateNeuralEventRoute({
+        event:{
+          id:resultSampleId(selectedResult)||clean(task.id),
+          type:'CI_RESULT',
+          taskId:clean(task.id),
+          gameId:clean(task.gameId),
+          outcome:'PASS',
+          stage:'FAN_IN_REVIEW',
+          evidence:[...evidence]
+        },
+        diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
+        rootCause,
+        policyFresh:!evidence.has('CENTRAL_POLICY_STALE_OR_INVALID'),
+        lockConflict:false,
+        securityBlocked:evidence.has('SECURITY_POLICY_BLOCK')
+      });
+      for(const marker of neuralEventRouteEvidence(neuralEventRoute))evidence.add(marker);
       const supervised=task?.supervisionContract?.required===true
         ||evidence.has('supervised-web-build:required')
         ||clean(task?.productionMode)==='SUPERVISED_VIBE_COAUTHORING';
@@ -81,16 +115,33 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('supervised-promotion:BLOCKED');
         evidence.add(supervisionVerified?`supervised-review:${supervisionDecision||'REVISE'}`:'supervised-review:REQUIRED');
         const releaseBlocker=supervisionVerified&&supervisionDecision&&supervisionDecision!=='PASS'?`SUPERVISED_${supervisionDecision}`:'SUPERVISED_APPROVAL_REQUIRED';
-        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker});
+        reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause,neuralEventRoute});
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
-      reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:false,releaseBlocker:null});
+      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
   });
-  return{queue:{...queue,tasks},reviewed,skipped,releaseCandidates,experienceReviews,pass:reviewed.every(row=>row.pass)};
+  const neuralShadowAudit=buildNeuralShadowAudit({reviewed});
+  const auditEvidenceByTask=new Map();
+  for(const row of neuralShadowAudit.rows||[]){
+    const marker=neuralShadowAuditEvidence({mode:'PHASE2_SHADOW_VS_WAVE_AUDIT',rows:[row]})[0]||null;
+    if(marker&&clean(row.taskId))auditEvidenceByTask.set(clean(row.taskId),marker);
+  }
+  const tasksWithNeuralAudit=tasks.map(task=>{
+    const marker=auditEvidenceByTask.get(clean(task.id));
+    if(!marker)return task;
+    return{...task,evidence:[...new Set([...(task.evidence||[]),marker])]};
+  });
+  const durableNeuralEvidence=tasksWithNeuralAudit.flatMap(task=>Array.isArray(task.evidence)?task.evidence:[]);
+  const neuralDurableShadowAudit=summarizeDurableNeuralShadowAudit(durableNeuralEvidence);
+  const neuralPhase2Readiness=evaluatePhase2Readiness({
+    evidence:durableNeuralEvidence,
+    shadowAudit:neuralDurableShadowAudit
+  });
+  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,neuralShadowAudit,neuralDurableShadowAudit,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile=''}={}){
@@ -100,7 +151,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   const results=resultsFromPayload(payload);
   const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload)});
   writeJson(queueFile,result.queue);
-  if(clean(outputFile))writeJson(outputFile,{version:3,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:4,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
   return result;
 }
 

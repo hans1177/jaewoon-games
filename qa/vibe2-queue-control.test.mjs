@@ -411,6 +411,61 @@ test('spare adaptive worker slots are shared across high-risk tasks before a thi
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
 });
 
+test('fan-in persists neural shadow calibration without granting learning or routing authority', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
+  queue=add(queue,'neural-feedback','neural-feedback','web',{estimatedRisk:'high',speculativeEligible:true});
+  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2}).queue;
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'neural-feedback',
+    variant:'primary',
+    outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'MALFORMED_OUTPUT'},
+    roleResults:{exploration:'PASS',implementation:'FAIL',test:'FAIL',performance:'FAIL'},
+    neuralDiagnosis:{
+      mode:'PHASE1_SHADOW_ADVISORY',
+      responsibility:{system:'SOURCE_GENERATION',confidence:.91},
+      actionRecommendation:{failureStage:'WEB_REPAIR'},
+      bottleneck:{score:81}
+    },
+    evidence:['actions-run:neural-feedback-test']
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='neural-feedback');
+  const marker=task.evidence.find(value=>value.startsWith('neural-shadow-feedback:'));
+  assert.ok(marker);
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-shadow-feedback:'.length)));
+  assert.equal(payload.predictedResponsibility,'SOURCE_GENERATION');
+  assert.equal(payload.observedResponsibility,'SOURCE_GENERATION');
+  assert.equal(payload.matchState,'MATCH');
+  assert.equal(payload.rootCauseVerified,false);
+  assert.equal(payload.learningEligible,false);
+  assert.equal(payload.authorityPromotionEligible,false);
+  assert.ok(task.evidence.includes('neural-shadow-match:MATCH'));
+  const eventMarker=task.evidence.find(value=>value.startsWith('neural-event-shadow:'));
+  assert.ok(eventMarker);
+  const eventPayload=JSON.parse(decodeURIComponent(eventMarker.slice('neural-event-shadow:'.length)));
+  assert.equal(eventPayload.eventType,'WORKER_RESULT');
+  assert.equal(eventPayload.fireAllowed,false);
+  assert.equal(eventPayload.workerCreationAllowed,false);
+  assert.equal(eventPayload.queueMutationAllowed,false);
+  const criticMarker=task.evidence.find(value=>value.startsWith('neural-shadow-critic:'));
+  assert.ok(criticMarker);
+  const criticPayload=JSON.parse(decodeURIComponent(criticMarker.slice('neural-shadow-critic:'.length)));
+  assert.equal(criticPayload.verdict,'PIPELINE_SUPPORTED');
+  assert.equal(criticPayload.actionFiringAllowed,false);
+  assert.equal(criticPayload.authorityPromotionEligible,false);
+  assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);
+  assert.equal(merged.neuralCalibration.durableEvidenceSamples,1);
+  assert.equal(merged.neuralCalibration.matches,1);
+  assert.equal(merged.neuralEventTelemetry.total,1);
+  assert.equal(merged.neuralEventTelemetry.byEventType.WORKER_RESULT,1);
+  assert.equal(merged.neuralEventTelemetry.unauthorizedFireCount,0);
+  assert.equal(merged.neuralEventTelemetry.safetyInvariantPass,true);
+  assert.equal(merged.neuralEventTelemetry.phase2AuthorityReady,false);
+  assert.equal(merged.neuralCalibration.phase2AuthorityReady,false);
+  assert.equal(merged.neuralCalibration.automaticAuthorityEscalationForbidden,true);
+});
+
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});

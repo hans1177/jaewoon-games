@@ -458,6 +458,25 @@ test('fan-in blocks release when only durable supervised evidence survives queue
   assert.equal(result.reviewed[0].releaseBlocker,'SUPERVISED_APPROVAL_REQUIRED');
   assert.equal(result.queue.tasks[0].blocker,'candidate-awaiting-supervised-review');
 });
+test('fan-in review persists neural shadow versus wave audit without authority',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/buildNeuralShadowAudit/);
+  assert.match(source,/neuralShadowAudit/);
+  assert.match(source,/version:4,role:'review'/);
+  assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
+});
+
+test('fan-in review exposes Phase2 readiness only as an explicit review gate',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/evaluatePhase2Readiness/);
+  assert.match(source,/neuralPhase2Readiness/);
+  const readiness=fs.readFileSync('tools/vibe2-neural-phase2-readiness.mjs','utf8');
+  assert.match(readiness,/phase2AuthorityReady:false/);
+  assert.match(readiness,/executionAuthorityGranted:false/);
+  assert.match(readiness,/automaticPromotionAllowed:false/);
+  assert.match(readiness,/explicitCentralPolicyPromotionRequired:true/);
+});
+
 test('fan-in workflow persists verified supervised review learning before release dispatch',()=>{
   assert.match(workflow,/vibe2-experience-control\.mjs/);
   assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
@@ -471,7 +490,28 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:9'));
+  assert(resultStep.includes('version:10'));
+  assert(resultStep.includes('neuralDiagnosis'));
+});
+
+test('continuous worker transports causal replay prepatch reproduction evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED/);
+  assert.match(workflow,/causal_replay_prepatch_reproduced=/);
+  assert.match(workflow,/IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED:/);
+  assert.match(workflow,/causal-replay-prepatch-reproduced:/);
+});
+
+test('continuous worker captures incremental QA failure signature before failed step exits',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('- name: Run impact-first incremental QA role');
+  const end=workflow.indexOf('- name: Run read-only performance sanity role',start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/qa_rc=\$\{PIPESTATUS\[0\]\}/);
+  assert.match(block,/VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE/);
+  assert.match(block,/failure_signature=\$failure_signature/);
+  assert.match(workflow,/IQA_FAILURE_SIGNATURE:/);
+  assert.match(workflow,/incremental-qa-failure-signature:/);
 });
 
 test('worker immutable result preserves causal replay status without treating plan-only as executed',()=>{

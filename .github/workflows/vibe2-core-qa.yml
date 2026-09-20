@@ -18,6 +18,14 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-neural-diagnosis.mjs'
+      - 'tools/vibe2-neural-feedback.mjs'
+      - 'tools/vibe2-neural-critic.mjs'
+      - 'tools/vibe2-neural-root-cause.mjs'
+      - 'tools/vibe2-neural-event-router.mjs'
+      - 'tools/vibe2-neural-shadow-audit.mjs'
+      - 'tools/vibe2-neural-event-telemetry.mjs'
+      - 'tools/vibe2-neural-phase2-readiness.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
@@ -81,6 +89,14 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-neural-diagnosis.mjs'
+      - 'tools/vibe2-neural-feedback.mjs'
+      - 'tools/vibe2-neural-critic.mjs'
+      - 'tools/vibe2-neural-root-cause.mjs'
+      - 'tools/vibe2-neural-event-router.mjs'
+      - 'tools/vibe2-neural-shadow-audit.mjs'
+      - 'tools/vibe2-neural-event-telemetry.mjs'
+      - 'tools/vibe2-neural-phase2-readiness.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
@@ -140,6 +156,14 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-neural-diagnosis.mjs
+          node --check tools/vibe2-neural-feedback.mjs
+          node --check tools/vibe2-neural-critic.mjs
+          node --check tools/vibe2-neural-root-cause.mjs
+          node --check tools/vibe2-neural-event-router.mjs
+          node --check tools/vibe2-neural-shadow-audit.mjs
+          node --check tools/vibe2-neural-event-telemetry.mjs
+          node --check tools/vibe2-neural-phase2-readiness.mjs
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
@@ -169,6 +193,15 @@ jobs:
           node --check qa/vibe2-web-experience-ingest.test.mjs
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
+          node --check qa/vibe2-neural-diagnosis.test.mjs
+          node --check qa/vibe2-neural-feedback.test.mjs
+          node --check qa/vibe2-neural-critic.test.mjs
+          node --check qa/vibe2-neural-root-cause.test.mjs
+          node --check qa/vibe2-neural-event-router.test.mjs
+          node --check qa/vibe2-neural-shadow-audit.test.mjs
+          node --check qa/vibe2-neural-event-telemetry.test.mjs
+          node --check qa/vibe2-neural-phase2-readiness.test.mjs
+          node --check qa/vibe2-neural-fanin-root-cause.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -188,6 +221,15 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe2-neural-diagnosis.test.mjs
+          node --test qa/vibe2-neural-feedback.test.mjs
+          node --test qa/vibe2-neural-critic.test.mjs
+          node --test qa/vibe2-neural-root-cause.test.mjs
+          node --test qa/vibe2-neural-event-router.test.mjs
+          node --test qa/vibe2-neural-shadow-audit.test.mjs
+          node --test qa/vibe2-neural-event-telemetry.test.mjs
+          node --test qa/vibe2-neural-phase2-readiness.test.mjs
+          node --test qa/vibe2-neural-fanin-root-cause.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs

@@ -12,6 +12,7 @@ import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
 import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
+import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -222,6 +223,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
   if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
   const task = resolved.task;
+  const neuralDiagnosis = task?.neuralDiagnosis || buildNeuralDiagnosis({task});
+  const neuralGuidance = neuralDiagnosisGuidance(neuralDiagnosis);
   const requiresWrite = taskRequiresWrite(task);
   if (requiresWrite && !writableTargetAllowed(runtime, task.target)) return freeze({ ...base, reason:`WRITABLE_TARGET_FORBIDDEN:${task.target}`, selectedTask:task });
 
@@ -339,7 +342,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'The candidate must be independently playable and reviewable; validation-only patches, placeholder source, and unrelated rewrites are forbidden.',
     supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
   ].join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, neuralGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
@@ -374,6 +377,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     }),
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     supervisionContract,
+    neuralDiagnosis,
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
@@ -402,6 +406,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
       sourceRootBootstrapAllowed,
       roleSeparation:true, sameFileParallelWrite:false,
+      neuralDiagnosisMode:'PHASE1_SHADOW_ADVISORY', neuralDiagnosisMayReorderWave:false, neuralDiagnosisMayCreateWorker:false,
       speculativeParallelism:tournament.candidateCount>1, speculativeVariants:tournament.candidateCount
     })
   });
