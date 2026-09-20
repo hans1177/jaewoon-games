@@ -483,7 +483,7 @@ test('fan-in review persists neural shadow versus wave audit without authority',
   const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(source,/buildNeuralShadowAudit/);
   assert.match(source,/neuralShadowAudit/);
-  assert.match(source,/version:6,role:'review'/);
+  assert.match(source,/version:7,role:'review'/);
   assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
 });
 
@@ -511,7 +511,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:11'));
+  assert(resultStep.includes('version:12'));
   assert(resultStep.includes('neuralDiagnosis'));
 });
 
