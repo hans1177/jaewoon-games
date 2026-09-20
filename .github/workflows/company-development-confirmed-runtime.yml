@@ -13,6 +13,7 @@ on:
       - 'roblox-games/**'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-web-contract-adapter.mjs'
       - 'tools/company-vibe2-gameplay-intelligence.mjs'
       - 'tools/company-vibe2-coding-architecture.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
@@ -28,6 +29,7 @@ on:
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-web-contract-adapter.test.mjs'
       - 'qa/company-web-vibe-handoff-e2e.test.mjs'
       - 'qa/company-vibe2-gameplay-intelligence.test.mjs'
       - 'qa/company-vibe2-coding-architecture.test.mjs'
@@ -86,13 +88,14 @@ jobs:
           node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-web-plan.json
           node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-web-contract-adapter.mjs
           node --check tools/company-vibe2-gameplay-intelligence.mjs
           node --check tools/company-vibe2-coding-architecture.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
           node --check tools/company-web-validation-evidence-contract.mjs
           node --check tools/company-design-artbook.mjs
           node --check tools/design-only-promotion-sync.mjs
-          node --test qa/company-development-web-runtime.test.mjs qa/company-web-vibe-handoff-e2e.test.mjs qa/company-vibe2-gameplay-intelligence.test.mjs qa/company-vibe2-coding-architecture.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-web-real-game-regression.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
+          node --test qa/company-development-web-runtime.test.mjs qa/company-web-contract-adapter.test.mjs qa/company-web-vibe-handoff-e2e.test.mjs qa/company-vibe2-gameplay-intelligence.test.mjs qa/company-vibe2-coding-architecture.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-web-real-game-regression.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
 
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
@@ -297,6 +300,7 @@ jobs:
           WEB_INITIAL_CYCLE_SOURCE_REVISION: ${{ matrix.webInitialCycleSourceRevision }}
           WEB_INITIAL_CYCLE_MUSIC_PASSED: ${{ matrix.webInitialCycleMusicValidationPassed }}
           WEB_FINAL_CONTENT_DEPTH_EVIDENCE_PATH: ${{ matrix.webFinalContentDepthEvidencePath }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
