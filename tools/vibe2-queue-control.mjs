@@ -16,7 +16,7 @@ import {
   DEFAULT_MAX_CONCURRENT_TASKS
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
-import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
+import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, DEFAULT_ADAPTIVE_TARGET } from './vibe2-adaptive-backpressure.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
@@ -60,6 +60,14 @@ function maxConcurrent(value) {
   return Math.max(1,Math.floor(raw));
 }
 function optionalMaxConcurrent(value) { return clean(value) ? maxConcurrent(value) : null; }
+export function resolveExecutionLaneCapacity({ executionLane='game-primary', configuredMax=DEFAULT_MAX_CONCURRENT_TASKS, adaptiveMax=configuredMax, gamePrimaryCap=DEFAULT_ADAPTIVE_TARGET } = {}) {
+  const lane=clean(executionLane).toLowerCase().replaceAll('_','-');
+  const configured=maxConcurrent(configuredMax);
+  const adaptive=maxConcurrent(adaptiveMax);
+  const contractMax=lane==='game-primary'?Math.min(configured,maxConcurrent(gamePrimaryCap)):configured;
+  const effectiveMax=lane==='game-primary'?Math.min(contractMax,adaptive):configured;
+  return Object.freeze({ lane, configuredMax:configured, contractMax, effectiveMax });
+}
 function reservationFromArgs(args = {}) {
   const id=clean(args['reservation-id']);
   return id ? {
@@ -619,18 +627,22 @@ export function runQueueCommand(args = {}) {
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const gamePrimaryCap=optionalMaxConcurrent(args['game-primary-cap']) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const laneCapacity=resolveExecutionLaneCapacity({executionLane,configuredMax:configuredMaxConcurrentTasks,adaptiveMax:adaptiveMaxConcurrentTasks,gamePrimaryCap});
+    const reservationMaxConcurrentTasks=laneCapacity.effectiveMax;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, executionContractMaxConcurrentTasks:laneCapacity.contractMax, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const gamePrimaryCap=optionalMaxConcurrent(args['game-primary-cap']) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const laneCapacity=resolveExecutionLaneCapacity({executionLane,configuredMax:configuredMaxConcurrentTasks,adaptiveMax:adaptiveMaxConcurrentTasks,gamePrimaryCap});
+    const reservationMaxConcurrentTasks=laneCapacity.effectiveMax;
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
@@ -644,6 +656,7 @@ export function runQueueCommand(args = {}) {
           persistentMaxConcurrentTasks,
           configuredMaxConcurrentTasks,
           adaptiveMaxConcurrentTasks,
+          executionContractMaxConcurrentTasks:laneCapacity.contractMax,
           reservationMaxConcurrentTasks,
           requestedMaxConcurrentTasks,
           effectiveMaxConcurrentTasks:reserved.selection?.effectiveMaxConcurrentTasks ?? Math.min(persistentMaxConcurrentTasks, requestedMaxConcurrentTasks),
@@ -662,7 +675,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, executionContractMaxConcurrentTasks:laneCapacity.contractMax, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -690,23 +703,27 @@ export function runQueueCommand(args = {}) {
     const adaptiveEligible=executionLane==='game-primary';
     const currentControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const gamePrimaryCap=optionalMaxConcurrent(args['game-primary-cap']) ?? DEFAULT_ADAPTIVE_TARGET;
     const firstMetrics=rows.find((row)=>row?.metrics)?.metrics || {};
+    const sourceRequestedMax=firstMetrics.requestedMax || currentControl.currentMax;
+    const sourceEffectiveMax=firstMetrics.effectiveMax || sourceRequestedMax;
+    const laneCapacity=resolveExecutionLaneCapacity({executionLane,configuredMax:sourceRequestedMax,adaptiveMax:sourceEffectiveMax,gamePrimaryCap});
     const taskCount=new Set(rows.map((row)=>clean(row?.taskId)).filter(Boolean)).size;
     const telemetry=computeParallelismTelemetry({
       results:rows,
       tasks:queue.tasks,
-      requestedMax:firstMetrics.requestedMax || currentControl.currentMax,
-      effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
+      requestedMax:adaptiveEligible?laneCapacity.contractMax:sourceRequestedMax,
+      effectiveMax:adaptiveEligible?laneCapacity.effectiveMax:sourceEffectiveMax,
       taskCount
     });
     const nextControl=adaptiveEligible
-      ? decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks })
+      ? decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks, maximumMax:laneCapacity.contractMax })
       : currentControl;
     const merged = applyVibeFanInResults(queue, rows);
     queue = merged.queue;
     writeJson(file, queue);
     if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
-    result = { command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
+    result = { command, executionLane, adaptiveEligible, executionContractMaxConcurrentTasks:laneCapacity.contractMax, updated: merged.applied.length > 0, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
   } else if (['pass','fail','block','cancel'].includes(command)) {
     const outcome = command === 'pass' ? 'PASS' : command === 'fail' ? 'FAIL' : command === 'block' ? 'BLOCKED' : 'CANCELLED';
     const settled = settleVibeTask(queue, {
