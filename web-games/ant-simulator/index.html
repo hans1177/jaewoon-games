@@ -62,7 +62,7 @@ addEventListener('resize',resize);resize();
 function showNotice(t){$('notice').textContent=t;$('notice').classList.add('on');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove('on'),1700)}
 function seeded(n){let x=Math.sin(n*91.133+17.71)*43758.5453;return x-Math.floor(x)}
 function newId(prefix){return prefix+(entitySeq++)}
-function spawnWorld(){
+const p=state.player;p.x=c.x+110;p.y=c.y+40;p.maxHp=state.classId==='soldier'?150:100;p.hp=p.maxHp;p.carry=0;p.deadUntil=0
  state.ants=[];state.queens=[];state.bugs=[];state.food=[];entitySeq=1;
  Object.entries(factions).forEach(([f,c])=>{
   state.queens.push({id:newId('q'),faction:f,x:c.x,y:c.y,hp:600,maxHp:600});
