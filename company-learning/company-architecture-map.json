@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 67,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -403,7 +403,8 @@
           "vibe2-weight-learning",
           "vibe2-authorized-source-memory",
           "vibe2-training-sample",
-          "vibe2-training-request"
+          "vibe2-training-request",
+          "real-web-artifact-practice-loop"
         ],
         "EXTERNAL_REFERENCE_DISTILLATION": [
           "vibe2-external-ai-distillation",
@@ -422,7 +423,8 @@
       "verifiedCheckpointRule": "PASS CREATES VERIFIED_CHECKPOINT AND NEXT CAUSAL INPUT",
       "inhibitionRule": "INHIBIT ONLY UNSAFE ACTION; KEEP EVENT SENSOR DIAGNOSIS RECOVERY MEMORY AND REPLAN LIVE",
       "workerSyncRule": "EVERY EXECUTION WORKER MUST MATCH LIVE VIBE RESERVATION IDENTITY AND PINNED MAIN CONTRACT BEFORE WORK",
-      "durableReplayRule": "EVERY SIGNAL IS RESOLVED BY EXECUTION VERIFIED_CHECKPOINT REQUEUE RECOVERY INHIBITION OR AWAITED_EVENT; SILENT DROP FORBIDDEN"
+      "durableReplayRule": "EVERY SIGNAL IS RESOLVED BY EXECUTION VERIFIED_CHECKPOINT REQUEUE RECOVERY INHIBITION OR AWAITED_EVENT; SILENT DROP FORBIDDEN",
+      "realArtifactPracticeRule": "ACTUAL_WEB_RESULT_TO_VERIFIED_COMPARISON_TO_NEXT_CAUSAL_GENERATION; VERIFIED_BETTER_RESULT_BECOMES_NEXT_BASELINE"
     },
     "auditability": {
       "everyActionLinksToEvidence": true,
@@ -2035,6 +2037,30 @@
     "externalAiRawOutputAuthority": "NONE",
     "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-    "authorityExpansion": false
+    "authorityExpansion": false,
+    "realWebArtifactPracticeLoop": {
+      "version": 1,
+      "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.learningMotor.realWebArtifactInfinitePractice",
+      "executionLane": "GAME_PRIMARY",
+      "executionAuthority": "EXISTING_VIBE_GAME_PRIMARY_WAVE_ONLY",
+      "baselineSource": "ACTUAL_VERIFIED_WEB_GAME_ARTIFACT",
+      "firstBaselineFallback": "APPROVED_DESIGN_BOOTSTRAP",
+      "candidateIsolation": "VIBE2_CANDIDATE_BRANCH",
+      "freshComparisonEvidence": [
+        "INCREMENTAL_QA",
+        "WEB_RUNTIME",
+        "PERFORMANCE",
+        "SECURITY",
+        "FAN_IN_REGRESSION_AND_REVIEW"
+      ],
+      "baselineAdvanceRule": "VERIFIED_BETTER_ONLY",
+      "nextGenerationOwner": "tools/vibe2-auto-planner.mjs::nextCausalGenerationId",
+      "repeatMode": "UNBOUNDED_CAUSAL_GENERATIONS",
+      "sourceFreeLearningIdleRole": "SECONDARY_ANALYSIS_ONLY",
+      "sourceFreeLearningIdleMayReplaceRealArtifactPractice": false,
+      "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
+      "directMainWrite": false,
+      "authorityExpansion": false
+    }
   }
 }
