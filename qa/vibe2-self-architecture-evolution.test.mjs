@@ -47,9 +47,14 @@ test('verified final-stage readiness allows Vibe to consider neural expansion wi
   const input={tasks:[failure('a','source-candidate-generation-failed'),failure('b','source-candidate-generation-failed'),failure('c','source-candidate-generation-failed')]};
   const result=injectSelfArchitectureEvolutionTasks(input,{
     neuralExpansionReadiness:{
-      source:'TEST_VERIFIED_QA',
+      source:'DIRECT_TARGETED_QA',pass:true,
       rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
-      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true
+      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true,
+      internalNeuralStructureExpansionAllowedWhenPass:true,
+      neuralExecutionAuthorityExpansionAllowed:false,
+      queueMutationAuthorityExpanded:false,
+      workerCreationAuthorityExpanded:false,
+      gateWeakeningAllowed:false
     }
   });
   assert.equal(result.neuralExpansionReadiness.pass,true);
@@ -70,8 +75,14 @@ test('neural bottlenecks route to neural architecture responsibilities when stru
   ];
   const result=injectSelfArchitectureEvolutionTasks({tasks:rows},{
     neuralExpansionReadiness:{
+      source:'DIRECT_TARGETED_QA',pass:true,
       rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
-      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true
+      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true,
+      internalNeuralStructureExpansionAllowedWhenPass:true,
+      neuralExecutionAuthorityExpansionAllowed:false,
+      queueMutationAuthorityExpanded:false,
+      workerCreationAuthorityExpanded:false,
+      gateWeakeningAllowed:false
     }
   });
   assert.equal(result.added.length,1);
