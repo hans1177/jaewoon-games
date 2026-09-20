@@ -32,13 +32,17 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
     if(row.predictedSystemConsistentWithVerified===true)predictionConsistent+=1;
     if(row.predictedSystemConsistentWithVerified===false)predictionContradicted+=1;
   }
+  const predictionEvaluated=predictionConsistent+predictionContradicted;
   return{
     version:1,
     total:rows.length,
     verified,
     systemVerified,
+    predictionEvaluated,
     predictionConsistent,
     predictionContradicted,
+    predictionConsistencyRate:predictionEvaluated?predictionConsistent/predictionEvaluated:null,
+    predictionContradictionRate:predictionEvaluated?predictionContradicted/predictionEvaluated:null,
     states
   };
 }
@@ -56,12 +60,20 @@ export function evaluatePhase2Readiness({
     shadowEvents:Math.max(1,Number(thresholds.shadowEvents||30)),
     calibrationEligible:Math.max(1,Number(thresholds.calibrationEligible||20)),
     verifiedRootCause:Math.max(1,Number(thresholds.verifiedRootCause||10)),
-    waveAuditSamples:Math.max(1,Number(thresholds.waveAuditSamples||10))
+    waveAuditSamples:Math.max(1,Number(thresholds.waveAuditSamples||10)),
+    calibrationAccuracy:Math.max(0,Math.min(1,Number(thresholds.calibrationAccuracy??0.7))),
+    rootCausePredictionCoverage:Math.max(0,Math.min(1,Number(thresholds.rootCausePredictionCoverage??0.8))),
+    maxRootCausePredictionContradictionRate:Math.max(0,Math.min(1,Number(thresholds.maxRootCausePredictionContradictionRate??0.3)))
   };
+  const predictionCoverage=rootCause.verified>0?rootCause.predictionEvaluated/rootCause.verified:0;
   const gates={
     shadowEventVolume:events.total>=required.shadowEvents,
     calibrationVolume:feedback.calibrationEligible>=required.calibrationEligible,
+    calibrationAccuracy:feedback.observedAccuracy!==null&&feedback.observedAccuracy>=required.calibrationAccuracy,
     verifiedRootCauseVolume:rootCause.verified>=required.verifiedRootCause,
+    rootCausePredictionCoverage:predictionCoverage>=required.rootCausePredictionCoverage,
+    rootCausePredictionContradictionRate:rootCause.predictionContradictionRate!==null
+      &&rootCause.predictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
     waveAuditVolume:Number(audit.sampleCount||0)>=required.waveAuditSamples,
     zeroUnauthorizedFire:events.unauthorizedFireCount===0,
     shadowSafetyInvariant:events.safetyInvariantPass===true
@@ -74,7 +86,13 @@ export function evaluatePhase2Readiness({
     required,
     gates,
     reviewEligible,
-    evidenceSummary:{feedback,events,rootCause,shadowAuditSamples:Number(audit.sampleCount||0)},
+    evidenceSummary:{
+      feedback,
+      events,
+      rootCause,
+      rootCausePredictionCoverage:predictionCoverage,
+      shadowAuditSamples:Number(audit.sampleCount||0)
+    },
     phase2AuthorityReady:false,
     executionAuthorityGranted:false,
     automaticPromotionAllowed:false,
