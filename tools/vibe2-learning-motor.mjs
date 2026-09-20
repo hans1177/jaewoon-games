@@ -1183,8 +1183,8 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     })));
   const drills=[
     ...phase4Drills,
-    ...selfGenerated.drills,
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
+    ...selfGenerated.drills,
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
   return {
