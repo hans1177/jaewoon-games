@@ -58,6 +58,17 @@ test('verified success and verified failure lesson raise only inferred mastery d
   assert.equal(Object.keys(result.state.failureSignatures).length,1);
 });
 
+test('verified domain mastery continues above legacy level 10 and benchmark difficulty follows it',()=>{
+  const state=createMasteryState({domains:{SAVE:{xp:1730},WEB_RUNTIME:{xp:1330}}});
+  assert.equal(state.domains.SAVE.level,15);
+  assert.equal(state.domains.WEB_RUNTIME.level,13);
+  const ladder=buildBenchmarkLadder(state);
+  const save=ladder.cases.find(row=>row.track==='SAVE');
+  assert.equal(save.level,15);
+  assert.equal(save.difficultyGeneration,6);
+  assert.match(save.id,/mastery-save-l15-g6/);
+});
+
 test('verified coding strategy outcomes accumulate, dedupe, and become preferred only after repeated independent evidence',()=>{
   const mk=(id,gameId,first='YES')=>({
     id,gameId,target:'web',evidence:[
@@ -374,16 +385,31 @@ test('project machine state carries canonical web to Roblox lifecycle context',(
 
 
 
-test('idle practice is enqueued only when production work is absent',()=>{
+test('practice signals are generated even while production work exists and only priority changes',()=>{
   const idle={drills:[{id:'gap-save-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE'],productionPreemptible:true,countsAsProductionPass:false}]};
-  const empty=injectIdlePracticeTask({tasks:[]},idle);
-  assert.equal(empty.added,true);
-  assert.equal(empty.task.type,'research');
-  assert.ok(empty.task.evidence.includes('learning-practice-only'));
-  assert.ok(empty.task.evidence.includes('production-pass:NO'));
-  const busy=injectIdlePracticeTask({tasks:[{id:'prod',status:'queued',type:'implementation',evidence:[]}]},idle);
-  assert.equal(busy.added,false);
-  assert.equal(busy.reason,'PRODUCTION_WORK_PRESENT');
+  const busy=injectIdlePracticeTask({tasks:[{id:'prod',status:'queued',department:'development',type:'implementation',evidence:[]}]},idle);
+  assert.equal(busy.added,true);
+  assert.equal(busy.task.department,'learning');
+  assert.equal(busy.task.type,'research');
+  assert.match(busy.task.id,/-g1$/);
+  assert.ok(busy.task.evidence.includes('learning-practice-only'));
+  assert.ok(busy.task.evidence.includes('learning-web-artifact-practice'));
+  assert.ok(busy.task.evidence.includes('production-pass:NO'));
+  assert.equal(busy.artifactPractice,true);
+  assert.equal(busy.practiceGeneration,1);
+});
+
+test('verified Web practice result creates the next generation and carries the previous score',()=>{
+  const idle={drills:[{id:'gap-save-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE'],productionPreemptible:true,countsAsProductionPass:false}]};
+  const first=injectIdlePracticeTask({tasks:[]},idle);
+  const verified={...first.task,status:'verified',evidence:[...first.task.evidence,'practice-artifact-score:82','practice-artifact-improved:YES']};
+  const second=injectIdlePracticeTask({tasks:[verified]},idle);
+  assert.equal(second.added,true);
+  assert.match(second.task.id,/-g2$/);
+  assert.equal(second.practiceGeneration,2);
+  assert.equal(second.previousArtifactScore,82);
+  assert.match(second.task.goal,/previousArtifactScore=82/);
+  assert.match(second.task.goal,/practiceGeneration=2/);
 });
 
 
@@ -400,14 +426,14 @@ test('verified internal code patterns raise mastery without raw code',()=>{
 });
 
 
-test('duplicate terminal idle practice collapses and advances to the next unrepresented drill',()=>{
+test('duplicate completed practice collapses and the same drill advances to the next generation',()=>{
   const practice=(id,status='failed',retries=1,evidence=[])=>({
-    id,status,retries,maxRetries:1,target:'web',type:'research',sourceRoot:'learning-practice:test',
+    id,status,retries,maxRetries:1,target:'web',department:'learning',type:'research',sourceRoot:'learning-practice:test',
     evidence:['learning-practice-only','production-pass:NO',...evidence]
   });
   const queue={tasks:[
-    practice('LEARNING-PRACTICE-gap-asset_production-l1','failed',3,['failure-cause:learning-practice-worker-failed']),
-    practice('LEARNING-PRACTICE-gap-asset_production-l1','failed',2,['learning-practice-complete'])
+    practice('LEARNING-PRACTICE-gap-asset_production-l1-g1','failed',3,['failure-cause:learning-practice-worker-failed']),
+    practice('LEARNING-PRACTICE-gap-asset_production-l1-g1','failed',2,['learning-practice-complete'])
   ]};
   const idle={drills:[
     {id:'gap-asset_production-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['ASSET_PRODUCTION']},
@@ -416,8 +442,8 @@ test('duplicate terminal idle practice collapses and advances to the next unrepr
   const result=injectIdlePracticeTask(queue,idle);
   assert.equal(result.added,true);
   assert.equal(result.deduped,1);
-  assert.equal(result.queue.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-asset_production-l1').length,1);
-  assert.equal(result.queue.tasks.some(t=>t.id==='LEARNING-PRACTICE-gap-economy-l1'&&t.status==='queued'),true);
+  assert.equal(result.queue.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-asset_production-l1-g1').length,1);
+  assert.equal(result.queue.tasks.some(t=>t.id==='LEARNING-PRACTICE-gap-asset_production-l1-g2'&&t.status==='queued'),true);
 });
 
 test('idle-practice dedupe never merges unrelated production tasks',()=>{
