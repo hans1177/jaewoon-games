@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 deterministic diagnostic repair",
+  "expectedEffect": "eliminate reproduced DOM_NULL_EVENT_BIND before model generation",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "addEventListener('keydown',e=>{keys.add(e.key);if(e.code==='Space'){e.preventDefault();dash()}});addEventListener('keyup',e=>keys.delete(e.key));document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventDefault();dash()});",
+      "replace": "addEventListener('keydown',e=>{keys.add(e.key);if(e.code==='Space'){e.preventDefault();dash()}});addEventListener('keyup',e=>keys.delete(e.key));document.getElementById('dashBtn')?.addEventListener('pointerdown',e=>{e.preventDefault();dash()});"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
