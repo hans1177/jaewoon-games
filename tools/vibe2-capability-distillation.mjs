@@ -302,7 +302,12 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     ].filter(Boolean).join(' ')
   },{limit:Math.max(1,Math.min(8,Number(limit)||5)),minimumScore:5});
   const selected=result.matches
-    .filter(({reasons})=>(reasons||[]).some(reason=>reason==='same-game'||reason==='same-engine'||reason.startsWith('keyword-overlap:')))
+    .filter(({reasons})=>{
+      const relevanceReasons=reasons||[];
+      const sameGame=relevanceReasons.includes('same-game');
+      const keywordOverlap=relevanceReasons.some(reason=>reason.startsWith('keyword-overlap:'));
+      return sameGame||keywordOverlap;
+    })
     .map(({record,score,reasons})=>Object.freeze({
     id:record.id,
     fingerprint:record.fingerprint,
@@ -329,6 +334,8 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     advisoryOnly:true,
     rawTraceUsed:false,
     rawCodeUsed:false,
+    crossGameKeywordOverlapRequired:true,
+    sameEngineAloneEligible:false,
     writableScopeExpansionAllowed:false,
     qaBypassAllowed:false,
     authorityExpanded:false
