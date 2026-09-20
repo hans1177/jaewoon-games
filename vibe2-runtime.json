@@ -146,7 +146,7 @@
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL",
-    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP",
+    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_ACTIVE_EXECUTION_CAP_IS_20",
     "developmentFirstScheduling": {
       "enabled": true,
       "gameImplementationBeforeNonblockingSupervision": true,
@@ -175,18 +175,20 @@
     },
     "perWorkerSlotRefillEnabled": false,
     "fanInRefillTrigger": "repository-dispatch",
-    "refillBatchPolicy": "COMPLETE_CURRENT_20_WAVE_THEN_FAN_IN_THEN_REFILL",
+    "refillBatchPolicy": "REFILL_AVAILABLE_GAME_PRIMARY_SLOTS_UP_TO_ACTIVE_CAP_20",
     "gamePrimaryExecutionWave": {
       "enabled": true,
       "lane": "GAME_PRIMARY",
       "ownerTarget": 20,
       "maxActiveWorkers": 20,
-      "reserveOnlyAfterFanIn": true,
-      "singleActiveWorkerWave": true,
+      "reserveOnlyAfterFanIn": false,
+      "singleActiveWorkerWave": false,
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "20 is the active game-development execution wave, not the persistent planning-pool limit"
+      "note": "20 is the active game-development execution cap; 256 is only the external provider/planning bound. Safe free slots refill without waiting for all active workers.",
+      "capacityAwareFreeSlotRefill": true,
+      "externalProviderMax": 256
     },
     "planningBacklog": {
       "enabled": true,
@@ -198,7 +200,8 @@
       "reservationDeferredUntilFanIn": true,
       "releaseWaitExcluded": true,
       "sameSourceResponsibilityConflictPreserved": true,
-      "activeWaveBlocksReserveNotPlanning": true
+      "activeWaveBlocksReserveNotPlanning": false,
+      "activeWorkAllowsIndependentFreeSlotReserve": true
     },
     "executionLanes": {
       "GAME_PRIMARY": {
@@ -207,8 +210,9 @@
         "taskClass": "development-implementation",
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
         "maxActiveWorkers": 20,
-        "fanInOnlyRefill": true,
-        "adaptiveGameControlEligible": true
+        "fanInOnlyRefill": false,
+        "adaptiveGameControlEligible": true,
+        "capacityAwareFreeSlotRefill": true
       },
       "RECOVERY_FAST": {
         "consumesGamePrimarySlot": false,
