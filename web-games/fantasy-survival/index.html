@@ -217,7 +217,7 @@ function ensureMusicStarted(){
  if(!music.enabled)return;
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
  if(!music.ctx){
-  music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=.24;music.master.connect(music.ctx.destination);
+  music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=.48;music.master.connect(music.ctx.destination);
   const len=Math.max(1,Math.floor(music.ctx.sampleRate*.35)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);
   for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf
  }
@@ -306,7 +306,7 @@ function toggleBgm(){
  const b=document.getElementById('bgmToggle');if(b)b.textContent=music.enabled?'BGM ON':'BGM OFF';
  if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}
  else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}
- if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(.24,music.ctx.currentTime)
+ if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(.48,music.ctx.currentTime)
 }
 
 function markExplored(){
@@ -611,7 +611,7 @@ function closeRecorderOverlay(delay=0){
 }
 function duckBgmForRecorder(on){
  if(!music.master||!music.ctx)return;
- const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.03:(music.enabled?.24:.0001),now,.08)
+ const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.06:(music.enabled?.48:.0001),now,.08)
 }
 function recorderBlobSrc(){
  if(recorderBlobUrl)return recorderBlobUrl;
