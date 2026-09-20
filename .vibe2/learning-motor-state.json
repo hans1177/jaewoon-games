@@ -2055,7 +2055,8 @@
       "coding_negative_ks2oob",
       "coding_negative_1dcqdbj",
       "coding_negative_1wvn0mr",
-      "coding_negative_dn7vx0"
+      "coding_negative_dn7vx0",
+      "coding_negative_ns3jea"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -3781,7 +3782,7 @@
         "verifiedApplications": 352,
         "firstCandidatePasses": 25,
         "totalGenerationAttempts": 828,
-        "verifiedFailures": 275,
+        "verifiedFailures": 276,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 41,
           "seed-idle-growth-rpg-crystal-bloom": 4,
@@ -3839,13 +3840,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 19,
-            "verifiedFailures": 6,
+            "verifiedFailures": 7,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 49,
             "totalContextBytes": 661420,
             "lastEvidence": "coding_ubsgyt",
-            "lastFailureEvidence": "coding_negative_93pjnz",
-            "lastUpdatedAt": "2026-09-20T17:14:43.667Z"
+            "lastFailureEvidence": "coding_negative_ns3jea",
+            "lastUpdatedAt": "2026-09-20T18:08:13.588Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -4266,7 +4267,7 @@
             "verifiedApplications": 50,
             "firstCandidatePasses": 11,
             "totalGenerationAttempts": 124,
-            "verifiedFailures": 14,
+            "verifiedFailures": 15,
             "games": {
               "monster-adventure": 35,
               "ant-simulator": 15
@@ -4275,18 +4276,18 @@
               "web": 50
             },
             "failureGames": {
-              "ant-simulator": 6,
+              "ant-simulator": 7,
               "monster-adventure": 8
             },
             "failureTargets": {
-              "web": 14
+              "web": 15
             },
             "failureClasses": {
-              "MALFORMED_OUTPUT": 14
+              "MALFORMED_OUTPUT": 15
             },
             "lastEvidence": "coding_o1x7et",
-            "lastFailureEvidence": "coding_negative_1eo4s2c",
-            "lastUpdatedAt": "2026-09-20T17:42:46.587Z"
+            "lastFailureEvidence": "coding_negative_ns3jea",
+            "lastUpdatedAt": "2026-09-20T18:08:13.588Z"
           },
           "web|OTHER": {
             "verifiedApplications": 0,
@@ -4451,8 +4452,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1io7v39",
-        "lastFailureEvidence": "coding_negative_1wvn0mr",
-        "lastUpdatedAt": "2026-09-20T17:56:25.967Z"
+        "lastFailureEvidence": "coding_negative_ns3jea",
+        "lastUpdatedAt": "2026-09-20T18:08:13.588Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 41,
@@ -7260,7 +7261,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T18:08:05.395Z",
+    "lastBuiltAt": "2026-09-20T18:08:13.609Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -7426,7 +7427,7 @@
         "lastUpdatedAt": "2026-09-20T17:07:00.679Z"
       },
       "DEBUGGING": {
-        "verifiedApplications": 87,
+        "verifiedApplications": 88,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
@@ -7435,7 +7436,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 4,
           "daechung-rpg": 5,
           "line-defense": 5,
@@ -7447,8 +7448,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1fb22fu",
-        "lastUpdatedAt": "2026-09-20T17:41:19.799Z"
+        "lastEvidence": "knowledge_1q6jon6",
+        "lastUpdatedAt": "2026-09-20T18:08:13.608Z"
       },
       "RECOVERY": {
         "verifiedApplications": 0,
@@ -7616,7 +7617,7 @@
         "lastUpdatedAt": null
       },
       "WEB_RUNTIME": {
-        "verifiedApplications": 97,
+        "verifiedApplications": 98,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 14,
@@ -7626,7 +7627,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7637,8 +7638,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_izx8rt",
-        "lastUpdatedAt": "2026-09-20T17:59:36.001Z"
+        "lastEvidence": "knowledge_1q6jon6",
+        "lastUpdatedAt": "2026-09-20T18:08:13.608Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 0,
@@ -7749,7 +7750,7 @@
     "entries": {
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7759,7 +7760,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7769,17 +7770,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7789,7 +7790,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7799,17 +7800,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7819,7 +7820,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7829,17 +7830,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7849,7 +7850,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7859,17 +7860,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7879,7 +7880,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7889,17 +7890,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7909,7 +7910,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7919,17 +7920,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 99,
+        "verifiedApplications": 100,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 16,
@@ -7939,7 +7940,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7949,17 +7950,17 @@
           "survival": 3
         },
         "targets": {
-          "web": 97,
+          "web": 98,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "EXPERIENCE:exp_security_28453669955c43a85d166c5c": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 14,
@@ -7969,7 +7970,7 @@
           "village-dungeons": 4,
           "monster-adventure": 7,
           "bug-defense": 10,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 1,
           "line-defense": 5,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
@@ -7979,12 +7980,12 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_izx8rt",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:59:35.998Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
@@ -8279,13 +8280,13 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_dd1edc1a11a1e7a360dfda28": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 49,
+        "verifiedApplications": 50,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
           "village-dungeons": 4,
           "bug-defense": 8,
-          "ant-simulator": 5,
+          "ant-simulator": 6,
           "fantasy-survival": 1,
           "daechung-rpg": 5,
           "line-defense": 5,
@@ -8295,12 +8296,12 @@
           "survival": 3
         },
         "targets": {
-          "web": 49
+          "web": 50
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1fb22fu",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:41:19.797Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_4046e195870c0ad506bb6c96": {
         "source": "VERIFIED_CAPABILITY",
@@ -8485,107 +8486,107 @@
       },
       "CODE_PATTERN:pat_104gf8i": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 22,
+        "verifiedApplications": 23,
         "verifiedFailures": 0,
         "games": {
           "monster-adventure": 7,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5,
           "daechung-rpg": 2
         },
         "targets": {
-          "web": 20,
+          "web": 21,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "CODE_PATTERN:pat_14mfn8n": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 20,
+        "verifiedApplications": 21,
         "verifiedFailures": 0,
         "games": {
           "monster-adventure": 7,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5
         },
         "targets": {
-          "web": 20
+          "web": 21
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "CODE_PATTERN:pat_1dffmam": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 20,
+        "verifiedApplications": 21,
         "verifiedFailures": 0,
         "games": {
           "monster-adventure": 7,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5
         },
         "targets": {
-          "web": 20
+          "web": 21
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "CODE_PATTERN:pat_5g68pi": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 20,
+        "verifiedApplications": 21,
         "verifiedFailures": 0,
         "games": {
           "monster-adventure": 7,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5
         },
         "targets": {
-          "web": 20
+          "web": 21
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "CODE_PATTERN:pat_7a30sr": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 20,
+        "verifiedApplications": 21,
         "verifiedFailures": 0,
         "games": {
           "monster-adventure": 7,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5
         },
         "targets": {
-          "web": 20
+          "web": 21
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "CODE_PATTERN:pat_83szfq": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 20,
+        "verifiedApplications": 21,
         "verifiedFailures": 0,
         "games": {
           "monster-adventure": 7,
-          "ant-simulator": 8,
+          "ant-simulator": 9,
           "fantasy-survival": 5
         },
         "targets": {
-          "web": 20
+          "web": 21
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_cd82f46339f60a9d3d87c01f": {
         "source": "VERIFIED_CAPABILITY",
@@ -8649,48 +8650,48 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_8f46ea8c8412790f7b83bfab": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 8,
+        "verifiedApplications": 9,
         "verifiedFailures": 0,
         "games": {
-          "ant-simulator": 8
+          "ant-simulator": 9
         },
         "targets": {
-          "web": 8
+          "web": 9
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_a670473591ad9b9fb242be1b": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 8,
+        "verifiedApplications": 9,
         "verifiedFailures": 0,
         "games": {
-          "ant-simulator": 8
+          "ant-simulator": 9
         },
         "targets": {
-          "web": 8
+          "web": 9
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_c487582246e9035b791501b3": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 3,
+        "verifiedApplications": 4,
         "verifiedFailures": 0,
         "games": {
-          "ant-simulator": 3
+          "ant-simulator": 4
         },
         "targets": {
-          "web": 3
+          "web": 4
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_ea4iwz",
+        "lastEvidence": "knowledge_1q6jon6",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T17:14:43.683Z"
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0f382275217b8135a0aa8d56": {
         "source": "VERIFIED_CAPABILITY",
@@ -9535,6 +9536,21 @@
         "lastEvidence": "knowledge_1fb22fu",
         "lastFailureEvidence": null,
         "lastUpdatedAt": "2026-09-20T17:41:19.797Z"
+      },
+      "VERIFIED_CAPABILITY:capability_ctrace_ca07155796f1d9843b59a64b": {
+        "source": "VERIFIED_CAPABILITY",
+        "verifiedApplications": 1,
+        "verifiedFailures": 0,
+        "games": {
+          "ant-simulator": 1
+        },
+        "targets": {
+          "web": 1
+        },
+        "state": "CANDIDATE",
+        "lastEvidence": "knowledge_1q6jon6",
+        "lastFailureEvidence": null,
+        "lastUpdatedAt": "2026-09-20T18:08:13.606Z"
       }
     },
     "seenOutcomeIds": [
@@ -9636,8 +9652,9 @@
       "knowledge_i3b676",
       "knowledge_v1pzsb",
       "knowledge_1fb22fu",
-      "knowledge_izx8rt"
+      "knowledge_izx8rt",
+      "knowledge_1q6jon6"
     ]
   },
-  "updatedAt": "2026-09-20T18:08:05.395Z"
+  "updatedAt": "2026-09-20T18:08:13.609Z"
 }
