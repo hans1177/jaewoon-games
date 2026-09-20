@@ -51,6 +51,87 @@ export function buildCausalCodingLessons(index){
   return Object.freeze([...dedup.values()].sort((a,b)=>b.confidence-a.confidence||b.contrastScore-a.contrastScore||a.id.localeCompare(b.id)));
 }
 
+function trajectoryVerifiedForCapability(record={}){
+  const e=record.finalEvidence||{};
+  return clean(record.outcome)==='VERIFIED_WINNER'
+    && e.runtimePass===true
+    && e.qaPassed===true
+    && e.regressionPassed===true
+    && e.exactRevision===true
+    && e.protectedStatePreserved!==false;
+}
+export function buildCapabilityDistillation(trajectories=[]){
+  const traces=[];
+  for(const record of trajectories||[]){
+    const trace=record?.observableCodingTrace;
+    if(!trajectoryVerifiedForCapability(record))continue;
+    if(!trace||clean(trace.boundary)!=='OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY')continue;
+    const trajectoryId=clean(record.trajectoryId)||`trajectory-${traces.length+1}`;
+    const project=clean(record.metadata?.project||record.metadata?.gameId)||'shared';
+    const taskType=TASK_TYPES.includes(lower(record.metadata?.taskType))?lower(record.metadata?.taskType):'general';
+    const sourceRevision=clean(record.metadata?.sourceRevision||record.finalEvidence?.sourceRevision);
+    const steps=(Array.isArray(trace.steps)?trace.steps:[]).map(step=>({
+      stage:clean(step?.stage).toUpperCase(),
+      action:clean(step?.action),
+      outcome:clean(step?.outcome).toUpperCase(),
+      failureClass:clean(step?.failureClass).toUpperCase(),
+      capabilityDomain:clean(step?.capabilityDomain).toUpperCase(),
+    }));
+    traces.push({trajectoryId,project,taskType,sourceRevision,domains:[...new Set((trace.capabilityDomains||[]).map(value=>clean(value).toUpperCase()).filter(Boolean))],steps});
+  }
+  const grouped=new Map();
+  for(const trace of traces){
+    for(const domain of trace.domains){
+      if(!grouped.has(domain))grouped.set(domain,[]);
+      grouped.get(domain).push(trace);
+    }
+  }
+  const patterns=[...grouped.entries()].map(([domain,rows])=>{
+    const trajectoryRefs=[...new Set(rows.map(row=>row.trajectoryId))].sort();
+    const sourceRevisions=[...new Set(rows.map(row=>row.sourceRevision).filter(Boolean))].sort();
+    const projects=[...new Set(rows.map(row=>row.project).filter(Boolean))].sort();
+    const taskTypes=[...new Set(rows.map(row=>row.taskType).filter(Boolean))].sort();
+    const observedActions=[...new Set(rows.flatMap(row=>row.steps.filter(step=>step.capabilityDomain===domain||!step.capabilityDomain).map(step=>step.action).filter(Boolean)))].sort();
+    const observedFailureClasses=[...new Set(rows.flatMap(row=>row.steps.map(step=>step.failureClass).filter(Boolean)))].sort();
+    const repeatedIndependent=trajectoryRefs.length>=2&&sourceRevisions.length>=2;
+    return Object.freeze({
+      id:`capability-${domain.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`,
+      domain,
+      state:repeatedIndependent?'REPEATED_VERIFIED':'OBSERVED_VERIFIED',
+      supportingTrajectoryRefs:Object.freeze(trajectoryRefs),
+      sourceRevisions:Object.freeze(sourceRevisions),
+      projects:Object.freeze(projects),
+      taskTypes:Object.freeze(taskTypes),
+      observedActions:Object.freeze(observedActions),
+      observedFailureClasses:Object.freeze(observedFailureClasses),
+      confidence:repeatedIndependent?.82:.64,
+      reuseRule:'ADVISORY_ONLY_REVALIDATE_ON_FRESH_TASK',
+      positiveTrainingAllowed:false,
+      directPromotionAllowed:false,
+      rawPatchReuseAllowed:false,
+      hiddenReasoningRequired:false,
+      authority:'capability-distillation-retrieval-context-only'
+    });
+  }).sort((a,b)=>b.supportingTrajectoryRefs.length-a.supportingTrajectoryRefs.length||a.domain.localeCompare(b.domain));
+  return Object.freeze({
+    version:1,
+    state:'OBSERVABLE_TRACE_DISTILLATION',
+    verifiedTraceCount:traces.length,
+    patternCount:patterns.length,
+    patterns:Object.freeze(patterns),
+    policy:Object.freeze({
+      verifiedWinnerOnly:true,
+      hiddenReasoningPersisted:false,
+      rawPatchReuseAllowed:false,
+      freshTaskQaRequired:true,
+      automaticPromotionAllowed:false,
+      executionAuthorityChanged:false,
+      canonicalPipelineOnly:true
+    }),
+    authority:'capability-distillation-retrieval-context-only'
+  });
+}
+
 export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchmarks=64,maxRecombinationRecipes=64}={}){
   const failures=[];
   for(const trajectory of trajectories){
@@ -61,6 +142,7 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
   }
   const index=buildVibeVerifiedMemoryIndex({trainingSamples,trajectories,failures});
   const causalLessons=buildCausalCodingLessons(index);
+  const capabilityDistillation=buildCapabilityDistillation(trajectories);
   const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,portableWebContextForRoblox:true,platformEvidenceTransferAllowed:false}};
   for(const taskType of TASK_TYPES){
     const query=`${taskType} verified implementation repair QA patterns${taskType==='roblox'?` ${PORTABLE_WEB_QUERY}`:''}`;
@@ -80,15 +162,16 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
   const benchmark={version:1,generation:'V3-PUMP',state:'READY',hourlyRefresh:true,executionAuthority:'EXISTING_VIBE_DEVELOPMENT_PIPELINE_ONLY',localWeightTrainingRequired:false,countsAsTrainingSample:false,cases,policy:{noAutoSuccess:true,noFabricatedEvidence:true,noParallelPipeline:true,noPaidApi:true,noGitHubHostedModelTraining:true}};
   const recombination=buildTransformativeRecombination({trainingSamples,maxRecipes:maxRecombinationRecipes});
   playbooks.causalCodingLearning={enabled:true,lessonCount:causalLessons.length,evidenceBoundary:'VERIFIED_SUCCESS_AND_OBSERVED_FAILURE_ONLY',directTraining:false,authority:'causal-coding-retrieval-context-only'};
+  playbooks.capabilityDistillation=capabilityDistillation;
   playbooks.transformativeRecombination={enabled:true,materialCount:recombination.materials.length,recipeCount:recombination.recipes.length,minimumDistinctProjects:2,originalModifierRequired:true,rawSourceOutputAllowed:false,rawAssetOutputAllowed:false,authority:'transformative-recombination-context-only'};
-  return {index,playbooks,benchmark,recombination,causalLessons};
+  return {index,playbooks,benchmark,recombination,causalLessons,capabilityDistillation};
 }
 
 export function refreshPumpFiles({sampleDir='company-learning/training-samples',trajectoryDir='company-learning/vibe3-trajectories',memoryOut='company-learning/vibe3-memory-index.json',playbooksOut='company-learning/vibe3-task-playbooks.json',benchmarkOut='company-learning/vibe3-benchmark-queue.json',recombinationOut='company-learning/vibe3-recombination-memory.json',maxBenchmarks=64,maxRecombinationRecipes=64}={}){
   const sampleItems=listJson(sampleDir),trajectoryItems=listJson(trajectoryDir),artifacts=buildPumpArtifacts({trainingSamples:sampleItems.map(item=>item.record),trajectories:trajectoryItems.map(item=>item.record),maxBenchmarks,maxRecombinationRecipes});
   const memory={...artifacts.index,sourceFiles:{trainingSamples:sampleItems.map(item=>item.file),trajectories:trajectoryItems.map(item=>item.file)},refresh:{mode:'HOURLY_24H',workflow:'Vibe2 Distillation Sample Ingest',localWeightTrainingRequired:false}};
   writeJson(memoryOut,memory);writeJson(playbooksOut,artifacts.playbooks);writeJson(benchmarkOut,artifacts.benchmark);writeJson(recombinationOut,artifacts.recombination);
-  return {version:1,state:'PASS',trainingSamplesExamined:sampleItems.length,trajectoriesExamined:trajectoryItems.length,verifiedPositiveMemory:memory.positive.length,failureWarnings:memory.failureWarnings.length,causalCodingLessons:artifacts.causalLessons.length,playbooks:Object.keys(artifacts.playbooks.taskTypes).length,benchmarks:artifacts.benchmark.cases.length,recombinationMaterials:artifacts.recombination.materials.length,recombinationRecipes:artifacts.recombination.recipes.length,outputs:{memoryOut,playbooksOut,benchmarkOut,recombinationOut}};
+  return {version:1,state:'PASS',trainingSamplesExamined:sampleItems.length,trajectoriesExamined:trajectoryItems.length,verifiedPositiveMemory:memory.positive.length,failureWarnings:memory.failureWarnings.length,causalCodingLessons:artifacts.causalLessons.length,capabilityTraces:artifacts.capabilityDistillation.verifiedTraceCount,capabilityPatterns:artifacts.capabilityDistillation.patternCount,playbooks:Object.keys(artifacts.playbooks.taskTypes).length,benchmarks:artifacts.benchmark.cases.length,recombinationMaterials:artifacts.recombination.materials.length,recombinationRecipes:artifacts.recombination.recipes.length,outputs:{memoryOut,playbooksOut,benchmarkOut,recombinationOut}};
 }
 
 function main(){const a=parseArgs(process.argv.slice(2));const result=refreshPumpFiles({sampleDir:a['sample-dir'],trajectoryDir:a['trajectory-dir'],memoryOut:a['memory-out'],playbooksOut:a['playbooks-out'],benchmarkOut:a['benchmark-out'],recombinationOut:a['recombination-out'],maxBenchmarks:a['max-benchmarks'],maxRecombinationRecipes:a['max-recombination-recipes']});console.log(JSON.stringify(result));}
