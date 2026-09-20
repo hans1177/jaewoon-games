@@ -3,7 +3,7 @@
 
 export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
-export const DEFAULT_ADAPTIVE_TARGET = 20;
+export const DEFAULT_ADAPTIVE_TARGET = 256;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
