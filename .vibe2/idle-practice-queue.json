@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "vibe2-idle-practice-queue",
   "productionWorkAlwaysPreemptsPractice": false,
   "productionDefaultPriorityHigherThanPractice": true,
@@ -9,6 +9,11 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
+  "atomicNeuronDefault": true,
+  "atomicNeuronMode": "PER_TASK_MICRO_FANIN",
+  "microFanInRequired": true,
+  "globalWaveBarrierForbidden": true,
+  "selfExpansionDrills": 6,
   "phase4GeneralizationDrills": 26,
   "drills": [
     {
@@ -670,6 +675,90 @@
       "domains": [
         "ASSET_ADAPTATION"
       ]
+    },
+    {
+      "id": "frontier-living_motion",
+      "kind": "FRONTIER_EXPLORATION_DRILL",
+      "priority": "medium",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "LIVING_MOTION"
+      ],
+      "selfExpansion": true,
+      "atomicNeuron": true
+    },
+    {
+      "id": "frontier-vfx",
+      "kind": "FRONTIER_EXPLORATION_DRILL",
+      "priority": "medium",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VFX"
+      ],
+      "selfExpansion": true,
+      "atomicNeuron": true
+    },
+    {
+      "id": "compose-animation_feel-vfx",
+      "kind": "KNOWLEDGE_COMPOSITION_DRILL",
+      "priority": "medium",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ANIMATION_FEEL",
+        "VFX"
+      ],
+      "selfExpansion": true,
+      "atomicNeuron": true
+    },
+    {
+      "id": "failure-cluster-pqflg6",
+      "kind": "FAILURE_CLUSTER_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME",
+        "CORE_LOOP",
+        "COMBAT"
+      ],
+      "sourceFailure": "fail_1agpu1k",
+      "selfExpansion": true,
+      "atomicNeuron": true
+    },
+    {
+      "id": "intro-first-minute",
+      "kind": "INTRO_FIRST_MINUTE_DRILL",
+      "priority": "medium",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STORYTELLING",
+        "UI_STATE",
+        "CAMERA_LANGUAGE",
+        "AUDIO_FEEL"
+      ],
+      "selfExpansion": true,
+      "atomicNeuron": true
+    },
+    {
+      "id": "concept-diversity",
+      "kind": "CONCEPT_DIVERSITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CONCEPT_DIVERSITY"
+      ],
+      "selfExpansion": true,
+      "atomicNeuron": true
     },
     {
       "id": "gap-asset_adaptation-l1",
