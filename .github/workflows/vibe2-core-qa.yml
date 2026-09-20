@@ -31,6 +31,7 @@ on:
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-capability-distillation.mjs'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -57,6 +58,7 @@ on:
       - 'qa/vibe2-exploration-worker.test.mjs'
       - 'qa/vibe2-existing-web-assessment.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
+      - 'qa/vibe2-capability-distillation.test.mjs'
       - 'qa/vibe2-central-work-contract.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-work-package.test.mjs'
@@ -103,6 +105,7 @@ on:
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-capability-distillation.mjs'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -172,6 +175,7 @@ jobs:
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
           node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-capability-distillation.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -211,6 +215,7 @@ jobs:
           node --check qa/vibe2-exploration-worker.test.mjs
           node --check qa/vibe2-existing-web-assessment.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
+          node --check qa/vibe2-capability-distillation.test.mjs
           node --check qa/vibe2-central-work-contract.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-work-package.test.mjs
@@ -240,6 +245,7 @@ jobs:
           node --test qa/vibe2-exploration-worker.test.mjs
           node --test qa/vibe2-existing-web-assessment.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe2-capability-distillation.test.mjs
           node --test qa/vibe2-central-work-contract.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-work-package.test.mjs
