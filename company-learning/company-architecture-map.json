@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 53,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1591,6 +1591,55 @@
     ],
     "presentationOnlyDefault": true,
     "gameplayMutationWithoutApprovedDesign": false,
+    "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "authorityExpansion": false
+  },
+  "webValidationContractAdapter": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#webValidationBottleneckAdapterContract",
+    "flow": [
+      "APPROVED_SCOPE",
+      "REAL_CONTROL_HANDLER_STATE_SCAN",
+      "DETERMINISTIC_MAPPING",
+      "AMBIGUOUS_EXTERNAL_AI_ADVISORY",
+      "VIBE_MINIMAL_REPAIR",
+      "STATIC_QA",
+      "RUNTIME_QA",
+      "STRICT_REVIEW"
+    ],
+    "sourceWriteAuthority": "VIBE_EXISTING_WAVE_ONLY",
+    "externalAiAuthority": "ADVISORY_ONLY",
+    "authorityExpansion": false
+  },
+  "learningClosedLoopTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract",
+    "sourceStores": {
+      "verifiedExperience": ".vibe2/experience.json",
+      "codePatterns": ".vibe2/code-pattern-library.json",
+      "practiceDistilled": ".vibe2/practice-distilled-knowledge.json",
+      "externalAiDistilled": ".vibe2/external-ai-distilled-knowledge.json",
+      "mastery": ".vibe2/learning-motor-state.json"
+    },
+    "retrievalOrder": [
+      "SAME_GAME_VERIFIED",
+      "SAME_FAILURE_VERIFIED",
+      "SAME_ENGINE_VERIFIED",
+      "CODE_PATTERN_VERIFIED",
+      "PRACTICE_DISTILLED_VERIFIED",
+      "EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY",
+      "GENERAL_PLAYBOOK"
+    ],
+    "applicationTrace": "WORK_ORDER_EXACT_KNOWLEDGE_IDS_TO_IMMUTABLE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+    "feedback": [
+      "EXPERIENCE_PROMOTION",
+      "KNOWLEDGE_ATTRIBUTION",
+      "PRODUCTION_CONFIDENCE",
+      "STRATEGY_LIFECYCLE",
+      "BENCHMARK_HOLDOUT"
+    ],
+    "externalAiRawOutputAuthority": "NONE",
+    "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "authorityExpansion": false
   }
