@@ -1,0 +1,56 @@
+// 파일명: qa/vibe2-neural-shadow-audit.test.mjs
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { buildNeuralShadowAudit } from '../tools/vibe2-neural-shadow-audit.mjs';
+
+test('audit records wave release versus neural hypothetical action without choosing a winner',()=>{
+  const audit=buildNeuralShadowAudit({reviewed:[{
+    taskId:'a',
+    pass:true,
+    releaseBlocked:false,
+    rootCause:{state:'ROOT_CAUSE_VERIFIED'},
+    neuralEventRoute:{
+      proposedAction:{kind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',reason:'VERIFIED_ROOT_CAUSE_AVAILABLE'},
+      wouldFireWithoutPhase2Authority:true,
+      fireAllowed:false
+    }
+  }]});
+  assert.equal(audit.sampleCount,1);
+  assert.equal(audit.rows[0].actualWaveOutcome,'WAVE_RELEASE_ELIGIBLE');
+  assert.equal(audit.rows[0].comparisonClass,'BOTH_PROCEED_DIFFERENT_ACTION_SEMANTICS');
+  assert.equal(audit.winnerSelectionAllowed,false);
+  assert.equal(audit.automaticTuningAllowed,false);
+  assert.equal(audit.phase2AuthorityReady,false);
+});
+
+test('audit preserves neural-would-act versus wave-hold disagreement without resolving it',()=>{
+  const audit=buildNeuralShadowAudit({reviewed:[{
+    taskId:'b',
+    pass:true,
+    releaseBlocked:true,
+    releaseBlocker:'SUPERVISED_APPROVAL_REQUIRED',
+    neuralEventRoute:{
+      proposedAction:{kind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR'},
+      wouldFireWithoutPhase2Authority:true,
+      fireAllowed:false
+    }
+  }]});
+  assert.equal(audit.rows[0].actualWaveOutcome,'WAVE_RELEASE_BLOCKED');
+  assert.equal(audit.rows[0].comparisonClass,'NEURAL_WOULD_ACT_WAVE_HOLDS');
+  assert.equal(audit.interpretationAuthority,'NONE');
+});
+
+test('audit preserves wave-proceeds neural-holds disagreement without tuning either system',()=>{
+  const audit=buildNeuralShadowAudit({reviewed:[{
+    taskId:'c',
+    pass:true,
+    releaseBlocked:false,
+    neuralEventRoute:{
+      proposedAction:{kind:'REQUEST_EVIDENCE'},
+      wouldFireWithoutPhase2Authority:false,
+      fireAllowed:false
+    }
+  }]});
+  assert.equal(audit.rows[0].comparisonClass,'WAVE_PROCEEDS_NEURAL_HOLDS');
+  assert.equal(audit.automaticLearningAllowed,false);
+});
