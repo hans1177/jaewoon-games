@@ -8568,7 +8568,9 @@
     "firstPilotGameId": "fantasy-survival",
     "generalizeAfterPilotQa": true,
     "existingWaveSchedulerOnly": true,
-    "authorityExpansion": false
+    "authorityExpansion": false,
+    "externalAiInsideWebBootstrapForbidden": true,
+    "externalAiAdvisoryRoute": "SEPARATE_VERIFIED_DISTILLATION_OR_SYSTEM_AI_LANE"
   },
   "learningClosedLoopContract": {
     "version": 1,
