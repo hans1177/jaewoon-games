@@ -51,7 +51,7 @@
         "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
       ],
       "dependencies": [],
-      "priority": "high",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -78,7 +78,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-2620c437645bba6eaa8c",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -109,7 +112,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "daechung-rpg-save-null-guards",
@@ -123,7 +127,7 @@
         "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
       ],
       "dependencies": [],
-      "priority": "normal",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -151,7 +155,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -182,7 +189,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "daechung-rpg-motion-routine-safety",
@@ -196,7 +204,7 @@
         "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs"
       ],
       "dependencies": [],
-      "priority": "normal",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -224,7 +232,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -255,7 +266,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "insect-survival-explicit-maintenance-eb-games-insect-survival-insect-survival-28-html",
@@ -338,7 +350,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG의 3D 애니메이션 모션을 부드럽게 개선하고 전환 블렌딩을 최적화한다.\n\n추가 지시:\n- 안녕\n- 앙녕\n- 뭐하냐\n- 뭐해\n- 뭐해\n- 야\n- 뭐해\n- 안녕하세요\n- 안녕\n- 연결해 제미나이\n- 좋아 그냥 얘기좀 가진도 올릴수 잇어?\n- 대답안해?\n- 야\n- 젛아\n- 오늘 뭐햇어?\n- 왜\n- 추천해줘\n- 게임개발 하자고?\n- 우이 개발중인거\n- 대충 알피지\n- 게임이름이 대충 알피지야\n- 게임 개발\n- 니가 가능해?\n- 우리 게임 개발중인거 뭐야\n- 야..빨리\n- 추천\n- 모르겟어\n- UI 그리고 지금 어플 다운 가능해? 빌드 배포 성공?\n- 오늘 넌 뭐햇냐?\n- 대충 알피지 그래픽좀 신경써 애니 모션 부드럽게 드리고 3디애?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -373,7 +385,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": "35508074069:1",
@@ -415,7 +430,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-80cf960a-2b5f-48db-bff1-38da39e9fe60",
@@ -427,7 +443,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG 전투 시스템 수정 및 개발 진행\n\n추가 지시:\n- 안녕\n- 아니 일잔 대기 내가 누군지 알어?\n- 야\n- 뭐해\n- 응?\n- 안녕? 나왔다\n- ㅠㅎㅎ\n- 좋아\n- 좋아\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -462,7 +478,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -504,7 +523,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-40fc7d01-b9a0-42f3-9589-9160f07c63e5",
@@ -516,7 +536,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 영토전쟁 전략 게임의 내 영토 표시 및 게임 플레이 설명 UI 추가 설계 및 수정 작업\n\n추가 지시:\n- 야\n- 뭐냐 왜그래\n- 야\n- 야\n- 말해\n- 야\n- 미안해\n- 생각중이야 지금게임들 워잇지?\n- 3분류게임중에\n- 개발은 잘되가?\n- 같이 만들어 볼가? 영토전쟁 전략게임인데 내영토 안나오고 전체적으로 게임이 무슨설명이 없어\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -551,7 +571,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -593,7 +616,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "insect-survival-diagnostic-LARGE-SINGLE-FILE-insect-survival-28-html",
@@ -1167,7 +1191,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG Unity Android 스토어 출시 및 정산 연동 준비 작업 진행\n\n추가 지시:\n- 언제 수정돼?\n- 지금?\n- 지금 모두가 뭐야\n- 좋아\n- 안녕\n- 뭐해\n- 그래서\n- ㅗㅎㅎㅎ\n- ㅕㅕ\n- ㅓ엉\n- 여ㅗ여\n- 젛아\n- 지금모드 뭐야\n- 기본모드야?\n- 그래\n- ㅎㅎ\n- ㅕㅛㅏㅏ\n- 좋아\n- 야 여기에 게임 올릴수 잇어? 만들어서\n- 홈페이지에 웹게임 이 아니라 웹테스트가 잇어\n- 아니 웹디임이 올라와야 정산아니야?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -1203,7 +1227,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -1245,7 +1272,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star-diagnostic-DOM-NULL-EVENT-BIND-index-html",
@@ -1784,7 +1812,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 포근섬 콘텐츠(벌목장, 광산, 늑대, 병영) 추가 및 유실된 웹게임 관련 정리·복구 작업 진행\n\n추가 지시:\n- 야\n- 편하게해\n- 로블록스 개발은?\n- 포근섬에 벌목징,광산 있어?\n- 늑대 있어?\n- 병영은\n- 야\n- 웹게임 다 왜 없어?\n- 빨리 만들어\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -1820,7 +1848,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -1862,7 +1893,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "unity"
+      "shard": "unity",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
@@ -1874,7 +1906,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 잃어버린 별의 메아리(일별) 게임 난이도 조정: 적 스폰 개수 감소 및 레벨업 시 60% 확률로 특수 스킬(회전 칼날: 50 데미지, 기관총: 5초마다 0.1초 간격 3초간 2배 데미지) 획득 로직 구현 및 적용\n\n추가 지시:\n- 홈피에 게임중에 설계 하고 아트북 왜 옶냐?\n- 잃어버린 별의 메아리는 일별이라 부를게\n- 이 게임 너무 어려워 나오는 거 개수 줄이고 레벨업하면60퍼 확률로 ㅈ좋은 스킬이 나와 1.회전 칼날 플레이어 근처를 빙빙도는 칼날이야 닿은적은 50데미지 2.기관총 5초마다 0.1초 간격으로3초동안 2배데미지의 총알을 발사해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -1910,7 +1942,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": "35508074069:1",
@@ -1952,7 +1987,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
@@ -1964,7 +2000,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 지시에 따라 현재 진행 중인 게임 개발 및 수정 작업을 전체적으로 수행하고 완료 상태로 맞춘다.\n\n추가 지시:\n- 어 너가 다 만들어 다 하고 말해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -2000,7 +2036,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -2042,7 +2081,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-95504813-93d9-4c2c-b1ea-980bd970162c",
@@ -2054,7 +2094,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 한재운 CEO의 지시에 따라 현재 진행 중인 개발 및 수정 작업을 직접 완성하고 보고합니다.\n\n추가 지시:\n- 너가 해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -2090,7 +2130,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -2132,7 +2175,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45",
@@ -2144,7 +2188,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자의 즉각적인 개발 및 제작 지시에 따라 현재 선택된 게임 '잃어버린 별의 메아리' 및 주요 프로젝트의 추가 기능 구현과 제작 작업을 즉시 진행함.\n\n추가 지시:\n- 너가 래\n- 없으니까 빨리 헤\n- 빨리 만들라고\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -2180,7 +2224,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -2222,7 +2269,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-7e6ead38-0669-4727-9959-e8a4bf1bd2fa",
@@ -2234,7 +2282,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 지시에 따라 요청된 모든 콘텐츠 및 기능을 완전히 구현할 때까지 중간 보고 없이 백그라운드에서 개발 및 구현 작업을 계속 수행함.\n\n추가 지시:\n- 아까 말했잖아\n- 아까 말한거 추기 하라고 만들어서 그리고 그거 다 만들때 가지는 나한테 말하지 마\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -2270,7 +2318,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -2312,7 +2363,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "pwa-59113f6b-0e6c-49d5-af9c-cc344eefea81",
@@ -2324,7 +2376,7 @@
       "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 지시된 순서와 우선순위에 따라 중간 보고 없이 개발 및 시스템 구축 작업을 계속 진행함.\n\n추가 지시:\n- 개발하라고\n- 그순서데로 니가 하라고\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
       "responsibleFiles": [],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 0,
@@ -2360,7 +2412,10 @@
         "production-authority-restored:DEVELOPMENT_CONFIRMED",
         "release-state:development-confirmed",
         "restored-from:production-authority-inactive:DESIGN_ONLY",
-        "event-driven-resume:central-production-authority-restored"
+        "event-driven-resume:central-production-authority-restored",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "reservationId": null,
@@ -2402,7 +2457,8 @@
       "ownerFocusedCaretaker": false,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star-diagnostic-bundle-DOM-NULL-EVENT-BIND-index-html",
@@ -38082,7 +38138,8 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22PERFORMANCE_SANITY%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35507588018%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-primary-35507588018-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35507956874:1",
@@ -38139,7 +38196,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-20T11:33:07.937Z"
     },
     {
       "id": "fantasy-survival-diagnostic-bundle-LARGE-SINGLE-FILE-index-html",
