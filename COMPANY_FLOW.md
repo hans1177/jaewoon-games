@@ -2250,6 +2250,8 @@ webValidationContractAdapter:
       - VIBE_LOCAL_OLLAMA
     ambiguousMappingsOnly: true
     advisoryOnly: true
+    insideWebBootstrapForbidden: true
+    advisoryRoute: SEPARATE_VERIFIED_DISTILLATION_OR_SYSTEM_AI_LANE
     directSourceWrite: false
     directPassAuthority: false
     failureBlocksLocalVibeRepair: false
