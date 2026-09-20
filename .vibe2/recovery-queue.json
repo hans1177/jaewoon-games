@@ -3672,7 +3672,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T04:29:01.953Z"
+      "updatedAt": "2026-09-20T04:36:59.830Z"
     },
     {
       "id": "recovery-30d0f7d9f4575fe5f49d",
@@ -6769,7 +6769,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:28:49.708Z",
-      "updatedAt": "2026-09-20T04:29:01.952Z"
+      "updatedAt": "2026-09-20T04:36:59.829Z"
     },
     {
       "id": "recovery-0714f07f6ea25ccb4da5",
@@ -6787,7 +6787,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "portfolio:5",
-      "checkpoint": "2026-09-20T04:25:10Z",
+      "checkpoint": "2026-09-20T04:29:26Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -7665,7 +7665,29 @@
         "workload:cycle-ms:32775",
         "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489059656%3A1%7Cspeculative-2%22%2C%22predictedResponsibility%22%3A%22VALIDATOR%22%2C%22predictedConfidence%22%3A0.17490494296577946%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489059656%3A1%7Cspeculative-2%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
-        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489059656%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489059656%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1",
+        "candidate-sha:f786f7616762b52296209c05d3d914b1795b3da3",
+        "base-main:29c4354b89132c39b41c08555e42c0206587dc1b",
+        "actions-run:35489131396",
+        "reservation-id:35489131396:1",
+        "shared-context-policy:9c8a435d0805a23dad5d77a93d07ed7458dba79800e4997db562019499c9c1a4",
+        "shared-context-architecture:b1818b3d4591e036c5130ee7b2bf7aeab2b8749bed1b2cfd4cfb1fae549c83d5",
+        "workload:prep-ms:12596",
+        "workload:cycle-ms:306081",
+        "exploration-reuse:d84d59e26e05a6696f0dc7cb",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-primary-35489131396-1%22%2C%22predictedResponsibility%22%3A%22VALIDATOR%22%2C%22predictedConfidence%22%3A0.17490494296577946%2C%22observedStage%22%3A%22REPAIR_PATH_PASSED%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-primary-35489131396-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-primary-35489131396-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1%22%2C%22predictedResponsibility%22%3A%22VALIDATOR%22%2C%22predictedConfidence%22%3A0.17490494296577946%2C%22observedStage%22%3A%22REPAIR_PATH_PASSED%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35489131396-1%22%2C%22predictedResponsibility%22%3A%22VALIDATOR%22%2C%22predictedConfidence%22%3A0.17490494296577946%2C%22observedStage%22%3A%22REPAIR_PATH_PASSED%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35489131396-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35489131396-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Atrue%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22amusement-tycoon-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35489131396%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-1-35489131396-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -7681,7 +7703,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T04:29:01.946Z"
+      "updatedAt": "2026-09-20T04:36:59.824Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -8700,7 +8722,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T04:29:01.949Z"
+      "updatedAt": "2026-09-20T04:36:59.827Z"
     },
     {
       "id": "recovery-3ca7e1812e127f215428",
@@ -8712,7 +8734,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "incremental-qa-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T04:23:04Z",
+      "checkpoint": "2026-09-20T04:31:06Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -9471,7 +9493,26 @@
         "workload:cycle-ms:306973",
         "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488682997%3A1%7Cspeculative-2%22%2C%22predictedResponsibility%22%3A%22GAME_INPUT%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488682997%3A1%7Cspeculative-2%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
-        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488682997%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488682997%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "base-main:99e3c6992a88067056a09004f7c048f144b8e036",
+        "actions-run:35488992488",
+        "reservation-id:35488992488:1",
+        "workload:prep-ms:5682",
+        "workload:cycle-ms:299446",
+        "exploration-reuse:bb8f932ed9beb96565f4244a",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22GAME_INPUT%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cprimary%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "workload:prep-ms:6097",
+        "workload:cycle-ms:297111",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cspeculative-1%22%2C%22predictedResponsibility%22%3A%22GAME_INPUT%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cspeculative-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "workload:prep-ms:11336",
+        "workload:cycle-ms:307832",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cspeculative-2%22%2C%22predictedResponsibility%22%3A%22GAME_INPUT%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cspeculative-2%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22bug-defense-web-runtime-repair-v1%7C35488992488%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -9487,7 +9528,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-20T04:29:01.951Z"
+      "updatedAt": "2026-09-20T04:36:59.828Z"
     }
   ]
 }
