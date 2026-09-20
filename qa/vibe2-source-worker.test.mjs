@@ -727,6 +727,9 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('모델 JSON 파싱 실패')),'MALFORMED_OUTPUT');
   assert.equal(generationFailureClass(new Error('같은 파일에 edit/new/replace 중복 작업 금지')),'MALFORMED_OUTPUT');
   assert.equal(shouldRetryGenerationError(new Error('같은 파일에 edit/new/replace 중복 작업 금지')),true);
+  assert.equal(generationFailureClass(new Error('focused replace placeholder 금지: index.html')),'MALFORMED_OUTPUT');
+  assert.equal(shouldRetryGenerationError(new Error('focused replace placeholder 금지: index.html')),true);
+  assert.equal(generationFailureClass(new Error('focused replace 비어 있음')),'MALFORMED_OUTPUT');
 });
 test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', async () => {
   const cwd = tempRoot();
@@ -1258,6 +1261,15 @@ test('focused replace-only rejects unchanged replacement and supports early comp
   const spec={path:'index.html',find:'const state={running:false};'};
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:spec.find}),spec),/변경 없는 edit/);
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:'COMPLETE_REPLACEMENT_SOURCE_SNIPPET'}),spec),/placeholder 금지/);
+  const focused=buildFocusedReplaceOnlyPrompt([
+    'Goal: repair play state',
+    'Allowed edit paths: index.html',
+    '=== FILE index.html [EDITABLE] ===',
+    spec.find
+  ].join('\n'),{responsibleFiles:['index.html']});
+  assert.ok(focused);
+  assert.doesNotMatch(focused.prompt,/COMPLETE_REPLACEMENT_SOURCE_SNIPPET/);
+  assert.match(focused.prompt,/exactly one key named "replace"/);
   assert.equal(modelResponseComplete(JSON.stringify({replace:'const state={running:true};'}),'JSON_REPLACE_ONLY'),true);
   assert.equal(modelResponseComplete('{"replace":','JSON_REPLACE_ONLY'),false);
 });
