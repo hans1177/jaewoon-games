@@ -9555,11 +9555,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_847981edc799006145095378",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2235",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c02b78cd698c408f2617f3e96cb798b8a2dbffe8",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2235,
+        "baseBranch": "main",
+        "headBranch": "assistant/vibe-rule-bottleneck-parallel-v1",
+        "baseSha": "c02b78cd698c408f2617f3e96cb798b8a2dbffe8",
+        "headSha": "b283bc4c126215f0a96ac6d2798988764b585cf6",
+        "mergeCommitSha": "1d7bb1784df6620cb27a274abc6b43eecde1506f",
+        "mergedAt": "2026-09-20T19:58:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "84f2a0f8a626db30cadde1d6fb20f7603dd941ac72c62d93cde6d4c55195291f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/vibe-rule-bottleneck-parallel-v1",
+        "candidateSha": "b283bc4c126215f0a96ac6d2798988764b585cf6"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 254,
+        "deletedLineCount": 17,
+        "changedFiles": [
+          "qa/vibe2-neural-expansion-readiness.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "tools/vibe2-neural-expansion-readiness.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe2-neural-expansion-readiness.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "tools/vibe2-neural-expansion-readiness.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2235",
+        "merge-commit:1d7bb1784df6620cb27a274abc6b43eecde1506f",
+        "base-main:c02b78cd698c408f2617f3e96cb798b8a2dbffe8"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 77
+    "total": 78
   }
 }
