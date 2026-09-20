@@ -72,9 +72,15 @@ function directCandidateText(source,tag,attrs,offset,openTagLength){
 }
 export function extractWebGameplayCandidates(html=''){
   const source=String(html??''),rows=[],seen=new Set();
-  const tagRe=/<(button|input|select|textarea|canvas|a)\b([^>]*)>/gi;
+  const tagRe=/<(button|input|select|textarea|canvas|a|div)\b([^>]*)>/gi;
   for(const match of source.matchAll(tagRe)){
     const tag=lower(match[1]),attrs=attrsOf(match[2]),offset=Number(match.index)||0,id=clean(attrs.id);
+    const spatialControl=tag==='div'&&(
+      attrs['data-joystick']!=null||attrs['data-dpad']!=null||attrs['data-touch-control']!=null||
+      /(?:^|\s)(?:joystick|stick|dpad|touch-controls|mobile-controls)(?:\s|$)/i.test(clean(attrs.class))||
+      /^(?:joystick|stick|dpad)$/i.test(id)
+    );
+    if(tag==='div'&&!spatialControl)continue;
     const nearby=nearbyHandlerSource(source,id,offset);
     const key=id?'id:'+id:'offset:'+offset;
     if(seen.has(key))continue;
@@ -87,6 +93,7 @@ export function extractWebGameplayCandidates(html=''){
       existingScopeId:clean(attrs['data-scope-id'])||null,
       existingMechanicId:clean(attrs['data-mechanic-id'])||null,
       gameplayAction:attrs['data-gameplay-action']!=null,
+      spatialControl,
       directFamilies:familyRows(directText),
       families:familyRows(semanticText),
       directSemanticText:directText.slice(0,500),
@@ -115,6 +122,8 @@ function scoreCandidate(item,candidate){
   const shared=tokenList(clean(item.path)+' '+clean(item.label)).filter(token=>lower(candidate.semanticText).includes(token));
   if(shared.length){score+=Math.min(20,shared.length*4);evidence.push('shared:'+shared.slice(0,4).join(','));}
   if(requirement==='SPATIAL_WORLD'&&candidateFamilies.has('MOVEMENT')){score+=18;evidence.push('spatial-input');}
+  if(requirement==='SPATIAL_WORLD'&&candidate.spatialControl){score+=42;evidence.push('direct-spatial-control');}
+  if(requirement==='SPATIAL_WORLD'&&!candidate.spatialControl&&/(?:^|\s)(?:map|지도)(?:\s|$)/i.test(lower(candidate.directSemanticText))){score-=24;evidence.push('map-is-not-movement-input');}
   if(requirement==='ENTITY_INTERACTION'&&candidateFamilies.has('INTERACTION')){score+=18;evidence.push('entity-interaction');}
   if(requirement==='TOWER_PLACEMENT'&&(candidate.tag==='canvas'||candidateFamilies.has('CRAFT'))){score+=16;evidence.push('placement-surface');}
   if(requirement==='STRATEGIC_CHOICE'&&(candidateFamilies.has('PROGRESSION')||candidateFamilies.has('COMBAT'))){score+=12;evidence.push('strategic-choice');}
