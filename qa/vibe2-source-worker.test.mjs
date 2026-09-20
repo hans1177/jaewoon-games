@@ -267,6 +267,7 @@ test('system architecture candidate retries until source and causal regression t
     department:'system-architecture',
     goal:'[VIBE_SELF_ARCHITECTURE_EVOLUTION] repair with same-failure regression proof',
     selectedTask,
+    candidateStrategyRole:{variant:'speculative-1',strategy:'CAUSAL_PAIR_REPAIR'},
     workerPolicy:{
       directMainWrite:false,
       systemArchitectureEvolution:true,
@@ -297,6 +298,8 @@ test('system architecture candidate retries until source and causal regression t
   }));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[sourceOnly,invalidPaired,paired]});
   assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.baseAttemptBudget,2);
+  assert.equal(result.generation.effectiveAttemptBudget,3);
   assert.equal(result.generation.recoveryUsed,true);
   assert.deepEqual(result.changedFiles.sort(),[sourceFile,testFile].sort());
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',selectedTask.id,'files',sourceFile),'utf8'),/systemValue = 2/);
