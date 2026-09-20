@@ -1179,7 +1179,22 @@
       "writableScopeExpansionAllowed": false,
       "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
       "authorityChange": "NONE",
-      "nextGate": "POST_MERGE_RUNTIME_OBSERVATION_AND_RETRIEVAL_QUALITY_VALIDATION"
+      "nextGate": "HARDEN_PHASE_2_PROVENANCE_AND_RETRIEVAL_THEN_REOBSERVE",
+      "productionObservation": {
+        "state": "OBSERVED_WITH_HARDENING_REQUIRED",
+        "provenanceWorkflowRunId": 35489360372,
+        "observedPullRequest": 1891,
+        "provenanceIngestPass": true,
+        "queueMutationObserved": false,
+        "experienceMutationObserved": false,
+        "authorityExpansionObserved": false,
+        "retrievalRuntimeEvidencePending": true
+      },
+      "hardeningRequired": [
+        "DO_NOT_STORE_RAW_PR_TITLE_OR_BODY_TEXT",
+        "SEPARATE_MERGED_PR_PROVENANCE_RETENTION_FROM_VIBE_WORKER_TRACE_RETENTION",
+        "PARTITION_GENERIC_LEARNING_FROM_DISTINCT_VERIFIED_CAPABILITY_LAYER"
+      ]
     }
   },
   "functionalIdentityPhilosophyTopology": {
