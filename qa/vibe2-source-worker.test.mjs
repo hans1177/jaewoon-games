@@ -1096,6 +1096,13 @@ test('focused Web repair keeps target selection on the first attempt before caus
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/Continue/);
 });
 
+test('focused replace string recovery is exported to immutable worker telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/focusedReplaceStringRecovery:generation\.focusedReplaceStringRecovery===true/);
+  assert.match(workflowSource,/coding-focused-replace-string-recovery:YES/);
+});
+
 test('focused first-attempt fast path is exported to immutable worker telemetry',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
