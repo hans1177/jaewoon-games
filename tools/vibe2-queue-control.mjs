@@ -262,7 +262,9 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
       sourceRoot: clean(taskInput.sourceRoot) || null,
       speculativeEligible: Boolean(taskInput.speculativeEligible),
       estimatedRisk: clean(taskInput.estimatedRisk) || 'low',
-      evidence: []
+      atomicNeuronMode: clean(taskInput.atomicNeuronMode) || null,
+      atomicCompletionRequired: taskInput.atomicCompletionRequired === true,
+      evidence: Array.isArray(taskInput.evidence) ? taskInput.evidence : []
     }]
   });
 }
@@ -666,7 +668,21 @@ export function runQueueCommand(args = {}) {
   const rawQueue = readJson(file, { tasks: [] });
   const rawTasks = Array.isArray(rawQueue) ? rawQueue : Array.isArray(rawQueue?.tasks) ? rawQueue.tasks : [];
   const atomicSchemaMigrationNeeded = rawQueue?.scheduling?.atomicNeuronCompletion !== true
-    || rawTasks.some((task) => !Object.prototype.hasOwnProperty.call(task || {}, 'neuronExpectedVariants') || !Object.prototype.hasOwnProperty.call(task || {}, 'neuronResults'));
+    || rawTasks.some((task) => {
+      const row=task&&typeof task==='object'?task:{};
+      const evidence=Array.isArray(row.evidence)?row.evidence.map(clean):[];
+      const presentation=/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(row.goal))
+        || evidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(value));
+      return !Object.prototype.hasOwnProperty.call(row,'neuronExpectedVariants')
+        || !Object.prototype.hasOwnProperty.call(row,'neuronResults')
+        || (presentation && (
+          clean(row.atomicNeuronMode)!=='PER_TASK_MICRO_FANIN'
+          || row.atomicCompletionRequired!==true
+          || !evidence.includes('atomic-neuron-stream:presentation')
+          || !evidence.includes('atomic-neuron-micro-fanin:per-task')
+          || !evidence.includes('graphics-atomic-candidate-isolation-required')
+        ));
+    });
   let queue = createVibeContinuousQueue(rawQueue);
   const command = clean(args.command).toLowerCase();
   let result;
@@ -676,7 +692,9 @@ export function runQueueCommand(args = {}) {
       responsibleFiles: list(args.files), dependencies: list(args.dependencies), priority: args.priority, releaseState: args['release-state'],
       maxRetries: args.retries, retryPolicy: args['retry-policy'], ownerDirective: bool(args.owner), requiresOwnerDecision: bool(args['owner-decision']),
       protectedChange: bool(args.protected), paidResourceRequired: bool(args.paid), sourceRoot: args['source-root'],
-      speculativeEligible: bool(args.speculative), estimatedRisk: args.risk
+      speculativeEligible: bool(args.speculative), estimatedRisk: args.risk,
+      atomicNeuronMode: args['atomic-neuron-mode'], atomicCompletionRequired: bool(args['atomic-completion-required']),
+      evidence: list(args.evidence)
     });
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
