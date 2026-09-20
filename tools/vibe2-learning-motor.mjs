@@ -81,6 +81,7 @@ const SELF_EXPANSION_TRACK_PATTERNS=freeze({
   LIGHTING_FEEL:/lighting.?feel|lighting|light.?composition|조명.?연출|조명/i
 });
 const CONCEPT_DIVERSITY_AXES=freeze(['PLAYER_FANTASY','PLAYER_ROLE','CORE_ACTION','SPACE_STRUCTURE','PROGRESSION','RISK_STRUCTURE','ART_DIRECTION','MOOD','SESSION_STRUCTURE']);
+const SELF_EXPANSION_TIE_PRIORITY=freeze(['LIVING_MOTION','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','ASSET_ADAPTATION','ASSET_PRODUCTION','UI_STATE','STORYTELLING','NARRATIVE_STRUCTURE','PERFORMANCE']);
 const KNOWLEDGE_COMPOSITION_PAIRS=freeze([
   freezeList(['ANIMATION_FEEL','VFX']),
   freezeList(['VFX','AUDIO_FEEL']),
@@ -1138,7 +1139,7 @@ function idleDrillKindForDomain(domain=''){
 export function buildSelfExpansionPlan({masteryInput={},experienceInput={},queueInput={},practiceDistilledInput={}}={}){
   const state=createMasteryState(masteryInput);
   const weakDomains=Object.entries(state.domains)
-    .sort((a,b)=>a[1].level-b[1].level||a[1].xp-b[1].xp||a[0].localeCompare(b[0]))
+    .sort((a,b)=>a[1].level-b[1].level||a[1].xp-b[1].xp||((SELF_EXPANSION_TIE_PRIORITY.indexOf(a[0])<0?999:SELF_EXPANSION_TIE_PRIORITY.indexOf(a[0]))-(SELF_EXPANSION_TIE_PRIORITY.indexOf(b[0])<0?999:SELF_EXPANSION_TIE_PRIORITY.indexOf(b[0])))||a[0].localeCompare(b[0]))
     .slice(0,8)
     .map(([domain,row],index)=>({
       domain,level:Number(row.level)||1,xp:Number(row.xp)||0,verifiedSuccesses:Number(row.verifiedSuccesses)||0,verifiedFailureLessons:Number(row.verifiedFailureLessons)||0,
