@@ -105,7 +105,19 @@ setInterval(checkWinCondition, 5000);
 // Add win/loss logic
 // Add win/loss logic
 
-let winCondition = false; // Check win condition
+function checkWinCondition() {
+  if (gameState.player.health <= 0) {
+    alert("You lost!");
+    resetGame();
+  } else if (gameState.player.position.x === gameState.map.width - 1 && gameState.player.position.y === gameState.map.height - 1) {
+    alert("You won!");
+    winCondition = true;
+    resetGame();
+  }
+}
+
+// Trigger win condition
+setInterval(checkWinCondition, 5000);
 // Add mobile pointer/touch interaction for mobile devices
 
 // Check win condition
