@@ -1,9 +1,12 @@
 // 파일명: qa/company-security-steward.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { scanSecurityPatch, scanExternalInstruction } from '../tools/company-security-steward.mjs';
 import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
+
+const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
 
 test('literal secret is quarantined and report stores only redacted evidence',()=>{
   const patch='diff --git a/x.txt b/x.txt\n+++ b/x.txt\n@@ -0,0 +1 @@\n+token=ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\n';
@@ -251,4 +254,41 @@ test('security incident must be verified and primary-AI reviewed before immune l
   assert.equal(learned.library.patterns[0].masteryEligible,true);
   assert.equal(learned.library.patterns[0].rawCodeStored,false);
   assert.equal(learned.incidents.incidents[0].learningPromotion,'PROMOTED');
+});
+
+
+test('recorded policy review scan provenance is immutable evidence for later authorization',()=>{
+  const report={findings:[{
+    rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',severity:'HIGH',disposition:'REVIEW',category:'policy-integrity',
+    file:'company-learning/platform-release-roadmap.json',line:7,evidenceSha256:'prov-e1',snippet:'redacted policy line'
+  }]};
+  const recorded=recordSecurityReport({},report,{securityRunId:777001,securityArtifactId:888002}).store;
+  const row=recorded.incidents[0];
+  assert.equal(row.securityRunId,777001);
+  assert.equal(row.securityArtifactId,888002);
+  const base={
+    id:row.id,rootCause:'authorized policy change',remediation:'retain review gate',evidence:['regression:PASS'],
+    regressionPass:true,primaryAiReview:'PASS',verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS'
+  };
+  assert.throws(()=>resolveSecurityIncident(recorded,{...base,policyReviewApproval:{
+    decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1999,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1999',
+    securityRunId:777999,securityArtifactId:888002,scanDetectedAt:row.firstDetectedAt,findingCount:1
+  }}),/SECURITY_POLICY_REVIEW_RUN_MISMATCH:777001:777999/);
+  assert.throws(()=>resolveSecurityIncident(recorded,{...base,policyReviewApproval:{
+    decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1999,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1999',
+    securityRunId:777001,securityArtifactId:888999,scanDetectedAt:row.firstDetectedAt,findingCount:1
+  }}),/SECURITY_POLICY_REVIEW_ARTIFACT_MISMATCH:888002:888999/);
+  const resolved=resolveSecurityIncident(recorded,{...base,policyReviewApproval:{
+    decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1999,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1999',
+    securityRunId:777001,securityArtifactId:888002,scanDetectedAt:row.firstDetectedAt,findingCount:1
+  }});
+  assert.equal(resolved.incidents[0].status,'RESOLVED_VERIFIED');
+});
+
+test('security workflow persists the upload artifact id and run id with every recorded incident',()=>{
+  assert.match(securityWorkflow,/id: upload/);
+  assert.match(securityWorkflow,/artifact_id: \$\{\{ steps\.upload\.outputs\.artifact-id \}\}/);
+  assert.match(securityWorkflow,/SECURITY_ARTIFACT_ID: \$\{\{ needs\.scan\.outputs\.artifact_id \}\}/);
+  assert.match(securityWorkflow,/--security-run="\$\{GITHUB_RUN_ID\}"/);
+  assert.match(securityWorkflow,/--security-artifact="\$SECURITY_ARTIFACT_ID"/);
 });
