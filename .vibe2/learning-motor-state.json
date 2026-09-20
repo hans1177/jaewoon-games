@@ -5,25 +5,25 @@
   "authorityExpanded": false,
   "domains": {
     "CORE_LOOP": {
-      "xp": 135,
-      "level": 4,
-      "verifiedSuccesses": 13,
-      "verifiedFailureLessons": 3,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
-    },
-    "STATE_MACHINE": {
       "xp": 147,
       "level": 4,
       "verifiedSuccesses": 14,
       "verifiedFailureLessons": 3,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
+    },
+    "STATE_MACHINE": {
+      "xp": 159,
+      "level": 4,
+      "verifiedSuccesses": 15,
+      "verifiedFailureLessons": 3,
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "COMBAT": {
-      "xp": 89,
+      "xp": 101,
       "level": 3,
-      "verifiedSuccesses": 7,
+      "verifiedSuccesses": 8,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "AI": {
       "xp": 120,
@@ -33,18 +33,18 @@
       "lastEvidence": "pat_ypohyy"
     },
     "PROGRESSION": {
-      "xp": 99,
+      "xp": 111,
       "level": 3,
-      "verifiedSuccesses": 7,
+      "verifiedSuccesses": 8,
       "verifiedFailureLessons": 3,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "ECONOMY": {
-      "xp": 41,
+      "xp": 53,
       "level": 2,
-      "verifiedSuccesses": 3,
+      "verifiedSuccesses": 4,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "SAVE": {
       "xp": 125,
@@ -68,18 +68,18 @@
       "lastEvidence": "pat_zf15dc"
     },
     "DEBUGGING": {
-      "xp": 123,
+      "xp": 135,
       "level": 4,
-      "verifiedSuccesses": 13,
+      "verifiedSuccesses": 14,
       "verifiedFailureLessons": 3,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "RECOVERY": {
-      "xp": 41,
+      "xp": 53,
       "level": 2,
-      "verifiedSuccesses": 3,
+      "verifiedSuccesses": 4,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "SECURITY": {
       "xp": 60,
@@ -117,11 +117,11 @@
       "lastEvidence": null
     },
     "ANIMATION_FEEL": {
-      "xp": 12,
+      "xp": 24,
       "level": 1,
-      "verifiedSuccesses": 1,
+      "verifiedSuccesses": 2,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "VFX": {
       "xp": 0,
@@ -159,11 +159,11 @@
       "lastEvidence": null
     },
     "QUEST_DESIGN": {
-      "xp": 22,
-      "level": 1,
-      "verifiedSuccesses": 1,
+      "xp": 34,
+      "level": 2,
+      "verifiedSuccesses": 2,
       "verifiedFailureLessons": 2,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "CHARACTER_ARC": {
       "xp": 0,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 75,
+      "xp": 87,
       "level": 3,
-      "verifiedSuccesses": 5,
+      "verifiedSuccesses": 6,
       "verifiedFailureLessons": 3,
-      "lastEvidence": "capability_ctrace_0ce73fa4ec23024bd474ad30"
+      "lastEvidence": "capability_ctrace_a5381be270464bcf8da90edf"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -234,7 +234,8 @@
     "exp_security_53422c69113706740dd73f5a",
     "capability_ctrace_a0534f92f8ff6021da614742",
     "capability_ctrace_7c263aebec46d449821c74a0",
-    "capability_ctrace_0ce73fa4ec23024bd474ad30"
+    "capability_ctrace_0ce73fa4ec23024bd474ad30",
+    "capability_ctrace_a5381be270464bcf8da90edf"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -592,7 +593,8 @@
       "coding_wqv9an",
       "coding_1cjv60a",
       "coding_w5mve",
-      "coding_45aebl"
+      "coding_45aebl",
+      "coding_5fe6bx"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -2494,16 +2496,16 @@
         "lastUpdatedAt": "2026-09-20T04:36:59.334Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 147,
+        "verifiedApplications": 148,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 357,
+        "totalGenerationAttempts": 359,
         "verifiedFailures": 115,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 20,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-puzzle-chromatic-cascade": 17,
           "crystal-defense": 4,
-          "amusement-tycoon": 21,
+          "amusement-tycoon": 22,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 5,
           "chess-battle": 8,
           "bug-defense": 9,
@@ -2515,7 +2517,7 @@
           "territory-war": 1
         },
         "targets": {
-          "web": 147
+          "web": 148
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -2529,14 +2531,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 144,
+            "verifiedApplications": 145,
             "verifiedFailures": 63,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 350,
-            "totalContextBytes": 2698755,
-            "lastEvidence": "coding_45aebl",
+            "totalGenerationAttempts": 352,
+            "totalContextBytes": 2726393,
+            "lastEvidence": "coding_5fe6bx",
             "lastFailureEvidence": "coding_negative_rwnwmi",
-            "lastUpdatedAt": "2026-09-20T04:36:59.334Z"
+            "lastUpdatedAt": "2026-09-20T04:45:23.080Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -2571,17 +2573,17 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 34,
+            "verifiedApplications": 35,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 73,
+            "totalGenerationAttempts": 75,
             "verifiedFailures": 10,
             "games": {
               "seed-puzzle-chromatic-cascade": 8,
-              "amusement-tycoon": 21,
+              "amusement-tycoon": 22,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 5
             },
             "targets": {
-              "web": 34
+              "web": 35
             },
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 6,
@@ -2595,9 +2597,9 @@
               "NO_OP": 3,
               "MALFORMED_OUTPUT": 7
             },
-            "lastEvidence": "coding_45aebl",
+            "lastEvidence": "coding_5fe6bx",
             "lastFailureEvidence": "coding_negative_1e8jjor",
-            "lastUpdatedAt": "2026-09-20T04:36:59.331Z"
+            "lastUpdatedAt": "2026-09-20T04:45:23.080Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 55,
@@ -2966,9 +2968,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_45aebl",
+        "lastEvidence": "coding_5fe6bx",
         "lastFailureEvidence": "coding_negative_rwnwmi",
-        "lastUpdatedAt": "2026-09-20T04:36:59.334Z"
+        "lastUpdatedAt": "2026-09-20T04:45:23.080Z"
       }
     }
   },
@@ -5139,9 +5141,9 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T04:37:58.458Z",
+    "lastBuiltAt": "2026-09-20T04:45:23.097Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
-  "updatedAt": "2026-09-20T04:37:58.458Z"
+  "updatedAt": "2026-09-20T04:45:23.097Z"
 }

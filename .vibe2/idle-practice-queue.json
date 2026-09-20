@@ -121,16 +121,6 @@
       ]
     },
     {
-      "id": "gap-quest_design-l1",
-      "kind": "QUEST_CAUSALITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "QUEST_DESIGN"
-      ]
-    },
-    {
       "id": "gap-roblox_datastore-l1",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -208,6 +198,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ECONOMY"
+      ]
+    },
+    {
+      "id": "gap-quest_design-l2",
+      "kind": "QUEST_CAUSALITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "QUEST_DESIGN"
       ]
     },
     {
