@@ -255,11 +255,11 @@ test('queue command reads adaptive cap and duplicate fan-in keeps exactly one ne
   fs.writeFileSync(fanFile,JSON.stringify({results},null,2));
   const first=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile});
   assert.equal(first.previousAdaptiveControl.currentMax,32);
-  assert.equal(first.adaptiveControl.currentMax,8);
+  assert.equal(first.adaptiveControl.currentMax,20);
   assert.equal(first.adaptiveControl.lastRunId,'300');
   const duplicate=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile});
   assert.equal(duplicate.previousAdaptiveControl.currentMax,20);
-  assert.equal(duplicate.adaptiveControl.currentMax,8);
+  assert.equal(duplicate.adaptiveControl.currentMax,20);
   assert.equal(duplicate.adaptiveControl.lastReason,'DUPLICATE_RUN');
   assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).currentMax,20);
   assert.equal(adaptiveRequestedMax(duplicate.adaptiveControl,32),20);
