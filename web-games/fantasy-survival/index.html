@@ -188,7 +188,8 @@ const recipes=[
 {id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70}
 ];
 const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','cooked-hare-meat','cooked-bird-meat','cooked-lizard-meat','cooked-crystal-goat-meat','cooked-greens','cooked-fish','cooked-crystal-deer-meat'];
-const COOKING_COMBOS={
+function foodComboKey(a,b){return[a,b].sort().join('|')}
+const HANDCRAFTED_COOKING_COMBOS={
  'carrot|carrot':'meal-carrot-carrot',
  'carrot|cooked-deer-meat':'meal-carrot-deer',
  'carrot|cooked-bug-meat':'meal-carrot-bug',
@@ -215,7 +216,32 @@ const COOKING_COMBOS={
  'cooked-greens|cooked-lizard-meat':'meal-lake-lizard-greens',
  'cooked-crystal-deer-meat|cooked-greens':'meal-lake-deer-greens'
 };
-function foodComboKey(a,b){return[a,b].sort().join('|')}
+const COOKING_COMBOS={};
+for(const [pair,mealId] of Object.entries(HANDCRAFTED_COOKING_COMBOS)){
+ const [a,b]=pair.split('|');
+ COOKING_COMBOS[foodComboKey(a,b)]=mealId
+}
+function registerAllCookingCombos(){
+ for(let i=0;i<FOOD_BASE_IDS.length;i++){
+  for(let j=i;j<FOOD_BASE_IDS.length;j++){
+   const a=FOOD_BASE_IDS[i],b=FOOD_BASE_IDS[j],key=foodComboKey(a,b);
+   if(COOKING_COMBOS[key])continue;
+   const foodA=recipes.find(r=>r.id===a),foodB=recipes.find(r=>r.id===b);
+   if(!foodA||!foodB)throw new Error('요리 재료 정의 누락: '+a+' / '+b);
+   const hungerA=Number(foodA.hunger)||0,hungerB=Number(foodB.hunger)||0;
+   const hunger=Math.min(100,Math.max(20,Math.round(hungerA+hungerB+10)));
+   const foodRegen=Math.max(6,Math.min(30,Math.round((hungerA+hungerB)/4)));
+   const foodRegenSeconds=hunger>=90?5:hunger>=65?4:3;
+   const id='meal-auto-'+i+'-'+j;
+   const name=a===b?foodA.name+' 특선요리':foodA.name+' · '+foodB.name+' 요리';
+   recipes.push({id,name,where:'meal',cost:{},desc:'밥 +'+hunger+' · 초당 체력 '+foodRegen+' 회복 · '+foodRegenSeconds+'초',kind:'consumable',hunger,foodRegen,foodRegenSeconds});
+   COOKING_COMBOS[key]=id
+  }
+ }
+ const expected=FOOD_BASE_IDS.length*(FOOD_BASE_IDS.length+1)/2;
+ if(Object.keys(COOKING_COMBOS).length!==expected)throw new Error('요리 조합 수 오류: '+Object.keys(COOKING_COMBOS).length+'/'+expected)
+}
+registerAllCookingCombos();
 const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
 const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
 const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
