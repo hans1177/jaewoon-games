@@ -13,6 +13,7 @@ on:
       - 'roblox-games/**'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-web-contract-adapter.mjs'
       - 'tools/company-vibe2-gameplay-intelligence.mjs'
       - 'tools/company-vibe2-coding-architecture.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
@@ -28,6 +29,7 @@ on:
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-web-contract-adapter.test.mjs'
       - 'qa/company-web-vibe-handoff-e2e.test.mjs'
       - 'qa/company-vibe2-gameplay-intelligence.test.mjs'
       - 'qa/company-vibe2-coding-architecture.test.mjs'
@@ -86,13 +88,14 @@ jobs:
           node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-web-plan.json
           node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-web-contract-adapter.mjs
           node --check tools/company-vibe2-gameplay-intelligence.mjs
           node --check tools/company-vibe2-coding-architecture.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
           node --check tools/company-web-validation-evidence-contract.mjs
           node --check tools/company-design-artbook.mjs
           node --check tools/design-only-promotion-sync.mjs
-          node --test qa/company-development-web-runtime.test.mjs qa/company-web-vibe-handoff-e2e.test.mjs qa/company-vibe2-gameplay-intelligence.test.mjs qa/company-vibe2-coding-architecture.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-web-real-game-regression.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
+          node --test qa/company-development-web-runtime.test.mjs qa/company-web-contract-adapter.test.mjs qa/company-web-vibe-handoff-e2e.test.mjs qa/company-vibe2-gameplay-intelligence.test.mjs qa/company-vibe2-coding-architecture.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-web-real-game-regression.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
 
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
@@ -297,6 +300,7 @@ jobs:
           WEB_INITIAL_CYCLE_SOURCE_REVISION: ${{ matrix.webInitialCycleSourceRevision }}
           WEB_INITIAL_CYCLE_MUSIC_PASSED: ${{ matrix.webInitialCycleMusicValidationPassed }}
           WEB_FINAL_CONTENT_DEPTH_EVIDENCE_PATH: ${{ matrix.webFinalContentDepthEvidencePath }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
@@ -351,6 +355,34 @@ jobs:
           const screenshot=path.join(workDir,'web-gameplay.png');
           fs.mkdirSync(workDir,{recursive:true});
           let finalEvidencePersisted=false;
+          const externalAiCandidateFromBootstrap=()=>{
+            try{
+              if(!fs.existsSync(bootstrapEvidence))return null;
+              const payload=JSON.parse(fs.readFileSync(bootstrapEvidence,'utf8'));
+              const advisory=payload?.externalAiAdvisory||{};
+              if(advisory?.used!==true||!String(advisory.provider||'').trim()||!String(advisory.model||'').trim()||!/^[a-f0-9]{64}$/i.test(String(advisory.rawOutputSha256||'')))return null;
+              const adapter=payload?.webContractAdapter||{};
+              const families=[...new Set([...(adapter.bindings||[]),...(adapter.ambiguous||[]),...(adapter.unmapped||[])].map(row=>String(row?.family||'').trim()).filter(Boolean))].slice(0,8);
+              const patterns=[
+                families.length?`Resolve ambiguous approved gameplay scope by matching real ${families.join('/')} controls to existing handlers and observable state changes before adding new controls.`:'Resolve ambiguous approved gameplay scope by matching existing real controls to handlers and observable state changes before adding new controls.',
+                'When a real gameplay mechanic already exists, bind verification metadata to that mechanic instead of creating validation-only buttons or no-op state.'
+              ];
+              return{
+                version:1,
+                id:`${item.gameId}-web-contract-${String(advisory.rawOutputSha256).slice(0,12)}`,
+                sourceKind:'external-ai',
+                provider:String(advisory.provider),
+                model:String(advisory.model),
+                rawOutputSha256:String(advisory.rawOutputSha256).toLowerCase(),
+                engine:'web',
+                gameId:item.gameId,
+                domains:['WEB_RUNTIME','MOBILE_INPUT','UI_STATE',...families].slice(0,12),
+                distilledPatterns:patterns.map(x=>String(x).slice(0,240)),
+                cautions:['External AI mapping is advisory only; require deterministic scope checks and real runtime interaction.','Do not persist or reuse raw external AI output.'],
+                sourceWrite:false,productionPass:false,authorityExpanded:false
+              };
+            }catch{return null;}
+          };
           let result;
           try{
             if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
@@ -408,6 +440,7 @@ jobs:
                 webInitialCycleValidationSchemaVersion:Number(initialReport.validationSchemaVersion||initialReport.version||0)||null,
                 webInitialCycleStrictScore:initialScore,webInitialCycleStrictReviewPath:initialStrictRelative,
                 webInitialCycleSourceRevision:process.env.GITHUB_SHA,webInitialCycleMusicValidationPassed:true,
+                webExternalAiLearningCandidate:externalAiCandidateFromBootstrap()||item.webExternalAiLearningCandidate||null,
                 webValidationPassedAt:null,musicValidationPassed:false,webValidationEvidencePath:null,
                 webFinalContentDepthEvidencePath:null,webFinalContentDepthPassedAt:null,
                 homepageTestEligible:false,homepageTestCandidate:false,homepageTestScore:null,homepageTestVerdict:'WAITING_FINAL_CONTENT_DEPTH',
@@ -552,6 +585,7 @@ jobs:
                 homepageTestVerdict:repairState,
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
                 vibeWebImplementationRequired:Boolean(vibeImplementationSignal),vibeWebRequestedStage:vibeRequestedStage,vibeWebImplementationReason:vibeRequestedReason,sourceRootBootstrapRequired,
+                webExternalAiLearningCandidate:externalAiCandidateFromBootstrap()||item.webExternalAiLearningCandidate||null,
                 routingBlockers:[routingBlocker],webValidationLastAttemptAt:stamp,updatedAt:stamp,
               }};
               console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
