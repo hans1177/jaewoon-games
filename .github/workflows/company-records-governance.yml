@@ -9,6 +9,10 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-architecture-map.json'
       - 'tools/company-records-governance.mjs'
+      - 'tools/company-runtime-media-homepage-index.mjs'
+      - 'runtime-media-index.json'
+      - 'assets/homepage-enhancements.js'
+      - 'qa/homepage-runtime-media-index.test.mjs'
       - 'qa/company-records-governance.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - '.github/workflows/company-records-governance.yml'
@@ -20,6 +24,10 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-architecture-map.json'
       - 'tools/company-records-governance.mjs'
+      - 'tools/company-runtime-media-homepage-index.mjs'
+      - 'runtime-media-index.json'
+      - 'assets/homepage-enhancements.js'
+      - 'qa/homepage-runtime-media-index.test.mjs'
       - 'qa/company-records-governance.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - '.github/workflows/company-records-governance.yml'
@@ -51,18 +59,22 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-records-governance.mjs
+          node --check tools/company-runtime-media-homepage-index.mjs
           node -e "JSON.parse(require('fs').readFileSync('company-records/record-contract.json','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('runtime-media-index.json','utf8'))"
 
       - name: Run record contract tests
         run: |
           set -euo pipefail
           node --test qa/company-records-governance.test.mjs
+          node --test qa/homepage-runtime-media-index.test.mjs
           node --test qa/company-central-policy-contract.test.mjs
 
       - name: Scan all governed records and runtime media
         run: |
           set -euo pipefail
           node tools/company-records-governance.mjs --scan
+          node tools/company-runtime-media-homepage-index.mjs --check
 
       - name: Scheduled records hygiene summary
         if: github.event_name == 'schedule'
