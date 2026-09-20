@@ -74,6 +74,56 @@ test('supervised review batch writes both verified success and verified failure 
   assert.equal(writes[0].records.length,2);
   assert.ok(writes[0].records.some(record=>record.outcome==='FAIL'&&record.avoidPatterns.includes('placeholder source')));
 });
+
+test('batch promotion persists phase 3 capability application evidence without double counting the same application',()=>{
+  const writes=[];
+  const capability=successfulReview({
+    id:'capability-phase3-1',
+    gameId:'demo-web',
+    engine:'web',
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore ordering',
+    change:'verified save restoration sequence',
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE']
+  });
+  const application={
+    version:1,
+    capabilityId:'capability-phase3-1',
+    applicationId:'capp_demo_1',
+    taskId:'demo-task-1',
+    workKey:'demo-web:web:save:1',
+    gameId:'demo-web',
+    engine:'web',
+    outcome:'FRESH_QA_PASS',
+    selected:true,
+    finalReviewPass:true,
+    freshTaskQaPass:true,
+    independent:true,
+    capabilitySpecificSupport:false,
+    capabilitySpecificContradiction:false,
+    coAppliedCapabilityIds:['capability-phase3-1'],
+    evidence:['actions-run:300','fan-in-review:PASS'],
+    rawCodeStored:false,
+    rawModelOutputStored:false,
+    hiddenChainOfThoughtStored:false,
+    authorityExpanded:false
+  };
+  const payload={experienceReviews:[capability],capabilityApplicationReviews:[application,{...application}]};
+  const result=runExperiencePromotionBatch({reviews:payload,memoryFile:'',writeMemory:(_file,value)=>writes.push(value)});
+  assert.equal(result.promotedCount,1);
+  assert.equal(result.capabilityApplicationApplied,1);
+  assert.equal(result.capabilityApplicationDuplicates,1);
+  assert.equal(result.persisted,true);
+  assert.equal(writes.length,1);
+  const stored=writes[0].records.find(record=>record.id==='capability-phase3-1');
+  assert.equal(stored.capabilityApplications.length,1);
+  assert.equal(stored.capabilityLifecycle.state,'APPLICATION_OBSERVED');
+  assert.equal(stored.capabilityLifecycle.independentPassCount,1);
+  assert.equal(stored.capabilityLifecycle.singlePassAutomaticPromotion,false);
+  assert.equal(stored.capabilityLifecycle.unrelatedFailurePenaltyApplied,false);
+});
+
 function revoteFixture({ buildConclusion = 'success', buildError = '', buildStage = 'Unity Android build', directorDecision = 'PASS' } = {}) {
   const request = {
     version: 1,
