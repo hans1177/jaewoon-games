@@ -8,6 +8,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { promoteVibeReviewedExperience } from './vibe2-experience-control.mjs';
+import { distillExternalAiKnowledge } from './vibe2-external-ai-distillation.mjs';
 
 const clean=v=>String(v??'').trim();
 const uniq=v=>[...new Set((v||[]).map(clean).filter(Boolean))];
@@ -194,14 +195,40 @@ function readFirstJsonFromGit(ref,files=[]){
   return{path:null,data:null};
 }
 
+
+function verifiedExternalAiCandidateFromWeb({item={},gate={},evidencePath=''}={}){
+  const candidate=item?.webExternalAiLearningCandidate;
+  if(!candidate||candidate.sourceKind!=='external-ai'||!/^[a-f0-9]{64}$/i.test(clean(candidate.rawOutputSha256)))return null;
+  if(!clean(candidate.provider)||!clean(candidate.model)||!Array.isArray(candidate.distilledPatterns)||!candidate.distilledPatterns.length)return null;
+  return{
+    ...candidate,
+    sourceKind:'external-ai',
+    sourceWrite:false,
+    productionPass:false,
+    authorityExpanded:false,
+    verification:{
+      independent:true,
+      status:'PASS',
+      method:'runtime',
+      evidence:[
+        `runtime:${clean(evidencePath)||'canonical-web-final'}`,
+        `source:${clean(gate.sourceRevision)||'verified-web-source'}`
+      ]
+    }
+  };
+}
+
 export function ingestFormalWebExperiences({
   queueInput={},
   memoryInput={},
+  externalAiKnowledgeInput={version:1,entries:[]},
   evidenceLoader=()=>null,
   designLoader=()=>({path:null,data:null})
 }={}){
   let memory=memoryInput;
+  let externalAiKnowledge=externalAiKnowledgeInput&&typeof externalAiKnowledgeInput==='object'?externalAiKnowledgeInput:{version:1,entries:[]};
   const results=[];
+  let externalAiAcceptedCount=0;
   for(const item of queueInput?.items||queueInput?.projects||[]){
     if(item?.formalImplementationPassed!==true)continue;
     const evidencePath=clean(get(item,'webValidationEvidencePath','webFinalContentDepthEvidencePath'));
@@ -217,6 +244,16 @@ export function ingestFormalWebExperiences({
     if(!built.valid){
       results.push({gameId:built.gate.gameId||clean(item?.gameId),promoted:false,reason:'formal-web-learning-gate-failed',issues:built.gate.issues});
       continue;
+    }
+    const externalCandidate=verifiedExternalAiCandidateFromWeb({item,gate:built.gate,evidencePath});
+    if(externalCandidate){
+      const distilledId='external-ai-distilled:'+safeGame(externalCandidate.id);
+      const exists=(externalAiKnowledge.entries||[]).some(row=>clean(row?.id)===distilledId);
+      if(!exists){
+        const distilled=distillExternalAiKnowledge({records:[externalCandidate]},externalAiKnowledge);
+        externalAiKnowledge=distilled.knowledge;
+        externalAiAcceptedCount+=distilled.accepted.length;
+      }
     }
     const alreadyRecorded=(memory?.records||[]).some(record=>
       clean(record?.id)===clean(built.review.id) ||
@@ -246,7 +283,9 @@ export function ingestFormalWebExperiences({
     memory,
     results,
     promotedCount:results.filter(x=>x.promoted===true).length,
-    eligibleCount:results.filter(x=>x.reason!=='web-final-evidence-path-missing'&&x.reason!=='web-final-evidence-unreadable').length
+    eligibleCount:results.filter(x=>x.reason!=='web-final-evidence-path-missing'&&x.reason!=='web-final-evidence-unreadable').length,
+    externalAiKnowledge,
+    externalAiAcceptedCount
   };
 }
 
@@ -256,17 +295,21 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const a=args();
   const queueFile=clean(a.queue)||'/tmp/vibe2-company-runtime-queue.json';
   const memoryFile=clean(a.experience)||'.vibe2/experience.json';
+  const externalAiFile=clean(a['external-ai-distilled'])||'.vibe2/external-ai-distilled-knowledge.json';
   const runtimeRef=clean(a['company-runtime-ref'])||'origin/company-runtime';
   const result=ingestFormalWebExperiences({
     queueInput:readJson(queueFile,{items:[]}),
     memoryInput:readJson(memoryFile,{records:[]}),
+    externalAiKnowledgeInput:readJson(externalAiFile,{version:1,entries:[]}),
     evidenceLoader:file=>readJsonFromGit(runtimeRef,file),
     designLoader:file=>readFirstJsonFromGit(runtimeRef,designPathCandidates(file))
   });
   if(result.promotedCount>0)writeJson(memoryFile,result.memory);
+  if(result.externalAiAcceptedCount>0)writeJson(externalAiFile,result.externalAiKnowledge);
   console.log('VIBE2_WEB_EXPERIENCE_INGEST=PASS');
   console.log(`VIBE2_WEB_EXPERIENCE_ELIGIBLE=${result.eligibleCount}`);
   console.log(`VIBE2_WEB_EXPERIENCE_PROMOTED=${result.promotedCount}`);
+  console.log(`VIBE2_WEB_EXTERNAL_AI_DISTILLED_ACCEPTED=${result.externalAiAcceptedCount||0}`);
   console.log('VIBE2_WEB_EXPERIENCE_GATE_WEAKENED=NO');
   for(const row of result.results)console.log(`VIBE2_WEB_EXPERIENCE_RESULT=${row.gameId||'unknown'}:${row.promoted?'PROMOTED':'SKIP'}:${row.reason}`);
 }
