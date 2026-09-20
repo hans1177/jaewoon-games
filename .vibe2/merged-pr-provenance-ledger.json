@@ -5949,11 +5949,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c14510c17c219ad4dc335cce",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2058",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4d383d1f381621857e98c712d0a56aa0f8056a62",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2058,
+        "baseBranch": "main",
+        "headBranch": "assistant/neural-root-prediction-coverage-v1",
+        "baseSha": "4d383d1f381621857e98c712d0a56aa0f8056a62",
+        "headSha": "6ed7665beb5789e79f750cccf4070f27d7c7e034",
+        "mergeCommitSha": "864e1fafdc63e3dc7b88ff22290e3ae9b0dcdb94",
+        "mergedAt": "2026-09-20T10:35:39Z",
+        "authorLogin": "hans1177",
+        "titleHash": "7c7742d99491fb2c341662dc0f900af255f72291d6afb5d1a53cbb5cae8ba849",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/neural-root-prediction-coverage-v1",
+        "candidateSha": "6ed7665beb5789e79f750cccf4070f27d7c7e034"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 52,
+        "deletedLineCount": 6,
+        "changedFiles": [
+          "game-catalog.json",
+          "qa/vibe2-neural-phase2-readiness.test.mjs",
+          "tools/vibe2-neural-phase2-readiness.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "qa/vibe2-neural-phase2-readiness.test.mjs",
+          "tools/vibe2-neural-phase2-readiness.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2058",
+        "merge-commit:864e1fafdc63e3dc7b88ff22290e3ae9b0dcdb94",
+        "base-main:4d383d1f381621857e98c712d0a56aa0f8056a62"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 48
+    "total": 49
   }
 }
