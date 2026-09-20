@@ -234,6 +234,74 @@ public class PrototypeAnimatedVisuals:MonoBehaviour {
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('web asset adaptation rejects primitive-only gameplay art',()=>{
+  const root=tempRoot();
+  try{
+    const relative='web-games/other-game/index.html';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`<!doctype html><canvas id="game"></canvas><script>
+const ctx=document.getElementById('game').getContext('2d');
+function render(){
+  ctx.fillStyle='#484';
+  ctx.fillRect(0,0,320,180);
+  ctx.fillStyle='#fff';
+  ctx.fillRect(120,80,20,30); // player placeholder
+  ctx.fillStyle='#f00';
+  ctx.fillRect(200,80,24,24); // monster placeholder
+}
+render();
+</script>`);
+    const manifestPath=path.join(root,'manifest-web-placeholder.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'web',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'web',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'web-placeholder',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*WEB_REAL_ASSET_BINDING/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('web asset adaptation accepts real themed actor equipment environment assets',()=>{
+  const root=tempRoot();
+  try{
+    const relative='web-games/other-game/index.html';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`<!doctype html><style>
+:root{--theme-shadow:#18221c;--theme-accent:#9fd88f}
+#game{background-image:url("./assets/background-forest.webp")}
+</style><canvas id="game"></canvas><img id="hero" src="./assets/character-hero.webp"><script>
+const ctx=document.getElementById('game').getContext('2d');
+const player=new Image(); player.src='./assets/character-hero.webp';
+const weapon=new Image(); weapon.src='./assets/weapon-sword.webp';
+const monster=new Image(); monster.src='./assets/enemy-wolf.webp';
+const environment=new Image(); environment.src='./assets/background-forest.webp';
+function render(){
+  ctx.drawImage(environment,0,0,320,180);
+  ctx.drawImage(player,100,80);
+  ctx.drawImage(weapon,118,88);
+  ctx.drawImage(monster,220,80);
+}
+render();
+</script>`);
+    const manifestPath=path.join(root,'manifest-web-themed.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'web',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'web',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    const result=runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'web-themed',force:true
+    });
+    assert.equal(result.outcome,'PASS');
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_REAL_ASSET_BINDING'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='WEB_GAME_VISUAL_IDENTITY_DOMAINS'&&row.pass));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('web weather marker prevents duplicate weather task creation',()=>{
   const root=tempRoot();
   try{
