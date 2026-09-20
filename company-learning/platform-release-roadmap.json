@@ -1,5 +1,5 @@
 {
-  "version": 205,
+  "version": 206,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4983,7 +4983,7 @@
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
-      "state": "PHASE_2_COMPLETE_RUNTIME_RETRIEVAL_VERIFIED",
+      "state": "PHASE_3_CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
       "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
       "teacherSources": [
         "VIBE_GENERATED_CODING",
@@ -5193,15 +5193,16 @@
           "reusableRequired": true,
           "contextualRelevanceRequired": [
             "SAME_GAME",
-            "SAME_ENGINE",
-            "KEYWORD_OVERLAP"
+            "CROSS_GAME_KEYWORD_OVERLAP"
           ],
           "workOrderLayer": "verifiedCapabilityMemory",
           "advisoryOnly": true,
           "freshTaskQaRequired": true,
           "writableScopeExpansionAllowed": false,
           "qaBypassAllowed": false,
-          "authorityExpanded": false
+          "authorityExpanded": false,
+          "crossGameKeywordOverlapRequired": true,
+          "sameEngineAloneEligible": false
         },
         "ci": {
           "vibe2CoreQa": "PASS",
@@ -5256,7 +5257,7 @@
           "directMainPromotionAuthority": false,
           "authorityChange": "NONE"
         },
-        "nextGate": "CENTRAL_STRATEGY_DEFINE_NEXT_IMPLEMENTATION_PHASE_BEFORE_FURTHER_CAPABILITY_EXPANSION",
+        "nextGate": "PHASE_3_IMPLEMENT_APPLICATION_OUTCOME_EVIDENCE_AND_CAPABILITY_LIFECYCLE_WITHOUT_AUTHORITY_EXPANSION",
         "knownHardeningGap": [],
         "hardening": {
           "sourcePr": 1899,
@@ -5275,7 +5276,124 @@
           "duplicateCapabilityInjectionAllowed": false,
           "mergeCountsAsCapabilityVerification": false,
           "authorityChange": "NONE"
+        },
+        "retrievalQualityHardening": {
+          "state": "MERGED_MAIN",
+          "sourcePr": 1902,
+          "mergedCommit": "fe994dc0c2c3375ed04727c3e6f9ff4e22d12697",
+          "scope": "SAME_ENGINE_ALONE_REJECTED_AND_CROSS_GAME_KEYWORD_OVERLAP_REQUIRED",
+          "observedRunId": 35489948079,
+          "observedVerifiedCapabilityCount": 5,
+          "observedGenericCapabilityPartitionExcludedCount": 8,
+          "sameGameVerifiedCapabilityEligible": true,
+          "crossGameKeywordOverlapRequired": true,
+          "sameEngineAloneEligible": false,
+          "authorityChange": "NONE"
         }
+      },
+      "implementationPhase3": {
+        "state": "CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
+        "scope": "VERIFIED_CAPABILITY_APPLICATION_OUTCOME_ATTRIBUTION_CONFIDENCE_LIFECYCLE_AND_GENERALIZATION_GATES",
+        "objective": "MEASURE_WHETHER_RETRIEVED_VERIFIED_CAPABILITIES_SURVIVE_FRESH_TASK_QA_AND_USE_REPEATED_INDEPENDENT_EVIDENCE_TO_RETAIN_DECAY_DEPRECATE_SUPERSEDE_OR_GENERALIZE_CAPABILITIES_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
+        "prerequisites": {
+          "phase1Complete": true,
+          "phase2Complete": true,
+          "realWorkOrderRetrievalVerified": true,
+          "mergedPrProvenanceSeparated": true,
+          "rawPrTextPersistenceRemoved": true,
+          "genericCapabilityDuplicateInjectionRemoved": true,
+          "retrievalQualityHardeningMerged": true
+        },
+        "applicationEvidence": {
+          "exactInjectedCapabilityIdsRequired": true,
+          "onlyActuallyInjectedCapabilitiesEligible": true,
+          "workOrderIdentityRequired": true,
+          "freshTaskQaOutcomeRequired": true,
+          "coAppliedCapabilitySetMustBeRecorded": true,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "secretsOrCredentialsStored": false,
+          "mergeAloneCountsAsApplicationEvidence": false,
+          "taskFailureAloneImpliesCapabilityFailure": false
+        },
+        "attribution": {
+          "singleSuccessEstablishesCausality": false,
+          "coAppliedSuccessIndividuallyProvesEachCapability": false,
+          "unrelatedFailureMayPenalizeCapability": false,
+          "correlatedOutcomeMustRemainNonCausalWithoutAdditionalEvidence": true,
+          "strongerAttributionEvidence": [
+            "DIRECT_CAPABILITY_SPECIFIC_EVIDENCE",
+            "REPEATED_INDEPENDENT_CONSISTENT_APPLICATIONS",
+            "CONTROLLED_REPLAY_OR_CHALLENGER_EVIDENCE"
+          ]
+        },
+        "lifecycle": {
+          "states": [
+            "VERIFIED_REUSABLE",
+            "APPLICATION_OBSERVED",
+            "REPEATED_APPLICATION_VERIFIED",
+            "GENERALIZATION_CANDIDATE",
+            "GENERALIZED_VERIFIED",
+            "DEPRECATED",
+            "SUPERSEDED"
+          ],
+          "confidenceRisesOnlyWithIndependentRepeatedVerification": true,
+          "confidenceMayDecayWhenStaleOrContradicted": true,
+          "singlePassAutomaticPromotionForbidden": true,
+          "singleFailureAutomaticDeprecationForbidden": true,
+          "deprecationOrSupersessionRequiresEvidence": true,
+          "strongGeneralizationRequiresUnseenProblemBenchmark": true,
+          "projectSpecificValuesRemainProjectLocal": true,
+          "crossProjectTransferRequiresFreshApplicabilityCheck": true
+        },
+        "retrievalPreservation": {
+          "sameGameVerifiedCapabilityEligible": true,
+          "crossGameKeywordOverlapRequired": true,
+          "sameEngineAloneEligible": false,
+          "verifiedAndReusableRequired": true,
+          "advisoryOnly": true,
+          "freshTaskQaRequired": true,
+          "genericLearningCapabilityPartitionPreserved": true,
+          "duplicateCapabilityInjectionAllowed": false
+        },
+        "evaluation": {
+          "productionWorkPreemptsPractice": true,
+          "controlledReplayUsesExistingSandboxQaPathsOnly": true,
+          "syntheticReplayCannotReplaceRequiredNativeRuntime": true,
+          "championChallengerPreferredForMaterialStrategyChanges": true,
+          "metrics": [
+            "CAPABILITY_INJECTION_COUNT",
+            "FRESH_QA_PASS_COUNT",
+            "FRESH_QA_FAILURE_COUNT",
+            "INDEPENDENT_REPEAT_VERIFICATION_COUNT",
+            "CROSS_GAME_VERIFIED_APPLICATION_COUNT",
+            "CONTRADICTION_COUNT",
+            "DEPRECATION_OR_SUPERSESSION_COUNT",
+            "CO_APPLICATION_RATE"
+          ]
+        },
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false,
+          "directMainPromotionAuthority": false,
+          "authorityChange": "NONE"
+        },
+        "exitCriteria": [
+          "APPLICATION_EVIDENCE_BOUND_TO_EXACT_INJECTED_CAPABILITY_IDS_AND_FRESH_TASK_QA",
+          "CONFIDENCE_LIFECYCLE_USES_REPEATED_INDEPENDENT_EVIDENCE",
+          "UNRELATED_FAILURE_DOES_NOT_PENALIZE_CAPABILITY",
+          "STRONG_GENERALIZATION_REQUIRES_UNSEEN_PROBLEM_BENCHMARK",
+          "NO_DUPLICATE_GENERIC_CAPABILITY_INJECTION",
+          "NO_RAW_OUTPUT_PERSISTENCE",
+          "NO_AUTHORITY_EXPANSION",
+          "CI_AND_REAL_WORK_ORDER_RUNTIME_VERIFICATION"
+        ],
+        "nextGate": "IMPLEMENT_PHASE_3_APPLICATION_EVIDENCE_AND_LIFECYCLE_THEN_VERIFY_REAL_WORK_ORDER_FEEDBACK_WITHOUT_AUTHORITY_EXPANSION"
       }
     }
   },
