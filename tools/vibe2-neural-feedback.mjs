@@ -61,7 +61,8 @@ export function evaluateNeuralDiagnosisFeedback({
   blocker='',
   candidateFailure=null,
   roleResults={},
-  evidence=[]
+  evidence=[],
+  sampleId=''
 }={}){
   if(!diagnosis||clean(diagnosis.mode)!=='PHASE1_SHADOW_ADVISORY'){
     return{
@@ -87,6 +88,7 @@ export function evaluateNeuralDiagnosisFeedback({
     version:1,
     mode:'PHASE1_SHADOW_FEEDBACK',
     calibrationTarget:'NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE',
+    sampleId:clean(sampleId)||null,
     predicted:{
       responsibility:predictedResponsibility,
       confidence:predictedConfidence,
@@ -110,6 +112,7 @@ export function neuralFeedbackEvidence(feedback={}){
   if(clean(feedback.mode)!=='PHASE1_SHADOW_FEEDBACK')return[];
   const payload={
     version:1,
+    sampleId:clean(feedback?.sampleId)||null,
     predictedResponsibility:clean(feedback?.predicted?.responsibility)||null,
     predictedConfidence:Number(feedback?.predicted?.confidence||0),
     observedStage:clean(feedback?.observed?.stage)||null,
