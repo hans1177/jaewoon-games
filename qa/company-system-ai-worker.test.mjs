@@ -57,6 +57,22 @@ test('queue reserves disjoint tasks and sends passing work to supervisor review'
 });
 
 
+test('deterministically satisfied current main closes stale task without candidate or supervisor acceptance',()=>{
+  const queue=normalizeSystemAiQueue({tasks:[{id:'stale',status:'running',goal:'already implemented',responsibleFiles:['tools/a.mjs'],reservationId:'r1'}]});
+  const next=applySystemAiResults(queue,[{
+    taskId:'stale',outcome:'CURRENT_MAIN_SATISFIED',
+    evidence:['implementation:failure','current-main-verification:success','no-candidate-required:current-main-already-satisfies-task']
+  }]);
+  const task=next.tasks[0];
+  assert.equal(task.status,'done');
+  assert.equal(task.lastOutcome,'DETERMINISTIC_CURRENT_MAIN_SATISFIED');
+  assert.equal(task.blocker,null);
+  assert.equal(task.candidateBranch,null);
+  assert.equal(task.pullRequestUrl,null);
+  assert(task.evidence.includes('deterministic-current-main-satisfied'));
+  assert(task.evidence.includes('worker-self-acceptance:NO'));
+});
+
 test('system AI may read central policy as context but cannot write it',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
