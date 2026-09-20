@@ -7,6 +7,10 @@ import {
   buildVerifiedCapabilityExperienceReview,
   buildCapabilityApplicationReviews,
   applyCapabilityApplicationReviews,
+  buildCapabilityGeneralizationBenchmarkContract,
+  applyCapabilityGeneralizationBenchmarkToRetrieval,
+  buildCapabilityGeneralizationBenchmarkReviews,
+  applyCapabilityGeneralizationBenchmarkReviews,
   mergeCodingTraceLedger,
   retrieveVerifiedCapabilities,
   verifiedCapabilityGuidance
@@ -373,6 +377,9 @@ test('continuous runner injects verified capability memory once and partitions i
   assert.match(source,/duplicateInjectionAllowed:false/);
   assert.match(source,/verifiedCapabilityMemoryAppliedToWorkerGoal/);
   assert.match(source,/capabilityApplicationContract/);
+  assert.match(source,/capabilityGeneralizationBenchmark/);
+  assert.match(source,/buildCapabilityGeneralizationBenchmarkContract/);
+  assert.match(source,/applyCapabilityGeneralizationBenchmarkToRetrieval/);
   assert.match(source,/exactInjectedCapabilityIds/);
   assert.match(source,/SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA/);
   assert.match(source,/VIBE2_VERIFIED_CAPABILITY_COUNT/);
@@ -381,8 +388,160 @@ test('continuous runner injects verified capability memory once and partitions i
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   assert.match(workflow,/capabilityApplicationIds/);
   assert.match(workflow,/exactInjectedCapabilityIds/);
-  assert.match(workflow,/capabilityApplication,durationMs/);
+  assert.match(workflow,/capabilityApplication,capabilityGeneralizationBenchmark,durationMs/);
+  assert.match(workflow,/version:12/);
   const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(fanIn,/buildCapabilityApplicationReviews/);
   assert.match(fanIn,/capabilityApplicationReviews/);
+  assert.match(fanIn,/buildCapabilityGeneralizationBenchmarkReviews/);
+  assert.match(fanIn,/capabilityGeneralizationBenchmarkReviews/);
+});
+
+
+test('phase 4 controlled pair withholds only the target capability from control',()=>{
+  const retrieval={
+    records:[
+      {
+        id:'cap_generalize',
+        gameId:'origin-game',
+        reasons:['keyword-overlap:save'],
+        capabilityLifecycle:{state:'GENERALIZATION_CANDIDATE',generalizationCandidate:true,contradictionCount:0},
+        capabilityBenchmarks:[]
+      },
+      {
+        id:'cap_other',
+        gameId:'another-origin',
+        reasons:['keyword-overlap:save'],
+        capabilityLifecycle:{state:'REPEATED_APPLICATION_VERIFIED',generalizationCandidate:false,contradictionCount:0},
+        capabilityBenchmarks:[]
+      }
+    ],
+    count:2,
+    verifiedOnly:true,
+    advisoryOnly:true,
+    authorityExpanded:false
+  };
+  const benchmarkTask={
+    id:'phase4-task',
+    gameId:'unseen-game',
+    target:'web',
+    goal:'repair save restore flow',
+    responsibleFiles:['web-games/unseen-game/index.html'],
+    compiledWorkContract:{workKey:'unseen-game:web:save'}
+  };
+  const control=buildCapabilityGeneralizationBenchmarkContract({retrieval,task:benchmarkTask,variant:'speculative-1'});
+  const challenger=buildCapabilityGeneralizationBenchmarkContract({retrieval,task:benchmarkTask,variant:'speculative-2'});
+  assert.equal(control.enabled,true);
+  assert.equal(challenger.enabled,true);
+  assert.equal(control.pairId,challenger.pairId);
+  assert.equal(control.targetCapabilityId,'cap_generalize');
+  assert.equal(control.contextHash,challenger.contextHash);
+  const controlRetrieval=applyCapabilityGeneralizationBenchmarkToRetrieval(retrieval,control);
+  const challengerRetrieval=applyCapabilityGeneralizationBenchmarkToRetrieval(retrieval,challenger);
+  assert.deepEqual(controlRetrieval.records.map(row=>row.id),['cap_other']);
+  assert.deepEqual(challengerRetrieval.records.map(row=>row.id),['cap_generalize','cap_other']);
+  assert.equal(controlRetrieval.targetCapabilityWithheld,true);
+  assert.equal(challengerRetrieval.targetCapabilityWithheld,false);
+  assert.equal(control.authorityExpanded,false);
+});
+
+test('phase 4 requires two independent unseen capability-specific wins before GENERALIZED_VERIFIED',()=>{
+  const capabilityMemory={records:[{
+    id:'cap_generalize',
+    gameId:'origin-game',
+    engine:'web',
+    departments:['development','qa'],
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore ordering',
+    change:'verified save restoration sequence',
+    outcome:'PASS',
+    qa:['full-fan-in-regression-pass'],
+    evidence:['actions-run:400','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE'],
+    verified:true,
+    capabilityApplications:[
+      {applicationId:'app-a',taskId:'task-a',workKey:'game-a:web:save',gameId:'game-a',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:'app-b',taskId:'task-b',workKey:'game-b:web:save',gameId:'game-b',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  }]};
+
+  const pair=(gameId,suffix)=>({
+    task:{id:'task-'+suffix,gameId,target:'web',goal:'repair save restore flow'},
+    results:[
+      {
+        taskId:'task-'+suffix,reservationId:'r-'+suffix+'-c',variant:'speculative-1',outcome:'FAIL',
+        baseMainSha:'base-'+suffix,candidateBranch:null,
+        roleResults:{test:'FAIL',performance:'PASS'},
+        codingMethod:{generationAttemptBudget:2},
+        capabilityApplication:{exactInjectedCapabilityIds:[]},
+        capabilityGeneralizationBenchmark:{
+          enabled:true,pairId:'pair-'+suffix,role:'control',targetCapabilityId:'cap_generalize',
+          gameId,engine:'web',problemFingerprint:'problem-'+suffix,sourceCapabilityGameId:'origin-game',
+          unseenGame:true,unseenProblem:true,contextHash:'ctx-'+suffix,
+          sameModelGenerationBudgetRequired:true,sameWritableScopeRequired:true,sameQaContractRequired:true,
+          nonTargetContextFixed:true,targetCapabilityOnlyGuidanceDelta:true
+        }
+      },
+      {
+        taskId:'task-'+suffix,reservationId:'r-'+suffix+'-h',variant:'speculative-2',outcome:'PASS',
+        baseMainSha:'base-'+suffix,candidateBranch:'vibe2/candidate/'+suffix,
+        roleResults:{test:'PASS',performance:'PASS'},
+        codingMethod:{generationAttemptBudget:2},
+        capabilityApplication:{exactInjectedCapabilityIds:['cap_generalize']},
+        capabilityGeneralizationBenchmark:{
+          enabled:true,pairId:'pair-'+suffix,role:'challenger',targetCapabilityId:'cap_generalize',
+          gameId,engine:'web',problemFingerprint:'problem-'+suffix,sourceCapabilityGameId:'origin-game',
+          unseenGame:true,unseenProblem:true,contextHash:'ctx-'+suffix,
+          sameModelGenerationBudgetRequired:true,sameWritableScopeRequired:true,sameQaContractRequired:true,
+          nonTargetContextFixed:true,targetCapabilityOnlyGuidanceDelta:true
+        }
+      }
+    ]
+  });
+
+  const firstPair=pair('unseen-one','one');
+  const firstReviews=buildCapabilityGeneralizationBenchmarkReviews({...firstPair,fanInRegressionPass:true});
+  assert.equal(firstReviews.length,1);
+  assert.equal(firstReviews[0].capabilitySpecificSupport,true);
+  assert.equal(firstReviews[0].capabilitySpecificContradiction,false);
+  assert.equal(firstReviews[0].challengerFreshQaPass,true);
+  const afterFirst=applyCapabilityGeneralizationBenchmarkReviews(capabilityMemory,firstReviews);
+  const firstRecord=afterFirst.memory.records.find(row=>row.id==='cap_generalize');
+  assert.equal(firstRecord.capabilityLifecycle.state,'GENERALIZATION_CANDIDATE');
+  assert.equal(firstRecord.capabilityLifecycle.independentUnseenPassCount,1);
+  assert.equal(firstRecord.capabilityLifecycle.strongGeneralizationVerified,false);
+
+  const secondPair=pair('unseen-two','two');
+  const secondReviews=buildCapabilityGeneralizationBenchmarkReviews({...secondPair,fanInRegressionPass:true});
+  const afterSecond=applyCapabilityGeneralizationBenchmarkReviews(afterFirst.memory,secondReviews);
+  const secondRecord=afterSecond.memory.records.find(row=>row.id==='cap_generalize');
+  assert.equal(secondRecord.capabilityLifecycle.state,'GENERALIZED_VERIFIED');
+  assert.equal(secondRecord.capabilityLifecycle.independentUnseenPassCount,2);
+  assert.equal(secondRecord.capabilityLifecycle.distinctUnseenGameCount,2);
+  assert.equal(secondRecord.capabilityLifecycle.strongGeneralizationVerified,true);
+  assert.equal(secondRecord.capabilityLifecycle.contradictionCount,0);
+  assert.equal(secondRecord.capabilityLifecycle.authorityExpanded,false);
+});
+
+test('phase 4 paired benchmark stays inconclusive when both control and challenger pass',()=>{
+  const contract={
+    enabled:true,pairId:'pair-neutral',targetCapabilityId:'cap_generalize',
+    gameId:'unseen-neutral',engine:'web',problemFingerprint:'problem-neutral',sourceCapabilityGameId:'origin-game',
+    unseenGame:true,unseenProblem:true,contextHash:'ctx-neutral',
+    sameModelGenerationBudgetRequired:true,sameWritableScopeRequired:true,sameQaContractRequired:true,
+    nonTargetContextFixed:true,targetCapabilityOnlyGuidanceDelta:true
+  };
+  const reviews=buildCapabilityGeneralizationBenchmarkReviews({
+    task:{id:'neutral-task',gameId:'unseen-neutral',target:'web'},
+    fanInRegressionPass:true,
+    results:[
+      {taskId:'neutral-task',reservationId:'neutral-c',variant:'speculative-1',outcome:'PASS',baseMainSha:'base-neutral',candidateBranch:'control',roleResults:{test:'PASS',performance:'PASS'},codingMethod:{generationAttemptBudget:2},capabilityApplication:{exactInjectedCapabilityIds:[]},capabilityGeneralizationBenchmark:{...contract,role:'control'}},
+      {taskId:'neutral-task',reservationId:'neutral-h',variant:'speculative-2',outcome:'PASS',baseMainSha:'base-neutral',candidateBranch:'challenger',roleResults:{test:'PASS',performance:'PASS'},codingMethod:{generationAttemptBudget:2},capabilityApplication:{exactInjectedCapabilityIds:['cap_generalize']},capabilityGeneralizationBenchmark:{...contract,role:'challenger'}}
+    ]
+  });
+  assert.equal(reviews.length,1);
+  assert.equal(reviews[0].inconclusive,true);
+  assert.equal(reviews[0].capabilitySpecificSupport,false);
+  assert.equal(reviews[0].capabilitySpecificContradiction,false);
 });
