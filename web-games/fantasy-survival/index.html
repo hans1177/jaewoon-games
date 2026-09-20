@@ -168,7 +168,7 @@ const COOKING_COMBOS={
  'crystal-goat-meat|worldtree-greens':'meal-crystal-greens'
 };
 function foodComboKey(a,b){return[a,b].sort().join('|')}
-const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
+const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
 const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword']);
 const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor']);
 function itemTier(id){return ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
