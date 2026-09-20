@@ -445,7 +445,7 @@ function neuralWorkerEvidence(row = {}) {
   const rowEvidence=Array.isArray(row?.evidence)?row.evidence:[];
   const feedback=neuralWorkerFeedback(row);
   const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:rowEvidence});
-  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence});
+  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence,sampleId:neuralWorkerSampleId(row)});
   const eventRoute=simulateNeuralEventRoute({
     event:{
       id:neuralWorkerSampleId(row),
