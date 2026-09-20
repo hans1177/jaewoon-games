@@ -3575,7 +3575,7 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "updatedAt": "2026-09-20T06:23:34.040Z"
+      "updatedAt": "2026-09-20T06:26:03.843Z"
     },
     {
       "version": 2,
@@ -4450,7 +4450,7 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -4855,7 +4855,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:23:34.034Z"
+      "updatedAt": "2026-09-20T06:26:03.798Z"
     },
     {
       "version": 2,
@@ -5284,7 +5284,7 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -5704,7 +5704,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -6124,7 +6124,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -6552,7 +6552,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -6956,7 +6956,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -7360,7 +7360,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-20T06:23:34.041Z"
+      "updatedAt": "2026-09-20T06:26:03.844Z"
     },
     {
       "version": 2,
@@ -13623,6 +13623,55 @@
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-20T02:10:41.102Z"
+    },
+    {
+      "version": 2,
+      "seedId": "OWNER-ALL-DESIGN-RESET-ZOMBIE-SURVIVAL-20260917",
+      "gameId": "zombie-survival",
+      "gameName": "좀비 생존기",
+      "status": "ACTIVE",
+      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
+      "REFERENCE_GAMES": [],
+      "CORE_FUN_TO_LEARN": [
+        "좀비 생존기의 핵심 재미를 실제 플레이 선택으로 재정의",
+        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+        "모바일에서도 즉시 이해되는 입력과 피드백"
+      ],
+      "CORE_LOOP": [
+        "현재 상황과 목표를 읽고 의미 있는 다음 행동을 선택한다.",
+        "행동 결과로 게임 상태·자원·위험·진행도가 실제로 변한다.",
+        "변화된 상태를 바탕으로 새로운 목표와 선택을 갱신하며 다음 사이클로 이어간다."
+      ],
+      "DISTINCT_IDENTITY": "좀비 생존기을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "DESIGN_REEVALUATION",
+        "targetMarketScope": "GLOBAL",
+        "hardPassFailGate": false,
+        "available": false,
+        "note": "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes the canonical gates."
+      },
+      "TARGET_AUDIENCE": "좀비 생존기의 핵심 장르 플레이를 선호하는 글로벌 플레이어",
+      "TARGET_SESSION_DIRECTION": "첫 세션부터 입력, 핵심 행동, 상태 변화, 보상 또는 진행, 위험 또는 실패, 다음 목표가 연결되도록 다시 설계한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
+      "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
+      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
+      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "MOBILE_FIRST": true,
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "ACTIVE",
+      "updatedAt": "2026-09-20T06:26:03.845Z"
     }
   ],
   "seedMaterials": [
@@ -18732,7 +18781,7 @@
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-    "gameCount": 9,
+    "gameCount": 10,
     "gameIds": [
       "crystal-defense",
       "insect-survival",
@@ -18742,9 +18791,10 @@
       "human-go",
       "island-village",
       "survival2",
-      "territory-war"
+      "territory-war",
+      "zombie-survival"
     ],
-    "updatedAt": "2026-09-20T06:23:34.041Z"
+    "updatedAt": "2026-09-20T06:26:03.845Z"
   },
   "ownerPreservationIntake": {
     "source": "owner-design-reset-queue.json",
