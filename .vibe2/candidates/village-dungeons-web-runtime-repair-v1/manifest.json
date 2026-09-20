@@ -1,0 +1,2072 @@
+{
+  "version": 6,
+  "taskId": "village-dungeons-web-runtime-repair-v1",
+  "gameId": "village-dungeons",
+  "target": "web",
+  "sourceRoot": "web-games/village-dungeons",
+  "sourceRootBootstrap": false,
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "generation": {
+    "attempts": 2,
+    "recoveryUsed": true,
+    "partialTimeoutRecovery": false,
+    "streamedPartialEditRecovery": false,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": true,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedWebRepair": true,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "baseAttemptBudget": 3,
+    "effectiveAttemptBudget": 3,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "mode": "JSON_EDIT",
+    "maxPredict": 384,
+    "timeoutMs": 90000,
+    "contextWindow": 8192,
+    "temperature": 0.26,
+    "completionMode": "JSON_REPLACE_ONLY",
+    "candidateVariant": "primary",
+    "attemptBudget": 3,
+    "speculativeAttemptBudgetApplied": false,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "contextFiles": 1,
+    "contextBytes": 23079,
+    "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+    "focusedSymbolCount": 16,
+    "exactSourceWindows": true,
+    "fullFileContextFallback": false,
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false
+  },
+  "developmentAuthority": {
+    "owner": "VIBE2_VIBE3",
+    "provider": "LOCAL_OLLAMA",
+    "model": "qwen3:1.7b",
+    "codexRole": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+    "codexGameSourceWrite": "FORBIDDEN",
+    "paidOpenAiApiAllowed": false,
+    "directMainWrite": false
+  },
+  "baseMainSha": "47f2baa86001760722fd03b55894c73461d5d3f0",
+  "goal": "[WORK PACKAGE village-dungeons-wp-ue1kkb]\n마을 던전 RPG: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.\n역할=implementation-owner; taskWorkUnits=6; packageWorkUnits=6\n공유 준비 범위=web-games/village-dungeons/index.html\n역할 분리=exploration:read-only-exploration-worker | implementation:source-worker-exclusive-write | test:incremental-qa-worker-read-only | performance:performance-sanity-worker-read-only | regression:single-fan-in-regression-worker-read-only | review:fan-in-package-review-worker-read-only\n완료 기준=task-local-exploration-handoff-produced-and-reused | functional-scope-implemented | all-package-task-incremental-qa-pass | performance-sanity-pass | full-core-regression-once-at-fan-in | fan-in-package-review-pass | machine-contract-and-central-doc-synced-when-architecture-changes\n\n[REUSABLE MACHINE HANDOFF - do not rediscover already known facts]\n- task=village-dungeons-web-runtime-repair-v1; package=village-dungeons-wp-ue1kkb; files=web-games/village-dungeons/index.html; evidence=role-result:exploration:FAIL | role-result:implementation:FAIL | role-result:test:FAIL | role-result:performance:FAIL | role-result:regression:WAITING_FAN_IN | role-result:review:WAITING_FAN_IN | workload:changed-files:0 | workload:changed-lines:0 | workload:prep-ms:11532 | workload:cycle-ms:469666 | failure-cause:source-candidate-generation-failed | workload:prep-ms:5814 | workload:cycle-ms:588448 | workload:prep-ms:4918 | workload:cycle-ms:512414 | repair-mode:CAUSAL_REGENERATION_GENERATION_1 | workload:prep-ms:5761 | workload:cycle-ms:524032 | role-result:exploration:PASS | workload:prep-ms:4943 | workload:cycle-ms:598973 | exploration-reuse:6105b7718cd7b42d62fd1e70 | exploration-impact:index.html | workload:prep-ms:5400 | workload:cycle-ms:602478 | exploration-reuse:641a88b84bce19c11c3e9f25 | workload:prep-ms:6394 | workload:cycle-ms:666257 | exploration-reuse:e49e795625d9149d0894586c | repair-mode:CAUSAL_REGENERATION_GENERATION_2 | workload:prep-ms:5435 | workload:cycle-ms:26941 | failure-cause:MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED | workload:prep-ms:11625 | workload:cycle-ms:381593 | exploration-reuse:95c2aedaaeea85745f15467e | workload:prep-ms:5130 | workload:cycle-ms:658992 | exploration-reuse:7ee2c9c783180a4576ba71f0 | workload:prep-ms:6687 | workload:cycle-ms:669697 | exploration-reuse:0270d67ee8999c3c692a1db7 | repair-mode:CAUSAL_REGENERATION_GENERATION_3 | workload:prep-ms:13489 | workload:cycle-ms:501774 | exploration-reuse:c2462187f7b3c8397ce4b4ef | workload:prep-ms:5741 | workload:cycle-ms:668954 | exploration-reuse:c76eb0be86b2f2772548a627 | workload:prep-ms:13113 | workload:cycle-ms:682039 | exploration-reuse:a3bda39e3416c347722be107 | repair-mode:CAUSAL_REGENERATION_GENERATION_4 | workload:prep-ms:4661 | workload:cycle-ms:670341 | exploration-reuse:8a41d6d08cc5ec6f03e5af72 | workload:prep-ms:5453 | workload:cycle-ms:664439 | exploration-reuse:e4cc2d407d5bea81ce251932 | workload:prep-ms:11959 | workload:cycle-ms:472881 | exploration-reuse:223b3276ed0b24eab54a219f | repair-mode:CAUSAL_REGENERATION_GENERATION_5 | workload:prep-ms:11056 | workload:cycle-ms:44385 | workload:prep-ms:13836 | workload:cycle-ms:682306 | exploration-reuse:840da5feab204975b38a306c | workload:prep-ms:4817 | workload:cycle-ms:660585 | exploration-reuse:e4c211a6a950823fdee19339 | workload:prep-ms:6587 | workload:cycle-ms:575838 | exploration-reuse:4366a58b9c11341671d6b2df | repair-mode:CAUSAL_REGENERATION_GENERATION_6 | workload:prep-ms:6577 | workload:cycle-ms:536871 | exploration-reuse:44c39097209c26ab376d5565 | workload:prep-ms:10146 | workload:cycle-ms:161559 | exploration-reuse:5e0d2ae6ffab9747f82189ef | workload:prep-ms:5715 | workload:cycle-ms:525081 | exploration-reuse:f9a7a9e107685003b3ddb90f | repair-mode:CAUSAL_REGENERATION_GENERATION_7 | workload:prep-ms:7050 | workload:cycle-ms:534792 | exploration-reuse:31f58fff9e8ffec4e6e5e19e | workload:prep-ms:10448 | workload:cycle-ms:375385 | workload:prep-ms:5684 | workload:cycle-ms:611879 | exploration-reuse:2a3026b0317564309570c9c2 | workload:prep-ms:5480 | workload:cycle-ms:375209 | workload:prep-ms:6457 | workload:cycle-ms:524610 | exploration-reuse:c1700c11abc7cf2dee92d0f4 | workload:prep-ms:12898 | workload:cycle-ms:356675 | repair-mode:CAUSAL_REGENERATION_GENERATION_8 | workload:prep-ms:5961 | workload:cycle-ms:522575 | exploration-reuse:180b267b41f00008cd6fc1cd | workload:prep-ms:9595 | workload:cycle-ms:338399 | workload:prep-ms:7940 | workload:cycle-ms:519026 | exploration-reuse:4a0f4c9bc6377631c7417004 | workload:prep-ms:5366 | workload:cycle-ms:421084 | workload:prep-ms:9869 | workload:cycle-ms:506640 | workload:prep-ms:9416 | workload:cycle-ms:333746 | repair-mode:CAUSAL_REGENERATION_GENERATION_9 | workload:prep-ms:10687 | workload:cycle-ms:490535 | exploration-reuse:78d1eebf3146b8afc0abee1e | workload:prep-ms:6313 | workload:cycle-ms:383259 | workload:prep-ms:6014 | workload:cycle-ms:530286 | exploration-reuse:ea783d9c7e4e3ba92246058d | workload:prep-ms:12229 | workload:cycle-ms:489976 | exploration-reuse:6442a1bd7deddad4491f4008 | workload:prep-ms:12077 | workload:cycle-ms:238275 | incremental-qa-hash:669eb1dc77e0e7e8c32ce4168ea11f64c3b7b2c68f59fca828fa5391de0939ee | incremental-qa-cache:MISS | role-result:implementation:PASS | role-result:test:PASS | role-result:performance:PASS | workload:changed-files:1 | workload:changed-lines:2 | workload:prep-ms:7683 | workload:cycle-ms:282388 | exploration-reuse:44bb2f3be696b224fa247cc0 | speculative-result:primary:PASS | speculative-result:speculative-1:FAIL | speculative-winner:primary | role-result:regression:PASS | role-result:review:PASS | workload:prep-ms:11405 | workload:cycle-ms:296233 | exploration-reuse:83502d0c49dea4702a839b6f | speculative-result:speculative-1:PASS | speculative-winner:speculative-1 | incremental-qa-cache:HIT | workload:prep-ms:6772 | workload:cycle-ms:239701 | exploration-reuse:f78269439edf3d1979f301d1 | speculative-result:speculative-2:PASS | workload:prep-ms:5762 | workload:cycle-ms:232878 | exploration-reuse:5ec338b22bfb7cadf609f9dc | speculative-winner:speculative-2 | workload:prep-ms:5432 | workload:cycle-ms:399822 | exploration-reuse:347882e025cf4cd05d680c1e | workload:prep-ms:6707 | workload:cycle-ms:258437 | workload:prep-ms:5119 | workload:cycle-ms:243136 | repair-mode:CAUSAL_REGENERATION_GENERATION_10 | workload:prep-ms:6923 | workload:cycle-ms:397226 | exploration-reuse:fb9f738c48152dd9923d0393 | speculative-result:speculative-2:FAIL | workload:prep-ms:6200 | workload:cycle-ms:301805 | exploration-reuse:e5bfa01e3650cd999a99fc4f | incremental-qa-hash:58404bec226e16cc6b67f185a373e620f9f347d0616e0e8ceb6ca2154f399b24 | workload:prep-ms:11816 | workload:cycle-ms:226306 | exploration-reuse:5575194cdead838ad96e55b0 | incremental-qa-hash:855d141d02b7138d3a9e52d70cd2d60faffc07671cbd5d73121701da51faf25a | workload:prep-ms:10074 | workload:cycle-ms:245218 | exploration-reuse:cdbbbbc41867fbfd2cdffec7 | workload:prep-ms:10729 | workload:cycle-ms:153271 | exploration-reuse:47865a0e1d0390a019347103 | workload:prep-ms:4915 | workload:cycle-ms:288575 | exploration-reuse:e88e215cb0b0486c63ea613a | repair-mode:CAUSAL_REGENERATION_GENERATION_11 | workload:prep-ms:6372 | workload:cycle-ms:265078 | exploration-reuse:4f6930508266e485ee25cb30 | workload:prep-ms:11358 | workload:cycle-ms:226132 | exploration-reuse:ce69a10369ee7a57cd9d4092; lastOutcome=FAIL\n\n[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-14e5fec9e4|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-21cda65cb7|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-a3fe13f59a|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:25:45.075Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.\n\n[NEURAL DIAGNOSIS SHADOW MODE]\nresponsibility=VALIDATOR confidence=0.17\nbottleneck-score=100 advisory-only=YES\nfailure-stage=WEB_REPAIR\ntop-hypothesis=validator-classification-or-contract confidence=0.92\nThis diagnosis is evidence guidance only. Existing task scope, central policy, locks, QA, supervision, and wave scheduling remain authoritative.\nDo not patch a validator problem by faking gameplay, and do not hide a real game defect by weakening validation.\n\n[CANDIDATE STRATEGY ROLE]\nvariant=primary\nstrategy=PRIMARY_RESPONSIBILITY_MINIMAL\nStart at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.\nThis role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: ADVISORY. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.\n\n[VERIFIED EXPERIENCE MEMORY - advisory only]\n다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.\n- 경험 exp_4odofx; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-ta; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:verified-play-observation:restart | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:turn\n- 경험 exp_pg739o; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:difficulty-selection | GAME_STUDY:study-tag:turn-feedback | GAME_STUDY:study-tag:player-action | GA\n- 경험 exp_1oonbi8; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:memory-game | study-tag:board-size-selection | study-tag:; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:memory-game | GAME_STUDY:study-tag:board-size-selec\n- 경험 supervised_bug-defense_35476177742_revise; 결과=FAIL; 문제=Vibe candidate was byte-identical to the failing main Web source and preserved a validation harness instead of implementing the approved bug-defense game.; 검증변경=Supervisor REVISE on candidate vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1; decompose the next attempt into real wave analysis, spatial placement, counterplay, live combat, rewards, terminal states, retry, and mo; 검증실패원인=NO_REAL_IMPLEMENTATION: candidate source blob equals current main; scope/session test controls remain; no pointer/touch placement, real spatial enemy loop, reachable win/loss, or persistent save/progression.; 회피=Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics. | Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain. | Do not duplicate handler functions to inflate apparent mechanic coverage. | Do not\n- 경험 exp_i00mwv; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mec; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:economy | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:authorized-source-pattern:frame-loop | GAME_STUDY:study-intelligence:mechanic:economy | GAME_STUDY:study\n\n[VIBE VERIFIED LEARNING MOTOR]\n우선순위=same-game+same-failure > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.\n- current-failure-fingerprint=web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT\n- experience=exp_1oonbi8; game=external-memory-game; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference; avoid=none\n- experience=exp_pg739o; game=external-tictactoe; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference|GAME_STUDY:study-tag:difficulty-selection; avoid=none\n- experience=exp_4odofx; game=external-tictactoe; engine=web; relevance=48; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:verified-play-observation:restart; avoid=none\n- experience=supervised_bug-defense_35476177742_revise; game=bug-defense; engine=web; relevance=42; reuse=none; avoid=Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics.|Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain.|Do not duplicate handler functions to inflate apparent mechanic coverage.|Do not fake spatial placement with counters or fixed positions; use real pointer/touch coordinates and entity positions.|Do not claim a complete run without reachable playing/win/loss states and retry flow.\n- experience=exp_rg6lvy; game=block-blast; engine=android; relevance=22; reuse=AUTHORIZED_SOURCE:board-grid-placement|AUTHORIZED_SOURCE:score-combo-reward|AUTHORIZED_SOURCE:input-drag-touch|AUTHORIZED_SOURCE:progression-difficulty|AUTHORIZED_SOURCE:save-state-persistence; avoid=do-not-treat-static-analysis-as-runtime-pass|do-not-bypass-current-project-qa|do-not-expand-authority-beyond-owner-authorized-scope\n- experience=exp_i00mwv; game=external-roblox-potion-shop-demo; engine=roblox; relevance=20; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:economy|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:authorized-source-pattern:frame-loop; avoid=none\n- experience=exp_security_policy_review_authorized_v1; game=n/a; engine=system; relevance=6; reuse=SECURITY_REVIEW_REQUIRED:CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW|SECURITY_PRESERVE_GATE:NO_BYPASS|SECURITY_AUTHORIZED_REVIEW:TRI_STATE_REVIEW_QUARANTINE_CLASSIFIER_WITH_DIRECT_POLICY_REVIEW_GATE; avoid=SECURITY_AVOID:POLICY_REVIEW_BYPASS\n- experience=exp_security_b72c29be3a79e4c5a56017dd; game=n/a; engine=system; relevance=2; reuse=SECURITY_REVIEW_REQUIRED:CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW|SECURITY_PRESERVE_GATE:NO_BYPASS|SECURITY_AUTHORIZED_REVIEW:DIRECT_REVIEW_CONFIRMED_CAPABILITY_EXPANSION_WITHOUT_AUTHORITY_EXPANSION_AND_PRESERVED_SECURITY_GATES; avoid=SECURITY_AVOID:POLICY_REVIEW_BYPASS\n- verified-code-pattern=pat_130jf9c; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1avbmmv; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1vgfuno; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_3f780w; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_9pwgix; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_m3ipio; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-practice-distilled=MOBILE_INPUT; confirmations=1; evidence=code-pattern:pat_14v79w7:3aa6a50ad14f3d0620d4b894660645b92137d708|code-pattern:pat_1lx9uhh:669aa231ae5291c89ab60eb528c4d357d5671c68|code-pattern:pat_1xg0er9:a2467c071d3fd3436fadefab7a3919c6e178d5f6\n- verified-practice-distilled=PROGRESSION; confirmations=1; evidence=experience:exp_rg6lvy:block-blast|game-study:external-memory-game:architecture:progression|game-study:external-roblox-potion-shop-demo:architecture:progression\n- mastery=CORE_LOOP:LV3 | STATE_MACHINE:LV4 | PROGRESSION:LV3 | MOBILE_INPUT:LV4 | DEBUGGING:LV3 | AUDIO_FEEL:LV1 | QUEST_DESIGN:LV1 | WEB_RUNTIME:LV2\n\n[RESPONSIBILITY CONFIDENCE CALIBRATION] Prior verified HIGH-confidence work regressed often enough that raw HIGH must be treated as MEDIUM; perform extra read-only exploration before writing.\n\n[VIBE ASSET PRODUCTION - implementation owner decision]\nVibe2/Vibe3가 게임 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 직접 선택한다.\n선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.\nWeb에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.\n이모지/단순 도형/검증용 임시 그래픽을 최종 에셋으로 사용하지 않는다.\nPNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.\n에셋 이유로 게임 규칙, 세이브 의미, 진행, 경제 수치를 바꾸지 않는다.\npreset=set-a-fantasy-rpg; reuseCandidateTypes=9; directAuthorableTypes=9; missingTypes=none\n- type=character; reuse=oga-adventurer-slime|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=enemy; reuse=oga-animated-monsters|oga-adventurer-slime|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=boss; reuse=oga-animated-monsters|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=background; reuse=survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=item; reuse=survival2-atlas|survival2-mushroom; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=prop; reuse=survival2-atlas|survival2-tree|survival2-rock|survival2-plant; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=effect; reuse=oga-basic-pixel-spells|survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=ui; reuse=survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=animation; reuse=oga-animated-monsters|oga-adventurer-slime|oga-basic-pixel-spells|oga-unity-slime-12; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST",
+  "generatedAt": "2026-09-20T02:42:16.862Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-primary-35484397996-1",
+  "candidateManifestPath": ".vibe2/candidates/village-dungeons-web-runtime-repair-v1/manifest.json",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "tests": [],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "village-dungeons-web-runtime-repair-v1",
+    "packageId": "village-dungeons-wp-ue1kkb",
+    "target": "web",
+    "sourceRoot": "web-games/village-dungeons",
+    "baseMainSha": "47f2baa86001760722fd03b55894c73461d5d3f0",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [
+      "save",
+      "combat-number",
+      "storage"
+    ],
+    "diagnosticEvidence": [],
+    "existingWebAssessment": {
+      "version": 1,
+      "strategy": "KEEP_AND_CONTINUE",
+      "confidence": "HIGH",
+      "reasons": [
+        "STRONG_EXISTING_GAMEPLAY",
+        "APPROVED_SCOPE_MOSTLY_REPRESENTED",
+        "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+      ],
+      "preserveExistingSource": true,
+      "fullRewriteAllowed": false,
+      "evidence": {
+        "sourceBytes": 37159,
+        "sourceSha256": "348bd95dd674bce02185964786782f88e5cf73e298efd33c7f726b3519a80de4",
+        "validationScore": 0,
+        "approvedDesign": false,
+        "gameplaySignalCount": 9,
+        "gameplaySignals": {
+          "input": true,
+          "runtimeLoop": true,
+          "mutableState": true,
+          "gameplayOutcome": false,
+          "progression": true,
+          "combat": true,
+          "spatial": true,
+          "persistence": true,
+          "mobile": true,
+          "audio": true
+        },
+        "prototypeMarkerCount": 0,
+        "approvedScopeRequiredCount": 0,
+        "approvedScopeBoundCount": 0,
+        "approvedScopeSemanticCount": 0,
+        "approvedScopeCoveragePct": 100
+      },
+      "gameId": "village-dungeons",
+      "sourceRoot": "web-games/village-dungeons",
+      "sourcePath": "web-games/village-dungeons/index.html",
+      "designBaselinePath": null
+    },
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "348bd95dd674bce0",
+        "bytes": 37159
+      }
+    ],
+    "editContract": {
+      "version": 1,
+      "mode": "COMPILED_EDIT_CONTRACT",
+      "strategyHint": "CAUSAL_TRACE_FIRST",
+      "responsibilityConfidence": "MEDIUM",
+      "rawResponsibilityConfidence": "HIGH",
+      "responsibilityCalibration": {
+        "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+        "applied": true,
+        "extraReadOnlyExploration": true,
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "regressionHotspotRisk": {
+        "riskLevel": "LOW",
+        "matched": [
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "acceptQuest",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "animate",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "buildArea",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "claimQuest",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYMBOL",
+            "name": "buildTown",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYSTEM",
+            "name": "PLACEMENT",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYSTEM",
+            "name": "PRESENTATION",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          },
+          {
+            "gameId": "village-dungeons",
+            "target": "web",
+            "kind": "SYSTEM",
+            "name": "SAVE",
+            "verifiedRegressionFailures": 0,
+            "verifiedPasses": 1,
+            "lastFailureEvidence": null,
+            "lastPassEvidence": "coding_hotspot_kp11mq",
+            "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+            "risk": {
+              "score": 0,
+              "level": "LOW"
+            }
+          }
+        ],
+        "focusedChecksAdded": [
+          "HOTSPOT_RECHECK:SYMBOL:acceptQuest",
+          "HOTSPOT_RECHECK:SYMBOL:animate",
+          "HOTSPOT_RECHECK:SYMBOL:buildArea",
+          "HOTSPOT_RECHECK:SYMBOL:claimQuest",
+          "HOTSPOT_RECHECK:SYMBOL:buildTown",
+          "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+          "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+          "HOTSPOT_RECHECK:SYSTEM:SAVE",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+        ],
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "primaryTargets": [
+        "claimQuest",
+        "animate",
+        "buildArea",
+        "acceptQuest",
+        "buildTown"
+      ],
+      "allowedResponsibleFiles": [
+        "index.html"
+      ],
+      "allowedDependentSymbolsOrSystems": [
+        "clearWorld",
+        "addGround",
+        "addHouse",
+        "addTree",
+        "addNpc",
+        "addBox",
+        "humanoid",
+        "save",
+        "setBGM",
+        "updateHUD",
+        "takeDamage",
+        "acceptQuest",
+        "claimQuest",
+        "returnTown",
+        "addRock",
+        "createEnemy",
+        "SAVE",
+        "CORE_STATE",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "AI",
+        "PRESENTATION",
+        "PLACEMENT"
+      ],
+      "primarySystems": [
+        "PLACEMENT",
+        "PRESENTATION",
+        "SAVE",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "AI",
+        "PROGRESSION",
+        "CORE_STATE",
+        "GOAL_STATE",
+        "ECONOMY"
+      ],
+      "dependentSystems": [
+        "INPUT",
+        "GOAL_STATE",
+        "SAVE",
+        "PRESENTATION",
+        "PLAYER",
+        "AI",
+        "INTERACTION",
+        "PLACEMENT",
+        "PROGRESSION",
+        "ECONOMY",
+        "COMBAT",
+        "WORLD"
+      ],
+      "directDependentSystems": [
+        "SAVE",
+        "CORE_STATE",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "AI",
+        "PRESENTATION",
+        "PLACEMENT",
+        "ECONOMY",
+        "PROGRESSION",
+        "GOAL_STATE"
+      ],
+      "readOnlyImpactSystems": [
+        "INPUT",
+        "GOAL_STATE",
+        "SAVE",
+        "PRESENTATION",
+        "PLAYER",
+        "AI",
+        "INTERACTION",
+        "PLACEMENT",
+        "PROGRESSION",
+        "ECONOMY",
+        "COMBAT",
+        "WORLD"
+      ],
+      "ownedState": [
+        "state",
+        "i",
+        "a",
+        "gate",
+        "healQuest",
+        "positions",
+        "remain",
+        "j",
+        "p",
+        "wounded",
+        "q",
+        "status",
+        "m",
+        "r",
+        "d",
+        "x",
+        "z",
+        "ang",
+        "k",
+        "gx",
+        "gz",
+        "rx",
+        "rz",
+        "ring"
+      ],
+      "readState": [
+        "QUESTS",
+        "state",
+        "scene",
+        "player",
+        "i",
+        "a",
+        "gate",
+        "healQuest",
+        "positions",
+        "remain",
+        "j",
+        "p",
+        "wounded",
+        "x",
+        "z",
+        "audioStarted",
+        "q",
+        "status",
+        "ZONES",
+        "m",
+        "r",
+        "AREA_DATA",
+        "d",
+        "ang"
+      ],
+      "preserveSemantics": [
+        "EXISTING_WORKING_BEHAVIOR",
+        "APPROVED_GAMEPLAY_VALUES",
+        "SAVE_MEANING",
+        "PROTECTED_SIGNAL:save",
+        "PROTECTED_SIGNAL:combat-number",
+        "PROTECTED_SIGNAL:storage"
+      ],
+      "failureOrRequirementCausalChain": [
+        "FAILURE_EVIDENCE",
+        "RESPONSIBLE_FUNCTION:claimQuest",
+        "STATE_WRITE:s",
+        "STATE_WRITE:state",
+        "STATE_WRITE:x",
+        "STATE_WRITE:q",
+        "DOWNSTREAM:qState",
+        "DOWNSTREAM:questDone",
+        "DOWNSTREAM:addXP",
+        "DOWNSTREAM:save",
+        "RESPONSIBLE_FUNCTION:animate",
+        "STATE_WRITE:lastFrame",
+        "STATE_WRITE:attackAnim",
+        "STATE_WRITE:dt",
+        "DOWNSTREAM:movePlayer",
+        "DOWNSTREAM:enemyAI",
+        "DOWNSTREAM:updateCombat",
+        "DOWNSTREAM:updatePrompt",
+        "RESPONSIBLE_FUNCTION:buildArea",
+        "STATE_WRITE:m",
+        "STATE_WRITE:r",
+        "STATE_WRITE:i",
+        "DOWNSTREAM:clearWorld",
+        "DOWNSTREAM:addGround",
+        "DOWNSTREAM:addTree",
+        "DOWNSTREAM:addBox",
+        "RESPONSIBLE_FUNCTION:acceptQuest",
+        "STATE_WRITE:status",
+        "DOWNSTREAM:closeModal",
+        "DOWNSTREAM:toastMsg",
+        "RESPONSIBLE_FUNCTION:buildTown",
+        "STATE_WRITE:a"
+      ],
+      "requiredObservableResult": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-14e5fec9e4|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-21cda65cb7|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-a3fe13f59a|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:25:45.075Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "semanticDiffBudget": {
+        "allowedSystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "preferredPrimarySymbols": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "maxSystemCount": 11,
+        "readOnlyImpactSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "impactPredictionDoesNotGrantWriteAuthority": true,
+        "unrelatedSystemMutationForbidden": true,
+        "saveKeysMustRemainCompatible": []
+      },
+      "requiredFocusedChecks": [
+        "OWNER_STATE_INVARIANTS",
+        "MICRO_CORE_STATE",
+        "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+        "MICRO_PRESENTATION",
+        "MICRO_WORLD",
+        "MICRO_COMBAT",
+        "MICRO_AI",
+        "MICRO_INTERACTION",
+        "MICRO_ECONOMY",
+        "MICRO_PROGRESSION",
+        "MICRO_PLACEMENT",
+        "MICRO_SAVE",
+        "MICRO_GOAL_STATE",
+        "HOTSPOT_RECHECK:SYMBOL:acceptQuest",
+        "HOTSPOT_RECHECK:SYMBOL:animate",
+        "HOTSPOT_RECHECK:SYMBOL:buildArea",
+        "HOTSPOT_RECHECK:SYMBOL:claimQuest",
+        "HOTSPOT_RECHECK:SYMBOL:buildTown",
+        "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+        "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+        "HOTSPOT_RECHECK:SYSTEM:SAVE"
+      ],
+      "causalReplay": {
+        "version": 2,
+        "required": true,
+        "prePatchReproduced": false,
+        "nodeTestTargets": [],
+        "executable": false,
+        "mode": "PLAN_ONLY",
+        "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "diagnosticType": null,
+        "diagnosticFile": null,
+        "verifiedResponsibleSystem": null,
+        "diagnosticVerifier": null,
+        "identicalOrEquivalentInputStateRequired": true,
+        "canonicalQaStillRequired": true,
+        "sourceWrite": false,
+        "authorityExpanded": false
+      },
+      "patchRecipe": {
+        "version": 1,
+        "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "verifiedMemoryIds": [],
+        "verifiedMemoryCount": 0,
+        "reusePatterns": [],
+        "avoidPatterns": [],
+        "steps": [
+          "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+          "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+          "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+          "VERIFY_OWNED_STATE_CHANGE",
+          "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+          "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+          "VERIFY_PRESERVE_SEMANTICS",
+          "RUN_COMPILED_FOCUSED_CHECKS"
+        ],
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "dependentSymbolsOrSystems": [
+          "clearWorld",
+          "addGround",
+          "addHouse",
+          "addTree",
+          "addNpc",
+          "addBox",
+          "humanoid",
+          "save",
+          "setBGM",
+          "updateHUD",
+          "takeDamage",
+          "acceptQuest",
+          "claimQuest",
+          "returnTown",
+          "addRock",
+          "createEnemy",
+          "SAVE",
+          "CORE_STATE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PRESENTATION",
+          "PLACEMENT"
+        ],
+        "ownedState": [
+          "state",
+          "i",
+          "a",
+          "gate",
+          "healQuest",
+          "positions",
+          "remain",
+          "j",
+          "p",
+          "wounded",
+          "q",
+          "status",
+          "m",
+          "r",
+          "d",
+          "x",
+          "z",
+          "ang",
+          "k",
+          "gx",
+          "gz",
+          "rx",
+          "rz",
+          "ring"
+        ],
+        "focusedChecks": [
+          "OWNER_STATE_INVARIANTS",
+          "MICRO_CORE_STATE",
+          "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+          "MICRO_PRESENTATION",
+          "MICRO_WORLD",
+          "MICRO_COMBAT",
+          "MICRO_AI",
+          "MICRO_INTERACTION",
+          "MICRO_ECONOMY",
+          "MICRO_PROGRESSION",
+          "MICRO_PLACEMENT",
+          "MICRO_SAVE",
+          "MICRO_GOAL_STATE",
+          "HOTSPOT_RECHECK:SYMBOL:acceptQuest",
+          "HOTSPOT_RECHECK:SYMBOL:animate",
+          "HOTSPOT_RECHECK:SYMBOL:buildArea",
+          "HOTSPOT_RECHECK:SYMBOL:claimQuest",
+          "HOTSPOT_RECHECK:SYMBOL:buildTown",
+          "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+          "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+          "HOTSPOT_RECHECK:SYSTEM:SAVE"
+        ],
+        "protectedSemantics": [
+          "EXISTING_WORKING_BEHAVIOR",
+          "APPROVED_GAMEPLAY_VALUES",
+          "SAVE_MEANING",
+          "PROTECTED_SIGNAL:save",
+          "PROTECTED_SIGNAL:combat-number",
+          "PROTECTED_SIGNAL:storage"
+        ],
+        "verifiedMemoryOnly": true,
+        "scopeExpansionAllowed": false,
+        "qaBypassAllowed": false,
+        "authorityExpanded": false
+      },
+      "codingArchitecture": {
+        "developmentMode": "PRESERVE_PATCH",
+        "stateOwnershipSystems": [
+          "CORE_STATE",
+          "INPUT",
+          "PRESENTATION",
+          "WORLD",
+          "PLAYER",
+          "COMBAT",
+          "AI",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "PLACEMENT",
+          "SAVE",
+          "GOAL_STATE"
+        ],
+        "apiNames": [
+          "transitionRunState(next,reason)",
+          "submitPlayerIntent(intent)",
+          "queryWorld(position,action)",
+          "applyPlayerDelta(delta,reason)",
+          "resolveCombatAction(action)",
+          "advanceAgentIntent(agentId,context)",
+          "resolveInteraction(targetId,action)",
+          "applyTransaction(transaction)",
+          "advanceObjective(event)",
+          "placeEntity(request)",
+          "saveOrRestore(command)",
+          "evaluateGoalState(context)",
+          "renderFromState(snapshot)"
+        ],
+        "invariantIds": [
+          "STATE_OWNER_ONLY_WRITE",
+          "NO_DUPLICATE_CAUSAL_REWARD",
+          "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+          "GOAL_STATE_EXCLUSIVE",
+          "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+          "INPUT_TO_STATE_CAUSALITY",
+          "SAVE_SCHEMA_VERSIONED",
+          "PLAYER_VITAL_BOUNDS",
+          "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+          "PLACEMENT_OCCUPANCY_CONSISTENT",
+          "PROGRESSION_REWARD_IDEMPOTENT"
+        ],
+        "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+      },
+      "architectureSnapshot": {
+        "version": 1,
+        "nodeCount": 57,
+        "edgeCount": 111,
+        "maxFunctionBodyBytes": 1555,
+        "maxCallsPerFunction": 10,
+        "maxCalledByPerFunction": 12,
+        "maxStateWritesPerFunction": 18,
+        "maxSystemsPerFunction": 9,
+        "multiWriterStateCount": 36,
+        "stateWriterLinkCount": 206,
+        "multiOwnerStorageKeyCount": 0,
+        "storageOwnerLinkCount": 0,
+        "timerFunctionCount": 5,
+        "eventBindingCount": 0,
+        "largeFunctionCount": 0,
+        "broadSystemFunctionCount": 14
+      },
+      "responsibilityGraph": {
+        "nodeCount": 57,
+        "relevantNodes": [
+          {
+            "name": "save",
+            "systems": [
+              "SAVE",
+              "CORE_STATE"
+            ],
+            "calls": [],
+            "calledBy": [
+              "buildTown",
+              "buildArea",
+              "progressTarget",
+              "takeDamage",
+              "acceptQuest",
+              "claimQuest",
+              "buyItem",
+              "equipItem"
+            ],
+            "stateReads": [
+              "SAVE_KEY",
+              "state",
+              "e"
+            ],
+            "stateWrites": [],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addBox",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "addHouse",
+              "buildTown",
+              "buildArea"
+            ],
+            "stateReads": [
+              "world",
+              "m",
+              "x",
+              "z"
+            ],
+            "stateWrites": [
+              "world",
+              "m"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addGround",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "buildTown",
+              "buildArea"
+            ],
+            "stateReads": [
+              "world",
+              "groundSize",
+              "g",
+              "x"
+            ],
+            "stateWrites": [
+              "world",
+              "groundSize",
+              "g",
+              "x"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addTree",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "buildTown",
+              "buildArea"
+            ],
+            "stateReads": [
+              "world",
+              "trunk",
+              "crown",
+              "x",
+              "z"
+            ],
+            "stateWrites": [
+              "world",
+              "trunk",
+              "crown"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addRock",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "buildArea"
+            ],
+            "stateReads": [
+              "world",
+              "r",
+              "x",
+              "z"
+            ],
+            "stateWrites": [
+              "world",
+              "r"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addHouse",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "addBox",
+              "mat"
+            ],
+            "calledBy": [
+              "buildTown"
+            ],
+            "stateReads": [
+              "world",
+              "roof",
+              "x",
+              "z"
+            ],
+            "stateWrites": [
+              "world",
+              "roof"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "humanoid",
+            "systems": [
+              "WORLD"
+            ],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "addNpc",
+              "buildTown"
+            ],
+            "stateReads": [
+              "world",
+              "g",
+              "b",
+              "h",
+              "x",
+              "z"
+            ],
+            "stateWrites": [
+              "world",
+              "g",
+              "b",
+              "h"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "addNpc",
+            "systems": [
+              "INTERACTION"
+            ],
+            "calls": [
+              "humanoid"
+            ],
+            "calledBy": [
+              "buildTown"
+            ],
+            "stateReads": [
+              "g",
+              "x",
+              "z"
+            ],
+            "stateWrites": [
+              "g"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "clearWorld",
+            "systems": [
+              "WORLD",
+              "INTERACTION"
+            ],
+            "calls": [],
+            "calledBy": [
+              "buildTown",
+              "buildArea"
+            ],
+            "stateReads": [
+              "world",
+              "enemies",
+              "currentInteract"
+            ],
+            "stateWrites": [
+              "enemies",
+              "currentInteract"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "buildTown",
+            "systems": [
+              "PLACEMENT",
+              "PRESENTATION",
+              "SAVE",
+              "WORLD",
+              "INTERACTION",
+              "COMBAT",
+              "AI",
+              "PROGRESSION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "clearWorld",
+              "addGround",
+              "addHouse",
+              "addTree",
+              "addNpc",
+              "addBox",
+              "humanoid",
+              "save",
+              "setBGM",
+              "updateHUD"
+            ],
+            "calledBy": [
+              "takeDamage",
+              "acceptQuest",
+              "claimQuest",
+              "returnTown"
+            ],
+            "stateReads": [
+              "QUESTS",
+              "state",
+              "scene",
+              "player",
+              "i",
+              "a",
+              "gate",
+              "healQuest",
+              "positions",
+              "remain",
+              "j",
+              "p",
+              "wounded",
+              "x",
+              "z",
+              "audioStarted",
+              "q",
+              "status"
+            ],
+            "stateWrites": [
+              "state",
+              "i",
+              "a",
+              "gate",
+              "healQuest",
+              "positions",
+              "remain",
+              "j",
+              "p",
+              "wounded",
+              "q",
+              "status"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "createEnemy",
+            "systems": [
+              "COMBAT",
+              "AI",
+              "WORLD"
+            ],
+            "calls": [
+              "mat"
+            ],
+            "calledBy": [
+              "buildArea"
+            ],
+            "stateReads": [
+              "world",
+              "enemies",
+              "g",
+              "torso",
+              "headB",
+              "torso2",
+              "head2",
+              "e",
+              "x",
+              "z",
+              "speed"
+            ],
+            "stateWrites": [
+              "world",
+              "enemies",
+              "g",
+              "torso",
+              "headB",
+              "torso2",
+              "head2",
+              "e"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "buildArea",
+            "systems": [
+              "PLACEMENT",
+              "WORLD",
+              "PRESENTATION",
+              "SAVE",
+              "COMBAT",
+              "AI",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "clearWorld",
+              "addGround",
+              "addTree",
+              "addBox",
+              "addRock",
+              "createEnemy",
+              "save",
+              "setBGM",
+              "updateHUD"
+            ],
+            "calledBy": [
+              "goZone"
+            ],
+            "stateReads": [
+              "ZONES",
+              "state",
+              "scene",
+              "player",
+              "m",
+              "r",
+              "i",
+              "j",
+              "AREA_DATA",
+              "d",
+              "x",
+              "z",
+              "ang",
+              "k",
+              "gx",
+              "gz",
+              "rx",
+              "rz",
+              "ring",
+              "n",
+              "an",
+              "rad",
+              "speed"
+            ],
+            "stateWrites": [
+              "state",
+              "m",
+              "r",
+              "i",
+              "j",
+              "d",
+              "x",
+              "z",
+              "ang",
+              "k",
+              "gx",
+              "gz",
+              "rx",
+              "rz",
+              "ring",
+              "n",
+              "an",
+              "rad"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "setBGM",
+            "systems": [
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "beat",
+              "note"
+            ],
+            "calledBy": [
+              "buildTown",
+              "buildArea",
+              "updateCombat"
+            ],
+            "stateReads": [
+              "state",
+              "musicName",
+              "audioCtx",
+              "musicTimer",
+              "musicBeat",
+              "currentMusic",
+              "TRACKS",
+              "t",
+              "f",
+              "bass",
+              "duration",
+              "label"
+            ],
+            "stateWrites": [
+              "state",
+              "musicName",
+              "audioCtx",
+              "musicTimer",
+              "musicBeat",
+              "currentMusic",
+              "t",
+              "f",
+              "bass",
+              "duration"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "takeDamage",
+            "systems": [
+              "COMBAT",
+              "SAVE",
+              "PLACEMENT",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "armorDef",
+              "updateHUD",
+              "save",
+              "toastMsg",
+              "buildTown"
+            ],
+            "calledBy": [
+              "enemyAI"
+            ],
+            "stateReads": [
+              "state",
+              "dmg"
+            ],
+            "stateWrites": [
+              "state",
+              "dmg"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "updateHUD",
+            "systems": [
+              "PRESENTATION",
+              "CORE_STATE",
+              "WORLD",
+              "COMBAT",
+              "ECONOMY",
+              "PROGRESSION"
+            ],
+            "calls": [
+              "totalAttack",
+              "armorDef",
+              "nextXp",
+              "activeQuests",
+              "qState"
+            ],
+            "calledBy": [
+              "buildTown",
+              "buildArea",
+              "progressTarget",
+              "takeDamage",
+              "updateCombat",
+              "acceptQuest",
+              "claimQuest",
+              "buyItem",
+              "equipItem"
+            ],
+            "stateReads": [
+              "ZONES",
+              "s",
+              "state",
+              "inCombat",
+              "hpFill",
+              "xpFill",
+              "hpText",
+              "levelText",
+              "atkText",
+              "defText",
+              "goldText",
+              "combatPill",
+              "zoneName",
+              "questMini",
+              "returnBtn",
+              "b",
+              "list",
+              "q"
+            ],
+            "stateWrites": [
+              "s",
+              "state",
+              "hpText",
+              "levelText",
+              "atkText",
+              "defText",
+              "goldText",
+              "zoneName",
+              "questMini",
+              "returnBtn",
+              "list"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "acceptQuest",
+            "systems": [
+              "PROGRESSION",
+              "SAVE",
+              "PLACEMENT",
+              "WORLD",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "qState",
+              "save",
+              "closeModal",
+              "toastMsg",
+              "buildTown",
+              "updateHUD"
+            ],
+            "calledBy": [],
+            "stateReads": [
+              "s",
+              "state",
+              "status"
+            ],
+            "stateWrites": [
+              "s",
+              "state",
+              "status"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "claimQuest",
+            "systems": [
+              "AI",
+              "PROGRESSION",
+              "SAVE",
+              "PLACEMENT",
+              "WORLD",
+              "ECONOMY",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "qState",
+              "questDone",
+              "addXP",
+              "save",
+              "closeModal",
+              "toastMsg",
+              "buildTown",
+              "updateHUD"
+            ],
+            "calledBy": [],
+            "stateReads": [
+              "QUESTS",
+              "s",
+              "state",
+              "x",
+              "q",
+              "status"
+            ],
+            "stateWrites": [
+              "s",
+              "state",
+              "x",
+              "q",
+              "status"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "returnTown",
+            "systems": [
+              "PLACEMENT",
+              "WORLD",
+              "COMBAT",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "openTravel",
+              "toastMsg",
+              "buildTown"
+            ],
+            "calledBy": [],
+            "stateReads": [
+              "state",
+              "inCombat"
+            ],
+            "stateWrites": [
+              "state"
+            ],
+            "storageKeys": [],
+            "events": []
+          },
+          {
+            "name": "animate",
+            "systems": [
+              "COMBAT",
+              "AI",
+              "PROGRESSION",
+              "PRESENTATION",
+              "CORE_STATE"
+            ],
+            "calls": [
+              "movePlayer",
+              "enemyAI",
+              "updateCombat",
+              "updatePrompt",
+              "cameraFollow"
+            ],
+            "calledBy": [],
+            "stateReads": [
+              "renderer",
+              "scene",
+              "camera",
+              "sword",
+              "lastFrame",
+              "attackAnim",
+              "x",
+              "now",
+              "dt"
+            ],
+            "stateWrites": [
+              "lastFrame",
+              "attackAnim",
+              "x",
+              "dt"
+            ],
+            "storageKeys": [],
+            "events": []
+          }
+        ],
+        "relevantEdges": [
+          {
+            "from": "addBox",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "addGround",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "addTree",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "addRock",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "addHouse",
+            "to": "addBox",
+            "type": "CALL"
+          },
+          {
+            "from": "addHouse",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "humanoid",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "addNpc",
+            "to": "humanoid",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "clearWorld",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "addGround",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "addHouse",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "addTree",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "addNpc",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "addBox",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "humanoid",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "save",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "setBGM",
+            "type": "CALL"
+          },
+          {
+            "from": "buildTown",
+            "to": "updateHUD",
+            "type": "CALL"
+          },
+          {
+            "from": "createEnemy",
+            "to": "mat",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "clearWorld",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "addGround",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "addTree",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "addBox",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "addRock",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "createEnemy",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "save",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "setBGM",
+            "type": "CALL"
+          },
+          {
+            "from": "buildArea",
+            "to": "updateHUD",
+            "type": "CALL"
+          },
+          {
+            "from": "setBGM",
+            "to": "beat",
+            "type": "CALL"
+          },
+          {
+            "from": "setBGM",
+            "to": "note",
+            "type": "CALL"
+          },
+          {
+            "from": "progressTarget",
+            "to": "save",
+            "type": "CALL"
+          },
+          {
+            "from": "progressTarget",
+            "to": "updateHUD",
+            "type": "CALL"
+          },
+          {
+            "from": "takeDamage",
+            "to": "armorDef",
+            "type": "CALL"
+          },
+          {
+            "from": "takeDamage",
+            "to": "updateHUD",
+            "type": "CALL"
+          },
+          {
+            "from": "takeDamage",
+            "to": "save",
+            "type": "CALL"
+          },
+          {
+            "from": "takeDamage",
+            "to": "toastMsg",
+            "type": "CALL"
+          },
+          {
+            "from": "takeDamage",
+            "to": "buildTown",
+            "type": "CALL"
+          },
+          {
+            "from": "updateCombat",
+            "to": "setBGM",
+            "type": "CALL"
+          },
+          {
+            "from": "updateCombat",
+            "to": "updateHUD",
+            "type": "CALL"
+          },
+          {
+            "from": "enemyAI",
+            "to": "takeDamage",
+            "type": "CALL"
+          }
+        ]
+      },
+      "behaviorChains": [
+        {
+          "id": "CORE_ACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "REAL_INPUT",
+            "RESPONSIBLE_FUNCTION",
+            "OWNED_STATE_CHANGE",
+            "OBSERVABLE_GAME_RESULT"
+          ]
+        },
+        {
+          "id": "PLACEMENT_CHAIN",
+          "required": true,
+          "steps": [
+            "POSITION_SELECTION",
+            "COST_OR_VALIDATION",
+            "ENTITY_MATERIALIZED_AT_POSITION",
+            "WORLD_OR_COMBAT_EFFECT"
+          ]
+        },
+        {
+          "id": "INTERACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "TARGET_SELECTION_OR_APPROACH",
+            "REAL_INPUT",
+            "TARGET_STATE_CHANGE",
+            "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "COMBAT_CHAIN",
+          "required": true,
+          "steps": [
+            "ATTACK_INTENT",
+            "HIT_OR_REJECT_RESULT",
+            "HP_OR_COMBAT_STATE_CHANGE",
+            "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "PROGRESSION_CHAIN",
+          "required": true,
+          "steps": [
+            "OBJECTIVE_EVENT",
+            "PROGRESS_DELTA",
+            "REWARD_OR_UNLOCK",
+            "NEXT_GAMEPLAY_OPTION_CHANGED"
+          ]
+        },
+        {
+          "id": "STRATEGY_DIVERGENCE_CHAIN",
+          "required": true,
+          "steps": [
+            "CHOICE_A_AND_CHOICE_B",
+            "SAME_OR_EQUIVALENT_START_STATE",
+            "DIFFERENT_STATE_TRANSITIONS",
+            "DIFFERENT_OBSERVED_OUTCOME"
+          ]
+        }
+      ],
+      "seniorReview": {
+        "score": 55,
+        "hardBlockers": [],
+        "issues": [
+          {
+            "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+            "severity": "WARN",
+            "detail": "buildArea:18"
+          },
+          {
+            "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+            "severity": "WARN",
+            "detail": "enemyAI:14"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "s:progressTarget,updateHUD,openQuestGiver,acceptQuest,claimQuest,openQuestList,interact"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "state:buildTown,buildArea,desiredMusic,setBGM,addXP,takeDamage,enemyAI,updateHUD,acceptQuest,claimQuest,buyItem,equipItem,returnTown,movePlayer"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "world:addBox,addGround,addTree,addRock,addHouse,humanoid,createEnemy"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "g:addGround,humanoid,addNpc,createEnemy,note"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "x:weaponPower,armorDef,addGround,buildArea,enemyAI,claimQuest,buyItem,setJoy,endJoy,movePlayer,cameraFollow,animate"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "q:buildTown,progressTarget,questsForGiver,openQuestGiver,claimQuest"
+          },
+          {
+            "code": "STATE_HAS_TOO_MANY_WRITERS",
+            "severity": "WARN",
+            "detail": "status:buildTown,progressTarget,activeQuests,openQuestGiver,acceptQuest,claimQuest,openQuestList"
+          }
+        ]
+      },
+      "failureEvidence": [
+        "FAIL",
+        "web-stage:WEB_REPAIR",
+        "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+        "recovery-exact-stage:WEB_REPAIR",
+        "role-result:exploration:FAIL",
+        "role-result:implementation:FAIL",
+        "role-result:test:FAIL",
+        "role-result:performance:FAIL",
+        "shared-context-sync:MISSING",
+        "failure-cause:source-candidate-generation-failed",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "system-steward:failure-signature:source-candidate-generation-failed",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE",
+        "recovery-queue:recovery-7f578ec759bfde044675"
+      ],
+      "writableScopeExpansionAllowed": false,
+      "learningAuthorityExpanded": false
+    },
+    "reuseKey": "34cb018a16d02937c1633abc",
+    "generatedAt": "2026-09-20T02:38:05.822Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codingMethod": {
+    "version": 2,
+    "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+    "compiledStrategyHint": "CAUSAL_TRACE_FIRST",
+    "candidateVariant": "primary",
+    "generationAttemptBudget": 3,
+    "speculativeAttemptBudgetApplied": false,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "responsibilityConfidence": "MEDIUM",
+    "primaryTargets": [
+      "claimQuest",
+      "animate",
+      "buildArea",
+      "acceptQuest",
+      "buildTown"
+    ],
+    "primarySystems": [
+      "PLACEMENT",
+      "PRESENTATION",
+      "SAVE",
+      "WORLD",
+      "INTERACTION",
+      "COMBAT",
+      "AI",
+      "PROGRESSION",
+      "CORE_STATE",
+      "GOAL_STATE",
+      "ECONOMY"
+    ],
+    "dependentSystems": [
+      "INPUT",
+      "GOAL_STATE",
+      "SAVE",
+      "PRESENTATION",
+      "PLAYER",
+      "AI",
+      "INTERACTION",
+      "PLACEMENT",
+      "PROGRESSION",
+      "ECONOMY",
+      "COMBAT",
+      "WORLD"
+    ],
+    "ownedState": [
+      "state",
+      "i",
+      "a",
+      "gate",
+      "healQuest",
+      "positions",
+      "remain",
+      "j",
+      "p",
+      "wounded",
+      "q",
+      "status",
+      "m",
+      "r",
+      "d",
+      "x",
+      "z",
+      "ang",
+      "k",
+      "gx",
+      "gz",
+      "rx",
+      "rz",
+      "ring"
+    ],
+    "semanticDiffBudget": {
+      "allowedSystems": [
+        "PLACEMENT",
+        "PRESENTATION",
+        "SAVE",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "AI",
+        "PROGRESSION",
+        "CORE_STATE",
+        "GOAL_STATE",
+        "ECONOMY"
+      ],
+      "preferredPrimarySymbols": [
+        "claimQuest",
+        "animate",
+        "buildArea",
+        "acceptQuest",
+        "buildTown"
+      ],
+      "maxSystemCount": 11,
+      "readOnlyImpactSystems": [
+        "INPUT",
+        "GOAL_STATE",
+        "SAVE",
+        "PRESENTATION",
+        "PLAYER",
+        "AI",
+        "INTERACTION",
+        "PLACEMENT",
+        "PROGRESSION",
+        "ECONOMY",
+        "COMBAT",
+        "WORLD"
+      ],
+      "impactPredictionDoesNotGrantWriteAuthority": true,
+      "unrelatedSystemMutationForbidden": true,
+      "saveKeysMustRemainCompatible": []
+    },
+    "semanticDiffEnforcement": {
+      "version": 1,
+      "mode": "OBSERVE_ONLY",
+      "hardGate": false,
+      "pass": true,
+      "confidence": "MEDIUM",
+      "developmentMode": "PRESERVE_PATCH",
+      "markerCount": 51,
+      "editCount": 1,
+      "touchedSystems": [],
+      "allowedSystems": [
+        "PLACEMENT",
+        "PRESENTATION",
+        "SAVE",
+        "WORLD",
+        "INTERACTION",
+        "COMBAT",
+        "AI",
+        "PROGRESSION",
+        "CORE_STATE",
+        "GOAL_STATE",
+        "ECONOMY"
+      ],
+      "unexpectedSystems": [],
+      "unprovenEditPaths": [],
+      "protectedSaveKeyCount": 0,
+      "saveKeyViolations": [],
+      "violations": [],
+      "ambiguousClassificationObserved": true,
+      "writableScopeExpansionAllowed": false,
+      "authorityExpanded": false
+    },
+    "causalReplay": {
+      "version": 2,
+      "required": true,
+      "prePatchReproduced": false,
+      "nodeTestTargets": [],
+      "executable": false,
+      "mode": "PLAN_ONLY",
+      "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+      "diagnosticType": null,
+      "diagnosticFile": null,
+      "verifiedResponsibleSystem": null,
+      "diagnosticVerifier": null,
+      "identicalOrEquivalentInputStateRequired": true,
+      "canonicalQaStillRequired": true,
+      "sourceWrite": false,
+      "authorityExpanded": false
+    },
+    "requiredFocusedChecks": [
+      "OWNER_STATE_INVARIANTS",
+      "MICRO_CORE_STATE",
+      "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+      "MICRO_PRESENTATION",
+      "MICRO_WORLD",
+      "MICRO_COMBAT",
+      "MICRO_AI",
+      "MICRO_INTERACTION",
+      "MICRO_ECONOMY",
+      "MICRO_PROGRESSION",
+      "MICRO_PLACEMENT",
+      "MICRO_SAVE",
+      "MICRO_GOAL_STATE",
+      "HOTSPOT_RECHECK:SYMBOL:acceptQuest",
+      "HOTSPOT_RECHECK:SYMBOL:animate",
+      "HOTSPOT_RECHECK:SYMBOL:buildArea",
+      "HOTSPOT_RECHECK:SYMBOL:claimQuest",
+      "HOTSPOT_RECHECK:SYMBOL:buildTown",
+      "HOTSPOT_RECHECK:SYSTEM:PLACEMENT",
+      "HOTSPOT_RECHECK:SYSTEM:PRESENTATION",
+      "HOTSPOT_RECHECK:SYSTEM:SAVE"
+    ],
+    "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+    "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+    "verifiedFailureLocalMemoryCount": 0,
+    "verifiedFailureLocalMemoryIds": [],
+    "contextFiles": 1,
+    "contextBytes": 23079,
+    "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false,
+    "focusedSymbolCount": 16,
+    "exactSourceWindows": true,
+    "fullFileContextFallback": false,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "baseAttemptBudget": 3,
+    "effectiveAttemptBudget": 3,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "intermediateGrowthTotalBytes": 0,
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "generationAttempts": 2,
+    "generationRecoveryUsed": true,
+    "partialTimeoutRecovery": false,
+    "partialMalformedRecovery": false,
+    "streamedPartialEditRecovery": false,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": true,
+    "focusedReplaceStringRecovery": false,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedMinimalJsonContract": true,
+    "candidateProducedFirstAttempt": false,
+    "writableScopeExpansionAllowed": false,
+    "learningAuthorityExpanded": false
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "presentationQuality": {
+    "required": false,
+    "pass": null,
+    "authorityExpanded": false
+  },
+  "fullFileRewriteAllowed": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
