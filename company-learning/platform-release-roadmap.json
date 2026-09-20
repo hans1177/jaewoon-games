@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 225,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -1210,7 +1210,37 @@
       "modelTrainingThresholdsUnchanged": true,
       "modelPromotionGate": "FIXED_HOLDOUT_AB_THEN_CANARY",
       "idlePracticeOnlyUsesFreeCapacity": true,
-      "productionWorkAlwaysPreemptsPractice": true
+      "productionWorkAlwaysPreemptsPractice": true,
+      "realWebArtifactInfinitePractice": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-20",
+        "enabled": true,
+        "primaryPracticeSurface": "ACTUAL_WEB_GAME_SOURCE_AND_VERIFIED_RUNTIME_RESULT",
+        "sourceFreePracticeRole": "SECONDARY_ANALYSIS_ONLY",
+        "sourceFreePracticeCannotReplaceRealWebArtifactPractice": true,
+        "firstBaseline": "APPROVED_DESIGN_BOOTSTRAP_UNTIL_FIRST_VERIFIED_WEB_ARTIFACT",
+        "recurringBaseline": "CURRENT_VERIFIED_WEB_ARTIFACT",
+        "cycle": [
+          "READ_CURRENT_BASELINE_AND_APPROVED_DESIGN",
+          "PLAN_CAUSAL_GAME_IMPROVEMENT",
+          "BUILD_ISOLATED_CANDIDATE_BRANCH",
+          "RUN_FRESH_WEB_QA_RUNTIME_PERFORMANCE_AND_SECURITY",
+          "COMPARE_WITH_CURRENT_BASELINE",
+          "ADVANCE_BASELINE_ONLY_IF_VERIFIED_BETTER",
+          "EMIT_NEXT_CAUSAL_GENERATION",
+          "REPEAT"
+        ],
+        "generationPattern": "v1_TO_v2_TO_v3_UNBOUNDED_BY_TERMINAL_PRACTICE_STATE",
+        "verifiedBetterArtifactBecomesNextBaseline": true,
+        "verifiedCheckpointMustFeedNextPracticeOrDevelopmentEvent": true,
+        "terminalPracticeCompletionForbidden": true,
+        "candidateBranchIsolationRequired": true,
+        "directMainWriteForbidden": true,
+        "productionPromotionUsesExistingReleaseGatesOnly": true,
+        "practiceResultAloneCannotClaimProductionPass": true,
+        "preserveGameIdentitySaveCoreLoopAndBalanceUnlessExplicitlyTargeted": true,
+        "localSafetyInhibitorMayDelayUnsafeActionButCannotTerminateBrain": true
+      }
     },
     "webFirstImplementation": {
       "authority": "VIBE_IMPLEMENTATION_OWNER",
@@ -8666,7 +8696,10 @@
       "causalReplayRequiredForRecoverableFailure": true,
       "droppedSignalWithoutDispositionForbidden": true,
       "busyLoopForbidden": true,
-      "externalResourceBoundaryMayDelayExecutionButCannotTerminateBrain": true
+      "externalResourceBoundaryMayDelayExecutionButCannotTerminateBrain": true,
+      "realArtifactPracticeLoopIsCausalSignalSource": true,
+      "verifiedImprovementMustEmitNextPracticeOrDevelopmentEvent": true,
+      "practiceCheckpointIsNotTerminal": true
     }
   },
   "assistantRoadmapOrchestration": {
