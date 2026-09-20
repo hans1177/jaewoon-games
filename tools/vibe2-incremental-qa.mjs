@@ -197,6 +197,27 @@ function checkNodeSyntax(text, ext, file) {
   try { runNodeSyntax(text,'commonjs'); return; }
   catch { throw syntaxFailure(file,moduleError); }
 }
+function htmlScriptType(attributes='') {
+  const match=String(attributes||'').match(/\btype\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>\x60]+))/i);
+  return clean(match?.[1]??match?.[2]??match?.[3]??'');
+}
+function checkHtmlInlineScriptSyntax(text, file) {
+  const scriptPattern=/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+  let match, scriptIndex=0, checked=0;
+  while((match=scriptPattern.exec(text))){
+    scriptIndex+=1;
+    const attributes=String(match[1]||'');
+    const body=String(match[2]||'');
+    if(/\bsrc\s*=/i.test(attributes)||!body.trim())continue;
+    const type=htmlScriptType(attributes).toLowerCase();
+    const executable=!type||type==='module'||/^(?:text|application)\/(?:java|ecma)script(?:\s*;|$)/i.test(type);
+    if(!executable)continue;
+    try{runNodeSyntax(body,type==='module'?'module':'commonjs');}
+    catch(error){throw syntaxFailure(`${file}#script-${scriptIndex}`,error);}
+    checked+=1;
+  }
+  return checked;
+}
 function presentationContract(data = {}) {
   const contract=data?.presentationQuality;
   return contract&&contract.required===true?contract:null;
@@ -382,7 +403,9 @@ function deterministicCheck(root, relative) {
     checks.push('brace-balance');
   } else if (['.html','.htm','.uxml'].includes(ext)) {
     if (!/[<>]/.test(text)) throw new Error(`markup looks invalid: ${relative}`);
+    const inlineScriptCount=checkHtmlInlineScriptSyntax(text,relative);
     checks.push('markup-sanity');
+    if(inlineScriptCount>0)checks.push('inline-script-syntax');
   } else if (['.unity','.prefab','.asset'].includes(ext)) {
     if (!/^%YAML|^--- !u!/m.test(text)) throw new Error(`Unity YAML header missing: ${relative}`);
     checks.push('unity-yaml-sanity');
@@ -399,7 +422,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
   const weatherPresentation=weatherPresentationContract(data);
-  const payload = ['vibe2-incremental-qa-v8', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null)];
+  const payload = ['vibe2-incremental-qa-v9', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -408,7 +431,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:7,entries:{}}) : {version:7,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
@@ -422,8 +445,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
   const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
-    cache.version=3; cache.entries=cache.entries||{};
-    cache.version=6; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, savedAt:new Date().toISOString() };
+    cache.entries=cache.entries||{};
+    cache.version=7; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
