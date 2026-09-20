@@ -1051,3 +1051,54 @@ test('continuous core workflow distinguishes pending neuron results from complet
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
   assert.doesNotMatch(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS/);
 });
+
+test('stale game-primary fan-in replay does not mutate adaptive control',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-stale-fanin-control-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const inputFile=path.join(dir,'results.json');
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
+    id:'stale-adaptive',gameId:'stale-adaptive',target:'web',department:'development',type:'implementation',
+    goal:'repair',status:'running',sourceRoot:'web-games/stale-adaptive',responsibleFiles:['index.html'],
+    reservationId:'new-run:1',reservationRunId:'new-run',reservationRunAttempt:1,reservedAt:'2026-09-20T10:00:00Z'
+  }]});
+  fs.writeFileSync(queueFile,JSON.stringify(queue,null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:32,lastDecision:'HOLD',lastReason:'CURRENT'},null,2));
+  fs.writeFileSync(inputFile,JSON.stringify({results:[{
+    taskId:'stale-adaptive',reservationId:'old-run:1',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    metrics:{requestedMax:32,effectiveMax:32,workerStartedAt:1,workerFinishedAt:2}
+  }]},null,2));
+  const before=fs.readFileSync(controlFile,'utf8');
+  const result=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:inputFile,lane:'game-primary',min:'20'});
+  const after=fs.readFileSync(controlFile,'utf8');
+  assert.equal(result.adaptiveEligible,true);
+  assert.equal(result.adaptiveUpdateApplied,false);
+  assert.equal(result.updated,false);
+  assert.equal(result.applied[0].outcome,'STALE_RESULT_SKIPPED');
+  assert.equal(after,before);
+});
+
+test('fan-in control persistence uses fresh-state semantic retries instead of rebasing JSON state',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const start=workflow.indexOf('- name: Merge outcomes run regression and package review');
+  const end=workflow.indexOf('- name: Dispatch reviewed winner candidates to release gate',start);
+  assert.ok(start>0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.equal(block.includes('git pull --rebase origin vibe2-unreal-core'),false);
+  assert.ok(block.includes('VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT='));
+  assert.ok(block.includes('VIBE2_FAN_IN_OPTIMISTIC_RETRY='));
+  assert.ok(block.includes('VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT='));
+  assert.ok(block.includes('VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY='));
+  const normalRetry=block.indexOf('for state_attempt in 1 2 3 4 5; do',block.indexOf("fanin_state_persisted=0"));
+  const normalReset=block.indexOf('git reset --hard origin/vibe2-unreal-core',normalRetry);
+  const normalSemantic=block.indexOf('vibe2-queue-control.mjs" fan-in',normalReset);
+  const normalPush=block.indexOf('git push origin HEAD:vibe2-unreal-core',normalSemantic);
+  assert.ok(normalRetry>0&&normalReset>normalRetry&&normalSemantic>normalReset&&normalPush>normalSemantic);
+  const regressionRetry=block.indexOf('for state_attempt in 1 2 3 4 5; do',block.indexOf("regression_state_persisted=0"));
+  const regressionReset=block.indexOf('git reset --hard origin/vibe2-unreal-core',regressionRetry);
+  const regressionFanIn=block.indexOf('vibe2-queue-control.mjs" fan-in',regressionReset);
+  const regressionFail=block.indexOf('fan-in-regression-fail',regressionFanIn);
+  const regressionPush=block.indexOf('git push origin HEAD:vibe2-unreal-core',regressionFail);
+  assert.ok(regressionRetry>0&&regressionReset>regressionRetry&&regressionFanIn>regressionReset&&regressionFail>regressionFanIn&&regressionPush>regressionFail);
+});
