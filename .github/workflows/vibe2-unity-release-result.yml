@@ -245,6 +245,19 @@ jobs:
             test "$attempt" -lt 3
             sleep $((attempt * 2))
           done
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          payload="$(jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg task "${TASK_ID:-}" \
+            --arg outcome "${result:-QUEUE_UPDATED}" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
           echo "VIBE2_UNITY_INCREMENTAL_BUILD=$result"
           [ "$result" = PASS ]
