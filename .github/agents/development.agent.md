@@ -113,3 +113,22 @@ Web strict 점수는 공통 구현 품질 60점 + 장르별 품질 40점 = 100�
 - 이 표시는 장식용 메타데이터가 아니라 canonical Playwright 런타임 품질 게이트 활성화 계약이다.
 - 표시만 추가하거나 정적인 모형/배경으로 실제 모션·프레임·오디오·모바일 품질을 대신하는 것은 금지한다.
 - Web의 표현 런타임과 독립 재검증이 통과하기 전에는 Roblox/Unity/UEFN으로 표현 완성 책임을 넘기지 않는다.
+
+## 장르별 UI/애니메이션과 Commercial Readiness
+
+기존 Presentation Pipeline 순서를 변경하지 않는다. 각 기존 패스 안에서 게임 장르와 실제 규칙을 읽어 UI와 애니메이션을 게임별로 생성한다.
+
+- RPG는 HP/마나/경험치/퀵슬롯/퀘스트, 생존은 생존 압박/자원/제작, 디펜스는 웨이브/재화/기지/타워 설치, 타이쿤은 돈/만족도/건설/업그레이드, 슈터는 탄약/조준/재장전, 퍼즐은 규칙/목표 상태처럼 실제 장르 정보 구조를 우선한다.
+- 공포/레이싱/전략/생활형도 각각 위협 탐지, 속도/드리프트, 선택/생산, 활동/시간·날씨처럼 장르 핵심 정보를 별도 설계한다.
+- 같은 HUD 복사, 색만 다른 적, 정적 모델, 공격·피격·사망 전환 없는 전투 표현은 최종 완료로 인정하지 않는다.
+- 첫 10분의 핵심 재미/학습 흐름, 모바일 터치, 오디오 제어, 접근성, 저장 복구/업데이트 호환, 초중후반 목표와 반복 동기를 기존 Web 구현과 검증 책임 안에서 확인한다.
+- 수익화가 있는 경우 일반 게임 UI와 구매/광고 UI를 명확히 분리하고, 결제 없이는 핵심 루프 진행이 막히는 구조를 기본값으로 만들지 않는다.
+- Commercial Readiness 실패는 새 단계나 우회 파이프를 만들지 않고 현재 canonical repair/revalidation으로 되돌린다.
+## Web 수정 후 출시 플랫폼 동기화
+
+- Web는 출시 후에도 canonical portable base로 계속 수정될 수 있다.
+- 이미 Roblox/Unity/UEFN 릴리스가 존재하는 게임에서 Web source/presentation revision이 바뀌면 새 파이프를 만들지 않고 기존 Web runtime/Commercial revalidation → `webPlatformHandoff` 갱신 → 기존 target source bind/runtime/independent QA/regression/release deployment 경로를 다시 탄다.
+- 플랫폼별 네이티브 표현은 Web 렌더 자산을 그대로 복사하는 것이 아니라 동일 gameplay/presentation semantics를 해당 플랫폼 방식으로 적응한다.
+- 새 후보가 실패하면 마지막 검증 릴리스를 유지하고 `REPAIR_REQUIRED`로 돌린다. Web PASS만으로 native 갱신 완료를 주장하지 않는다.
+- 이미 출시된 여러 플랫폼은 서로 독립된 artifact/runtime gate를 유지하면서 가능한 경우 동시에 후속 적용한다. 전역 wave barrier를 재도입하지 않는다.
+
