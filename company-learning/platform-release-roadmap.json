@@ -2874,7 +2874,19 @@
         "executionUsesExistingScheduler": true,
         "systemStewardProtectedLane": "RECOVERY_FAST",
         "producer": "tools/vibe2-self-architecture-evolution.mjs",
-        "steward": "tools/vibe2-system-steward.mjs"
+        "steward": "tools/vibe2-system-steward.mjs",
+        "executionLaneConnected24h": true,
+        "executionLane": "RECOVERY_FAST",
+        "protectedSlots": 1,
+        "exactWritablePathGuard": "tools/vibe2-system-architecture-contract.mjs",
+        "candidateVerifier": "tools/vibe2-system-evolution-verify.mjs",
+        "promotionWorkflow": ".github/workflows/vibe2-system-evolution-release.yml",
+        "adoptionProof": "SAME_CHANGED_REGRESSION_TEST_BASE_FAIL_CANDIDATE_PASS",
+        "candidateFullRegression": "ALL_VIBE2_TESTS_PLUS_CENTRAL_POLICY_CONTRACT",
+        "candidateSecurityScanRequired": true,
+        "centralAuthorityProjectionMustRemainIdentical": true,
+        "runtimeSafetyProjectionMustRemainIdentical": true,
+        "automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass": true
       }
     },
     "webIterationPolicy": {

@@ -514,3 +514,17 @@ test('Vibe may evolve its own internal architecture from verified structural evi
   assert.equal(e.gateWeakeningForbidden,true);
   assert.equal(e.executionUsesExistingScheduler,true);
 });
+
+
+test('Vibe self-architecture evolution is executable and adopted only after verified improvement',()=>{
+  const e=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.selfArchitectureEvolution;
+  assert.equal(e.executionLaneConnected24h,true);
+  assert.equal(e.executionLane,'RECOVERY_FAST');
+  assert.equal(e.protectedSlots,1);
+  assert.equal(e.adoptionProof,'SAME_CHANGED_REGRESSION_TEST_BASE_FAIL_CANDIDATE_PASS');
+  assert.equal(e.candidateSecurityScanRequired,true);
+  assert.equal(e.centralAuthorityProjectionMustRemainIdentical,true);
+  assert.equal(e.runtimeSafetyProjectionMustRemainIdentical,true);
+  assert.equal(e.automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass,true);
+  assert.equal(e.directMainWriteForbidden,true);
+});

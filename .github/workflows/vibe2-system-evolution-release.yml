@@ -1,0 +1,185 @@
+name: Vibe2 System Architecture Evolution Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_branch:
+        description: Exact vibe2/candidate/** system architecture branch
+        required: true
+        type: string
+      task_id:
+        description: Exact system architecture task id
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: vibe2-system-evolution-${{ inputs.task_id }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      candidate_sha: ${{ steps.meta.outputs.candidate_sha }}
+      base_sha: ${{ steps.meta.outputs.base_sha }}
+      manifest: ${{ steps.meta.outputs.manifest }}
+      changed_files_json: ${{ steps.meta.outputs.changed_files_json }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.candidate_branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve exact system candidate
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          candidate_sha="$(git rev-parse HEAD)"
+          manifest="$(find .vibe2/candidates -type f -name manifest.json -print | sort | while read -r f; do node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(String(m.branch||'')===process.env.CANDIDATE_BRANCH)process.stdout.write(process.argv[1]+'\n')" "$f"; done | head -n1)"
+          test -n "$manifest"
+          base_sha="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(m.baseMainSha||''))" "$manifest")"
+          task="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(m.taskId||''))" "$manifest")"
+          test "$task" = "$TASK_ID"
+          git cat-file -e "${base_sha}^{commit}"
+          node tools/vibe2-system-evolution-verify.mjs --root=. --manifest="$manifest" --base-sha="$base_sha" --output=/tmp/system-evolution-verify.json
+          changed_json="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/system-evolution-verify.json','utf8'));process.stdout.write(JSON.stringify(x.changedFiles||[]))")"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          echo "manifest=$manifest" >> "$GITHUB_OUTPUT"
+          echo "changed_files_json=$changed_json" >> "$GITHUB_OUTPUT"
+        env:
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          TASK_ID: ${{ inputs.task_id }}
+
+      - name: Prove before FAIL and after PASS with same changed regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="${{ steps.meta.outputs.manifest }}"
+          mapfile -t tests < <(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));for(const f of m.changedFiles||[])if(/^qa\/.+\.test\.(mjs|js|cjs)$/.test(f))console.log(f)" "$manifest")
+          [ "${#tests[@]}" -gt 0 ]
+          node --test "${tests[@]}"
+          git worktree add --detach /tmp/vibe2-system-base "${{ steps.meta.outputs.base_sha }}" >/dev/null
+          for test_file in "${tests[@]}"; do
+            mkdir -p "/tmp/vibe2-system-base/$(dirname "$test_file")"
+            cp "$test_file" "/tmp/vibe2-system-base/$test_file"
+          done
+          set +e
+          (cd /tmp/vibe2-system-base && node --test "${tests[@]}")
+          base_rc=$?
+          set -e
+          if [ "$base_rc" -eq 0 ]; then
+            echo 'SYSTEM_EVOLUTION_BEFORE_AFTER=NO_VERIFIED_IMPROVEMENT' >&2
+            exit 1
+          fi
+          echo 'SYSTEM_EVOLUTION_BEFORE=FAIL'
+          echo 'SYSTEM_EVOLUTION_AFTER=PASS'
+
+      - name: Run full Vibe regression and security
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check "${{ steps.meta.outputs.base_sha }}" HEAD
+          node --check tools/vibe2-system-evolution-verify.mjs
+          node --test --test-concurrency=4 qa/vibe2-*.test.mjs qa/company-central-policy-contract.test.mjs
+          node tools/company-security-steward.mjs --output=/tmp/vibe2-system-security.json
+          test -s /tmp/vibe2-system-security.json
+          echo 'VIBE2_SYSTEM_EVOLUTION_FULL_REGRESSION=PASS'
+          echo 'VIBE2_SYSTEM_EVOLUTION_SECURITY=PASS'
+
+  promote:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Promote exact verified files through PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          TASK_ID: ${{ inputs.task_id }}
+          CANDIDATE_SHA: ${{ needs.verify.outputs.candidate_sha }}
+          BASE_SHA: ${{ needs.verify.outputs.base_sha }}
+          CHANGED_FILES_JSON: ${{ needs.verify.outputs.changed_files_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main "$CANDIDATE_BRANCH" --quiet
+          mapfile -t changed < <(node -e "for(const f of JSON.parse(process.env.CHANGED_FILES_JSON||'[]'))console.log(f)")
+          [ "${#changed[@]}" -gt 0 ]
+          for file in "${changed[@]}"; do
+            if [ -n "$(git diff --name-only "$BASE_SHA" origin/main -- "$file")" ]; then
+              echo "SYSTEM_EVOLUTION_MAIN_DRIFT=$file" >&2
+              exit 1
+            fi
+          done
+          safe="$(printf '%s' "$TASK_ID" | tr -c 'A-Za-z0-9._-' '-')"
+          branch="automation/vibe2-system-evolution-${safe}-${GITHUB_RUN_ID}"
+          git switch -c "$branch" origin/main
+          for file in "${changed[@]}"; do git checkout "$CANDIDATE_SHA" -- "$file"; done
+          git diff --check
+          git config user.name 'jaewoon-vibe-system-evolution'
+          git config user.email 'vibe-system-evolution@users.noreply.github.com'
+          git add -- "${changed[@]}"
+          git commit -m "vibe2: verified self architecture evolution ${TASK_ID}"
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "vibe2: self architecture evolution ${TASK_ID}" --body "Vibe self-architecture candidate. Verified base FAIL -> candidate PASS regression, full Vibe regression, security scan, exact writable scope, authority unchanged, gates unchanged. Direct main write: NO.")"
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main --quiet
+          for file in "${changed[@]}"; do git diff --quiet "$CANDIDATE_SHA" origin/main -- "$file"; done
+          echo "VIBE2_SYSTEM_EVOLUTION_PROMOTION=PASS"
+          echo "VIBE2_SYSTEM_EVOLUTION_PR=$pr_url"
+
+  settle:
+    if: always()
+    needs: [verify, promote]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+      - name: Persist system evolution outcome
+        env:
+          TASK_ID: ${{ inputs.task_id }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          PROMOTE_RESULT: ${{ needs.promote.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe-system-evolution'
+          git config user.email 'vibe-system-evolution@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin vibe2-unreal-core main --quiet
+            git reset --hard origin/vibe2-unreal-core
+            rm -rf /tmp/vibe2-system-main
+            git worktree prune
+            git worktree add --detach /tmp/vibe2-system-main origin/main >/dev/null
+            if [ "$VERIFY_RESULT" = success ] && [ "$PROMOTE_RESULT" = success ]; then
+              node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs pass --queue=.vibe2/queue.json --id="$TASK_ID" --evidence="self-architecture-before-fail-after-pass,self-architecture-full-regression-pass,self-architecture-security-pass,self-architecture-main-pr-merged"
+            else
+              node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs fail --queue=.vibe2/queue.json --id="$TASK_ID" --blocker=self-architecture-verification-or-promotion-failed --evidence="self-architecture-verify-$VERIFY_RESULT,self-architecture-promote-$PROMOTE_RESULT"
+            fi
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "vibe2: settle self architecture evolution [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1

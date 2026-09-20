@@ -2090,6 +2090,15 @@
     "proposalGenerationLimit": null,
     "directMainWrite": false,
     "authorityExpansion": false,
-    "gateWeakening": false
+    "gateWeakening": false,
+    "lane": "RECOVERY_FAST",
+    "laneRunner": ".github/workflows/vibe2-24h-runner.yml",
+    "workOrder": "tools/vibe2-continuous-runner.mjs",
+    "sourceWorker": "tools/vibe2-source-worker.mjs",
+    "pathGuard": "tools/vibe2-system-architecture-contract.mjs",
+    "candidateVerifier": "tools/vibe2-system-evolution-verify.mjs",
+    "promotion": ".github/workflows/vibe2-system-evolution-release.yml",
+    "adoptionProof": "BASE_FAIL_CANDIDATE_PASS_SAME_REGRESSION_TEST",
+    "automaticPrAdoption": true
   }
 }
