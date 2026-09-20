@@ -1,0 +1,104 @@
+// 파일명: qa/vibe2-neural-feedback.test.mjs
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedback } from '../tools/vibe2-neural-feedback.mjs';
+
+function diagnosis(system='SOURCE_GENERATION',confidence=.8){
+  return{
+    mode:'PHASE1_SHADOW_ADVISORY',
+    responsibility:{system,confidence},
+    actionRecommendation:{failureStage:'WEB_REPAIR'},
+    bottleneck:{score:77}
+  };
+}
+
+test('source generation failure is a calibration sample for the next observed blocking system',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.88),
+    outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'MALFORMED_OUTPUT'},
+    roleResults:{implementation:'FAIL',test:'FAIL',performance:'FAIL'}
+  });
+  assert.equal(feedback.observed.stage,'SOURCE_GENERATION');
+  assert.equal(feedback.observed.responsibility,'SOURCE_GENERATION');
+  assert.equal(feedback.sampleEligible,true);
+  assert.equal(feedback.responsibilityMatch,true);
+  assert.equal(feedback.matchState,'MATCH');
+  assert.equal(feedback.rootCauseVerified,false);
+  assert.equal(feedback.learningEligible,false);
+  assert.equal(feedback.authorityPromotionEligible,false);
+});
+
+test('deterministic source-generation stage can record mismatch without claiming root cause',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('GAME_RUNTIME',.9),
+    outcome:'FAIL',
+    candidateFailure:{class:'EDIT_MATCH'},
+    roleResults:{implementation:'FAIL'}
+  });
+  assert.equal(feedback.sampleEligible,true);
+  assert.equal(feedback.responsibilityMatch,false);
+  assert.equal(feedback.matchState,'MISMATCH');
+  assert.equal(feedback.calibrationTarget,'NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE');
+  assert.equal(feedback.rootCauseVerified,false);
+});
+
+test('QA failure records the stage but leaves responsibility correctness unknown',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('GAME_RUNTIME',.92),
+    outcome:'FAIL',
+    blocker:'incremental-qa-failed',
+    roleResults:{implementation:'PASS',test:'FAIL',performance:'FAIL'}
+  });
+  assert.equal(feedback.observed.stage,'INCREMENTAL_QA');
+  assert.equal(feedback.observed.responsibility,null);
+  assert.equal(feedback.sampleEligible,false);
+  assert.equal(feedback.responsibilityMatch,null);
+  assert.equal(feedback.matchState,'UNKNOWN');
+});
+
+test('worker pass is not treated as proof that the diagnosis root cause was correct',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('VALIDATOR',.7),
+    outcome:'PASS',
+    roleResults:{implementation:'PASS',test:'PASS',performance:'PASS'}
+  });
+  assert.equal(feedback.observed.stage,'REPAIR_PATH_PASSED');
+  assert.equal(feedback.sampleEligible,false);
+  assert.equal(feedback.matchState,'UNKNOWN');
+  assert.equal(feedback.authorityPromotionEligible,false);
+});
+
+test('feedback evidence is compact, durable and explicitly non-learning',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.8),
+    outcome:'FAIL',
+    candidateFailure:{class:'NO_OP'},
+    roleResults:{implementation:'FAIL'}
+  });
+  const evidence=neuralFeedbackEvidence(feedback);
+  const encoded=evidence.find(x=>x.startsWith('neural-shadow-feedback:'));
+  assert.ok(encoded);
+  const payload=JSON.parse(decodeURIComponent(encoded.slice('neural-shadow-feedback:'.length)));
+  assert.equal(payload.matchState,'MATCH');
+  assert.equal(payload.rootCauseVerified,false);
+  assert.equal(payload.learningEligible,false);
+  assert.equal(payload.authorityPromotionEligible,false);
+});
+
+test('summary never grants phase2 authority from shadow samples alone',()=>{
+  const rows=[
+    evaluateNeuralDiagnosisFeedback({diagnosis:diagnosis('SOURCE_GENERATION'),outcome:'FAIL',candidateFailure:{class:'NO_OP'},roleResults:{implementation:'FAIL'}}),
+    evaluateNeuralDiagnosisFeedback({diagnosis:diagnosis('GAME_RUNTIME'),outcome:'FAIL',candidateFailure:{class:'EDIT_MATCH'},roleResults:{implementation:'FAIL'}}),
+    evaluateNeuralDiagnosisFeedback({diagnosis:diagnosis('GAME_RUNTIME'),outcome:'PASS',roleResults:{implementation:'PASS',test:'PASS',performance:'PASS'}})
+  ];
+  const summary=summarizeNeuralFeedback(rows);
+  assert.equal(summary.total,3);
+  assert.equal(summary.calibrationEligible,2);
+  assert.equal(summary.matches,1);
+  assert.equal(summary.mismatches,1);
+  assert.equal(summary.unknown,1);
+  assert.equal(summary.observedAccuracy,.5);
+  assert.equal(summary.phase2AuthorityReady,false);
+});
