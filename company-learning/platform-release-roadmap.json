@@ -5491,104 +5491,235 @@
       },
       "implementationPhase4": {
         "state": "MERGED_MAIN_RUNTIME_EVIDENCE_PENDING",
-        "sourcePr": 1958,
-        "mergedCommit": "8d7b74e1075c738f310b39544faac62d3bae45dc",
-        "scope": "PASSIVE_EXISTING_TOURNAMENT_CONTROL_CHALLENGER_GENERALIZATION_BENCHMARK",
-        "objective": "VERIFY_GENERALIZATION_CANDIDATES_ON_UNSEEN_REAL_WORK_WITH_A_CONTROL_CHALLENGER_PAIR_WITHOUT_CREATING_NEW_EXECUTION_AUTHORITY",
-        "components": [
-          ".github/workflows/vibe2-continuous-core.yml",
-          "assets/vibe-experience-memory.js",
-          "qa/vibe2-capability-distillation.test.mjs",
-          "qa/vibe2-controller-contract.test.mjs",
-          "tools/vibe2-capability-distillation.mjs",
-          "tools/vibe2-continuous-runner.mjs",
-          "tools/vibe2-fan-in-review.mjs",
-          "tools/vibe2-source-worker.mjs"
-        ],
-        "runtimePairing": {
-          "controlVariant": "primary",
-          "challengerVariant": "speculative-1",
-          "existingTournamentWorkersOnly": true,
-          "extraWorkerCreation": false,
-          "queueMutation": false,
-          "queueReorder": false,
-          "fixedCandidateStrategy": true,
-          "originalGoalExploration": true,
-          "exactCapabilityIsolation": true,
+        "scope": "UNSEEN_PROBLEM_GENERALIZATION_BENCHMARK_AND_CAPABILITY_PORTFOLIO_GOVERNANCE",
+        "objective": "VERIFY_WHICH_GENERALIZATION_CANDIDATES_TRANSFER_TO_UNSEEN_PROBLEMS_AND_GOVERN_THE_CAPABILITY_PORTFOLIO_WITH_EVIDENCE_BACKED_GENERALIZATION_SUPERSESSION_DEPRECATION_AND_RETRIEVAL_PRECISION_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
+        "prerequisites": {
+          "phase1Complete": true,
+          "phase2Complete": true,
+          "phase3RuntimeVerified": true,
+          "generalizationCandidatesObserved": 5,
+          "strongGeneralizationVerifiedObserved": 0,
+          "realApplicationEvidenceObserved": true,
+          "repeatedIndependentFreshQaObserved": true
+        },
+        "eligibility": {
+          "sourceStateRequired": "GENERALIZATION_CANDIDATE",
+          "repeatedIndependentApplicationEvidenceRequired": true,
+          "crossGameVerifiedApplicationEvidenceRequired": true,
+          "unresolvedCapabilitySpecificContradictionAllowedForPromotion": false,
+          "projectSpecificGameplayValuesMayGeneralize": false,
+          "rawTraceMayServeAsBenchmarkAnswer": false,
+          "mergedPrMetadataAloneEligible": false
+        },
+        "unseenProblemBenchmark": {
+          "holdoutIdentityRequired": true,
+          "benchmarkProblemMustNotHaveCreatedOrReinforcedCandidate": true,
+          "existingBenchmarkAndPracticePathsOnly": true,
+          "productionWorkPreemptsBenchmark": true,
+          "syntheticPracticeMayScreenCandidate": true,
+          "syntheticPracticeMayReplaceNativeRuntime": false,
+          "freshIndependentQaRequired": true,
+          "fullRegressionRequired": true,
+          "nativeRuntimeRequiredWhenClaimTouchesNativeRuntime": true,
+          "minimumIndependentUnseenPassesForStrongGeneralization": 2,
+          "minimumDistinctGamesForStrongGeneralization": 2,
+          "crossEngineClaimRequiresNativeEvidencePerClaimedEngine": true,
+          "singleUnseenPassEstablishesStrongGeneralization": false,
+          "benchmarkFailureAutomaticallyDeprecatesLocalCapability": false,
+          "unrelatedBenchmarkFailurePenalizesCapability": false,
           "unseenGameRequired": true,
           "unseenProblemFingerprintRequired": true,
-          "nonTargetContextFixed": true,
-          "writableScopeFixed": true,
-          "modelBudgetFixed": true,
-          "qaContractFixed": true
+          "pairedControlChallengerRequired": true,
+          "nonTargetContextFixedBetweenControlAndChallenger": true,
+          "writableScopeFixedBetweenControlAndChallenger": true,
+          "modelBudgetFixedBetweenControlAndChallenger": true,
+          "qaContractFixedBetweenControlAndChallenger": true
         },
-        "fanInAttribution": {
-          "bothFreshWorkerQaRequired": true,
-          "exactCapabilityIsolationRequired": true,
-          "challengerMustBeNormalSelectedWinner": true,
-          "fullFanInRegressionRequired": true,
-          "controlFreshQaRequiredForLifecycle": true,
-          "nativeRuntimeRequiredForNativeClaim": true,
-          "neutralOrAmbiguousEvidenceDoesNotPromote": true
+        "generalizationPromotion": {
+          "targetState": "GENERALIZED_VERIFIED",
+          "evidenceMustBindExactCapabilityId": true,
+          "benchmarkCasesMustRemainIndependent": true,
+          "coAppliedBenchmarkSuccessIndividuallyProvesEachCapability": false,
+          "capabilitySpecificSupportPreferred": false,
+          "challengerOrControlledReplayPreferredForAmbiguousAttribution": false,
+          "automaticModelOrTuningPromotion": false,
+          "directTrainingPromotion": false,
+          "capabilitySpecificPositiveSupportRequired": true,
+          "zeroCapabilitySpecificContradictionsRequired": true,
+          "pairedControlChallengerRequiredForStrongGeneralization": true,
+          "ambiguousOrNeutralEvidenceRemainsGeneralizationCandidate": true
         },
-        "schemas": {
-          "workerResult": 12,
-          "benchmarkReview": 1
+        "portfolioGovernance": {
+          "preserveProvenanceOnDeprecationOrSupersession": true,
+          "deprecatedCapabilityRetrievalEligible": false,
+          "supersededCapabilityRetrievalEligible": false,
+          "supersessionRequiresEvidence": true,
+          "deprecationRequiresEvidence": true,
+          "redundantCapabilityConsolidationRequiresSemanticAndOutcomeEvidence": true,
+          "sameGameSpecificCapabilityMayOutrankGeneralizedCapability": true,
+          "generalizedCapabilityDoesNotBypassKeywordOrProblemRelevance": true,
+          "sameEngineAloneEligible": false,
+          "genericCapabilityPartitionRemainsDistinct": true,
+          "duplicateCapabilityInjectionAllowed": false,
+          "localProjectValuesRemainLocal": true
         },
-        "ci": {
-          "vibe2CoreQa": {
-            "state": "PASS",
-            "runId": 35495380342
-          },
-          "integratedRegression": {
-            "state": "PASS",
-            "runId": 35495380335
-          },
-          "vibe3EngineContract": {
-            "state": "PASS",
-            "runId": 35495380330
-          },
-          "companySecurityImmuneSystem": {
-            "state": "PASS",
-            "runId": 35495380327
-          },
-          "mainWriteGuard": {
-            "state": "PASS",
-            "runId": 35495380340
-          },
-          "companyEvolutionQa": {
-            "state": "PASS",
-            "runId": 35495380352
-          },
-          "vibeQa": {
-            "state": "PASS",
-            "runId": 35495380325
-          },
-          "centralPolicy": {
-            "state": "PASS",
-            "runId": 35495380341
-          }
+        "retrievalPrecision": {
+          "generalizedTransferRequiresFreshApplicabilityCheck": true,
+          "crossGameProblemOrKeywordRelevanceRequired": true,
+          "confidenceAloneMayNotExpandRetrievalScope": true,
+          "benchmarkEvidenceMayRaiseRankingButNotAuthority": true,
+          "freshTaskQaStillRequired": true
         },
-        "productionObservation": {
-          "state": "RUNTIME_EVIDENCE_PENDING",
-          "runtimeRef": "vibe2-unreal-core",
-          "experienceBlobSha": "f23698411e8e9740396c27a5a59f9a8f0eee27b8",
-          "experienceRecordCount": 52,
-          "observedPhase4PairedBenchmarkCount": 0,
-          "observedStrongGeneralizationVerifiedCount": 0,
-          "completionClaimAllowed": false
+        "evaluation": {
+          "metrics": [
+            "UNSEEN_BENCHMARK_ATTEMPT_COUNT",
+            "UNSEEN_BENCHMARK_PASS_COUNT",
+            "UNSEEN_BENCHMARK_FAILURE_COUNT",
+            "GENERALIZATION_CANDIDATE_COUNT",
+            "GENERALIZED_VERIFIED_COUNT",
+            "GENERALIZATION_FALSE_POSITIVE_COUNT",
+            "GENERALIZATION_FALSE_NEGATIVE_REVIEW_COUNT",
+            "NATIVE_RUNTIME_COVERAGE_COUNT",
+            "SUPERSESSION_COUNT",
+            "DEPRECATION_COUNT",
+            "REDUNDANT_CAPABILITY_CONSOLIDATION_COUNT",
+            "BENCHMARK_PRODUCTION_PREEMPTION_COUNT",
+            "BENCHMARK_CONTAMINATION_COUNT"
+          ],
+          "benchmarkContaminationTarget": 0,
+          "championChallengerPreferredForMaterialGeneralizationChanges": true,
+          "strongGeneralizationClaimRequiresObservedRuntimeEvidence": true
+        },
+        "storageAndPrivacy": {
+          "existingExperienceMemoryAndBenchmarkLadderOnly": true,
+          "newParallelLearningLedgerAllowed": false,
+          "rawCodeStored": false,
+          "rawExternalAiOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "secretsOrCredentialsStored": false
         },
         "authority": {
-          "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-          "workerCreation": false,
-          "queueMutation": false,
-          "waveReorder": false,
-          "lockOrPolicyMutation": false,
-          "automaticLearningTuningPromotion": false,
-          "directMainPromotion": false,
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false,
+          "directMainPromotionAuthority": false,
           "authorityChange": "NONE"
         },
-        "nextGate": "OBSERVE_REAL_PASSIVE_PAIRED_RUNTIME_BENCHMARKS_ON_UNSEEN_WORK_THEN_APPLY_THE_EXISTING_STRONG_GENERALIZATION_GATE_WITHOUT_AUTHORITY_EXPANSION"
+        "exitCriteria": [
+          "GENERALIZATION_CANDIDATE_TO_UNSEEN_BENCHMARK_BINDING_IMPLEMENTED_IN_EXISTING_PATHS",
+          "STRONG_GENERALIZATION_REQUIRES_MULTIPLE_INDEPENDENT_UNSEEN_PASSES",
+          "PAIRED_CONTROL_CHALLENGER_ISOLATES_TARGET_CAPABILITY_EFFECT",
+          "CAPABILITY_SPECIFIC_POSITIVE_SUPPORT_REQUIRED_FOR_GENERALIZED_VERIFIED",
+          "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS_REQUIRED_FOR_GENERALIZED_VERIFIED",
+          "CROSS_ENGINE_GENERALIZATION_REQUIRES_NATIVE_EVIDENCE_PER_ENGINE",
+          "PORTFOLIO_SUPERSESSION_AND_DEPRECATION_RETAIN_PROVENANCE",
+          "GENERALIZED_RETRIEVAL_REMAINS_RELEVANCE_GATED",
+          "NO_BENCHMARK_CONTAMINATION_OF_PRODUCTION_PRIORITY",
+          "NO_RAW_OUTPUT_PERSISTENCE",
+          "NO_AUTHORITY_EXPANSION",
+          "CI_AND_REAL_RUNTIME_BENCHMARK_VERIFICATION"
+        ],
+        "nextGate": "OBSERVE_REAL_PASSIVE_PAIRED_RUNTIME_BENCHMARKS_ON_UNSEEN_WORK_THEN_APPLY_THE_EXISTING_STRONG_GENERALIZATION_GATE_WITHOUT_AUTHORITY_EXPANSION",
+        "baseCentralVersions": {
+          "roadmapBeforePhase4": 209,
+          "architectureBeforePhase4": 51,
+          "capabilityTopologyBeforePhase4": 9
+        },
+        "sourcePr": 1958,
+        "mergedCommit": "8d7b74e1075c738f310b39544faac62d3bae45dc",
+        "implementationEvidence": {
+          "scope": "PASSIVE_EXISTING_TOURNAMENT_CONTROL_CHALLENGER_GENERALIZATION_BENCHMARK",
+          "components": [
+            ".github/workflows/vibe2-continuous-core.yml",
+            "assets/vibe-experience-memory.js",
+            "qa/vibe2-capability-distillation.test.mjs",
+            "qa/vibe2-controller-contract.test.mjs",
+            "tools/vibe2-capability-distillation.mjs",
+            "tools/vibe2-continuous-runner.mjs",
+            "tools/vibe2-fan-in-review.mjs",
+            "tools/vibe2-source-worker.mjs"
+          ],
+          "runtimePairing": {
+            "controlVariant": "primary",
+            "challengerVariant": "speculative-1",
+            "existingTournamentWorkersOnly": true,
+            "extraWorkerCreation": false,
+            "queueMutation": false,
+            "queueReorder": false,
+            "fixedCandidateStrategy": true,
+            "originalGoalExploration": true,
+            "exactCapabilityIsolation": true
+          },
+          "fanInAttribution": {
+            "bothFreshWorkerQaRequired": true,
+            "exactCapabilityIsolationRequired": true,
+            "challengerMustBeNormalSelectedWinner": true,
+            "fullFanInRegressionRequired": true,
+            "controlFreshQaRequiredForLifecycle": true,
+            "nativeRuntimeRequiredForNativeClaim": true,
+            "neutralOrAmbiguousEvidenceDoesNotPromote": true
+          },
+          "schemas": {
+            "workerResult": 12,
+            "benchmarkReview": 1
+          },
+          "ci": {
+            "vibe2CoreQa": {
+              "state": "PASS",
+              "runId": 35495380342
+            },
+            "integratedRegression": {
+              "state": "PASS",
+              "runId": 35495380335
+            },
+            "vibe3EngineContract": {
+              "state": "PASS",
+              "runId": 35495380330
+            },
+            "companySecurityImmuneSystem": {
+              "state": "PASS",
+              "runId": 35495380327
+            },
+            "mainWriteGuard": {
+              "state": "PASS",
+              "runId": 35495380340
+            },
+            "companyEvolutionQa": {
+              "state": "PASS",
+              "runId": 35495380352
+            },
+            "vibeQa": {
+              "state": "PASS",
+              "runId": 35495380325
+            },
+            "centralPolicy": {
+              "state": "PASS",
+              "runId": 35495380341
+            }
+          },
+          "productionObservation": {
+            "state": "RUNTIME_EVIDENCE_PENDING",
+            "runtimeRef": "vibe2-unreal-core",
+            "experienceBlobSha": "f23698411e8e9740396c27a5a59f9a8f0eee27b8",
+            "experienceRecordCount": 52,
+            "observedPhase4PairedBenchmarkCount": 0,
+            "observedStrongGeneralizationVerifiedCount": 0,
+            "completionClaimAllowed": false
+          },
+          "authority": {
+            "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+            "workerCreation": false,
+            "queueMutation": false,
+            "waveReorder": false,
+            "lockOrPolicyMutation": false,
+            "automaticLearningTuningPromotion": false,
+            "directMainPromotion": false,
+            "authorityChange": "NONE"
+          }
+        }
       }
     }
   },
