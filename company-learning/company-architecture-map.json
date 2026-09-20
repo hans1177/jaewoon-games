@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE1_SHADOW_DIAGNOSIS_CALIBRATION_CRITIC_CONNECTED",
+    "currentState": "PHASE1_ROOT_CAUSE_VERIFIER_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -330,7 +330,13 @@
         "prePatchReproductionRequired": true,
         "executedReplayPassRequired": true,
         "rootCauseAuthority": "NONE"
-      }
+      },
+      "rootCauseVerifier": "tools/vibe2-neural-root-cause.mjs",
+      "rootCauseFanInBinding": "tools/vibe2-fan-in-review.mjs",
+      "rootCauseAuthority": "VERIFICATION_ONLY",
+      "rootCauseSystemRequiresIndependentExplicitEvidence": true,
+      "causalRepairDoesNotImplyRootCause": true,
+      "phase2Authority": "NONE"
     }
   }
 }
