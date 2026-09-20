@@ -128,7 +128,11 @@ export function evaluatePhase2Readiness({
       events,
       rootCause,
       rootCausePredictionCoverage:predictionCoverage,
-      shadowAuditSamples:Number(audit.sampleCount||0)
+      identifiedShadowEvents,
+      identifiedCalibrationEligible,
+      identifiedCalibrationAccuracy,
+      shadowAuditSamples:Number(audit.sampleCount||0),
+      identifiedShadowAuditSamples:identifiedWaveAuditSamples
     },
     phase2AuthorityReady:false,
     executionAuthorityGranted:false,
