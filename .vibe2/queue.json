@@ -55591,7 +55591,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 개미 시뮬레이터\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.",
       "responsibleFiles": [
         "web-games/ant-simulator/index.html"
@@ -55599,8 +55599,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 4,
+      "status": "queued",
+      "retries": 5,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": true,
@@ -55644,7 +55644,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -56222,13 +56222,14 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22ant-simulator-existing-web-assessment-v1%7C35521224058%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22ant-simulator-existing-web-assessment-v1%7C35521224058%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A21%2C%22edgeCount%22%3A19%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "release-dispatch-recovery-requested:vibe2/candidate/ant-simulator-existing-web-assessment-v1-speculative-2-35521224058-1",
         "release-dispatch-recovery-at:1789921184610",
-        "release-dispatch-recovery-candidate-sha:24badd7e70218dc7a153c8efa62af6d622690918"
+        "release-dispatch-recovery-candidate-sha:24badd7e70218dc7a153c8efa62af6d622690918",
+        "actions-run-35522375221"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": "35521224058:1",
-      "reservationRunId": "35521224058",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T15:59:52Z",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
