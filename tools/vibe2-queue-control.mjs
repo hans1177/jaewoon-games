@@ -833,6 +833,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if(result.executionLane)console.log(`VIBE2_EXECUTION_LANE=${result.executionLane}`);
   if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
   if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
+  if(Array.isArray(result.dependencyReadyTaskIds)){
+    console.log(`VIBE2_DEPENDENCY_READY_BATCH=${result.dependencyReadyTaskIds.join(',')||'NONE'}`);
+    console.log(`VIBE2_DEPENDENCY_EVENT_REQUIRED=${result.dependencyEventRequired===true?'YES':'NO'}`);
+  }
   if(result.command==='neuron-complete'){
     console.log(`VIBE2_NEURON_RESULT=${result.reason || 'UNKNOWN'}`);
     console.log(`VIBE2_NEURON_TASK_READY=${result.ready===true?'YES':'NO'}`);
