@@ -96,7 +96,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --depth=1 --no-tags origin main --quiet
+          requested_contract_sha=''
+          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ]; then
+            dispatch_type="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.action||''))")"
+            if [ "$dispatch_type" = 'vibe2-neuron-complete' ]; then
+              requested_contract_sha="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.client_payload?.contract_sha||''))")"
+            fi
+          fi
+          if [ -n "$requested_contract_sha" ]; then
+            git fetch --depth=1 --no-tags origin "$requested_contract_sha" --quiet
+          else
+            git fetch --depth=1 --no-tags origin main --quiet
+          fi
           contract_sha="$(git rev-parse FETCH_HEAD)"
           rm -rf /tmp/vibe2-main
           mkdir -p /tmp/vibe2-main
@@ -1276,6 +1287,7 @@ jobs:
           VIBE2_NEURON_EXPECTED_VARIANTS: ${{ matrix.expectedVariants }}
           VIBE2_NEURON_TASK_ID: ${{ matrix.taskId }}
           VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
+          VIBE2_NEURON_CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1287,7 +1299,8 @@ jobs:
               artifact_name:String(process.env.VIBE2_NEURON_ARTIFACT||''),
               expected_variants:String(process.env.VIBE2_NEURON_EXPECTED_VARIANTS||'1'),
               task_id:String(process.env.VIBE2_NEURON_TASK_ID||''),
-              reservation_id:String(process.env.VIBE2_NEURON_RESERVATION_ID||'')
+              reservation_id:String(process.env.VIBE2_NEURON_RESERVATION_ID||''),
+              contract_sha:String(process.env.VIBE2_NEURON_CONTRACT_SHA||'')
             }
           };
           process.stdout.write(JSON.stringify(payload));
