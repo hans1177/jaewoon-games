@@ -491,9 +491,6 @@ export function buildNeuralWorkerTransaction(row = {}) {
     ])])
   });
 }
-function neuralWorkerEvidence(row = {}) {
-  return buildNeuralWorkerTransaction(row).evidence;
-}
 function reusableWorkerEvidence(row = {}) {
   const evidence=[];
   const exploration=row?.exploration||{};
