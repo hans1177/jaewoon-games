@@ -147,8 +147,7 @@ const recipes=[
 {id:'meal-deer-firewolf',name:'화염 사슴구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 4초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:4},
 {id:'meal-bug-bug',name:'벌레고기 대접',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 20 회복 · 5초',kind:'consumable',hunger:100,foodRegen:20,foodRegenSeconds:5},
 {id:'meal-bug-firewolf',name:'화염 벌레구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
-{id:'meal-firewolf-firewolf',name:'화염 고기 만찬',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5}
-
+{id:'meal-firewolf-firewolf',name:'화염 고기 만찬',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5},
 {id:'croc-jaw-blade',name:'악어 턱날',where:'goldbench',cost:{crocTooth:5,crocHide:2,goldIngot:7},desc:'공격력 360 · 악어 전리품 4티어 무기',kind:'weapon',power:360,range:84,cooldown:700},
 {id:'croc-tooth-spear',name:'악어 이빨창',where:'goldbench',cost:{crocTooth:7,crocHide:1,goldIngot:6,wood:3},desc:'공격력 320 · 긴 사거리 · 악어 전리품 4티어 무기',kind:'weapon',power:320,range:122,cooldown:850},
 {id:'croc-armor',name:'악어 껍질갑옷',where:'goldbench',cost:{crocHide:8,crocTooth:3,goldIngot:8},desc:'최대 체력 +380 · 받는 피해 35% 감소 · 4티어',kind:'armor',maxHp:380,reduce:.35},
@@ -187,8 +186,7 @@ const COOKING_COMBOS={
  'forest-hare-meat|worldtree-greens':'meal-hare-greens',
  'world-bird-meat|worldtree-greens':'meal-worldbird-greens',
  'canyon-lizard-meat|worldtree-greens':'meal-canyon-greens',
- 'crystal-goat-meat|worldtree-greens':'meal-crystal-greens'
-
+ 'crystal-goat-meat|worldtree-greens':'meal-crystal-greens',
  'cooked-fish|cooked-greens':'meal-lake-fish-greens',
  'cooked-crystal-deer-meat|cooked-fish':'meal-lake-fish-deer',
  'cooked-fish|cooked-fish':'meal-lake-fish-fish',
@@ -228,8 +226,7 @@ vampirebat:{id:'vampirebat',name:'거대 흡혈 박쥐',mood:'aggressive',hp:190
 foresthare:{id:'foresthare',name:'숲토끼',mood:'harmless',hp:55,dmg:0,speed:86,r:16,color:'#b79a77',detect:0,huntable:true,foodDrop:'forest-hare-meat'},
 worldpheasant:{id:'worldpheasant',name:'세계수 꿩',mood:'harmless',hp:70,dmg:0,speed:80,r:17,color:'#6e9b62',detect:0,worldtree:true,huntable:true,foodDrop:'world-bird-meat',vegetableDrop:'worldtree-greens'},
 canyonlizard:{id:'canyonlizard',name:'협곡도마뱀',mood:'neutral',hp:105,dmg:12,speed:72,r:18,color:'#9c7b55',detect:390,attackCooldown:1100,canyon:true,foodDrop:'canyon-lizard-meat'},
-crystalgoat:{id:'crystalgoat',name:'수정염소',mood:'neutral',hp:135,dmg:16,speed:70,r:20,color:'#a58ddd',detect:420,attackCooldown:1100,crystalZone:true,foodDrop:'crystal-goat-meat'}
-
+crystalgoat:{id:'crystalgoat',name:'수정염소',mood:'neutral',hp:135,dmg:16,speed:70,r:20,color:'#a58ddd',detect:420,attackCooldown:1100,crystalZone:true,foodDrop:'crystal-goat-meat'},
 lakecroc:{id:'lakecroc',name:'거대 호수 악어',mood:'aggressive',hp:777,dmg:58,speed:88,r:31,color:'#446c48',detect:760,lakeZone:true,crocodile:true},
 lakebuffalo:{id:'lakebuffalo',name:'호수 물소',mood:'neutral',hp:560,dmg:42,speed:58,r:31,color:'#667b72',detect:440,lakeZone:true},
 crystaldeer:{id:'crystaldeer',name:'수정 사슴',mood:'neutral',hp:360,dmg:28,speed:82,r:23,color:'#90a8d8',detect:460,lakeZone:true,foodDrop:'raw-crystal-deer-meat'},
@@ -778,8 +775,7 @@ const BESTIARY_INFO={
  foresthare:{cat:'harmless',desc:'일반 숲에 한 마리씩 나타나는 온순한 토끼. 사냥하면 숲토끼고기를 얻는다.'},
  worldpheasant:{cat:'harmless',desc:'세계수 잎 사이를 돌아다니는 꿩. 고기와 함께 세계수 잎채소를 떨어뜨린다.'},
  canyonlizard:{cat:'neutral',desc:'협곡의 따뜻한 바위 위를 돌아다니는 중립 도마뱀. 사냥하면 협곡도마뱀고기를 얻는다.'},
- crystalgoat:{cat:'neutral',desc:'수정 지대의 마력을 먹고 사는 중립 염소. 사냥하면 수정염소고기를 얻는다.'}
-
+ crystalgoat:{cat:'neutral',desc:'수정 지대의 마력을 먹고 사는 중립 염소. 사냥하면 수정염소고기를 얻는다.'},
  lakecroc:{cat:'aggressive',desc:'거대 호수의 4티어 포식자. 끌고 뒤집기와 수중 데스롤을 사용한다.'},
  lakebuffalo:{cat:'neutral',desc:'거대 호숫가를 돌아다니는 중립 물소. 먼저 공격하지 않으면 조용하다.'},
  crystaldeer:{cat:'neutral',desc:'호수의 마력을 받아 수정이 돋은 중립 사슴. 수정 사슴고기를 얻을 수 있다.'},
@@ -1430,8 +1426,7 @@ const SMELT_SPECS={
  iron:{name:'철',duration:5000,has:()=>state.player.ironOre>0,take:()=>state.player.ironOre--,give:()=>{state.player.ironIngot++;rememberMaterial('ironIngot')}},
  gold:{name:'화산 금',duration:10000,has:()=>state.player.goldOre>0,take:()=>state.player.goldOre--,give:()=>{state.player.goldIngot++;rememberMaterial('goldIngot')}},
  deer:{name:'수액사슴고기',duration:10000,has:()=>invCount('raw-deer-meat')>0,take:()=>state.player.inventory['raw-deer-meat']--,give:()=>addInv('cooked-deer-meat',1)},
- bug:{name:'초거대 벌레고기',duration:15000,has:()=>invCount('raw-bug-meat')>0,take:()=>state.player.inventory['raw-bug-meat']--,give:()=>addInv('cooked-bug-meat',1)}
-
+ bug:{name:'초거대 벌레고기',duration:15000,has:()=>invCount('raw-bug-meat')>0,take:()=>state.player.inventory['raw-bug-meat']--,give:()=>addInv('cooked-bug-meat',1)},
  fish:{name:'생선',duration:10000,has:()=>invCount('raw-fish')>0,take:()=>state.player.inventory['raw-fish']--,give:()=>addInv('cooked-fish',1)},
  hare:{name:'숲토끼고기',duration:10000,has:()=>invCount('forest-hare-meat')>0,take:()=>state.player.inventory['forest-hare-meat']--,give:()=>addInv('cooked-hare-meat',1)},
  lizard:{name:'도마뱀고기',duration:10000,has:()=>invCount('canyon-lizard-meat')>0,take:()=>state.player.inventory['canyon-lizard-meat']--,give:()=>addInv('cooked-lizard-meat',1)},
