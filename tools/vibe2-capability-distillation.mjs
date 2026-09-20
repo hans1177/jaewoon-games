@@ -189,7 +189,8 @@ export function buildVerifiedCapabilityExperienceReview({task={},result={},final
   const workerOutcome=upper(result.outcome);
   const failureClass=upper(result.candidateFailure?.class||trace.verification?.candidateFailureClass);
   const success=selected===true&&finalReviewPass===true&&workerOutcome==='PASS';
-  const verifiedFailure=!success&&workerOutcome==='FAIL'&&Boolean(failureClass);
+  const failureEvidence=(result.evidence||[]).map(clean).includes(`source-generation-failure:${failureClass}`);
+  const verifiedFailure=!success&&workerOutcome==='FAIL'&&Boolean(failureClass)&&failureClass!=='OTHER'&&failureEvidence;
   if(!success&&!verifiedFailure)return null;
   const evidence=unique([
     ...(result.evidence||[]).map(clean).filter(value=>/^(actions-run:|reservation-id:|candidate-sha:|base-main:|incremental-qa-hash:|incremental-qa-failure-signature:|source-generation-failure:|causal-replay-status:|architecture-drift-status:)/.test(value)),
