@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "document.getElementById(\"scope-control-1\").addEventListener('click',scopeHandler1);",
+      "replace": "ody.dataset.audioState=muted?'muted':'running'}function advance(label){if(state.progress>=100){state.progress=state.progress%100;state.wave++;state.level++;state.resource+=2}const s=$('state');s.dataset.state='turn-'+state.turn;s.dataset.score=String(state.score);s.dataset.health=String(state.hp);s.dataset.resource=String(state.resource);s.dataset.progress=String(state.progress);$('score').textContent=state.score;$('health').textContent=state.hp;$('wave').textContent=state.wave;$('resource').textContent=state.resource;$('level').textContent=state.level;$('enemyHp').textContent=state.enemyHp;$('position').textContent=state.position;$('cooldown').textContent=state.cooldown;$('meter').style.width=Math.min(100,state.progress)+'%';$('player').style.setProperty('--pos',String(state.position));$('enemy').style.opacity=String(.35+.65*(state.enemyHp/100));if(osc)osc.frequency.setTargetAtTime(cfg.notes[state.turn%cfg.notes.length],audioCtx.currentTime,.03);$('status').textContent='STATUS: '+label+' · TURN '+state.turn+' · OBJECTIVE '+state.objective+' · ENERGY '+state.energy+' · SESSION '+cfg.sessionMinutes+'m'} async function scopeHandler1(){await ensureAudio();const button=document.getElementById(\"scope-control-1\");button.dataset.scopeCovered='true';state.turn++;state.objective++;state.score+=7;state.progress+=9;state.position=(state.position+1)%8;advance(\"scope-corefun-3007361096\")};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
