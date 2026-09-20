@@ -13,8 +13,8 @@ on:
         type: string
 
 permissions:
-  contents: read
-  actions: read
+  contents: write
+  actions: write
 
 concurrency:
   group: unity-android-runtime-smoke-${{ inputs.run_id || github.event.workflow_run.id }}
@@ -184,6 +184,131 @@ jobs:
           echo "UNITY_RUNTIME_EVIDENCE=PASS"
           echo "UNITY_RUNTIME_BUILD_ID=$BUILD_ID"
           echo "UNITY_RUNTIME_SOURCE_COMMIT=$SOURCE_COMMIT"
+
+      - name: Publish verified Unity runtime gameplay screenshot
+        id: runtime_media
+        if: success()
+        env:
+          GH_TOKEN: \${{ github.token }}
+          BUILD_ID: \${{ steps.apk.outputs.sha256 }}
+          SOURCE_COMMIT: \${{ steps.apk.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          screenshot='qa-artifacts/unity-runtime-smoke/screenshot.png'
+          if [[ ! -s "$screenshot" ]]; then
+            echo 'publish=false' >> "$GITHUB_OUTPUT"
+            echo 'UNITY_RUNTIME_SCREENSHOT_PUBLICATION=SKIPPED_EMPTY_SCREENSHOT'
+            exit 0
+          fi
+
+          status_file='/tmp/unity-runtime-company-status.json'
+          found=0
+          for attempt in 1 2 3; do
+            git fetch --no-tags --depth=1 origin company-runtime >/dev/null 2>&1 || true
+            if git show origin/company-runtime:company-status.json > "$status_file" 2>/dev/null; then
+              match="$(BUILD_ID="$BUILD_ID" SOURCE_COMMIT="$SOURCE_COMMIT" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const status=JSON.parse(fs.readFileSync('/tmp/unity-runtime-company-status.json','utf8'));
+          const build=(status.testBuilds||[]).find(row=>
+            String(row?.sha256||'')===process.env.BUILD_ID &&
+            String(row?.sourceCommit||'')===process.env.SOURCE_COMMIT &&
+            String(row?.releaseTag||'').trim()
+          );
+          if(build)process.stdout.write([build.gameId,build.releaseTag].join('\t'));
+          NODE
+              )"
+              if [[ -n "$match" ]]; then found=1; break; fi
+            fi
+            sleep $((attempt * 3))
+          done
+          if [[ "$found" != 1 ]]; then
+            echo 'publish=false' >> "$GITHUB_OUTPUT"
+            echo 'UNITY_RUNTIME_SCREENSHOT_PUBLICATION=SKIPPED_RELEASE_BINDING_NOT_READY'
+            exit 0
+          fi
+
+          IFS=
+        with:
+          name: unity-runtime-smoke-${{ steps.upstream.outputs.run_id }}
+          path: |
+            qa-artifacts/unity-runtime-smoke/
+            /tmp/jaewoon-redroid.log
+            /tmp/jaewoon-redroid-device.txt
+            /tmp/jaewoon-redroid-docker.txt
+            /tmp/jaewoon-redroid-adb-connect.txt
+            /tmp/jaewoon-redroid-inspect.json
+          if-no-files-found: warn
+          retention-days: 14\t' read -r game_id release_tag <<<"$match"
+          [[ -n "$game_id" && -n "$release_tag" ]]
+          short="\${BUILD_ID:0:12}"
+          asset_name="\${game_id}-runtime-\${short}.png"
+          media_file="$RUNNER_TEMP/$asset_name"
+          cp "$screenshot" "$media_file"
+          gh release upload "$release_tag" "$media_file#$asset_name" --repo "$GITHUB_REPOSITORY" --clobber
+          media_url="https://github.com/\${GITHUB_REPOSITORY}/releases/download/\${release_tag}/\${asset_name}"
+          {
+            echo 'publish=true'
+            echo "game_id=$game_id"
+            echo "release_tag=$release_tag"
+            echo "asset_name=$asset_name"
+            echo "url=$media_url"
+          } >> "$GITHUB_OUTPUT"
+          echo "UNITY_RUNTIME_SCREENSHOT_PUBLICATION=PASS:$game_id:$asset_name"
+
+      - name: Persist exact-build Unity runtime screenshot evidence
+        if: steps.runtime_media.outputs.publish == 'true'
+        env:
+          GH_TOKEN: \${{ github.token }}
+          MEDIA_GAME_ID: \${{ steps.runtime_media.outputs.game_id }}
+          MEDIA_URL: \${{ steps.runtime_media.outputs.url }}
+          MEDIA_RELEASE_TAG: \${{ steps.runtime_media.outputs.release_tag }}
+          BUILD_ID: \${{ steps.apk.outputs.sha256 }}
+          SOURCE_COMMIT: \${{ steps.apk.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-unity-runtime-media'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3; do
+            git fetch --no-tags origin company-runtime
+            git checkout -B unity-runtime-media-sync origin/company-runtime
+            BUILD_ID="$BUILD_ID" SOURCE_COMMIT="$SOURCE_COMMIT" MEDIA_GAME_ID="$MEDIA_GAME_ID" MEDIA_URL="$MEDIA_URL" MEDIA_RELEASE_TAG="$MEDIA_RELEASE_TAG" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='company-status.json';
+          const status=JSON.parse(fs.readFileSync(file,'utf8'));
+          const build=(status.testBuilds||[]).find(row=>
+            String(row?.gameId||'')===process.env.MEDIA_GAME_ID &&
+            String(row?.sha256||'')===process.env.BUILD_ID &&
+            String(row?.sourceCommit||'')===process.env.SOURCE_COMMIT &&
+            String(row?.releaseTag||'')===process.env.MEDIA_RELEASE_TAG
+          );
+          if(!build)throw new Error('exact Unity test build missing for runtime screenshot persist');
+          build.runtimeScreenshot={
+            version:1,
+            platform:'UNITY',
+            captureType:'UNITY_ANDROID_RUNTIME',
+            url:process.env.MEDIA_URL,
+            verified:true,
+            buildId:process.env.BUILD_ID,
+            sourceRevision:process.env.SOURCE_COMMIT,
+            capturedAt:new Date().toISOString(),
+            workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,
+            source:'ANDROID_RUNTIME_SMOKE_ADB_SCREENCAP'
+          };
+          fs.writeFileSync(file,JSON.stringify(status,null,2)+'\n');
+          NODE
+            git add company-status.json
+            if git diff --cached --quiet; then persisted=1; break; fi
+            git commit -m 'runtime: bind verified Unity gameplay screenshot [skip ci]'
+            if git push origin HEAD:company-runtime; then persisted=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
+          gh workflow run homepage-manager.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'UNITY_RUNTIME_SCREENSHOT_RUNTIME_PERSIST=PASS'
+          echo 'UNITY_RUNTIME_SCREENSHOT_HOMEPAGE_REFRESH=DISPATCHED'
 
       - name: Upload Unity runtime QA evidence
         if: always()
