@@ -33080,13 +33080,364 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_e20bf08661bfac4f50456d71",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "253217c4241ddeff498e8d1cc0a4b91b07b9a0c0",
+        "variant": "primary",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "ensureAudio",
+          "advance"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35495309643-1",
+        "candidateSha": "f0ccbc140a5aa81ab9cacc3234a4bb4ee995735d"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 319975,
+        "candidateMs": 271728,
+        "qaMs": 89
+      },
+      "evidenceRefs": [
+        "actions-run:35495309643",
+        "reservation-id:35495309643:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_5f2cab7a8f2259a49041a482",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "253217c4241ddeff498e8d1cc0a4b91b07b9a0c0",
+        "variant": "speculative-1",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "ensureAudio",
+          "advance"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-speculative-1-35495309643-1",
+        "candidateSha": "e3655e0f729ffd0d7069de1f6432df95f8eddba9"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 302131,
+        "candidateMs": 270699,
+        "qaMs": 92
+      },
+      "evidenceRefs": [
+        "actions-run:35495309643",
+        "reservation-id:35495309643:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_cbd49d858ee87c34f5d91475",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "253217c4241ddeff498e8d1cc0a4b91b07b9a0c0",
+        "variant": "speculative-2",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "ensureAudio",
+          "advance"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-speculative-2-35495309643-1",
+        "candidateSha": "c09a288227dbb55dc658ea42ccb9c6b26aea9c69"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 316643,
+        "candidateMs": 271514,
+        "qaMs": 96
+      },
+      "evidenceRefs": [
+        "actions-run:35495309643",
+        "reservation-id:35495309643:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 9,
+    "added": 3,
     "refreshed": 0,
-    "total": 282,
+    "total": 285,
     "verified": 43,
-    "failures": 161
+    "failures": 164
   }
 }
