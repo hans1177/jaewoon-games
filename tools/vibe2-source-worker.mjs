@@ -711,13 +711,13 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     }catch{}
   }
   const rows=[];
-  const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\\w$]{1,80}$/.test(name));
+  const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
       const escaped=regexEscape(symbol);
       const patterns=[
-        new RegExp('function\\\\s+'+escaped+'\\\\s*\\\\([^)]{0,180}\\\\)\\\\s*\\\\{'),
-        new RegExp('(?:const|let|var)\\\\s+'+escaped+'\\\\s*=\\\\s*[^;\\\\n]{1,320};?')
+        new RegExp('function\\s+'+escaped+'\\s*\\([^)]{0,180}\\)\\s*\\{'),
+        new RegExp('(?:const|let|var)\\s+'+escaped+'\\s*=\\s*[^;\\n]{1,320};?')
       ];
       for(const pattern of patterns){
         const match=fullSource.match(pattern);
