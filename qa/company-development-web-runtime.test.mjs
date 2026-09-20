@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,approvedScopeRequirement,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
-import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
+import {summarizePresentationRuntimeSamples,summarizeActionPresentationEvidence,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -387,4 +387,47 @@ test('presentation runtime marker must be exposed by the live DOM',()=>{
   assert.equal(evidence.presentation.contractExposed,false);
   assert.equal(evidence.presentation.pass,false);
   assert.equal(evidence.presentation.status,'FAIL');
+});
+
+
+test('action presentation gate requires attack flow, hit response, VFX, SFX and mobile-friendly controls',()=>{
+  const actionEvidence=[{
+    mechanicId:'weapon-attack',label:'공격',
+    presentationEvent:{
+      motionStates:['attack','hit'],
+      actionPhases:['windup','active','recovery'],
+      vfxPeak:2,audioNodeDelta:1,canvasChanged:true,audioEvents:['sword-hit']
+    }
+  }];
+  const passed=summarizeActionPresentationEvidence({
+    required:true,qualityVersion:2,actionEvidence,
+    before:{smallControlCount:0,bottomActionCount:3}
+  });
+  assert.equal(passed.pass,true);
+  assert.equal(passed.actionFlowObserved,true);
+  assert.equal(passed.vfxObserved,true);
+  assert.equal(passed.sfxObserved,true);
+  assert.equal(passed.mobileUi.pass,true);
+});
+
+test('action presentation gate rejects model-like static combat and inconvenient mobile controls',()=>{
+  const failed=summarizeActionPresentationEvidence({
+    required:true,qualityVersion:1,
+    actionEvidence:[{mechanicId:'attack',label:'공격',presentationEvent:{motionStates:['idle'],actionPhases:['active'],vfxPeak:0,audioNodeDelta:0,canvasChanged:false,audioEvents:[]}}],
+    before:{smallControlCount:2,bottomActionCount:0}
+  });
+  assert.equal(failed.pass,false);
+  assert.equal(failed.attackMotion,false);
+  assert.equal(failed.actionFlowObserved,false);
+  assert.equal(failed.vfxObserved,false);
+  assert.equal(failed.sfxObserved,false);
+  assert.equal(failed.mobileUi.pass,false);
+});
+
+test('preplatform Web prompt requires coherent action presentation and intuitive mobile UI',()=>{
+  const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
+  assert.match(source,/data-presentation-quality-version="2"/);
+  assert.match(source,/선행동작\(anticipation\/windup\).*타격\(active\/contact\).*회수\(recovery\/follow-through\)/);
+  assert.match(source,/몬스터는 승인된 세계관.*생태.*전투 역할/);
+  assert.match(source,/모바일.*전투 버튼|전투 버튼.*모바일|모바일 UI|엄지/);
 });
