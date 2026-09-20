@@ -146,7 +146,7 @@
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL",
-    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_HAS_NO_FIXED_INTERNAL_CAP_AND_STARTS_AT_EXTERNAL_CAPACITY_BOUNDARY",
+    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_AND_PLANNING_BOUND; GAME_PRIMARY_HAS_NO_FIXED_INTERNAL_CAP; BASELINE_AND_PRESSURE_FLOOR_20; VERIFIED_HEALTHY_TELEMETRY_SELF_EXPANDS",
     "developmentFirstScheduling": {
       "enabled": true,
       "gameImplementationBeforeNonblockingSupervision": true,
@@ -185,11 +185,11 @@
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "GAME_PRIMARY has no fixed internal concurrency cap. It starts at the current external provider boundary and may temporarily downshift through verified-pressure adaptive steps; 20 has no special authority.",
+      "note": "GAME_PRIMARY has no fixed internal concurrency cap. It starts from baseline 20, never downshifts below 20 under pressure, and self-expands 20→32→64→128→256 when verified healthy saturation allows; 256 is the current external provider wave boundary.",
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
-      "baselineTarget": 256,
-      "adaptiveMinActiveWorkers": 4,
+      "baselineTarget": 20,
+      "adaptiveMinActiveWorkers": 20,
       "adaptiveMaxActiveWorkers": 256
     },
     "planningBacklog": {
@@ -214,8 +214,8 @@
         "fanInOnlyRefill": false,
         "adaptiveGameControlEligible": true,
         "capacityAwareFreeSlotRefill": true,
-        "adaptiveBaselineTarget": 256,
-        "adaptiveMinActiveWorkers": 4,
+        "adaptiveBaselineTarget": 20,
+        "adaptiveMinActiveWorkers": 20,
         "adaptiveMaxActiveWorkers": 256
       },
       "RECOVERY_FAST": {
@@ -291,19 +291,21 @@
     "lowWorkloadBuildsRecoveryStreak": false,
     "immediateDynamicCapMayAlsoDownshiftPersistentCap": false,
     "duplicateRunMayChangePersistentCap": false,
-    "missingStateFallbackMax": 256,
-    "corruptStateFallbackMax": 256,
+    "missingStateFallbackMax": 20,
+    "corruptStateFallbackMax": 20,
     "fastHealthyRamp": true,
     "staleTelemetryTtlMinutes": 90,
-    "staleTelemetryResetsToMax": true,
+    "staleTelemetryResetsToMax": false,
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
     "externalBatchMax": 256,
-    "ownerMinimumWaveAuthority": "SUPERSEDED_BY_OWNER_DIRECTIVE_2026-09-20_SELF_ADAPTIVE",
-    "ownerMinimumWaveAppliedTo": [],
-    "minimumAdaptiveWave": 4,
-    "baselineAdaptiveWave": 256,
-    "staleTelemetryResetTarget": 256
+    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-20_PRESSURE_FLOOR_20_SELF_ADAPTIVE_EXPANSION",
+    "ownerMinimumWaveAppliedTo": [
+      "GAME_PRIMARY"
+    ],
+    "minimumAdaptiveWave": 20,
+    "baselineAdaptiveWave": 20,
+    "staleTelemetryResetTarget": 20
   },
   "sources": {
     "queue": ".vibe2/queue.json",
