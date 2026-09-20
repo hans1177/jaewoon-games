@@ -7,7 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
-import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
+import { diagnoseGame, microTaskFromIssue, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
 import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 
@@ -294,6 +294,40 @@ function webRepairImplementationHints(evidence=[]){
   add(/REAL_GAME_FOOTPRINT_TOO_SMALL|REAL_GAME_LOGIC_TOO_SMALL/,'문자 수를 채우지 말고 위 검증 실패를 해결하는 실제 gameplay 로직·상태·입력 연결을 추가한다.');
   return [...new Set(hints)].slice(0,8);
 }
+function exactRepairDiagnosticCarryover(gameId='',queue={tasks:[]},repoRelative=''){
+  const id=clean(gameId),target=posix(repoRelative),prefix=`web-games/${id}/`;
+  const localFile=target.startsWith(prefix)?target.slice(prefix.length):target;
+  if(!id||!localFile)return[];
+  const severityRank={critical:4,high:3,medium:2,low:1};
+  const candidates=[];
+  for(const item of Array.isArray(queue?.tasks)?queue.tasks:[]){
+    if(clean(item?.gameId)!==id)continue;
+    const evidence=(item?.evidence||[]).map(clean).filter(Boolean);
+    for(const marker of evidence.filter(value=>value.startsWith('diagnostic-key:'))){
+      const payload=clean(marker.slice('diagnostic-key:'.length)),at=payload.indexOf(':');
+      if(at<=0)continue;
+      const type=clean(payload.slice(0,at)).toUpperCase(),file=posix(payload.slice(at+1));
+      if(file!==localFile||!evidence.includes(`diagnostic:${type}`))continue;
+      const system=diagnosticResponsibleSystem(type);
+      if(!system)continue;
+      const severityMarker=evidence.find(value=>value.startsWith('diagnostic-severity:'))||'';
+      const severity=clean(severityMarker.slice('diagnostic-severity:'.length)).toLowerCase();
+      candidates.push({type,file,system,severity,score:severityRank[severity]||0,evidence});
+    }
+  }
+  const selected=candidates.sort((a,b)=>b.score-a.score||a.type.localeCompare(b.type))[0];
+  if(!selected)return[];
+  const originalRepairMode=selected.evidence.find(value=>value==='repair-mode:MODEL'||value==='repair-mode:RULE_PATCH')||'';
+  return[
+    `diagnostic:${selected.type}`,
+    `diagnostic-key:${selected.type}:${selected.file}`,
+    selected.severity?`diagnostic-severity:${selected.severity}`:'',
+    originalRepairMode,
+    `diagnostic-responsibility-shadow:${selected.system}`,
+    'diagnostic-carryover:EXACT_WEB_REPAIR'
+  ].filter(Boolean);
+}
+
 function findWebAssessmentTask(project,repoRoot,queue){
   if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
@@ -319,7 +353,8 @@ function findWebAssessmentTask(project,repoRoot,queue){
       ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}${runtimeHintContext}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
       :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
     const goal=`[WEB_REPAIR] 게임: ${project.name||project.gameId}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
-    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game']);out.ownerDirective=true;out.speculativeEligible=false;return out;
+    const diagnosticCarryover=exactRepairDiagnosticCarryover(project.gameId,queue,relative);
+    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game',...diagnosticCarryover]);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
   const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
@@ -519,6 +554,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
         }
         if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
           const game=catalogGames.get(gameId)||{};
+          const diagnosticCarryover=exactRepairDiagnosticCarryover(gameId,queue,indexPath);
           const runtimeFailureEvidence=compactRuntimeFailureEvidence({
             requestedStage:runtimeItem?.vibeWebRequestedStage,
             implementationReason:runtimeItem?.vibeWebImplementationReason,
@@ -537,9 +573,12 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
               ||clean(item?.productionMode)==='SUPERVISED_VIBE_COAUTHORING'
               ||(item?.evidence||[]).map(clean).includes('supervised-web-build:required');
             if(supervised){
-              return{...item,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+              return{...item,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
             }
-            return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+            return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+          }
+          if(diagnosticCarryover.length){
+            return{...item,evidence:[...new Set([...(item.evidence||[]),...diagnosticCarryover,'company-runtime-diagnostic-bridge:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
           }
         }
         return item;
