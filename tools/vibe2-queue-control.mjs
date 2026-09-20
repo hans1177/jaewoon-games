@@ -18,6 +18,7 @@ import {
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
+import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -422,7 +423,9 @@ function neuralWorkerFeedback(row = {}) {
   });
 }
 function neuralWorkerEvidence(row = {}) {
-  return neuralFeedbackEvidence(neuralWorkerFeedback(row));
+  const feedback=neuralWorkerFeedback(row);
+  const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback});
+  return [...neuralFeedbackEvidence(feedback),...neuralCriticEvidence(critic)];
 }
 function reusableWorkerEvidence(row = {}) {
   const evidence=[];
