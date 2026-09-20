@@ -128,3 +128,13 @@ test('repeated source-generation postcondition failure predicts the next pipelin
   assert.equal(d.pipelinePrediction.calibrationTarget,'NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE');
   assert.equal(d.pipelinePrediction.advisoryOnly,true);
 });
+
+test('ordinary no-op prohibition text does not masquerade as observed source-generation failure',()=>{
+  const d=buildNeuralDiagnosis({task:{
+    goal:'기존 구조를 직접 수정하고 no-op 수정은 금지한다',
+    evidence:['routing-blocker=MOBILE_TOUCH_ACTION_NOT_CONNECTED']
+  }});
+  assert.equal(d.responsibility.system,'GAME_INPUT');
+  assert.equal(d.pipelinePrediction.nextBlockingSystem,'GAME_INPUT');
+  assert.equal(d.pipelinePrediction.basis,'RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER');
+});
