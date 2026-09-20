@@ -1,5 +1,5 @@
 {
-  "version": 53,
+  "version": 54,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1651,5 +1651,43 @@
     "gameplayMutationWithoutApprovedDesign": false,
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "authorityExpansion": false
+  },
+  "securityRecoveryTopology": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralContract": "company-learning/platform-release-roadmap.json::developmentLifecycleMachine.securityImmuneSystem",
+    "securityPolicy": "company-learning/security-immune-system.json",
+    "incidentResolution": {
+      "tool": "tools/company-security-incident.mjs",
+      "contractTest": "qa/company-security-steward.test.mjs",
+      "authorizedPolicyReviewSourceIdentity": {
+        "exactPullRequestUrl": true,
+        "exactPullRequestReviewAnchor": true,
+        "reviewAnchorRequiresNumericId": true,
+        "adjacentPullRequestUrlRejected": true,
+        "pullRequestFilesViewRejected": true,
+        "queryStringRejected": true,
+        "issueCommentFragmentRejected": true,
+        "nonNumericReviewAnchorRejected": true
+      }
+    },
+    "verifiedImplementation": {
+      "sourcePr": 1968,
+      "mergedCommit": "0bc52a266f2e218f50e938298cf6ec869284b55b",
+      "implementationCommit": "98afb3a7da0508fe22b8ded04f07df8900d7265c",
+      "companySecurityImmuneSystemRunId": 35496240787,
+      "scan": "PASS",
+      "enforce": "PASS",
+      "incidentRecord": "SKIPPED_NO_INCIDENT"
+    },
+    "unchangedAuthority": {
+      "existingRecoveryQueueOnly": true,
+      "workerCreation": false,
+      "queueMutation": false,
+      "waveReorder": false,
+      "lockOrPolicyMutationByRuntime": false,
+      "directMainPromotion": false,
+      "authorityChange": "NONE"
+    }
   }
 }
