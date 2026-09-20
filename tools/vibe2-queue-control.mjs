@@ -17,7 +17,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
-import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
+import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -524,7 +524,8 @@ export function applyVibeFanInResults(queueInput, results = []) {
     queue = settled.queue;
     applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback });
   }
-  return { queue, applied, summary: summarizeVibeContinuousQueue(queue) };
+  const neuralCalibration=summarizeNeuralFeedbackEvidence(queue.tasks.flatMap(task=>Array.isArray(task.evidence)?task.evidence:[]));
+  return { queue, applied, summary: summarizeVibeContinuousQueue(queue), neuralCalibration };
 }
 
 export function runQueueCommand(args = {}) {
