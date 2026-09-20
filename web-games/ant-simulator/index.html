@@ -62,7 +62,7 @@ addEventListener('resize',resize);resize();
 function showNotice(t){$('notice').textContent=t;$('notice').classList.add('on');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove('on'),1700)}
 function seeded(n){let x=Math.sin(n*91.133+17.71)*43758.5453;return x-Math.floor(x)}
 function newId(prefix){return prefix+(entitySeq++)}
-function spawnWorld(){
+function spawnWorld(){ state.ants=[];state.queens=[];state.bugs=[];state.food=[];entitySeq=1; Object.entries(factions).forEach(([f,c])=>{ state.queens.push({id:newId('q'),faction:f,x:c.x,y:c.y,hp:600,maxHp:600}); for(let i=0;i<10;i++){const a=i/10*TAU,rr=115+(i%3)*28;state.ants.push({id:newId('a'),faction:f,classId:i<4?'soldier':'worker',x:c.x+Math.cos(a)*rr,y:c.y+Math.sin(a)*rr,hp:i<4?150:95,maxHp:i<4?150:95,vx:0,vy:0,wander:0,target:null,attackAt:0});} }); for(let i=0;i<120;i++){const x=250+seeded(i+11)*(WORLD.w-500),y=250+seeded(i+101)*(WORLD.h-500);state.food.push({id:newId('f'),x,y,amount:3+Math.floor(seeded(i+211)*5),active:true});} const typeList=['spider','spider','spider','roach','roach','beetle','beetle','ladybug','ladybug','butterfly','butterfly']; for(let i=0;i<45;i++){const typeId=typeList[i%typeList.length],t=bugTypes[typeId];state.bugs.push({id:newId('b'),typeId,x:400+seeded(i+401)*(WORLD.w-800),y:400+seeded(i+601)*(WORLD.h-800),hp:t.hp,maxHp:t.hp,vx:0,vy:0,wander:0,attackAt:0,provoked:false});} } spawnWorld();
  state.ants=[];state.queens=[];state.bugs=[];state.food=[];entitySeq=1;
  Object.entries(factions).forEach(([f,c])=>{
   state.queens.push({id:newId('q'),faction:f,x:c.x,y:c.y,hp:600,maxHp:600});
