@@ -846,7 +846,8 @@
       "coding_1v3lrgt",
       "coding_htyzma",
       "coding_17n0pf4",
-      "coding_nnqxf2"
+      "coding_nnqxf2",
+      "coding_1p5ug7t"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3524,26 +3525,26 @@
         "lastUpdatedAt": "2026-09-20T10:05:41.957Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
-        "verifiedApplications": 2,
+        "verifiedApplications": 3,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 4,
+        "totalGenerationAttempts": 6,
         "verifiedFailures": 3,
         "games": {
-          "seed-puzzle-chromatic-cascade": 2
+          "seed-puzzle-chromatic-cascade": 3
         },
         "targets": {
-          "web": 2
+          "web": 3
         },
         "contextModes": {
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "verifiedFailures": 0,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 4,
-            "totalContextBytes": 42300,
-            "lastEvidence": "coding_18xhfqz",
+            "totalGenerationAttempts": 6,
+            "totalContextBytes": 63450,
+            "lastEvidence": "coding_1p5ug7t",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T10:05:41.952Z"
+            "lastUpdatedAt": "2026-09-20T10:13:11.658Z"
           }
         },
         "failureFingerprints": {
@@ -3588,28 +3589,28 @@
             "lastUpdatedAt": "2026-09-20T07:24:22.900Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 4,
+            "totalGenerationAttempts": 6,
             "verifiedFailures": 0,
             "games": {
-              "seed-puzzle-chromatic-cascade": 2
+              "seed-puzzle-chromatic-cascade": 3
             },
             "targets": {
-              "web": 2
+              "web": 3
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_18xhfqz",
+            "lastEvidence": "coding_1p5ug7t",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T10:05:41.952Z"
+            "lastUpdatedAt": "2026-09-20T10:13:11.658Z"
           }
         },
-        "state": "OBSERVED",
-        "lastEvidence": "coding_18xhfqz",
+        "state": "VERIFIED",
+        "lastEvidence": "coding_1p5ug7t",
         "lastFailureEvidence": "coding_negative_1f765qy",
-        "lastUpdatedAt": "2026-09-20T10:05:41.952Z"
+        "lastUpdatedAt": "2026-09-20T10:13:11.658Z"
       }
     }
   },
@@ -5990,7 +5991,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T10:08:24.591Z",
+    "lastBuiltAt": "2026-09-20T10:13:11.683Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -7308,5 +7309,5 @@
       "knowledge_awbs9j"
     ]
   },
-  "updatedAt": "2026-09-20T10:08:24.591Z"
+  "updatedAt": "2026-09-20T10:13:11.683Z"
 }
