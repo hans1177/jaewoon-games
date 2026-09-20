@@ -212,3 +212,116 @@ jobs:
     with:
       request_file: ${{ needs.route.outputs.request_file }}
     secrets: inherit
+
+  phase4-native-evidence:
+    needs: [route, local, cloud]
+    if: always() && needs.cloud.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    continue-on-error: true
+    steps:
+      - name: Checkout exact Unity candidate/runtime source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build Phase 4 Unity native completion payload
+        env:
+          REQUEST_FILE: ${{ needs.route.outputs.request_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$REQUEST_FILE"
+          game_id="$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));process.stdout.write(String(r.gameId||''))")"
+          test -n "$game_id"
+          export GAME_ID="$game_id"
+          node <<'NODE' > /tmp/vibe2-phase4-unity-native-completion.json
+          const fs=require('fs');
+          const path=require('path');
+          const gameId=String(process.env.GAME_ID||'').trim();
+          const files=[];
+          const walk=dir=>{
+            if(!fs.existsSync(dir))return;
+            for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+              const full=path.join(dir,entry.name);
+              if(entry.isDirectory())walk(full);
+              else if(entry.isFile()&&entry.name==='manifest.json')files.push(full);
+            }
+          };
+          walk('.vibe2/candidates');
+          const matches=[];
+          for(const file of files){
+            try{
+              const m=JSON.parse(fs.readFileSync(file,'utf8'));
+              const p=m?.phase4BenchmarkVerification;
+              if(String(m?.gameId||'').trim()!==gameId)continue;
+              if(String(m?.target||'').trim().toLowerCase()!=='unity')continue;
+              if(p?.active!==true||String(p?.role||'').trim().toUpperCase()!=='CHALLENGER')continue;
+              matches.push({m,p,file});
+            }catch{}
+          }
+          if(matches.length!==1){
+            process.stdout.write(JSON.stringify({version:1,capabilityBenchmarkNativeCompletions:[],reason:matches.length?'AMBIGUOUS_PHASE4_CHALLENGER':'NO_PHASE4_CHALLENGER'},null,2)+'\n');
+            process.exit(0);
+          }
+          const {p}=matches[0];
+          const completion={
+            capabilityId:String(p.capabilityId||'').trim(),
+            caseId:String(p.caseId||'').trim(),
+            pairId:String(p.pairId||'').trim(),
+            gameId,
+            engine:'unity',
+            unseenProblemFingerprint:String(p.unseenProblemFingerprint||'').trim(),
+            nativeRuntimeVerified:true,
+            evidence:[
+              'phase4-native-runtime:UNITY_ANDROID16_ARM64_CLOUD_PASS',
+              'actions-run:'+String(process.env.GITHUB_RUN_ID||'').trim(),
+              'candidate-sha:'+String(process.env.GITHUB_SHA||'').trim()
+            ]
+          };
+          if(!completion.capabilityId||!completion.caseId||!completion.pairId||!completion.unseenProblemFingerprint){
+            process.stdout.write(JSON.stringify({version:1,capabilityBenchmarkNativeCompletions:[],reason:'INCOMPLETE_PHASE4_IDENTITY'},null,2)+'\n');
+            process.exit(0);
+          }
+          process.stdout.write(JSON.stringify({version:1,capabilityBenchmarkNativeCompletions:[completion]},null,2)+'\n');
+          NODE
+
+      - name: Persist Unity native benchmark completion without release authority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          count="$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe2-phase4-unity-native-completion.json','utf8'));process.stdout.write(String((p.capabilityBenchmarkNativeCompletions||[]).length))")"
+          if [ "$count" != 1 ]; then
+            echo 'VIBE2_PHASE4_UNITY_NATIVE_COMPLETION=SKIPPED_NO_ELIGIBLE_CHALLENGER'
+            exit 0
+          fi
+          rm -rf /tmp/vibe2-control /tmp/vibe2-main-contract
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
+          git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-unity-native-evidence'
+          git config user.email 'vibe2-unity-native-evidence@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3; do
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-experience-control.mjs \
+              --memory="$PWD/.vibe2/experience.json" \
+              --batch-review=/tmp/vibe2-phase4-unity-native-completion.json | tee /tmp/vibe2-phase4-unity-native-completion.log
+            if git diff --quiet -- .vibe2/experience.json; then
+              persisted=1
+              break
+            fi
+            git add .vibe2/experience.json
+            git commit -m "vibe2: bind Unity native Phase4 evidence [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              persisted=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
+          echo 'VIBE2_PHASE4_UNITY_NATIVE_COMPLETION=BOUND_OR_ALREADY_PRESENT'
