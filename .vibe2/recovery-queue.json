@@ -2599,7 +2599,7 @@
     },
     {
       "id": "recovery-1280249776fe150c64d0",
-      "status": "queued",
+      "status": "verified",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-35435328190",
@@ -2610,7 +2610,10 @@
       "checkpoint": null,
       "evidence": [
         "security-run:35435328190",
-        "security-report:artifact-35435328190"
+        "security-report:artifact-35435328190",
+        "recovery-outcome:PASS",
+        "primary-ai-recovery-review:PASS",
+        "remediation-pr:1923"
       ],
       "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
       "verificationPlan": [
@@ -2619,18 +2622,33 @@
         "REGRESSION_RESCAN",
         "PRIMARY_AI_SECURITY_REVIEW"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "remediation-pr:1923",
+        "remediation-merge:2d74e04795898f3bf92e1693a9fdca86e136ffeb",
+        "pr-security-run:35492280487",
+        "pr-security-artifact:10598894589",
+        "pr-regression-run:35492280474",
+        "pr-main-write-guard-run:35492280473",
+        "merge-security-run:35492320665",
+        "merge-security-artifact:10599890209",
+        "merge-main-write-guard-run:35492320670",
+        "generator-run:35492320708",
+        "current-source-direct-main-write:NO",
+        "security-rescan:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
       "recoveryOwner": "SYSTEM_AI",
-      "primaryAiReview": "PENDING",
+      "primaryAiReview": "PASS",
       "learningPromotion": "PENDING",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T09:44:38.666Z",
-      "updatedAt": "2026-09-19T09:44:38.666Z"
+      "updatedAt": "2026-09-20T05:46:10.213Z"
     },
     {
       "id": "recovery-67897fa9ac9ccb2ce866",
-      "status": "queued",
+      "status": "verified",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-35435490393",
@@ -2641,7 +2659,10 @@
       "checkpoint": null,
       "evidence": [
         "security-run:35435490393",
-        "security-report:artifact-35435490393"
+        "security-report:artifact-35435490393",
+        "recovery-outcome:PASS",
+        "primary-ai-recovery-review:PASS",
+        "remediation-pr:1923"
       ],
       "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
       "verificationPlan": [
@@ -2650,14 +2671,29 @@
         "REGRESSION_RESCAN",
         "PRIMARY_AI_SECURITY_REVIEW"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "remediation-pr:1923",
+        "remediation-merge:2d74e04795898f3bf92e1693a9fdca86e136ffeb",
+        "pr-security-run:35492280487",
+        "pr-security-artifact:10598894589",
+        "pr-regression-run:35492280474",
+        "pr-main-write-guard-run:35492280473",
+        "merge-security-run:35492320665",
+        "merge-security-artifact:10599890209",
+        "merge-main-write-guard-run:35492320670",
+        "generator-run:35492320708",
+        "current-source-direct-main-write:NO",
+        "security-rescan:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
       "recoveryOwner": "SYSTEM_AI",
-      "primaryAiReview": "PENDING",
+      "primaryAiReview": "PASS",
       "learningPromotion": "PENDING",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T09:45:34.367Z",
-      "updatedAt": "2026-09-19T09:45:34.368Z"
+      "updatedAt": "2026-09-20T05:46:10.213Z"
     },
     {
       "id": "recovery-dfc4a640416f2e1ccfe3",
