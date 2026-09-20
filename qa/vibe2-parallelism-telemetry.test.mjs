@@ -208,11 +208,13 @@ test('run-local queue backpressure prevents a second persistent downshift',()=>{
   assert.equal(next.lastReason,'RUN_LOCAL_BACKPRESSURE_ACTIVE');
 });
 
-test('low workload never teaches the controller to reduce capacity',()=>{
+test('low worker count with verified runner pressure still downshifts one level',()=>{
   const telemetry=computeParallelismTelemetry({results:Array.from({length:5},(_,i)=>row(i,{start:1000+i*5000,end:4000+i*5000,runId:'203'})),requestedMax:16,effectiveMax:16,taskCount:5});
+  assert.equal(telemetry.bottleneck,'RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION');
   const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:16}),telemetry,{now:'2026-09-15T10:02:00.000Z'});
-  assert.equal(next.currentMax,16);
-  assert.equal(next.lastReason,'LOW_LOAD');
+  assert.equal(next.currentMax,8);
+  assert.equal(next.lastDecision,'DOWN');
+  assert.equal(next.lastReason,'RUNNER_CAPACITY');
 });
 
 test('healthy saturated runs fast-ramp one adaptive step per run',()=>{
