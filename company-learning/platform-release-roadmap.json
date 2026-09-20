@@ -1,5 +1,5 @@
 {
-  "version": 189,
+  "version": 190,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6382,7 +6382,9 @@
         "authorityChange": "NONE",
         "currentSecurityFollowupPr": 1826,
         "currentSecurityFollowupState": "MERGED_MAIN",
-        "currentSecurityFollowupCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
+        "currentSecurityFollowupCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3",
+        "readinessHardeningPr": 1825,
+        "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
       }
     },
     "phase1Implementation": {
@@ -6721,11 +6723,13 @@
           "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79"
         },
         "distinctEvidenceHardening": {
-          "state": "CANDIDATE_BRANCH",
+          "state": "MERGED_MAIN",
           "branch": "assistant/neural-shadow-readiness-consolidated-v1",
           "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY",
           "executionAuthorityChange": "NONE",
-          "legacyEvidenceRule": "VISIBLE_FOR_AUDIT_BUT_EXCLUDED_FROM_REVIEW_VOLUME_THRESHOLDS"
+          "legacyEvidenceRule": "VISIBLE_FOR_AUDIT_BUT_EXCLUDED_FROM_REVIEW_VOLUME_THRESHOLDS",
+          "sourcePr": 1825,
+          "mergedCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
         }
       },
       "sampleIdentity": {
@@ -6759,7 +6763,7 @@
       "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY",
       "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
       "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
-      "syncedMainHead": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
+      "syncedMainHead": "d86c3a65d4687115791748234cc1046c69541465"
     },
     "currentWaveExecution": {
       "mode": "CAPACITY_AWARE_FREE_SLOT_REFILL",
@@ -6887,8 +6891,9 @@
           "pr": 1825,
           "branch": "assistant/neural-shadow-readiness-consolidated-v1",
           "purpose": "DISTINCT_DURABLE_READINESS_EVIDENCE_AND_LIVE_SHADOW_STATE_CONSOLIDATION",
-          "status": "CI_PENDING",
-          "authorityChange": "NONE"
+          "status": "MERGED_MAIN",
+          "authorityChange": "NONE",
+          "mergedCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
         },
         {
           "pr": 1826,
@@ -6898,7 +6903,14 @@
           "authorityChange": "NONE",
           "mergedCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
         }
-      ]
+      ],
+      "postMergeState": {
+        "readinessHardeningPr": 1825,
+        "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d",
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "neuralExecutionAuthority": false,
+        "nextGate": "OBSERVE_NEXT_PRODUCTION_WAVE_WITH_IDENTIFIED_DISTINCT_SHADOW_EVIDENCE"
+      }
     }
   }
 }
