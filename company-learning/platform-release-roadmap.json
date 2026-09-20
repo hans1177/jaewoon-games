@@ -1,5 +1,5 @@
 {
-  "version": 201,
+  "version": 202,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -5124,7 +5124,8 @@
           "vibe2CoreQa": "PASS",
           "securityImmuneSystem": "PASS",
           "mainWriteGuard": "PASS",
-          "vibe3EngineContract": "PASS"
+          "vibe3EngineContract": "PASS",
+          "fanInVerificationRepair": "PASS"
         },
         "authority": {
           "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
@@ -5142,7 +5143,18 @@
           "OTHER_AI_PR_PROVENANCE_NOT_YET_DURABLY_CAPTURED_AS_CAPABILITY_TRACE",
           "VERIFIED_CAPABILITY_RETRIEVAL_NOT_YET_EXPLICITLY_INJECTED_AS_A_DISTINCT_WORK_ORDER_LAYER"
         ],
-        "nextGate": "PHASE_2_MERGED_PR_PROVENANCE_CAPTURE_AND_VERIFIED_CAPABILITY_RETRIEVAL_WITHOUT_RAW_OUTPUT_STORAGE_OR_AUTHORITY_EXPANSION"
+        "nextGate": "PHASE_2_MERGED_PR_PROVENANCE_CAPTURE_AND_VERIFIED_CAPABILITY_RETRIEVAL_WITHOUT_RAW_OUTPUT_STORAGE_OR_AUTHORITY_EXPANSION",
+        "fanInVerificationBindingRepair": {
+          "state": "MERGED_MAIN",
+          "sourcePr": 1887,
+          "mergedCommit": "99e3c6992a88067056a09004f7c048f144b8e036",
+          "problem": "SELECTED_SUCCESS_TRACE_RETAINED_WORKER_TIME_WAITING_FAN_IN_ROLE_STATE",
+          "correction": "BIND_REGRESSION_AND_REVIEW_PASS_ONLY_AFTER_EXACT_SELECTED_SAMPLE_IDENTITY_PASSES_PACKAGE_FAN_IN",
+          "blockedOrUnselectedTracePromotion": false,
+          "provenanceOnlyPreserved": true,
+          "verifiedTraceRequiresExactSelectedFanInPass": true,
+          "authorityChange": "NONE"
+        }
       }
     }
   },
