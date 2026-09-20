@@ -52,8 +52,18 @@ test('telemetry exposes any accidental authority bit as safety invariant failure
   assert.equal(parsed.length,1);
   const summary=summarizeNeuralEventShadowEvidence(rows);
   assert.equal(summary.unauthorizedFireCount,1);
+  assert.equal(summary.unauthorizedAuthorityCount,1);
   assert.equal(summary.safetyInvariantPass,false);
   assert.equal(summary.phase2AuthorityReady,false);
+});
+
+test('telemetry catches lock policy learning and promotion authority accidents',()=>{
+  for(const field of ['lockAcquisitionAllowed','policyMutationAllowed','learningEligible','authorityPromotionEligible']){
+    const summary=summarizeNeuralEventShadowEvidence([marker({eventId:'probe-'+field,[field]:true})]);
+    assert.equal(summary.unauthorizedAuthorityCount,1,field);
+    assert.equal(summary.unauthorizedFireCount,1,field);
+    assert.equal(summary.safetyInvariantPass,false,field);
+  }
 });
 
 
