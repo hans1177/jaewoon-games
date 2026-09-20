@@ -11,12 +11,15 @@ description: "중앙정책에 따라 실제 Web companion과 선택된 native �
 
 1. 최신 owner 직접 지시와 `company-learning/platform-release-roadmap.json` 중앙 머신 정책을 읽는다.
 2. 현재 게임의 `productionClass`, 잠긴 DESIGN_BASELINE, approved scope, 선택 플랫폼, 기존 Web/native source와 최신 검증 evidence를 확인한다.
-3. 기존 실제 Web 게임이 있으면 재생성보다 보존·재검증을 우선한다.
-4. canonical pipeline의 현재 책임 단계만 수행한다. 별도 wrapper/shadow/bypass 파이프라인을 만들지 않는다.
+3. Web 구현 전에 승인 설계·최신 아트북을 기준으로 게임별 아트 방향과 Style Lock을 먼저 확정한다. 팔레트·조명·실루엣·재질/외곽선·배경 톤·몬스터 생태/전투 역할·VFX 밀도·모션 과장도·UI 모션 언어가 서로 맞아야 한다.
+4. 기존 실제 Web 게임이 있으면 재생성보다 보존·재검증을 우선한다.
+5. canonical pipeline의 현재 책임 단계만 수행한다. 별도 wrapper/shadow/bypass 파이프라인을 만들지 않는다.
 
 ## DEVELOPMENT_CONFIRMED Web 계약
 
 Web은 단순 테스트 하네스나 밑그림이 아니라 모든 게임에 필요한 **실제 플레이 가능한 Web companion**이다. 다만 초기 제작 단계에서 30분 전체 분량을 한 번에 강제하지 않는다.
+
+그래픽·배경·캐릭터/몬스터 표현·모션은 플랫폼 단계로 미루지 않는다. Web부터 게임별 아트 방향과 지역 맥락에 맞게 실제 구현하고, 이모지·단순 도형·임시 모형 몹·컨셉과 맞지 않는 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death를 실제 게임 상태에 연결하고 공격·피격·사망 전환, VFX, SFX를 동일한 실제 이벤트 시점에 맞춘다.
 
 초기 제작 최소 단위는 반드시 `ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE`이다.
 
@@ -105,7 +108,8 @@ Web strict 점수는 공통 구현 품질 60점 + 장르별 품질 40점 = 100�
 
 ## Presentation Pipeline 구현 상태
 
-- Web 표현 품질은 `ASSET_ADAPTATION → LIVING_MOTION → ANIMATION_FEEL → VFX → AUDIO_FEEL → CAMERA_LANGUAGE → POLISH_MOBILE` 순서로 진행한다.
-- 마지막 POLISH가 실제 완료된 뒤에만 gameplay root 또는 body에 `data-presentation-quality-version="1"`을 선언한다.
+- Web 표현 품질은 게임별 `ART_DIRECTION_STYLE_LOCK → ASSET_ADAPTATION → LIVING_MOTION → ANIMATION_FEEL → VFX → AUDIO_FEEL → CAMERA_LANGUAGE → POLISH_MOBILE` 순서로 진행한다.
+- 액션·전투 중심 Web은 위 표현 구현이 실제 완료된 뒤에만 gameplay root 또는 body에 `data-presentation-quality-version="2"` 이상을 선언한다. 비전투 게임도 중앙 정책의 해당 presentation contract를 실제 런타임으로 만족해야 한다.
 - 이 표시는 장식용 메타데이터가 아니라 canonical Playwright 런타임 품질 게이트 활성화 계약이다.
-- 표시만 추가하고 실제 모션·프레임·오디오·모바일 품질을 구현하지 않는 것은 금지한다.
+- 표시만 추가하거나 정적인 모형/배경으로 실제 모션·프레임·오디오·모바일 품질을 대신하는 것은 금지한다.
+- Web의 표현 런타임과 독립 재검증이 통과하기 전에는 Roblox/Unity/UEFN으로 표현 완성 책임을 넘기지 않는다.
