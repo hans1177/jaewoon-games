@@ -7,6 +7,17 @@ const lower=v=>clean(v).toLowerCase();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const hash=v=>crypto.createHash('sha256').update(String(v??''),'utf8').digest('hex').slice(0,12);
 const occurrenceMarker=evidence=>{const x=(evidence||[]).map(clean).find(v=>v.startsWith('architecture-signal-occurrence-count:'));return x?Number(x.split(':').at(-1))||0:0;};
+function neuralExpansionReadiness(controlInput={}){
+  const r=controlInput?.neuralExpansionReadiness&&typeof controlInput.neuralExpansionReadiness==='object'
+    ?controlInput.neuralExpansionReadiness:{};
+  const required=['rule1QaPass','rule2QaPass','rule3QaPass','atomicNeuronFanInQaPass','sharedContextQaPass','securityQaPass'];
+  const missing=required.filter(key=>r[key]!==true);
+  return Object.freeze({
+    pass:missing.length===0,
+    missing:Object.freeze(missing),
+    source:clean(r.source)||'RUNTIME_QA_EVIDENCE'
+  });
+}
 
 function signatureOf(task={}){
   const blocker=clean(task.blocker),outcome=clean(task.lastOutcome);
@@ -65,6 +76,7 @@ function nextGeneration(queue,signature,count){
 }
 export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput={}){
   let queue=createVibeContinuousQueue(queueInput);
+  const readiness=neuralExpansionReadiness(controlInput);
   const signals=structuralSignals(queue),added=[];
   for(const signal of signals){
     const generation=nextGeneration(queue,signal.signature,signal.count);
@@ -82,8 +94,11 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
         '현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.',
         '최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.',
         '필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.',
+        readiness.pass
+          ?'제1·2·3규칙, 원자 뉴런/fan-in, shared-context, security QA가 모두 PASS다. 구조적 원인이 타당하면 신경망 노드/연결/라우팅/학습 구조 확대를 대안으로 선택할 수 있다. 신경망 확대는 실행 권한 확대와 다르며 기존 권한은 그대로 유지한다.'
+          :'신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.',
         '구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.',
-        '권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.'
+        '실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.'
       ].join('\n'),
       evidence:[
         'vibe-self-architecture-evolution','architecture-proposal-required','architecture-alternatives-required:2',
@@ -92,15 +107,20 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
         'architecture-total-evolution-generation-limit:NONE','architecture-busy-loop-forbidden',
         'architecture-before-after-comparison-required','architecture-regression-required','architecture-security-required','architecture-system-construction-allowed',
         'architecture-authority-expansion:NO','architecture-gate-weakening:NO',
-        'architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-allowed:NO'
+        'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
+        'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
+        `architecture-neural-expansion-readiness:${readiness.pass?'PASS':'PENDING'}`,
+        `architecture-neural-expansion-allowed:${readiness.pass?'YES':'NO'}`,
+        ...readiness.missing.map(key=>`architecture-neural-expansion-missing:${key}`)
       ],
       completionCriteria:[
         'STRUCTURAL_CAUSE_VERIFIED','AT_LEAST_TWO_ALTERNATIVES_COMPARED','DIRECT_RESPONSIBLE_SYSTEM_CHANGED_OR_VERIFIED_NO_CHANGE',
         'SAME_FAILURE_REPRODUCTION_RECHECKED','RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED',
-        'AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED'
+        'AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED',
+        ...(readiness.pass?['NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF','NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_BEFORE_AFTER_IMPROVEMENT']:[])
       ]
     });
   }
   if(added.length)queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:[...(queue.tasks||[]),...added]});
-  return{queue,signals,added,changed:added.length>0,totalGenerationLimit:null,proposalGenerationLimit:null};
+  return{queue,signals,added,changed:added.length>0,totalGenerationLimit:null,proposalGenerationLimit:null,neuralExpansionReadiness:readiness};
 }
