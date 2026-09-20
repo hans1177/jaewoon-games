@@ -37,7 +37,8 @@
     "candidateGenerationAloneIsNotLearning": true,
     "qaGateWeakeningForbidden": true,
     "authorityExpansionForbidden": true,
-    "protectedGameplayMutationRequiresOwnerAuthorization": true
+    "protectedGameplayMutationRequiresOwnerAuthorization": true,
+    "documentationSelfReferenceRule": "TRACE_MAINTENANCE_AND_POLICY_SYNC_MAY_BE_SUMMARIZED_ONCE_PER_WORK_SESSION_TO_AVOID_INFINITE_SELF_LOGGING"
   },
   "reusableFields": {
     "reusablePatterns": "Patterns verified safe and useful for future same-game/same-engine retrieval.",
@@ -192,6 +193,36 @@
         "runtime/supervisor final decision still pending"
       ],
       "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_coauthoring_trace_contract_20260920",
+      "date": "2026-09-20",
+      "gameId": "SYSTEM",
+      "actionType": "RELEASE_OR_PROMOTION_DECISION",
+      "problem": "Assistant-led coauthoring work could be lost as ephemeral chat context unless every review, source change, QA result, and decision is persisted in a learnable evidence contract.",
+      "decision": "Require a same-session coauthoring trace for every assistant action category and bind verified outcomes to the existing Vibe Experience Memory and canonical training pipeline only.",
+      "change": "Added the assistant coauthoring trace store, central roadmap contract, and Vibe learning motor binding. Raw trace is provenance only; verified PASS/REVISE/DROP is required before reusable learning.",
+      "evidence": [
+        "trace-store-commit:9f59d01e09ed9ad8e67aec5cb0565b679e0605ec",
+        "roadmap-v161-commit:251cb67ee064ab8fd9a1d4b6813e4e5801e0af44",
+        "learning-motor-v4-commit:519315bf9ea0321212e8d7b4917df8127d0e50cd"
+      ],
+      "reusablePatterns": [
+        "DOCUMENT_ASSISTANT_ACTIONS_IN_SAME_WORK_SESSION",
+        "PROMOTE_ONLY_VERIFIED_SUPERVISION_OUTCOMES",
+        "REUSE_EXISTING_EXPERIENCE_AND_CANONICAL_TRAINING_PIPELINE"
+      ],
+      "avoidPatterns": [
+        "EPHEMERAL_CHAT_ONLY_LEARNING",
+        "RAW_TRACE_DIRECT_RETRIEVAL",
+        "SHADOW_LEARNING_PIPELINE",
+        "UNVERIFIED_ACTION_AS_POSITIVE_MASTERY"
+      ],
+      "qa": [
+        "policy paths and promotion gates are explicit",
+        "raw trace authority remains provenance-only"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
     }
   ]
 }
