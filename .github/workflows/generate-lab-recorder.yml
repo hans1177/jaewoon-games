@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -50,27 +51,31 @@ jobs:
             /tmp/lab-recorder-final.mpga
           test -s /tmp/lab-recorder-final.mpga
           ls -lh /tmp/lab-recorder-final.mpga
-      - name: Commit generated audio safely
+      - name: Publish generated audio through review PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git lfs install --local
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            mkdir -p web-games/fantasy-survival/audio
-            cp /tmp/lab-recorder-final.mpga web-games/fantasy-survival/audio/lab-recorder.mpga
-            git add web-games/fantasy-survival/audio/lab-recorder.mpga
-            if git diff --cached --quiet; then
-              echo "Audio already current"
-              exit 0
-            fi
-            git commit -m "fix: publish Korean recorder as browser-compatible MPEG audio"
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            echo "Push raced with another writer; retrying on latest main"
-            sleep 2
-          done
-          echo "Failed to publish generated audio after retries"
-          exit 1
+          git fetch origin main
+          git reset --hard origin/main
+          branch="automation/lab-recorder-audio-${GITHUB_RUN_ID}"
+          git checkout -B "$branch"
+          mkdir -p web-games/fantasy-survival/audio
+          cp /tmp/lab-recorder-final.mpga web-games/fantasy-survival/audio/lab-recorder.mpga
+          git add web-games/fantasy-survival/audio/lab-recorder.mpga
+          if git diff --cached --quiet; then
+            echo "Audio already current"
+            exit 0
+          fi
+          git commit -m "fix: publish Korean recorder as browser-compatible MPEG audio"
+          git push origin "HEAD:refs/heads/$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "fix: publish Korean recorder audio" \
+            --body "Generated audio update from workflow run ${GITHUB_RUN_ID}. Direct-main writes are forbidden; merge only after normal review and CI."
+          echo "LAB_RECORDER_DIRECT_MAIN_WRITE=NO"
+          echo "LAB_RECORDER_REVIEW_PR_CREATED=YES"
