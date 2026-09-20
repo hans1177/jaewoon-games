@@ -2,6 +2,7 @@
 // DESIGN_BASELINE -> 실제 Web 게임 생성/보존. 기존 실게임은 보존하고, 설계 구현이 부족한 기존 소스는 Vibe2가 직접 보완한다.
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {Script} from 'node:vm';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
@@ -81,8 +82,9 @@ async function requestWebContractExternalAdvisory({gameId='',plan={}}={}){
     const body=await response.json();
     const raw=clean((body?.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
     if(!raw)return{used:false,provider:'GEMINI',model,reason:'GEMINI_EMPTY_RESPONSE',suggestedBindings:[],repairTargets:[]};
+    const rawOutputSha256=crypto.createHash('sha256').update(raw).digest('hex');
     const parsed=JSON.parse(raw);
-    return{used:true,provider:'GEMINI',model,reason:null,...sanitizeExternalAdvisory(parsed)};
+    return{used:true,provider:'GEMINI',model,rawOutputSha256,reason:null,...sanitizeExternalAdvisory(parsed)};
   }catch(error){
     return{used:false,provider:'GEMINI',reason:'GEMINI_ADVISORY_ERROR:'+clean(error?.message||error).slice(0,220),suggestedBindings:[],repairTargets:[]};
   }
