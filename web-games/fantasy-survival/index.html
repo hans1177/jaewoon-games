@@ -240,10 +240,11 @@ function weatherParticleBudget(){
  return 1
 }
 function nextWeatherKind(){
- const roll=Math.random(),current=validWeatherKind(state.weather?.kind);
- const candidate=roll<.34?'CLEAR':roll<.58?'RAIN':roll<.76?'FOG':roll<.88?'STORM':'SNOW';
- if(candidate===current&&Math.random()<.65)return candidate==='CLEAR'?'RAIN':'CLEAR';
- return candidate
+ const roll=Math.random();
+ if(roll<.10)return'SNOW';
+ if(roll<.30)return'RAIN';
+ if(roll<.45)return'FOG';
+ return'CLEAR'
 }
 function setWeather(kind,{fromNetwork=false,changedAt=Date.now(),nextAt=0,seed=null}={}){
  const resolved=validWeatherKind(kind),w=state.weather||(state.weather={});
