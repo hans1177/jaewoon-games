@@ -32,6 +32,7 @@ on:
       - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
+      - 'tools/vibe2-merged-pr-provenance.mjs'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -59,6 +60,7 @@ on:
       - 'qa/vibe2-existing-web-assessment.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-capability-distillation.test.mjs'
+      - 'qa/vibe2-merged-pr-provenance.test.mjs'
       - 'qa/vibe2-central-work-contract.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-work-package.test.mjs'
@@ -79,6 +81,7 @@ on:
       - 'qa/vibe2-web-experience-ingest.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/vibe2-merged-pr-provenance.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-recovery-fast.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -106,6 +109,7 @@ on:
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
+      - 'tools/vibe2-merged-pr-provenance.mjs'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -127,6 +131,7 @@ on:
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/vibe2-merged-pr-provenance.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-recovery-fast.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -176,6 +181,7 @@ jobs:
           node --check tools/vibe2-existing-web-assessment.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-capability-distillation.mjs
+          node --check tools/vibe2-merged-pr-provenance.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -216,6 +222,7 @@ jobs:
           node --check qa/vibe2-existing-web-assessment.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-capability-distillation.test.mjs
+          node --check qa/vibe2-merged-pr-provenance.test.mjs
           node --check qa/vibe2-central-work-contract.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-work-package.test.mjs
@@ -246,6 +253,7 @@ jobs:
           node --test qa/vibe2-existing-web-assessment.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-capability-distillation.test.mjs
+          node --test qa/vibe2-merged-pr-provenance.test.mjs
           node --test qa/vibe2-central-work-contract.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-work-package.test.mjs

@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 
 import {
   buildObservableCodingTrace,
   buildVerifiedCapabilityExperienceReview,
-  mergeCodingTraceLedger
+  mergeCodingTraceLedger,
+  retrieveVerifiedCapabilities,
+  verifiedCapabilityGuidance
 } from '../tools/vibe2-capability-distillation.mjs';
 
 const task={
@@ -157,4 +160,106 @@ test('ambiguous OTHER failure is provenance only and cannot become a reusable fa
   const trace=buildObservableCodingTrace({task,result:ambiguous});
   assert.equal(trace.verification.candidateFailureClass,'OTHER');
   assert.equal(buildVerifiedCapabilityExperienceReview({task,result:ambiguous,finalReviewPass:false,selected:false}),null);
+});
+
+
+test('explicit capability retrieval selects only verified reusable capability experiences',()=>{
+  const experienceInput={records:[
+    {
+      id:'cap_verified',
+      gameId:'bug-defense',
+      engine:'web',
+      departments:['development','qa'],
+      taskType:'coding-capability-distillation',
+      problem:'save restore bug',
+      goal:'repair save flow',
+      change:'strategy RESPONSIBILITY_FIRST',
+      outcome:'PASS',
+      qa:['full-fan-in-regression-pass'],
+      evidence:['actions-run:200','fan-in-review:PASS'],
+      reusablePatterns:['CAPABILITY:CODING_STRATEGY:RESPONSIBILITY_FIRST','CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING'],
+      avoidPatterns:[],
+      verified:true
+    },
+    {
+      id:'general_verified',
+      gameId:'bug-defense',
+      engine:'web',
+      departments:['development'],
+      taskType:'general',
+      problem:'save restore bug',
+      goal:'repair save flow',
+      change:'generic lesson',
+      outcome:'PASS',
+      evidence:['actions-run:201'],
+      reusablePatterns:['GENERAL_ONLY'],
+      verified:true
+    },
+    {
+      id:'cap_unrelated',
+      gameId:'other-game',
+      engine:'unity',
+      taskType:'coding-capability-distillation',
+      problem:'camera cinematic framing',
+      goal:'improve boss camera',
+      change:'camera strategy',
+      outcome:'PASS',
+      evidence:['actions-run:202'],
+      reusablePatterns:['CAPABILITY_DOMAIN:CAMERA_LANGUAGE'],
+      verified:true
+    },
+    {
+      id:'cap_unverified',
+      gameId:'bug-defense',
+      engine:'web',
+      taskType:'coding-capability-distillation',
+      problem:'save restore bug',
+      goal:'repair save flow',
+      change:'unverified',
+      outcome:'PASS',
+      evidence:['attempt-only'],
+      reusablePatterns:['SHOULD_NOT_APPEAR'],
+      verified:false
+    }
+  ]};
+  const retrieval=retrieveVerifiedCapabilities({
+    experienceInput,
+    task:{gameId:'bug-defense',target:'web',department:'development',goal:'repair save restore flow',responsibleFiles:['web-games/bug-defense/index.html']}
+  });
+  assert.equal(retrieval.kind,'verified-coding-capability-retrieval');
+  assert.equal(retrieval.count,1);
+  assert.equal(retrieval.records[0].id,'cap_verified');
+  assert.equal(retrieval.verifiedOnly,true);
+  assert.equal(retrieval.rawTraceUsed,false);
+  assert.equal(retrieval.rawCodeUsed,false);
+  assert.equal(retrieval.writableScopeExpansionAllowed,false);
+  assert.equal(retrieval.qaBypassAllowed,false);
+  assert.equal(retrieval.authorityExpanded,false);
+
+  const guidance=verifiedCapabilityGuidance(retrieval);
+  assert.match(guidance,/VERIFIED CAPABILITY MEMORY/);
+  assert.match(guidance,/RESPONSIBILITY_FIRST/);
+  assert.doesNotMatch(guidance,/GENERAL_ONLY/);
+  assert.doesNotMatch(guidance,/SHOULD_NOT_APPEAR/);
+  assert.doesNotMatch(guidance,/CAMERA_LANGUAGE/);
+  assert.match(guidance,/MUST NOT expand writable scope/);
+});
+
+test('capability guidance is empty when no verified capability matches exist',()=>{
+  const retrieval=retrieveVerifiedCapabilities({
+    experienceInput:{records:[]},
+    task:{gameId:'unknown',target:'web',goal:'new task'}
+  });
+  assert.equal(retrieval.count,0);
+  assert.equal(verifiedCapabilityGuidance(retrieval),'');
+});
+
+
+test('continuous runner explicitly injects verified capability memory as a distinct advisory layer',()=>{
+  const source=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
+  assert.match(source,/retrieveVerifiedCapabilities/);
+  assert.match(source,/verifiedCapabilityMemoryGuidance/);
+  assert.match(source,/executionGoal = \[.*verifiedCapabilityMemoryGuidance/s);
+  assert.match(source,/verifiedCapabilityMemoryAppliedToWorkerGoal/);
+  assert.match(source,/VIBE2_VERIFIED_CAPABILITY_COUNT/);
 });
