@@ -546,3 +546,46 @@ test('phase 4 reviewed deprecation or supersession removes capability from retri
   assert.equal(retrieval.records.some(row=>row.id==='cap-phase4-supersede'),false);
   assert.equal(retrieval.deprecatedOrSupersededRetrievalEligible,false);
 });
+
+
+test('phase 4 practice control gets zero capabilities and challenger gets only exact candidate',()=>{
+  const base=(id,gameId)=>({
+    id,gameId,engine:'web',departments:['development'],taskType:'coding-capability-distillation',
+    problem:'save restore ordering',goal:'repair save restore',change:'verified save strategy',outcome:'PASS',
+    evidence:['actions-run:510','fan-in-review:PASS'],reusablePatterns:['CAPABILITY:SAVE_RESTORE'],verified:true,
+    capabilityApplications:[
+      {applicationId:id+'-a',taskId:id+'-a',workKey:'ga:web:save',gameId:'ga',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:id+'-b',taskId:id+'-b',workKey:'gb:web:save',gameId:'gb',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  });
+  const experienceInput={records:[base('cap-target','source-a'),base('cap-other','source-b')]};
+  const commonEvidence=[
+    'learning-practice-only',
+    'phase4-generalization-screen-only',
+    'phase4-capability-id:cap-target',
+    'phase4-benchmark-pair:pair-1',
+    'phase4-unseen-game:holdout-game',
+    'phase4-unseen-problem-fingerprint:fp-holdout'
+  ];
+  const control=retrieveVerifiedCapabilities({
+    experienceInput,
+    task:{gameId:'holdout-game',target:'web',goal:'unseen unrelated holdout',evidence:[...commonEvidence,'phase4-benchmark-role:CONTROL']}
+  });
+  assert.equal(control.count,0);
+  assert.equal(control.phase4BenchmarkScreen,true);
+  assert.equal(control.phase4BenchmarkRole,'CONTROL');
+  assert.equal(control.phase4ExactCapabilityIsolation,true);
+  assert.equal(verifiedCapabilityGuidance(control),'');
+
+  const challenger=retrieveVerifiedCapabilities({
+    experienceInput,
+    task:{gameId:'holdout-game',target:'web',goal:'unseen unrelated holdout',evidence:[...commonEvidence,'phase4-benchmark-role:CHALLENGER']}
+  });
+  assert.equal(challenger.count,1);
+  assert.equal(challenger.records[0].id,'cap-target');
+  assert.deepEqual(challenger.records[0].reasons,['phase4-benchmark-exact-target']);
+  assert.equal(challenger.phase4BenchmarkRole,'CHALLENGER');
+  assert.equal(challenger.phase4ExactCapabilityIsolation,true);
+  assert.match(verifiedCapabilityGuidance(challenger),/cap-target/);
+  assert.doesNotMatch(verifiedCapabilityGuidance(challenger),/cap-other/);
+});
