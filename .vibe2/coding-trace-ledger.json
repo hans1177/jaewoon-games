@@ -30210,13 +30210,1835 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_f2368e2dafb92dae24e517a0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "primary",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "advance",
+          "ensureAudio"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35494959392-1",
+        "candidateSha": "388d6b74878b4bb7c7c685599a53be0b805aa74e"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 302891,
+        "candidateMs": 268521,
+        "qaMs": 83
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_9e420d79033dffeecb68426b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-1",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "advance",
+          "ensureAudio"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-speculative-1-35494959392-1",
+        "candidateSha": "6cd7086647b901e804b6666bd1e49c0b3c82196f"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 304825,
+        "candidateMs": 268887,
+        "qaMs": 91
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_54624a9fd6bd19ca94a72272",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-2",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "advance",
+          "ensureAudio"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-speculative-2-35494959392-1",
+        "candidateSha": "4fd152befa0f8aa2f6f990fb598b453690950187"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 320578,
+        "candidateMs": 268089,
+        "qaMs": 90
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_81b2474140975d7e0d4d621b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "monster-adventure-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "monster-adventure",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 몬스터 어드벤처\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-3d162bbbec|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-c6398c898e|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-5bae1b38a2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-79f736cab9|APPROVED_SCOPE_ITEM_MISSING:s"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "gameLoop",
+          "updateGameState"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "SAVE",
+          "PROGRESSION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 5406,
+        "failureFingerprint": "web|MALFORMED_OUTPUT|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/monster-adventure-web-runtime-repair-v1-primary-35494959392-1",
+        "candidateSha": "e9482f428a43920ab5b9fb3c27c31cd2d616d0c0"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 292611,
+        "candidateMs": 261325,
+        "qaMs": 76
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:ded8739dcf57bf15633fc1969635d4bb2a0ea4f864c2b050a476d7d776baaae5"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_72aa00be8e2b3ff40c02b50f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "monster-adventure-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "monster-adventure",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 몬스터 어드벤처\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-3d162bbbec|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-c6398c898e|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-5bae1b38a2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-79f736cab9|APPROVED_SCOPE_ITEM_MISSING:s"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "gameLoop",
+          "updateGameState"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "SAVE",
+          "PROGRESSION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 5406,
+        "failureFingerprint": "web|MALFORMED_OUTPUT|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/monster-adventure-web-runtime-repair-v1-speculative-1-35494959392-1",
+        "candidateSha": "d9c2edf14b4987c37ee047df4efab01828212678"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 297746,
+        "candidateMs": 254099,
+        "qaMs": 58
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:ded8739dcf57bf15633fc1969635d4bb2a0ea4f864c2b050a476d7d776baaae5"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_15a5bad11f225f97ccef46c8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "monster-adventure-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "monster-adventure",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 몬스터 어드벤처\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-3d162bbbec|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-c6398c898e|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-5bae1b38a2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-79f736cab9|APPROVED_SCOPE_ITEM_MISSING:s"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "gameLoop",
+          "updateGameState"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "SAVE",
+          "PROGRESSION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 5406,
+        "failureFingerprint": "web|MALFORMED_OUTPUT|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/monster-adventure-web-runtime-repair-v1-speculative-2-35494959392-1",
+        "candidateSha": "fed0bc5a1f51eb694f0442395381a11b1a271d09"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 296562,
+        "candidateMs": 261196,
+        "qaMs": 74
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:ded8739dcf57bf15633fc1969635d4bb2a0ea4f864c2b050a476d7d776baaae5"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_85c9f7f2e3996fb10d13f4a5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 색채의 연쇄\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-eed82538ec|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-191bcc8970|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-62f2f81cf4|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T05:56:58.642Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actSurvival",
+          "actDefense",
+          "renderPuzzle",
+          "clusterAt"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLACEMENT",
+          "CORE_STATE",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 21150,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/seed-puzzle-chromatic-cascade-web-runtime-repair-v1-primary-35494959392-1",
+        "candidateSha": "62844905fc66bd53f280cd0940e285f529ae0aef"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 327750,
+        "candidateMs": 285232,
+        "qaMs": 73
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:365277d8dba62611d3e053a9051e74feadc117d11f2be07370f097239eb659a4"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_2bcc91336fc8206af9f63d91",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 색채의 연쇄\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-eed82538ec|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-191bcc8970|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-62f2f81cf4|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T05:56:58.642Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actSurvival",
+          "actDefense",
+          "renderPuzzle",
+          "clusterAt"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLACEMENT",
+          "CORE_STATE",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 21150,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/seed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35494959392-1",
+        "candidateSha": "5735f5782e938daa7c3828614c226094dde3e580"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 320006,
+        "candidateMs": 285971,
+        "qaMs": 79
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:365277d8dba62611d3e053a9051e74feadc117d11f2be07370f097239eb659a4"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_597e0183db81cc6f1cd21e75",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 색채의 연쇄\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-eed82538ec|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-191bcc8970|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-62f2f81cf4|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T05:56:58.642Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actSurvival",
+          "actDefense",
+          "renderPuzzle",
+          "clusterAt"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLACEMENT",
+          "CORE_STATE",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 21150,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": true,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/seed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-2-35494959392-1",
+        "candidateSha": "232704a9df547a9e23d691f97de75f1ef1b29d2e"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 186152,
+        "candidateMs": 141270,
+        "qaMs": 51
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:365277d8dba62611d3e053a9051e74feadc117d11f2be07370f097239eb659a4"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_996f801035a76bd935f5c3b5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T05:56:26.130Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actSurvival",
+          "actDefense",
+          "renderPuzzle",
+          "clusterAt"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLACEMENT",
+          "CORE_STATE",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 20319,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/seed-single-defense-strat-celestial-bastion-web-runtime-repa-primary-35494959392-1",
+        "candidateSha": "14412677ea59fb87db5033341e73ae66dc86cf90"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 312629,
+        "candidateMs": 271275,
+        "qaMs": 80
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:9c92dbe27dfc45ec7d38d39b7cb8f72a680bad3db22285396ea0267285c020dd"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_b1311a057664a62b3c6be96f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T05:56:26.130Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actSurvival",
+          "actDefense",
+          "renderPuzzle",
+          "clusterAt"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLACEMENT",
+          "CORE_STATE",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 20319,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/seed-single-defense-strat-celestial-bastion-web-runtime-repa-speculative-1-35494959392-1",
+        "candidateSha": "cc15a9a37cebb41fc930bda4bbc2e81e8b2c9858"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 304315,
+        "candidateMs": 271343,
+        "qaMs": 75
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:9c92dbe27dfc45ec7d38d39b7cb8f72a680bad3db22285396ea0267285c020dd"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_f1afd8320ee958e15034b6c8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-single-defense-strat-celestial-bastion",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T05:56:26.130Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "actSurvival",
+          "actDefense",
+          "renderPuzzle",
+          "clusterAt"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLACEMENT",
+          "CORE_STATE",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 20319,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/seed-single-defense-strat-celestial-bastion-web-runtime-repa-speculative-2-35494959392-1",
+        "candidateSha": "009c0c903010d5571fabbaac7a7cbf57ed4d6dba"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 306480,
+        "candidateMs": 272041,
+        "qaMs": 80
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:9c92dbe27dfc45ec7d38d39b7cb8f72a680bad3db22285396ea0267285c020dd"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_758679b5897ffeb7ab5cc67e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-corel"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 23079,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-primary-35494959392-1",
+        "candidateSha": "abc8e17c112c42b5fa3d1c3e5094e4219bd2a4e5"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 297911,
+        "candidateMs": 265017,
+        "qaMs": 73
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:51758e75f47ca45adfa93b15dfa768e6f7a1ef4d4214a9b7fef5fd3cecf06770"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_e3031fed21e595c20becfc50",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-corel"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 23079,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-speculative-1-35494959392-1",
+        "candidateSha": "8a57bd7a39417d324b14a4faaa753b7bd1642db8"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 232047,
+        "candidateMs": 184285,
+        "qaMs": 61
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:51758e75f47ca45adfa93b15dfa768e6f7a1ef4d4214a9b7fef5fd3cecf06770"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_1246b0c09d1f9344e01df110",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-corel"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 23079,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-speculative-2-35494959392-1",
+        "candidateSha": "02e7eb7c26527469fbe256783dda0fe0040e76e9"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 269434,
+        "candidateMs": 236818,
+        "qaMs": 79
+      },
+      "evidenceRefs": [
+        "actions-run:35494959392",
+        "reservation-id:35494959392:1",
+        "incremental-qa-hash:51758e75f47ca45adfa93b15dfa768e6f7a1ef4d4214a9b7fef5fd3cecf06770"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 6,
+    "added": 15,
     "refreshed": 0,
-    "total": 258,
-    "verified": 38,
-    "failures": 152
+    "total": 273,
+    "verified": 42,
+    "failures": 155
   }
 }
