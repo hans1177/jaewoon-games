@@ -42,9 +42,20 @@ const repair=createVibeRepairLoop({attempts:[{candidateId:'c',state:'FAIL',failu
 assert.equal(repair.state,'REPAIR_REQUIRED');
 assert.equal(repair.failureClass,'RUNTIME');
 assert.equal(repair.attemptsRemaining,2);
-const trajectory=createVibeTrajectoryRecord({request:'combat fix',sourceGraph:graph,tournament,repairLoop:repair,finalEvidence:{runtime:'PASS'}});
+const trajectory=createVibeTrajectoryRecord({request:'combat fix',sourceGraph:graph,tournament,repairLoop:repair,finalEvidence:{runtime:'PASS',qaPassed:true,regressionPassed:true}});
 assert.equal(trajectory.outcome,'VERIFIED_WINNER');
 assert.equal(trajectory.learningUse.failedCandidatesPreserved,true);
+assert.equal(trajectory.learningUse.observableCodingTraceCaptured,true);
+assert.equal(trajectory.observableCodingTrace.boundary,'OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY');
+assert.equal(trajectory.observableCodingTrace.hiddenReasoningPersisted,false);
+assert.equal(trajectory.observableCodingTrace.positivePromotionAuthority,false);
+assert(trajectory.observableCodingTrace.capabilityDomains.includes('RESPONSIBILITY_LOCALIZATION'));
+assert(trajectory.observableCodingTrace.capabilityDomains.includes('FAILURE_RECOVERY'));
+assert(trajectory.observableCodingTrace.capabilityDomains.includes('QA_DESIGN'));
+assert(trajectory.observableCodingTrace.capabilityDomains.includes('REGRESSION_REASONING'));
+assert(trajectory.observableCodingTrace.steps.some(step=>step.stage==='CANDIDATE_EVALUATION'&&step.candidateId==='c'));
+assert(trajectory.observableCodingTrace.steps.some(step=>step.stage==='REPAIR_ATTEMPT'&&step.failureClass==='RUNTIME'));
+assert(trajectory.observableCodingTrace.steps.some(step=>step.stage==='FINAL_VERIFICATION'));
 
 const execution=createVibeV3ExecutionContract();
 assert.equal(execution.version,3);
