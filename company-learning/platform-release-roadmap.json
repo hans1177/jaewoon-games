@@ -1083,7 +1083,10 @@
               "TARGET_PLATFORM_SMOKE",
               "FOCUSED_REGRESSION",
               "EXACT_ARTIFACT_RELEASE_GATE"
-            ]
+            ],
+            "priority": "IMMEDIATE",
+            "interruptsOtherUpdateWork": true,
+            "redeployAsSoonAsRelevantEvidencePasses": true
           },
           "MINOR": {
             "intent": "SMALL_FEATURE_ENHANCEMENT_OR_LOW_RISK_QUALITY_IMPROVEMENT",
@@ -1134,7 +1137,10 @@
         "skipUnrelatedFullRepositoryWork": true,
         "requiredRelevantQaCannotBeSkipped": true,
         "exactSourceAndArtifactBindingRequired": true,
-        "existingReleasePromotionGateStillRequired": true
+        "existingReleasePromotionGateStillRequired": true,
+        "hotfixPreemptsMinorAndMajor": true,
+        "bugFixesFirst": true,
+        "fastResponseCannotSkipRequiredRelevantQa": true
       },
       "majorUpdatePreparationPolicy": {
         "prepareBeforePublicVersionChange": true,
@@ -1143,6 +1149,37 @@
         "repeatedValidationRequired": true,
         "finalWholeGameReviewRequired": true,
         "noDirectProductionPatchBeforeCandidatePass": true
+      },
+      "bugEmergencyLane": {
+        "version": 1,
+        "enabled": true,
+        "priority": "HIGHEST_POST_RELEASE_ENGINEERING_PRIORITY",
+        "interruptsMinorAndMajorPreparation": true,
+        "qualifyingFailures": [
+          "CRASH_OR_START_FAILURE",
+          "PROGRESS_BLOCKER",
+          "SAVE_LOAD_CORRUPTION_OR_FAILURE",
+          "INPUT_OR_CONTROL_UNUSABLE",
+          "MULTIPLAYER_SYNC_BREAK",
+          "REPRODUCIBLE_GAMEPLAY_BREAK",
+          "SEVERE_PERFORMANCE_REGRESSION",
+          "RELEASE_BLOCKING_PLATFORM_ERROR"
+        ],
+        "response": [
+          "CAPTURE_MINIMUM_REPRODUCTION",
+          "TRACE_TO_RESPONSIBLE_STATE_OR_FUNCTION",
+          "FOCUSED_FIX_ONLY",
+          "INCREMENTAL_QA",
+          "TARGET_PLATFORM_SMOKE",
+          "FOCUSED_REGRESSION",
+          "EXACT_ARTIFACT_RELEASE_GATE",
+          "FAST_REDEPLOY"
+        ],
+        "unrelatedMajorUpdateMayNotDelayHotfix": true,
+        "activeMajorCandidateRemainsIsolated": true,
+        "noQaBypass": true,
+        "noDirectUnverifiedProductionPatch": true,
+        "fastResponseMeaning": "MINIMIZE_UNRELATED_WORK_NOT_REQUIRED_EVIDENCE"
       }
     },
     "executionBindings": {
@@ -3704,7 +3741,10 @@
       "minorAndHotfixFastRedeploy": true,
       "allRedeploysRequireRelevantPlatformEvidence": true,
       "publicVersionNeverReplacedByUnverifiedCandidate": true,
-      "verifiedOutcomeReturnsToVibeLearning": true
+      "verifiedOutcomeReturnsToVibeLearning": true,
+      "bugEmergencyLaneRequired": true,
+      "hotfixMayPreemptPreparedMajorUpdate": true,
+      "majorCandidateMustRemainIsolatedDuringHotfix": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
