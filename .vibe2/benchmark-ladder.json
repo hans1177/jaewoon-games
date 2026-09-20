@@ -143,9 +143,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-animation_feel-l4",
+      "id": "mastery-animation_feel-l5",
       "track": "ANIMATION_FEEL",
-      "level": 4,
+      "level": 5,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -253,7 +253,328 @@
         "REGRESSION"
       ],
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_0ce73fa4ec23024bd474ad30",
+      "sourceGameId": "amusement-tycoon",
+      "targetEngine": "web",
+      "holdoutGameId": "daechung-rpg",
+      "pairId": "phase4-pair-ceqx3l",
+      "unseenProblemFingerprint": "phase4-unseen-dhekzb",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_7022dd1d29e03580f9fab379",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_7022dd1d29e03580f9fab379",
+      "sourceGameId": "amusement-tycoon",
+      "targetEngine": "web",
+      "holdoutGameId": "daechung-rpg",
+      "pairId": "phase4-pair-vjeflv",
+      "unseenProblemFingerprint": "phase4-unseen-1clgjm5",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_85db81b69282663e194c1627",
+      "sourceGameId": "seed-idle-growth-rpg-crystal-bloom",
+      "targetEngine": "web",
+      "holdoutGameId": "daechung-rpg",
+      "pairId": "phase4-pair-lp4q6k",
+      "unseenProblemFingerprint": "phase4-unseen-15wip3m",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
+      "sourceGameId": "seed-idle-growth-rpg-crystal-bloom",
+      "targetEngine": "web",
+      "holdoutGameId": "daechung-rpg",
+      "pairId": "phase4-pair-1plpckc",
+      "unseenProblemFingerprint": "phase4-unseen-14us7gi",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "sourceGameId": "seed-idle-growth-rpg-crystal-bloom",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-65e2gu",
+      "unseenProblemFingerprint": "phase4-unseen-1hf16g8",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_cd82f46339f60a9d3d87c01f",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_cd82f46339f60a9d3d87c01f",
+      "sourceGameId": "monster-adventure",
+      "targetEngine": "web",
+      "holdoutGameId": "bug-defense",
+      "pairId": "phase4-pair-1v1d6mc",
+      "unseenProblemFingerprint": "phase4-unseen-1utroje",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_d5f1596f6da4a12df001d268",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_d5f1596f6da4a12df001d268",
+      "sourceGameId": "monster-adventure",
+      "targetEngine": "web",
+      "holdoutGameId": "bug-defense",
+      "pairId": "phase4-pair-1pvf9gi",
+      "unseenProblemFingerprint": "phase4-unseen-krtbh8",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_2fa9b22629238db4c1902074",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_2fa9b22629238db4c1902074",
+      "sourceGameId": "village-dungeons",
+      "targetEngine": "web",
+      "holdoutGameId": "bug-defense",
+      "pairId": "phase4-pair-1pte55q",
+      "unseenProblemFingerprint": "phase4-unseen-wymm88",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
     }
   ],
+  "phase4GeneralizationCases": 8,
   "authority": "practice-and-measurement-only"
 }
