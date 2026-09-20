@@ -1177,11 +1177,17 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     priority:'high',productionPreemptible:true,countsAsProductionPass:false,
     domains:row.domains,sourceFailure:sig
   }));
+  const repeatedFailureDrills=repeated.map(([sig,row])=>({
+    id:`review-${sig}`,
+    kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',
+    priority:'high',productionPreemptible:true,countsAsProductionPass:false,
+    domains:row.domains,sourceFailure:sig
+  }));
   const drills=[
+    ...repeatedFailureDrills,
+    ...relearningDrills,
     ...phase4Drills,
     ...hypothesisDrills,
-    ...relearningDrills,
-    ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
   return {
