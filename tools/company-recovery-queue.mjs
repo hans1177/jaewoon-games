@@ -29,16 +29,34 @@ export function securityRepairEvidence(report={}){
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
-function idFor(row){return clean(row.id)||'recovery-'+crypto.createHash('sha256').update([row.sourceQueue,row.sourceTaskId,row.failureStage,row.failureSignature].map(clean).join('|')).digest('hex').slice(0,20);}
+function normalizedFailureSignature(value=''){
+  return clean(value).replace(/^failure-signature:/i,'');
+}
+function normalizedFailureStage(stage='',signature=''){
+  const raw=clean(stage),sig=normalizedFailureSignature(signature).toLowerCase();
+  if(sig==='source-candidate-generation-failed')return'SOURCE_CANDIDATE_GENERATION';
+  if(['system-ai-implementation-failed','repeated-system-ai-implementation-failed'].includes(sig))return'SYSTEM_AI_IMPLEMENTATION';
+  if(sig==='incremental-qa-failed')return'INCREMENTAL_QA';
+  if(sig==='performance-sanity-failed')return'PERFORMANCE_SANITY';
+  return raw&&raw.toUpperCase()!=='UNKNOWN_STAGE'?raw:'UNKNOWN_STAGE';
+}
+function idFor(row){
+  const signature=normalizedFailureSignature(row.failureSignature);
+  const stage=normalizedFailureStage(row.failureStage,signature);
+  return clean(row.id)||'recovery-'+crypto.createHash('sha256').update([row.sourceQueue,row.sourceTaskId,stage,signature].map(clean).join('|')).digest('hex').slice(0,20);
+}
 function normalize(row={}){
+  const failureSignature=normalizedFailureSignature(row.failureSignature);
+  const failureStage=normalizedFailureStage(row.failureStage,failureSignature);
   return{
-    id:idFor(row),status:clean(row.status)||'queued',priority:clean(row.priority)||'high',
+    id:idFor({...row,failureSignature,failureStage}),status:clean(row.status)||'queued',priority:clean(row.priority)||'high',
     sourceQueue:clean(row.sourceQueue),sourceTaskId:clean(row.sourceTaskId)||null,
-    relatedTaskIds:uniq(row.relatedTaskIds),failureStage:clean(row.failureStage),failureSignature:clean(row.failureSignature),
+    relatedTaskIds:uniq(row.relatedTaskIds),dispatchTaskIds:uniq(row.dispatchTaskIds),failureStage,failureSignature,
     blastRadius:clean(row.blastRadius)||'single-task',checkpoint:clean(row.checkpoint)||null,
     evidence:uniq(row.evidence),recoveryStrategy:clean(row.recoveryStrategy),verificationPlan:uniq(row.verificationPlan),
     deterministicEvidence:uniq(row.deterministicEvidence),recoveryOwner:clean(row.recoveryOwner)||'SYSTEM_STEWARD_OR_PRIMARY_AI',
     primaryAiReview:clean(row.primaryAiReview)||'PENDING',learningPromotion:clean(row.learningPromotion)||'PENDING',
+    retryPolicy:clean(row.retryPolicy).toUpperCase()||'UNLIMITED',
     retries:Math.max(0,Number(row.retries||0)),maxRetries:Math.max(0,Number(row.maxRetries??5)),
     createdAt:clean(row.createdAt)||now(),updatedAt:clean(row.updatedAt)||now()
   };
@@ -50,19 +68,33 @@ export function enqueueRecovery(queueInput,row={},options={}){
   const queue=normalizeRecoveryQueue(queueInput),item=normalize(row);
   const reactivateDispatched=options?.reactivateDispatched===true;
   if(!item.sourceQueue||!item.failureStage||!item.failureSignature||!item.recoveryStrategy||!item.verificationPlan.length)throw new Error('RECOVERY_REQUIRED_FIELDS_MISSING');
-  const existing=queue.tasks.find(x=>x.id===item.id||(x.sourceQueue===item.sourceQueue&&x.sourceTaskId===item.sourceTaskId&&x.failureStage===item.failureStage&&x.failureSignature===item.failureSignature));
+  const exactExisting=queue.tasks.find(x=>x.id===item.id||(x.sourceQueue===item.sourceQueue&&x.sourceTaskId===item.sourceTaskId&&x.failureStage===item.failureStage&&x.failureSignature===item.failureSignature));
+  const portfolioExisting=queue.tasks.find(x=>
+    x.sourceQueue===item.sourceQueue
+    &&x.failureSignature===item.failureSignature
+    &&clean(x.blastRadius).startsWith('portfolio:')
+    &&!['verified','cancelled-stale-terminal-source','cancelled-review-only','cancelled-superseded-canonical-recovery'].includes(clean(x.status))
+  );
+  const existing=portfolioExisting||exactExisting;
   if(existing){
     const supersedeMarker=(existing.evidence||[]).map(clean).find(x=>x.startsWith('superseded-by:'));
     const canonicalId=supersedeMarker?clean(supersedeMarker.slice('superseded-by:'.length)):'';
     const canonical=canonicalId?queue.tasks.find(x=>x.id===canonicalId):null;
     const target=reactivateDispatched&&canonical?.status==='dispatched'?canonical:existing;
     const reactivated=reactivateDispatched&&target.status==='dispatched';
-    const tasks=queue.tasks.map(x=>x.id!==target.id?x:{...x,
-      status:reactivated?'queued':x.status,
-      priority:item.priority||x.priority,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
-      evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
-      checkpoint:item.checkpoint||x.checkpoint,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
-      verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
+    const tasks=queue.tasks.map(x=>{
+      if(portfolioExisting&&exactExisting&&x.id===exactExisting.id&&x.id!==target.id){
+        return{...x,status:'cancelled-superseded-canonical-recovery',evidence:uniq([...(x.evidence||[]),'superseded-by:'+target.id]),updatedAt:now()};
+      }
+      if(x.id!==target.id)return x;
+      return{...x,
+        status:reactivated?'queued':x.status,
+        priority:item.priority||x.priority,
+        relatedTaskIds:uniq([...(x.relatedTaskIds||[]),item.sourceTaskId,...(item.relatedTaskIds||[])]),
+        evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:x.blastRadius||item.blastRadius,
+        checkpoint:item.checkpoint||x.checkpoint,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
+        verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
+      };
     });
     return{queue:{...queue,tasks},added:false,reactivated,id:target.id};
   }
@@ -81,8 +113,8 @@ export function settleRecovery(queueInput,{id,outcome,evidence=[]}={}){
   const tasks=queue.tasks.map(x=>{
     if(x.id!==target)return x;found=true;
     if(result==='PASS')return{...x,status:'awaiting-primary-ai-review',deterministicEvidence:uniq([...(x.deterministicEvidence||[]),...evidence]),primaryAiReview:'PENDING',updatedAt:stamp};
-    const retries=x.retries+1,retry=retries<=x.maxRetries;
-    return{...x,status:retry?'queued':'failed',retries,evidence:uniq([...(x.evidence||[]),...evidence,'recovery-outcome:'+(result||'FAIL')]),updatedAt:stamp};
+    const retries=x.retries+1,unlimited=clean(x.retryPolicy).toUpperCase()==='UNLIMITED',retry=unlimited||retries<=x.maxRetries;
+    return{...x,status:retry?'queued':'failed',retries,evidence:uniq([...(x.evidence||[]),...evidence,'recovery-outcome:'+(result||'FAIL'),...(unlimited?['recovery-retry-policy:UNLIMITED']:[])]),updatedAt:stamp};
   });
   if(!found)throw new Error('RECOVERY_TASK_NOT_FOUND:'+target);return{...queue,tasks};
 }
@@ -141,7 +173,7 @@ export function applySecurityRecoverySystemAiFanIn(queueInput,systemAiQueueInput
     }
     if(outcome==='FAIL'){
       linked++;
-      const retries=rec.retries+1,retry=retries<=rec.maxRetries;
+      const retries=rec.retries+1,unlimited=clean(rec.retryPolicy).toUpperCase()==='UNLIMITED',retry=unlimited||retries<=rec.maxRetries;
       return{
         ...rec,
         status:retry?'queued':'failed',

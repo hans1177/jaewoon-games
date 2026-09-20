@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { enqueueRecovery, reviewRecovery, settleRecovery } from '../tools/company-recovery-queue.mjs';
 import { escalateRecoveryCandidates } from '../tools/company-recovery-escalation.mjs';
+import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
 import { promoteVerifiedRecoveryLearning } from '../tools/company-recovery-learning.mjs';
 import { distillRecoveryCodePatterns } from '../tools/company-recovery-code-distillation.mjs';
 
@@ -90,6 +91,68 @@ test('source refailure follows superseded duplicate to the dispatched canonical 
   });
   assert.equal(running.reactivated.length,0);
   assert.equal(running.queue.tasks.find(t=>t.id==='recovery-canonical').status,'dispatched');
+});
+
+
+test('source candidate UNKNOWN_STAGE joins the active portfolio recovery',()=>{
+  let recovery=enqueueRecovery({tasks:[]},{
+    id:'recovery-source-portfolio',sourceQueue:'vibe2',sourceTaskId:'old-source',
+    failureStage:'SOURCE_CANDIDATE_GENERATION',failureSignature:'source-candidate-generation-failed',
+    blastRadius:'portfolio:3',relatedTaskIds:['old-source'],
+    recoveryOwner:'VIBE2_VIBE3',
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE']
+  }).queue;
+  recovery.tasks[0].status='dispatched';
+  const result=escalateRecoveryCandidates({
+    gameQueueInput:{tasks:[{
+      id:'new-source',status:'running',target:'web',sourceRoot:'web-games/new-source',recoveryGeneration:1,
+      evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:UNKNOWN_STAGE']
+    }]},
+    recoveryInput:recovery
+  });
+  assert.equal(result.added.length,0);
+  assert.equal(result.queue.tasks.length,1);
+  assert.equal(result.queue.tasks[0].failureStage,'SOURCE_CANDIDATE_GENERATION');
+  assert.equal(result.queue.tasks[0].failureSignature,'source-candidate-generation-failed');
+  assert(result.queue.tasks[0].relatedTaskIds.includes('new-source'));
+});
+
+test('recovery failures remain queued past the legacy retry cap',()=>{
+  let recovery=enqueueRecovery({tasks:[]},{
+    id:'unlimited-recovery',sourceQueue:'vibe2',sourceTaskId:'g1',
+    failureStage:'SOURCE_CANDIDATE_GENERATION',failureSignature:'source-candidate-generation-failed',
+    recoveryOwner:'VIBE2_VIBE3',maxRetries:1,
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE']
+  }).queue;
+  recovery=settleRecovery(recovery,{id:'unlimited-recovery',outcome:'FAIL'});
+  recovery=settleRecovery(recovery,{id:'unlimited-recovery',outcome:'FAIL'});
+  assert.equal(recovery.tasks[0].status,'queued');
+  assert.equal(recovery.tasks[0].retryPolicy,'UNLIMITED');
+  assert.equal(recovery.tasks[0].retries,2);
+  assert(recovery.tasks[0].evidence.includes('recovery-retry-policy:UNLIMITED'));
+});
+
+test('dispatch reconciles completed Vibe recovery instead of leaving it dispatched forever',()=>{
+  let recovery=enqueueRecovery({tasks:[]},{
+    id:'recovery-g1',sourceQueue:'vibe2',sourceTaskId:'g1',
+    failureStage:'SOURCE_CANDIDATE_GENERATION',failureSignature:'source-candidate-generation-failed',
+    recoveryOwner:'VIBE2_VIBE3',
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE']
+  }).queue;
+  recovery.tasks[0].status='dispatched';
+  recovery.tasks[0].dispatchTaskIds=['g1'];
+  const result=dispatchRecovery({
+    recoveryInput:recovery,
+    gameQueueInput:{tasks:[{id:'g1',status:'done',evidence:['recovery-queue:recovery-g1']}]},
+    systemAiQueueInput:{tasks:[]},
+    route:'vibe'
+  });
+  assert.equal(result.reconciled.resolved,1);
+  assert.equal(result.recovery.tasks[0].status,'awaiting-primary-ai-review');
+  assert(result.recovery.tasks[0].deterministicEvidence.includes('recovery-source-task-pass:g1'));
 });
 
 test('recovery learning requires deterministic pass and primary AI review',()=>{
