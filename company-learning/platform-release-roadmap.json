@@ -1,5 +1,5 @@
 {
-  "version": 169,
+  "version": 170,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6383,7 +6383,8 @@
           "OBSERVED_ACCURACY"
         ],
         "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
-        "qaOrPassMayNotBeClaimedAsRootCauseProof": true
+        "qaOrPassMayNotBeClaimedAsRootCauseProof": true,
+        "signatureAware": true
       },
       "authorityPromotion": {
         "automaticFromAccuracyForbidden": true,
@@ -6391,7 +6392,16 @@
         "shadowTelemetryMayNotCreateWorker": true,
         "shadowTelemetryMayNotBecomeReusableLearning": true,
         "phase2RequiresExplicitCentralPolicyPromotion": true,
-        "phase2AlsoRequiresPostQaRootCauseVerification": true
+        "phase2AlsoRequiresPostQaRootCauseVerification": true,
+        "qaSignatureDoesNotGrantAuthority": true
+      },
+      "qaFailureSignature": {
+        "producer": "tools/vibe2-incremental-qa.mjs",
+        "transport": ".github/workflows/vibe2-continuous-core.yml",
+        "evidencePrefix": "incremental-qa-failure-signature:",
+        "consumer": "tools/vibe2-neural-feedback.mjs",
+        "rootCauseClaimAllowed": false,
+        "responsibilityMatchAllowedFromQaSignatureAlone": false
       }
     }
   }
