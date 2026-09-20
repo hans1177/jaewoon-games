@@ -392,3 +392,46 @@ test('continuous workflow executes task-local exploration before implementation 
   assert(workflow.includes('VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'));
   assert(!workflow.includes('git push origin HEAD:main'));
 });
+
+
+test('exact deterministic diagnostic is reproduced prepatch and becomes diagnostic rescan replay',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/diagnostic-replay');
+  write(path.join(root,'index.js'),'let timer=null; function start(){ timer=setInterval(()=>{},1000); }\n');
+  const order={
+    run:true,taskId:'diagnostic-replay',gameId:'diagnostic-replay',target:'web',
+    goal:'반복 타이머 생명주기 문제를 수정한다',
+    source:{root:'web-games/diagnostic-replay',responsibleFiles:['web-games/diagnostic-replay/index.js'],ignoredPaths:[]},
+    selectedTask:{evidence:['diagnostic:INTERVAL_CLEANUP_RISK','diagnostic-key:INTERVAL_CLEANUP_RISK:index.js'],lastOutcome:'FAIL'},
+    workPackage:{id:'diagnostic-replay-wp',sharedContext:{diagnosticEvidence:['diagnostic:INTERVAL_CLEANUP_RISK','diagnostic-key:INTERVAL_CLEANUP_RISK:index.js']}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.editContract.causalReplay.required,true);
+  assert.equal(result.editContract.causalReplay.prePatchReproduced,true);
+  assert.equal(result.editContract.causalReplay.executable,true);
+  assert.equal(result.editContract.causalReplay.mode,'DIAGNOSTIC_RESCAN');
+  assert.equal(result.editContract.causalReplay.status,'READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN');
+  assert.equal(result.editContract.causalReplay.diagnosticType,'INTERVAL_CLEANUP_RISK');
+  assert.equal(result.editContract.causalReplay.diagnosticFile,'index.js');
+  assert.equal(result.editContract.causalReplay.verifiedResponsibleSystem,'GAME_RUNTIME');
+  assert.equal(result.editContract.causalReplay.authorityExpanded,false);
+});
+
+test('diagnostic evidence does not claim prepatch reproduction when exact issue is absent',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/diagnostic-cleared');
+  write(path.join(root,'index.js'),'let timer=null; function start(){ timer=setInterval(()=>{},1000); } function stop(){ clearInterval(timer); }\n');
+  const order={
+    run:true,taskId:'diagnostic-cleared',gameId:'diagnostic-cleared',target:'web',
+    goal:'반복 타이머 생명주기 문제를 수정한다',
+    source:{root:'web-games/diagnostic-cleared',responsibleFiles:['web-games/diagnostic-cleared/index.js'],ignoredPaths:[]},
+    selectedTask:{evidence:['diagnostic:INTERVAL_CLEANUP_RISK','diagnostic-key:INTERVAL_CLEANUP_RISK:index.js'],lastOutcome:'FAIL'},
+    workPackage:{id:'diagnostic-cleared-wp',sharedContext:{diagnosticEvidence:['diagnostic:INTERVAL_CLEANUP_RISK','diagnostic-key:INTERVAL_CLEANUP_RISK:index.js']}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.editContract.causalReplay.prePatchReproduced,false);
+  assert.equal(result.editContract.causalReplay.executable,false);
+  assert.equal(result.editContract.causalReplay.mode,'PLAN_ONLY');
+  assert.equal(result.editContract.causalReplay.verifiedResponsibleSystem,null);
+  assert.equal(result.editContract.causalReplay.authorityExpanded,false);
+});

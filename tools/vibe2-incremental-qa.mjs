@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildResponsibilityGraph, summarizeResponsibilityArchitecture, compareResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
+import { diagnoseGame } from './autonomous-diagnostics.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\','/').replace(/^\.\//,'');
@@ -77,9 +78,29 @@ function resolveReplayTargets(root,data={},plan={}){
 }
 function runCausalReplay({root,data={}}={}){
   const plan=causalReplayPlan(data);
-  if(!plan||plan.required!==true)return{status:'NOT_REQUIRED',executed:false,targets:[],canonicalQaStillRequired:true};
-  if(plan.executable!==true||clean(plan.mode)!=='NODE_TEST_TARGETS')return{status:'PLAN_ONLY',executed:false,reason:clean(plan.status)||'NO_EXECUTABLE_REPLAY',targets:[],canonicalQaStillRequired:true};
+  if(!plan||plan.required!==true)return{status:'NOT_REQUIRED',executed:false,targets:[],verifiedResponsibleSystem:null,canonicalQaStillRequired:true};
+  if(plan.executable!==true)return{status:'PLAN_ONLY',executed:false,reason:clean(plan.status)||'NO_EXECUTABLE_REPLAY',targets:[],verifiedResponsibleSystem:null,canonicalQaStillRequired:true};
   if(plan.prePatchReproduced!==true)throw new Error('CAUSAL_REPLAY_PREPATCH_REPRODUCTION_REQUIRED');
+  const mode=clean(plan.mode);
+  if(mode==='DIAGNOSTIC_RESCAN'){
+    const type=clean(plan.diagnosticType).toUpperCase();
+    const file=posix(plan.diagnosticFile);
+    const sourceRoot=posix(data.sourceRoot);
+    if(!type||!file||!sourceRoot)throw new Error('CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED');
+    const sourceDir=assertInside(root,sourceRoot);
+    const report=diagnoseGame(sourceDir,{maxIssues:200});
+    const stillPresent=(report.issues||[]).some(row=>clean(row?.type).toUpperCase()===type&&posix(row?.file)===file);
+    if(stillPresent)throw new Error(`CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:${type}:${file}`);
+    return{
+      status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,
+      targets:[{target:`diagnostic:${type}:${file}`,outcome:'ABSENT_AFTER_PATCH'}],
+      verifiedResponsibleSystem:clean(plan.verifiedResponsibleSystem).toUpperCase()||null,
+      verificationMode:'DIAGNOSTIC_EXACT_TYPE_FILE_RESCAN',
+      identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,
+      canonicalQaStillRequired:true
+    };
+  }
+  if(mode!=='NODE_TEST_TARGETS')return{status:'PLAN_ONLY',executed:false,reason:clean(plan.status)||'UNSUPPORTED_REPLAY_MODE',targets:[],verifiedResponsibleSystem:null,canonicalQaStillRequired:true};
   const targets=resolveReplayTargets(root,data,plan);
   if(!targets.length)throw new Error('CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET');
   const results=[];
@@ -87,7 +108,7 @@ function runCausalReplay({root,data={}}={}){
     execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8'});
     results.push({target:target.relative,outcome:'PASS'});
   }
-  return{status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,targets:results,identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,canonicalQaStillRequired:true};
+  return{status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,targets:results,verifiedResponsibleSystem:null,identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,canonicalQaStillRequired:true};
 }
 function architectureSourceText(root,data={}){
   const sourceRoot=posix(data.sourceRoot);
@@ -265,10 +286,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const data=manifestData(manifest);
   const changed = collectFiles({root, files, manifest});
   const replayPlan=causalReplayPlan(data);
-  const replayTargets=replayPlan?.executable===true?resolveReplayTargets(root,data,replayPlan):[];
+  const replayTargets=replayPlan?.executable===true&&clean(replayPlan?.mode)==='NODE_TEST_TARGETS'?resolveReplayTargets(root,data,replayPlan):[];
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
-  const payload = ['vibe2-incremental-qa-v6', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null)];
+  const payload = ['vibe2-incremental-qa-v7', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -304,6 +325,8 @@ export function incrementalQaFailureSignature(error){
   const known=[
     'CAUSAL_REPLAY_PREPATCH_REPRODUCTION_REQUIRED',
     'CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET',
+    'CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED',
+    'CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT',
     'PRESENTATION_STATIC_QA_FAILED',
     'CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT',
     'CAUSAL_REPLAY_TARGET_MISSING'
@@ -333,6 +356,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_CAUSAL_REPLAY_STATUS=${result.causalReplay?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
     console.log(`VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=${result.causalReplay?.prePatchReproduced===true?'YES':'NO'}`);
+    console.log(`VIBE2_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM=${result.causalReplay?.verifiedResponsibleSystem||'NONE'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);

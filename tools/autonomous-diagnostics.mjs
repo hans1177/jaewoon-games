@@ -168,6 +168,18 @@ function diagnoseFile(root,row,filesystem=fs){
   return results;
 }
 
+export function diagnosticResponsibleSystem(type=''){
+  const normalized=clean(type).toUpperCase();
+  const mapping={
+    UNGUARDED_SAVE_PARSE:'SAVE_SYSTEM',
+    INTERVAL_CLEANUP_RISK:'GAME_RUNTIME',
+    TOUCH_ACTION_UNSPECIFIED:'GAME_INPUT',
+    DOM_NULL_EVENT_BIND:'GAME_INPUT',
+    ADJACENT_DUPLICATE_EVENT_LISTENER:'GAME_INPUT'
+  };
+  return mapping[normalized]||null;
+}
+
 export function diagnoseGame(sourcePath,{filesystem=fs,maxIssues=30}={}){
   const root=path.resolve(sourcePath);
   const files=listTextFiles(sourcePath,filesystem);
