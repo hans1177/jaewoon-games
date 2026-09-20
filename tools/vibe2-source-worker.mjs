@@ -670,6 +670,26 @@ export function normalizeFocusedReplaceOnly(raw,spec={}){
     tests:[]
   };
 }
+
+export function recoverFocusedReplaceOnly(raw,spec={}){
+  const text=String(raw??'');
+  const key=/"replace"\s*:\s*"/.exec(text);
+  if(!key)return null;
+  const colon=text.indexOf(':',key.index);
+  const start=colon>=0?text.indexOf('"',colon+1):-1;
+  if(start<0)return null;
+  let escape=false;
+  for(let i=start+1;i<text.length;i++){
+    const ch=text[i];
+    if(escape){escape=false;continue;}
+    if(ch==='\\'){escape=true;continue;}
+    if(ch!=='"')continue;
+    let replace;
+    try{replace=JSON.parse(text.slice(start,i+1));}catch{return null;}
+    try{return normalizeFocusedReplaceOnly({replace},spec);}catch{return null;}
+  }
+  return null;
+}
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot=''}={}){
   const rawPrompt=String(prompt??'');
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -977,15 +997,16 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(focusedReplaceOnly&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)){
         const focusedPartial=partialOutput.trim()?partialOutput:lastRaw;
-        if(focusedPartial.trim()&&modelResponseComplete(focusedPartial,'JSON_REPLACE_ONLY')){
+        const recoveredFocused=focusedPartial.trim()?recoverFocusedReplaceOnly(focusedPartial,focusedReplaceOnly.spec):null;
+        if(recoveredFocused){
           try{
-            const focusedCandidate=normalizeCandidate(normalizeFocusedReplaceOnly(focusedPartial,focusedReplaceOnly.spec),{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes});
+            const focusedCandidate=normalizeCandidate(recoveredFocused,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes});
             if(focusedCandidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,focusedCandidate.edits,{dryRun:true});
             lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(focusedCandidate):null;
-            console.log('VIBE2_FOCUSED_REPLACE_PARTIAL_RECOVERED='+attempt+':'+focusedReplaceOnly.spec.path);
-            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+            console.log('VIBE2_FOCUSED_REPLACE_STRING_RECOVERED='+attempt+':'+failureClass+':'+focusedReplaceOnly.spec.path);
+            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedReplaceStringRecovery:true,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
           }catch(recoveryError){
-            console.log('VIBE2_FOCUSED_REPLACE_PARTIAL_REJECTED='+attempt+':'+generationFailureClass(recoveryError)+':'+clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240));
+            console.log('VIBE2_FOCUSED_REPLACE_STRING_REJECTED='+attempt+':'+generationFailureClass(recoveryError)+':'+clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240));
           }
         }
       }
@@ -1228,6 +1249,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     focusedFirstEditEarlyStop:generation.focusedFirstEditEarlyStop===true,
     focusedFinalRetry:generation.focusedFinalRetry===true,
     focusedReplaceOnly:generation.focusedReplaceOnly===true,
+    focusedReplaceStringRecovery:generation.focusedReplaceStringRecovery===true,
     focusedFirstAttemptFastPath:generation.focusedFirstAttemptFastPath===true,
     malformedFastEscalation:generation.malformedFastEscalation===true,
     focusedReplaceAnchorRotations:Number(generation.focusedReplaceAnchorRotations||0),
