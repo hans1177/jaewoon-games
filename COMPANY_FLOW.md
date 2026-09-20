@@ -242,6 +242,8 @@ ownerCurrentProductionContract:
     atomicNeuronIngressLightweight: true
     pendingVariantCallbackRunsHeavyReserve: false
     taskMicroFanInDispatchesSingleRefill: true
+    taskMicroFinalizerBeforeCohortAudit: true
+    contractRegressionEvidenceReusableByPinnedMainSha: true
     sharedRuntimeStatePersistedByOptimisticAtomicCommit: true
     validationTiers:
       - MICRO_TARGETED_CHECK
