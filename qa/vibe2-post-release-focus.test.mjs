@@ -39,11 +39,22 @@ function setup(){
   assert.deepEqual(task.allowedFeedbackDecisions,['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT']);
   assert.deepEqual(task.allowedUpdateScales,['HOTFIX','MINOR','MAJOR']);
   assert.equal(task.bugEmergencyLane,true);
+  assert.equal(task.securityStewardRequired,true);
+  assert.equal(task.securityConfirmedBugRoute,'HOTFIX');
+  assert.equal(task.platformAntiCheatDuplicated,false);
   assert.equal(task.hotfixPreemptsOtherUpdateWork,true);
   assert.equal(task.majorUpdatePrepareAhead,true);
   assert.deepEqual(task.fastRedeployEligibleScales,['HOTFIX','MINOR']);
   assert.equal(task.unverifiedPublicReplacementForbidden,true);
   assert.equal(task.verifiedResultLearningRequired,true);
+  assert.equal(task.securityStewardRequired,true);
+  assert.equal(task.securityPolicy,'company-learning/security-immune-system.json');
+  assert.equal(task.securityConfirmedBugRoute,'HOTFIX');
+  assert.equal(task.securityHotfixPreemptsOtherUpdateWork,true);
+  assert.equal(task.securityRescanBeforeRedeploy,true);
+  assert.equal(task.platformAntiCheatDuplicated,false);
+  assert.ok(task.securityReviewScopes.includes('REMOTE_INPUT_VALIDATION'));
+  assert.ok(task.securityReviewScopes.includes('SAVE_INTEGRITY'));
   assert(task.evidence.some(x=>x==='recombination-recipe:r1'));
 }
 
@@ -178,6 +189,12 @@ function setup(){
   assert.equal(focus.generatedTaskContract.feedbackAdvisoryOnly,true);
   assert.equal(focus.generatedTaskContract.feedbackDecisionAuthority,'VIBE');
   assert.deepEqual(focus.generatedTaskContract.allowedUpdateScales,['HOTFIX','MINOR','MAJOR']);
+  assert.equal(focus.securityStewardIntegration.required,true);
+  assert.equal(focus.securityStewardIntegration.steward,'VIBE_SECURITY_STEWARD');
+  assert.equal(focus.securityStewardIntegration.platformAntiCheatDuplicated,false);
+  assert.equal(focus.securityStewardIntegration.confirmedSecurityBugRoute,'HOTFIX');
+  assert.ok(focus.securityStewardIntegration.robloxExistingGates.includes('SERVER_REMOTE_INPUT_VALIDATION_REQUIRED'));
+  assert.ok(focus.securityStewardIntegration.reviewScope.includes('ECONOMY_AND_REWARD_INTEGRITY'));
   const update=roadmap.developmentLifecycleMachine.postReleaseUpdatePolicy;
   assert.deepEqual(update.appliesTo,['ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.equal(update.feedbackNonBinding,true);
@@ -186,6 +203,10 @@ function setup(){
   assert.equal(update.minorAndHotfixFastRedeploy,true);
   assert.equal(update.bugEmergencyLaneRequired,true);
   assert.equal(update.hotfixMayPreemptPreparedMajorUpdate,true);
+  assert.equal(update.securityStewardRequired,true);
+  assert.equal(update.securityPolicy,'company-learning/security-immune-system.json');
+  assert.equal(update.securityFindingRouting.confirmedExploitOrSecurityBug,'HOTFIX');
+  assert.equal(update.securityFindingRouting.securityReleaseBlockersCannotBeBypassedByOrdinaryFeedbackDecision,true);
   assert.equal(update.canonicalFlow[1],'POST_RELEASE_PLAYTEST_AND_REVIEW');
   assert.equal(update.canonicalFlow[4],'HOTFIX_FAST_LANE_OR_MINOR_FAST_LANE_OR_MAJOR_PREPARATION_LANE');
 }
