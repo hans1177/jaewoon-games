@@ -52,6 +52,7 @@ test('work graph materializes neural contract fields without granting execution 
   assert.equal(graph.authority.automaticLearningAllowed,false);
   assert.equal(graph.authority.authorityPromotionAllowed,false);
   assert.equal(graph.currentWaveSchedulerRemainsAuthoritative,true);
+  assert.ok(graph.nodes.some(row=>row.nodeClass==='GOAL'&&row.neuronType==='INTENT'));
   assert.ok(graph.nodes.some(row=>row.nodeClass==='FACT'&&row.neuronType==='CAUSAL'));
   assert.ok(graph.nodes.some(row=>row.nodeClass==='ACTION'&&row.neuronType==='ACTION'));
   for(const row of graph.nodes){
