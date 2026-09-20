@@ -199,3 +199,10 @@ test('exact artifact regression binds upstream APK SHA and source revision',()=>
   assert.match(regressionSource,/regressionPassed.*True/s);
   assert.match(regressionSource,/exactArtifactRegression.*True/s);
 });
+
+test('Unity executor admits source-bind work so missing owner-focused native roots can use the existing bootstrap path',()=>{
+  assert.match(workflowSource,/step==='TARGET_PLATFORM_SOURCE_BIND'\|\|step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
+  assert.match(workflowSource,/project="unity-games\/\$GAME_ID"/);
+  assert.match(workflowSource,/node tools\/company-development-unity-bootstrap\.mjs/);
+  assert.match(workflowSource,/resolveSelectedPlatform\(item\)!=='UNITY'/);
+});

@@ -86,7 +86,7 @@ jobs:
             if(resolveSelectedPlatform(item)!=='UNITY')return false;
             const step=String(item.currentStep||'').toUpperCase();
             const state=String(item.canonicalState||'').toUpperCase();
-            return step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||step==='UNITY_ANDROID_TECHNICAL_VALIDATION'||
+            return step==='TARGET_PLATFORM_SOURCE_BIND'||step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||step==='UNITY_ANDROID_TECHNICAL_VALIDATION'||
               state==='WAITING_TARGET_PLATFORM_VALIDATION'||state==='WAITING_TARGET_PLATFORM_REVALIDATION'||state==='WAITING_UNITY_VALIDATION'||state==='WAITING_UNITY_REVALIDATION'||
               Boolean(item.executionEvidence?.failureStage);
           }).map(item=>({
