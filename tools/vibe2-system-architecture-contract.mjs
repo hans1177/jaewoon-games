@@ -21,14 +21,23 @@ export function assertSystemArchitectureTask(task={}){
   if(!evidence.has('architecture-authority-expansion:NO'))throw new Error('SYSTEM_ARCHITECTURE_AUTHORITY_GUARD_REQUIRED');
   if(!evidence.has('architecture-gate-weakening:NO'))throw new Error('SYSTEM_ARCHITECTURE_GATE_GUARD_REQUIRED');
   if(!evidence.has('architecture-neural-expansion-phase:LAST_STAGE_ONLY'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_PHASE_GUARD_REQUIRED');
-  if(!evidence.has('architecture-neural-expansion-allowed:NO'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_GUARD_REQUIRED');
+  if(!evidence.has('architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_MODE_REQUIRED');
+  const neuralReady=evidence.has('architecture-neural-expansion-readiness:PASS');
+  const neuralAllowedYes=evidence.has('architecture-neural-expansion-allowed:YES');
+  const neuralAllowedNo=evidence.has('architecture-neural-expansion-allowed:NO');
+  if(neuralReady!==neuralAllowedYes)throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_READINESS_MISMATCH');
+  if(neuralAllowedYes===neuralAllowedNo)throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_GUARD_REQUIRED');
   const responsible=uniq(task.responsibleFiles||[]);
   if(!responsible.length||responsible.length>4)throw new Error('SYSTEM_ARCHITECTURE_RESPONSIBLE_FILE_COUNT_INVALID');
   for(const file of responsible)if(!isAllowedSystemArchitecturePath(file))throw new Error('SYSTEM_ARCHITECTURE_PATH_FORBIDDEN:'+file);
   return Object.freeze({
     valid:true,responsibleFiles:Object.freeze(responsible),
     systemConstructionAllowed:evidence.has('architecture-system-construction-allowed'),
-    neuralExpansionPhase:'LAST_STAGE_ONLY',neuralExpansionAllowed:false,
+    neuralExpansionPhase:'LAST_STAGE_ONLY',
+    neuralExpansionMode:'EVIDENCE_GATED_SELF_EXPANSION',
+    neuralExpansionReadiness:neuralReady?'PASS':'PENDING',
+    neuralExpansionAllowed:neuralReady&&neuralAllowedYes,
+    neuralExecutionAuthorityExpansionAllowed:false,
     authorityExpanded:false,gateWeakening:false
   });
 }
@@ -42,7 +51,9 @@ export function systemArchitectureGuidance(task={}){
     contract.systemConstructionAllowed?'A new internal helper/system file is allowed only when its exact path is already listed in responsibleFiles and the existing architecture truly lacks the capability.':'New files are not authorized by this task.',
     'Do not create wrapper/shadow duplicate systems merely to bypass the current responsibility.',
     'Do not expand authority, lower gates or thresholds, fabricate PASS, delete verified learning, weaken security, or change game design/balance.',
-    'Current architecture evolution may improve internal structure but MUST NOT expand neural execution authority. Neural expansion is LAST_STAGE_ONLY and is not authorized by this task.',
+    contract.neuralExpansionAllowed
+      ?'Neural expansion is evidence-gated and authorized for this task because final-stage readiness evidence passed. Vibe may expand internal neural nodes, edges, routing, memory, or learning structure when the structural cause justifies it, but neural execution authority MUST remain unchanged.'
+      :'Neural expansion remains unavailable for this task because final-stage readiness evidence has not passed. Continue normal self-architecture evolution without neural expansion.',
     'The candidate must pass same-failure recheck, related regression, security verification, and before/after metric comparison. No verified improvement means no adoption.',
     'Exact writable files='+contract.responsibleFiles.join(', ')
   ].join('\n');
