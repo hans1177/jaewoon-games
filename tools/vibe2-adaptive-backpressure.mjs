@@ -3,15 +3,16 @@
 
 export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
+export const DEFAULT_ADAPTIVE_TARGET = 20;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const clean = (value) => String(value ?? '').trim();
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-function normalizeStep(value = DEFAULT_ADAPTIVE_MAX) {
-  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, DEFAULT_ADAPTIVE_MAX);
-  return ADAPTIVE_PARALLELISM_STEPS.reduce((best, step) => Math.abs(step - raw) < Math.abs(best - raw) ? step : best, DEFAULT_ADAPTIVE_MAX);
+function normalizeStep(value = DEFAULT_ADAPTIVE_TARGET) {
+  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_TARGET), 4, DEFAULT_ADAPTIVE_MAX);
+  return ADAPTIVE_PARALLELISM_STEPS.reduce((best, step) => Math.abs(step - raw) < Math.abs(best - raw) ? step : best, DEFAULT_ADAPTIVE_TARGET);
 }
 function stepDown(current) {
   const index = ADAPTIVE_PARALLELISM_STEPS.indexOf(normalizeStep(current));
@@ -29,7 +30,7 @@ export function createParallelismControl(input = {}) {
     healthyStreak: Math.max(0, Math.floor(num(input.healthyStreak))),
     pressureStreak: Math.max(0, Math.floor(num(input.pressureStreak))),
     lastDecision: clean(input.lastDecision) || 'INIT',
-    lastReason: clean(input.lastReason) || 'DEFAULT_EXTERNAL_BATCH_MAX',
+    lastReason: clean(input.lastReason) || `DEFAULT_ADAPTIVE_TARGET_${DEFAULT_ADAPTIVE_TARGET}`,
     lastRunId: clean(input.lastRunId) || null,
     lastUpdatedAt: clean(input.lastUpdatedAt) || null,
     lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null
@@ -84,13 +85,13 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const nowMs = Date.parse(now);
   const previousAt = Date.parse(clean(control.lastUpdatedAt));
   const stale = Number.isFinite(nowMs) && Number.isFinite(previousAt) && nowMs - previousAt > Math.max(60_000, Number(telemetryTtlMs) || DEFAULT_TELEMETRY_TTL_MS);
-  if (stale && control.currentMax < DEFAULT_ADAPTIVE_MAX) {
+  if (stale) {
     control = createParallelismControl({
-      currentMax: DEFAULT_ADAPTIVE_MAX,
+      currentMax: DEFAULT_ADAPTIVE_TARGET,
       healthyStreak: 0,
       pressureStreak: 0,
       lastDecision: 'RESET',
-      lastReason: 'STALE_TELEMETRY_RESET',
+      lastReason: `STALE_TELEMETRY_RESET_TO_${DEFAULT_ADAPTIVE_TARGET}`,
       lastRunId: null,
       lastUpdatedAt: now,
       lastTelemetry: null

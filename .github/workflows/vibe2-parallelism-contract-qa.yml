@@ -6,6 +6,10 @@ on:
       - 'COMPANY_FLOW.md'
       - 'VIBE2_PARALLEL_ARCHITECTURE.md'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-continuous-core.yml'
+      - 'vibe2-runtime.json'
+      - 'tools/vibe2-adaptive-backpressure.mjs'
+      - 'tools/vibe2-queue-control.mjs'
       - 'qa/vibe2-parallelism-main-contract.test.mjs'
       - '.github/workflows/vibe2-parallelism-contract-qa.yml'
   push:
@@ -14,6 +18,10 @@ on:
       - 'COMPANY_FLOW.md'
       - 'VIBE2_PARALLEL_ARCHITECTURE.md'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-continuous-core.yml'
+      - 'vibe2-runtime.json'
+      - 'tools/vibe2-adaptive-backpressure.mjs'
+      - 'tools/vibe2-queue-control.mjs'
       - 'qa/vibe2-parallelism-main-contract.test.mjs'
       - '.github/workflows/vibe2-parallelism-contract-qa.yml'
   workflow_dispatch:
@@ -30,5 +38,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify adaptive 20-slot parallelism contract
+      - name: Verify self-adaptive GAME_PRIMARY parallelism contract
         run: node --test qa/vibe2-parallelism-main-contract.test.mjs

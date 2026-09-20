@@ -1,5 +1,5 @@
 {
-  "version": 214,
+  "version": 215,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -2370,15 +2370,15 @@
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
           "gameDevelopment": "VIBE2_VIBE3_RUNNING_PRIMARY_FIRST",
-          "systemBottleneckWorkers": "NONBLOCKING_WHILE_GAME_PRIMARY_20_WAVE_RUNS",
+          "systemBottleneckWorkers": "NONBLOCKING_WHILE_GAME_PRIMARY_SELF_ADAPTIVE_WAVE_RUNS",
           "nonCriticalIdleWork": "PREEMPTED_WHILE_ACTIONABLE_GAME_DEVELOPMENT_WORK_EXISTS",
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
           "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL",
-          "adaptiveWave": 20,
+          "adaptiveWave": "SELF_ADAPTIVE",
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
-          "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST",
+          "wavePolicy": "OWNER_SELF_ADAPTIVE_PRIMARY_FIRST",
           "vibe2CoreQa": "PASS_RUN_35426882175",
           "schedulerPriority": "OWNER_OR_STEWARD_CRITICAL_THEN_RELEASE_THEN_GAME_DEVELOPMENT_THEN_NONBLOCKING_SUPERVISION",
           "supervisorCapacityPolicy": "SPARE_CAPACITY_ONLY_WHILE_ACTIONABLE_GAME_DEVELOPMENT_EXISTS",
@@ -2386,12 +2386,12 @@
           "controlBranchRole": "STATE_ONLY",
           "explorationPolicy": "TASK_LOCAL_NONBLOCKING",
           "refillPolicy": "FAN_IN_ONLY",
-          "ownerWaveFloor": 20,
-          "ownerWaveFloorPolicy": "ADAPTIVE_MAY_NOT_DROP_BELOW_OWNER_DIRECTIVE",
+          "ownerWaveFloor": null,
+          "ownerWaveFloorPolicy": "SUPERSEDED_BY_OWNER_DIRECTIVE_2026-09-20_SELF_ADAPTIVE",
           "webVibeRepairPlannerInput": "FIXED_PENDING_LIVE_QUEUE_VERIFICATION",
           "sourceGenerationRepair": "FOCUSED_CONTEXT_AND_ONE_TIME_INFRA_REQUEUE",
           "exactWebRepairSupersession": "ENABLED",
-          "controlWaveState": "RESTORED_TO_OWNER_MINIMUM_20_AFTER_PRE_FLOOR_RUN_35428356084",
+          "controlWaveState": "SELF_ADAPTIVE_CONTROL_4_TO_256_BASELINE_20",
           "webVibeRepairLiveCreation": "CONFIRMED_9_EXACT_REPAIR_TASKS_CREATED_AND_RUNNING",
           "companyStatusRuntimeStateMerge": "FIXED",
           "missingSourceExactBaseRecovery": "FIXED",
@@ -2445,7 +2445,10 @@
           "fanInRefillMainContractSnapshot": "ARCHIVE_FIXED_QA_PASS_PENDING_NEXT_REFILL_LIVE",
           "externalPlaytestGamePrimaryGate": "LIVE_CONFIRMED",
           "actionableWebRepairHints": "QA_PASS_PENDING_NEXT_REFILL",
-          "fullWebCompletenessContract": "QA_PASS_PENDING_NEXT_REFILL"
+          "fullWebCompletenessContract": "QA_PASS_PENDING_NEXT_REFILL",
+          "adaptiveWaveBaseline": 20,
+          "adaptiveWaveMin": 4,
+          "adaptiveWaveMax": 256
         },
         "incidentHistory": [
           {
@@ -7776,12 +7779,24 @@
       "gameStudyStillRequiresIdleGameWave": true,
       "phase2NeuralExecutionAuthority": false,
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": 20,
-      "refillFormula": "MAX(0, MIN(EXTERNAL_EFFECTIVE_MAX, GAME_PRIMARY_ACTIVE_CAP_20) - ACTIVE_GAME_WORKERS)",
-      "observedExample": "ACTIVE_8 => REFILL_12; NEVER_REFILL_248",
+      "refillFormula": "MAX(0, CURRENT_ADAPTIVE_GAME_PRIMARY_TARGET - ACTIVE_GAME_WORKERS)",
+      "observedExample": "TARGET_20_ACTIVE_8=>REFILL_12; TARGET_64_ACTIVE_40=>REFILL_24",
       "adaptiveBackpressureMayLowerBelow20": true,
-      "adaptiveBackpressureMayNotRaiseGamePrimaryAbove20": true,
-      "rationale": "Independent game work must not wait for all active workers when safe capacity remains."
+      "rationale": "GAME_PRIMARY should continuously choose its own safe concurrency from verified runtime pressure instead of treating 20 as a hard cap.",
+      "gamePrimaryAdaptiveSteps": [
+        4,
+        8,
+        16,
+        20,
+        32,
+        64,
+        128,
+        256
+      ],
+      "gamePrimaryBaselineTarget": 20,
+      "gamePrimaryAdaptiveMinimum": 4,
+      "gamePrimaryExternalBoundary": 256,
+      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",
@@ -8592,6 +8607,57 @@
           "tools/vibe2-incremental-qa.mjs::runCausalReplay"
         ],
         "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
+      },
+      "selfAdaptiveGamePrimaryConcurrency": {
+        "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
+        "sourcePr": 1994,
+        "trigger": "OWNER_DIRECTIVE_2026-09-20_SELF_ADAPTIVE",
+        "priorConflict": {
+          "direct24hRunnerLaneMax": 20,
+          "repositoryDispatchDefaultLaneMax": 256,
+          "result": "SAME_GAME_PRIMARY_LANE_HAD_PATH_DEPENDENT_CONCURRENCY_AND_TELEMETRY_DENOMINATORS"
+        },
+        "policy": {
+          "externalProviderBoundary": 256,
+          "initialBaselineTarget": 20,
+          "adaptiveMinimum": 4,
+          "adaptiveSteps": [
+            4,
+            8,
+            16,
+            20,
+            32,
+            64,
+            128,
+            256
+          ],
+          "maxStepChangesPerRun": 1,
+          "highOrSeverePressure": "STEP_DOWN",
+          "mediumPressure": "STEP_DOWN_AFTER_2_SATURATED_RUNS",
+          "healthySaturated": "STEP_UP_ONE",
+          "lowLoad": "HOLD",
+          "staleOrMissingState": "RESET_TO_BASELINE_20_THEN_ADAPT_FROM_FRESH_TELEMETRY"
+        },
+        "unifiedEntryPaths": [
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml"
+        ],
+        "responsibleSystems": [
+          "tools/vibe2-adaptive-backpressure.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "tools/vibe2-parallelism-telemetry.mjs"
+        ],
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false,
+          "directMainAuthority": false,
+          "authorityChange": "NONE"
+        },
+        "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS"
       }
     }
   },

@@ -51,7 +51,7 @@ test('fan-in controller contract directly verifies design intelligence stages an
 });
 
 test('runtime enables DAG sharding work stealing with policy-unbounded external-capacity waves',()=>{
-  assert(runtime.version>=12);
+  assert(runtime.version>=14);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.parallelismPolicy,'UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY');
@@ -75,6 +75,12 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.workManagement.machineContextRequired,true);
   assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
   assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,20);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,4);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
+  assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,20);
+  assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,4);
+  assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
 });
 
 test('work order exposes Web source bootstrap authority only from explicit task evidence',()=>{
@@ -89,8 +95,9 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes('strategy:'));
   assert.equal(workflow.includes('max-parallel: 30'),false);
   assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
-  assert(workflow.includes("VIBE2_OWNER_MINIMUM_WAVE: '20'"));
-  assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_OWNER_MINIMUM_WAVE\"; fi"));
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'"));
+  assert(workflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
+  assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,2);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
   assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
@@ -264,6 +271,12 @@ test('24H safety-net refills free game slots while preserving queue-level confli
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_FREE_GAME_WORKER_SLOTS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_REFILL_READY='));
+  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '20'"));
+  assert(safetyNetWorkflow.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
+  assert(safetyNetWorkflow.includes('const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));'));
+  assert(safetyNetWorkflow.includes('const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));'));
+  assert(safetyNetWorkflow.includes("lane_max: '256'"));
+  assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"));
   assert(safetyNetWorkflow.includes("needs.continuous.result == 'success'"));
