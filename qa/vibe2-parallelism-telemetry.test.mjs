@@ -19,6 +19,24 @@ const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null,evidence=
   }
 });
 
+test('19 game-primary workers use the 20-worker execution cap instead of global 256',()=>{
+  const results=Array.from({length:19},(_,i)=>row(i,{start:1000+i,end:5000+i,runId:'game-primary-cap',metrics:{requestedMax:256,effectiveMax:256}}));
+  const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:19});
+  assert.equal(t.actualPeakConcurrency,19);
+  assert.equal(t.effectiveMax,20);
+  assert.equal(t.effectivePeakUtilizationPct,95);
+  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:256}),t,{now:'2026-09-20T09:00:00.000Z',minimumMax:4,maximumMax:20});
+  assert.equal(next.currentMax,20);
+  assert.notEqual(next.lastReason,'LOW_LOAD');
+});
+
+test('non-game-primary 256 execution cap retains existing telemetry meaning',()=>{
+  const results=Array.from({length:19},(_,i)=>row(i,{start:1000+i,end:5000+i,runId:'aux-256',metrics:{requestedMax:256,effectiveMax:256}}));
+  const t=computeParallelismTelemetry({results,requestedMax:256,effectiveMax:256,taskCount:19});
+  assert.equal(t.effectiveMax,256);
+  assert.equal(t.effectivePeakUtilizationPct,7.42);
+});
+
 test('20 overlapping workers report real peak 20 and full utilization',()=>{
   const results=Array.from({length:20},(_,i)=>row(i,{start:1000+i*5,end:5000+i*5,runId:'100'}));
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:20});
