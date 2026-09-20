@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
-import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
+import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence,baselineFeatureRequirements,initialCycleGoalReached} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -35,6 +35,19 @@ test('company Web bootstrap cannot generate or repair game source with Gemini',(
   assert.match(source,/failureSignature/);
   assert.match(source,/vibeWebRequestedStage/);
   assert.match(source,/vibeWebImplementationReason/);
+});
+
+test('initial gameplay cycle accepts real wave progression without requiring full-game terminal',()=>{
+  assert.equal(initialCycleGoalReached({before:{values:{wave:1}},after:{values:{wave:2}},terminalReached:false}),true);
+  assert.equal(initialCycleGoalReached({before:{values:{wave:2}},after:{values:{wave:2}},terminalReached:false}),false);
+  assert.equal(initialCycleGoalReached({before:{values:{}},after:{values:{}},terminalReached:true}),true);
+});
+
+test('bug-defense runtime is treated as tower defense without fake avatar movement requirements',()=>{
+  const baseline={gameId:'bug-defense',gameSeedId:'OWNER-FULL-REBUILD-BUG-DEFENSE-20260916',content:{identity:'곤충 디펜스',coreFun:'포식자 곤충을 배치해 정원을 방어한다',coreLoop:['웨이브 시작 전 적의 침입 경로를 분석한다','최적 위치에 포식자 곤충을 배치한다','전투 중 배치를 수정한다'],mobileUx:'한 손 터치 배치'}};
+  const requirements=baselineFeatureRequirements(baseline,deriveApprovedScopeInventory(baseline));
+  assert.equal(requirements.avatarMovementRequired,false);
+  assert.equal(requirements.worldRequired,true);
 });
 
 test('Web runtime spatial detector does not treat absent coordinates as 3D and recognizes Korean exploration input',()=>{

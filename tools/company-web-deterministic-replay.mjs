@@ -70,7 +70,8 @@ async function clickReplayAction(page,row){
   }
   if(!target)return null;
   const before=await criticalSnapshot(page);
-  try{await target.click({timeout:2500});await page.waitForTimeout(90);}catch{return null;}
+  const actionStarted=Date.now();
+  try{await target.click({timeout:2500});await page.waitForTimeout(70);}catch{return null;}
   if(row?.placementFollowupRequired===true){
     const placements=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]'),count=await placements.count();
     let placement=null;
@@ -85,6 +86,9 @@ async function clickReplayAction(page,row){
       if(active){const surface=page.locator('canvas,[data-gameplay-surface]').first();try{const box=await surface.boundingBox();if(box){const index=Math.abs(Number(row?.placementIndex)||0);await surface.click({position:{x:Math.max(1,box.width*(.25+(.1*(index%4)))),y:Math.max(1,box.height*.55)},timeout:1800});await page.waitForTimeout(90);}}catch{}}
     }
   }
+  const targetElapsed=Math.max(0,Math.min(1500,Number(row?.actionElapsedMilliseconds||0)));
+  const remaining=targetElapsed-(Date.now()-actionStarted);
+  if(remaining>0)await page.waitForTimeout(remaining);
   const after=await criticalSnapshot(page);
   return {before,after,outcomeSignature:deltaSignature(before,after)};
 }
