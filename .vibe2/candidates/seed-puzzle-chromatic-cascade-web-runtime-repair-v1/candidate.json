@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const save=()=>localStorage.setItem(key,JSON.stringify(S));",
+      "replace": "function buttons(items){for(let i=0;i<5;i++){const b=$('#a"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
