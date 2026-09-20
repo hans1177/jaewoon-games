@@ -78,22 +78,30 @@ test('unappliable edit is retried inside generation before candidate write', asy
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/edit-preflight-retry/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
-test('malformed source output fast-escalates to focused replace on the next attempt', async () => {
+test('focused Web repair malformed output fast-escalates to focused replace on the next attempt', async () => {
   const cwd = tempRoot();
   const malformed = path.join(cwd, 'malformed.txt');
   const focused = path.join(cwd, 'focused.json');
-  write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
-  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'malformed-fast-escalation' }), null, 2));
+  const workOrder = order({
+    target: 'web',
+    root: 'web-games/demo',
+    responsibleFiles: ['web-games/demo/index.html'],
+    taskId: 'malformed-fast-escalation'
+  });
+  workOrder.goal = '[WEB_REPAIR] 기존 플레이 버튼 동작을 직접 보강';
+  write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>\n<button id="play">Play</button>\n<script>let started=false;</script>\n</body></html>\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
   write(malformed, 'not-json');
-  write(focused, JSON.stringify({ replace: 'class Player { int Speed() { return 3; } }' }));
+  write(focused, JSON.stringify({ replace: '<button id="play">Continue</button>' }));
   const result = await runVibe2SourceWorker({ cwd, responseFiles: [malformed, focused] });
   assert.equal(result.generation.attempts, 2);
   assert.equal(result.generation.recoveryUsed, true);
+  assert.equal(result.generation.focusedWebRepair, true);
   assert.equal(result.generation.focusedReplaceOnly, true);
   assert.equal(result.generation.malformedFastEscalation, true);
   assert.equal(result.codingMethod.malformedFastEscalation, true);
-  assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
-  assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/malformed-fast-escalation/files/Assets/Player.cs'), 'utf8'), /return 3/);
+  assert.deepEqual(result.changedFiles, ['index.html']);
+  assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/malformed-fast-escalation/files/index.html'), 'utf8'), /Continue/);
 });
 
 test('exact edit dry run validates sequential applicability without mutating source', () => {
