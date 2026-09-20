@@ -1,5 +1,5 @@
 {
-  "version": 163,
+  "version": 164,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3790,24 +3790,29 @@
     }
   },
   "changeRecord": {
-    "id": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_PARTIAL_PASS_2026-09-20",
+    "id": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_ALL_PASS_RUNTIME_VALIDATION_QUEUED_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "ASSISTANT_VIBE_COAUTHORING_TRACE_REQUIRED_2026-09-20",
-    "reason": "SYNC THE FIRST ASSISTANT+VIBE COAUTHORING CANDIDATE WITH OBSERVED PR QA. FOUR CHECKS ARE PASS; VIBE QA AND FINAL SUPERVISOR PLAYABILITY REVIEW ARE NOT COMPLETE, SO MAIN PROMOTION REMAINS BLOCKED.",
+    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_PARTIAL_PASS_2026-09-20",
+    "reason": "SYNC EXACT ASSISTANT+VIBE BUG-DEFENSE CANDIDATE AFTER ALL PR CI PASSED. CANONICAL SCHEMA15 PLAYWRIGHT RUNTIME VALIDATION IS RUNNING AGAINST CURRENT MAIN PLUS THE COMPANY-RUNTIME APPROVED DESIGN BASELINE. SUPERVISOR DECISION, REUSABLE LEARNING, AND MAIN PROMOTION REMAIN BLOCKED UNTIL VERIFIED RUNTIME EVIDENCE PASSES.",
     "invariants": {
-      "exactCandidateCommit": "185c418c5458e14147b360af4bf3f2f01d6577fc",
+      "exactCandidateCommit": "55db74ac0d4f876f3ca28d569a3dc9d754811590",
       "draftPr": 1743,
-      "partialCiDoesNotEqualProductionPass": true,
+      "prCiAllPassed": true,
+      "canonicalRuntimeValidationRequired": true,
+      "canonicalRuntimeValidationRunId": 35478451968,
+      "validationDraftPr": 1756,
       "runtimeOrSupervisorEvidenceNotInvented": true,
+      "finalSupervisorDecisionRequired": true,
+      "reusableLearningBeforeSupervisorPassForbidden": true,
       "automaticPromotionBlocked": true,
-      "coauthoringTraceUpdated": true
+      "parallelGameWorkPreserved": true
     },
     "next": [
-      "WAIT_FOR_OR_INSPECT_VIBE_QA_RUN_35477567582",
-      "REVIEW_EXACT_CANDIDATE_FOR_PLAYABILITY_AND_DESIGN_TRACEABILITY",
-      "WRITE_VERIFIED_PASS_OR_REVISE_TO_COAUTHORING_TRACE_AND_SUPERVISION_REVIEW",
-      "PROMOTE_ONLY_IF_ALL_REQUIRED_GATES_PASS"
+      "INSPECT_CANONICAL_SCHEMA15_RUNTIME_RUN_35478451968",
+      "REPAIR_ONLY_ASSISTANT_SUPERVISED_BUG_DEFENSE_BRANCH_IF_RUNTIME_FAILS",
+      "WRITE_VERIFIED_PASS_OR_REVISE_ONLY_FROM_RUNTIME_AND_SOURCE_EVIDENCE",
+      "PROMOTE_REUSABLE_LEARNING_AND_MAIN_ONLY_AFTER_VERIFIED_SUPERVISOR_PASS"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5890,9 +5895,9 @@
       ],
       "assistantCandidate": {
         "branch": "assistant/supervised-bug-defense-v1",
-        "candidateCommit": "185c418c5458e14147b360af4bf3f2f01d6577fc",
+        "candidateCommit": "55db74ac0d4f876f3ca28d569a3dc9d754811590",
         "draftPr": 1743,
-        "state": "CI_PARTIAL_PASS_VIBE_QA_PENDING_SUPERVISOR_REVIEW_PENDING",
+        "state": "CI_ALL_PASS_CANONICAL_RUNTIME_VALIDATION_QUEUED_SUPERVISOR_REVIEW_PENDING",
         "mainPromotionAllowed": false,
         "staticSourceReview": {
           "validationHarnessAbsent": true,
@@ -5908,28 +5913,28 @@
         "learningTrace": "company-learning/assistant-vibe-coauthoring-log.json#assistant_bug_defense_playable_candidate_v1_20260920",
         "qa": {
           "companyEvolutionQa": {
-            "runId": 35477567584,
+            "runId": 35478053101,
             "conclusion": "success"
           },
           "integratedRegression": {
-            "runId": 35477567579,
+            "runId": 35478052973,
             "conclusion": "success"
           },
           "securityImmuneSystem": {
-            "runId": 35477567597,
+            "runId": 35478052978,
             "conclusion": "success"
           },
           "vibe3EngineContract": {
-            "runId": 35477567578,
+            "runId": 35478053071,
             "conclusion": "success"
           },
           "vibeQa": {
-            "runId": 35477567582,
-            "conclusion": "queued"
+            "runId": 35478053033,
+            "conclusion": "success"
           },
           "homepageManager": {
-            "runId": 35477567590,
-            "conclusion": "queued",
+            "runId": 35478053075,
+            "conclusion": "success",
             "releaseAuthority": "NOT_APPLICABLE_UNTIL_SUPERVISOR_PASS"
           }
         },
@@ -5939,7 +5944,26 @@
           "17d24e636365a942e22e9a6c2ffcb55f3eaff428",
           "cdd09445397866ef64cc902d28f1626e2da4938e",
           "b9e19df8ab46e06a57b22903e86c61259eb441ca"
-        ]
+        ],
+        "candidateCommits": [
+          "9066566bbfc15028dd7cc8530735471ba1ff3519",
+          "9d4aa29fc3044bb74d8248730ac6fb56a38ac59e",
+          "55db74ac0d4f876f3ca28d569a3dc9d754811590"
+        ],
+        "reusableLearningAllowed": false,
+        "learningState": "TRACE_ONLY_UNTIL_SUPERVISOR_PASS",
+        "runtimeValidation": {
+          "validator": "tools/company-development-web-gameplay-validation.mjs",
+          "schemaVersion": 15,
+          "sourceCommit": "55db74ac0d4f876f3ca28d569a3dc9d754811590",
+          "designBaseline": "company-runtime:design/bug-defense/2026-09-19/design-revised.json",
+          "validationBranch": "assistant/validate-bug-defense-v1",
+          "validationDraftPr": 1756,
+          "runId": 35478451968,
+          "status": "queued",
+          "conclusion": null,
+          "currentMainValidator": true
+        }
       }
     }
   }
