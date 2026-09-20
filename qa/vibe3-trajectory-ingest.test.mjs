@@ -20,7 +20,22 @@ const trajectory={
   outcome:'VERIFIED_WINNER',
   finalEvidence:{runtimePassed:true,qaPassed:true,regressionPassed:true,exactRevision:true,protectedStatePreserved:true,independentQa:'PASS',browserQa:'PASS',runtime:'PASS'},
   metadata:{taskType:'bugfix',project:'qa-project',gameId:'qa-project',sourceRevision:'abcdef1234567890',winnerOutput:'diff --git a/game.js b/game.js\n+verified fix',playerImpactScore:1},
-  learningUse:{positiveWinnerAllowed:true,failedCandidatesPreserved:true,hiddenReasoningRequired:false,observableActionsAndEvidenceOnly:true},
+  observableCodingTrace:{
+    version:1,
+    boundary:'OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY',
+    goal:'검증된 전투 버그를 책임 코드에서 수정한다',
+    capabilityDomains:['RESPONSIBILITY_LOCALIZATION','FAILURE_RECOVERY','QA_DESIGN'],
+    steps:[
+      {index:1,stage:'CANDIDATE_EVALUATION',action:'GENERATE_EVALUATE_CANDIDATE',evidence:['eligible=false','failure=runtime crash'],outcome:'REJECTED',candidateId:'bad',failureClass:'RUNTIME',capabilityDomain:'FAILURE_RECOVERY'},
+      {index:2,stage:'FINAL_VERIFICATION',action:'VERIFY_SELECTED_CANDIDATE',evidence:['runtimePass=true','qaPassed=true','regressionPassed=true'],outcome:'VERIFIED_WINNER',candidateId:'winner',capabilityDomain:'QA_DESIGN'},
+    ],
+    reusablePrinciples:['bind runtime failure evidence before reusing a repair pattern'],
+    traceDigest:'trace-verified-001',
+    hiddenReasoningPersisted:false,
+    positivePromotionAuthority:false,
+    authority:'observable-coding-trace-only',
+  },
+  learningUse:{positiveWinnerAllowed:true,failedCandidatesPreserved:true,hiddenReasoningRequired:false,observableActionsAndEvidenceOnly:true,observableCodingTraceCaptured:true,hiddenReasoningPersisted:false},
   authority:'verified-development-trajectory',
 };
 assert.equal(validateVibe3Trajectory(trajectory).pass,true);
@@ -82,7 +97,15 @@ const sample=JSON.parse(fs.readFileSync(ordinaryResult.outFile,'utf8'));
 assert.equal(sample.sourceKind,'vibe3-trajectory');
 assert.equal(sample.taskType,'bugfix');
 assert(sample.input.includes('runtime-failed'));
+assert(sample.input.includes('OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY'));
+assert(sample.input.includes('RESPONSIBILITY_LOCALIZATION'));
+assert(sample.input.includes('GENERATE_EVALUATE_CANDIDATE'));
 assert(sample.output.includes('verified fix'));
+assert.equal(sample.provenance.observableCodingTraceIncluded,true);
+assert.equal(sample.provenance.observableCodingTraceDigest,'trace-verified-001');
+assert.equal(sample.provenance.hiddenReasoningPersisted,false);
+assert.equal(ordinaryResult.observableCodingTraceIncluded,true);
+assert(ordinaryResult.capabilityDomains.includes('FAILURE_RECOVERY'));
 const robloxSample=JSON.parse(fs.readFileSync(robloxResult.outFile,'utf8'));
 assert.equal(robloxSample.taskType,'roblox');
 assert.equal(robloxSample.browserQa,'NOT_APPLICABLE');
