@@ -2,6 +2,11 @@ name: Company System AI Workers
 
 on:
   workflow_dispatch:
+    inputs:
+      security_recovery_task_id:
+        description: 'Exact Primary-AI-assigned security recovery task id; when set, reserve only this task'
+        required: false
+        type: string
   repository_dispatch:
     types: [company-system-ai-cycle]
   schedule:
@@ -41,6 +46,7 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       count: ${{ steps.matrix.outputs.count }}
+      targeted_security_recovery: ${{ steps.matrix.outputs.targeted_security_recovery }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,6 +70,8 @@ jobs:
 
       - name: Reserve disjoint supervised assignments
         id: matrix
+        env:
+          SECURITY_RECOVERY_TASK_ID: ${{ inputs.security_recovery_task_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -85,18 +93,32 @@ jobs:
               --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
               --recovery=/tmp/system-ai-control/.vibe2/recovery-queue.json | tee /tmp/system-ai-recovery-escalation.log
 
-            node tools/company-recovery-dispatch.mjs \
-              --route=system-ai \
-              --queue=/tmp/system-ai-control/.vibe2/queue.json \
-              --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
-              --recovery=/tmp/system-ai-control/.vibe2/recovery-queue.json | tee /tmp/system-ai-recovery-dispatch.log
+            dispatch_args=(
+              --route=system-ai
+              --queue=/tmp/system-ai-control/.vibe2/queue.json
+              --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json
+              --recovery=/tmp/system-ai-control/.vibe2/recovery-queue.json
+            )
+            if [ -n "$SECURITY_RECOVERY_TASK_ID" ]; then
+              dispatch_args+=(--source-task="$SECURITY_RECOVERY_TASK_ID")
+            fi
+            node tools/company-recovery-dispatch.mjs "${dispatch_args[@]}" | tee /tmp/system-ai-recovery-dispatch.log
 
-            node tools/company-system-ai-queue.mjs \
-              --command=reserve \
-              --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
-              --max="$SYSTEM_AI_MAX_BATCH" \
-              --reservation="$reservation" \
-              --output=/tmp/system-ai-reserved.json
+            if [ -n "$SECURITY_RECOVERY_TASK_ID" ]; then
+              node tools/company-system-ai-queue.mjs \
+                --command=reserve-security-recovery \
+                --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
+                --id="$SECURITY_RECOVERY_TASK_ID" \
+                --reservation="$reservation" \
+                --output=/tmp/system-ai-reserved.json
+            else
+              node tools/company-system-ai-queue.mjs \
+                --command=reserve \
+                --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
+                --max="$SYSTEM_AI_MAX_BATCH" \
+                --reservation="$reservation" \
+                --output=/tmp/system-ai-reserved.json
+            fi
 
             cd /tmp/system-ai-control
             git config user.name 'jaewoon-system-ai-scheduler'
@@ -124,12 +146,13 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
           test "$persisted" = 1
-          node - <<'NODE'
+          SECURITY_RECOVERY_TASK_ID="$SECURITY_RECOVERY_TASK_ID" node - <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync('/tmp/system-ai-reserved.json','utf8'));
           const rows=(x.tasks||[]).map(t=>({taskId:t.id}));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targeted_security_recovery=${process.env.SECURITY_RECOVERY_TASK_ID?'YES':'NO'}\n`);
           console.log(`COMPANY_SYSTEM_AI_RESERVED=${rows.length}`);
           NODE
 
@@ -420,6 +443,7 @@ jobs:
       - name: Persist results for primary AI supervision
         env:
           GH_TOKEN: ${{ github.token }}
+          TARGETED_SECURITY_RECOVERY: ${{ needs.reserve.outputs.targeted_security_recovery }}
         shell: bash
         run: |
           set -euo pipefail
@@ -469,7 +493,9 @@ jobs:
 
           node "$GITHUB_WORKSPACE/tools/company-system-ai-queue.mjs" --command=summary --queue=.vibe2/system-ai-queue.json | tee /tmp/company-system-ai-summary.log
           queued="$(node -e "const q=require('./.vibe2/system-ai-queue.json');console.log((q.tasks||[]).filter(x=>x.status==='queued').length)")"
-          if [ "$queued" -gt 0 ]; then
+          if [ "$TARGETED_SECURITY_RECOVERY" = 'YES' ]; then
+            echo 'COMPANY_SYSTEM_AI_REFILL=SKIPPED_TARGETED_SECURITY_RECOVERY'
+          elif [ "$queued" -gt 0 ]; then
             curl --fail-with-body --silent --show-error \
               --request POST \
               --header 'Accept: application/vnd.github+json' \
