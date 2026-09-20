@@ -897,7 +897,12 @@ test('presentation quality passes are queued in canonical order',()=>{
   queue={tasks:stages.map(row=>done(row.id))};
   const finalPass=findWebPresentationQualityTask(project,root,queue);
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
-  assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
+  assert.match(finalPass.goal,/data-presentation-quality-version="2"/);
+  assert.match(finalPass.goal,/data-commercial-readiness-version="1"/);
+  assert.match(finalPass.goal,/Commercial Readiness/);
+  assert.ok(finalPass.evidence.includes('quality-contract:genrePresentationQualityContract'));
+  assert.ok(finalPass.evidence.includes('quality-contract:commercialReadinessGate'));
+  assert.ok(finalPass.evidence.includes('presentation-canonical-order-preserved'));
   assert.equal(finalPass.estimatedRisk,'high');
   assert.equal(finalPass.speculativeEligible,true);
   assert.equal(finalPass.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
@@ -933,16 +938,39 @@ test('web art direction and presentation are mandatory before platform handoff',
   });
   const task=result.tasks.find(row=>row.gameId===gameId);
   assert.ok(task);
-  assert.equal(task.supervisionContract.version,2);
+  assert.equal(task.supervisionContract.version,3);
   assert.ok(task.supervisionContract.stages.includes('GAME_ART_DIRECTION_STYLE_LOCK'));
   assert.ok(task.supervisionContract.stages.includes('PRESENTATION_IMPLEMENTATION'));
   assert.ok(task.supervisionContract.hardReject.includes('PLACEHOLDER_MONSTER_OR_CHARACTER'));
   assert.ok(task.supervisionContract.hardReject.includes('CONTEXT_MISMATCH_BACKGROUND'));
   assert.ok(task.supervisionContract.hardReject.includes('INCOMPLETE_ACTION_MOTION_SET'));
+  assert.ok(task.supervisionContract.hardReject.includes('COLOR_ONLY_ENEMY_VARIANT'));
+  assert.ok(task.supervisionContract.hardReject.includes('GENERIC_CROSS_GENRE_HUD'));
+  assert.ok(task.supervisionContract.hardReject.includes('COMMERCIAL_READINESS_INCOMPLETE'));
+  assert.ok(task.supervisionContract.completionRequirements.includes('GENRE_SPECIFIC_UI'));
+  assert.ok(task.supervisionContract.completionRequirements.includes('COMMERCIAL_READINESS_BEFORE_NATIVE_HANDOFF'));
   assert.match(task.goal,/게임별 아트 방향과 Style Lock/);
   assert.match(task.goal,/idle\/move\/attack\/hit\/death/);
   assert.match(task.goal,/임시 모형 몹/);
   assert.match(task.goal,/Roblox\/Unity\/UEFN 이관/);
+  assert.match(task.goal,/Commercial Readiness/);
+});
+
+test('genre presentation guidance is authored per game genre inside canonical pass order',()=>{
+  const root=tempRepo();
+  const gameId='commercial-survival';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas></canvas></body></html>\n','utf8');
+  const project={gameId,name:'Commercial Survival',genre:'SURVIVAL',engine:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const task=findWebPresentationQualityTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.match(task.goal,/생존 장르는/);
+  assert.match(task.goal,/UI Motion Language/);
+  assert.match(task.goal,/색만 바꿔/);
+  assert.match(task.goal,/첫 10분/);
+  assert.match(task.goal,/접근성/);
+  assert.match(task.goal,/수익화/);
 });
 
 test('web repair converts presentation blockers into concrete visual and motion repair hints',()=>{
@@ -972,7 +1000,7 @@ test('web repair converts presentation blockers into concrete visual and motion 
       webSourcePath:`web-games/${gameId}`,
       sourcePath:`web-games/${gameId}`,
       vibeWebRequestedStage:'WEB_REPAIR',
-      vibeWebImplementationReason:'PRESENTATION_RUNTIME_QUALITY_REQUIRED|ACTION_PRESENTATION_QUALITY_REQUIRED'
+      vibeWebImplementationReason:'PRESENTATION_RUNTIME_QUALITY_REQUIRED|ACTION_PRESENTATION_QUALITY_REQUIRED|GENRE_PRESENTATION_IDENTITY_REQUIRED|ENEMY_PRESENTATION_DISTINCTIVENESS_REQUIRED|ACCESSIBILITY_RUNTIME_REQUIRED|COMMERCIAL_READINESS_REQUIRED'
     }]},
     queue:{maxConcurrentTasks:20,tasks:[]},
     repoRoot:root,
@@ -986,4 +1014,8 @@ test('web repair converts presentation blockers into concrete visual and motion 
   assert.match(task.goal,/idle\/move\/attack\/hit\/death/);
   assert.match(task.goal,/anticipation\/windup/);
   assert.match(task.goal,/impact 이벤트/);
+  assert.match(task.goal,/공용 HUD/);
+  assert.match(task.goal,/색상만 다른 동일 모델/);
+  assert.match(task.goal,/44px/);
+  assert.match(task.goal,/Commercial Readiness/);
 });
