@@ -54,7 +54,7 @@ test('game-primary summary uses current atomic reservation cap instead of extern
   const running=Array.from({length:7},(_,i)=>({
     id:`running-${i}`,gameId:`running-${i}`,target:'web',department:'development',type:'implementation',
     goal:'running',status:'running',sourceRoot:`web-games/running-${i}`,responsibleFiles:['index.html'],
-    reservationId:'prior:1',reservationRunId:'prior',reservedAt:'2026-09-20T10:00:00Z'
+    reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
   const queued=Array.from({length:20},(_,i)=>({
     id:`queued-${i}`,gameId:`queued-${i}`,target:'web',department:'development',type:'implementation',
