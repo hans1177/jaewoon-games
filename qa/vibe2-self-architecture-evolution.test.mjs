@@ -144,3 +144,26 @@ test('queued architecture task fails closed again if neural readiness later regr
   assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:NO'));
   assert.ok(!task.completionCriteria.includes('NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF'));
 });
+
+
+test('fast preflight without readiness input preserves previously verified queued neural readiness',()=>{
+  const base=[failure('a','neural-event-router-bottleneck'),failure('b','neural-event-router-bottleneck'),failure('c','neural-event-router-bottleneck')];
+  const ready={
+    source:'DIRECT_TARGETED_QA',pass:true,
+    rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
+    atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true,
+    internalNeuralStructureExpansionAllowedWhenPass:true,
+    neuralExecutionAuthorityExpansionAllowed:false,
+    queueMutationAuthorityExpanded:false,
+    workerCreationAuthorityExpanded:false,
+    gateWeakeningAllowed:false
+  };
+  const first=injectSelfArchitectureEvolutionTasks({tasks:base},{neuralExpansionReadiness:ready});
+  const id=first.added[0].id;
+  const preflight=injectSelfArchitectureEvolutionTasks(first.queue,{currentMax:20});
+  const task=preflight.queue.tasks.find(row=>row.id===id);
+  assert.deepEqual(preflight.refreshed,[]);
+  assert.ok(task.evidence.includes('architecture-neural-expansion-readiness:PASS'));
+  assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:YES'));
+  assert.ok(!task.evidence.includes('architecture-neural-expansion-readiness:PENDING'));
+});
