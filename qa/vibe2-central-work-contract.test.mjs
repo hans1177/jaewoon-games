@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import {
   CANONICAL_VIBE_POLICY_PATH,
   loadCentralPolicySnapshot,
@@ -15,6 +16,7 @@ import {
 import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
 
 function tempRoot(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-central-contract-'));}
+function git(cwd,...args){return execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
 
 function writePolicy(root,version=196,overrides={}){
   const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
@@ -133,6 +135,47 @@ test('central roadmap fingerprint is fail-closed when policy changes during work
   writePolicy(root,197);
   assert.throws(
     ()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),
+    /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
+  );
+});
+
+test('pinned worker detects a central policy change that exists only on live origin main',()=>{
+  const base=tempRoot();
+  const origin=path.join(base,'origin.git');
+  const seed=path.join(base,'seed');
+  const worker=path.join(base,'worker');
+  fs.mkdirSync(seed,{recursive:true});
+  execFileSync('git',['init','--bare',origin],{stdio:['ignore','pipe','pipe']});
+  git(seed,'init','-b','main');
+  git(seed,'config','user.name','qa');
+  git(seed,'config','user.email','qa@example.invalid');
+  writePolicy(seed,196);
+  git(seed,'add','.');
+  git(seed,'commit','-m','policy v196');
+  git(seed,'remote','add','origin',origin);
+  git(seed,'push','-u','origin','main');
+  execFileSync('git',['clone','--quiet',origin,worker],{stdio:['ignore','pipe','pipe']});
+
+  const snapshot=loadCentralPolicySnapshot({repoRoot:worker,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'live-stale',gameId:'demo',target:'web'},
+    plan:{target:'web'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['web-games/demo/index.html'],
+    mainSha:git(worker,'rev-parse','HEAD'),
+    livePolicyRef:'origin/main'
+  });
+  assert.equal(contract.freshness.liveMainRequired,true);
+  assert.equal(assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_SOURCE_GENERATION'}).liveMainVersion,196);
+
+  writePolicy(seed,197);
+  git(seed,'add',CANONICAL_VIBE_POLICY_PATH);
+  git(seed,'commit','-m','policy v197');
+  git(seed,'push','origin','main');
+  assert.equal(loadCentralPolicySnapshot({repoRoot:worker,required:true}).version,196);
+  assert.throws(
+    ()=>assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_CANDIDATE_WRITE'}),
     /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
   );
 });
