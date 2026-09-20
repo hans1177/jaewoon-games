@@ -64,3 +64,13 @@ test('no-change system task may close only after deterministic current-main veri
   assert.match(queue,/DETERMINISTIC_CURRENT_MAIN_SATISFIED/);
   assert.match(queue,/deterministic-current-main-satisfied/);
 });
+
+
+test('system AI control conflict retry reloads latest control branch and recomputes state',()=>{
+  const reserve=workflow.slice(workflow.indexOf('- name: Reserve disjoint supervised assignments'),workflow.indexOf('\n  worker:'));
+  assert.match(reserve,/for attempt in 1 2 3; do/);
+  assert.match(reserve,/git worktree add --detach \/tmp\/system-ai-control origin\/vibe2-unreal-core/);
+  assert.match(reserve,/company-recovery-escalation\.mjs[\s\S]*company-recovery-dispatch\.mjs[\s\S]*company-system-ai-queue\.mjs/);
+  assert.match(reserve,/COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY/);
+  assert.doesNotMatch(reserve,/git pull --rebase origin vibe2-unreal-core/);
+});
