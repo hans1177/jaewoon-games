@@ -1,5 +1,5 @@
 {
-  "version": 226,
+  "version": 227,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3058,8 +3058,8 @@
       "missingRootWithoutExplicitBootstrapAuthority": "BLOCK"
     },
     "developmentToolAuthority": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
       "sourceOfTruth": "company-learning/platform-release-roadmap.json",
       "gameDevelopmentOwner": [
         "VIBE2",
@@ -3073,7 +3073,29 @@
         "branchPattern": "vibe2/candidate/*",
         "directMainWrite": false,
         "externalPaidApiRequired": false,
-        "openAiPaidApiAllowed": false
+        "openAiPaidApiAllowed": false,
+        "ownerAuthorizedCollaborativeCandidateWriters": [
+          "CHATGPT_INTERACTIVE_ASSISTANT",
+          "EXTERNAL_AI_ASSISTANT"
+        ],
+        "collaboratorBranchPatterns": [
+          "assistant/*",
+          "chatgpt/*",
+          "external-ai/*"
+        ],
+        "collaboratorIsolatedCandidateBranchRequired": true,
+        "collaboratorPullRequestRequired": true,
+        "collaboratorDirectMainWrite": false,
+        "collaboratorProductionPassAuthority": false,
+        "collaboratorReleaseAuthority": false,
+        "collaboratorQaSecurityRuntimeGatesUnchanged": true,
+        "verifiedCollaboratorOutcomeFeedsVibeLearning": true,
+        "mergedPrProvenanceCollector": "tools/vibe2-merged-pr-provenance.mjs",
+        "learningIngress": [
+          ".vibe2/merged-pr-provenance-ledger.json",
+          ".vibe2/external-ai-distilled-knowledge.json",
+          ".vibe2/experience.json"
+        ]
       },
       "codex": {
         "role": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
@@ -3109,6 +3131,35 @@
           "VIBE2_CODEX_GAME_SOURCE_WRITE": "FORBIDDEN",
           "VIBE2_OPENAI_PAID_API_ALLOWED": "false"
         }
+      },
+      "chatgptAssistant": {
+        "role": "OWNER_AUTHORIZED_INTERACTIVE_GAME_AND_SYSTEM_COLLABORATOR",
+        "gameSourceCandidateWriteAllowed": true,
+        "unityCandidateAuthoringAllowed": true,
+        "robloxCandidateAuthoringAllowed": true,
+        "webCandidateAuthoringAllowed": true,
+        "toolingAndQaAuthoringAllowed": true,
+        "isolatedCandidateBranchRequired": true,
+        "directMainWrite": false,
+        "productionPassAuthority": false,
+        "runtimeQaPassFailAuthority": false,
+        "regressionPassFailAuthority": false,
+        "releaseAuthority": false,
+        "unattendedGithubActionsGameSourceUse": false,
+        "hiddenCredentialOrPaidApiAssumptionForbidden": true,
+        "verifiedOutcomeMustFeedVibeLearning": true
+      },
+      "externalAiCollaborators": {
+        "ownerAuthorizationRequired": true,
+        "isolatedCandidateAuthoringAllowed": true,
+        "candidateMayIncludeGameSource": true,
+        "candidateMayIncludePlatformNativeSource": true,
+        "directMainWrite": false,
+        "productionPassAuthority": false,
+        "releaseAuthority": false,
+        "rawModelOutputIsNotEvidence": true,
+        "finalCandidateMustPassExistingQaSecurityRuntimeRegression": true,
+        "verifiedOutcomeFeedsExistingVibeLearningClosedLoop": true
       }
     },
     "sharedWorkerContext": {
@@ -9488,7 +9539,17 @@
       "independentlyVerifiedDistilledOnly": true,
       "rankAfterInternalVerified": true,
       "actualContinuousRunnerInjectionRequired": true,
-      "externalAiMayNotWriteSourceOrClaimPass": true
+      "externalAiMayNotWriteSourceOrClaimPass": true,
+      "ownerAuthorizedCandidateAuthoringAllowed": true,
+      "rawExternalOutputStillUntrusted": true,
+      "mergedAssistantCandidateProvenanceCaptured": true,
+      "verifiedCandidateOutcomeMayFeedDistillation": true,
+      "assistantBranchClasses": [
+        "assistant/*",
+        "chatgpt/*",
+        "external-ai/*"
+      ],
+      "directMainAndPassAuthorityRemainForbidden": true
     },
     "knowledgeAttribution": {
       "exactInjectedKnowledgeIdsRequired": true,
