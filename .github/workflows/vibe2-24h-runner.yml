@@ -185,23 +185,7 @@ jobs:
                 qa/vibe2-owner-rule3-unbounded-learning.test.mjs \
                 qa/vibe2-neural-fanin-root-cause.test.mjs \
                 qa/company-security-steward.test.mjs
-              node --input-type=module <<'NODE'
-              import fs from 'node:fs';
-              const readiness={
-                version:1,
-                source:'VIBE2_24H_VERIFIED_RULE_AND_NEURAL_QA',
-                rule1QaPass:true,
-                rule2QaPass:true,
-                rule3QaPass:true,
-                atomicNeuronFanInQaPass:true,
-                sharedContextQaPass:true,
-                securityQaPass:true,
-                authorityExpansion:false,
-                gateWeakening:false
-              };
-              fs.writeFileSync('/tmp/vibe2-neural-expansion-readiness.json',JSON.stringify(readiness,null,2)+'\n');
-              console.log('VIBE2_NEURAL_EXPANSION_READINESS_EVIDENCE=PASS');
-              NODE
+              node -e "const fs=require('fs');const r={version:1,source:'VIBE2_24H_VERIFIED_RULE_AND_NEURAL_QA',rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true,authorityExpansion:false,gateWeakening:false};fs.writeFileSync('/tmp/vibe2-neural-expansion-readiness.json',JSON.stringify(r,null,2)+'\\n');console.log('VIBE2_NEURAL_EXPANSION_READINESS_EVIDENCE=PASS')"
             )
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
