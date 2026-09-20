@@ -550,6 +550,21 @@ test('planning department is the canonical combined planning growth monetization
   assert.equal(p.timingPolicy.revenueBlockingBugUsesHotfixLane,true);
   assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,true);
   assert.equal(p.learningLoop.verifiedOutcomeReturnsToExistingVibeLearning,true);
+  const commercial=p.postReleaseCommercializationEngine;
+  assert.deepEqual(commercial.executionOrder.slice(0,4),[
+    'DISCOVERY_AND_POSITIONING',
+    'FIRST_SESSION_ACTIVATION',
+    'RETENTION_AND_RETURN',
+    'SOCIAL_AND_COMMUNITY_COMPOUNDING'
+  ]);
+  assert.equal(commercial.phases.ZERO_TO_FIRST_COHORT.monetizationPriority,'LOW_PREPARE_ONLY');
+  assert.equal(commercial.phases.SCALE_AND_REINVEST.paidAcquisitionScalingRequiresRetentionProof,true);
+  assert.equal(commercial.creativeLab.winnerSelectionAuthority,'VIBE');
+  assert.equal(commercial.firstFiveMinuteLab.required,true);
+  assert.equal(commercial.channelCohortAnalysis.cheapTrafficWithPoorRetentionNotGrowth,true);
+  assert.equal(commercial.commercialExperimentRules.scaleOnlyAfterMeasuredDownstreamValue,true);
+  assert.equal(commercial.commercialExperimentRules.vibeCanStopOrReverseAnyExperiment,true);
+  assert.equal(commercial.trendRadar.directTrendCopyForbidden,true);
   assert.equal(p.departmentToVibeDecisionBoundary.departmentAuthority,'RESEARCH_ADVISORY_EVIDENCE_ONLY');
   assert.equal(p.departmentToVibeDecisionBoundary.departmentRecommendationNeverEqualsExecutionOrder,true);
   assert.equal(p.departmentToVibeDecisionBoundary.vibeDecisionUsesEvidenceNotDepartmentAuthority,true);
