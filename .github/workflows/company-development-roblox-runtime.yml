@@ -79,8 +79,9 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
@@ -90,13 +91,18 @@ jobs:
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            if(platform!=='ROBLOX')continue;
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
-            if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
+            const candidateReady=secondaryOwnerFocus
+              ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
+              :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
+            if(candidateReady)continue;
             const target=`roblox-games/${item.gameId}`;
-            if(fs.existsSync(target)&&!item.robloxSourceBootstrapFailedAt)continue;
+            const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
+            if(fs.existsSync(target)&&!bootstrapFailed)continue;
             rows.push({
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -104,6 +110,7 @@ jobs:
               artbook:item.artbookSource||`artbook-submissions/${item.gameId}/current.json`,
               webHandoff:item.webPlatformHandoff||null,
               target,
+              secondaryOwnerFocus,
             });
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
@@ -300,6 +307,7 @@ jobs:
           const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const expectedById=new Map(expected.map(target=>[target.gameId,target]));
           const reconciliation=JSON.parse(process.env.RECONCILIATION_RESULTS_JSON||'[]');
           const resultDir='/tmp/roblox-batch/results';
           const results=[];
@@ -340,6 +348,41 @@ jobs:
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
+            const target=expectedById.get(result.gameId)||{};
+            const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            if(secondaryOwnerFocus){
+              if(result.pass===true){
+                Object.assign(item,{
+                  robloxProjectPath:result.sourcePath,
+                  ownerFocusRobloxSourcePath:result.sourcePath,
+                  ownerFocusRobloxSourceBoundAt:stamp,
+                  ownerFocusRobloxSourceBootstrapFailedAt:null,
+                  ownerFocusRobloxSourceCandidateBranch:null,
+                  ownerFocusRobloxSourceCandidateReadyAt:null,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_READY',
+                  updatedAt:stamp,
+                });
+                passCount++;
+              }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
+                Object.assign(item,{
+                  ownerFocusRobloxSourceCandidateBranch:result.candidateBranch,
+                  ownerFocusRobloxSourceCandidateReadyAt:stamp,
+                  ownerFocusRobloxSourceBootstrapFailedAt:null,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_PROMOTION_PENDING',
+                  updatedAt:stamp,
+                });
+                candidateCount++;
+              }else{
+                Object.assign(item,{
+                  ownerFocusRobloxSourceBootstrapFailedAt:stamp,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED',
+                  ownerFocusRobloxSourceFailure:result.failure||'unknown-failure',
+                  updatedAt:stamp,
+                });
+                failCount++;
+              }
+              continue;
+            }
             if(result.pass===true){
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
@@ -375,6 +418,7 @@ jobs:
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
+          console.log(`ROBLOX_OWNER_FOCUS_SECONDARY_COUNT=${expected.filter(x=>x.secondaryOwnerFocus===true).length}`);
           console.log('DEVELOPMENT_GAME_WIP_MAX=6');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
