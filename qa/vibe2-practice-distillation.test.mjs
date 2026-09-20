@@ -132,3 +132,41 @@ test('presentation practice distills only verified quality domains without stori
   assert.doesNotMatch(serialized,/secondary motion/);
   assert.doesNotMatch(serialized,/duplicate audio owner/);
 });
+
+test('practice distillation emits verified knowledge atoms with lineage but never stores candidate prose',()=>{
+  const distilled=distillPracticeResult({result,order,codePatternsInput:patterns});
+  const row=distilled.accepted[0];
+  assert.equal(row.lifecycle,'ACTIVE');
+  assert.equal(row.fastLaneAdvisoryOnly,true);
+  assert.ok(Array.isArray(row.knowledgeAtoms));
+  assert.equal(row.knowledgeAtoms.length,1);
+  const atom=row.knowledgeAtoms[0];
+  assert.match(atom.id,/^knowledge-atom:/);
+  assert.equal(atom.domain,'SAVE');
+  assert.equal(atom.lifecycle,'ACTIVE');
+  assert.equal(atom.advisoryOnly,true);
+  assert.equal(atom.directMasteryCredit,false);
+  assert.equal(atom.directTrainingSample,false);
+  assert.equal(atom.authorityExpanded,false);
+  assert.equal(atom.lineage.sourceKnowledgeId,row.id);
+  assert.ok(row.techniqueFingerprints.every(value=>/^sha256:[a-f0-9]{64}$/.test(value)));
+  const serialized=JSON.stringify(row);
+  assert.doesNotMatch(serialized,/single save persistence owner/);
+  assert.doesNotMatch(serialized,/duplicate save restore mutation/);
+});
+
+test('practice store upgrades legacy verified entries into atoms and preserves provenance during merge',()=>{
+  const distilled=distillPracticeResult({result,order,codePatternsInput:patterns});
+  const legacy={...distilled.accepted[0]};
+  delete legacy.knowledgeAtoms;
+  delete legacy.lifecycle;
+  delete legacy.fastLaneAdvisoryOnly;
+  const merged=mergePracticeDistillationStore({version:1,entries:[legacy]},[distilled]);
+  assert.equal(merged.store.version,2);
+  assert.equal(merged.store.policy.knowledgeAtomizationRequired,true);
+  assert.equal(merged.store.policy.fastLaneMayIncreaseMastery,false);
+  assert.equal(merged.store.policy.fastLaneMayCreateCanonicalTrainingSample,false);
+  assert.ok(merged.store.entries[0].knowledgeAtoms.length>=1);
+  assert.equal(merged.store.entries[0].lifecycle,'ACTIVE');
+  assert.equal(merged.store.entries[0].verificationEvidence.length>=2,true);
+});

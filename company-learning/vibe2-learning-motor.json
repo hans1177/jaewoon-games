@@ -308,7 +308,13 @@
       "EXTERNAL_REFERENCE_SYNTHESIS_DRILL",
       "RELEARNING_REPLAY_DRILL",
       "UNITY_NATIVE_DRILL",
-      "FORTNITE_UEFN_NATIVE_DRILL"
+      "FORTNITE_UEFN_NATIVE_DRILL",
+      "FRONTIER_EXPLORATION_DRILL",
+      "SHADOW_DOMAIN_DRILL",
+      "KNOWLEDGE_COMPOSITION_DRILL",
+      "FAILURE_CLUSTER_DRILL",
+      "INTRO_FIRST_MINUTE_DRILL",
+      "CONCEPT_DIVERSITY_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -338,7 +344,11 @@
     "hypothesisGenerationLimit": null,
     "falsificationGenerationLimit": null,
     "previousResultComparisonRequired": true,
-    "nextSignalAfterCompletedGenerationRequired": true
+    "nextSignalAfterCompletedGenerationRequired": true,
+    "atomicNeuronDefault": true,
+    "atomicNeuronMode": "PER_TASK_MICRO_FANIN",
+    "microFanInRequired": true,
+    "globalWaveBarrierForbidden": true
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",
@@ -524,6 +534,23 @@
       "PROGRESSION_UNCHANGED",
       "HIT_SEMANTICS_UNCHANGED",
       "NETWORK_AUTHORITY_UNCHANGED"
+    ],
+    "creativeExpansionTracks": [
+      "INTRO_HOOK",
+      "ONBOARDING_FEEL",
+      "FIRST_MINUTE_PACING",
+      "PRESENTATION_COMPOSITION",
+      "CONCEPT_DIVERSITY",
+      "ENVIRONMENTAL_STORYTELLING",
+      "LIGHTING_FEEL"
+    ],
+    "presentationCompositionDomains": [
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE",
+      "UI_STATE"
     ]
   },
   "closedLoop": {
@@ -547,5 +574,61 @@
     "retiredKnowledgeRetrievalForbidden": true,
     "rawExternalAiOutputDirectUse": false,
     "authorityExpanded": false
+  },
+  "selfExpansion": {
+    "enabled": true,
+    "centralContract": "company-learning/platform-release-roadmap.json#selfExpansionLearningContract",
+    "existingLearningMotorOnly": true,
+    "separateTrainerForbidden": true,
+    "atomicNeuronDefault": true,
+    "atomicNeuronMode": "PER_TASK_MICRO_FANIN",
+    "microFanInRequired": true,
+    "globalWaveBarrierForbidden": true,
+    "knowledgeAtomization": true,
+    "microDistillationFastLane": "VERIFIED_ADVISORY_ONLY",
+    "fastLaneDirectMasteryCredit": false,
+    "fastLaneDirectCanonicalTrainingSample": false,
+    "freshProjectOutcomeRequiredForPositiveMasteryOrTraining": true,
+    "weakDomainPriority": true,
+    "failureClusterFrontier": true,
+    "recursiveCurriculum": true,
+    "knowledgeComposition": true,
+    "knowledgeLineage": true,
+    "knowledgeCompressionPreservesProvenance": true,
+    "knowledgeLifecycle": [
+      "ACTIVE",
+      "RECHECK",
+      "RETIRED"
+    ],
+    "shadowDomainCandidates": true,
+    "shadowDomainAutoAuthorityExpansion": false,
+    "domainSplitMergeCandidateOnly": true,
+    "playbookAutoCandidateOnly": true,
+    "transferConfidenceContextScoped": true,
+    "selfConfidenceCalibration": true,
+    "noveltyPressure": true,
+    "conceptFingerprintRepetitionPenalty": true,
+    "conceptAxes": [
+      "PLAYER_FANTASY",
+      "PLAYER_ROLE",
+      "CORE_ACTION",
+      "SPACE_STRUCTURE",
+      "PROGRESSION",
+      "RISK_STRUCTURE",
+      "ART_DIRECTION",
+      "MOOD",
+      "SESSION_STRUCTURE"
+    ],
+    "creativeTracks": [
+      "INTRO_HOOK",
+      "ONBOARDING_FEEL",
+      "FIRST_MINUTE_PACING",
+      "PRESENTATION_COMPOSITION",
+      "CONCEPT_DIVERSITY",
+      "ENVIRONMENTAL_STORYTELLING",
+      "LIGHTING_FEEL"
+    ],
+    "authorityExpanded": false,
+    "gateWeakening": false
   }
 }

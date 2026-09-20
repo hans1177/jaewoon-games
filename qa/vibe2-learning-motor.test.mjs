@@ -23,6 +23,7 @@ import {
   retrieveUnifiedLearning,
   candidateTournamentPolicy,
   buildBenchmarkLadder,
+  buildSelfExpansionPlan,
   buildIdlePracticeQueue,
   injectIdlePracticeTask,
   dedupeIdlePracticeTasks,
@@ -940,4 +941,63 @@ test('native positive mastery does not rise from verified metadata without match
   assert.equal(result.state.domains.UEFN_RUNTIME.xp,0);
   assert.equal(result.state.domains.UEFN_VERSE.xp,0);
   assert.ok(result.state.domains.CORE_LOOP.xp>0);
+});
+
+test('self expansion creates atomic frontier, recursive curriculum, intro and concept diversity tracks without authority expansion',()=>{
+  const state=createMasteryState({domains:{ANIMATION_FEEL:{xp:744},AUDIO_FEEL:{xp:12},VFX:{xp:0},LIVING_MOTION:{xp:0}}});
+  const plan=buildSelfExpansionPlan({
+    masteryInput:state,
+    experienceInput:{records:[
+      {id:'e1',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'audio feel crossfade and boss intro presentation composition',reusablePatterns:['audio feel camera language']},
+      {id:'e2',gameId:'g2',engine:'web',verified:true,reusable:true,outcome:'FAIL',failureCause:'vfx readability regression',avoidPatterns:['unbounded vfx']}
+    ]},
+    queueInput:{tasks:[
+      {id:'q1',goal:'first minute onboarding intro hook',evidence:['concept-fingerprint:survival|forest|combat']},
+      {id:'q2',goal:'concept diversity',evidence:['concept-fingerprint:survival|forest|combat']}
+    ]},
+    practiceDistilledInput:{entries:[{id:'pd-audio',domain:'AUDIO_FEEL',verified:true,independentlyVerified:true,retrievalEligible:true,lifecycle:'ACTIVE',confirmations:3,verificationEvidence:['a','b'],knowledgeAtoms:[{id:'atom-audio',domain:'AUDIO_FEEL',lifecycle:'ACTIVE'}]}]}
+  });
+  assert.equal(plan.atomicNeuron.default,true);
+  assert.equal(plan.atomicNeuron.mode,'PER_TASK_MICRO_FANIN');
+  assert.equal(plan.atomicNeuron.microFanInRequired,true);
+  assert.equal(plan.atomicNeuron.globalWaveBarrierForbidden,true);
+  assert.ok(plan.weakDomains.some(row=>row.domain==='VFX'));
+  assert.ok(plan.creativeTracks.includes('INTRO_HOOK'));
+  assert.ok(plan.creativeTracks.includes('CONCEPT_DIVERSITY'));
+  assert.equal(plan.conceptDiversity.exactFingerprintRepetitionPenalty,true);
+  assert.equal(plan.conceptDiversity.repeatedConceptFingerprints[0].count,2);
+  assert.equal(plan.microDistillation.directMasteryCredit,false);
+  assert.equal(plan.authorityExpanded,false);
+});
+
+test('self expansion drills enter existing idle queue as atomic micro-fanin practice',()=>{
+  const expansion=buildSelfExpansionPlan({masteryInput:{}});
+  const idle=buildIdlePracticeQueue({}, {}, expansion);
+  assert.ok(idle.selfExpansionDrills>0);
+  assert.equal(idle.atomicNeuronDefault,true);
+  const expansionDrill=idle.drills.find(row=>row.selfExpansion===true);
+  assert.ok(expansionDrill);
+  const injected=injectIdlePracticeTask({tasks:[]},{drills:[expansionDrill]});
+  assert.equal(injected.added,true);
+  assert.ok(injected.task.evidence.includes('atomic-neuron:PER_TASK_MICRO_FANIN'));
+  assert.ok(injected.task.evidence.includes('task-micro-fanin:required'));
+  assert.ok(injected.task.evidence.includes('global-wave-barrier:forbidden'));
+  assert.ok(injected.task.completionCriteria.includes('ATOMIC_NEURON_MICRO_FANIN_REQUIRED'));
+});
+
+test('central self expansion policy keeps fast distillation advisory and shadow domains non-authoritative',()=>{
+  const learning=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  assert.equal(learning.selfExpansion?.atomicNeuronDefault,true);
+  assert.equal(learning.selfExpansion?.microFanInRequired,true);
+  assert.equal(learning.selfExpansion?.fastLaneDirectMasteryCredit,false);
+  assert.equal(learning.selfExpansion?.shadowDomainAutoAuthorityExpansion,false);
+  assert.ok(learning.selfExpansion?.creativeTracks?.includes('INTRO_HOOK'));
+  assert.ok(learning.selfExpansion?.creativeTracks?.includes('CONCEPT_DIVERSITY'));
+  assert.equal(roadmap.selfExpansionLearningContract?.execution?.atomicNeuronDefault,true);
+  assert.equal(roadmap.selfExpansionLearningContract?.execution?.globalWaveBarrierForbidden,true);
+  assert.equal(roadmap.selfExpansionLearningContract?.microDistillation?.fastLaneMayIncreaseMastery,false);
+  assert.equal(roadmap.selfExpansionLearningContract?.selfExpansion?.shadowDomainMayNotExpandAuthority,true);
+  assert.equal(roadmap.presentationPipelineImplementation?.rules?.presentationAtomicNeuronExecutionRequired,true);
+  assert.equal(roadmap.presentationPipelineImplementation?.rules?.audioAtomicNeuronExecutionRequired,true);
 });

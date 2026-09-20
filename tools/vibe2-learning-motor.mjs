@@ -70,6 +70,26 @@ const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGR
 const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER']);
 const UNITY_NATIVE_ONLY=new Set(['UNITY_RUNTIME','UNITY_PHYSICS','UNITY_NETCODE']);
 const UEFN_NATIVE_ONLY=new Set(['UEFN_RUNTIME','UEFN_VERSE','UEFN_REPLICATION']);
+const SELF_EXPANSION_TRACKS=freeze(['INTRO_HOOK','ONBOARDING_FEEL','FIRST_MINUTE_PACING','PRESENTATION_COMPOSITION','CONCEPT_DIVERSITY','ENVIRONMENTAL_STORYTELLING','LIGHTING_FEEL']);
+const SELF_EXPANSION_TRACK_PATTERNS=freeze({
+  INTRO_HOOK:/intro|hook|first.?5|첫.?5|도입.?훅/i,
+  ONBOARDING_FEEL:/onboarding|tutorial|튜토리얼|조작.?안내|초반.?학습/i,
+  FIRST_MINUTE_PACING:/first.?minute|first.?60|첫.?1분|첫.?60|초반.?페이싱/i,
+  PRESENTATION_COMPOSITION:/presentation.?composition|연출|hero.?moment|boss.?intro|보스.?등장|impact.?sync/i,
+  CONCEPT_DIVERSITY:/concept.?divers|novelty|컨셉.?다양|콘셉트.?다양|장르.?다양|concept.?mutation/i,
+  ENVIRONMENTAL_STORYTELLING:/environmental.?story|environment.?narrative|환경.?서사|환경.?스토리/i,
+  LIGHTING_FEEL:/lighting.?feel|lighting|light.?composition|조명.?연출|조명/i
+});
+const CONCEPT_DIVERSITY_AXES=freeze(['PLAYER_FANTASY','PLAYER_ROLE','CORE_ACTION','SPACE_STRUCTURE','PROGRESSION','RISK_STRUCTURE','ART_DIRECTION','MOOD','SESSION_STRUCTURE']);
+const SELF_EXPANSION_TIE_PRIORITY=freeze(['LIVING_MOTION','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','ASSET_ADAPTATION','ASSET_PRODUCTION','UI_STATE','STORYTELLING','NARRATIVE_STRUCTURE','PERFORMANCE']);
+const KNOWLEDGE_COMPOSITION_PAIRS=freeze([
+  freezeList(['ANIMATION_FEEL','VFX']),
+  freezeList(['VFX','AUDIO_FEEL']),
+  freezeList(['AUDIO_FEEL','CAMERA_LANGUAGE']),
+  freezeList(['LIVING_MOTION','CAMERA_LANGUAGE']),
+  freezeList(['STORYTELLING','CAMERA_LANGUAGE']),
+  freezeList(['UI_STATE','AUDIO_FEEL'])
+]);
 const XP_SUCCESS=12;
 const XP_FAILURE=5;
 const LEVEL_THRESHOLDS=[0,30,70,120,180,250,340,450,580,730];
@@ -1116,6 +1136,78 @@ function idleDrillKindForDomain(domain=''){
   if(UEFN_NATIVE_ONLY.has(d))return'FORTNITE_UEFN_NATIVE_DRILL';
   return'MINI_GAME_SYSTEM_DRILL';
 }
+export function buildSelfExpansionPlan({masteryInput={},experienceInput={},queueInput={},practiceDistilledInput={}}={}){
+  const state=createMasteryState(masteryInput);
+  const weakDomains=Object.entries(state.domains)
+    .sort((a,b)=>a[1].level-b[1].level||a[1].xp-b[1].xp||((SELF_EXPANSION_TIE_PRIORITY.indexOf(a[0])<0?999:SELF_EXPANSION_TIE_PRIORITY.indexOf(a[0]))-(SELF_EXPANSION_TIE_PRIORITY.indexOf(b[0])<0?999:SELF_EXPANSION_TIE_PRIORITY.indexOf(b[0])))||a[0].localeCompare(b[0]))
+    .slice(0,8)
+    .map(([domain,row],index)=>({
+      domain,level:Number(row.level)||1,xp:Number(row.xp)||0,verifiedSuccesses:Number(row.verifiedSuccesses)||0,verifiedFailureLessons:Number(row.verifiedFailureLessons)||0,
+      priorityRank:index+1,priorityWeight:Number((1/Math.max(1,Number(row.level)||1)).toFixed(4)),
+      nextDifficultyGeneration:Math.max(1,(Number(row.level)||1)+1),drillKind:idleDrillKindForDomain(domain)
+    }));
+  const verifiedExperience=(experienceInput?.records||[]).filter(row=>row?.verified===true&&row?.reusable===true);
+  const observationRows=[
+    ...verifiedExperience.map(row=>[row.problem,row.goal,row.change,row.failureCause,...(row.reusablePatterns||[]),...(row.avoidPatterns||[])].join(' ')),
+    ...(queueInput?.tasks||[]).map(row=>[row.goal,row.blocker,row.lastOutcome,...(row.evidence||[])].join(' '))
+  ].map(clean).filter(Boolean);
+  const shadowDomains=SELF_EXPANSION_TRACKS.map(track=>{
+    const re=SELF_EXPANSION_TRACK_PATTERNS[track];
+    const supportCount=observationRows.reduce((count,text)=>count+(re?.test(text)?1:0),0);
+    return {track,state:supportCount>=3?'CROSS_PROJECT_EVIDENCE_CANDIDATE':'EXPLORATION_ONLY',supportCount,formalMasteryDomain:false,authorityExpanded:false};
+  });
+  const failureClusters=Object.entries(state.failureSignatures||{})
+    .filter(([,row])=>Number(row?.count)>=2)
+    .sort((a,b)=>Number(b[1]?.count)-Number(a[1]?.count)||a[0].localeCompare(b[0]))
+    .slice(0,8)
+    .map(([fingerprint,row])=>({fingerprint,count:Number(row.count)||0,domains:uniq(row.domains||[]),state:'FRONTIER_RELEARNING_CANDIDATE'}));
+  const distilled=(practiceDistilledInput?.entries||[]).filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.retrievalEligible===true&&upper(row?.lifecycle||'ACTIVE')!=='RETIRED');
+  const knowledgeAtoms=[];
+  for(const row of distilled){
+    const supplied=Array.isArray(row?.knowledgeAtoms)?row.knowledgeAtoms:[];
+    if(supplied.length){
+      for(const atom of supplied){
+        if(!clean(atom?.id))continue;
+        knowledgeAtoms.push({id:clean(atom.id),domain:upper(atom.domain||row.domain),sourceKnowledgeId:clean(row.id),lifecycle:upper(atom.lifecycle||row.lifecycle||'ACTIVE'),confirmations:Math.max(1,Number(row.confirmations)||1),advisoryOnly:true,authorityExpanded:false});
+      }
+    }else if(clean(row.id)&&upper(row.domain)){
+      knowledgeAtoms.push({id:'knowledge-atom:'+hash(clean(row.id)+'|'+upper(row.domain)+'|'+(row.verificationEvidence||[]).join('|')),domain:upper(row.domain),sourceKnowledgeId:clean(row.id),lifecycle:upper(row.lifecycle||'ACTIVE'),confirmations:Math.max(1,Number(row.confirmations)||1),advisoryOnly:true,authorityExpanded:false});
+    }
+  }
+  const atomCounts=new Map();
+  for(const atom of knowledgeAtoms)atomCounts.set(atom.domain,(atomCounts.get(atom.domain)||0)+1);
+  const compositionCandidates=KNOWLEDGE_COMPOSITION_PAIRS.map(domains=>({
+    id:'compose-'+domains.map(lower).join('-'),domains:[...domains],atomCoverage:domains.map(domain=>Number(atomCounts.get(domain)||0)),
+    state:domains.every(domain=>Number(atomCounts.get(domain)||0)>0)?'READY_FOR_RECOMBINATION_PRACTICE':'FRONTIER',directMasteryCredit:false,authorityExpanded:false
+  }));
+  const playbookCandidates=distilled.filter(row=>Math.max(1,Number(row.confirmations)||1)>=3).map(row=>({id:'playbook-candidate:'+clean(row.id),domain:upper(row.domain),sourceKnowledgeId:clean(row.id),confirmations:Math.max(1,Number(row.confirmations)||1),state:'CANDIDATE_ONLY',autoPromotion:false}));
+  const compressionCandidates=[...atomCounts.entries()].filter(([,count])=>count>=4).map(([domain,count])=>({domain,atomCount:count,state:'COMPRESSION_CANDIDATE',provenanceMustBePreserved:true}));
+  const transferConfidence=weakDomains.map(item=>{
+    const games=uniq(verifiedExperience.filter(row=>inferDomains([row.problem,row.goal,row.change,row.failureCause,...(row.reusablePatterns||[]),...(row.avoidPatterns||[])].join(' '),row.engine).includes(item.domain)).map(row=>row.gameId));
+    const tier=games.length>=3?'CROSS_PROJECT_STRONG':games.length===2?'CROSS_PROJECT_EMERGING':games.length===1?'SINGLE_PROJECT_ONLY':'UNVERIFIED';
+    return {domain:item.domain,distinctVerifiedGames:games.length,tier,contextScoped:true};
+  });
+  const conceptFingerprintCounts=new Map();
+  for(const task of queueInput?.tasks||[])for(const evidence of task?.evidence||[]){
+    const marker=clean(evidence);if(!marker.startsWith('concept-fingerprint:'))continue;
+    const fp=marker.slice('concept-fingerprint:'.length);if(fp)conceptFingerprintCounts.set(fp,(conceptFingerprintCounts.get(fp)||0)+1);
+  }
+  const repeatedConceptFingerprints=[...conceptFingerprintCounts.entries()].filter(([,count])=>count>1).map(([fingerprint,count])=>({fingerprint,count,noveltyPenalty:true}));
+  const frontier=[
+    ...weakDomains.slice(0,4).map(item=>({id:'weak-'+lower(item.domain),kind:'WEAK_DOMAIN',domain:item.domain,priorityRank:item.priorityRank})),
+    ...shadowDomains.filter(row=>row.supportCount<3).slice(0,4).map(row=>({id:'shadow-'+lower(row.track),kind:'SHADOW_TRACK',track:row.track,supportCount:row.supportCount}))
+  ];
+  const recursiveCurriculum=weakDomains.map(item=>({domain:item.domain,currentLevel:item.level,nextDifficultyGeneration:item.nextDifficultyGeneration,drillKind:item.drillKind,state:'READY_FOR_ATOMIC_PRACTICE'}));
+  return {
+    version:1,kind:'vibe2-self-expansion-plan',
+    atomicNeuron:{default:true,mode:'PER_TASK_MICRO_FANIN',microFanInRequired:true,globalWaveBarrierForbidden:true,authorityExpanded:false,gateWeakening:false},
+    microDistillation:{knowledgeAtomizationRequired:true,fastLane:'VERIFIED_ADVISORY_ONLY',directMasteryCredit:false,directTrainingSample:false,freshProjectOutcomeRequiredForPositiveMastery:true},
+    weakDomains,frontier,failureClusters,shadowDomains,knowledgeAtoms,compositionCandidates,playbookCandidates,compressionCandidates,transferConfidence,recursiveCurriculum,
+    creativeTracks:[...SELF_EXPANSION_TRACKS],introObservationWindowsSeconds:[5,15,30,60],
+    conceptDiversity:{axes:[...CONCEPT_DIVERSITY_AXES],noveltyPressure:true,repeatedConceptFingerprints,exactFingerprintRepetitionPenalty:true,mutationMustChangeOneOrMoreAxes:true},
+    domainSplitMergeCandidateOnly:true,shadowDomainAutoPromotion:false,authorityExpanded:false,gateWeakening:false
+  };
+}
 function practiceInstructionForDrill(drill={}){
   const kind=upper(drill.kind);
   if(kind==='ASSET_ADAPTATION_DRILL')return'원본 에셋을 보존하면서 색감·재질·외곽선·비율·파츠·텍스처를 게임 Style Lock에 맞게 변형하는 방법과 라이선스/모바일 비용 검증을 분석한다.';
@@ -1134,9 +1226,15 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='PREVIOUS_RESULT_COMPARISON_DRILL')return'동일 도메인의 이전 검증 결과와 현재 접근을 비교해 개선/퇴보/불확실을 분리하고, 차이를 설명할 수 있는 최소 인과 가설과 다음 검증을 만든다.';
   if(kind==='RELEARNING_REPLAY_DRILL')return'반복된 검증 실패를 그대로 암기하지 말고 원인 fingerprint를 재현한 뒤 다른 해결 전략으로 다시 풀고 이전 실패와 결과를 비교한다.';
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
+  if(kind==='FRONTIER_EXPLORATION_DRILL')return'현재 약한 검증 도메인을 하나의 원자 문제로 좁혀 최소 구현/관찰, 반증 조건, 이전 검증 결과 대비 개선 여부를 만든다. 결과는 micro-fan-in으로 합치며 전역 wave barrier를 기다리지 않는다.';
+  if(kind==='SHADOW_DOMAIN_DRILL')return'정식 Mastery 도메인으로 아직 승격되지 않은 shadow track을 작은 독립 문제로 탐색한다. 여러 프로젝트의 독립 검증 근거가 쌓이기 전에는 새 권한이나 정식 도메인을 만들지 않는다.';
+  if(kind==='KNOWLEDGE_COMPOSITION_DRILL')return'서로 다른 검증 지식 원자 둘을 하나의 작은 상호작용 문제에서 조합하고, 각각 단독일 때보다 개선되는지와 충돌/rollback 조건을 검증한다. 조합 결과 자체는 advisory이며 실제 프로젝트 재검증 전 Mastery를 올리지 않는다.';
+  if(kind==='FAILURE_CLUSTER_DRILL')return'반복 실패 fingerprint들을 공통 원인과 조건별 예외로 분리하고, 하나의 최소 재현과 반대 해결 전략을 만든다. 검증된 실패는 avoid atom과 frontier 신호로만 사용한다.';
+  if(kind==='INTRO_FIRST_MINUTE_DRILL')return'첫 5초·15초·30초·60초의 훅, 조작 시작, 세계관 전달, 첫 행동·위험·보상 타이밍을 실제 플레이 흐름으로 검증한다. 긴 설명 대신 플레이 가독성을 우선하며 기존 게임 정체성·저장·밸런스는 바꾸지 않는다.';
+  if(kind==='CONCEPT_DIVERSITY_DRILL')return'플레이어 판타지·역할·핵심행동·공간·성장·위험·아트·분위기·세션 구조 축을 fingerprint로 만들고 최근 조합과 겹치면 하나 이상의 축을 변이해 차별화한다. 기존 프로젝트의 잠긴 정체성은 변경하지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
-export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
+export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},selfExpansionInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
@@ -1183,19 +1281,33 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     priority:'high',productionPreemptible:true,countsAsProductionPass:false,
     domains:row.domains,sourceFailure:sig
   }));
+  const expansionDrills=[];
+  for(const item of (selfExpansionInput?.frontier||[]).slice(0,2)){
+    const label=upper(item.domain||item.track);if(!label)continue;
+    expansionDrills.push({id:`frontier-${lower(label)}`,kind:item.kind==='SHADOW_TRACK'?'SHADOW_DOMAIN_DRILL':'FRONTIER_EXPLORATION_DRILL',priority:'medium',productionPreemptible:true,countsAsProductionPass:false,domains:[label],selfExpansion:true,atomicNeuron:true});
+  }
+  const composition=(selfExpansionInput?.compositionCandidates||[])[0];
+  if(composition?.domains?.length)expansionDrills.push({id:`compose-${composition.domains.map(lower).join('-')}`,kind:'KNOWLEDGE_COMPOSITION_DRILL',priority:'medium',productionPreemptible:true,countsAsProductionPass:false,domains:[...composition.domains],selfExpansion:true,atomicNeuron:true});
+  const failureCluster=(selfExpansionInput?.failureClusters||[])[0];
+  if(failureCluster)expansionDrills.push({id:`failure-cluster-${hash(failureCluster.fingerprint).slice(0,10)}`,kind:'FAILURE_CLUSTER_DRILL',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:uniq(failureCluster.domains||[]),sourceFailure:clean(failureCluster.fingerprint),selfExpansion:true,atomicNeuron:true});
+  if((selfExpansionInput?.creativeTracks||[]).includes('INTRO_HOOK'))expansionDrills.push({id:'intro-first-minute',kind:'INTRO_FIRST_MINUTE_DRILL',priority:'medium',productionPreemptible:true,countsAsProductionPass:false,domains:['STORYTELLING','UI_STATE','CAMERA_LANGUAGE','AUDIO_FEEL'],selfExpansion:true,atomicNeuron:true});
+  if(Array.isArray(selfExpansionInput?.conceptDiversity?.axes))expansionDrills.push({id:'concept-diversity',kind:'CONCEPT_DIVERSITY_DRILL',priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:['CONCEPT_DIVERSITY'],selfExpansion:true,atomicNeuron:true});
   const drills=[
     ...repeatedFailureDrills,
     ...relearningDrills,
     ...phase4Drills,
     ...hypothesisDrills,
+    ...expansionDrills,
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
   return {
-    version:3,kind:'vibe2-idle-practice-queue',
+    version:4,kind:'vibe2-idle-practice-queue',
     productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,
     practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,relearningGenerationLimit:null,
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
+    atomicNeuronDefault:true,atomicNeuronMode:'PER_TASK_MICRO_FANIN',microFanInRequired:true,globalWaveBarrierForbidden:true,
+    selfExpansionDrills:expansionDrills.length,
     phase4GeneralizationDrills:phase4Drills.length,drills
   };
 }
@@ -1287,7 +1399,8 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const {drill,next}=candidates[0];
   const id=idlePracticeTaskId(drill,next.generation);
   const phase4=drill?.phase4Benchmark===true;
-  const artifactPractice=!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','WEB_RUNTIME'].includes(upper(domain)));
+  const expansionArtifactKinds=new Set(['INTRO_FIRST_MINUTE_DRILL','KNOWLEDGE_COMPOSITION_DRILL','FRONTIER_EXPLORATION_DRILL']);
+  const artifactPractice=!phase4&&(expansionArtifactKinds.has(upper(drill.kind))||(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','WEB_RUNTIME'].includes(upper(domain))));
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
@@ -1323,8 +1436,8 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
-    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
-    completionCriteria:[artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
+    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,'atomic-neuron:PER_TASK_MICRO_FANIN','task-micro-fanin:required','global-wave-barrier:forbidden','knowledge-atomization:required',artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
+    completionCriteria:[artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','ATOMIC_NEURON_MICRO_FANIN_REQUIRED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
   return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'PRACTICE_SIGNAL_ENQUEUED',task,practiceGeneration:next.generation,previousArtifactScore:next.previousScore,artifactPractice};
 }
@@ -1628,7 +1741,7 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={},q
   };
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
+export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={},practiceDistilledInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
@@ -1639,7 +1752,8 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   knowledgeApplied.state.codingConstitution=constitution;
   knowledgeApplied.state.updatedAt=new Date().toISOString();
   const benchmark=buildBenchmarkLadder(knowledgeApplied.state,experienceInput,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(knowledgeApplied.state,benchmark);
+  const selfExpansion=buildSelfExpansionPlan({masteryInput:knowledgeApplied.state,experienceInput,queueInput,practiceDistilledInput});
+  const idlePractice=buildIdlePracticeQueue(knowledgeApplied.state,benchmark,selfExpansion);
   const tournament=enrichQueueForCandidateTournaments(queueInput,knowledgeApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
@@ -1656,6 +1770,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     knowledgeNegativeApplications:knowledgeApplied.negative||0,
     codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
+    selfExpansion,
     idlePractice,
     handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
     queue:practice.queue,
@@ -1677,11 +1792,13 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const queueFile=clean(a.queue);
   const roadmapFile=clean(a.roadmap)||'company-learning/platform-release-roadmap.json';
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
+  const practiceDistilledFile=clean(a['practice-distilled'])||'.vibe2/practice-distilled-knowledge.json';
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),practiceDistilledInput:readJson(practiceDistilledFile,{entries:[]})});
   writeJson(stateFile,result.state);
   if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
+  if(clean(a.expansion)) writeJson(a.expansion,result.selfExpansion);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
   console.log(`VIBE2_LEARNING_MOTOR=PASS`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
@@ -1698,6 +1815,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_BENCHMARK_CASES=${result.benchmark.phase4GeneralizationCases||0}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
+  console.log(`VIBE2_SELF_EXPANSION_FRONTIER=${result.selfExpansion.frontier.length}`);
+  console.log(`VIBE2_SELF_EXPANSION_ATOMS=${result.selfExpansion.knowledgeAtoms.length}`);
+  console.log(`VIBE2_SELF_EXPANSION_DRILLS=${result.idlePractice.selfExpansionDrills||0}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_PRACTICE_DRILLS=${result.idlePractice.phase4GeneralizationDrills||0}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);
