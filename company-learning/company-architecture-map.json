@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -601,10 +601,14 @@
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
       "neuralAuthority": "NONE",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": 20,
-      "refillExample": "ACTIVE_8_FREE_12",
-      "externalSpareBeyond20": "NOT_GAME_PRIMARY_EXECUTION_AUTHORITY",
-      "adaptiveControl": "MAY_DOWNSHIFT_BELOW_20_BUT_MAY_NOT_EXCEED_20_FOR_GAME_PRIMARY"
+      "gamePrimaryActiveExecutionCap": null,
+      "refillExample": "ACTIVE_19_FREE_237_AT_EXTERNAL_BOUND_256",
+      "externalSpareBeyond20": "AVAILABLE_TO_GAME_PRIMARY; 20_HAS_NO_SPECIAL_AUTHORITY",
+      "adaptiveControl": "NO_FIXED_20_CAP; START_AT_EXTERNAL_BOUNDARY_256_AND_MAY_DOWNSHIFT_ONLY_FROM_VERIFIED_PRESSURE",
+      "gamePrimaryFixedInternalCap": null,
+      "ownerUnlimitedConcurrencyDirective": "2026-09-20",
+      "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
+      "authorityChange": "NONE"
     },
     "liveShadowRepairLoop": {
       "path": [
