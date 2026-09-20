@@ -1053,6 +1053,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let focusedReplaceAnchorRotations=0;
   let focusedReplaceNoOpCreditUsed=false;
   let systemAtomicPairCreditUsed=false;
+  let diagnosticPostconditionCreditUsed=false;
   let fullWebProgressCreditCount=0;
   const baseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   let maxAttempts=baseMaxAttempts;
@@ -1252,6 +1253,13 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           }
         }
       }
+      let diagnosticPostconditionCreditRetry=false;
+      if(!allowFullRewrite&&failureClass==='DIAGNOSTIC_POSTCONDITION'&&diagnosticFocusedReplaceOnly&&attempt>=maxAttempts&&!diagnosticPostconditionCreditUsed){
+        maxAttempts=attempt+1;
+        diagnosticPostconditionCreditUsed=true;
+        diagnosticPostconditionCreditRetry=true;
+        console.log(`VIBE2_DIAGNOSTIC_POSTCONDITION_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}:${diagnosticFocusedReplaceOnly.spec.diagnosticType}`);
+      }
       let systemAtomicPairCreditRetry=false;
       if(!allowFullRewrite&&systemAtomicPairRequired&&['SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(failureClass)&&attempt>=maxAttempts&&!systemAtomicPairCreditUsed){
         maxAttempts=attempt+1;
@@ -1292,7 +1300,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
