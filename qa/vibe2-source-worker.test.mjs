@@ -1204,6 +1204,43 @@ test('focused replace-only pins exact path and anchor while model emits only rep
   assert.notEqual(normalized.edits[0].replace,focused.spec.find);
 });
 
+test('focused replace-only selects a concrete anchor across multiple responsible files',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'system-root');
+  write(path.join(sourceRoot,'tools/system.mjs'),[
+    'export function inspectSignal(signal){',
+    '  return signal === "repeat" ? "repair" : "healthy";',
+    '}'
+  ].join('\n'));
+  write(path.join(sourceRoot,'qa/system.test.mjs'),[
+    'const expectedState = "repair";',
+    'assert.equal(inspectSignal("repeat"), expectedState);'
+  ].join('\n'));
+  const prompt=[
+    'Goal: repair repeated system routing without changing authority',
+    'Allowed edit paths: tools/system.mjs, qa/system.test.mjs',
+    '',
+    '=== FILE tools/system.mjs [EDITABLE] ===',
+    'export function inspectSignal(signal){',
+    '  return signal === "repeat" ? "repair" : "healthy";',
+    '}',
+    '',
+    '=== FILE qa/system.test.mjs [EDITABLE] ===',
+    'const expectedState = "repair";',
+    'assert.equal(inspectSignal("repeat"), expectedState);'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:['tools/system.mjs','qa/system.test.mjs'],
+    sourceRoot
+  });
+  assert.ok(focused);
+  assert.ok(['tools/system.mjs','qa/system.test.mjs'].includes(focused.spec.path));
+  assert.ok(fs.readFileSync(path.join(sourceRoot,focused.spec.path),'utf8').includes(focused.spec.find));
+  assert.match(focused.prompt,/Do NOT return path or find/);
+  assert.doesNotMatch(focused.prompt,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
+});
+
 test('minified focused repair can pin a worker-owned GAME_CONFIG anchor',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'web-games/demo');
@@ -1416,7 +1453,8 @@ test('focused retry prompt never references focusedFinal before it is initialize
     responsibleFiles:['index.html'],
     attempt:2
   });
-  assert.match(retry,/Return exactly one minimal JSON object with only an edits array/);
+  assert.match(retry,/only top-level key is "edits"/);
+  assert.doesNotMatch(retry,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
 });
 
 test('first timeout escalates attempt two directly to compact focused retry',()=>{
@@ -1434,7 +1472,8 @@ test('first timeout escalates attempt two directly to compact focused retry',()=
   assert.match(retry,/FINAL FOCUSED RETRY/);
   assert.doesNotMatch(retry,/config\.js/);
   assert.match(retry,/Recovery context intentionally contains only writable FILE blocks/);
-  assert.match(retry,/Start immediately with \{\"edits\":\[/);
+  assert.match(retry,/Start immediately with the JSON object/);
+  assert.doesNotMatch(retry,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT'/);
   assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_MAX_PREDICT/);
@@ -1487,7 +1526,8 @@ test('timeout final retry prompt strips read-only context and asks for one compa
   assert.match(retry,/exceeded the time budget/);
   assert.match(retry,/FINAL FOCUSED RETRY/);
   assert.doesNotMatch(retry,/config\.js/);
-  assert.match(retry,/output only \{\"edits\":\[/);
+  assert.match(retry,/output one JSON object with only the "edits" key/);
+  assert.doesNotMatch(retry,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
 });
 
 test('generation recovery remains bounded and keeps strict output contracts', () => {
