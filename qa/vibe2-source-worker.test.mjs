@@ -26,6 +26,15 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
   };
 }
 
+test('JSON source generation uses bounded context and structured output mode',()=>{
+  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(source,/const MAX_CONTEXT_BYTES=48000;/);
+  assert.match(source,/const JSON_CONTEXT_WINDOW=16384;/);
+  assert.match(source,/\^JSON_\/\.test\(completionMode\)\?\{format:'json'\}/);
+  assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;/);
+  assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
+});
+
 test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),3);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'primary'}),4);
