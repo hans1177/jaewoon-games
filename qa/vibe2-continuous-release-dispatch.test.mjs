@@ -55,7 +55,7 @@ test('candidate release selects the manifest bound to the submitted branch',()=>
 });
 
 
-test('web candidate release checks inline scripts and preserves historical save-key meaning',()=>{
+test('web candidate release checks inline scripts and preserves generic storage contract meaning',()=>{
   const start=releaseWorkflow.indexOf('      - name: Web syntax QA');
   const end=releaseWorkflow.indexOf('      - name: Promote approved web source root through reviewed PR',start);
   const section=releaseWorkflow.slice(start,end);
@@ -63,8 +63,10 @@ test('web candidate release checks inline scripts and preserves historical save-
   assert.match(section,/BASE_SHA:/);
   assert.match(section,/matchAll\(\/<script\\b/);
   assert.match(section,/execFileSync\(process\.execPath,\['--check',tmp\]/);
-  assert.match(section,/const historicalSaveKey="const key='jg-final:'\+C\.id;"/);
-  assert.match(section,/VIBE2_WEB_SAVE_KEY_REGRESSION/);
+  assert.match(section,/const storageContract=raw=>/);
+  assert.match(section,/literalKeys/);
+  assert.match(section,/variableBindings/);
+  assert.match(section,/VIBE2_WEB_SAVE_CONTRACT_MUTATION/);
   assert.match(section,/VIBE2_WEB_INLINE_SCRIPT_QA=PASS/);
   assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
 });
@@ -87,13 +89,14 @@ test('web candidate release inline QA module itself compiles',()=>{
   }
 });
 
-test('web candidate release blocks inline script syntax and historical save-key regressions',()=>{
+test('web candidate release blocks inline script syntax and generic storage-contract regressions',()=>{
   const section=releaseWorkflow.slice(releaseWorkflow.indexOf('- name: Web syntax QA'),releaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR'));
   assert.match(section,/VIBE2_WEB_INLINE_SCRIPT_QA=PASS/);
   assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
   assert.match(section,/node --check/);
   assert.match(section,/\.filter\(match=>!\/\\bsrc\\s\*=\\s\*\/i\.test/);
-  assert.match(section,/const historicalSaveKey="const key='jg-final:'\+C\.id;"/);
-  assert.match(section,/VIBE2_WEB_SAVE_KEY_REGRESSION/);
+  assert.match(section,/storageContract\(base\)/);
+  assert.match(section,/storageContract\(source\)/);
+  assert.match(section,/VIBE2_WEB_SAVE_CONTRACT_MUTATION/);
   assert.match(releaseWorkflow,/git -C \/tmp\/vibe2-control fetch origin main:refs\/remotes\/origin\/main --quiet/);
 });
