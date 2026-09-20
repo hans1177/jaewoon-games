@@ -82,6 +82,8 @@ function aggregatePolicyReviewRows(rows=[],existing=null){
     reviewEvidenceSha256:evidenceHashes,
     reviewLines,
     legacyIncidentIds,
+    securityRunId:Number(existing?.securityRunId||rows[0]?.securityRunId||0)||null,
+    securityArtifactId:Number(existing?.securityArtifactId||rows[0]?.securityArtifactId||0)||null,
     firstDetectedAt,
     lastDetectedAt,
     containment:'AFFECTED_CHANGE_HELD_FOR_REVIEW',
@@ -132,8 +134,11 @@ export function compactPolicyReviewIncidents(storeInput={}){
     }
   };
 }
-export function recordSecurityReport(storeInput={},report={}){
+export function recordSecurityReport(storeInput={},report={},provenance={}){
   const compacted=compactPolicyReviewIncidents(storeInput),store=compacted.store;
+  const securityRunId=Number(provenance?.securityRunId||0),securityArtifactId=Number(provenance?.securityArtifactId||0);
+  const trustedRunId=Number.isInteger(securityRunId)&&securityRunId>0?securityRunId:null;
+  const trustedArtifactId=Number.isInteger(securityArtifactId)&&securityArtifactId>0?securityArtifactId:null;
   const byId=new Map(store.incidents.map(x=>[clean(x.id),x]));let added=0;
   const reviewGroups=new Map(),otherFindings=[];
   for(const finding of report.findings||[]){
@@ -154,6 +159,7 @@ export function recordSecurityReport(storeInput={},report={}){
       severity:clean(finding.severity).toUpperCase(),category:clean(finding.category)||'policy-integrity',
       file,line:Number(finding.line||0),evidenceSha256:clean(finding.evidenceSha256),
       snippet:clean(finding.snippet).slice(0,240),rawSecretStored:false,rawMalwareStored:false,
+      securityRunId:trustedRunId,securityArtifactId:trustedArtifactId,
       detections:1,firstDetectedAt:stamp,lastDetectedAt:stamp,containment:'AFFECTED_CHANGE_HELD_FOR_REVIEW'
     }));
     const row=aggregatePolicyReviewRows(rows,existing);
@@ -171,6 +177,8 @@ export function recordSecurityReport(storeInput={},report={}){
       category:clean(finding.category)||'security',file:clean(finding.file)||null,line:Number(finding.line||0),
       evidenceSha256:clean(finding.evidenceSha256),snippet:clean(finding.snippet).slice(0,240),
       rawSecretStored:false,rawMalwareStored:false,
+      securityRunId:Number(existing?.securityRunId||trustedRunId||0)||null,
+      securityArtifactId:Number(existing?.securityArtifactId||trustedArtifactId||0)||null,
       detections:Math.max(1,Number(existing?.detections||0)+1),
       firstDetectedAt:clean(existing?.firstDetectedAt)||stamp,lastDetectedAt:stamp,
       containment:disposition==='REVIEW'?'AFFECTED_CHANGE_HELD_FOR_REVIEW':'AFFECTED_CHANGE_QUARANTINED',
@@ -213,6 +221,9 @@ export function resolveSecurityIncident(storeInput={},{
       if(!Number.isInteger(prNumber)||prNumber<1||!Number.isInteger(securityRunId)||securityRunId<1||!Number.isInteger(securityArtifactId)||securityArtifactId<1){
         throw new Error('SECURITY_POLICY_REVIEW_IDENTITY_REQUIRED');
       }
+      const recordedSecurityRunId=Number(row.securityRunId||0),recordedSecurityArtifactId=Number(row.securityArtifactId||0);
+      if(recordedSecurityRunId>0&&recordedSecurityRunId!==securityRunId)throw new Error('SECURITY_POLICY_REVIEW_RUN_MISMATCH:'+recordedSecurityRunId+':'+securityRunId);
+      if(recordedSecurityArtifactId>0&&recordedSecurityArtifactId!==securityArtifactId)throw new Error('SECURITY_POLICY_REVIEW_ARTIFACT_MISMATCH:'+recordedSecurityArtifactId+':'+securityArtifactId);
       const sourceUrlBase='https://github.com/hans1177/jaewoon-games/pull/'+prNumber;
       const reviewAnchorPrefix=sourceUrlBase+'#pullrequestreview-';
       const reviewAnchorId=sourceUrl.startsWith(reviewAnchorPrefix)?sourceUrl.slice(reviewAnchorPrefix.length):'';
@@ -246,7 +257,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   let store=normalizeStore(readJson(file,{}));
   if(cmd==='record'){
     const report=readJson(clean(args.report),{});
-    const result=recordSecurityReport(store,report);store=result.store;writeJson(file,store);
+    const result=recordSecurityReport(store,report,{securityRunId:args['security-run'],securityArtifactId:args['security-artifact']});store=result.store;writeJson(file,store);
     console.log('SECURITY_INCIDENTS_ADDED='+result.added);
     console.log('SECURITY_POLICY_REVIEWS_COMPACTED='+(result.compacted?.compacted||0));
   }else if(cmd==='compact-policy-review'){
