@@ -71,6 +71,7 @@ test('current central roadmap compiles a complete Vibe work request without auth
   writePolicy(root);
   const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
   assert.equal(snapshot.valid,true);
+  assert.match(snapshot.executionFingerprint,/^[a-f0-9]{64}$/);
   const contract=compileVibeCentralWorkContract({
     snapshot,
     task:{
@@ -89,6 +90,7 @@ test('current central roadmap compiles a complete Vibe work request without auth
   });
   assert.equal(contract.required,true);
   assert.equal(contract.validAtCompile,true);
+  assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
   assert.equal(contract.workRequest.workKey,'repair-1');
   assert.equal(contract.workRequest.roadmapVersion,196);
   assert.equal(contract.workRequest.mainSha,'abc123');
@@ -133,13 +135,21 @@ test('central roadmap fingerprint is fail-closed when policy changes during work
   });
   assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
   writePolicy(root,197);
+  const versionOnly=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.notEqual(versionOnly.fingerprint,snapshot.fingerprint);
+  assert.equal(versionOnly.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}).status,'PASS');
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const changed=JSON.parse(fs.readFileSync(file,'utf8'));
+  changed.developmentLifecycleMachine.sharedWorkerContext.mismatchAction='BLOCK_AND_REQUEUE_RELEVANT_EXECUTION_POLICY_CHANGE';
+  fs.writeFileSync(file,JSON.stringify(changed,null,2)+'\n','utf8');
   assert.throws(
     ()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),
     /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
   );
 });
 
-test('pinned worker detects a central policy change that exists only on live origin main',()=>{
+test('pinned worker ignores unrelated live roadmap progress but detects execution-policy change',()=>{
   const base=tempRoot();
   const origin=path.join(base,'origin.git');
   const seed=path.join(base,'seed');
@@ -174,6 +184,17 @@ test('pinned worker detects a central policy change that exists only on live ori
   git(seed,'commit','-m','policy v197');
   git(seed,'push','origin','main');
   assert.equal(loadCentralPolicySnapshot({repoRoot:worker,required:true}).version,196);
+  const versionAdvance=assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_CANDIDATE_WRITE'});
+  assert.equal(versionAdvance.status,'PASS');
+  assert.equal(versionAdvance.liveMainVersion,197);
+
+  const seedPolicy=path.join(seed,CANONICAL_VIBE_POLICY_PATH);
+  const executionChange=JSON.parse(fs.readFileSync(seedPolicy,'utf8'));
+  executionChange.developmentLifecycleMachine.sharedWorkerContext.mismatchAction='BLOCK_AND_REQUEUE_RELEVANT_EXECUTION_POLICY_CHANGE';
+  fs.writeFileSync(seedPolicy,JSON.stringify(executionChange,null,2)+'\n','utf8');
+  git(seed,'add',CANONICAL_VIBE_POLICY_PATH);
+  git(seed,'commit','-m','execution policy change');
+  git(seed,'push','origin','main');
   assert.throws(
     ()=>assertCompiledWorkContractFresh({cwd:worker,contract,phase:'PRE_CANDIDATE_WRITE'}),
     /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
@@ -203,7 +224,10 @@ test('source worker rejects stale compiled policy before model generation',async
     workerPolicy:{directMainWrite:false},
     compiledWorkContract
   },null,2)+'\n','utf8');
-  writePolicy(root,197);
+  const policyFile=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const changed=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  changed.developmentLifecycleMachine.sharedWorkerContext.mismatchAction='BLOCK_AND_REQUEUE_RELEVANT_EXECUTION_POLICY_CHANGE';
+  fs.writeFileSync(policyFile,JSON.stringify(changed,null,2)+'\n','utf8');
   await assert.rejects(
     runVibe2SourceWorker({cwd:root,responseFile:path.join(root,'unused-model-output.json')}),
     /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/
