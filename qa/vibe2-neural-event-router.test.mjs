@@ -40,16 +40,32 @@ test('unverified responsible system requests evidence rather than guessing repai
   assert.equal(route.fireAllowed,false);
 });
 
-test('policy changes propose work-contract recompilation but remain simulation-only',()=>{
+test('policy changes can calibrate work-contract recompilation without unrelated root-cause proof',()=>{
   const route=simulateNeuralEventRoute({
     event:{type:'POLICY_CHANGE'},
     diagnosis,
-    rootCause:{state:'ROOT_CAUSE_VERIFIED',rootCauseVerified:true,responsibleSystem:'VALIDATOR'}
+    rootCause:null
   });
   assert.equal(route.proposedAction.kind,'RECOMPILE_WORK_CONTRACT');
   assert.equal(route.proposedAction.requiresFreshPolicy,true);
+  assert.equal(route.wouldFireWithoutPhase2Authority,true);
+  assert.equal(route.inhibitors.includes('ROOT_CAUSE_NOT_VERIFIED'),false);
+  assert.ok(route.inhibitors.includes('PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'));
   assert.equal(route.fireAllowed,false);
   assert.equal(route.policyMutationAllowed,false);
+});
+
+test('resource or lock changes can calibrate dependency reevaluation without root-cause proof',()=>{
+  const route=simulateNeuralEventRoute({
+    event:{type:'RESOURCE_OR_LOCK_CHANGE',gameId:'demo'},
+    diagnosis,
+    rootCause:null
+  });
+  assert.equal(route.proposedAction.kind,'REEVALUATE_DEPENDENCY_AND_LOCKS');
+  assert.equal(route.wouldFireWithoutPhase2Authority,true);
+  assert.equal(route.inhibitors.includes('ROOT_CAUSE_NOT_VERIFIED'),false);
+  assert.equal(route.fireAllowed,false);
+  assert.equal(route.lockAcquisitionAllowed,false);
 });
 
 test('security and lock inhibitors suppress hypothetical firing',()=>{
