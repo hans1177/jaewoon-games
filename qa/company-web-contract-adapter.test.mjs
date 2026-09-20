@@ -13,6 +13,7 @@ const inventory=[
 const html=[
   '<!doctype html><html><body>',
   '<canvas id="game" data-gameplay-action="world"></canvas>',
+  '<div id="stick" class="stick" data-joystick="true" data-touch-control="move"></div>',
   '<button id="attackBtn" data-gameplay-action="attack">공격</button>',
   '<button id="gatherBtn" data-gameplay-action="gather">채집</button>',
   '<button id="craftBtn" data-gameplay-action="craft">제작</button>',
@@ -34,6 +35,7 @@ test('adapter detects actual gameplay controls without writing source',()=>{
   assert.ok(candidates.some(row=>row.id==='attackBtn'));
   assert.ok(candidates.some(row=>row.id==='gatherBtn'));
   assert.ok(candidates.some(row=>row.id==='craftBtn'));
+  assert.ok(candidates.some(row=>row.id==='stick'&&row.spatialControl===true));
   const plan=buildWebContractAdapterPlan({html,inventory});
   assert.equal(plan.sourceWrite,false);
   assert.equal(plan.gateWeakening,false);
@@ -43,6 +45,9 @@ test('adapter detects actual gameplay controls without writing source',()=>{
   assert.ok(plan.bindings.some(row=>row.family==='COMBAT'&&row.controlId==='attackBtn'));
   assert.ok(plan.bindings.some(row=>row.family==='GATHER'&&row.controlId==='gatherBtn'));
   assert.ok(plan.bindings.some(row=>row.family==='CRAFT'&&row.controlId==='craftBtn'));
+  const movement=plan.bindings.find(row=>row.scopeId==='scope-coreloop-0-b');
+  assert.equal(movement?.controlId,'stick');
+  assert.ok(movement?.evidence.includes('direct-spatial-control'));
 });
 
 test('adapter preserves existing real scope binding with highest confidence',()=>{
