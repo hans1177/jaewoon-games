@@ -76,7 +76,11 @@ test('PARALLELISM_CONTRACT_GATE keeps GAME_PRIMARY internally unbounded and bind
   assert.ok(core.includes('vibe2-queue-control.mjs reserve-batch'));
   assert.ok(core.includes('fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"'));
   assert.equal(wave.gamePrimaryFixedInternalCap,null);
-  assert.equal(wave.telemetryDenominator,'ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP');
+  assert.equal(wave.telemetryDenominator,'CURRENT_ATOMIC_RESERVATION_CAP');
+  assert.equal(wave.mode,'ATOMIC_NEURON_STREAM');
+  assert.equal(wave.fixedWaveBarrier,false);
+  assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
+  assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.ok(!core.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
 
   assert.deepEqual(runtime.documentation.humanDocuments,[]);
