@@ -154,7 +154,7 @@ test('pinned worker detects a central policy change that exists only on live ori
   git(seed,'commit','-m','policy v196');
   git(seed,'remote','add','origin',origin);
   git(seed,'push','-u','origin','main');
-  execFileSync('git',['clone','--quiet',origin,worker],{stdio:['ignore','pipe','pipe']});
+  execFileSync('git',['clone','--quiet','--branch','main',origin,worker],{stdio:['ignore','pipe','pipe']});
 
   const snapshot=loadCentralPolicySnapshot({repoRoot:worker,required:true});
   const contract=compileVibeCentralWorkContract({
