@@ -1131,6 +1131,18 @@ test('reserve-batch heals downgraded atomic queue schema even when no work is re
 });
 
 
+test('continuous core fan-in replays immutable results on latest runtime head instead of rebasing stale queue commits',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const fanIn=workflow.match(/\n  fan_in:\n[\s\S]*?(?=\n  [a-zA-Z0-9_-]+:\n)/)?.[0]||'';
+  assert.ok(fanIn.length>0);
+  assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(fanIn,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(fanIn,/vibe2-queue-control\.mjs" fan-in/);
+  assert.match(fanIn,/VIBE2_FAN_IN_STATE_ALREADY_APPLIED=YES/);
+  assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
+});
+
 test('continuous core workflow distinguishes pending neuron results from completed micro fan-in',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
