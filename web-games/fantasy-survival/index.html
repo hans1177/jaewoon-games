@@ -484,6 +484,7 @@ function markExplored(){
 function discoverRegion(){
   if(state.area!=='surface')return;
   const r=regionAt(state.player.x,state.player.y);
+  if(r==='jungle'&&!state.discovered.jungle){state.discovered.jungle=true;state.dirty=true;showNotice('발견함 밀림')}
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}
   if(r==='volcano'&&!state.discovered.volcano){state.discovered.volcano=true;state.dirty=true;showNotice('발견함 화산')}
@@ -749,6 +750,7 @@ function renderInventory(){
 }
 function mapTerrainColorAt(x,y){
  const r=regionAt(x,y);
+ if(r==='jungle')return pointInJungleLake(x,y)?'#285d58':'#153a22';
  if(r==='volcano'){if(dist(x,y,OASIS.x,OASIS.y)<=OASIS.r)return'#2f78b7';if(pointInRect(x,y,WASTELAND))return'#b99b3f';return'#3b1517'}
  if(r==='giantlake')return pointInGiantLakeWater(x,y)?'#1e668d':'#527868';
  return r==='worldtree'?'#173d24':r==='canyon'?'#523824':r==='crystal'?'#392c5c':'#1d392b'
@@ -762,6 +764,7 @@ function drawMap(){
    m.fillStyle=mapTerrainColorAt(cx,cy);
    m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
  }
+ if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
  if(state.discovered.giantlake){m.strokeStyle='#4ba6c8';m.lineWidth=2;m.strokeRect(GIANT_LAKE_SURFACE.x*sx,GIANT_LAKE_SURFACE.y*sy,GIANT_LAKE_SURFACE.w*sx,GIANT_LAKE_SURFACE.h*sy);m.fillStyle='#a8e8ff';m.font='bold 11px system-ui';m.fillText('거대 호수',6800*sx,900*sy)}
  if(state.discovered.crystal){m.strokeStyle='#9a84e8';m.lineWidth=2;m.strokeRect(CRYSTAL_REGION.x*sx,0,CRYSTAL_REGION.w*sx,WORLD.h*sy);m.fillStyle='#d7ccff';m.font='bold 11px system-ui';m.fillText('수정 지대',15500*sx,800*sy);m.beginPath();m.arc(CRYSTAL_HEART.x*sx,CRYSTAL_HEART.y*sy,5,0,Math.PI*2);m.fill()}
  if(state.discovered.volcano){m.strokeStyle='#6d2426';m.lineWidth=2;m.strokeRect(2400*sx,2000*sy,12000*sx,3200*sy);m.font='bold 10px system-ui';m.fillStyle='#8fc9ff';m.fillText('오아시스',OASIS.x*sx-18,OASIS.y*sy);m.fillStyle='#ffe073';m.fillText('화산 황무지',(WASTELAND.x+250)*sx,(WASTELAND.y+250)*sy);m.fillStyle='#e88484';m.fillText('화산',12700*sx,2500*sy)}
@@ -1090,6 +1093,10 @@ function awardLoot(e){
  if(e.type.id==='rootsovereign'){const n=2+Math.floor(Math.random()*2);addMaterial('sovereignCore',n);showNotice('전리품 · 근원포식자 핵 +'+n)}
  if(e.type.id==='lakecroc'){addMaterial('crocHide',1);addMaterial('crocTooth',1+Math.floor(Math.random()*2));showNotice('전리품 · 악어 껍질 +1 · 악어 이빨 획득')}
  if(e.type.id==='shark'){addMaterial('sharkSkin',1);showNotice('전리품 · 상어 가죽 +1')}
+ if(e.type.id==='giantleech'){addMaterial('leechSucker',1);showNotice('전리품 · 초거대 거머리 흡반 +1')}
+ if(e.type.id==='gorilla'){addMaterial('gorillaHide',2);showNotice('전리품 · 고릴라 가죽 +2')}
+ if(e.type.id==='anaconda'){addMaterial('anacondaScale',2);showNotice('전리품 · 아나콘다 비늘 +2')}
+ if(e.type.id==='mudwalker'){addMaterial('mudCore',1);showNotice('전리품 · 머드 워커 진흙핵 +1')}
  if(e.type.foodDrop){addInv(e.type.foodDrop,1);food.push(item(e.type.foodDrop)?.name||e.type.foodDrop)}
  if(e.type.vegetableDrop){addInv(e.type.vegetableDrop,1);food.push(item(e.type.vegetableDrop)?.name||e.type.vegetableDrop)}
  if(food.length)showNotice('전리품 · '+food.join(' + '));
@@ -2028,6 +2035,11 @@ function updateCrystalBoarSpecial(e,p,now){
 function updateHazards(now){
  const p=state.player;
  if(p.burnTicks>0&&now>=p.burnNext){p.hp=Math.max(0,p.hp-5);p.burnTicks--;p.burnNext=now+1000;state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('화염 피해로 쓰러졌다');return}}
+ if(now<(p.poisonUntil||0)&&now>=(p.poisonNext||0)){p.poisonNext=now+1000;p.hp=Math.max(0,p.hp-5);state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독 피해로 쓰러졌다');return}}
+ if(state.area==='surface'&&regionAt(p.x,p.y)==='jungle'){
+  const gas=state.poisonStones.some(n=>!n.dead&&dist(p.x,p.y,n.x,n.y)<180);
+  if(gas&&now>=(p.poisonGasNext||0)){p.poisonGasNext=now+1000;p.hp=Math.max(0,p.hp-5);showNotice('독점석 독가스 · 5 피해');state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독점석 독가스로 쓰러졌다');return}}
+ }
  if(state.area==='underwater'){
   if(item(p.armor)?.underwaterBreath){p.oxygen=40000;p.oxygenEndsAt=0}
   else{
@@ -2221,6 +2233,13 @@ function roundRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,
 function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#1d392b';ctx.fillRect(0,0,w,h);
  ctx.save();ctx.translate(-cx,-cy);
+ // 밀림 · 새 맵 전체 면적의 40%
+ ctx.fillStyle='#153a22';ctx.fillRect(JUNGLE_REGION.x,JUNGLE_REGION.y,JUNGLE_REGION.w,JUNGLE_REGION.h);
+ ctx.strokeStyle='#346b3f';ctx.lineWidth=28;ctx.strokeRect(JUNGLE_REGION.x+14,JUNGLE_REGION.y+14,JUNGLE_REGION.w-28,JUNGLE_REGION.h-28);
+ for(let i=0;i<110;i++){const x=JUNGLE_REGION.x+180+(i*997)%13800,y=180+(i*613)%11600;ctx.fillStyle=i%3?'#22552d':'#2e6b38';ctx.beginPath();ctx.arc(x,y,45+(i%4)*14,0,Math.PI*2);ctx.fill()}
+ for(const l of JUNGLE_LAKES){ctx.fillStyle='#285d58';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6d9b75';ctx.lineWidth=18;ctx.stroke()}
+ ctx.fillStyle='#b6e8a7';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText('밀림',JUNGLE_REGION.x+JUNGLE_REGION.w/2,120);
+ ctx.font='bold 12px system-ui';ctx.fillText('독점석 광맥의 독가스를 조심해',JUNGLE_REGION.x+JUNGLE_REGION.w/2,155);
  // 거대 호수 · 화산 위 일반 지역
  ctx.fillStyle='#557c69';ctx.fillRect(GIANT_LAKE_SURFACE.x,GIANT_LAKE_SURFACE.y,GIANT_LAKE_SURFACE.w,GIANT_LAKE_SURFACE.h);
  ctx.fillStyle='#1d6b91';ctx.fillRect(GIANT_LAKE_WATER.x,GIANT_LAKE_WATER.y,GIANT_LAKE_WATER.w,GIANT_LAKE_WATER.h);
@@ -2544,7 +2563,7 @@ function draw(){
  else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
-  for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);
+  for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
   drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);
@@ -2583,7 +2602,7 @@ function loadGame(){
   for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
   if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}
   if(s.weather&&typeof s.weather==='object')setWeather(s.weather.kind,{fromNetwork:true,changedAt:s.weather.changedAt,nextAt:s.weather.nextAt,seed:s.weather.seed});
-  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake};
+  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle};
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};
    for(const key of Object.keys(s.explored)){
