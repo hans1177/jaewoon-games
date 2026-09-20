@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function buildTown(){",
+      "replace": "  addNpc(\"mayor\",\"이장\",-4,-3,0xc9a326,\"quest\");"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
