@@ -71,13 +71,18 @@ function actionFromState({event,diagnosis,rootCause}={}){
   };
 }
 
-function collectInhibitors({diagnosis,rootCause,policyFresh=true,lockConflict=false,securityBlocked=false}={}){
+function rootCauseIndependentEvent(event={}){
+  return ['POLICY_CHANGE','RESOURCE_OR_LOCK_CHANGE'].includes(clean(event?.type).toUpperCase());
+}
+
+function collectInhibitors({event,diagnosis,rootCause,policyFresh=true,lockConflict=false,securityBlocked=false}={}){
+  const rootCauseRequired=!rootCauseIndependentEvent(event);
   const inhibitors=uniq([
     ...(diagnosis?.inhibitors||[]),
     policyFresh===false?'CENTRAL_POLICY_STALE_OR_INVALID':'',
     lockConflict===true?'SOURCE_OR_RESOURCE_LOCK_CONFLICT':'',
     securityBlocked===true?'SECURITY_POLICY_BLOCK':'',
-    rootCause?.rootCauseVerified!==true?'ROOT_CAUSE_NOT_VERIFIED':'',
+    rootCauseRequired&&rootCause?.rootCauseVerified!==true?'ROOT_CAUSE_NOT_VERIFIED':'',
     'PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'
   ]);
   return inhibitors;
@@ -93,7 +98,7 @@ export function simulateNeuralEventRoute({
 }={}){
   const normalizedEvent=normalizeEvent(event);
   const proposedAction=actionFromState({event:normalizedEvent,diagnosis,rootCause});
-  const inhibitors=collectInhibitors({diagnosis,rootCause,policyFresh,lockConflict,securityBlocked});
+  const inhibitors=collectInhibitors({event:normalizedEvent,diagnosis,rootCause,policyFresh,lockConflict,securityBlocked});
   const wouldFireWithoutPhase2Authority=
     normalizedEvent.type!=='UNKNOWN'
     &&proposedAction.kind!=='OBSERVE_ONLY'
