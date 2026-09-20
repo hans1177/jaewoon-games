@@ -16,6 +16,7 @@ import {
   selectTargetPlatformDevelopmentWindow,
   targetPlatformDevelopmentEligible,
   verifiedOwnerReleaseHandoffEligible,
+  ownerFocusedSecondaryPlatformEligible,
   canonicalTargetStep,
   canonicalTargetWaitingState,
 } from '../tools/company-selected-platform-router.mjs';
@@ -173,3 +174,26 @@ test('stage recording preserves exact artifact and advances common evidence fiel
   assert.equal(evidence.regressionPassed,true);
   assert.equal(evidence.lastSuccessfulStage,'REGRESSION');
 });
+
+test('owner-focused concurrent contract can admit Roblox as a secondary platform without changing selected Unity',()=>{
+  const item={
+    gameId:'fantasy-survival',selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    webValidationPassedAt:'2026-09-20T00:00:00.000Z',musicValidationPassed:true,
+    formalImplementationPassed:true,formalImplementationVerdict:'PASS',
+    webStrictScore:95,strictImplementationHardFailures:[],
+    webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,webPromotionRevalidationPassed:true,
+  };
+  const roadmap={assetProductionParallelContract:{
+    enabled:true,firstAdoption:{
+      gameId:'fantasy-survival',mode:'UNITY_ROBLOX_CONCURRENT',targetPlatforms:['UNITY','ROBLOX']
+    }
+  }};
+  assert.equal(ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX'),true);
+  assert.equal(item.selectedPlatform,'UNITY');
+  assert.equal(ownerFocusedSecondaryPlatformEligible(item,roadmap,'UNITY'),false);
+  assert.equal(ownerFocusedSecondaryPlatformEligible({...item,gameId:'other-game'},roadmap,'ROBLOX'),false);
+  assert.equal(ownerFocusedSecondaryPlatformEligible({...item,webPromotionRevalidationPassed:false},roadmap,'ROBLOX'),false);
+});
+
