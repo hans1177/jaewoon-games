@@ -76,44 +76,48 @@
     "autonomous24hWithoutPrimaryAi": true,
     "primaryAiIsRuntimeGate": false,
     "nextWorkerDirective": {
-      "objective": "CONTINUE_SELF_EVOLVING_ATOMIC_NEURON_SCHEDULER_TOWARD_VERIFIED_EVENT_DRIVEN_DAG_WITH_TRUTHFUL_TELEMETRY",
+      "objective": "COMPLETE_AND_VERIFY_ATOMIC_GRAPHICS_FAN_OUT_ON_THE_EXISTING_ATOMIC_NEURON_SCHEDULER_THEN_CAPTURE_LIVE_DEPENDENCY_REFILL_EVIDENCE",
       "freshnessRule": "FETCH_FRESH_MAIN_HEAD_LIVE_WORKFLOW_STATUS_AND_CONTROL_STATE_BEFORE_MUTATION; DO_NOT_ASSUME_THIS_SNAPSHOT_IS_STILL_CURRENT",
-      "observedMainHead": "b28abcdaf3c42bd0d529938e7dc6b7418c3b8244",
-      "verifiedAt": "2026-09-20T10:28:30Z",
+      "observedMainHead": "1de6030d791dc19840c51d5b171fca35817bb68d",
+      "verifiedAt": "2026-09-20T10:50:19Z",
       "centralGoalRefs": [
         "company-learning/platform-release-roadmap.json::neuralDevelopmentBrain.currentWaveExecution",
+        "company-learning/platform-release-roadmap.json::assetProductionParallelContract.atomicPresentationExecution",
         "company-learning/company-architecture-map.json::neuralWorkGraphTopology.phase1RuntimeBindings.selfAdaptiveGamePrimaryConcurrency",
         "vibe2-runtime.json::continuous.atomicNeuronStream"
       ],
       "verifiedState": [
-        "PR_2038_MERGED_ATOMIC_NEURON_STREAM_LIVE",
+        "PR_2065_MERGED_TRUTHFUL_ATOMIC_TELEMETRY_AND_MICRO_FANIN_SEMANTICS",
+        "PR_2068_MERGED_TIME_STABLE_ATOMIC_TELEMETRY_QA_FIXTURE",
+        "GAME_PRIMARY_SUMMARY_BINDS_TO_CURRENT_ATOMIC_RESERVATION_CAP",
+        "AWAITING_VARIANTS_REPORTS_RESULT_RECORDED_PENDING",
+        "TASK_MICRO_FANIN_COMPLETE_IS_DISTINCT_FROM_PENDING_RESULTS",
         "FIXED_GLOBAL_WAVE_BARRIER_FALSE",
-        "REPOSITORY_DISPATCH_NEURON_CALLBACKS_LIVE",
-        "TASK_VARIANT_RESULTS_RECORDED_IN_SERIALIZED_CONTROLLER",
         "SOURCE_ROOT_AND_RESPONSIBLE_FILE_CONFLICT_LOCKS_PRESERVED",
-        "COHORT_FAN_IN_REMAINS_REGRESSION_RELEASE_AUDIT_ONLY",
         "GAME_PRIMARY_BASELINE_AND_PRESSURE_FLOOR_20",
         "GAME_PRIMARY_INTERNAL_POLICY_CAP_NULL",
         "CURRENT_EXTERNAL_PROVIDER_BOUNDARY_256"
       ],
       "liveEvidence": [
-        "RUN_35505152601_REPOSITORY_DISPATCH_SUCCESS",
-        "VIBE2_NEURON_RESULT_AWAITING_VARIANTS_1_OF_3",
-        "VIBE2_LANE_RESERVATION_MAX_20",
-        "VIBE2_QUEUE_ACTIVE_WORKERS_7",
-        "VIBE2_RESERVE_MODE_FREE_SLOT_REFILL_DURING_ACTIVE_WORK",
-        "MULTIPLE_REPOSITORY_DISPATCH_CONTINUOUS_CORE_RUNS_COMPLETED_SUCCESSFULLY_ON_MAIN"
+        "MAIN_MERGE_1de6030d791dc19840c51d5b171fca35817bb68d",
+        "PR_2068_VIBE2_CORE_QA_SUCCESS",
+        "PR_2068_VIBE_INTEGRATED_REGRESSION_SUCCESS",
+        "PR_2068_COMPANY_SECURITY_IMMUNE_SYSTEM_SUCCESS",
+        "PR_2068_COMPANY_EVOLUTION_QA_SUCCESS"
       ],
       "priorities": [
-        "P0_FIX_ATOMIC_TELEMETRY_DENOMINATOR: GAME_PRIMARY reservation max is 20 while queue summary currently reports effectiveMax 256 and freeSlots 249; live telemetry and free-slot reasoning must use the current atomic reservation allowance rather than the persistent external boundary where the central contract requires CURRENT_ATOMIC_RESERVATION_CAP",
-        "P0_FIX_MICRO_FANIN_LOG_SEMANTICS: do not emit VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS while result is AWAITING_VARIANTS; distinguish RESULT_RECORDED_PENDING from TASK_MICRO_FANIN_COMPLETE",
-        "P1_CAPTURE_END_TO_END_LIVE_EVIDENCE: observe final variant 3/3 -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort workers finish",
-        "P1_RECONCILE_CENTRAL_ARCHITECTURE_LIVE_STATE: replace stale pending-merge/source-PR metadata only after fresh evidence confirms current main",
-        "P2_EXTEND_EVENT_DRIVEN_DAG: once truthful telemetry and completion semantics are proven, release dependency consumers immediately from per-task completion instead of adding any global barrier",
-        "P2_SELF_EVOLUTION_FEEDBACK: use verified failure and throughput evidence to adjust scheduling heuristics without lowering QA, security, save, or release gates"
+        "P0_ATOMIC_GRAPHICS_FANOUT: remove legacy serial ASSET_TO_MOTION_TO_ANIMATION_TO_VFX_TO_CAMERA pass chaining and fan out disjoint responsible files as independent atomic presentation tasks",
+        "P0_MONOLITHIC_GRAPHICS_COLLAPSE: when presentation is one shared file, perform all presentation concerns in one atomic task instead of repeatedly serial-editing the same file",
+        "P0_PRESENTATION_PACKAGE_FANIN: run one POLISH_MOBILE convergence task only after all atomic presentation dependencies complete",
+        "P1_CAPTURE_END_TO_END_LIVE_EVIDENCE: observe final variant -> TASK_MICRO_FANIN_COMPLETE -> VIBE2_NEURON_SLOT_RELEASED=YES -> immediate reserve/refill before unrelated cohort workers finish",
+        "P2_EXTEND_EVENT_DRIVEN_DAG: release dependency consumers immediately from per-task completion without any global barrier",
+        "P2_SELF_EVOLUTION_FEEDBACK: use verified failure and throughput evidence to adjust scheduling heuristics without lowering QA security save or release gates"
       ],
       "hardConstraints": [
         "NO_GLOBAL_WAVE_BARRIER_REINTRODUCTION",
+        "NO_LEGACY_SERIAL_PRESENTATION_STAGE_CHAIN",
+        "SAME_RESPONSIBLE_FILE_PARALLEL_FORBIDDEN",
+        "DISJOINT_RESPONSIBLE_FILES_MAY_FAN_OUT",
         "NO_GATE_OR_THRESHOLD_WEAKENING",
         "NO_WORKER_DIRECT_SHARED_CONTROL_STATE_WRITE",
         "PRESERVE_SOURCE_AND_FILE_CONFLICT_LOCKS",
@@ -124,8 +128,9 @@
         "PHASE2_NEURAL_EXECUTION_AUTHORITY_STAYS_DISABLED_UNTIL_EXPLICIT_VERIFIED_PROMOTION"
       ],
       "successEvidence": [
-        "GAME_PRIMARY_LIVE_TELEMETRY_DENOMINATOR_MATCHES_CURRENT_ATOMIC_RESERVATION_CAP",
-        "AWAITING_VARIANTS_NEVER_REPORTS_MICRO_FANIN_COMPLETE",
+        "ATOMIC_PRESENTATION_TASKS_USE_DISJOINT_RESPONSIBLE_FILES_WHEN_AVAILABLE",
+        "MONOLITHIC_PRESENTATION_SOURCE_IS_NOT_REPEATED_AS_SERIAL_QUALITY_PASSES",
+        "ONE_FINAL_PRESENTATION_PACKAGE_FANIN_DEPENDS_ON_ALL_ATOMIC_PRESENTATION_TASKS",
         "FINAL_VARIANT_REPORTS_TASK_MICRO_FANIN_COMPLETE_AND_SLOT_RELEASE",
         "NEXT_READY_TASK_CAN_RESERVE_BEFORE_UNRELATED_COHORT_COMPLETES",
         "RELEVANT_CORE_PARALLELISM_INTEGRATED_SECURITY_AND_CENTRAL_CONTRACT_QA_PASS"
@@ -342,7 +347,19 @@
         256
       ],
       "internalPolicyCap": null,
-      "externalProviderBoundary": 256
+      "externalProviderBoundary": 256,
+      "presentationAtomicFanOut": {
+        "enabled": true,
+        "legacySerialStageChain": false,
+        "unit": "DISJOINT_RESPONSIBLE_FILE_OR_MONOLITHIC_PRESENTATION_SCOPE",
+        "sameResponsibleFileParallel": false,
+        "disjointResponsibleFilesParallel": true,
+        "monolithicPresentationCollapsesToOneAtomicTask": true,
+        "perTaskMicroFanIn": true,
+        "immediateRefill": true,
+        "finalPackageFanIn": true,
+        "globalPresentationBarrier": false
+      }
     }
   },
   "adaptiveBackpressure": {
