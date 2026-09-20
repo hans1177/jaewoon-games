@@ -1403,20 +1403,33 @@
       ],
       "benchmarkFlow": [
         "SELECT_GENERALIZATION_CANDIDATE",
-        "BUILD_HOLDOUT_UNSEEN_PROBLEM_CASE",
+        "BUILD_HOLDOUT_UNSEEN_GAME_AND_PROBLEM_FINGERPRINT_CASE",
+        "FREEZE_NON_TARGET_CONTEXT_WRITABLE_SCOPE_MODEL_BUDGET_AND_QA_CONTRACT",
+        "RUN_PAIRED_CONTROL_WITHOUT_TARGET_CAPABILITY",
+        "RUN_PAIRED_CHALLENGER_WITH_TARGET_CAPABILITY",
         "RUN_EXISTING_PRACTICE_OR_SANDBOX_SCREEN",
         "RUN_FRESH_INDEPENDENT_QA_AND_REGRESSION",
         "RUN_NATIVE_RUNTIME_WHEN_CLAIM_REQUIRES_IT",
-        "BIND_EXACT_CAPABILITY_ID_TO_BENCHMARK_OUTCOME",
+        "BIND_EXACT_CAPABILITY_ID_TO_CAPABILITY_SPECIFIC_BENCHMARK_OUTCOME",
         "REPEAT_ON_INDEPENDENT_UNSEEN_CASE",
-        "PROMOTE_TO_GENERALIZED_VERIFIED_ONLY_IF_EVIDENCE_GATE_PASSES"
+        "PROMOTE_TO_GENERALIZED_VERIFIED_ONLY_WITH_POSITIVE_SUPPORT_AND_ZERO_CONTRADICTIONS"
       ],
       "strongGeneralizationGate": {
         "minimumIndependentUnseenPasses": 2,
         "minimumDistinctGames": 2,
         "crossEngineClaimRequiresNativeEvidencePerClaimedEngine": true,
         "singlePassSufficient": false,
-        "syntheticPracticeReplacesNativeRuntime": false
+        "syntheticPracticeReplacesNativeRuntime": false,
+        "unseenGameRequired": true,
+        "unseenProblemFingerprintRequired": true,
+        "pairedControlChallengerRequired": true,
+        "capabilitySpecificPositiveSupportRequired": true,
+        "zeroCapabilitySpecificContradictionsRequired": true,
+        "nonTargetContextFixed": true,
+        "writableScopeFixed": true,
+        "modelBudgetFixed": true,
+        "qaContractFixed": true,
+        "ambiguousOrNeutralEvidenceRemainsGeneralizationCandidate": true
       },
       "portfolioGovernance": [
         "PRESERVE_PROVENANCE_ON_DEPRECATION",
