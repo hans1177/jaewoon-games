@@ -2970,7 +2970,7 @@ function saveGame(manual=true){
  }catch(e){if(manual)showNotice('저장 실패')}
 }
 function ensureEquippedInInventory(){const p=state.player;for(const id of [p.weapon,p.tool,p.armor])if(id&&item(id)&&invCount(id)<1)p.inventory[id]=1}
-function loadGame(){
+p.loot=o.loot&&typeof o.loot==='object'?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.l /no_think)
  try{
   const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!s||!s.player)return;
   const o=s.player,p=state.player,version=Number(s.v)||1,legacyScale=version<3,scale=legacyScale?5:(version<6?1:(version<8?2:1)),ox=Number(o.x),oy=Number(o.y),oldSurface=s.area!=='underground',shiftX=version<13?3000:0,shiftY=version<13?2000:0;
