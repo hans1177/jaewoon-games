@@ -173,3 +173,25 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
   assert.match(manager,/HOMEPAGE_MANAGER_COUNT=1/);
   assert.match(manager,/HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1/);
 });
+
+
+test('homepage prefers only exact-build verified runtime gameplay captures',()=>{
+  assert.match(homepage,/function verifiedRuntimeImage\(row\)/);
+  assert.match(homepage,/runtimeGameplayMedia/);
+  assert.match(homepage,/shot\?\.verified===true/);
+  assert.match(homepage,/String\(shot\?\.buildId\|\|''\)===String\(build\.sha256\|\|''\)/);
+  assert.match(homepage,/String\(shot\?\.sourceRevision\|\|''\)===String\(build\.sourceCommit\|\|''\)/);
+  assert.match(homepage,/ROBLOX_PUBLIC_CLIENT_CAPTURE/);
+  assert.match(homepage,/ROBLOX_STUDIO_RUNTIME_CAPTURE/);
+  assert.match(homepage,/data-runtime-gameplay-image=/);
+  assert.match(homepage,/실제 플레이/);
+  const media=roadmap.runtimeGameplayMediaPublication;
+  assert.equal(media.homepage.exactBuildBindingRequired,true);
+  assert.equal(media.homepage.syntheticOrGeneratedImageForbiddenAsRuntimeEvidence,true);
+  assert.equal(media.unity.captureSource,'ANDROID_RUNTIME_SMOKE_ADB_SCREENCAP');
+  assert.equal(media.roblox.unattendedAccountLoginAutomationForbidden,true);
+  assert.equal(media.roblox.credentialOrSessionCookieStorageForbidden,true);
+  assert.equal(media.roblox.publicReleaseHomepageRequiresPublicClientCapture,true);
+  assert.equal(media.roblox.studioUnattendedAutomationForbidden,true);
+  assert.equal(media.refreshPolicy.triggerAfterVerifiedGraphicsOrPresentationUpdate,true);
+});
