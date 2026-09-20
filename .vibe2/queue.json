@@ -9199,7 +9199,1902 @@
       "reservationRunAttempt": 1,
       "reservedAt": "2026-09-20T11:08:28Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [],
+      "neuronResults": [
+        {
+          "version": 13,
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "reservationId": "35506985116:1",
+          "variant": "speculative-1",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "1de6030d791dc19840c51d5b171fca35817bb68d",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "DIAGNOSTIC_POSTCONDITION",
+            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:rpg.html:CLEAR_INTERVAL_LIFECYCLE_MISSING"
+          },
+          "evidence": [
+            "base-main:1de6030d791dc19840c51d5b171fca35817bb68d",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+            "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:3",
+            "coding-primary-targets:%5B%22attackNow%22%2C%22enter%22%2C%22initAudio%22%5D",
+            "coding-primary-systems:%5B%22CORE_STATE%22%2C%22AI%22%2C%22GOAL_STATE%22%2C%22WORLD%22%2C%22COMBAT%22%2C%22PROGRESSION%22%2C%22PRESENTATION%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22PLAYER%22%2C%22AI%22%2C%22INTERACTION%22%2C%22PLACEMENT%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
+            "coding-semantic-system-budget:10",
+            "coding-failure-fingerprint:web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_5dfec906b032e3f9d70dbdf7%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_c42b48a673bc1019bd202884%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_cc6bed7b5957878fd2293955%22%5D",
+            "actions-run:35506985116",
+            "reservation-id:35506985116:1",
+            "variant:speculative-1",
+            "shared-context-sync:MISSING"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": false,
+            "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+            "packageId": "daechung-rpg-wp-lo8pg6",
+            "target": "web",
+            "sourceRoot": "web-games/daechung-rpg",
+            "baseMainSha": "1de6030d791dc19840c51d5b171fca35817bb68d",
+            "responsibleFiles": [
+              "rpg.html"
+            ],
+            "impactFiles": [
+              "rpg.html",
+              "index.html",
+              "patch-core18.js",
+              "patch-v15.js",
+              "patch-v16.js",
+              "patch-v17.js",
+              "patch-v18-reaper.js",
+              "patch-v18.js"
+            ],
+            "contextFiles": [
+              "rpg.html",
+              "index.html",
+              "patch-core18.js",
+              "patch-v15.js",
+              "patch-v16.js",
+              "patch-v17.js",
+              "patch-v18-reaper.js",
+              "patch-v18.js"
+            ],
+            "relatedFiles": [
+              {
+                "path": "index.html",
+                "score": 64
+              },
+              {
+                "path": "patch-core18.js",
+                "score": 35
+              },
+              {
+                "path": "patch-v15.js",
+                "score": 35
+              },
+              {
+                "path": "patch-v16.js",
+                "score": 35
+              },
+              {
+                "path": "patch-v17.js",
+                "score": 35
+              },
+              {
+                "path": "patch-v18-reaper.js",
+                "score": 35
+              },
+              {
+                "path": "patch-v18.js",
+                "score": 35
+              }
+            ],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [
+              "diagnostic:INTERVAL_CLEANUP_RISK",
+              "repair-mode:MODEL"
+            ],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "MAJOR_REWORK",
+              "confidence": "MEDIUM",
+              "reasons": [
+                "REUSABLE_SOURCE_EXISTS",
+                "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 1720,
+                "sourceSha256": "aa3eb5055b095fe367a123475f163e1b4618aee3afad7125851311ac9a378b43",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 2,
+                "gameplaySignals": {
+                  "input": true,
+                  "runtimeLoop": false,
+                  "mutableState": false,
+                  "gameplayOutcome": false,
+                  "progression": false,
+                  "combat": false,
+                  "spatial": false,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": false
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "daechung-rpg",
+              "sourceRoot": "web-games/daechung-rpg",
+              "sourcePath": "web-games/daechung-rpg/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "rpg.html",
+                "hash": "21800a793588d78d",
+                "bytes": 49430
+              },
+              {
+                "path": "index.html",
+                "hash": "aa3eb5055b095fe3",
+                "bytes": 1720
+              },
+              {
+                "path": "patch-core18.js",
+                "hash": "7a58961a6ba23ce5",
+                "bytes": 2984
+              },
+              {
+                "path": "patch-v15.js",
+                "hash": "91ed041c21ee3dad",
+                "bytes": 42395
+              },
+              {
+                "path": "patch-v16.js",
+                "hash": "ee07c61a8db66ed6",
+                "bytes": 10067
+              },
+              {
+                "path": "patch-v17.js",
+                "hash": "180765e25b66fdde",
+                "bytes": 3124
+              },
+              {
+                "path": "patch-v18-reaper.js",
+                "hash": "e04dcc24fe996f72",
+                "bytes": 966
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "MEDIUM",
+                "matched": [
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "attackNow",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "enter",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "initAudio",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "CORE_STATE",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "AI",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "GOAL_STATE",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "WORLD",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  },
+                  {
+                    "gameId": "daechung-rpg",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "COMBAT",
+                    "verifiedRegressionFailures": 1,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
+                    "lastPassEvidence": "coding_hotspot_raspnq",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
+                    "risk": {
+                      "score": 2,
+                      "level": "MEDIUM"
+                    }
+                  }
+                ],
+                "focusedChecksAdded": [
+                  "HOTSPOT_RECHECK:SYMBOL:attackNow",
+                  "HOTSPOT_RECHECK:SYMBOL:enter",
+                  "HOTSPOT_RECHECK:SYMBOL:initAudio",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+                ],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "attackNow",
+                "enter",
+                "initAudio"
+              ],
+              "allowedResponsibleFiles": [
+                "rpg.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "startBgm",
+                "sfx",
+                "toggleSound",
+                "setAggro",
+                "toastMsg",
+                "spawnCave",
+                "spawnAll",
+                "spawnHiddenEnemy",
+                "hud",
+                "useAction",
+                "portals",
+                "currentAtk",
+                "kill",
+                "INTERACTION",
+                "COMBAT",
+                "ECONOMY",
+                "PROGRESSION",
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "CORE_STATE",
+                "WORLD",
+                "AI"
+              ],
+              "primarySystems": [
+                "CORE_STATE",
+                "AI",
+                "GOAL_STATE",
+                "WORLD",
+                "COMBAT",
+                "PROGRESSION",
+                "PRESENTATION"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "PLAYER",
+                "AI",
+                "INTERACTION",
+                "PLACEMENT",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "directDependentSystems": [
+                "INTERACTION",
+                "COMBAT",
+                "ECONOMY",
+                "PROGRESSION",
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "CORE_STATE",
+                "WORLD",
+                "AI"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "PLAYER",
+                "AI",
+                "INTERACTION",
+                "PLACEMENT",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "ownedState": [
+                "AUDIO",
+                "AC",
+                "ac",
+                "prev",
+                "z",
+                "w",
+                "ax",
+                "m"
+              ],
+              "readState": [
+                "AUDIO",
+                "AC",
+                "ac",
+                "F",
+                "prev",
+                "n",
+                "z",
+                "WEAPONS",
+                "run",
+                "w",
+                "t",
+                "ax",
+                "m",
+                "d",
+                "r"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:attackNow",
+                "STATE_WRITE:ac",
+                "STATE_WRITE:w",
+                "STATE_WRITE:ax",
+                "STATE_WRITE:m",
+                "DOWNSTREAM:sfx",
+                "DOWNSTREAM:currentAtk",
+                "DOWNSTREAM:kill",
+                "RESPONSIBLE_FUNCTION:enter",
+                "STATE_WRITE:prev",
+                "STATE_WRITE:z",
+                "DOWNSTREAM:setAggro",
+                "DOWNSTREAM:toastMsg",
+                "DOWNSTREAM:spawnCave",
+                "RESPONSIBLE_FUNCTION:initAudio",
+                "STATE_WRITE:AUDIO",
+                "STATE_WRITE:AC",
+                "DOWNSTREAM:startBgm"
+              ],
+              "requiredObservableResult": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "CORE_STATE",
+                  "AI",
+                  "GOAL_STATE",
+                  "WORLD",
+                  "COMBAT",
+                  "PROGRESSION",
+                  "PRESENTATION",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "INPUT"
+                ],
+                "preferredPrimarySymbols": [
+                  "attackNow",
+                  "enter",
+                  "initAudio"
+                ],
+                "maxSystemCount": 10,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "PLAYER",
+                  "AI",
+                  "INTERACTION",
+                  "PLACEMENT",
+                  "PROGRESSION",
+                  "ECONOMY",
+                  "COMBAT",
+                  "WORLD"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PRESENTATION",
+                "MICRO_WORLD",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_PROGRESSION",
+                "MICRO_GOAL_STATE",
+                "MICRO_INPUT",
+                "MICRO_INTERACTION",
+                "MICRO_ECONOMY",
+                "HOTSPOT_RECHECK:SYMBOL:attackNow",
+                "HOTSPOT_RECHECK:SYMBOL:enter",
+                "HOTSPOT_RECHECK:SYMBOL:initAudio",
+                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:AI",
+                "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:WORLD",
+                "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": true,
+                "nodeTestTargets": [],
+                "executable": true,
+                "mode": "DIAGNOSTIC_RESCAN",
+                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+                "diagnosticType": "INTERVAL_CLEANUP_RISK",
+                "diagnosticFile": "rpg.html",
+                "diagnosticLine": 177,
+                "diagnosticNeedle": "setInterval(",
+                "diagnosticMicroTask": "rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
+                "verifiedResponsibleSystem": "GAME_RUNTIME",
+                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "attackNow",
+                  "enter",
+                  "initAudio"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "startBgm",
+                  "sfx",
+                  "toggleSound",
+                  "setAggro",
+                  "toastMsg",
+                  "spawnCave",
+                  "spawnAll",
+                  "spawnHiddenEnemy",
+                  "hud",
+                  "useAction",
+                  "portals",
+                  "currentAtk",
+                  "kill",
+                  "INTERACTION",
+                  "COMBAT",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "CORE_STATE",
+                  "WORLD",
+                  "AI"
+                ],
+                "ownedState": [
+                  "AUDIO",
+                  "AC",
+                  "ac",
+                  "prev",
+                  "z",
+                  "w",
+                  "ax",
+                  "m"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PRESENTATION",
+                  "MICRO_WORLD",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_PROGRESSION",
+                  "MICRO_GOAL_STATE",
+                  "MICRO_INPUT",
+                  "MICRO_INTERACTION",
+                  "MICRO_ECONOMY",
+                  "HOTSPOT_RECHECK:SYMBOL:attackNow",
+                  "HOTSPOT_RECHECK:SYMBOL:enter",
+                  "HOTSPOT_RECHECK:SYMBOL:initAudio",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 73,
+                "edgeCount": 126,
+                "maxFunctionBodyBytes": 3620,
+                "maxCallsPerFunction": 10,
+                "maxCalledByPerFunction": 20,
+                "maxStateWritesPerFunction": 11,
+                "maxSystemsPerFunction": 8,
+                "multiWriterStateCount": 20,
+                "stateWriterLinkCount": 114,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 5,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 15
+              },
+              "responsibilityGraph": {
+                "nodeCount": 73,
+                "relevantNodes": [
+                  {
+                    "name": "initAudio",
+                    "systems": [
+                      "CORE_STATE",
+                      "AI",
+                      "GOAL_STATE"
+                    ],
+                    "calls": [
+                      "startBgm"
+                    ],
+                    "calledBy": [
+                      "sfx",
+                      "toggleSound"
+                    ],
+                    "stateReads": [
+                      "AUDIO",
+                      "AC",
+                      "ac"
+                    ],
+                    "stateWrites": [
+                      "AUDIO",
+                      "AC",
+                      "ac"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "sfx",
+                    "systems": [
+                      "INTERACTION",
+                      "COMBAT",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "INPUT",
+                      "GOAL_STATE",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "initAudio",
+                      "tone",
+                      "noise"
+                    ],
+                    "calledBy": [
+                      "setAggro",
+                      "toggleSound",
+                      "say",
+                      "enter",
+                      "talkNow",
+                      "openWeaponShop",
+                      "equipWeapon",
+                      "buyOrEquipWeapon",
+                      "openArmorShop",
+                      "buyOrEquipArmor",
+                      "openSellShop",
+                      "sellItem",
+                      "sellEverything",
+                      "useAction",
+                      "attackNow",
+                      "kill",
+                      "fireArrow",
+                      "updateArrows",
+                      "damage",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "SFX_INDEX",
+                      "AUDIO",
+                      "i",
+                      "special",
+                      "k"
+                    ],
+                    "stateWrites": [
+                      "i",
+                      "special",
+                      "k"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "startBgm",
+                    "systems": [
+                      "CORE_STATE",
+                      "WORLD"
+                    ],
+                    "calls": [
+                      "tone",
+                      "noise"
+                    ],
+                    "calledBy": [
+                      "initAudio"
+                    ],
+                    "stateReads": [
+                      "AUDIO",
+                      "i",
+                      "normal",
+                      "aggro",
+                      "run"
+                    ],
+                    "stateWrites": [
+                      "AUDIO",
+                      "i",
+                      "normal",
+                      "aggro"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "setAggro",
+                    "systems": [
+                      "INTERACTION",
+                      "COMBAT",
+                      "AI"
+                    ],
+                    "calls": [
+                      "sfx"
+                    ],
+                    "calledBy": [
+                      "enter",
+                      "damage",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "AUDIO",
+                      "aggro",
+                      "now",
+                      "v"
+                    ],
+                    "stateWrites": [
+                      "AUDIO",
+                      "aggro",
+                      "now"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "toggleSound",
+                    "systems": [
+                      "INTERACTION",
+                      "AI",
+                      "INPUT",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "initAudio",
+                      "sfx"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "AUDIO"
+                    ],
+                    "stateWrites": [
+                      "AUDIO"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "currentAtk",
+                    "systems": [
+                      "COMBAT"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "hud",
+                      "equipWeapon",
+                      "attackNow"
+                    ],
+                    "stateReads": [
+                      "WEAPONS"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "hud",
+                    "systems": [
+                      "PRESENTATION",
+                      "WORLD",
+                      "COMBAT",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "GOAL_STATE"
+                    ],
+                    "calls": [
+                      "maxHp",
+                      "currentAtk"
+                    ],
+                    "calledBy": [
+                      "reset",
+                      "enter",
+                      "talkNow",
+                      "equipWeapon",
+                      "buyOrEquipArmor",
+                      "sellItem",
+                      "sellEverything",
+                      "kill",
+                      "damage",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "F",
+                      "mh",
+                      "n"
+                    ],
+                    "stateWrites": [
+                      "mh"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "toastMsg",
+                    "systems": [
+                      "PRESENTATION"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "enter",
+                      "talkNow",
+                      "equipWeapon",
+                      "buyOrEquipWeapon",
+                      "buyOrEquipArmor",
+                      "sellEverything",
+                      "useAction",
+                      "kill",
+                      "portals"
+                    ],
+                    "stateReads": [
+                      "t"
+                    ],
+                    "stateWrites": [
+                      "t"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "enter",
+                    "systems": [
+                      "WORLD",
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "setAggro",
+                      "sfx",
+                      "toastMsg",
+                      "spawnCave",
+                      "spawnAll",
+                      "spawnHiddenEnemy",
+                      "hud"
+                    ],
+                    "calledBy": [
+                      "useAction",
+                      "portals"
+                    ],
+                    "stateReads": [
+                      "F",
+                      "prev",
+                      "n",
+                      "z"
+                    ],
+                    "stateWrites": [
+                      "prev",
+                      "z"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "spawnAll",
+                    "systems": [],
+                    "calls": [
+                      "spawn"
+                    ],
+                    "calledBy": [
+                      "enter"
+                    ],
+                    "stateReads": [
+                      "F",
+                      "i",
+                      "z",
+                      "m"
+                    ],
+                    "stateWrites": [
+                      "i"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "spawnCave",
+                    "systems": [
+                      "INTERACTION"
+                    ],
+                    "calls": [
+                      "spawnCaveMonster"
+                    ],
+                    "calledBy": [
+                      "enter"
+                    ],
+                    "stateReads": [
+                      "CAVE",
+                      "i"
+                    ],
+                    "stateWrites": [
+                      "i"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "spawnHiddenEnemy",
+                    "systems": [
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "enter"
+                    ],
+                    "stateReads": [
+                      "TOMB",
+                      "n",
+                      "a",
+                      "z",
+                      "m",
+                      "r"
+                    ],
+                    "stateWrites": [
+                      "m"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "useAction",
+                    "systems": [
+                      "INTERACTION",
+                      "COMBAT",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "getAction",
+                      "enter",
+                      "toastMsg",
+                      "sfx"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "a"
+                    ],
+                    "stateWrites": [
+                      "a"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "attackNow",
+                    "systems": [
+                      "COMBAT",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "sfx",
+                      "currentAtk",
+                      "kill"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "WEAPONS",
+                      "ac",
+                      "run",
+                      "w",
+                      "t",
+                      "ax",
+                      "m",
+                      "d",
+                      "r"
+                    ],
+                    "stateWrites": [
+                      "ac",
+                      "w",
+                      "ax",
+                      "m"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "kill",
+                    "systems": [
+                      "WORLD",
+                      "INTERACTION",
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION",
+                      "GOAL_STATE",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "sfx",
+                      "deathSoundFor",
+                      "toastMsg",
+                      "maxHp",
+                      "spawn",
+                      "hud"
+                    ],
+                    "calledBy": [
+                      "attackNow"
+                    ],
+                    "stateReads": [
+                      "F",
+                      "run",
+                      "ownedWeapons",
+                      "v",
+                      "t",
+                      "item",
+                      "z",
+                      "spec",
+                      "m"
+                    ],
+                    "stateWrites": [
+                      "v",
+                      "item",
+                      "z",
+                      "spec",
+                      "m"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "portals",
+                    "systems": [
+                      "WORLD",
+                      "COMBAT"
+                    ],
+                    "calls": [
+                      "enter",
+                      "toastMsg"
+                    ],
+                    "calledBy": [
+                      "update"
+                    ],
+                    "stateReads": [
+                      "P",
+                      "a"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "initAudio",
+                    "to": "startBgm",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sfx",
+                    "to": "initAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sfx",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sfx",
+                    "to": "noise",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "startBgm",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "startBgm",
+                    "to": "noise",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "setAggro",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "toggleSound",
+                    "to": "initAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "toggleSound",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "reset",
+                    "to": "hud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hud",
+                    "to": "maxHp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hud",
+                    "to": "currentAtk",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "say",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "setAggro",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "toastMsg",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "spawnCave",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "spawnAll",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "spawnHiddenEnemy",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "enter",
+                    "to": "hud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "spawnAll",
+                    "to": "spawn",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "spawnCave",
+                    "to": "spawnCaveMonster",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "talkNow",
+                    "to": "toastMsg",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "talkNow",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "talkNow",
+                    "to": "hud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "openWeaponShop",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "equipWeapon",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "equipWeapon",
+                    "to": "toastMsg",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "equipWeapon",
+                    "to": "currentAtk",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "equipWeapon",
+                    "to": "hud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyOrEquipWeapon",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyOrEquipWeapon",
+                    "to": "toastMsg",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "openArmorShop",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyOrEquipArmor",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyOrEquipArmor",
+                    "to": "toastMsg",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "buyOrEquipArmor",
+                    "to": "hud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "openSellShop",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sellItem",
+                    "to": "sfx",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sellItem",
+                    "to": "hud",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "sellEverything",
+                    "to": "toastMsg",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 65,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "ac:initAudio,tone,noise,attackNow,update"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "i:noise,sfx,startBgm,spawnAll,spawnCave,updateArrows,update,drawDecor"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "b:nearest,renderWeaponShop,renderArmorShop,renderSellShop,renderBag"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "a:buyOrEquipArmor,updateActionButton,useAction,fireArrow,updateArrows,update,palm,tropical"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "t:tone,noise,toastMsg,sellEverything,update,drawHuman,drawMonsterSprite"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "m:spawnHiddenEnemy,attackNow,kill,update,drawMonsterSprite,drawMonster,moveJoy"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "k:sfx,talkNow,palm,banana,tropical,renderBag"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "diagnostic:INTERVAL_CLEANUP_RISK",
+                "repair-mode:MODEL",
+                "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
+                "role-result:exploration:FAIL",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "failure-cause:source-candidate-generation-failed",
+                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+                "system-steward:failure-signature:source-candidate-generation-failed",
+                "repair-mode:CAUSAL_REGENERATION_GENERATION_2",
+                "shared-context-sync:MISSING",
+                "recovery-queue:recovery-web-source-candidate-generation-portfolio-v1",
+                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+                "recovery-exact-stage:SOURCE_CANDIDATE_GENERATION",
+                "recovery-queue:recovery-b9a81ece6a251027e30e"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "d4d623beb9553d711fc0c888",
+            "generatedAt": "2026-09-20T11:09:49.208Z"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+            "candidateVariant": "speculative-1",
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "attackNow",
+              "enter",
+              "initAudio"
+            ],
+            "primarySystems": [
+              "CORE_STATE",
+              "AI",
+              "GOAL_STATE",
+              "WORLD",
+              "COMBAT",
+              "PROGRESSION",
+              "PRESENTATION"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "PLAYER",
+              "AI",
+              "INTERACTION",
+              "PLACEMENT",
+              "PROGRESSION",
+              "ECONOMY",
+              "COMBAT",
+              "WORLD"
+            ],
+            "ownedState": [
+              "AUDIO",
+              "AC",
+              "ac",
+              "prev",
+              "z",
+              "w",
+              "ax",
+              "m"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "CORE_STATE",
+                "AI",
+                "GOAL_STATE",
+                "WORLD",
+                "COMBAT",
+                "PROGRESSION",
+                "PRESENTATION",
+                "INTERACTION",
+                "ECONOMY",
+                "INPUT"
+              ],
+              "preferredPrimarySymbols": [
+                "attackNow",
+                "enter",
+                "initAudio"
+              ],
+              "maxSystemCount": 10,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "PLAYER",
+                "AI",
+                "INTERACTION",
+                "PLACEMENT",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": null,
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": true,
+              "nodeTestTargets": [],
+              "executable": true,
+              "mode": "DIAGNOSTIC_RESCAN",
+              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+              "diagnosticType": "INTERVAL_CLEANUP_RISK",
+              "diagnosticFile": "rpg.html",
+              "diagnosticLine": 177,
+              "diagnosticNeedle": "setInterval(",
+              "diagnosticMicroTask": "rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
+              "verifiedResponsibleSystem": "GAME_RUNTIME",
+              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "generationAttempts": 0,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "WORK_ORDER_FALLBACK"
+          },
+          "presentationQuality": null,
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/daechung-rpg",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "recovery-exact-stage:SOURCE_CANDIDATE_GENERATION",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "recovery-exact-stage:production-authority-inactive:DESIGN_ONLY",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "recovery-exact-stage:UNKNOWN_STAGE",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "current-deterministic-diagnostic-interval-cleanup-risk",
+                "system": "GAME_RUNTIME",
+                "confidence": 0.99,
+                "reason": "현재 task의 결정론적 diagnostic INTERVAL_CLEANUP_RISK(rpg.html)가 GAME_RUNTIME 책임 가설을 직접 지지함",
+                "diagnosticType": "INTERVAL_CLEANUP_RISK",
+                "diagnosticFile": "rpg.html",
+                "verified": false,
+                "advisoryOnly": true
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "audio-runtime-binding",
+                "system": "GAME_AUDIO",
+                "confidence": 0.86,
+                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              },
+              {
+                "id": "pipeline-or-runner",
+                "system": "INFRA",
+                "confidence": 0.82,
+                "reason": "게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "current-deterministic-diagnostic-interval-cleanup-risk",
+                "to": "SOURCE_CANDIDATE_GENERATION",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.99,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "save-compatibility",
+                "to": "SOURCE_CANDIDATE_GENERATION",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "audio-runtime-binding",
+                "to": "SOURCE_CANDIDATE_GENERATION",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 3
+              },
+              {
+                "from": "source-generation-path",
+                "to": "SOURCE_CANDIDATE_GENERATION",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 4
+              }
+            ],
+            "responsibility": {
+              "system": "GAME_RUNTIME",
+              "confidence": 0.99,
+              "alternatives": [
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.2031602708803612
+                },
+                {
+                  "system": "GAME_AUDIO",
+                  "confidence": 0.19413092550790068
+                },
+                {
+                  "system": "SOURCE_GENERATION",
+                  "confidence": 0.19413092550790068
+                }
+              ],
+              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 6,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 1,
+                "evidenceConfidence": 0.99
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "PRODUCTION_AUTHORITY_INACTIVE",
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "SOURCE_CANDIDATE_GENERATION",
+              "responsibleSystem": "GAME_RUNTIME",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "PRODUCTION_AUTHORITY_INACTIVE"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+              "capability_ctrace_c42b48a673bc1019bd202884",
+              "capability_ctrace_cc6bed7b5957878fd2293955"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+              "capability_ctrace_c42b48a673bc1019bd202884",
+              "capability_ctrace_cc6bed7b5957878fd2293955"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 131154,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "CODE_PATTERN:pat_130jf9c",
+              "CODE_PATTERN:pat_1avbmmv",
+              "CODE_PATTERN:pat_1vgfuno",
+              "CODE_PATTERN:pat_3f780w",
+              "CODE_PATTERN:pat_9pwgix",
+              "CODE_PATTERN:pat_m3ipio",
+              "VERIFIED_CAPABILITY:capability_ctrace_5dfec906b032e3f9d70dbdf7",
+              "VERIFIED_CAPABILITY:capability_ctrace_c42b48a673bc1019bd202884",
+              "VERIFIED_CAPABILITY:capability_ctrace_cc6bed7b5957878fd2293955"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35506985116:1",
+            "reservedAt": "2026-09-20T11:08:28Z",
+            "workerStartedAt": 1789902542089,
+            "workerFinishedAt": 1789902673243,
+            "checkoutMs": 4252,
+            "modelPrepMs": 9081,
+            "candidateMs": 83096,
+            "qaMs": 0,
+            "workerTotalMs": 131154,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
+        }
+      ],
       "companyContext": null,
       "sourceRoot": "web-games/daechung-rpg",
       "speculativeEligible": true,
