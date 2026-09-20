@@ -3,7 +3,7 @@
 
 const clean=value=>String(value??'').trim();
 
-export function critiqueNeuralShadow({diagnosis=null,feedback=null}={}){
+export function critiqueNeuralShadow({diagnosis=null,feedback=null,evidence=[]}={}){
   if(!diagnosis||clean(diagnosis.mode)!=='PHASE1_SHADOW_ADVISORY'||!feedback||clean(feedback.mode)!=='PHASE1_SHADOW_FEEDBACK'){
     return{
       version:1,
@@ -25,9 +25,18 @@ export function critiqueNeuralShadow({diagnosis=null,feedback=null}={}){
 
   const observedStage=clean(feedback?.observed?.stage)||'UNKNOWN';
   const failureSignature=clean(feedback?.observed?.failureSignature)||null;
+  const evidenceRows=(Array.isArray(evidence)?evidence:[]).map(clean).filter(Boolean);
+  const causalReplayPass=evidenceRows.includes('causal-replay-status:EXECUTED_PASS')&&evidenceRows.includes('causal-replay-executed:YES');
+  const prePatchReproduced=evidenceRows.includes('causal-replay-prepatch-reproduced:YES');
+  const causalRepairVerified=causalReplayPass&&prePatchReproduced;
   let nextEvidenceRequired=[];
   if(feedback.rootCauseVerified===true){
     nextEvidenceRequired=['INDEPENDENT_REGRESSION_CONFIRMATION'];
+  }else if(causalRepairVerified){
+    nextEvidenceRequired=[
+      'RUNTIME_OR_INDEPENDENT_QA_CONFIRMATION',
+      'MAP_CAUSALLY_VERIFIED_REPAIR_TO_RESPONSIBLE_SYSTEM_BEFORE_ROOT_CAUSE_CLAIM'
+    ];
   }else if(observedStage==='SOURCE_GENERATION'){
     nextEvidenceRequired=[
       'RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY',
@@ -63,6 +72,9 @@ export function critiqueNeuralShadow({diagnosis=null,feedback=null}={}){
     observedResponsibility:clean(feedback?.observed?.responsibility)||null,
     failureSignature,
     rootCauseVerified:feedback.rootCauseVerified===true,
+    causalRepairVerified,
+    prePatchReproduced,
+    causalReplayPass,
     confidenceAdjustmentHint:adjustmentHint,
     confidenceMutationAllowed:false,
     nextEvidenceRequired,
@@ -89,6 +101,9 @@ export function neuralCriticEvidence(critic={}){
     observedResponsibility:clean(critic.observedResponsibility)||null,
     failureSignature:clean(critic.failureSignature)||null,
     rootCauseVerified:critic.rootCauseVerified===true,
+    causalRepairVerified:critic.causalRepairVerified===true,
+    prePatchReproduced:critic.prePatchReproduced===true,
+    causalReplayPass:critic.causalReplayPass===true,
     confidenceAdjustmentHint:Number(critic.confidenceAdjustmentHint||0),
     confidenceMutationAllowed:false,
     actionFiringAllowed:false,
