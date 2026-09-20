@@ -466,6 +466,17 @@ test('fan-in review persists neural shadow versus wave audit without authority',
   assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
 });
 
+test('fan-in review exposes Phase2 readiness only as an explicit review gate',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/evaluatePhase2Readiness/);
+  assert.match(source,/neuralPhase2Readiness/);
+  const readiness=fs.readFileSync('tools/vibe2-neural-phase2-readiness.mjs','utf8');
+  assert.match(readiness,/phase2AuthorityReady:false/);
+  assert.match(readiness,/executionAuthorityGranted:false/);
+  assert.match(readiness,/automaticPromotionAllowed:false/);
+  assert.match(readiness,/explicitCentralPolicyPromotionRequired:true/);
+});
+
 test('fan-in workflow persists verified supervised review learning before release dispatch',()=>{
   assert.match(workflow,/vibe2-experience-control\.mjs/);
   assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
