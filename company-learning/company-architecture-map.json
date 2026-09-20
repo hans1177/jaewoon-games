@@ -1,5 +1,5 @@
 {
-  "version": 43,
+  "version": 44,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1090,7 +1090,7 @@
     }
   },
   "capabilityDistillationTopology": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
     "flow": [
       "OBSERVABLE_CODING_TRACE_CAPTURE",
@@ -1128,7 +1128,20 @@
       "hiddenChainOfThoughtStored": false,
       "ambiguousFailurePromotion": false,
       "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-      "authorityChange": "NONE"
+      "authorityChange": "NONE",
+      "fanInVerificationBindingRepair": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1887,
+        "mergedCommit": "99e3c6992a88067056a09004f7c048f144b8e036",
+        "binding": "EXACT_SELECTED_SAMPLE_IDENTITY_AFTER_PACKAGE_FAN_IN_PASS",
+        "passRoleBinding": [
+          "regression:PASS",
+          "review:PASS"
+        ],
+        "blockedOrUnselectedMutation": false,
+        "provenanceOnlyPreserved": true,
+        "authorityChange": "NONE"
+      }
     },
     "phase2Next": {
       "state": "PLANNED",
