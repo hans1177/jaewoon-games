@@ -85,13 +85,16 @@ jobs:
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
-          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
+          const propagationCandidates=globalWindow.filter(item=>item.webNativePropagation===true&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX');
+          const candidates=[...(q.items||[]),...propagationCandidates].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(!windowIds.has(item.gameId))continue;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const development=String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED';
+            const propagation=item.webNativePropagation===true&&String(item.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED';
+            if(!development&&!propagation)continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            const secondaryOwnerFocus=!propagation&&platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
@@ -102,7 +105,7 @@ jobs:
             if(candidateReady)continue;
             const target=`roblox-games/${item.gameId}`;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
-            if(fs.existsSync(target)&&!bootstrapFailed)continue;
+            if(fs.existsSync(target)&&!bootstrapFailed&&!propagation)continue;
             rows.push({
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -111,6 +114,8 @@ jobs:
               webHandoff:item.webPlatformHandoff||null,
               target,
               secondaryOwnerFocus,
+              webNativePropagation:propagation,
+              webNativePropagationWebSourceIndexSha256:item.webNativePropagationWebSourceIndexSha256||null,
             });
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
@@ -350,6 +355,29 @@ jobs:
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
             const target=expectedById.get(result.gameId)||{};
             const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            const webNativePropagation=target.webNativePropagation===true;
+            if(webNativePropagation){
+              item.webNativeRevisionSync=item.webNativeRevisionSync||{version:1,platforms:{}};
+              item.webNativeRevisionSync.platforms=item.webNativeRevisionSync.platforms||{};
+              const sync=item.webNativeRevisionSync.platforms.ROBLOX||{};
+              if(result.pass===true){
+                Object.assign(item,{
+                  robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                  robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,robloxRuntimePassed:false,updatedAt:stamp,
+                });
+                item.webNativeRevisionSync.platforms.ROBLOX={...sync,state:'SOURCE_READY',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',requestedWebSourceIndexSha256:target.webNativePropagationWebSourceIndexSha256||null,sourceRevision:result.sourceRevision,updatedAt:stamp};
+                passCount++;
+              }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
+                Object.assign(item,{robloxSourceCandidateBranch:result.candidateBranch,robloxSourceCandidateReadyAt:stamp,robloxSourceBootstrapFailedAt:null,updatedAt:stamp});
+                item.webNativeRevisionSync.platforms.ROBLOX={...sync,state:'SOURCE_PROMOTION_PENDING',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',requestedWebSourceIndexSha256:target.webNativePropagationWebSourceIndexSha256||null,candidateBranch:result.candidateBranch,updatedAt:stamp};
+                candidateCount++;
+              }else{
+                Object.assign(item,{robloxSourceBootstrapFailedAt:stamp,updatedAt:stamp});
+                item.webNativeRevisionSync.platforms.ROBLOX={...sync,state:'SOURCE_REPAIR_REQUIRED',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',requestedWebSourceIndexSha256:target.webNativePropagationWebSourceIndexSha256||null,failure:result.failure||'unknown-failure',updatedAt:stamp};
+                failCount++;
+              }
+              continue;
+            }
             if(secondaryOwnerFocus){
               if(result.pass===true){
                 Object.assign(item,{
