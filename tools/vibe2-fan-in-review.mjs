@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
+import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -67,6 +68,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      const rootCause=verifyNeuralRootCause({
+        diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
+        evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))]
+      });
+      for(const marker of neuralRootCauseEvidence(rootCause))evidence.add(marker);
       const supervised=task?.supervisionContract?.required===true
         ||evidence.has('supervised-web-build:required')
         ||clean(task?.productionMode)==='SUPERVISED_VIBE_COAUTHORING';
@@ -81,11 +87,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('supervised-promotion:BLOCKED');
         evidence.add(supervisionVerified?`supervised-review:${supervisionDecision||'REVISE'}`:'supervised-review:REQUIRED');
         const releaseBlocker=supervisionVerified&&supervisionDecision&&supervisionDecision!=='PASS'?`SUPERVISED_${supervisionDecision}`:'SUPERVISED_APPROVAL_REQUIRED';
-        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker});
+        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause});
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
-      reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:false,releaseBlocker:null});
+      reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
