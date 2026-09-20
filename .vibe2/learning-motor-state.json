@@ -12,18 +12,18 @@
       "lastEvidence": "capability_ctrace_82c7184020b6c7803e6cddb0"
     },
     "STATE_MACHINE": {
-      "xp": 1122,
-      "level": 11,
+      "xp": 1132,
+      "level": 12,
       "verifiedSuccesses": 73,
-      "verifiedFailureLessons": 58,
-      "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
+      "verifiedFailureLessons": 60,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
     },
     "COMBAT": {
-      "xp": 848,
+      "xp": 858,
       "level": 10,
       "verifiedSuccesses": 64,
-      "verifiedFailureLessons": 16,
-      "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
+      "verifiedFailureLessons": 18,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
     },
     "AI": {
       "xp": 540,
@@ -33,11 +33,11 @@
       "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
     },
     "PROGRESSION": {
-      "xp": 939,
+      "xp": 949,
       "level": 11,
       "verifiedSuccesses": 62,
-      "verifiedFailureLessons": 39,
-      "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
+      "verifiedFailureLessons": 41,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
     },
     "ECONOMY": {
       "xp": 713,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_98ff2306686a32e38f808a33"
     },
     "DEBUGGING": {
-      "xp": 1110,
+      "xp": 1120,
       "level": 11,
       "verifiedSuccesses": 74,
-      "verifiedFailureLessons": 58,
-      "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
+      "verifiedFailureLessons": 60,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
     },
     "RECOVERY": {
       "xp": 769,
@@ -159,11 +159,11 @@
       "lastEvidence": null
     },
     "QUEST_DESIGN": {
-      "xp": 850,
+      "xp": 860,
       "level": 10,
       "verifiedSuccesses": 55,
-      "verifiedFailureLessons": 38,
-      "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
+      "verifiedFailureLessons": 40,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
     },
     "CHARACTER_ARC": {
       "xp": 0,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1002,
+      "xp": 1012,
       "level": 11,
       "verifiedSuccesses": 61,
-      "verifiedFailureLessons": 54,
-      "lastEvidence": "capability_ctrace_cabd54645f7cd0476a6c213e"
+      "verifiedFailureLessons": 56,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -215,48 +215,6 @@
       "lastEvidence": null
     },
     "ROBLOX_MULTIPLAYER": {
-      "xp": 0,
-      "level": 1,
-      "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
-    },
-    "UNITY_RUNTIME": {
-      "xp": 0,
-      "level": 1,
-      "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
-    },
-    "UNITY_PHYSICS": {
-      "xp": 0,
-      "level": 1,
-      "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
-    },
-    "UNITY_NETCODE": {
-      "xp": 0,
-      "level": 1,
-      "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
-    },
-    "UEFN_RUNTIME": {
-      "xp": 0,
-      "level": 1,
-      "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
-    },
-    "UEFN_VERSE": {
-      "xp": 0,
-      "level": 1,
-      "verifiedSuccesses": 0,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": null
-    },
-    "UEFN_REPLICATION": {
       "xp": 0,
       "level": 1,
       "verifiedSuccesses": 0,
@@ -389,7 +347,9 @@
     "capability_ctrace_ca9e8a184a353c58054c72d4",
     "capability_ctrace_e0225474add0ea6185d8631c",
     "capability_ctrace_82c7184020b6c7803e6cddb0",
-    "capability_ctrace_cabd54645f7cd0476a6c213e"
+    "capability_ctrace_cabd54645f7cd0476a6c213e",
+    "capability_ctrace_952084b55868155b9986b095",
+    "capability_ctrace_30eb5b825c658b88991658d6"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -527,8 +487,8 @@
       ]
     },
     "fail_wu3qnk": {
-      "count": 10,
-      "lastEvidence": "capability_ctrace_2b65182e9775732951f9f505",
+      "count": 11,
+      "lastEvidence": "capability_ctrace_30eb5b825c658b88991658d6",
       "example": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
       "domains": [
         "STATE_MACHINE",
@@ -542,8 +502,8 @@
       ]
     },
     "fail_c9xvk3": {
-      "count": 6,
-      "lastEvidence": "capability_ctrace_4e729cec4540b040a1e80cd6",
+      "count": 7,
+      "lastEvidence": "capability_ctrace_952084b55868155b9986b095",
       "example": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
       "domains": [
         "STATE_MACHINE",
@@ -552,7 +512,8 @@
         "DEBUGGING",
         "QUEST_DESIGN",
         "WEB_RUNTIME",
-        "UI_STATE"
+        "UI_STATE",
+        "COMBAT"
       ]
     },
     "fail_1agpu1k": {
@@ -7233,7 +7194,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T17:45:53.748Z",
+    "lastBuiltAt": "2026-09-20T17:46:04.567Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -7659,60 +7620,6 @@
         "level": 2,
         "lastEvidence": "knowledge_m8qcx6",
         "lastUpdatedAt": "2026-09-20T16:29:35.572Z"
-      },
-      "UNITY_RUNTIME": {
-        "verifiedApplications": 0,
-        "verifiedFailures": 0,
-        "games": {},
-        "holdoutPasses": 0,
-        "level": 1,
-        "lastEvidence": null,
-        "lastUpdatedAt": null
-      },
-      "UNITY_PHYSICS": {
-        "verifiedApplications": 0,
-        "verifiedFailures": 0,
-        "games": {},
-        "holdoutPasses": 0,
-        "level": 1,
-        "lastEvidence": null,
-        "lastUpdatedAt": null
-      },
-      "UNITY_NETCODE": {
-        "verifiedApplications": 0,
-        "verifiedFailures": 0,
-        "games": {},
-        "holdoutPasses": 0,
-        "level": 1,
-        "lastEvidence": null,
-        "lastUpdatedAt": null
-      },
-      "UEFN_RUNTIME": {
-        "verifiedApplications": 0,
-        "verifiedFailures": 0,
-        "games": {},
-        "holdoutPasses": 0,
-        "level": 1,
-        "lastEvidence": null,
-        "lastUpdatedAt": null
-      },
-      "UEFN_VERSE": {
-        "verifiedApplications": 0,
-        "verifiedFailures": 0,
-        "games": {},
-        "holdoutPasses": 0,
-        "level": 1,
-        "lastEvidence": null,
-        "lastUpdatedAt": null
-      },
-      "UEFN_REPLICATION": {
-        "verifiedApplications": 0,
-        "verifiedFailures": 0,
-        "games": {},
-        "holdoutPasses": 0,
-        "level": 1,
-        "lastEvidence": null,
-        "lastUpdatedAt": null
       }
     },
     "seenOutcomeIds": []
@@ -9611,5 +9518,5 @@
       "knowledge_1fb22fu"
     ]
   },
-  "updatedAt": "2026-09-20T17:45:53.748Z"
+  "updatedAt": "2026-09-20T17:46:04.567Z"
 }

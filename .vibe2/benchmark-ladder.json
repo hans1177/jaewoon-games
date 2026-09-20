@@ -3,10 +3,10 @@
   "kind": "vibe2-benchmark-ladder",
   "cases": [
     {
-      "id": "mastery-coding-l10-g1",
+      "id": "mastery-coding-l11-g2",
       "track": "CODING",
-      "level": 10,
-      "difficultyGeneration": 1,
+      "level": 11,
+      "difficultyGeneration": 2,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -50,36 +50,6 @@
     {
       "id": "mastery-roblox_native-l1-g1",
       "track": "ROBLOX_NATIVE",
-      "level": 1,
-      "difficultyGeneration": 1,
-      "state": "READY_FOR_VERIFIED_PRACTICE",
-      "countsAsTrainingSample": false,
-      "requiredVerification": [
-        "SYNTAX",
-        "RUNTIME_WHEN_APPLICABLE",
-        "INDEPENDENT_QA",
-        "REGRESSION"
-      ],
-      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
-    },
-    {
-      "id": "mastery-unity_native-l1-g1",
-      "track": "UNITY_NATIVE",
-      "level": 1,
-      "difficultyGeneration": 1,
-      "state": "READY_FOR_VERIFIED_PRACTICE",
-      "countsAsTrainingSample": false,
-      "requiredVerification": [
-        "SYNTAX",
-        "RUNTIME_WHEN_APPLICABLE",
-        "INDEPENDENT_QA",
-        "REGRESSION"
-      ],
-      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
-    },
-    {
-      "id": "mastery-fortnite_uefn_native-l1-g1",
-      "track": "FORTNITE_UEFN_NATIVE",
       "level": 1,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
