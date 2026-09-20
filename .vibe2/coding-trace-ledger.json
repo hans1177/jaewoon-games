@@ -116699,13 +116699,587 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_4b29deb17e536fb1b4654d8c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-living-motion-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 43478,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-presentation-living-motion-v1-primary-35521766492-1",
+        "candidateSha": "44a492f7a5b18a3011a91fb11e21d0d831206565"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 400141,
+        "candidateMs": 344818,
+        "qaMs": 60
+      },
+      "evidenceRefs": [
+        "actions-run:35521766492",
+        "reservation-id:35521766492:1",
+        "incremental-qa-hash:3d5c7e2d0d84b6092d12007426e697aee125ec6635ed9fa29c26137066c05914"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_5619d5d78fe52b41b33118e0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-living-motion-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+        "variant": "speculative-1",
+        "goal": "[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 43478,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-presentation-living-motion-v1-speculative-1-35521766492-1",
+        "candidateSha": "74e5b2bd767ac73859be693f90c9b1756ee793fd"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 192525,
+        "candidateMs": 144905,
+        "qaMs": 59
+      },
+      "evidenceRefs": [
+        "actions-run:35521766492",
+        "reservation-id:35521766492:1",
+        "incremental-qa-hash:3d5c7e2d0d84b6092d12007426e697aee125ec6635ed9fa29c26137066c05914"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_594fddb38285e3ce1fee3483",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-living-motion-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+        "variant": "speculative-2",
+        "goal": "[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 43478,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-presentation-living-motion-v1-speculative-2-35521766492-1",
+        "candidateSha": "8d468d4fb96014bb158e01b9eb7be0f958edf177"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 295035,
+        "candidateMs": 260571,
+        "qaMs": 74
+      },
+      "evidenceRefs": [
+        "actions-run:35521766492",
+        "reservation-id:35521766492:1",
+        "incremental-qa-hash:3d5c7e2d0d84b6092d12007426e697aee125ec6635ed9fa29c26137066c05914"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_ca9e8a184a353c58054c72d4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 엘도리아 연대기\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-06442afbc3 -> #a0 | mechanic=action-primary | family=COMBAT | confidence=HIGH | evidence=existing-scope-binding,nearby-family:COMBAT,shared:corefun,existing-mechanic,gam"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|NO_OP",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "NO_OP",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 337467,
+        "candidateMs": 292186,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35521766492",
+        "reservation-id:35521766492:1",
+        "source-generation-failure:NO_OP"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_e0225474add0ea6185d8631c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 엘도리아 연대기\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-06442afbc3 -> #a0 | mechanic=action-primary | family=COMBAT | confidence=HIGH | evidence=existing-scope-binding,nearby-family:COMBAT,shared:corefun,existing-mechanic,gam"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|NO_OP",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "NO_OP",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 307659,
+        "candidateMs": 266080,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35521766492",
+        "reservation-id:35521766492:1",
+        "source-generation-failure:NO_OP"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_cb97d519c7959378e9e06ba8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 엘도리아 연대기\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-06442afbc3 -> #a0 | mechanic=action-primary | family=COMBAT | confidence=HIGH | evidence=existing-scope-binding,nearby-family:COMBAT,shared:corefun,existing-mechanic,gam"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|NO_OP",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "NO_OP",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 305287,
+        "candidateMs": 270967,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35521766492",
+        "reservation-id:35521766492:1",
+        "source-generation-failure:NO_OP"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 9,
+    "added": 6,
     "refreshed": 0,
-    "total": 1009,
-    "verified": 161,
-    "failures": 638
+    "total": 1015,
+    "verified": 162,
+    "failures": 641
   }
 }
