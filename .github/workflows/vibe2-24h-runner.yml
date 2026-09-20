@@ -582,7 +582,7 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: recovery-fast
-      lane_max: '1'
+      lane_max: '5'
     permissions:
       contents: write
       actions: write
