@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
+import { assignSecurityRecovery, PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION } from '../tools/company-system-ai-queue.mjs';
 import { securityRepairEvidence } from '../tools/company-recovery-queue.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
@@ -158,4 +159,51 @@ test('ordinary supervised recovery without a matching task keeps existing queued
   });
   assert.equal(result.recovery.tasks[0].status,'queued');
   assert.equal(result.dispatched.length,0);
+});
+
+
+test('Primary AI security recovery assignment requires exact explicit approval and preserves supervised boundaries',()=>{
+  const recovery={tasks:[{
+    id:'recovery-security-123',
+    status:'blocked-primary-ai-assignment-required',
+    sourceQueue:'security',
+    sourceTaskId:'security-run-123',
+    recoveryOwner:'SYSTEM_AI',
+    evidence:[
+      'security-run:123',
+      'security-repair-file:.github/workflows/example.yml',
+      'security-repair-file:tools/security-fix.mjs',
+      'security-repair-file:web-games/forbidden/index.html'
+    ]
+  }]};
+  assert.throws(()=>assignSecurityRecovery({tasks:[]},recovery,{recoveryId:'recovery-security-123',decision:'APPROVE'}),/EXPLICIT_APPROVAL_REQUIRED/);
+  const result=assignSecurityRecovery({tasks:[]},recovery,{
+    recoveryId:'recovery-security-123',
+    decision:PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION
+  });
+  assert.equal(result.task.id,'security-run-123');
+  assert.equal(result.task.status,'queued');
+  assert.equal(result.task.priority,'critical');
+  assert.deepEqual(result.task.responsibleFiles,['.github/workflows/example.yml','tools/security-fix.mjs']);
+  assert.equal(result.task.supervisorReviewRequired,true);
+  assert.ok(result.task.evidence.includes('primary-ai-security-recovery-assignment:APPROVE'));
+  assert.equal(result.recovery.tasks[0].status,'queued');
+  assert.ok(result.recovery.tasks[0].evidence.includes('system-ai-assignment:security-run-123'));
+
+  const dispatched=dispatchRecovery({
+    recoveryInput:result.recovery,
+    gameQueueInput:{tasks:[]},
+    systemAiQueueInput:result.queue,
+    route:'system-ai'
+  });
+  assert.equal(dispatched.recovery.tasks[0].status,'dispatched');
+  assert.equal(dispatched.systemAi.tasks[0].status,'queued');
+  assert.ok(dispatched.systemAi.tasks[0].evidence.includes('recovery-queue:recovery-security-123'));
+});
+
+test('Primary AI security recovery assignment is never invoked automatically by system or security workflows',()=>{
+  assert.doesNotMatch(workflow,/--command=assign-security-recovery/);
+  assert.doesNotMatch(securityWorkflow,/--command=assign-security-recovery/);
+  assert.match(queue,/PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE/);
+  assert.match(queue,/SYSTEM_AI_SECURITY_RECOVERY_EXPLICIT_APPROVAL_REQUIRED/);
 });
