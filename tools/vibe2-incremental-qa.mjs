@@ -206,7 +206,7 @@ function presentationSourceText(root, changed = []) {
   for(const relative of changed){
     const file=assertInside(root,relative);
     if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
-    if(!/\.(?:html?|js|mjs|cjs|css|svg|cs|gd|cpp|cc|cxx|h|hpp)$/i.test(relative))continue;
+    if(!/\.(?:html?|js|mjs|cjs|css|svg|cs|lua|luau|gd|cpp|cc|cxx|h|hpp)$/i.test(relative))continue;
     rows.push(fs.readFileSync(file,'utf8'));
   }
   return rows.join('\n\n');
@@ -247,10 +247,10 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('CAMERA_OWNER',/(?:camera|viewport|viewOffset|screenShake|cameraShake)/i.test(text));
     require('SMOOTH_CAMERA_RESPONSE',/(?:shake|zoom|lerp|ease|damp|offset|scale|follow)/i.test(text));
   }else if(pass==='POLISH_MOBILE'){
-    require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick)/i.test(text));
-    require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Update\s*\(|_process\s*\()/i.test(text));
-    require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|ttl|duration)/i.test(text));
-    require('PRESENTATION_CONTRACT_MARKER',/data-presentation-quality-version=["']1["']/i.test(text));
+    require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick|UserInputService|ContextActionService|TouchEnabled|Input\.touch|Touchscreen|InputSystem)/i.test(text));
+    require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Heartbeat|Update\s*\(|_process\s*\()/i.test(text));
+    require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|Destroy\s*\(|Debris|ttl|duration)/i.test(text));
+    require('PRESENTATION_CONTRACT_MARKER',/(?:data-presentation-quality-version=["']1["']|PresentationQualityVersion\s*=\s*1|PRESENTATION_QUALITY_VERSION\s*=\s*1)/i.test(text));
   }
   if(issues.length)throw new Error(`PRESENTATION_STATIC_QA_FAILED:${pass}:${issues.join('|')}`);
   return{
