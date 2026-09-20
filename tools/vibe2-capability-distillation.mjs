@@ -4,7 +4,7 @@
 // 원칙: trace 자체는 학습 정답이 아니며, full regression/검증된 실패 원인 전에는 재사용 권한이 없다.
 
 import crypto from 'node:crypto';
-import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication } from '../assets/vibe-experience-memory.js';
+import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication, recordVibeCapabilityBenchmark } from '../assets/vibe-experience-memory.js';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -357,6 +357,222 @@ export function applyCapabilityApplicationReviews(memoryInput={},reviews=[]){
     automaticDeprecation:false
   });
 }
+export function buildCapabilityGeneralizationBenchmarkContract({retrieval={},task={},variant='primary'}={}){
+  const normalizedVariant=clean(variant)||'primary';
+  const role=normalizedVariant==='speculative-1'?'control':normalizedVariant==='speculative-2'?'challenger':null;
+  const records=Array.isArray(retrieval?.records)?retrieval.records:[];
+  if(!role)return Object.freeze({enabled:false,reason:'VARIANT_NOT_BENCHMARK_PAIR',role:null,authorityExpanded:false});
+  const taskGameId=clean(task.gameId);
+  const problemFingerprint='gbench_problem_'+hashObject({
+    gameId:taskGameId,
+    target:clean(task.target||task.engine).toLowerCase(),
+    goal:clean(task.goal||task.problem),
+    responsibleFiles:safeArray(task.responsibleFiles,12).sort()
+  }).slice(0,24);
+  const candidate=records.find(record=>{
+    const lifecycle=record?.capabilityLifecycle||{};
+    const crossGame=clean(record?.gameId)&&clean(record?.gameId)!==taskGameId;
+    const keywordRelevant=(record?.reasons||[]).some(reason=>clean(reason).startsWith('keyword-overlap:'));
+    const prior=(record?.capabilityBenchmarks||[]).some(row=>clean(row?.problemFingerprint)===problemFingerprint);
+    return (lifecycle.generalizationCandidate===true||clean(lifecycle.state)==='GENERALIZATION_CANDIDATE')
+      &&crossGame
+      &&keywordRelevant
+      &&Number(lifecycle.contradictionCount||0)===0
+      &&!prior;
+  });
+  if(!candidate)return Object.freeze({enabled:false,reason:'NO_ELIGIBLE_GENERALIZATION_CANDIDATE',role:null,problemFingerprint,authorityExpanded:false});
+  const targetCapabilityId=clean(candidate.id);
+  const nonTargetCapabilityIds=records.map(record=>clean(record?.id)).filter(id=>id&&id!==targetCapabilityId);
+  const workKey=clean(task?.compiledWorkContract?.workKey);
+  const pairId='gpair_'+hashObject([targetCapabilityId,clean(task.id),workKey,problemFingerprint].join('|')).slice(0,24);
+  const contextHash='gctx_'+hashObject({
+    taskId:clean(task.id),
+    workKey,
+    gameId:taskGameId,
+    target:clean(task.target||task.engine).toLowerCase(),
+    responsibleFiles:safeArray(task.responsibleFiles,12).sort(),
+    nonTargetCapabilityIds
+  }).slice(0,24);
+  return Object.freeze({
+    version:1,
+    enabled:true,
+    pairId,
+    role,
+    targetCapabilityId,
+    sourceCapabilityGameId:clean(candidate.gameId)||null,
+    taskId:clean(task.id)||null,
+    workKey:workKey||null,
+    gameId:taskGameId||null,
+    engine:clean(task.target||task.engine).toLowerCase()||null,
+    problemFingerprint,
+    contextHash,
+    unseenGame:true,
+    unseenProblem:true,
+    pairedControlChallenger:true,
+    sameSourceBaselineRequired:true,
+    sameModelGenerationBudgetRequired:true,
+    sameWritableScopeRequired:true,
+    sameQaContractRequired:true,
+    nonTargetContextFixed:true,
+    targetCapabilityOnlyGuidanceDelta:true,
+    productionWorkPreemptsBenchmark:true,
+    newExecutionLane:false,
+    newWorkerCreated:false,
+    queueMutationAllowed:false,
+    waveReorderAllowed:false,
+    automaticPromotionAllowed:false,
+    authorityExpanded:false
+  });
+}
+
+export function applyCapabilityGeneralizationBenchmarkToRetrieval(retrieval={},benchmark={}){
+  const records=Array.isArray(retrieval?.records)?retrieval.records:[];
+  if(benchmark?.enabled!==true)return retrieval;
+  const target=clean(benchmark.targetCapabilityId);
+  const next=clean(benchmark.role)==='control'
+    ?records.filter(record=>clean(record?.id)!==target)
+    :records;
+  return Object.freeze({
+    ...retrieval,
+    records:Object.freeze([...next]),
+    count:next.length,
+    benchmarkPairId:clean(benchmark.pairId)||null,
+    benchmarkRole:clean(benchmark.role)||null,
+    benchmarkTargetCapabilityId:target||null,
+    targetCapabilityWithheld:clean(benchmark.role)==='control',
+    authorityExpanded:false
+  });
+}
+
+export function capabilityGeneralizationBenchmarkGuidance(benchmark={}){
+  if(benchmark?.enabled!==true)return'';
+  return [
+    '[CONTROLLED CAPABILITY GENERALIZATION PAIR]',
+    'Keep the task, source baseline, writable scope, model budget, QA contract, protected semantics, and all non-target context fixed.',
+    'Do not widen scope or change gameplay/save semantics for the benchmark.',
+    'The paired variants differ only by whether one already-verified target capability is present in verified capability guidance.'
+  ].join('\n');
+}
+
+export function buildCapabilityGeneralizationBenchmarkReviews({task={},results=[],verifiedSampleIds=new Set()}={}){
+  const rows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
+  const groups=new Map();
+  for(const row of rows){
+    const contract=row?.capabilityGeneralizationBenchmark&&typeof row.capabilityGeneralizationBenchmark==='object'?row.capabilityGeneralizationBenchmark:null;
+    if(contract?.enabled!==true||!clean(contract.pairId)||!clean(contract.targetCapabilityId))continue;
+    const key=clean(contract.pairId);
+    const group=groups.get(key)||{pairId:key,control:null,challenger:null};
+    if(clean(contract.role)==='control')group.control=row;
+    if(clean(contract.role)==='challenger')group.challenger=row;
+    groups.set(key,group);
+  }
+  const reviews=[];
+  const sampleId=row=>[
+    clean(row?.taskId),
+    clean(row?.reservationId||row?.metrics?.reservationId),
+    clean(row?.variant)||'primary',
+    clean(row?.candidateBranch)
+  ].filter(Boolean).join('|');
+  const workerPass=row=>{
+    const roles=normalizeRoleResults(row?.roleResults||{});
+    return upper(row?.outcome)==='PASS'&&roles.test==='PASS'&&roles.performance==='PASS';
+  };
+  for(const group of groups.values()){
+    const control=group.control,challenger=group.challenger;
+    if(!control||!challenger)continue;
+    const cc=control.capabilityGeneralizationBenchmark||{},ch=challenger.capabilityGeneralizationBenchmark||{};
+    const targetCapabilityId=clean(ch.targetCapabilityId);
+    if(!targetCapabilityId||targetCapabilityId!==clean(cc.targetCapabilityId))continue;
+    const controlFinalVerified=verifiedSampleIds.has(sampleId(control));
+    const challengerFinalVerified=verifiedSampleIds.has(sampleId(challenger));
+    const controlWorkerPass=workerPass(control);
+    const challengerWorkerPass=workerPass(challenger);
+    const sameSourceBaseline=Boolean(clean(control.baseMainSha)&&clean(control.baseMainSha)===clean(challenger.baseMainSha));
+    const sameContext=Boolean(clean(cc.contextHash)&&clean(cc.contextHash)===clean(ch.contextHash));
+    const invariantPair=sameSourceBaseline
+      &&sameContext
+      &&cc.sameModelGenerationBudgetRequired===true&&ch.sameModelGenerationBudgetRequired===true
+      &&cc.sameWritableScopeRequired===true&&ch.sameWritableScopeRequired===true
+      &&cc.sameQaContractRequired===true&&ch.sameQaContractRequired===true
+      &&cc.nonTargetContextFixed===true&&ch.nonTargetContextFixed===true
+      &&cc.targetCapabilityOnlyGuidanceDelta===true&&ch.targetCapabilityOnlyGuidanceDelta===true;
+    const capabilitySpecificSupport=invariantPair&&challengerFinalVerified&&!controlWorkerPass;
+    const capabilitySpecificContradiction=invariantPair&&controlFinalVerified&&!challengerWorkerPass;
+    const inconclusive=!capabilitySpecificSupport&&!capabilitySpecificContradiction;
+    const benchmarkId='gbench_'+hashObject([
+      group.pairId,targetCapabilityId,clean(ch.gameId||task.gameId),clean(ch.problemFingerprint)
+    ].join('|')).slice(0,24);
+    reviews.push(Object.freeze({
+      version:1,
+      benchmarkId,
+      pairId:group.pairId,
+      capabilityId:targetCapabilityId,
+      taskId:clean(ch.taskId||task.id)||null,
+      workKey:clean(ch.workKey)||null,
+      gameId:clean(ch.gameId||task.gameId)||null,
+      engine:clean(ch.engine||task.target||task.engine).toLowerCase()||null,
+      problemFingerprint:clean(ch.problemFingerprint)||null,
+      sourceCapabilityGameId:clean(ch.sourceCapabilityGameId)||null,
+      unseenGame:ch.unseenGame===true&&cc.unseenGame===true,
+      unseenProblem:ch.unseenProblem===true&&cc.unseenProblem===true,
+      pairedControlChallenger:true,
+      sameSourceBaseline,
+      sameModelGenerationBudget:invariantPair,
+      sameWritableScope:invariantPair,
+      sameQaContract:invariantPair,
+      nonTargetContextFixed:sameContext&&invariantPair,
+      targetCapabilityOnlyGuidanceDelta:invariantPair,
+      controlFreshQaPass:controlFinalVerified&&controlWorkerPass,
+      challengerFreshQaPass:challengerFinalVerified&&challengerWorkerPass,
+      capabilitySpecificSupport,
+      capabilitySpecificContradiction,
+      inconclusive,
+      evidence:Object.freeze(unique([
+        sameSourceBaseline?'generalization-same-source-baseline:PASS':'',
+        sameContext?'generalization-nontarget-context:PASS':'',
+        controlFinalVerified?'generalization-control-fan-in:PASS':'',
+        challengerFinalVerified?'generalization-challenger-fan-in:PASS':'',
+        capabilitySpecificSupport?'capability-specific-support:'+targetCapabilityId:'',
+        capabilitySpecificContradiction?'capability-specific-contradiction:'+targetCapabilityId:'',
+        'generalization-pair:'+group.pairId
+      ]).filter(Boolean)),
+      observedAt:null,
+      rawCodeStored:false,
+      rawModelOutputStored:false,
+      hiddenChainOfThoughtStored:false,
+      authorityExpanded:false
+    }));
+  }
+  return Object.freeze(reviews);
+}
+
+export function applyCapabilityGeneralizationBenchmarkReviews(memoryInput={},reviews=[]){
+  let memory=createVibeExperienceMemory(memoryInput);
+  let applied=0,duplicates=0,missing=0;
+  const results=[];
+  for(const review of Array.isArray(reviews)?reviews:[]){
+    const result=recordVibeCapabilityBenchmark(memory,review);
+    results.push(Object.freeze({
+      capabilityId:clean(review?.capabilityId)||null,
+      benchmarkId:clean(review?.benchmarkId)||null,
+      updated:result.updated===true,
+      duplicate:result.duplicate===true,
+      reason:result.reason
+    }));
+    if(result.updated){applied+=1;memory=result.memory;}
+    else if(result.duplicate)duplicates+=1;
+    else missing+=1;
+  }
+  return Object.freeze({
+    memory,applied,duplicates,missing,
+    results:Object.freeze(results),
+    authorityExpanded:false,
+    automaticPromotion:false,
+    automaticDeprecation:false,
+    automaticPolicyPromotion:false
+  });
+}
+
 export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5}={}){
   const memory=createVibeExperienceMemory(experienceInput);
   const records=memory.records.filter(record=>
@@ -401,8 +617,11 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     confidence:Number(record.capabilityConfidence??record.confidence??0),
     genericConfidence:Number(record.confidence||0),
     capabilityLifecycle:record.capabilityLifecycle||null,
+    capabilityBenchmarks:Object.freeze([...(record.capabilityBenchmarks||[])]),
     applicationCount:Number(record.capabilityLifecycle?.applicationCount||0),
     independentPassCount:Number(record.capabilityLifecycle?.independentPassCount||0),
+    independentUnseenPassCount:Number(record.capabilityLifecycle?.independentUnseenPassCount||0),
+    distinctUnseenGameCount:Number(record.capabilityLifecycle?.distinctUnseenGameCount||0),
     relevance:Number(score||0),
     reasons:Object.freeze([...(reasons||[])])
   }));
@@ -441,6 +660,8 @@ export function verifiedCapabilityGuidance(retrieval={}){
       record.capabilityLifecycle?.state?`lifecycle=${clean(record.capabilityLifecycle.state)}`:'',
       `applications=${Number(record.applicationCount||0)}`,
       `independentPasses=${Number(record.independentPassCount||0)}`,
+      `unseenPasses=${Number(record.independentUnseenPassCount||0)}`,
+      `unseenGames=${Number(record.distinctUnseenGameCount||0)}`,
       `confidence=${Number(record.confidence||0).toFixed(4)}`,
       `relevance=${Number(record.relevance||0).toFixed(2)}`
     ].filter(Boolean);
