@@ -1,5 +1,5 @@
 {
-  "version": 49,
+  "version": 50,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1097,7 +1097,7 @@
     }
   },
   "capabilityDistillationTopology": {
-    "version": 8,
+    "version": 9,
     "centralContract": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
     "flow": [
       "OBSERVABLE_CODING_TRACE_CAPTURE",
@@ -1289,7 +1289,7 @@
       "completedBy": "phase3"
     },
     "phase3": {
-      "state": "MERGED_MAIN_RUNTIME_FEEDBACK_PENDING",
+      "state": "RUNTIME_FEEDBACK_VERIFIED_GENERALIZATION_BENCHMARK_GATED",
       "sourcePr": 1909,
       "mergedCommit": "347f96cdb95cb76dc81a57ea776139076404b73b",
       "workOrderApplicationBinding": "tools/vibe2-continuous-runner.mjs::capabilityApplicationContract",
@@ -1355,13 +1355,48 @@
         }
       },
       "productionObservation": {
-        "state": "RUNTIME_FEEDBACK_PENDING",
+        "state": "REAL_WORK_ORDER_RUNTIME_VERIFIED",
         "runtimeRef": "vibe2-unreal-core",
-        "experienceRecordCount": 20,
-        "capabilityApplicationRecordCount": 0,
-        "runtimeEvidenceObserved": false
+        "observedRunId": 35491605325,
+        "runConclusion": "SUCCESS",
+        "workerResultCount": 18,
+        "fanInReviewPass": true,
+        "fanInReviewedTaskCount": 5,
+        "releaseCandidateCount": 5,
+        "capabilityApplicationReviews": 90,
+        "capabilityApplicationsApplied": 90,
+        "capabilityApplicationDuplicates": 0,
+        "capabilityApplicationMissing": 0,
+        "experienceRecordCount": 25,
+        "lifecycleRecordCount": 9,
+        "applicationCount": 90,
+        "freshQaPassApplications": 25,
+        "observedNotFinalApplications": 50,
+        "taskFailedUnattributedApplications": 15,
+        "distinctApplicationTasks": 6,
+        "distinctFreshQaPassTasks": 5,
+        "applicationObservedRecords": 4,
+        "repeatedApplicationVerifiedRecords": 5,
+        "maxIndependentPasses": 5,
+        "maxCrossGameVerifiedApplications": 5,
+        "maxCapabilityConfidence": 0.8571,
+        "generalizationCandidates": 5,
+        "strongGeneralizationVerified": 0,
+        "contradictions": 0,
+        "unrelatedFailurePenaltyApplied": false,
+        "runtimeEvidenceObserved": true
       },
-      "nextGate": "OBSERVE_PHASE_3_CAPABILITY_APPLICATION_EVIDENCE_IN_REAL_WORK_ORDER_THEN_VERIFY_LIFECYCLE_WITHOUT_AUTHORITY_EXPANSION"
+      "nextGate": "RUN_UNSEEN_PROBLEM_GENERALIZATION_BENCHMARK_BEFORE_ANY_STRONG_GENERALIZATION_CLAIM_WITHOUT_AUTHORITY_EXPANSION",
+      "verifiedRuntimeProperties": [
+        "EXACT_INJECTED_CAPABILITY_IDS_BOUND_TO_WORKER_RESULT",
+        "FAN_IN_FRESH_QA_APPLICATION_EVIDENCE_PERSISTED",
+        "TASK_FAILURE_REMAINS_UNATTRIBUTED_WITHOUT_CAPABILITY_SPECIFIC_EVIDENCE",
+        "REPEATED_INDEPENDENT_APPLICATIONS_RAISE_CAPABILITY_CONFIDENCE",
+        "CROSS_GAME_APPLICATIONS_RECORDED",
+        "APPLICATION_ID_DEDUPLICATION_ACTIVE",
+        "NO_RAW_CODE_MODEL_OUTPUT_OR_HIDDEN_CHAIN_OF_THOUGHT_STORED",
+        "NO_EXECUTION_AUTHORITY_EXPANSION"
+      ]
     }
   },
   "functionalIdentityPhilosophyTopology": {
