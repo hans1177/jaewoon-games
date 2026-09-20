@@ -50,7 +50,7 @@ function releaseCandidateFromEvidence(evidence=new Set()){
   return branches.at(-1)||null;
 }
 
-export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
+export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[],microFanIn=false}={}){
   const resultRows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
   const ids=new Set([...(taskIds||[]).map(clean),...resultRows.map(row=>clean(row?.taskId))].filter(Boolean));
   const reviewed=[];
@@ -67,6 +67,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     if(!ids.has(clean(task.id)))return task;
     if(!reviewReady(task)){skipped.push({taskId:task.id,status:clean(task.status),blocker:clean(task.blocker)||null});return task;}
     const evidence=new Set((task.evidence||[]).map(clean).filter(Boolean));
+    const previouslyMicroReviewed=evidence.has('atomic-micro-fanin-review:PASS');
     evidence.add('role-result:regression:PASS');
     const missing=REQUIRED_ROLES.filter(role=>!rolePass(evidence,role));
     const candidateBranch=releaseCandidateFromEvidence(evidence);
@@ -159,10 +160,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
+      if(microFanIn)evidence.add('atomic-micro-fanin-review:PASS');
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
-      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute});
-      releaseCandidates.push({taskId:clean(task.id),candidateBranch});
+      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute,microFanIn:microFanIn===true});
+      if(!previouslyMicroReviewed)releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
   });
@@ -240,14 +242,15 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   const queue=readJson(queueFile,{tasks:[]});
   const payload=readJson(inputFile,{results:[]});
   const results=resultsFromPayload(payload);
-  const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload)});
+  const microFanIn=payload?.microFanIn===true;
+  const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload),microFanIn});
   writeJson(queueFile,result.queue);
   let codingTraceLedger=null;
   if(clean(traceLedgerFile)){
     codingTraceLedger=mergeCodingTraceLedger(readJson(traceLedgerFile,{traces:[]}),result.codingTraces);
     writeJson(traceLedgerFile,codingTraceLedger);
   }
-  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,microFanIn,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
   return{...result,codingTraceLedger};
 }
 
