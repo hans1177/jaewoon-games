@@ -10757,6 +10757,71 @@
       "유료 광고를 쓰기 전에 무료/유기적 채널에서 어떤 크리에이티브와 메시지가 반응하는가?",
       "유저 획득 비용이 생기면 유지율과 장기 가치가 이를 감당하는가?",
       "매출을 올리려다 리텐션·신뢰·게임 재미를 해치고 있지 않은가?"
-    ]
+    ],
+    "departmentToVibeDecisionBoundary": {
+      "version": 1,
+      "departmentAuthority": "RESEARCH_ADVISORY_EVIDENCE_ONLY",
+      "departmentMay": [
+        "COLLECT_PUBLIC_AND_INTERNAL_ALLOWED_DATA",
+        "ANALYZE_USER_ACQUISITION_RETENTION_MONETIZATION_AND_TRENDS",
+        "FORM_HYPOTHESES",
+        "PROPOSE_OPTIONS",
+        "ESTIMATE_BENEFIT_COST_RISK_AND_TIMING",
+        "PROVIDE_SUPPORTING_AND_CONTRADICTING_EVIDENCE",
+        "RECOMMEND_MEASUREMENT_AND_STOP_CONDITIONS"
+      ],
+      "departmentMayNot": [
+        "FORCE_IMPLEMENTATION",
+        "AUTO_ACCEPT_OWN_RECOMMENDATION",
+        "CHANGE_GAME_BALANCE_OR_MONETIZATION_DIRECTLY_WITHOUT_VIBE_ACCEPTED_SCOPE",
+        "DECIDE_FINAL_APPLICATION_TIMING",
+        "COMMIT_PAID_SPEND",
+        "TREAT_WEAK_OR_MISSING_DATA_AS_FACT"
+      ],
+      "requiredHandoffToVibe": [
+        "RESEARCH_QUESTION",
+        "DATA_SOURCES_AND_DATES",
+        "OBSERVED_FACTS",
+        "INFERENCES_SEPARATED_FROM_FACTS",
+        "UNCERTAINTIES_AND_MISSING_DATA",
+        "OPTIONS",
+        "EXPECTED_PLAYER_GROWTH_OR_REVENUE_EFFECT",
+        "RISKS_AND_NEGATIVE_SIGNALS",
+        "SUGGESTED_SCOPE",
+        "SUGGESTED_TIMING",
+        "MEASUREMENT_PLAN",
+        "STOP_OR_ROLLBACK_CONDITION"
+      ],
+      "vibeAuthority": [
+        "ACCEPT",
+        "PARTIAL_ACCEPT",
+        "DEFER",
+        "REJECT",
+        "REQUEST_MORE_RESEARCH",
+        "RUN_LIMITED_EXPERIMENT",
+        "CHOOSE_APPLICATION_SCOPE",
+        "CHOOSE_APPLICATION_TIMING",
+        "CHOOSE_PRIORITY",
+        "RECLASSIFY_HOTFIX_MINOR_OR_MAJOR"
+      ],
+      "vibeDecisionUsesEvidenceNotDepartmentAuthority": true,
+      "weakEvidenceDefault": "REQUEST_MORE_RESEARCH_OR_DEFER",
+      "departmentRecommendationNeverEqualsExecutionOrder": true
+    },
+    "dataResearchDiscipline": {
+      "version": 1,
+      "factsInferenceHypothesisMustBeSeparated": true,
+      "sourceDateRequiredForCurrentTrendClaims": true,
+      "currentPlatformDataPreferred": true,
+      "gameSpecificObservedDataPreferredOverGenericBenchmarks": true,
+      "benchmarkPopulationAndContextRequired": true,
+      "sampleSizeAndSelectionBiasMustBeConsidered": true,
+      "noUsersMeansNoPlayerBehaviorClaim": true,
+      "noPurchasesMeansNoConversionOrRevenueOptimizationClaim": true,
+      "noRetentionDataMeansRetentionMustRemainUnverified": true,
+      "missingDataCanGenerateResearchTask": true,
+      "contradictoryEvidenceMustBeShownToVibe": true,
+      "cherryPickingPositiveEvidenceForbidden": true
+    }
   }
 }
