@@ -590,6 +590,13 @@ jobs:
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          PHASE4_ROLE: ${{ needs.inspect.outputs.phase4_role }}
+          PHASE4_CAPABILITY_ID: ${{ needs.inspect.outputs.phase4_capability_id }}
+          PHASE4_CASE_ID: ${{ needs.inspect.outputs.phase4_case_id }}
+          PHASE4_PAIR_ID: ${{ needs.inspect.outputs.phase4_pair_id }}
+          PHASE4_UNSEEN_PROBLEM_FINGERPRINT: ${{ needs.inspect.outputs.phase4_unseen_problem_fingerprint }}
         shell: bash
         run: |
           set -euo pipefail
@@ -618,10 +625,36 @@ jobs:
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,actions-run-${GITHUB_RUN_ID}"
+              if [ "$PHASE4_ROLE" = CHALLENGER ] && [ -n "$PHASE4_CAPABILITY_ID" ] && [ -n "$PHASE4_CASE_ID" ] && [ -n "$PHASE4_PAIR_ID" ] && [ -n "$PHASE4_UNSEEN_PROBLEM_FINGERPRINT" ]; then
+                PHASE4_NATIVE_PLATFORM=ROBLOX node <<'NODE' > /tmp/vibe2-phase4-native-completion.json
+const payload={
+  version:1,
+  capabilityBenchmarkNativeCompletions:[{
+    capabilityId:process.env.PHASE4_CAPABILITY_ID,
+    caseId:process.env.PHASE4_CASE_ID,
+    pairId:process.env.PHASE4_PAIR_ID,
+    gameId:process.env.GAME_ID,
+    engine:'roblox',
+    unseenProblemFingerprint:process.env.PHASE4_UNSEEN_PROBLEM_FINGERPRINT,
+    nativeRuntimeVerified:true,
+    evidence:[
+      'phase4-native-runtime:ROBLOX_OPEN_CLOUD_PUBLISHED',
+      'actions-run:'+process.env.GITHUB_RUN_ID,
+      'candidate-sha:'+process.env.CANDIDATE_SHA
+    ]
+  }]
+};
+process.stdout.write(JSON.stringify(payload,null,2)+'\n');
+NODE
+                node /tmp/vibe2-main-contract/tools/vibe2-experience-control.mjs \
+                  --memory="$PWD/.vibe2/experience.json" \
+                  --batch-review=/tmp/vibe2-phase4-native-completion.json | tee /tmp/vibe2-phase4-native-completion.log
+              fi
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
             git add .vibe2/queue.json
+            test ! -f .vibe2/experience.json || git add .vibe2/experience.json
             if git diff --cached --quiet; then
               settled=1
               break
