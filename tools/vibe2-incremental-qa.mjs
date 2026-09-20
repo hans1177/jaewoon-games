@@ -222,6 +222,7 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
   const contract=presentationContract(data);
   if(!contract)return{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false};
   const pass=clean(contract.pass).toUpperCase();
+  const target=clean(contract.target||data?.target).toLowerCase();
   const text=presentationSourceText(root,changed);
   if(!text.trim())throw new Error(`PRESENTATION_QA_SOURCE_REQUIRED:${pass}`);
   const checks=[],issues=[];
@@ -229,10 +230,47 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
   if(pass==='ASSET_ADAPTATION'){
     require('STYLE_SURFACE',/(?:fillStyle|strokeStyle|classList|style\.|--[\w-]+\s*:|background|linear-gradient|radial-gradient|material|texture|sprite)/i.test(text));
     require('RENDER_OR_VISUAL_OWNER',/(?:canvas|getContext\(|render|draw|sprite|mesh|visual|style)/i.test(text));
+    if(target==='unity'||target==='roblox'){
+      const nativeComposition=target==='unity'
+        ?patternHits(text,[
+          /GameObject\.CreatePrimitive\s*\(/i,
+          /new\s+GameObject\s*\(/i,
+          /(?:Instantiate|Resources\.Load|Addressables\.)\s*[<(]/i,
+          /\b(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer|SpriteRenderer)\b/i,
+          /transform\.(?:SetParent|localScale|localPosition|localRotation)|\.transform\./i,
+          /\b(?:Material|Shader|Renderer|Light)\b/i
+        ])
+        :patternHits(text,[
+          /Instance\.new\s*\(\s*["'](?:Part|MeshPart|Model|Attachment|Bone)["']\s*\)/i,
+          /\b(?:MeshPart|SpecialMesh|SurfaceAppearance|TextureID|MeshId)\b/i,
+          /\b(?:Clone|FindFirstChild|WaitForChild)\s*\(/i,
+          /\.(?:Parent|CFrame|Size|Position|Orientation)\s*=/i,
+          /\b(?:WeldConstraint|Motor6D|Attachment|Bone)\b/i,
+          /\b(?:Material|Color3|BrickColor|Lighting)\b/i
+        ]);
+      const identityDomains=patternHits(text,[
+        /\b(?:head|torso|body|arm|leg|hand|foot|character|player|enemy|monster|npc|creature)\b/i,
+        /\b(?:weapon|sword|blade|spear|axe|hammer|bow|staff|shield|gun|claw|fang)\b/i,
+        /\b(?:terrain|ground|tree|rock|plant|building|environment|sky|fog|lighting|biome|forest|village|dungeon)\b/i,
+        /\b(?:palette|style.?lock|material|shader|outline|roughness|metallic|emission|color3|gradient)\b|Color\s*\(/i
+      ]);
+      const singlePrimitiveOnly=target==='unity'
+        ?(text.match(/GameObject\.CreatePrimitive\s*\(/gi)||[]).length<=1&&!/(?:new\s+GameObject|Instantiate\s*\(|MeshFilter|SkinnedMeshRenderer|SetParent|sharedMesh)/i.test(text)
+        :(text.match(/Instance\.new\s*\(\s*["']Part["']\s*\)/gi)||[]).length<=1&&!/(?:MeshPart|SpecialMesh|Model["']|Attachment|WeldConstraint|Motor6D|SurfaceAppearance|Clone\s*\()/i.test(text);
+      require('NATIVE_COMPOSITE_FORM',nativeComposition>=3);
+      require('GAME_VISUAL_IDENTITY_DOMAINS',identityDomains>=3);
+      require('NO_SINGLE_PRIMITIVE_PLACEHOLDER',!singlePrimitiveOnly);
+    }
   }else if(pass==='LIVING_MOTION'){
     require('CONTINUOUS_UPDATE',/(?:requestAnimationFrame|setInterval|Update\s*\(|_process\s*\(|Heartbeat|RenderStepped)/i.test(text));
     require('SMOOTH_INTERPOLATION',/(?:lerp|damp|spring|ease|interpol|Math\.sin|smoothstep|velocity|accel|decel)/i.test(text));
     require('MOTION_STATE',/(?:idle|walk|run|speed|velocity|rotation|turn|breath|bob|sway)/i.test(text));
+    if(target==='unity'||target==='roblox'){
+      require('NATIVE_ACTOR_MOTION_OWNER',target==='unity'
+        ?/(?:Animator|AnimationClip|SkinnedMeshRenderer|Transform|Bone|Quaternion|localRotation|localPosition)/i.test(text)
+        :/(?:Animator|AnimationTrack|Motor6D|Bone|CFrame|Transform|TweenService)/i.test(text));
+      require('SECONDARY_MOTION_SIGNAL',/(?:weapon|arm|hand|head|hair|tail|wing|cloak|cape|accessory|ornament)[\s\S]{0,800}(?:lerp|damp|spring|sway|bob|follow|lag|rotation|cframe|quaternion)|(?:lerp|damp|spring|sway|bob|follow|lag)[\s\S]{0,800}(?:weapon|arm|hand|head|hair|tail|wing|cloak|cape|accessory|ornament)/i.test(text));
+    }
   }else if(pass==='ANIMATION_FEEL'){
     const hit=patternHits(text,[/anticipat/i,/hit.?stop|freeze.?frame/i,/recoil/i,/recover(?:y)?/i,/overshoot|settle/i,/smear|trail|afterimage/i,/squash|stretch/i]);
     require('IMPACT_SEQUENCE_SIGNALS',hit>=2);
