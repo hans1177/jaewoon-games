@@ -1,0 +1,109 @@
+name: Company Security Recovery Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      recovery_id:
+        description: 'Exact security recovery id awaiting Primary-AI review'
+        required: true
+        type: string
+      decision:
+        description: 'Exact marker: PRIMARY_AI_SECURITY_RECOVERY_REVIEW=PASS or PRIMARY_AI_SECURITY_RECOVERY_REVIEW=REWORK'
+        required: true
+        type: string
+      evidence:
+        description: 'Optional comma-separated Primary-AI review evidence ids'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-security-recovery-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify review contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/company-system-ai-queue.mjs
+          node --check tools/company-recovery-queue.mjs
+          node --test qa/company-system-ai-supervision-loop.test.mjs
+
+      - name: Persist explicit Primary-AI security recovery review atomically
+        env:
+          RECOVERY_ID: ${{ inputs.recovery_id }}
+          DECISION: ${{ inputs.decision }}
+          REVIEW_EVIDENCE: ${{ inputs.evidence || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$DECISION" in
+            'PRIMARY_AI_SECURITY_RECOVERY_REVIEW=PASS'|'PRIMARY_AI_SECURITY_RECOVERY_REVIEW=REWORK') ;;
+            *) echo 'SECURITY_RECOVERY_REVIEW_EXACT_DECISION_REQUIRED'; exit 1 ;;
+          esac
+          persisted=0
+
+          for attempt in 1 2 3; do
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/security-recovery-review-control 2>/dev/null || true
+            rm -rf /tmp/security-recovery-review-control
+            git worktree prune
+            git fetch origin main vibe2-unreal-core --quiet
+            git worktree add --detach /tmp/security-recovery-review-control origin/vibe2-unreal-core >/dev/null
+            control=/tmp/security-recovery-review-control
+
+            test -f "$control/.vibe2/system-ai-queue.json"
+            test -f "$control/.vibe2/recovery-queue.json"
+
+            node tools/company-system-ai-queue.mjs \
+              --command=review-security-recovery \
+              --queue="$control/.vibe2/system-ai-queue.json" \
+              --recovery="$control/.vibe2/recovery-queue.json" \
+              --recovery-id="$RECOVERY_ID" \
+              --decision="$DECISION" \
+              --evidence="$REVIEW_EVIDENCE"
+
+            cd "$control"
+            changed="$(git diff --name-only -- .vibe2/system-ai-queue.json .vibe2/recovery-queue.json)"
+            printf '%s\n' "$changed" | grep -Fqx '.vibe2/system-ai-queue.json'
+            printf '%s\n' "$changed" | grep -Fqx '.vibe2/recovery-queue.json'
+            test "$(printf '%s\n' "$changed" | sed '/^$/d' | wc -l | tr -d ' ')" = 2
+
+            git config user.name 'jaewoon-security-recovery-review'
+            git config user.email 'security-recovery-review@users.noreply.github.com'
+            git add .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
+            git commit -m "security: review supervised recovery $RECOVERY_ID [skip ci]"
+
+            if git push origin HEAD:vibe2-unreal-core; then
+              persisted=1
+              echo "SECURITY_RECOVERY_REVIEW_CONTROL_WRITE=YES:attempt-$attempt"
+              break
+            fi
+
+            echo "SECURITY_RECOVERY_REVIEW_CONTROL_REFRESH_RETRY=$attempt"
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/security-recovery-review-control 2>/dev/null || true
+            rm -rf /tmp/security-recovery-review-control
+            sleep $((attempt * 2))
+          done
+
+          test "$persisted" = 1
+          echo "SECURITY_RECOVERY_REVIEW=PASS"
+          echo "SECURITY_RECOVERY_REVIEW_AUTO_MERGE=NO"
+          echo "SECURITY_RECOVERY_REVIEW_AUTO_PROMOTION=NO"
