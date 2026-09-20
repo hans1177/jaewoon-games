@@ -256,10 +256,6 @@ test('company status Web rows retain exact repair state from company runtime que
   assert.equal(task.id,`${gameId}-web-runtime-repair-v1`);
   assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
-  assert.ok(task.evidence.includes('diagnostic:TOUCH_ACTION_UNSPECIFIED'));
-  assert.ok(task.evidence.includes('diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html'));
-  assert.ok(task.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
-  assert.ok(task.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
   assert.equal(task.neuralDiagnosis.mode,'PHASE1_SHADOW_ADVISORY');
   assert.equal(task.neuralDiagnosis.actionRecommendation.failureStage,'WEB_REPAIR');
   assert.equal(task.neuralDiagnosis.waveControl.mayReorderWave,false);
@@ -318,6 +314,10 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   assert.deepEqual(task.responsibleFiles,[`web-games/${gameId}/index.html`]);
   assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
+  assert.ok(task.evidence.includes('diagnostic:TOUCH_ACTION_UNSPECIFIED'));
+  assert.ok(task.evidence.includes('diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html'));
+  assert.ok(task.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
+  assert.ok(task.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
   assert.match(task.goal,/\[WEB_REPAIR\]/);
   assert.match(task.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
   assert.match(task.goal,/requested-stage=WEB_REPAIR/);
