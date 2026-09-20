@@ -50,7 +50,7 @@
     },
     {
       "id": "recovery-system-ai-core-implementation-v1",
-      "status": "dispatched",
+      "status": "queued",
       "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
@@ -58,24 +58,59 @@
         "sys-web-bootstrap-signal-routing-v1",
         "sys-vibe-planner-web-repair-routing-v1",
         "sys-vibe-web-source-bootstrap-boundary-v1",
-        "sys-web-vibe-handoff-e2e-contract-v1"
+        "sys-web-vibe-handoff-e2e-contract-v1",
+        "sys-verify-system-ai-supervision-loop-v1"
       ],
       "failureStage": "SYSTEM_AI_IMPLEMENTATION",
       "failureSignature": "repeated-system-ai-implementation-failed",
-      "blastRadius": "portfolio-system:4",
+      "blastRadius": "portfolio:5",
       "checkpoint": null,
       "evidence": [
         "actions-run:35424046606",
         "actions-run:35424229113",
         "primary-ai-escalation:repeated-system-ai-implementation-failure",
-        "recovery-route:SYSTEM_AI"
+        "recovery-route:SYSTEM_AI",
+        "primary-ai-priority:portfolio-wide-common-web-blocker",
+        "company-runtime:19-of-19-web-gameplay-music",
+        "primary-ai-review:REWORK",
+        "primary-ai-rework:worker-read-write-boundary-fixed",
+        "supersede-run:35423438877",
+        "actions-run:35423438877",
+        "implementation:skipped",
+        "verification:skipped",
+        "publish:skipped",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "actions-run:35423569068",
+        "actions-run:35423629684",
+        "primary-ai-rework:ollama-cache-path-fixed",
+        "supersede-runs:35423569068|35423629684",
+        "implementation:failure",
+        "recovery-queue:recovery-system-ai-core-implementation-v1",
+        "recovery-strategy:ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
+        "recovery-exact-stage:SYSTEM_AI_IMPLEMENTATION",
+        "actions-run:35424573382",
+        "owner-development-bottleneck-requeue:2026-09-19",
+        "system-ai-empty-change-retry-repaired:tools/company-system-ai-worker.mjs",
+        "recovery-queue:recovery-e36314e23ac645b9df25",
+        "recovery-exact-stage:system-ai-implementation-failed",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "recovery-queue:recovery-453ef0814800056c05b6",
+        "actions-run:35426574813",
+        "recovery-escalated-from:system-ai",
+        "recovery-reactivated-after-source-refailure"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
         "VERIFY_JSON_MODE_AND_OUTPUT_PARSER",
         "RERUN_EXACT_SYSTEM_AI_IMPLEMENTATION_STEP",
         "REQUIRE_DETERMINISTIC_VERIFICATION_STEP",
-        "REQUIRE_CANDIDATE_PR_BEFORE_REVIEW"
+        "REQUIRE_CANDIDATE_PR_BEFORE_REVIEW",
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
       "deterministicEvidence": [],
       "recoveryOwner": "SYSTEM_AI",
@@ -84,7 +119,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T05:41:00.000Z",
-      "updatedAt": "2026-09-19T05:42:47.548Z"
+      "updatedAt": "2026-09-20T00:28:45.563Z"
     },
     {
       "id": "recovery-system-ai-supervision-loop-v1",
@@ -1624,7 +1659,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-20T00:23:59.729Z"
+      "updatedAt": "2026-09-20T00:28:45.563Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
@@ -3178,7 +3213,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T00:23:59.729Z"
+      "updatedAt": "2026-09-20T00:28:45.564Z"
     }
   ]
 }
