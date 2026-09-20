@@ -666,6 +666,9 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
   if (task.status !== 'running') {
     return { updated:false, ready:false, slotReleased:false, stale:true, reason:`TASK_${clean(task.status).toUpperCase()}_NOT_RUNNING`, taskId, variant, expectedVariants:expected, resultCount:(task.neuronResults || []).length, queue };
   }
+  if (isWorkerCapacityReleasedBlocker(task.blocker) && Number(task.neuronExpectedVariants || 0) === 0) {
+    return { updated:false, ready:false, slotReleased:true, stale:false, reason:'TASK_ALREADY_MICRO_FANIN_COMPLETE', taskId, variant, expectedVariants:expected, resultCount:0, queue };
+  }
   const currentResults = Array.isArray(task.neuronResults) ? task.neuronResults : [];
   const duplicate = currentResults.some((row) => (clean(row?.variant) || 'primary') === variant && resultReservationId(row) === rowReservationId);
   if (duplicate) {
