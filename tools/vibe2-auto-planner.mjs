@@ -207,15 +207,20 @@ function sourceFile(root,relative){return path.join(root,...posix(relative).spli
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
 function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
 function taskVerified(queue,id){return queue.tasks.some(item=>item.id===id&&clean(item.status).toLowerCase()==='verified');}
-function nextCausalGenerationId(queue,basePrefix){
-  const prefix=`${basePrefix}-v`;
-  const rows=(queue.tasks||[]).map(item=>{
-    const id=clean(item.id);
-    if(!id.startsWith(prefix))return null;
-    const versionText=id.slice(prefix.length);
-    if(!/^\d+$/.test(versionText))return null;
-    return{item,version:Number(versionText)};
+function causalGenerationVersion(id,basePrefix){
+  const prefix=`${basePrefix}-v`,value=clean(id);
+  if(!value.startsWith(prefix))return null;
+  const versionText=value.slice(prefix.length);
+  return /^\d+$/.test(versionText)?Number(versionText):null;
+}
+function causalGenerationRows(queue,basePrefix){
+  return(queue.tasks||[]).map(item=>{
+    const version=causalGenerationVersion(item?.id,basePrefix);
+    return version===null?null:{item,version};
   }).filter(Boolean).sort((a,b)=>a.version-b.version);
+}
+function nextCausalGenerationId(queue,basePrefix){
+  const rows=causalGenerationRows(queue,basePrefix);
   if(!rows.length)return `${basePrefix}-v1`;
   const latest=rows[rows.length-1];
   const status=clean(latest.item.status).toLowerCase();
@@ -738,12 +743,34 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
         }
         return item;
       }
-      const exactTaskId=sourceMissing?`${gameId}-web-base-implementation-v1`:`${gameId}-web-runtime-repair-v1`;
-      if(clean(item?.id)===exactTaskId){
+      const exactTaskPrefix=sourceMissing?`${gameId}-web-base-implementation`:`${gameId}-web-runtime-repair`;
+      const exactGeneration=causalGenerationVersion(item?.id,exactTaskPrefix);
+      if(exactGeneration!==null){
+        const exactRows=causalGenerationRows(queue,exactTaskPrefix);
+        const latestExact=exactRows[exactRows.length-1]||null;
+        const isLatestExact=Boolean(latestExact&&latestExact.version===exactGeneration&&clean(latestExact.item?.id)===clean(item?.id));
         const blocker=clean(item?.blocker);
-        const staleExactBaseCancellation=blocker==='superseded-by:VIBE_WEB_REPAIR'||/^production-authority-inactive:/.test(blocker);
-        if(sourceMissing&&status==='cancelled'&&staleExactBaseCancellation){
-          return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION',`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+        const exactStage=sourceMissing?'VIBE_WEB_BASE_IMPLEMENTATION':'VIBE_WEB_REPAIR';
+        const staleExactCancellation=blocker===`superseded-by:${exactStage}`||/^production-authority-inactive:/.test(blocker);
+        if(status==='cancelled'&&isLatestExact&&staleExactCancellation){
+          return{
+            ...item,
+            status:'queued',
+            retries:0,
+            blocker:null,
+            reservationId:null,
+            reservationRunId:null,
+            reservationRunAttempt:0,
+            reservedAt:null,
+            lastOutcome:sourceMissing?'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION':'RESTORED_BY_EXACT_WEB_REPAIR_CONTINUATION',
+            evidence:[...new Set([
+              ...(item.evidence||[]),
+              `restored-exact-stage:${sourceMissing?'WEB_BASE_IMPLEMENTATION':'WEB_REPAIR'}`,
+              `restored-from:${blocker}`,
+              'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED',
+              'signal-continuity:NEXT_CAUSAL_INPUT'
+            ])]
+          };
         }
         if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
           const diagnosticEvidence=inheritedDiagnosticEvidence(gameId,indexPath,queue);
