@@ -90,7 +90,7 @@ export function injectSelfArchitectureEvolutionTasks(queueInput={},controlInput=
         `architecture-signal:${signal.signature}`,`architecture-signal-occurrence-count:${signal.count}`,
         `architecture-recovery-generation:${signal.recoveryGeneration}`,
         'architecture-total-evolution-generation-limit:NONE','architecture-busy-loop-forbidden',
-        'architecture-before-after-comparison-required','architecture-regression-required','architecture-security-required',
+        'architecture-before-after-comparison-required','architecture-regression-required','architecture-security-required','architecture-system-construction-allowed',
         'architecture-authority-expansion:NO','architecture-gate-weakening:NO'
       ],
       completionCriteria:[

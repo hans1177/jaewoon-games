@@ -14,6 +14,7 @@ import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candid
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
 import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
+import { assertSystemArchitectureTask, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance, buildPassiveCapabilityBenchmarkContract } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
@@ -290,6 +291,46 @@ function candidateStrategyRole(variant='primary',preference={}){
   return freeze({variant:normalized,strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'});
 }
 
+function buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef='',runtime={},variant='primary'}={}){
+  const system=assertSystemArchitectureTask(task);
+  const responsibleFiles=freezeList(system.responsibleFiles);
+  const route=freeze({route:'text-source-worker',requiresEditor:false,reason:'vibe-system-architecture-evolution',repositorySourceWrite:true});
+  const plan=freeze({target:'system',qa:freezeList(['system-architecture-contract','same-failure-recheck','related-regression','full-regression','security-verification','before-after-metric-comparison','authority-and-gate-invariance'])});
+  const compiledWorkContract=compileVibeCentralWorkContract({
+    snapshot:centralPolicy,task,plan,route,responsibleFiles,presentationQuality:{required:false,preserve:[]},
+    mainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)||'',livePolicyRef:clean(centralPolicyLiveRef)
+  });
+  const contractGuidance=compiledWorkContractGuidance(compiledWorkContract);
+  const strategy=candidateStrategyRole(variant,{strategy:'STRUCTURAL_CAUSE_FIRST'});
+  const goal=[
+    systemArchitectureGuidance(task),task.goal,contractGuidance,
+    '[SYSTEM EVOLUTION IMPLEMENTATION METHOD]',
+    '1) reproduce/confirm the structural bottleneck from evidence; 2) compare two or more alternatives; 3) change the smallest direct responsibility;',
+    '4) retain all existing authority/security/quality gates; 5) record a measurable before/after expectation; 6) rollback or reject if evidence does not improve.',
+    `candidate-variant=${strategy.variant}; strategy=${strategy.strategy}`
+  ].join('\n\n');
+  const qa=freezeList(plan.qa);
+  const maxWorkMinutes=Math.max(1,Math.min(60,Math.floor(Number(runtime?.continuous?.maxWorkMinutes)||20)));
+  return freeze({
+    ...base,run:true,reason:'SYSTEM_ARCHITECTURE_WORK_READY',selectedTask:task,taskId:task.id,gameId:task.gameId,
+    target:'system',shard:task.shard,sourceRootLock:'.',workMode:'source-change-candidate',executionRoute:'text-source-worker',
+    route,goal,originalGoal:task.goal,department:task.department,priority:task.priority,releaseState:'other',maxWorkMinutes,
+    source:freeze({root:'.',writable:true,maintenanceOnly:false,candidateFiles:responsibleFiles,textWritablePatterns:responsibleFiles,editorRequiredPatterns:freezeList([]),ignoredPaths:freezeList(['.git','node_modules']),responsibleFiles}),
+    qa,incrementalQa:incrementalQaPlan(task,'system',responsibleFiles,1),
+    supervisionContract:null,compiledWorkContract,neuralDiagnosis:null,
+    workPackage:freeze({id:null,goal:null,role:'system-architecture',owner:'VIBE2_VIBE3',taskWorkUnits:1,packageWorkUnits:1,packageSize:1,longWorkProtected:true,sharedContext:null,completionCriteria:freezeList(task.completionCriteria||[]),rolePlan:freeze({exploration:'read-only',implementation:'vibe-system-source-worker',test:'incremental-qa',performance:'before-after-and-sanity',regression:'full-system-regression',review:'security-and-policy-invariance'})}),
+    designIntelligence:freeze({required:false,version:1,pipeline:freezeList(['STRUCTURAL_DIAGNOSIS','ALTERNATIVE_COMPARISON','IMPLEMENTATION','SAME_FAILURE_RECHECK','REGRESSION','SECURITY','BEFORE_AFTER_COMPARISON']),implementationGate:freeze({allowed:true,blockers:freezeList([])}),guidance:'SYSTEM_ARCHITECTURE_CONTRACT_REPLACES_GAME_DESIGN_PIPELINE',authorityExpanded:false}),
+    phase4BenchmarkVerification:null,verifiedCapabilityMemory:freeze({records:freezeList([])}),
+    unifiedLearning:null,knowledgeApplicationContract:freeze({version:1,exactInjectedKnowledgeIds:freezeList([]),freshIndependentQaRequired:true,infrastructureFailurePenalizesKnowledge:false,singleSuccessGeneralizationProof:false,rawExternalAiOutputIncluded:false,authorityExpanded:false}),
+    assetProduction:freeze({required:false}),presentationQuality:freeze({required:false,pass:null,authorityExpanded:false}),weatherPresentation:freeze({required:false,authorityExpanded:false}),
+    candidateTournament:freeze({candidateCount:1,reason:'SYSTEM_ARCHITECTURE_ATOMIC_DEFAULT'}),candidateStrategyRole:strategy,
+    learning:null,learningAppliedToWorkerGoal:false,verifiedCapabilityMemoryAppliedToWorkerGoal:false,motion:null,executionGate:freeze({mayExecute:true,reasons:freezeList([]),authority:'existing-vibe-system-steward-contract'}),
+    deployment:freeze({automaticEligible:false,requiresVerifiedQA:true,requiresBuild:false,promoteSourceRootOnly:false,mainDirectWriteByWorker:false,publicStoreReleaseAutomatic:false,systemArchitecturePromotion:true}),
+    editor:freeze({required:false,runtime:null,dispatchConfigured:true,workflow:null,runnerLabel:null}),
+    workerPolicy:freeze({isolatedCandidateBranch:true,directMainWrite:false,verifiedCommitRequired:true,retryLimit:null,paidAIAllowed:false,paidRunnerAllowed:false,engineMustResolveGameplayResults:false,protectedGameplayMutationAutomatic:false,binaryAssetsDirectTextEditForbidden:true,textWorkerAllowed:true,isolatedPracticeArtifactAllowed:false,practiceArtifactRepositorySourceWrite:false,practiceArtifactProductionPromotion:false,explorationRequired:true,explorationWorker:'tools/vibe2-exploration-worker.mjs',explorationSourceWrite:false,centralPolicyFreshnessRequired:compiledWorkContract.required===true,centralPolicyMismatchAction:compiledWorkContract.freshness?.mismatchAction||null,sourceRootBootstrapAllowed:false,roleSeparation:true,sameFileParallelWrite:false,systemArchitectureEvolution:true,systemConstructionAllowed:system.systemConstructionAllowed,authorityExpansionAllowed:false,gateWeakeningAllowed:false,speculativeParallelism:false,speculativeVariants:1})
+  });
+}
+
 export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {}, externalAiDistilled = {}, centralPolicySnapshot = null, centralPolicyLiveRef = '' } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
@@ -313,6 +354,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const task = resolved.task;
   const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:true });
   if (centralPolicy.required === true && centralPolicy.valid !== true) return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
+  if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
+    return buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef,runtime,variant});
+  }
   const neuralDiagnosis = task?.neuralDiagnosis || buildNeuralDiagnosis({task});
   const neuralGuidance = neuralDiagnosisGuidance(neuralDiagnosis);
   const requiresWrite = taskRequiresWrite(task);
