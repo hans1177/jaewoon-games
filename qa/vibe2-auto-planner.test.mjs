@@ -257,7 +257,7 @@ test('company status Web rows retain exact repair state from company runtime que
   assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
   assert.equal(task.neuralDiagnosis.mode,'PHASE1_SHADOW_ADVISORY');
-  assert.equal(task.neuralDiagnosis.actionRecommendation.failureStage,'WEB_BASE_IMPLEMENTATION');
+  assert.equal(task.neuralDiagnosis.actionRecommendation.failureStage,'WEB_REPAIR');
   assert.equal(task.neuralDiagnosis.waveControl.mayReorderWave,false);
   assert.equal(task.neuralDiagnosis.waveControl.mayCreateWorker,false);
 });
