@@ -22,6 +22,9 @@ export function assertSystemArchitectureTask(task={}){
   if(!evidence.has('architecture-gate-weakening:NO'))throw new Error('SYSTEM_ARCHITECTURE_GATE_GUARD_REQUIRED');
   if(!evidence.has('architecture-neural-expansion-phase:LAST_STAGE_ONLY'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_PHASE_GUARD_REQUIRED');
   if(!evidence.has('architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION'))throw new Error('SYSTEM_ARCHITECTURE_NEURAL_EXPANSION_MODE_REQUIRED');
+  if(!evidence.has('architecture-rule5-atomization-required:YES'))throw new Error('SYSTEM_ARCHITECTURE_RULE5_ATOMIZATION_REQUIRED');
+  if(!evidence.has('architecture-rule5-neuronization-required:YES'))throw new Error('SYSTEM_ARCHITECTURE_RULE5_NEURONIZATION_REQUIRED');
+  if(!evidence.has('architecture-rule5-central-code-sync-required:YES'))throw new Error('SYSTEM_ARCHITECTURE_RULE5_CENTRAL_CODE_SYNC_REQUIRED');
   const neuralReady=evidence.has('architecture-neural-expansion-readiness:PASS');
   const neuralAllowedYes=evidence.has('architecture-neural-expansion-allowed:YES');
   const neuralAllowedNo=evidence.has('architecture-neural-expansion-allowed:NO');
@@ -38,6 +41,9 @@ export function assertSystemArchitectureTask(task={}){
     neuralExpansionReadiness:neuralReady?'PASS':'PENDING',
     neuralExpansionAllowed:neuralReady&&neuralAllowedYes,
     neuralExecutionAuthorityExpansionAllowed:false,
+    rule5AtomicArchitectureRequired:true,
+    rule5NeuronizationRequired:true,
+    rule5CentralCodeSyncRequired:true,
     authorityExpanded:false,gateWeakening:false
   });
 }
@@ -50,11 +56,12 @@ export function systemArchitectureGuidance(task={}){
     'Compare at least two alternatives, choose the smallest causal architecture change, and modify the existing responsible system directly.',
     contract.systemConstructionAllowed?'A new internal helper/system file is allowed only when its exact path is already listed in responsibleFiles and the existing architecture truly lacks the capability.':'New files are not authorized by this task.',
     'Do not create wrapper/shadow duplicate systems merely to bypass the current responsibility.',
+    'Rule 5 requires this structure to be decomposed into atomic responsibility nodes, mapped to neuron types and causal/dependency edges, then synchronized across central policy, company architecture map, responsible code, and contract tests before activation.',
     'Do not expand authority, lower gates or thresholds, fabricate PASS, delete verified learning, weaken security, or change game design/balance.',
     contract.neuralExpansionAllowed
       ?'Neural expansion is evidence-gated and authorized for this task because final-stage readiness evidence passed. Vibe may expand internal neural nodes, edges, routing, memory, or learning structure when the structural cause justifies it, but neural execution authority MUST remain unchanged.'
       :'Neural expansion remains unavailable for this task because final-stage readiness evidence has not passed. Continue normal self-architecture evolution without neural expansion.',
-    'The candidate must pass same-failure recheck, related regression, security verification, and before/after metric comparison. No verified improvement means no adoption.',
+    'The candidate must pass same-failure recheck, related regression, security verification, before/after metric comparison, and Rule 5 central-architecture-code-test consistency. No verified improvement or consistency means no adoption.',
     'Exact writable files='+contract.responsibleFiles.join(', ')
   ].join('\n');
 }
