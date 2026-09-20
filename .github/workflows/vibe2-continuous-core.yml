@@ -1323,6 +1323,527 @@ jobs:
             --data "$payload"
           echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'
 
+  micro_finalize:
+    needs: atomic_ingress
+    if: ${{ needs.atomic_ingress.outputs.ready == 'YES' && needs.atomic_ingress.outputs.execution_lane == 'game-primary' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: ${{ format('vibe2-micro-finalize-{0}-{1}', github.event.client_payload.task_id, github.event.client_payload.reservation_id) }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout latest Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - name: Checkout source-pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.atomic_ingress.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download completed task micro fan-in
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.atomic_ingress.outputs.micro_artifact }}
+          path: /tmp/vibe2-micro-finalize
+
+      - name: Restore contract regression evidence
+        id: regression_cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/vibe2-contract-regression
+          key: vibe2-contract-regression-v2-${{ needs.atomic_ingress.outputs.contract_sha }}
+
+      - name: Verify pinned contract regression once
+        id: regression
+        if: steps.regression_cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test --test-concurrency=4 qa/vibe2-auto-planner.test.mjs qa/vibe2-native-asset-production.test.mjs qa/vibe2-neural-diagnosis.test.mjs qa/vibe2-neural-feedback.test.mjs qa/vibe2-neural-critic.test.mjs qa/vibe2-neural-root-cause.test.mjs qa/vibe2-neural-event-router.test.mjs qa/vibe2-neural-shadow-audit.test.mjs qa/vibe2-neural-event-telemetry.test.mjs qa/vibe2-neural-phase2-readiness.test.mjs qa/vibe2-neural-fanin-root-cause.test.mjs qa/vibe2-core-engine-motion.test.mjs qa/vibe2-source-worker.test.mjs qa/vibe2-capability-distillation.test.mjs qa/vibe2-central-work-contract.test.mjs qa/vibe2-exploration-worker.test.mjs qa/vibe2-queue-control.test.mjs qa/vibe2-work-package.test.mjs qa/vibe2-incremental-qa.test.mjs qa/vibe2-parallelism-telemetry.test.mjs qa/vibe2-adaptive-backpressure.test.mjs qa/vibe2-candidate-reconcile.test.mjs qa/vibe2-experience-control.test.mjs qa/vibe2-learning-closed-loop.test.mjs qa/vibe2-handoff.test.mjs qa/vibe2-practice-distillation.test.mjs
+          mkdir -p /tmp/vibe2-contract-regression
+          printf '%s\n' "${{ needs.atomic_ingress.outputs.contract_sha }}" > /tmp/vibe2-contract-regression/pass
+          echo 'VIBE2_MICRO_REGRESSION=PASS_FRESH'
+
+      - name: Confirm cached contract regression
+        if: steps.regression_cache.outputs.cache-hit == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s /tmp/vibe2-contract-regression/pass
+          grep -Fxq "${{ needs.atomic_ingress.outputs.contract_sha }}" /tmp/vibe2-contract-regression/pass
+          echo 'VIBE2_MICRO_REGRESSION=PASS_REUSED'
+
+      - name: Requeue exact task if contract regression fails
+        if: steps.regression.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-micro-regression'
+          git config user.email 'vibe2-micro-regression@users.noreply.github.com'
+          input="$(find /tmp/vibe2-micro-finalize -type f -name '*.json' -print -quit)"
+          test -n "$input"
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node vibe2-contract/tools/vibe2-queue-control.mjs fan-in-regression-fail --queue=.vibe2/queue.json --control=.vibe2/parallelism-control.json --input="$input" --blocker=micro-fan-in-regression-failed
+            git add .vibe2/queue.json .vibe2/parallelism-control.json
+            if git diff --cached --quiet; then pushed=1; break; fi
+            git commit -m "vibe2: requeue failed atomic micro regression [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_MICRO_REGRESSION=FAIL_REQUEUED'
+          exit 1
+
+      - name: Review and persist completed atomic task
+        id: review
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-micro-fanin'
+          git config user.email 'vibe2-micro-fanin@users.noreply.github.com'
+          input="$(find /tmp/vibe2-micro-finalize -type f -name '*.json' -print -quit)"
+          test -n "$input"
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node vibe2-contract/tools/vibe2-fan-in-review.mjs --queue=.vibe2/queue.json --input="$input" --output=/tmp/vibe2-micro-review.json --trace-ledger=.vibe2/coding-trace-ledger.json | tee /tmp/vibe2-micro-review.log
+            node vibe2-contract/tools/vibe2-experience-control.mjs --memory=.vibe2/experience.json --batch-review=/tmp/vibe2-micro-review.json | tee /tmp/vibe2-micro-experience.log
+            git add .vibe2/queue.json .vibe2/experience.json
+            test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
+            if git diff --cached --quiet; then
+              pushed=1
+              echo 'VIBE2_MICRO_FANIN_STATE_ALREADY_APPLIED=YES'
+              break
+            fi
+            git commit -m "vibe2: finalize atomic task micro fan-in [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_MICRO_FANIN_REVIEW=PASS'
+
+      - name: Dispatch micro-reviewed candidate to existing release gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-micro-review.json
+          node - <<'NODE' > /tmp/vibe2-micro-release.tsv
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('/tmp/vibe2-micro-review.json','utf8'));
+          for(const row of review.releaseCandidates||[]){
+            const task=String(row?.taskId||'').trim();
+            const branch=String(row?.candidateBranch||'').trim();
+            if(task&&branch)process.stdout.write(task+'\t'+branch+'\n');
+          }
+          NODE
+          while IFS=    needs: [reserve, worker]
+    if: always() && needs.reserve.outputs.worker_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      # Fan-in jobs must not share one pending GitHub concurrency slot.
+      # Every fan-in reconciles control state with optimistic fetch/reset/push retries below.
+      group: ${{ format('vibe2-control-state-fanin-{0}-{1}', github.run_id, github.run_attempt) }}
+      cancel-in-progress: false
+    outputs:
+      refill: ${{ steps.persist.outputs.refill }}
+    steps:
+      - name: Mark fan-in start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/vibe2-fan-in-start-ms
+
+      - name: Checkout latest Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - name: Checkout pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
+      - name: Measure fan-in checkout
+        id: fan_checkout_metrics
+        shell: bash
+        run: |
+          now="$(date +%s%3N)"
+          start="$(cat /tmp/vibe2-fan-in-start-ms)"
+          echo "ms=$((now-start))" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download all parallel worker results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vibe2-result-*
+          path: /tmp/vibe2-results
+          merge-multiple: true
+
+      - name: Aggregate immutable results
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const dir='/tmp/vibe2-results';
+          const files=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort();
+          const results=files.map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:queue.tasks||[]},null,2)+'\n');
+          console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
+          NODE
+
+      - name: Merge outcomes run regression and package review
+        id: persist
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-fan-in'
+          git config user.email 'vibe2-fan-in@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+          control_root="$GITHUB_WORKSPACE"
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          contract_sha="${{ needs.reserve.outputs.contract_sha }}"
+          test -n "$contract_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
+
+          lane_min='1'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
+          # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            set +e
+            (cd "$contract_root" && node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-native-asset-production.test.mjs \
+            qa/vibe2-neural-diagnosis.test.mjs \
+            qa/vibe2-neural-feedback.test.mjs \
+            qa/vibe2-neural-critic.test.mjs \
+            qa/vibe2-neural-root-cause.test.mjs \
+            qa/vibe2-neural-event-router.test.mjs \
+            qa/vibe2-neural-shadow-audit.test.mjs \
+            qa/vibe2-neural-event-telemetry.test.mjs \
+            qa/vibe2-neural-phase2-readiness.test.mjs \
+            qa/vibe2-neural-fanin-root-cause.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-capability-distillation.test.mjs \
+            qa/vibe2-central-work-contract.test.mjs \
+            qa/vibe2-exploration-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-work-package.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-adaptive-backpressure.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-learning-closed-loop.test.mjs \
+            qa/vibe2-handoff.test.mjs \
+            qa/vibe2-practice-distillation.test.mjs)
+          regression_rc=$?
+          set -e
+          if [ "$regression_rc" -ne 0 ]; then
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$attempt/5"
+              git fetch origin vibe2-unreal-core --quiet
+              git reset --hard origin/vibe2-unreal-core
+              node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --lane="$VIBE2_EXECUTION_LANE" \
+                --min="$lane_min" \
+                --input=/tmp/vibe2-fan-in.json > /tmp/vibe2-fan-in-regression-replay.log
+              node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --input=/tmp/vibe2-fan-in.json \
+                --blocker=fan-in-regression-failed
+              git add .vibe2/queue.json .vibe2/parallelism-control.json
+              if git diff --cached --quiet; then
+                pushed=1
+                echo 'VIBE2_FAN_IN_REGRESSION_STATE_ALREADY_APPLIED=YES'
+                break
+              fi
+              git commit -m "vibe2: requeue after fan-in regression failure [skip ci]"
+              if git push origin HEAD:vibe2-unreal-core; then
+                pushed=1
+                break
+              fi
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY=$attempt"
+              sleep $((attempt * 2))
+            done
+            test "$pushed" = 1
+            echo 'VIBE2_REGRESSION_ROLE=FAIL_REQUEUED'
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+            exit "$regression_rc"
+          fi
+            echo 'VIBE2_REGRESSION_ROLE=PASS'
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+          else
+            echo "VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+          fi
+
+          git fetch origin company-runtime --quiet
+          git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+          pushed=0
+          state_write='NO'
+          for attempt in 1 2 3 4 5; do
+            echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$attempt/5"
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+
+            node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --lane="$VIBE2_EXECUTION_LANE" \
+              --min="$lane_min" \
+              --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
+
+            node "$contract_root/tools/vibe2-practice-distillation.mjs" \
+              --fanin=/tmp/vibe2-fan-in.json \
+              --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
+
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+              node "$contract_root/tools/vibe2-fan-in-review.mjs" \
+                --queue="$control_root/.vibe2/queue.json" \
+                --input=/tmp/vibe2-fan-in.json \
+                --output=/tmp/vibe2-package-review.json \
+                --trace-ledger="$control_root/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-package-review.log
+              node "$contract_root/tools/vibe2-experience-control.mjs" \
+                --memory="$control_root/.vibe2/experience.json" \
+                --batch-review=/tmp/vibe2-package-review.json | tee /tmp/vibe2-supervised-experience.log
+            else
+              printf '%s\n' '{"version":1,"releaseCandidates":[],"experienceReviews":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
+              echo "VIBE2_REVIEW_ROLE=AUXILIARY_NO_RELEASE:$VIBE2_EXECUTION_LANE" | tee /tmp/vibe2-package-review.log
+            fi
+            echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
+
+            node "$contract_root/tools/vibe2-learning-motor.mjs" \
+              --state="$control_root/.vibe2/learning-motor-state.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+              --company-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --roadmap="$contract_root/company-learning/platform-release-roadmap.json" \
+              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+              --practice="$control_root/.vibe2/idle-practice-queue.json" \
+              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-fanin.log
+            echo "VIBE2_SELF_SIGNAL_AFTER_FANIN=PASS:$VIBE2_EXECUTION_LANE"
+
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json \
+              .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
+            test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
+            if git diff --cached --quiet; then
+              pushed=1
+              state_write='NO'
+              echo 'VIBE2_FAN_IN_STATE_ALREADY_APPLIED=YES'
+              break
+            fi
+
+            git commit -m "vibe2: fan in parallel worker results [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              state_write='YES'
+              break
+            fi
+
+            echo "VIBE2_FAN_IN_OPTIMISTIC_RETRY=$attempt"
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo "VIBE2_FAN_IN_QUEUE_WRITE=$state_write"
+
+          node "$contract_root/tools/vibe2-handoff.mjs" --check \
+            --runtime="$contract_root/vibe2-runtime.json" \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
+          node "$contract_root/tools/vibe2-queue-control.mjs" summary \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
+            --min="$lane_min" | tee /tmp/vibe2-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
+          if [ "${continue_required:-NO}" = 'YES' ]; then
+            echo 'refill=1' >> "$GITHUB_OUTPUT"
+          else
+            echo 'refill=0' >> "$GITHUB_OUTPUT"
+          fi
+          echo "VIBE2_HIERARCHICAL_FAN_IN=PASS:$VIBE2_EXECUTION_LANE"
+
+      - name: Dispatch reviewed winner candidates to release gate
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-package-review.json
+          node - <<'NODE' > /tmp/vibe2-release-candidates.tsv
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('/tmp/vibe2-package-review.json','utf8'));
+          for(const row of review.releaseCandidates||[]){
+            const taskId=String(row?.taskId||'').trim();
+            const candidateBranch=String(row?.candidateBranch||'').trim();
+            if(taskId&&candidateBranch)process.stdout.write(taskId+'\t'+candidateBranch+'\n');
+          }
+          NODE
+          count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+          done < /tmp/vibe2-release-candidates.tsv
+
+      - name: Dispatch verified system architecture candidates
+        if: env.VIBE2_EXECUTION_LANE == 'recovery-fast'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/vibe2-system-release-candidates.tsv
+          const fs=require('fs');
+          const fan=JSON.parse(fs.readFileSync('/tmp/vibe2-fan-in.json','utf8'));
+          const tasks=new Map((fan.tasks||[]).map(t=>[String(t.id||''),t]));
+          for(const r of fan.results||[]){
+            const t=tasks.get(String(r.taskId||''));
+            if(!t||String(t.target||'').toLowerCase()!=='system'||String(t.department||'').toLowerCase()!=='system-architecture')continue;
+            if(String(r.outcome||'').toUpperCase()!=='PASS')continue;
+            const branch=String(r.candidateBranch||'').trim();
+            if(branch)process.stdout.write(String(r.taskId)+'\t'+branch+'\n');
+          }
+          NODE
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" --arg task "$task_id" '{ref:"main",inputs:{candidate_branch:$branch,task_id:$task}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-system-evolution-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_SYSTEM_EVOLUTION_RELEASE_DISPATCHED=$task_id:$candidate_branch"
+          done < /tmp/vibe2-system-release-candidates.tsv
+
+      - name: Upload generated machine handoff and role review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-after-fanin.json
+            /tmp/vibe2-handoff-after-fanin.log
+            /tmp/vibe2-package-review.json
+            /tmp/vibe2-package-review.log
+            /tmp/vibe2-practice-distillation-fanin.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Aggregate Vibe2 parallelism telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          REQUESTED_MAX: ${{ inputs.lane_max || '256' }}
+          EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
+          TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
+          FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-fan-in.json || exit 0
+          fan_end="$(date +%s%3N)"
+          fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
+          fallback_effective="$VIBE2_LANE_MAX"
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"; fi
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-$fallback_effective}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
+          const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
+          NODE2
+
+      - name: Upload Vibe2 parallelism telemetry
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-parallelism-telemetry-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-parallelism-telemetry.json
+            /tmp/vibe2-parallelism-telemetry.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Event-driven fan-in refill fallback
+        if: steps.persist.outputs.refill == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'
+\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error --request POST --header 'Accept: application/vnd.github+json' --header "Authorization: Bearer $GH_TOKEN" --header 'X-GitHub-Api-Version: 2022-11-28' "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" --data "$body"
+            echo "VIBE2_MICRO_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+          done < /tmp/vibe2-micro-release.tsv
+
+      - name: Upload atomic micro review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-micro-review-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-micro-review.json
+            /tmp/vibe2-micro-review.log
+            /tmp/vibe2-micro-experience.log
+          if-no-files-found: ignore
+          retention-days: 7
+
   fan_in:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.worker_count != '0'
