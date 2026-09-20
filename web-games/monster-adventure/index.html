@@ -37,6 +37,7 @@
             <div id="player">Player</div>
 Player</div><div id="enemies">Enemies</div><div id="progress"></div><div id="save-state"></div
         game.enemies.push({ id: Math.random(), health: 50, position: { x: 1, y: 1 } });
+        game.saveState = JSON.parse(JSON.stringify(game));
             <div id="save-state"></div>
         `;
 
