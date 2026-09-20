@@ -1,5 +1,5 @@
 {
-  "version": 183,
+  "version": 184,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6090,7 +6090,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE_CAPACITY_AWARE_20_SLOT_EXECUTION",
+    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE_LIVE_REPAIR_LOOP",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6695,6 +6695,86 @@
       "adaptiveBackpressureMayLowerBelow20": true,
       "adaptiveBackpressureMayNotRaiseGamePrimaryAbove20": true,
       "rationale": "Independent game work must not wait for all active workers when safe capacity remains."
+    },
+    "liveShadowObservation": {
+      "observedAt": "2026-09-20",
+      "continuousRunId": 35482102418,
+      "fanInJobId": 106003001893,
+      "runtimeEvidenceCommit": "3e949b0ddf09463f4d7941c73682a08de766bb71",
+      "centralPolicyVersionObservedByWorker": 181,
+      "fanIn": {
+        "status": "PASS",
+        "reviewed": 5,
+        "skipped": 3,
+        "releaseCandidates": 5,
+        "experiencePromoted": false
+      },
+      "inspectedRuntimeDiffSample": {
+        "shadowEvents": 11,
+        "eventTypes": {
+          "WORKER_RESULT": 9,
+          "CI_RESULT": 2
+        },
+        "proposedActions": {
+          "REQUEST_EVIDENCE": 11
+        },
+        "unauthorizedFireCount": 0,
+        "hypotheticalFireCount": 0,
+        "feedback": {
+          "MISMATCH": 2,
+          "UNKNOWN": 7,
+          "calibrationEligible": 2
+        },
+        "durableWaveAuditSamples": 2,
+        "note": "COUNTS_ARE_FROM_THE_INSPECTED_RUNTIME_COMMIT_DIFF_SAMPLE_NOT_A_CLAIM_OF_TOTAL_HISTORICAL_QUEUE_VOLUME"
+      },
+      "firstObservedPredictionContradiction": {
+        "exampleTask": "amusement-tycoon-web-runtime-repair-v1",
+        "neuralPredictedResponsibility": "VALIDATOR",
+        "observedBlockingStage": "SOURCE_GENERATION",
+        "criticVerdict": "PIPELINE_CONTRADICTED",
+        "action": "REQUEST_EVIDENCE",
+        "confidenceMutationAllowed": false,
+        "learningEligible": false,
+        "executionAuthorityGranted": false
+      },
+      "productionWaveBottleneck": {
+        "workerResults": 24,
+        "actualPeakConcurrency": 20,
+        "sourceGenerationFailures": 8,
+        "sourceGenerationFailureClasses": {
+          "MALFORMED_OUTPUT": 5,
+          "TIMEOUT": 1,
+          "EDIT_MATCH": 2
+        },
+        "packageCycleAvgMs": 479574.38,
+        "previousTelemetryPrimaryLabel": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "reviewedEvidencePrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "secondaryBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "rationale": "DIRECT_FAILURE_EVIDENCE_MUST_NOT_BE_HIDDEN_BY_PEAK_BELOW_TARGET"
+      },
+      "activeRepairs": [
+        {
+          "pr": 1815,
+          "branch": "assistant/vibe2-focused-replace-recovery-v1",
+          "purpose": "RECOVER_COMPLETE_FOCUSED_REPLACE_STRING_FROM_MALFORMED_OUTER_JSON_AFTER_TIMEOUT_ESCALATION",
+          "status": "CI_PENDING"
+        },
+        {
+          "pr": 1817,
+          "branch": "assistant/vibe2-evidence-ranked-bottlenecks-v1",
+          "purpose": "RANK_DIRECT_SOURCE_FAILURE_EVIDENCE_AS_PRIMARY_AND_PRESERVE_RUNNER_AS_SECONDARY_BOTTLENECK",
+          "status": "CI_PENDING"
+        }
+      ],
+      "nextVerification": [
+        "MERGE_ONLY_AFTER_REQUIRED_CI_PASS",
+        "OBSERVE_NEXT_PRODUCTION_WAVE_SOURCE_GENERATION_FAILURE_COUNT_AND_CLASSES",
+        "VERIFY_CODING_FOCUSED_REPLACE_STRING_RECOVERY_MARKER_WHEN_APPLICABLE",
+        "VERIFY_PRIMARY_AND_SECONDARY_BOTTLENECK_LABELS_MATCH_DIRECT_EVIDENCE",
+        "KEEP_UNAUTHORIZED_SHADOW_FIRE_COUNT_AT_ZERO",
+        "DO_NOT_GRANT_PHASE2_EXECUTION_AUTHORITY_FROM_THIS_WAVE"
+      ]
     }
   }
 }
