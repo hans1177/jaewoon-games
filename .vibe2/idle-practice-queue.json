@@ -21,14 +21,20 @@
       "sourceFailure": "fail_3e38u6"
     },
     {
-      "id": "gap-animation_feel-l1",
-      "kind": "ANIMATION_FEEL_DRILL",
-      "priority": "low",
+      "id": "review-fail_c9xvk3",
+      "kind": "FORCED_RETRIEVAL_REVIEW",
+      "priority": "high",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ANIMATION_FEEL"
-      ]
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_c9xvk3"
     },
     {
       "id": "gap-asset_adaptation-l1",
@@ -191,6 +197,16 @@
       ]
     },
     {
+      "id": "gap-animation_feel-l2",
+      "kind": "ANIMATION_FEEL_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
       "id": "gap-economy-l2",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -238,16 +254,6 @@
       "countsAsProductionPass": false,
       "domains": [
         "COMBAT"
-      ]
-    },
-    {
-      "id": "gap-progression-l3",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "PROGRESSION"
       ]
     },
     {
@@ -301,6 +307,16 @@
       ]
     },
     {
+      "id": "gap-progression-l4",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "PROGRESSION"
+      ]
+    },
+    {
       "id": "gap-save-l4",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -311,16 +327,6 @@
       ]
     },
     {
-      "id": "gap-state_machine-l4",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE"
-      ]
-    },
-    {
       "id": "gap-ui_state-l4",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -328,6 +334,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "UI_STATE"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE"
       ]
     }
   ]
