@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_READINESS_REVIEW_GATE_CONNECTED",
+    "currentState": "PHASE2_DURABLE_SHADOW_AUDIT_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -371,7 +371,10 @@
       "readinessReview": "tools/vibe2-neural-phase2-readiness.mjs",
       "readinessReviewBinding": "tools/vibe2-fan-in-review.mjs",
       "readinessReviewAuthority": "REVIEW_ELIGIBILITY_ONLY",
-      "executionAuthorityAfterReadiness": "NONE_UNTIL_EXPLICIT_CENTRAL_POLICY_PROMOTION"
+      "executionAuthorityAfterReadiness": "NONE_UNTIL_EXPLICIT_CENTRAL_POLICY_PROMOTION",
+      "durableAuditEvidencePrefix": "neural-shadow-wave-audit:",
+      "durableAuditStorage": "VIBE_QUEUE_TASK_EVIDENCE",
+      "readinessAuditSource": "DURABLE_QUEUE_EVIDENCE"
     }
   }
 }
