@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "tools/vibe2-source-worker.mjs",
+      "find": "  const candidates=[];",
+      "replace": "      const fallbackPatterns=[\n        /window\\.GAME_CONFIG\\s*=\\\n        \\{[^<]{20,700}?\n        }(?=</script>|;|$)/g,\n        /(?:const|let|var)\n        \\.+[A-Za-z_$][\n\\w$]*\n        \\.+[^\n;\\n]{10,320};/g,\n        /document\\.getElementById\\((["
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

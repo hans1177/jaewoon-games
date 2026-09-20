@@ -754,7 +754,16 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     :[];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   if(!exactResponsible.length)return null;
-  const candidates=[];
+      const fallbackPatterns=[
+        /window\.GAME_CONFIG\s*=\
+        \{[^<]{20,700}?
+        }(?=</script>|;|$)/g,
+        /(?:const|let|var)
+        \.+[A-Za-z_$][
+\w$]*
+        \.+[^
+;\n]{10,320};/g,
+        /document\.getElementById\(([
   for(const relative of exactResponsible){
     const anchors=exactRetryAnchorSuggestions(raw,{max:5,sourceRoot,responsibleFiles:[relative]});
     for(const find of anchors)candidates.push({path:relative,find});
