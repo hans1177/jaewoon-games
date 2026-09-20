@@ -222,7 +222,7 @@ function adjacentCells(gx,gz){
 }
 
 var visualById={},buildingByCell={},paths={},runtime={};
-var cleanerMeshes=[];
+return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),mat(c));
 function registerObject(group,id){
   group.traverse(function(o){if(o.isMesh)o.userData.buildingId=id;});
 }
