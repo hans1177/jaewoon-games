@@ -78,6 +78,24 @@ test('unappliable edit is retried inside generation before candidate write', asy
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/edit-preflight-retry/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
+test('malformed source output fast-escalates to focused replace on the next attempt', async () => {
+  const cwd = tempRoot();
+  const malformed = path.join(cwd, 'malformed.txt');
+  const focused = path.join(cwd, 'focused.json');
+  write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'malformed-fast-escalation' }), null, 2));
+  write(malformed, 'not-json');
+  write(focused, JSON.stringify({ replace: 'class Player { int Speed() { return 3; } }' }));
+  const result = await runVibe2SourceWorker({ cwd, responseFiles: [malformed, focused] });
+  assert.equal(result.generation.attempts, 2);
+  assert.equal(result.generation.recoveryUsed, true);
+  assert.equal(result.generation.focusedReplaceOnly, true);
+  assert.equal(result.generation.malformedFastEscalation, true);
+  assert.equal(result.codingMethod.malformedFastEscalation, true);
+  assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
+  assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/malformed-fast-escalation/files/Assets/Player.cs'), 'utf8'), /return 3/);
+});
+
 test('exact edit dry run validates sequential applicability without mutating source', () => {
   const cwd = tempRoot();
   const source = path.join(cwd, 'Player.cs');
