@@ -1,5 +1,5 @@
 {
-  "version": 220,
+  "version": 221,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -7889,8 +7889,8 @@
       "syncedMainHead": "4875f7d9e41632d2239caf9db1ab4ab6410e1bbe"
     },
     "currentWaveExecution": {
-      "mode": "CAPACITY_AWARE_FREE_SLOT_REFILL",
-      "schedulerAuthority": "EXISTING_WAVE_SCHEDULER",
+      "mode": "ATOMIC_NEURON_STREAM",
+      "schedulerAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
       "globalActiveWorkerBarrier": false,
       "freeSlotRefillWhileOtherIndependentWorkersActive": true,
       "sourceAndFileConflictProtectionStillRequired": true,
@@ -7902,7 +7902,7 @@
       "refillFormula": "MAX(0, CURRENT_ADAPTIVE_GAME_PRIMARY_TARGET - ACTIVE_GAME_WORKERS)",
       "observedExample": "TARGET_20_ACTIVE_12=>REFILL_8; TARGET_64_ACTIVE_40=>REFILL_24",
       "adaptiveBackpressureMayLowerBelow20": false,
-      "rationale": "GAME_PRIMARY has no fixed internal concurrency cap. It starts at baseline 20, keeps a pressure floor of 20, and self-expands above 20 only from verified healthy saturation; 256 is the current external provider wave boundary.",
+      "rationale": "GAME_PRIMARY is an atomic event-driven task stream, not a fixed execution wave. Independent tasks refill immediately after per-task variant micro-fan-in; source/file locks and release QA remain preserved. Baseline and pressure floor stay 20, healthy saturation expands 20→32→64→128→256, and 256 is only the current external provider boundary.",
       "gamePrimaryAdaptiveSteps": [
         20,
         32,
@@ -7914,10 +7914,15 @@
       "gamePrimaryAdaptiveMinimum": 20,
       "gamePrimaryExternalBoundary": 256,
       "gamePrimaryFixedInternalCap": null,
-      "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
+      "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
       "authorityChange": "NONE",
-      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true
+      "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true,
+      "fixedWaveBarrier": false,
+      "completionEvent": "vibe2-neuron-complete",
+      "taskMicroFanIn": true,
+      "speculativeJoinScope": "PER_TASK",
+      "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY"
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",
