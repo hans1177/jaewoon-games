@@ -4,7 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import {execFileSync} from 'node:child_process';
+import {execFileSync,spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 
 const clean=v=>String(v??'').trim();
@@ -39,10 +39,33 @@ function runNodeTests(root,files){
   }
 }
 
-export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runNodeTests}={}){
+function runNodeTestsAsync(root,files){
+  const missing=files.filter(file=>!fs.existsSync(path.join(root,file)));
+  if(missing.length)return Promise.resolve({pass:false,missing,error:'MISSING_TEST_FILES'});
+  return new Promise(resolve=>{
+    const child=spawn(process.execPath,['--test',...files],{
+      cwd:root,
+      stdio:['ignore','pipe','pipe'],
+      env:process.env
+    });
+    let stdout='',stderr='';
+    child.stdout.on('data',chunk=>{stdout+=chunk;});
+    child.stderr.on('data',chunk=>{stderr+=chunk;});
+    child.on('error',error=>resolve({
+      pass:false,missing:[],
+      error:clean(error?.message||error).replace(/\s+/g,' ').slice(0,500)
+    }));
+    child.on('close',code=>resolve(code===0
+      ?{pass:true,missing:[],error:null}
+      :{pass:false,missing:[],error:clean(stderr||stdout||('node test exit '+code)).replace(/\s+/g,' ').slice(0,500)}
+    ));
+  });
+}
+
+function buildReadinessResult(results){
   const checks={},details={};
   for(const [key,files] of Object.entries(NEURAL_EXPANSION_READINESS_CHECKS)){
-    const result=runner(root,files);
+    const result=results[key]||{};
     checks[key]=result?.pass===true;
     details[key]={files:[...files],pass:checks[key],missing:[...(result?.missing||[])],error:result?.error||null};
   }
@@ -57,6 +80,8 @@ export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runN
     required,
     missing,
     details,
+    evaluationMode:'PARALLEL_INDEPENDENT_QA_ORDERED_FINAL_GATE',
+    implementationOrder:['RULE_1','RULE_2','RULE_3','RULE_4_FINAL_STAGE'],
     internalNeuralStructureExpansionAllowedWhenPass:true,
     neuralExecutionAuthorityExpansionAllowed:false,
     queueMutationAuthorityExpanded:false,
@@ -65,10 +90,22 @@ export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runN
   };
 }
 
+export function evaluateNeuralExpansionReadiness({root=process.cwd(),runner=runNodeTests}={}){
+  const results={};
+  for(const [key,files] of Object.entries(NEURAL_EXPANSION_READINESS_CHECKS))results[key]=runner(root,files);
+  return buildReadinessResult(results);
+}
+
+export async function evaluateNeuralExpansionReadinessParallel({root=process.cwd(),runner=runNodeTestsAsync}={}){
+  const entries=Object.entries(NEURAL_EXPANSION_READINESS_CHECKS);
+  const settled=await Promise.all(entries.map(async([key,files])=>[key,await runner(root,files)]));
+  return buildReadinessResult(Object.fromEntries(settled));
+}
+
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
   const root=path.resolve(clean(args.root)||process.cwd());
-  const result=evaluateNeuralExpansionReadiness({root});
+  const result=await evaluateNeuralExpansionReadinessParallel({root});
   if(clean(args.output))writeJson(path.resolve(clean(args.output)),result);
   console.log('VIBE2_NEURAL_EXPANSION_READINESS='+(result.pass?'PASS':'PENDING'));
   console.log('VIBE2_NEURAL_EXPANSION_MISSING='+(result.missing.join(',')||'NONE'));
