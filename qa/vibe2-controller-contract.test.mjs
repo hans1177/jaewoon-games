@@ -218,7 +218,11 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   const reserveEnd=workflow.indexOf('  model_cache:');
   const reserveBlock=workflow.slice(reserveStart,reserveEnd);
   assert(reserveBlock.indexOf('tools/vibe2-system-steward.mjs') < reserveBlock.indexOf('tools/vibe2-handoff.mjs --check'));
-  assert(reserveBlock.includes('git add .vibe2/queue.json .vibe2/parallelism-control.json'));
+  assert(reserveBlock.includes('state_paths=('));
+  assert(reserveBlock.includes('.vibe2/queue.json'));
+  assert(reserveBlock.includes('.vibe2/parallelism-control.json'));
+  assert(reserveBlock.includes('.vibe2/learning-motor-state.json'));
+  assert(reserveBlock.includes('git add "${state_paths[@]}"'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
   assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
   assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
@@ -386,7 +390,7 @@ test('24H cycle serialization does not reuse the control-state lock',()=>{
 
 test('continuous core and 24H runner isolate game-primary and learning-idle execution lanes',()=>{
   assert(workflow.includes('execution_lane:'));
-  assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || 'game-primary' }}"));
+  assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}"));
   assert(workflow.includes('--lane="$VIBE2_EXECUTION_LANE"'));
   assert(workflow.includes('VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:'));
   assert(workflow.includes('AUXILIARY_LANE_NO_RELEASE'));
@@ -791,6 +795,6 @@ test('continuous core connects existing evidence reasoning into self-generated s
   assert.match(workflow,/\.vibe2\/web-roblox-handoffs\.json/);
   assert.match(workflow,/execution_lane:process\.env\.VIBE2_EXECUTION_LANE/);
   assert.doesNotMatch(workflow,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \] && \[ "\$\{continue_required:-NO\}" = 'YES' \]/);
-  assert.equal(roadmap.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
-  assert.equal(roadmap.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+  assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
+  assert.equal(roadmap.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
 });
