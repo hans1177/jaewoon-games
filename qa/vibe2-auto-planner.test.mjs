@@ -930,6 +930,7 @@ test('queued exact Web repair refresh inherits mapped diagnostic evidence from a
     id:`${gameId}-web-runtime-repair-v1`,gameId,target:'web',department:'development',type:'implementation',
     sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
     goal:'old runtime repair goal',releaseState:'development-confirmed',status:'queued',retries:1,maxRetries:2,blocker:null,
+    neuralDiagnosis:{mode:'PHASE1_SHADOW_ADVISORY',responsibility:{system:'SAVE_SYSTEM',confidence:.9}},
     evidence:['company-runtime-state:WEB_VIBE_REPAIR_REQUIRED']
   };
   const diagnostic={
@@ -959,4 +960,5 @@ test('queued exact Web repair refresh inherits mapped diagnostic evidence from a
   assert.ok(refreshed.evidence.includes('diagnostic-key:DOM_NULL_EVENT_BIND:index.html'));
   assert.ok(refreshed.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
   assert.ok(refreshed.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
+  assert.equal(refreshed.neuralDiagnosis,null);
 });
