@@ -115,12 +115,29 @@ export function scanCompanyRecords(){
   const root=path.join(ROOT,'company-records'),files=[];
   const walk=dir=>{if(!fs.existsSync(dir))return;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walk(p);else if(entry.isFile()&&p.endsWith('.json')&&repoRel(p)!=='company-records/record-contract.json')files.push(p);}};
   walk(root);
-  const results=files.map(file=>validateCompanyRecord(file)),ids=new Map(),errors=[];
+  const results=files.map(file=>validateCompanyRecord(file)),ids=new Map(),errors=[],warnings=[],mediaRefs=new Set();
+  const statusCounts={},retentionCounts={};
   for(const result of results){
     if(result.recordId){if(ids.has(result.recordId))errors.push(`DUPLICATE_RECORD_ID:${result.recordId}:${ids.get(result.recordId)}:${result.file}`);else ids.set(result.recordId,result.file);}
     for(const err of result.errors)errors.push(`${result.file}:${err}`);
+    try{
+      const row=JSON.parse(fs.readFileSync(path.join(ROOT,result.file),'utf8'));
+      const status=clean(row.status).toUpperCase(),retention=clean(row.retentionClass).toUpperCase();
+      statusCounts[status]=(statusCounts[status]||0)+1;
+      retentionCounts[retention]=(retentionCounts[retention]||0)+1;
+      if(clean(row.domain)==='runtime-media'&&clean(row.data?.mediaPath))mediaRefs.add(clean(row.data.mediaPath));
+      if(status==='DRAFT'&&isoDateTime(row.timestamps?.createdAt)){
+        const ageDays=(Date.now()-Date.parse(row.timestamps.createdAt))/86400000;
+        if(ageDays>14)warnings.push(`STALE_DRAFT:${result.file}:AGE_DAYS=${Math.floor(ageDays)}`);
+      }
+    }catch{}
   }
-  return{files:results.length,errors,results};
+  const mediaRoot=path.join(ROOT,'assets/runtime-evidence'),mediaFiles=[];
+  const walkMedia=dir=>{if(!fs.existsSync(dir))return;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walkMedia(p);else if(entry.isFile()&&!entry.name.startsWith('.'))mediaFiles.push(repoRel(p));}};
+  walkMedia(mediaRoot);
+  for(const media of mediaFiles)if(!mediaRefs.has(media))errors.push(`ORPHAN_RUNTIME_MEDIA:${media}`);
+  for(const ref of mediaRefs)if(!existsRel(ref))errors.push(`RUNTIME_MEDIA_MANIFEST_MISSING_FILE:${ref}`);
+  return{files:results.length,mediaFiles:mediaFiles.length,errors,warnings,statusCounts,retentionCounts,results};
 }
 
 export function changedGovernedFiles(base='HEAD^',head='HEAD'){
@@ -133,11 +150,15 @@ function main(){
   const args=process.argv.slice(2);
   const changedArg=args.find(x=>x.startsWith('--changed-from='));
   let files=[];
-  if(args.includes('--scan')){
+  if(args.includes('--scan')||args.includes('--summary')){
     const report=scanCompanyRecords();
     console.log(`COMPANY_RECORDS_FILES=${report.files}`);
+    console.log(`COMPANY_RECORDS_RUNTIME_MEDIA_FILES=${report.mediaFiles}`);
+    console.log(`COMPANY_RECORDS_STATUS_COUNTS=${JSON.stringify(report.statusCounts)}`);
+    console.log(`COMPANY_RECORDS_RETENTION_COUNTS=${JSON.stringify(report.retentionCounts)}`);
+    report.warnings.forEach(x=>console.warn(x));
     if(report.errors.length){report.errors.forEach(x=>console.error(x));process.exit(1);}
-    console.log('COMPANY_RECORDS_GOVERNANCE=PASS');
+    console.log(args.includes('--summary')?'COMPANY_RECORDS_HYGIENE_SUMMARY=PASS':'COMPANY_RECORDS_GOVERNANCE=PASS');
     return;
   }
   if(changedArg){
