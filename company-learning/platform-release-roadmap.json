@@ -1,5 +1,5 @@
 {
-  "version": 197,
+  "version": 198,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -7356,6 +7356,139 @@
       "neuralExecutionAuthority": false,
       "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
       "nextGate": "OPERATE_FROM_CENTRAL_ROADMAP_ACTIONABLE_NEXT_GATE_WITH_DURABLE_GITHUB_HANDOFF"
+    },
+    "vibeExecutionBinding": {
+      "version": 1,
+      "state": "MERGED_MAIN",
+      "sourcePr": 1870,
+      "mergedCommit": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+      "workContractVersion": 2,
+      "compiler": "tools/vibe2-central-work-contract.mjs",
+      "runnerBinding": "tools/vibe2-continuous-runner.mjs",
+      "sourceWorkerBinding": "tools/vibe2-source-worker.mjs",
+      "qa": "qa/vibe2-central-work-contract.test.mjs",
+      "workflowBindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-core-qa.yml"
+      ],
+      "compiledFields": [
+        "workKey",
+        "roadmapVersion",
+        "mainSha",
+        "scope",
+        "nextGate",
+        "requiredEvidence",
+        "authorityBoundary",
+        "dedupeKey"
+      ],
+      "freshnessChecks": [
+        "PRE_SOURCE_GENERATION",
+        "PRE_CANDIDATE_WRITE"
+      ],
+      "staleAction": "FAIL_CLOSED",
+      "authorityChange": "NONE",
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": false,
+      "workerCreationAuthority": false,
+      "queueMutationAuthority": false,
+      "waveReorderAuthority": false,
+      "lockPolicyMutationAuthority": false,
+      "automaticLearningTuningPromotionAuthority": false,
+      "nextGate": "VERIFY_POSTMERGE_VIBE2_24H_WORK_ORDER_EMITS_COMPILED_CONTRACT_ON_LATEST_MAIN"
+    },
+    "codingAbsorptionSelfReplayProposal": {
+      "version": 1,
+      "state": "DISCUSSION_REQUIRED_NOT_IMPLEMENTED",
+      "authority": "OWNER_DISCUSSION_2026-09-20",
+      "objective": "CAPTURE_ALL_ASSISTANT_CODING_TRACES_THEN_SELF_REPLAY_VERIFY_DISTILL_AND_REUSE_ONLY_VERIFIED_LESSONS",
+      "intent": {
+        "captureAllCodingAttempts": true,
+        "selfReplayBeforeReuse": true,
+        "applyVerifiedLessonsToFutureCandidateGeneration": true,
+        "preserveFailureLessonsWhenFailureCauseIsVerified": true,
+        "rawAttemptDirectReuse": false,
+        "rawAttemptDirectTraining": false,
+        "rawAttemptDirectProductionApplication": false
+      },
+      "lifecycle": [
+        "CAPTURE_CODING_TRACE_WITH_PROVENANCE",
+        "REPLAY_IN_ISOLATED_EXISTING_TEST_OR_RUNTIME_PATH",
+        "RUN_SYNTAX_UNIT_INTEGRATION_RUNTIME_REGRESSION_SECURITY_AND_PLATFORM_RELEVANT_QA",
+        "CLASSIFY_PASS_FAIL_OR_UNVERIFIED",
+        "DISTILL_VERIFIED_SUCCESS_PATTERN_OR_VERIFIED_FAILURE_CAUSE",
+        "ADD_TO_EXISTING_EXPERIENCE_AND_CANONICAL_LEARNING_PATH",
+        "RETRIEVE_VERIFIED_LESSON_FOR_FUTURE_CANDIDATE",
+        "REVERIFY_CANDIDATE_BEFORE_ANY_RELEASE_OR_PROMOTION"
+      ],
+      "captureContract": {
+        "intendedScope": "ALL_AI_OR_ASSISTANT_GENERATED_CODING_ATTEMPTS_VISIBLE_TO_THE_EXISTING_VIBE_WORKFLOW",
+        "minimumProvenance": [
+          "WORK_KEY",
+          "ROADMAP_VERSION",
+          "BASE_MAIN_SHA",
+          "AUTHOR_OR_AGENT_CLASS",
+          "RESPONSIBLE_FILES",
+          "PATCH_OR_CHANGE_DIGEST",
+          "TASK_GOAL",
+          "QA_RESULT_REFERENCES",
+          "RUNTIME_RESULT_REFERENCES"
+        ],
+        "rawTraceAuthority": "PROVENANCE_ONLY_UNTIL_VERIFIED",
+        "duplicateSuppressionRequired": true,
+        "secretOrCredentialCaptureForbidden": true
+      },
+      "selfReplayContract": {
+        "executionSurface": "EXISTING_VIBE2_24H_AND_WAVE_CONTROLLED_VALIDATION_PATHS_ONLY",
+        "productionWriteDuringReplay": false,
+        "directMainWriteDuringReplay": false,
+        "saveOrProgressionMutationWithoutMigration": false,
+        "platformNativeClaimsRequirePlatformNativeEvidence": true,
+        "webEvidenceCannotSubstituteNativeRuntimeEvidence": true,
+        "replayMustUseResponsibleSystemAndExistingArchitecture": true
+      },
+      "verifiedLearningRules": {
+        "verifiedPassMayCreateReusablePattern": true,
+        "verifiedFailureCauseMayCreateAvoidPattern": true,
+        "unverifiedAttemptReusable": false,
+        "failedCodeItselfReusableByDefault": false,
+        "candidateGenerationAloneCountsAsLearning": false,
+        "minimumIndependentEvidenceRequired": true,
+        "canonicalLearningPipelineOnly": true,
+        "automaticModelPromotion": false,
+        "holdoutAndCanaryRemainRequired": true
+      },
+      "applicationRules": {
+        "verifiedLessonMayInfluencePlanning": true,
+        "verifiedLessonMayInfluenceCandidateGeneration": true,
+        "verifiedLessonMayInfluenceRepairSelection": true,
+        "applicationStillRequiresFreshTaskQa": true,
+        "applicationStillRequiresFreshRuntimeEvidenceWhenRuntimeIsRelevant": true,
+        "mayBypassReleaseGate": false,
+        "mayBypassSecurityGate": false,
+        "mayChangeProtectedGameplayValuesWithoutApprovedRevision": false
+      },
+      "authorityBoundary": {
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "neuralExecutionAuthority": false,
+        "workerCreationAuthority": false,
+        "queueMutationAuthority": false,
+        "waveReorderAuthority": false,
+        "lockPolicyMutationAuthority": false,
+        "automaticLearningTuningPromotionAuthority": false,
+        "directMainPromotionAuthority": false,
+        "authorityChange": "NONE"
+      },
+      "discussionTopics": [
+        "TRACE_GRANULARITY_FULL_PATCH_VS_NORMALIZED_CHANGE_DIGEST",
+        "REPLAY_FREQUENCY_EVERY_ATTEMPT_VS_DEDUPED_UNIQUE_ATTEMPT",
+        "RESOURCE_BUDGET_FOR_SELF_REPLAY",
+        "WHEN_VERIFIED_FAILURE_LESSONS_BECOME_IMMEDIATELY_RETRIEVABLE",
+        "CROSS_ENGINE_TRANSFER_BOUNDARIES_WEB_ROBLOX_UNITY",
+        "RAW_TRACE_RETENTION_AND_COMPACTION_POLICY",
+        "DEFINITION_OF_APPLY_AUTOMATIC_CANDIDATE_GUIDANCE_VS_AUTOMATIC_SOURCE_EDIT",
+        "HOW_TO_ATTRIBUTE_MULTI_AI_COAUTHORED_CHANGES"
+      ],
+      "nextGate": "OWNER_DISCUSSION_AND_CONTRACT_FINALIZATION_BEFORE_IMPLEMENTATION"
     }
   }
 }
