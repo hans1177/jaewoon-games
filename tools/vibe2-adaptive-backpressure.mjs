@@ -57,13 +57,14 @@ function pressureReasons(telemetry = {}) {
   const reasons = [];
   const failureRate = num(telemetry.failureRatePct);
   const bottleneck = clean(telemetry.bottleneck);
+  const bottlenecks = new Set([bottleneck,...(Array.isArray(telemetry.secondaryBottlenecks)?telemetry.secondaryBottlenecks.map(clean):[])].filter(Boolean));
   const peakUtil = num(telemetry.effectivePeakUtilizationPct);
   const queueWaitP95 = num(telemetry.queueWait?.p95Ms);
   const checkoutP95 = num(telemetry.checkout?.p95Ms);
   if (failureRate >= 20) reasons.push('FAILURE_RATE');
-  if (bottleneck === 'RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION' && peakUtil < 80) reasons.push('RUNNER_CAPACITY');
-  if (bottleneck === 'INCREMENTAL_QA') reasons.push('INCREMENTAL_QA');
-  if (bottleneck === 'CHECKOUT_NETWORK' || checkoutP95 > 30000) reasons.push('CHECKOUT_NETWORK');
+  if (bottlenecks.has('RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION') && peakUtil < 80) reasons.push('RUNNER_CAPACITY');
+  if (bottlenecks.has('INCREMENTAL_QA')) reasons.push('INCREMENTAL_QA');
+  if (bottlenecks.has('CHECKOUT_NETWORK') || checkoutP95 > 30000) reasons.push('CHECKOUT_NETWORK');
   if (queueWaitP95 > 30000) reasons.push('RUNNER_QUEUE_WAIT');
   return reasons;
 }

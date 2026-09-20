@@ -37,6 +37,8 @@ test('serialized worker starts expose runner/startup bottleneck',()=>{
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:20});
   assert.equal(t.actualPeakConcurrency,1);
   assert.equal(t.bottleneck,'RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION');
+  assert.deepEqual(t.secondaryBottlenecks,[]);
+  assert.deepEqual(t.bottleneckCandidates,['RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION']);
   assert.equal(t.pass,false);
 });
 
@@ -48,6 +50,31 @@ test('cache misses and failures are visible even when concurrency is healthy',()
   assert.equal(t.failureRatePct,20);
   assert.equal(t.pressureLevel,'HIGH');
   assert.equal(t.bottleneck,'OLLAMA_CACHE_MISS_RATE');
+});
+
+test('direct source-generation failures outrank runner under-utilization while preserving runner as secondary evidence',()=>{
+  const results=Array.from({length:24},(_,i)=>{
+    const sourceFail=i<8;
+    const otherFail=i>=8&&i<11;
+    return row(i,{
+      start:i<20?1000+i*5:7000+(i-20)*5,
+      end:i<20?5000+i*5:11000+(i-20)*5,
+      outcome:sourceFail||otherFail?'FAIL':'PASS',
+      runId:'live-shadow-1',
+      candidateFailure:sourceFail?{class:i===0?'TIMEOUT':'MALFORMED_OUTPUT',message:'source generation failed'}:null,
+      blocker:otherFail?'incremental-qa-failed':null
+    });
+  });
+  const t=computeParallelismTelemetry({results,requestedMax:256,effectiveMax:256,taskCount:24});
+  assert.equal(t.actualPeakConcurrency,20);
+  assert.equal(t.sourceGenerationFailures.count,8);
+  assert.equal(t.bottleneck,'SOURCE_CANDIDATE_GENERATION');
+  assert.deepEqual(t.secondaryBottlenecks,['RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION']);
+  assert.deepEqual(t.bottleneckCandidates,['SOURCE_CANDIDATE_GENERATION','RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION']);
+  assert.equal(t.pass,false);
+  const next=decideAdaptiveBackpressure(createParallelismControl({currentMax:20}),t,{now:'2026-09-20T02:00:00.000Z'});
+  assert.match(next.lastReason,/FAILURE_RATE/);
+  assert.match(next.lastReason,/RUNNER_CAPACITY/);
 });
 
 test('source candidate failures are reported as the real saturated-wave bottleneck',()=>{
