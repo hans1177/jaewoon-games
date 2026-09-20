@@ -4,6 +4,100 @@
   "policy": "QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL",
   "incidents": [
     {
+      "id": "sec_review_7bf93adb05dbc146f5dc",
+      "status": "REVIEW_REQUIRED",
+      "disposition": "REVIEW",
+      "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "severity": "HIGH",
+      "category": "policy-integrity",
+      "file": "company-learning/platform-release-roadmap.json",
+      "line": 0,
+      "evidenceSha256": "df05821831d72f6e90ceb789a52f99c46458139bd37f366edac359fec67c6b80",
+      "snippet": "AGGREGATED_POLICY_REVIEW_FINDINGS",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "detections": 1,
+      "reviewFindingCount": 9,
+      "reviewEvidenceSha256": [
+        "25e77d16417cbe979f2fda3d52e8c612f9a1dea340f65b410726b8f3ec86cfc7",
+        "36c8bd576e0d0bcd464bb8a93310e1c44948b6e103499bf2dff9cbc63032c91a",
+        "36e25eec9b9b54280f49c5c7f4e87dda2e2f6d4649ae492aba472ff5845a898e",
+        "502401f6e2efaa41f6efc87b20bac097c7f03a44911b31c5912bdb39dbdf3ac4",
+        "7e214d088dd2911f30cdf2967f38adce623fd2df84e9729f5a173efa7808f881",
+        "9e3470bffe418f96b502288de60ffe53dd3bbd12e7266259ad3e15086d4d78f8",
+        "b9cece6eef7758639a495a7b52b04d547c9c5ddb4dca7978181fbaf79396d85c",
+        "ca8678adce844cc44b247e6ab00b1920f5e58435d91496f621c9075735befb05",
+        "ccb51dc061d0ce1ae86eed83d5b42658d1038a2cb0e7e61b6d800f5112570b43"
+      ],
+      "reviewLines": [
+        8508,
+        8513,
+        8514,
+        8515,
+        8516,
+        8517,
+        8518,
+        8519,
+        8520
+      ],
+      "legacyIncidentIds": [],
+      "securityRunId": 35497978343,
+      "securityArtifactId": 10600672590,
+      "firstDetectedAt": "2026-09-20T07:51:51.171Z",
+      "lastDetectedAt": "2026-09-20T07:51:51.171Z",
+      "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
+      "reviewUnit": "SECURITY_SCAN_AND_FILE",
+      "compactedPolicyReview": true,
+      "rootCause": null,
+      "remediation": null,
+      "verificationEvidence": [],
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "resolvedAt": null,
+      "verificationMode": null
+    },
+    {
+      "id": "sec_review_779266c6d1982f5f8f2e",
+      "status": "REVIEW_REQUIRED",
+      "disposition": "REVIEW",
+      "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "severity": "HIGH",
+      "category": "policy-integrity",
+      "file": "company-learning/company-architecture-map.json",
+      "line": 0,
+      "evidenceSha256": "2d6fb8af372f17033043100a8c9a95ba13220d4bd908bd25ce0b0d3b11eef143",
+      "snippet": "AGGREGATED_POLICY_REVIEW_FINDINGS",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "detections": 1,
+      "reviewFindingCount": 3,
+      "reviewEvidenceSha256": [
+        "91875ee428ef4537b0c0eea41764f231a98f0301a8080b44c6b17f24804de525",
+        "a7cfada50b3afdfccd73990a16f6b87723760d7c918eac3c54457ee1215c6901",
+        "e9d128f6b786f81b29edf2bb884a91db9c77fcb3268e9592973af88874290ae5"
+      ],
+      "reviewLines": [
+        391,
+        395,
+        405
+      ],
+      "legacyIncidentIds": [],
+      "securityRunId": 35497978343,
+      "securityArtifactId": 10600672590,
+      "firstDetectedAt": "2026-09-20T07:51:51.170Z",
+      "lastDetectedAt": "2026-09-20T07:51:51.170Z",
+      "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
+      "reviewUnit": "SECURITY_SCAN_AND_FILE",
+      "compactedPolicyReview": true,
+      "rootCause": null,
+      "remediation": null,
+      "verificationEvidence": [],
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "resolvedAt": null,
+      "verificationMode": null
+    },
+    {
       "id": "sec_review_df2f437c0ca2190212e5",
       "status": "REVIEW_REQUIRED",
       "disposition": "REVIEW",
@@ -29,6 +123,8 @@
         1690
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T07:30:19.138Z",
       "lastDetectedAt": "2026-09-20T07:30:19.138Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -70,6 +166,8 @@
         3409
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T07:30:19.138Z",
       "lastDetectedAt": "2026-09-20T07:30:19.138Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -111,6 +209,8 @@
         5720
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T07:21:12.985Z",
       "lastDetectedAt": "2026-09-20T07:21:12.985Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -152,6 +252,8 @@
         1538
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T07:21:12.984Z",
       "lastDetectedAt": "2026-09-20T07:21:12.984Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -197,6 +299,8 @@
         1476
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:43:06.282Z",
       "lastDetectedAt": "2026-09-20T05:43:06.282Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -256,6 +360,8 @@
         5625
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:43:06.282Z",
       "lastDetectedAt": "2026-09-20T05:43:06.282Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -309,6 +415,8 @@
         8411
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:39:39.179Z",
       "lastDetectedAt": "2026-09-20T05:39:39.179Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -350,6 +458,8 @@
         1505
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:39:39.178Z",
       "lastDetectedAt": "2026-09-20T05:39:39.178Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -387,6 +497,8 @@
         1391
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:36:05.808Z",
       "lastDetectedAt": "2026-09-20T05:36:05.808Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -422,6 +534,8 @@
         5487
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:36:05.808Z",
       "lastDetectedAt": "2026-09-20T05:36:05.808Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -465,6 +579,8 @@
         1429
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:23:48.635Z",
       "lastDetectedAt": "2026-09-20T05:23:48.635Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -514,6 +630,8 @@
         8258
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:23:48.635Z",
       "lastDetectedAt": "2026-09-20T05:23:48.635Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -557,6 +675,8 @@
         1357
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:23:37.445Z",
       "lastDetectedAt": "2026-09-20T05:23:37.445Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -592,6 +712,8 @@
         5396
       ],
       "legacyIncidentIds": [],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:23:37.445Z",
       "lastDetectedAt": "2026-09-20T05:23:37.445Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -647,6 +769,8 @@
         "sec_b78c8a025a5b8b0f530b82da",
         "sec_e3e811b2d332ce68b0d8543a"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:09:12.726Z",
       "lastDetectedAt": "2026-09-20T05:09:12.727Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -732,6 +856,8 @@
         "sec_5783a4b275b52004aa2f751a",
         "sec_94419d53e57e37ead22e3593"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T05:09:12.727Z",
       "lastDetectedAt": "2026-09-20T05:09:12.727Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -772,6 +898,8 @@
         "sec_cd6e1836b07e914c0f0b1db4",
         "sec_34ddf39742fcb89bc9e92ba7"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:57:36.397Z",
       "lastDetectedAt": "2026-09-20T04:57:36.397Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -963,6 +1091,8 @@
         "sec_e2e60932b70d77d5dbe326d3",
         "sec_6a4c2f18dc714bf1e9ba6c27"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:27:15.510Z",
       "lastDetectedAt": "2026-09-20T04:27:15.510Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1003,6 +1133,8 @@
         "sec_8c7a6a8613e1da2d17ba46fc",
         "sec_5bdce49ff277207e0b44b492"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:27:15.510Z",
       "lastDetectedAt": "2026-09-20T04:27:15.510Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1070,6 +1202,8 @@
         "sec_6553240864557831fc30bac5",
         "sec_3e5af1fa7abb69dfe8014a4d"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:19:21.126Z",
       "lastDetectedAt": "2026-09-20T04:19:21.127Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1116,6 +1250,8 @@
         "sec_90319119797ac5b88ba03bf5",
         "sec_c28e8a48fc0e6b8c0d715bcb"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:19:21.126Z",
       "lastDetectedAt": "2026-09-20T04:19:21.126Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1159,6 +1295,8 @@
         "sec_d32bb6d2f46b4162c4cd1929",
         "sec_d449947984960ff5ec763a0b"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:10:12.311Z",
       "lastDetectedAt": "2026-09-20T04:10:12.311Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1199,6 +1337,8 @@
         "sec_940edbcb3d5c3008753ef9b4",
         "sec_34e58c561b704ddfee00fd32"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:10:12.311Z",
       "lastDetectedAt": "2026-09-20T04:10:12.311Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1290,6 +1430,8 @@
         "sec_a479fcccca1f9b4a34289154",
         "sec_910a792e8fd47f69818f2533"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:07:06.747Z",
       "lastDetectedAt": "2026-09-20T04:07:06.748Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1336,6 +1478,8 @@
         "sec_a914f662042bed1723684de4",
         "sec_b57c9ba71aae55de95323f5e"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T04:07:06.747Z",
       "lastDetectedAt": "2026-09-20T04:07:06.747Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1451,6 +1595,8 @@
         "sec_d777a97ad9d88dcd3751b041",
         "sec_147d477038e10ddd6f9e16aa"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:55:22.638Z",
       "lastDetectedAt": "2026-09-20T03:55:22.638Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1560,6 +1706,8 @@
         "sec_89ca144189be34d5afcc66ae",
         "sec_41ba5ac0cd05e26d539fe8b1"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:55:22.638Z",
       "lastDetectedAt": "2026-09-20T03:55:22.638Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1603,6 +1751,8 @@
         "sec_543e2a0bb4e0918748a97346",
         "sec_66568b8b92fe21eb884c1e1a"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:45:13.768Z",
       "lastDetectedAt": "2026-09-20T03:45:13.768Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1646,6 +1796,8 @@
         "sec_064d7b5832b3bdf53fb7f237",
         "sec_ea3b55686599fbdd14347a53"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:45:13.768Z",
       "lastDetectedAt": "2026-09-20T03:45:13.768Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1698,6 +1850,8 @@
         "sec_2c08bc9b5955c2d8bf13df1d",
         "sec_8c7ae53c40f20e8d00a36b0f"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:30:48.277Z",
       "lastDetectedAt": "2026-09-20T03:30:48.278Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1747,6 +1901,8 @@
         "sec_0daed895e1bc466d66ebab98",
         "sec_82f7d508642a3d976a771385"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:30:48.278Z",
       "lastDetectedAt": "2026-09-20T03:30:48.278Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1817,6 +1973,8 @@
         "sec_b9ccc16f8eab8094f95631d8",
         "sec_b032793649ab4d929b481eb8"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:22:06.542Z",
       "lastDetectedAt": "2026-09-20T03:22:06.543Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1884,6 +2042,8 @@
         "sec_a74fe912eb8dc54e40d281da",
         "sec_01ae55beeab313eebc76f007"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:22:06.543Z",
       "lastDetectedAt": "2026-09-20T03:22:06.543Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1927,6 +2087,8 @@
         "sec_681c47afdedb12acb3af3e2c",
         "sec_3fa0f1901e22b9c8ac8c65a4"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:15:51.118Z",
       "lastDetectedAt": "2026-09-20T03:15:51.119Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -1973,6 +2135,8 @@
         "sec_ac5c668ad3bccd7f46985a6f",
         "sec_bd3809147b198578d1e685ae"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:15:51.119Z",
       "lastDetectedAt": "2026-09-20T03:15:51.119Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2025,6 +2189,8 @@
         "sec_b3c2b4b2cc2da3985ff3f7e5",
         "sec_e283865313584b605063ce8d"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:14:23.734Z",
       "lastDetectedAt": "2026-09-20T03:14:23.735Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2101,6 +2267,8 @@
         "sec_9b6f9e89cf254994760a6f7d",
         "sec_8b9d791c0285a2f2df052f6e"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:14:23.735Z",
       "lastDetectedAt": "2026-09-20T03:14:23.735Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2138,6 +2306,8 @@
       "legacyIncidentIds": [
         "sec_9f8e8ad202bb6b57ba8d1dbd"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:06:29.734Z",
       "lastDetectedAt": "2026-09-20T03:06:29.734Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2175,6 +2345,8 @@
       "legacyIncidentIds": [
         "sec_ab6ca4235ae0aa11ef3e914c"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:06:29.734Z",
       "lastDetectedAt": "2026-09-20T03:06:29.734Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2215,6 +2387,8 @@
         "sec_80adf9d89af1c5929c3a137b",
         "sec_3ca08a5649a5a874ac1f59ef"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:03:46.594Z",
       "lastDetectedAt": "2026-09-20T03:03:46.594Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2258,6 +2432,8 @@
         "sec_392c577eba3cefe5d8e9edb5",
         "sec_12edabbdd03c52ad33c8cd4d"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T03:03:46.594Z",
       "lastDetectedAt": "2026-09-20T03:03:46.594Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2295,6 +2471,8 @@
       "legacyIncidentIds": [
         "sec_0bafc3f32c23d5aa70618649"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T02:41:58.810Z",
       "lastDetectedAt": "2026-09-20T02:41:58.810Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2338,6 +2516,8 @@
         "sec_e8842fcc4918e89421c88ee5",
         "sec_4ae78649665d35116a452158"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T02:41:58.810Z",
       "lastDetectedAt": "2026-09-20T02:41:58.810Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -2378,6 +2558,8 @@
         "sec_832b400f1baa09d3ee6cb80b",
         "sec_faccdfcb8adeafaeda1372de"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T02:27:37.865Z",
       "lastDetectedAt": "2026-09-20T02:27:37.866Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -5921,6 +6103,8 @@
       "legacyIncidentIds": [
         "sec_e0daafffabcc4545e857cd11"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T00:45:50.312Z",
       "lastDetectedAt": "2026-09-20T00:45:50.312Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -5958,6 +6142,8 @@
       "legacyIncidentIds": [
         "sec_7ecc3e3d8b7f6a1bd95e63aa"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T00:22:56.648Z",
       "lastDetectedAt": "2026-09-20T00:22:56.648Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -5995,6 +6181,8 @@
       "legacyIncidentIds": [
         "sec_3f279b30f0f0a8f320e36471"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T00:06:01.728Z",
       "lastDetectedAt": "2026-09-20T00:06:01.728Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6041,6 +6229,8 @@
         "sec_6dcb24a7205095efd90fb1a6",
         "sec_b2fb5588149840b74679fb84"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-20T00:05:23.122Z",
       "lastDetectedAt": "2026-09-20T00:05:23.122Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6081,6 +6271,8 @@
         "sec_950cae2ccf65f1a6d5b75f79",
         "sec_38522eec3ca362f16e4b3bd0"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T23:50:11.069Z",
       "lastDetectedAt": "2026-09-19T23:50:11.069Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6118,6 +6310,8 @@
       "legacyIncidentIds": [
         "sec_3a9dd487e277f47fb86c8344"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T23:35:42.832Z",
       "lastDetectedAt": "2026-09-19T23:35:42.832Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6155,6 +6349,8 @@
       "legacyIncidentIds": [
         "sec_ac38c5312cd2b7e06f628848"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T23:28:28.423Z",
       "lastDetectedAt": "2026-09-19T23:28:28.423Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6195,6 +6391,8 @@
         "sec_1595586d5c37be3e6f1674ee",
         "sec_98bba413954aa3e9c2f24573"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T16:35:09.007Z",
       "lastDetectedAt": "2026-09-19T16:35:09.007Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6232,6 +6430,8 @@
       "legacyIncidentIds": [
         "sec_f0a6b1f3723aa43e39212a33"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T16:20:59.332Z",
       "lastDetectedAt": "2026-09-19T16:20:59.332Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6269,6 +6469,8 @@
       "legacyIncidentIds": [
         "sec_bcceff1001cc03622dd01e81"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T16:12:11.888Z",
       "lastDetectedAt": "2026-09-19T16:12:11.888Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6306,6 +6508,8 @@
       "legacyIncidentIds": [
         "sec_d07c1f5cfb3b35ad7d699fef"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T14:26:09.502Z",
       "lastDetectedAt": "2026-09-19T14:26:09.502Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6343,6 +6547,8 @@
       "legacyIncidentIds": [
         "sec_58ee31cfdda44280e611aea2"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T14:25:41.316Z",
       "lastDetectedAt": "2026-09-19T14:25:41.316Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6386,6 +6592,8 @@
         "sec_fcee666684e94cbd40e96483",
         "sec_ca4f7a00166af6b4f18c6ad2"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T14:09:12.280Z",
       "lastDetectedAt": "2026-09-19T14:09:12.280Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6426,6 +6634,8 @@
         "sec_ec10725bb34e8c009bedd93e",
         "sec_9b815536a67711922e6b5e2a"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T14:06:37.596Z",
       "lastDetectedAt": "2026-09-19T14:06:37.596Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6463,6 +6673,8 @@
       "legacyIncidentIds": [
         "sec_52e0c5c987378a8c81f669a4"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T14:04:47.486Z",
       "lastDetectedAt": "2026-09-19T14:04:47.486Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6503,6 +6715,8 @@
         "sec_a8c2996298eab4e8b64bd165",
         "sec_48fa95523b8b7d4373d5fb9f"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:59:40.893Z",
       "lastDetectedAt": "2026-09-19T13:59:40.893Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6564,6 +6778,8 @@
         "sec_d98caf7126b44fd457fbc775",
         "sec_ae7a40f018e67040f73771f3"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:46:32.524Z",
       "lastDetectedAt": "2026-09-19T13:46:32.524Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6634,6 +6850,8 @@
         "sec_d9a0c6cab836451822c7d6f4",
         "sec_4145e18e01b613eb34bf2c53"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:37:53.513Z",
       "lastDetectedAt": "2026-09-19T13:37:53.514Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6677,6 +6895,8 @@
         "sec_f03dfcfa768b756ac3ac26ca",
         "sec_925ebe8d80fac13a5bfabfbb"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:37:20.261Z",
       "lastDetectedAt": "2026-09-19T13:37:20.261Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6744,6 +6964,8 @@
         "sec_82a2ccc3797034ced46d331b",
         "sec_d8905d42f1b81496a0e66907"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:36:05.663Z",
       "lastDetectedAt": "2026-09-19T13:36:05.663Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6781,6 +7003,8 @@
       "legacyIncidentIds": [
         "sec_3d91e35717d352402da6098d"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:17:27.858Z",
       "lastDetectedAt": "2026-09-19T13:17:27.858Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6818,6 +7042,8 @@
       "legacyIncidentIds": [
         "sec_f1caf7ad20dba781e90c7eaf"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:13:43.837Z",
       "lastDetectedAt": "2026-09-19T13:13:43.837Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6855,6 +7081,8 @@
       "legacyIncidentIds": [
         "sec_bff09c0ebdde6ca9c26fc4a8"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:11:22.622Z",
       "lastDetectedAt": "2026-09-19T13:11:22.623Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6892,6 +7120,8 @@
       "legacyIncidentIds": [
         "sec_31ac48b600ebb7b91c368d1a"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:10:12.718Z",
       "lastDetectedAt": "2026-09-19T13:10:12.719Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6929,6 +7159,8 @@
       "legacyIncidentIds": [
         "sec_e9275058399d7183e1f7b855"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T13:09:25.647Z",
       "lastDetectedAt": "2026-09-19T13:09:25.647Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -6966,6 +7198,8 @@
       "legacyIncidentIds": [
         "sec_6772636a6c43b82398525303"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:57:54.847Z",
       "lastDetectedAt": "2026-09-19T12:57:54.847Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7003,6 +7237,8 @@
       "legacyIncidentIds": [
         "sec_66fdb2ff8480332953435be7"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:50:26.970Z",
       "lastDetectedAt": "2026-09-19T12:50:26.970Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7055,6 +7291,8 @@
         "sec_2bf8b268c0d91bae12b5d4c0",
         "sec_efee3f903eea38227cca0ded"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:48:38.831Z",
       "lastDetectedAt": "2026-09-19T12:48:38.831Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7101,6 +7339,8 @@
         "sec_2022525b497f0f703e90a117",
         "sec_6074271991134d92b6b2daf5"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:37:33.040Z",
       "lastDetectedAt": "2026-09-19T12:37:33.040Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7141,6 +7381,8 @@
         "sec_ff587dc277af00b29cbf3cbc",
         "sec_11fb32acea7c9d3ddc9f408d"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:28:08.132Z",
       "lastDetectedAt": "2026-09-19T12:29:10.086Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7178,6 +7420,8 @@
       "legacyIncidentIds": [
         "sec_17ba7051d2e8f6ba3bc1dc3b"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:29:10.086Z",
       "lastDetectedAt": "2026-09-19T12:29:10.086Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7215,6 +7459,8 @@
       "legacyIncidentIds": [
         "sec_581b7a2c3446f281b98f7c00"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:27:03.808Z",
       "lastDetectedAt": "2026-09-19T12:27:03.808Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7255,6 +7501,8 @@
         "sec_101ff4e639d0ceb4a3e240e1",
         "sec_cc46bc065ff757c63dfcd8fe"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:15:51.834Z",
       "lastDetectedAt": "2026-09-19T12:15:51.834Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7292,6 +7540,8 @@
       "legacyIncidentIds": [
         "sec_093b1d20deba8f770925d03a"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T12:00:31.348Z",
       "lastDetectedAt": "2026-09-19T12:00:31.348Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7329,6 +7579,8 @@
       "legacyIncidentIds": [
         "sec_400dc4733a6e08d2d142d0f6"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T11:59:28.753Z",
       "lastDetectedAt": "2026-09-19T11:59:28.753Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7372,6 +7624,8 @@
         "sec_8738f557e808aff0ff184c54",
         "sec_f1ced4ecbda4a2b3215569d7"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T11:45:51.644Z",
       "lastDetectedAt": "2026-09-19T11:45:51.645Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7418,6 +7672,8 @@
         "sec_57f69648a1b93f5a75d39a20",
         "sec_dfaa614b54fc63ee50c6d6c9"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T11:37:30.973Z",
       "lastDetectedAt": "2026-09-19T11:37:30.973Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7461,6 +7717,8 @@
         "sec_8492910544e8ef077d486048",
         "sec_246625d18a1467a863fe1e9b"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T11:15:03.550Z",
       "lastDetectedAt": "2026-09-19T11:15:03.550Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7504,6 +7762,8 @@
         "sec_d4f54d302540e000c73a47aa",
         "sec_8b49c5f735db85a1d252a1e5"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:59:40.683Z",
       "lastDetectedAt": "2026-09-19T10:59:40.683Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7553,6 +7813,8 @@
         "sec_3f3c96923f462af854c76eff",
         "sec_d5a07513a575381d49467ee3"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:58:50.266Z",
       "lastDetectedAt": "2026-09-19T10:58:50.267Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7596,6 +7858,8 @@
         "sec_60e71c86e49687a5b721fff5",
         "sec_58e37d667c716a72fc96a981"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:58:04.210Z",
       "lastDetectedAt": "2026-09-19T10:58:04.210Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7636,6 +7900,8 @@
         "sec_283cbf746963ca19834cd9b6",
         "sec_fa757578602d246c6c6889b1"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:48:38.743Z",
       "lastDetectedAt": "2026-09-19T10:48:38.744Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7673,6 +7939,8 @@
       "legacyIncidentIds": [
         "sec_27190508f49f76aa47455462"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:44:33.413Z",
       "lastDetectedAt": "2026-09-19T10:44:33.413Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7710,6 +7978,8 @@
       "legacyIncidentIds": [
         "sec_740978f081001df4224510db"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:33:24.684Z",
       "lastDetectedAt": "2026-09-19T10:33:24.684Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7792,6 +8062,8 @@
         "sec_03246a5bac3d97cef0e7da10",
         "sec_b44df8067f1ded3d7ed21caf"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:16:13.363Z",
       "lastDetectedAt": "2026-09-19T10:16:13.364Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7829,6 +8101,8 @@
       "legacyIncidentIds": [
         "sec_3fa72ad52f1e6a103fbe994c"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T10:02:40.479Z",
       "lastDetectedAt": "2026-09-19T10:02:40.479Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7869,6 +8143,8 @@
         "sec_40f3b85a7d0a638a4e1d349b",
         "sec_1f672758bfae9c9133c57dad"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T09:50:51.207Z",
       "lastDetectedAt": "2026-09-19T09:50:51.207Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7906,6 +8182,8 @@
       "legacyIncidentIds": [
         "sec_3359b4c1910250604b4fbada"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T09:47:43.914Z",
       "lastDetectedAt": "2026-09-19T09:47:43.914Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -7943,6 +8221,8 @@
       "legacyIncidentIds": [
         "sec_da50809a0aeb4355aa13c3fd"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T09:46:57.961Z",
       "lastDetectedAt": "2026-09-19T09:46:57.961Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8022,6 +8302,8 @@
       "legacyIncidentIds": [
         "sec_fad7da4727df42d8b8b534b3"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T09:44:45.636Z",
       "lastDetectedAt": "2026-09-19T09:44:45.636Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8101,6 +8383,8 @@
       "legacyIncidentIds": [
         "sec_6d059623ea151de3dee5b33f"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T09:44:23.443Z",
       "lastDetectedAt": "2026-09-19T09:44:23.443Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8144,6 +8428,8 @@
         "sec_0a067931443c10e81c758f07",
         "sec_efb1d9d37a6da5e9999dff1f"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T08:51:14.500Z",
       "lastDetectedAt": "2026-09-19T08:51:14.500Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8181,6 +8467,8 @@
       "legacyIncidentIds": [
         "sec_ce06b50312163e50bd8bae62"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T08:49:44.565Z",
       "lastDetectedAt": "2026-09-19T08:49:44.565Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8218,6 +8506,8 @@
       "legacyIncidentIds": [
         "sec_2ef211df9ced4924631a0630"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T08:49:01.281Z",
       "lastDetectedAt": "2026-09-19T08:49:01.281Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8258,6 +8548,8 @@
         "sec_11fd575a09e817d1a8458899",
         "sec_da6b77b26d51f9ff9ac44bb1"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T08:38:47.596Z",
       "lastDetectedAt": "2026-09-19T08:38:47.596Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8304,6 +8596,8 @@
         "sec_3ef9a66d7dcbdd52bf430d91",
         "sec_1fa04ad6c11a5c8c72cd6161"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T07:25:49.741Z",
       "lastDetectedAt": "2026-09-19T07:25:49.741Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8341,6 +8635,8 @@
       "legacyIncidentIds": [
         "sec_935d005b8ad21393c6055b30"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T06:57:22.117Z",
       "lastDetectedAt": "2026-09-19T06:57:22.117Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8381,6 +8677,8 @@
         "sec_01843e37bfb5b8fa456cc929",
         "sec_e36d574f387e328f11404c8e"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T06:51:39.615Z",
       "lastDetectedAt": "2026-09-19T06:51:39.615Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8421,6 +8719,8 @@
         "sec_4634dac8976098ddf7fdbaa4",
         "sec_85f1fd08f1569ed5aee14d36"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T06:46:00.582Z",
       "lastDetectedAt": "2026-09-19T06:46:00.582Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8458,6 +8758,8 @@
       "legacyIncidentIds": [
         "sec_0adf8139c66a10fc20d9097a"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T06:37:28.891Z",
       "lastDetectedAt": "2026-09-19T06:37:28.891Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
@@ -8495,6 +8797,8 @@
       "legacyIncidentIds": [
         "sec_ad144f60a075fc180ebba5a0"
       ],
+      "securityRunId": null,
+      "securityArtifactId": null,
       "firstDetectedAt": "2026-09-19T06:32:29.854Z",
       "lastDetectedAt": "2026-09-19T06:32:29.855Z",
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
