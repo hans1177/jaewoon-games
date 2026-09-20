@@ -155,7 +155,7 @@ test('missing diagnostic postcondition is a retryable generation failure',()=>{
   assert.match(source,/diagnosticFocusedReplaceOnly\|\|\(focusedFinal/);
 });
 
-test('speculative diagnostic postcondition gets one bounded focused correction credit', async()=>{
+test('speculative interval diagnostic uses deterministic repair before model retry', async()=>{
   const cwd=tempRoot();
   const bad1=path.join(cwd,'diagnostic-bad-1.json');
   const bad2=path.join(cwd,'diagnostic-bad-2.json');
@@ -174,15 +174,15 @@ test('speculative diagnostic postcondition gets one bounded focused correction c
   write(bad2,JSON.stringify({replace:'function start(){ AUDIO.timer=setInterval(()=>tick(),320); }'}));
   write(good,JSON.stringify({replace:'function stop(){ if(AUDIO.timer){ clearInterval(AUDIO.timer); AUDIO.timer=null; } }\\nfunction start(){ stop(); AUDIO.timer=setInterval(()=>tick(),285); }'}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
-  assert.equal(result.generation.attempts,3);
-  assert.equal(result.generation.baseAttemptBudget,2);
-  assert.equal(result.generation.effectiveAttemptBudget,3);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.attemptBudget,2);
+  assert.equal(result.generation.deterministicDiagnosticRepair,true);
+  assert.equal(result.generation.deterministicDiagnosticType,'INTERVAL_CLEANUP_RISK');
   assert.equal(result.codingMethod.semanticDiffEnforcement.diagnosticPostcondition.pass,true);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/diagnostic-credit/files/rpg.html'),'utf8'),/clearInterval/);
 });
 
-test('speculative DOM null diagnostic postcondition gets one bounded focused correction credit', async()=>{
+test('speculative DOM null diagnostic uses deterministic repair before model retry', async()=>{
   const cwd=tempRoot();
   const bad1=path.join(cwd,'dom-null-bad-1.json');
   const bad2=path.join(cwd,'dom-null-bad-2.json');
@@ -202,10 +202,10 @@ test('speculative DOM null diagnostic postcondition gets one bounded focused cor
   write(bad2,JSON.stringify({replace:"document.getElementById('play').addEventListener('click',()=>startGame());"}));
   write(good,JSON.stringify({replace:"document.getElementById('play')?.addEventListener('click',startGame);"}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
-  assert.equal(result.generation.attempts,3);
-  assert.equal(result.generation.baseAttemptBudget,2);
-  assert.equal(result.generation.effectiveAttemptBudget,3);
-  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.attemptBudget,2);
+  assert.equal(result.generation.deterministicDiagnosticRepair,true);
+  assert.equal(result.generation.deterministicDiagnosticType,'DOM_NULL_EVENT_BIND');
   assert.equal(result.codingMethod.semanticDiffEnforcement.diagnosticPostcondition.pass,true);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/dom-null-diagnostic-credit/files/index.html'),'utf8'),/\?\.addEventListener/);
 });
@@ -362,7 +362,7 @@ test('system architecture still gets one bounded retry when pair-focused complet
     id:'SYS-ARCH-edit-match-credit-v1',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
     executionLane:'RECOVERY_FAST',sourceRoot:'.',responsibleFiles:[sourceFile,testFile],priority:'high',releaseState:'other',status:'running',
     retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,systemSteward:true,goal:'repair structural bottleneck with direct causal proof',
-    evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed'],
+    evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed','architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION','architecture-neural-expansion-readiness:PENDING','architecture-neural-expansion-allowed:NO'],
     completionCriteria:['STRUCTURAL_CAUSE_VERIFIED','RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED','AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED']
   };
   const workOrder={
