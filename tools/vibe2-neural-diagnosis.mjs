@@ -1,6 +1,8 @@
 // 파일명: tools/vibe2-neural-diagnosis.mjs
 // 역할: 기존 웨이브 실행을 유지한 채 task의 사실/가설/원인/책임/병목/억제조건을 결정론적으로 계산하는 1단계 neural shadow 진단층.
 
+import { diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
+
 const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const clamp=(value,min=0,max=1)=>Math.max(min,Math.min(max,Number(value)||0));
@@ -31,6 +33,30 @@ function failureStage(rows=[],task={}){
   const blocker=clean(task.blocker);
   if(blocker)return blocker;
   return null;
+}
+
+function currentDeterministicDiagnosticHypothesis(task={}){
+  const evidence=(Array.isArray(task?.evidence)?task.evidence:[]).map(clean).filter(Boolean);
+  const key=[...evidence].reverse().find(value=>value.startsWith('diagnostic-key:'));
+  if(!key)return null;
+  const payload=clean(key.slice('diagnostic-key:'.length));
+  const split=payload.indexOf(':');
+  if(split<=0)return null;
+  const type=clean(payload.slice(0,split)).toUpperCase();
+  const file=clean(payload.slice(split+1));
+  if(!type||!file||!evidence.includes('diagnostic:'+type))return null;
+  const system=diagnosticResponsibleSystem(type);
+  if(!system)return null;
+  return{
+    id:'current-deterministic-diagnostic-'+type.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+    system,
+    confidence:.99,
+    reason:`현재 task의 결정론적 diagnostic ${type}(${file})가 ${system} 책임 가설을 직접 지지함`,
+    diagnosticType:type,
+    diagnosticFile:file,
+    verified:false,
+    advisoryOnly:true
+  };
 }
 
 function hypothesisCandidates(text=''){
@@ -131,8 +157,23 @@ export function buildNeuralDiagnosis({task={},project={}}={}){
     verified:true
   }));
   const text=[clean(task.goal),clean(task.blocker),clean(task.lastOutcome),...rows].join('|');
-  const hypotheses=hypothesisCandidates(text);
-  const owner=responsibility(hypotheses);
+  const currentDiagnostic=currentDeterministicDiagnosticHypothesis(task);
+  const genericHypotheses=hypothesisCandidates(text);
+  const hypotheses=[
+    ...(currentDiagnostic?[currentDiagnostic]:[]),
+    ...genericHypotheses.filter(row=>!currentDiagnostic||row.id!==currentDiagnostic.id)
+  ].slice(0,6);
+  const weightedOwner=responsibility(hypotheses);
+  const owner=currentDiagnostic?{
+    system:currentDiagnostic.system,
+    confidence:.99,
+    alternatives:[
+      ...(weightedOwner.system!==currentDiagnostic.system?[{system:weightedOwner.system,confidence:weightedOwner.confidence}]:[]),
+      ...(weightedOwner.alternatives||[])
+    ].filter((row,index,all)=>row.system!==currentDiagnostic.system&&all.findIndex(x=>x.system===row.system)===index).slice(0,3),
+    basis:'CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS',
+    verified:false
+  }:{...weightedOwner,basis:'WEIGHTED_SHADOW_HYPOTHESES',verified:false};
   const blocker=bottleneck({rows,task,hypotheses,responsibility:owner});
   const hardInhibitors=inhibitors(task,rows);
   const stage=failureStage(rows,task);
