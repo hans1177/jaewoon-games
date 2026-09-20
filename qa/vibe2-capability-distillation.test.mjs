@@ -141,3 +141,20 @@ test('trace ledger deduplicates attempts and remains provenance-only',()=>{
   assert.equal(second.policy.rawCodeStored,false);
   assert.equal(second.policy.mayExpandAuthority,false);
 });
+
+
+test('ambiguous OTHER failure is provenance only and cannot become a reusable failure lesson',()=>{
+  const ambiguous={
+    ...passResult,
+    reservationId:'reservation-3',
+    outcome:'FAIL',
+    candidateBranch:null,
+    candidateIdentity:null,
+    candidateFailure:{class:'OTHER',message:'unknown failure'},
+    evidence:['actions-run:12347','reservation-id:reservation-3','source-generation-failure:OTHER'],
+    roleResults:{exploration:'PASS',implementation:'FAIL',test:'FAIL',performance:'FAIL',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'}
+  };
+  const trace=buildObservableCodingTrace({task,result:ambiguous});
+  assert.equal(trace.verification.candidateFailureClass,'OTHER');
+  assert.equal(buildVerifiedCapabilityExperienceReview({task,result:ambiguous,finalReviewPass:false,selected:false}),null);
+});
