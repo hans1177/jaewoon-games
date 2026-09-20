@@ -149,3 +149,33 @@ test('player attack feel stays inside the existing attack presentation window an
   assert.match(player,/currentRange\(\)\*\.72/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
+
+test('combat vfx is stateless bounded and keyed to authoritative hit timing',()=>{
+  const enemyVfx=functionBody('drawEnemyCombatVfx');
+  assert.match(enemyVfx,/fantasyEnemyAttackPose\(e,now\)/);
+  assert.match(enemyVfx,/e\.hitAt/);
+  assert.match(enemyVfx,/remaining>110/);
+  assert.match(enemyVfx,/for\(let i=0;i<4;i\+\+\)/);
+  assert.doesNotMatch(enemyVfx,/push\(|splice\(|new Array|\[\]/);
+  const playerVfx=functionBody('drawPlayerCombatVfx');
+  assert.match(playerVfx,/attackActive/);
+  assert.match(playerVfx,/p\.invuln/);
+  assert.match(playerVfx,/currentRange\(\)/);
+  assert.doesNotMatch(playerVfx,/push\(|splice\(|new Array|\[\]/);
+  assert.doesNotMatch(source,/(?:combatFx|impactFx|hitFx)\s*=\s*\[/);
+});
+
+test('combat vfx is bound after actor rendering without changing combat ownership',()=>{
+  assert.match(functionBody('drawCreature'),/drawEnemyCombatVfx\(e,x,y,now\)/);
+  assert.match(functionBody('drawPlayer'),/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.doesNotMatch(functionBody('drawEnemyCombatVfx'),/e\.(?:hp|attackAt|nextAttackAt|hitAt)\s*=/);
+  assert.doesNotMatch(functionBody('drawPlayerCombatVfx'),/p\.(?:hp|attackAt|attackFx|invuln)\s*=/);
+});
+
+test('multiplayer snapshots derive visual hit timing only from authoritative hp decrease',()=>{
+  const snapshot=functionBody('applyWorldSnapshot');
+  assert.match(snapshot,/Number\(n\.hp\)<Number\(old\.hp\)\?now\+110/);
+  assert.match(snapshot,/hitAt/);
+  assert.doesNotMatch(snapshot,/n\.hp\s*=/);
+  assert.doesNotMatch(snapshot,/old\.hp\s*=/);
+});

@@ -1323,8 +1323,8 @@ function applyWorldSnapshot(w){
  const list=Array.isArray(w.enemies)?w.enemies:[],previous=new Map(state.enemies.map(e=>[e.netId,e])),now=performance.now();
  state.enemies=list.map(n=>{
   const type=creatures[n.typeId];if(!type)return null;
-  const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0);
-  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt:old?.hitAt||0,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id}
+  const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0),hitAt=old&&Number(n.hp)<Number(old.hp)?now+110:(old?.hitAt||0);
+  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];
  if(w.structures&&typeof w.structures==='object'){
@@ -2934,6 +2934,37 @@ function drawDeathEffects(cx,cy,now){
   ctx.restore()
  }
 }
+function fantasyVfxSeed(value){
+ const text=String(value||'vfx');let seed=0;for(let i=0;i<text.length;i++)seed=(seed*31+text.charCodeAt(i))%9973;return seed/9973*Math.PI*2
+}
+function drawEnemyCombatVfx(e,x,y,now){
+ const pose=fantasyEnemyAttackPose(e,now),angle=creatureAngle(e);
+ if(pose.anticipation>.02){
+  ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+  ctx.strokeStyle='rgba(255,188,102,'+(.14+pose.anticipation*.34)+')';ctx.lineWidth=1.5+pose.anticipation*1.5;
+  ctx.beginPath();ctx.arc(0,0,e.type.r+10,-.5,.5);ctx.stroke();ctx.restore()
+ }
+ const remaining=(Number(e.hitAt)||0)-now;if(remaining<=0||remaining>110)return;
+ const t=1-remaining/110,alpha=1-t,seed=fantasyVfxSeed(e.netId||e.type.id),radius=e.type.r*(.65+t*.9);
+ ctx.save();ctx.translate(x,y);
+ ctx.strokeStyle='rgba(255,242,180,'+(alpha*.82)+')';ctx.lineWidth=Math.max(1,4*(1-t));ctx.beginPath();ctx.arc(0,0,radius,0,Math.PI*2);ctx.stroke();
+ ctx.fillStyle='rgba(255,255,235,'+(alpha*.34)+')';ctx.beginPath();ctx.arc(0,0,Math.max(4,e.type.r*(.34-t*.12)),0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='rgba(255,205,116,'+(alpha*.76)+')';ctx.lineWidth=2;
+ for(let i=0;i<4;i++){const a=seed+i*Math.PI*.5,len=e.type.r*(.55+t*.55),inner=e.type.r*.22;ctx.beginPath();ctx.moveTo(Math.cos(a)*inner,Math.sin(a)*inner);ctx.lineTo(Math.cos(a)*len,Math.sin(a)*len);ctx.stroke()}
+ ctx.restore()
+}
+function drawPlayerCombatVfx(p,x,y,now,angle,attackPose,attackActive){
+ if(attackActive){
+  const strength=Math.max(.18,attackPose.impact+attackPose.recovery*.45);
+  ctx.save();ctx.lineCap='round';
+  for(let i=0;i<3;i++){const fade=(1-i*.24)*strength,rr=currentRange()*(.56+i*.06),offset=attackPose.weaponOffset*.24-i*.07;ctx.strokeStyle='rgba(255,238,166,'+Math.min(.78,fade*.66)+')';ctx.lineWidth=Math.max(1,4-i);ctx.beginPath();ctx.arc(x,y,rr,angle-.5+offset,angle+.5+offset);ctx.stroke()}
+  ctx.restore()
+ }
+ const hitStartedAt=(Number(p.invuln)||0)-520,elapsed=now-hitStartedAt;if(elapsed<0||elapsed>=110)return;
+ const t=elapsed/110,alpha=1-t;
+ ctx.save();ctx.translate(x,y);ctx.strokeStyle='rgba(255,128,128,'+(alpha*.74)+')';ctx.lineWidth=3*(1-t)+1;ctx.beginPath();ctx.arc(0,0,18+t*15,0,Math.PI*2);ctx.stroke();
+ ctx.strokeStyle='rgba(255,216,180,'+(alpha*.7)+')';ctx.lineWidth=2;for(let i=0;i<4;i++){const a=i*Math.PI*.5+.35,inner=10,outer=25+t*10;ctx.beginPath();ctx.moveTo(Math.cos(a)*inner,Math.sin(a)*inner);ctx.lineTo(Math.cos(a)*outer,Math.sin(a)*outer);ctx.stroke()}ctx.restore()
+}
 function drawCreature(e,cx,cy){
  const x=e.x-cx,y=e.y-cy,now=performance.now();if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;
  if(e.type.labBoss&&now<(e.submergedUntil||0)){ctx.fillStyle='#ff5a30';ctx.beginPath();ctx.ellipse(x,y,52,18,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c5a2ff';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#f7e7ff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('용암 잠수',x,y+34);return}
@@ -2955,6 +2986,7 @@ function drawCreature(e,cx,cy){
   if(e.type.boss){const bs=e.bossState;if(bs?.mode?.startsWith('telegraph')){ctx.globalAlpha=.22;ctx.fillStyle=bs.mode==='telegraph-triple'?'#ff466f':'#9cffb0';for(let i=1;i<=3;i++){ctx.beginPath();ctx.arc(x-i*18,y+i*7,e.type.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;ctx.strokeStyle=bs.mode==='telegraph-triple'?'#ff6689':'#a8ffc0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+16,0,Math.PI*2);ctx.stroke()}}
  }
  ctx.restore();
+ drawEnemyCombatVfx(e,x,y,now);
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
  ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':e.type.name,x,y+e.type.r+18)
 }
@@ -2991,7 +3023,7 @@ function drawPlayer(cx,cy,now){
  if(now<(p.weakenedUntil||0))ctx.globalAlpha=Math.min(ctx.globalAlpha,.72);
  if(now<(p.stunnedUntil||0)){ctx.strokeStyle='#f4e76e';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-28,18,0,Math.PI*2);ctx.stroke()}
  if(p.armor){ctx.strokeStyle='#d5cf9b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y+8,14,0,Math.PI);ctx.stroke()}
- if(attackActive){ctx.strokeStyle='rgba(247,230,153,'+(.42+attackPose.impact*.48)+')';ctx.lineWidth=3+attackPose.impact*2;ctx.beginPath();ctx.arc(x,y,currentRange()*.72,angle-.55+attackPose.weaponOffset*.2,angle+.55+attackPose.weaponOffset*.2);ctx.stroke()}
+ drawPlayerCombatVfx(p,x,y,now,angle,attackPose,attackActive);
  ctx.restore()
 }
 function drawShadowEgg(cx,cy){
