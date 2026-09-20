@@ -1,406 +1,170 @@
 <!doctype html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>Approved Web Bootstrap</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px;
-        }
-        h1 {
-            margin-top: 0;
-        }
-        #game {
-            width: 300px;
-            height: 300px;
-            background-color: #fff;
-            border: 2px solid #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            color: #333;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-    font-weight: bold;
-    text-align: center;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#10141d">
+<title>체스 전투</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:#0d1118;color:#eef2f7;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}body{display:flex;justify-content:center}button,input{font:inherit}.app{width:min(100%,760px);min-height:100vh;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:linear-gradient(180deg,#151c29,#0d1118 60%)}.top{display:flex;gap:8px;align-items:center;margin-bottom:8px}.title{font-size:19px;font-weight:1000;white-space:nowrap}.status{min-width:0;flex:1;font-size:11px;color:#b8c5d8;text-align:right;line-height:1.35}.home{height:36px;padding:0 11px;border-radius:10px;background:#263247;color:#fff;text-decoration:none;display:flex;align-items:center;font-size:11px;font-weight:900}.panel{background:#121a27;border:1px solid #2a3850;border-radius:15px;padding:10px;margin-bottom:9px;box-shadow:0 10px 28px #0005}.multi{display:grid;grid-template-columns:1fr auto auto;gap:7px}.multi input{min-width:0;height:40px;border:1px solid #33445f;border-radius:10px;background:#0d1420;color:#fff;padding:0 10px;font-weight:1000}.multi button,.actions button{height:40px;border:0;border-radius:10px;padding:0 12px;background:#324d78;color:#fff;font-weight:1000}.multi button.alt,.actions button.alt{background:#39404d}.roomInfo{margin-top:7px;display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:10px;color:#b9c7d9}.roomInfo b{color:#fff}.battleInfo{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:9px}.side{padding:8px 10px;border-radius:12px;background:#121a27;border:1px solid #27364e;font-size:11px;font-weight:900}.side.black{text-align:right}.side.on{outline:2px solid #76a8ff}.versus{text-align:center;font-size:10px;color:#9fb0c7}.boardWrap{width:100%;display:flex;justify-content:center}.board{width:min(94vw,620px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:4px solid #29384f;border-radius:14px;overflow:hidden;box-shadow:0 16px 36px #0008;touch-action:manipulation}.sq{position:relative;border:0;padding:0;display:flex;align-items:center;justify-content:center;font-size:clamp(27px,8.3vw,57px);line-height:1;user-select:none}.sq.light{background:#d6d9d2}.sq.dark{background:#637386}.sq.selected{box-shadow:inset 0 0 0 5px #ffd86b}.sq.last{box-shadow:inset 0 0 0 4px #7fb6ff9c}.sq.check{box-shadow:inset 0 0 0 5px #ff5568}.sq.target:after{content:"";position:absolute;width:24%;height:24%;border-radius:50%;background:#244d6dbd}.sq.capture:after{content:"";position:absolute;inset:7%;border:5px solid #b83c4fbf;border-radius:50%}.piece.white{color:#fff;text-shadow:0 2px 2px #000,0 0 3px #000}.piece.black{color:#111820;text-shadow:0 1px 1px #fff8}.coord{position:absolute;font-size:8px;font-weight:1000;opacity:.55;color:#111}.coord.file{right:3px;bottom:2px}.coord.rank{left:3px;top:2px}.message{min-height:43px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:900;color:#dfe7f2}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.note{margin-top:7px;font-size:9px;color:#8fa1b9;text-align:center;line-height:1.4}@media(max-width:520px){.app{padding-left:7px;padding-right:7px}.top{align-items:flex-start}.title{font-size:16px}.status{font-size:9px}.home{height:32px;padding:0 8px}.panel{padding:8px}.multi{grid-template-columns:1fr 1fr}.multi input{grid-column:1/-1}.multi button{width:100%}.battleInfo{gap:5px}.side{padding:7px 6px;font-size:10px}.board{width:calc(100vw - 14px);border-width:3px;border-radius:8px}.sq{font-size:clamp(27px,10.5vw,46px)}.roomInfo{align-items:flex-start;flex-direction:column;gap:3px}}
+</style>
 </head>
 <body>
-<main id="game"><script>const game = { player: 'Alice', opponent: 'Bob', score: 0 };</script></main>
-    <script>
-        // Simulated game logic
-        const game = document.getElementById('game');
-        game.innerHTML = 'Chess Battle Game';
-    </script>
-
+<main class="app">
+ <div class="top"><div class="title">체스 전투</div><div id="status" class="status">멀티 방에 참가해</div><a class="home" href="/">홈</a></div>
+ <section class="panel">
+  <div class="multi"><input id="room" type="number" min="1" max="10" inputmode="numeric" placeholder="방 번호 1~10"><button id="create">방 만들기</button><button id="join" class="alt">방 참가</button></div>
+  <div class="roomInfo"><span id="connection">오프라인</span><span><b id="role">관전</b> · 접속 <b id="count">0</b>명</span></div>
+ </section>
+ <div class="battleInfo"><div id="whiteSide" class="side">♔ 흰색 · 빈 자리</div><div class="versus">VS</div><div id="blackSide" class="side black">검은색 · 빈 자리 ♚</div></div>
+ <div class="boardWrap"><div id="board" class="board" aria-label="체스판"></div></div>
+ <section class="panel" style="margin-top:9px">
+  <div id="message" class="message">두 명이 접속하면 시작돼</div>
+  <div class="actions"><button id="reset">새 판</button><button id="resign" class="alt">기권</button></div>
+  <div class="note">말을 누른 뒤 이동할 칸을 눌러. 체크 상태에서는 반드시 왕을 지켜야 해.</div>
+ </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.1"></script>
 <script>
-    // Game state management
-    let gameState = {
-        player1: 'White',
-        player2: 'Black',
-        turn: 'Player1',
-        board: [
-            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
-            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
-            ['__', '__', '__', '__', '__', '__', '__'],
-            ['__', '__', '__', '__', '__', '__', '__'],
-            ['__', '__', '__', '__', '__', '__', '__'],
-            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
-            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP']
-        ],
-        currentPlayer: 0,
-        gameOver: false
-    };
-
-    // Game logic functions
-    function updateBoard() {
-        const board = gameState.board;
-        const currentPlayer = gameState.currentPlayer;
-        const currentPlayerColor = gameState.player1 === 'White' ? 'White' : 'Black';
-
-        // Update board display
-        const boardElement = document.getElementById('game');
-        boardElement.innerHTML = '';
-
-        for (let row = 0; row < 7; row++) {
-            const rowElement = document.createElement('div');
-            rowElement.style.display = 'flex';
-            rowElement.style.flexWrap = 'wrap';
-            rowElement.style.gap = '10px';
-            rowElement.style.backgroundColor = row % 2 === 0 ? '#e0e0e0' : '#f0f0f0';
-
-            for (let col = 0; col < 7; col++) {
-                const piece = board[row][col];
-                const pieceElement = document.createElement('div');
-                pieceElement.style.width = '60px';
-                pieceElement.style.height = '60px';
-                pieceElement.style.display = 'flex';
-                pieceElement.style.justifyContent = 'center';
-                pieceElement.style.alignItems = 'center';
-                pieceElement.style.border = '2px solid #000';
-                pieceElement.style.backgroundColor = piece === 'WP' ? 'white' : 'black';
-                pieceElement.style.color = piece === 'WP' ? 'black' : 'white';
-                pieceElement.style.fontSize = '20px';
-                pieceElement.style.textAlign = 'center';
-                pieceElement.style.textTransform = 'uppercase';
-
-                if (piece === '__') {
-                    pieceElement.style.backgroundColor = '#ccc';
-                }
-
-                pieceElement.addEventListener('click', () => {
-                    if (gameState.gameOver) return;
-                    if (piece === '__') {
-                        // Simulate a move
-                        const newBoard = JSON.parse(JSON.stringify(gameState.board));
-                        newBoard[row][col] = currentPlayerColor;
-                        gameState.board = newBoard;
-                        gameState.currentPlayer = 1 - gameState.currentPlayer;
-                        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
-                        updateBoard();
-                    }
-                });
-
-                rowElement.appendChild(pieceElement);
-            }
-
-            boardElement.appendChild(rowElement);
-        }
-    }
-
-    // Handle user input
-    document.addEventListener('click', (event) => {
-        if (event.target && event.target.classList.contains('piece')) {
-            const piece = event.target;
-            const row = Array.from(piece.parentElement).indexOf(piece);
-            const col = Array.from(piece.parentElement.children).indexOf(piece);
-
-            if (gameState.gameOver) return;
-
-            // Check if the move is valid
-            if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
-                if (row === 0 || row === 6 || col === 0 || col === 6) {
-                    // Invalid move, do nothing
-                    return;
-                }
-            } else if (gameState.currentPlayer === 1 && gameState.player2 === 'Black') {
-                if (row === 0 || row === 6 || col === 0 || col === 6) {
-                    // Invalid move, do nothing
-                    return;
-                }
-            }
-
-            // Simulate a valid move
-            const newBoard = JSON.parse(JSON.stringify(gameState.board));
-            newBoard[row][col] = gameState.currentPlayer === 0 ? 'White' : 'Black';
-            gameState.board = newBoard;
-            gameState.currentPlayer = 1 - gameState.currentPlayer;
-            gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
-            updateBoard();
-        }
-    });
-
-    // Game progression
-    if (board[row][col] = /no_think
-        const board = gameState.board;
-        const currentPlayer = gameState.currentPlayer;
-        const currentPlayerColor = currentPlayer === 0 ? 'White' : 'Black';
-
-        // Check if player1 has won
-        if (board[0][0] === 'White' && board[0][1] === 'White' && board[0][2] === 'White' &&
-            board[0][3] === 'White' && board[0][4] === 'White' && board[0][5] === 'White' &&
-            board[0][6] === 'White') {
-            gameState.gameOver = true;
-            gameState.result = 'Player1 wins!';
-            return true;
-        }
-
-        // Check if player2 has won
-        if (board[6][0] === 'Black' && board[6][1] === 'Black' && board[6][2] === 'Black' &&
-            board[6][3] === 'Black' && board[6][4] === 'Black' && board[6][5] === 'Black' &&
-            board[6][6] === 'Black') {
-            gameState.gameOver = true;
-            gameState.result = 'Player2 wins!';
-            return true;
-        }
-
-        return false;
-    }
-
-    // Game loop
-    function gameLoop() {
-        if (gameState.gameOver) {
-            alert(gameState.result);
-            return;
-        }
-
-        if (checkWinCondition()) {
-            return;
-        }
-
-        // Check for draw
-        const board = gameState.board;
-        let draw = true;
-
-        for (let row = 0; row < 7; row++) {
-            for (let col = 0; col < 7; col++) {
-                if (board[row][col] === '__') {
-                    draw = false;
-                    break;
-                }
-            }
-            if (!draw) break;
-        }
-
-        if (draw) {
-            gameState.gameOver = true;
-            gameState.result = 'It\'s a draw!';
-            return;
-        }
-
-        // Switch players
-        gameState.currentPlayer = 1 - gameState.currentPlayer;
-        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
-        updateBoard();
-    }
-
-    // Start the game
-    updateBoard();
-    setInterval(gameLoop, 1000);
-</script>
-
-<script>
-    // Progression system
-let progression = 0; let resource = 0;
-    let resource = 0;
-
-    // Game state management
-    let gameState = {
-        player1: 'White',
-        player2: 'Black',
-        turn: 'Player1',
-        board: [
-            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
-            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
-            ['__', '__', '__', '__', '__', '__', '__'],
-            ['__', '__', '__', '__', '__', '__', '__'],
-            ['__', '__', '__', '__', '__', '__', '__'],
-            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
-            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP']
-        ],
-        currentPlayer: 0,
-        gameOver: false,
-        progression: 0,
-        resource: 0
-    };
-
-    // Game logic functions
-    function updateBoard() {
-        const board = gameState.board;
-        const currentPlayer = gameState.currentPlayer;
-        const currentPlayerColor = gameState.player1 === 'White' ? 'White' : 'Black';
-
-        // Update board display
-        const boardElement = document.getElementById('game');
-        boardElement.innerHTML = '';
-
-        for (let row = 0; row < 7; row++) {
-            const rowElement = document.createElement('div');
-            rowElement.style.display = 'flex';
-            rowElement.style.flexWrap = 'wrap';
-            rowElement.style.gap = '10px';
-            rowElement.style.backgroundColor = row % 2 === 0 ? '#e0e0e0' : '#f0f0f0';
-
-            for (let col = 0; col < 7; col++) {
-                const piece = board[row][col];
-                const pieceElement = document.createElement('div');
-                pieceElement.style.width = '60px';
-                pieceElement.style.height = '60px';
-                pieceElement.style.display = 'flex';
-                pieceElement.style.justifyContent = 'center';
-                pieceElement.style.alignItems = 'center';
-                pieceElement.style.border = '2px solid #000';
-                pieceElement.style.backgroundColor = piece === 'WP' ? 'white' : 'black';
-                pieceElement.style.color = piece === 'WP' ? 'black' : 'white';
-                pieceElement.style.fontSize = '20px';
-                pieceElement.style.textAlign = 'center';
-                pieceElement.style.textTransform = 'uppercase';
-
-                if (piece === '__') {
-                    pieceElement.style.backgroundColor = '#ccc';
-                }
-
-                pieceElement.addEventListener('click', () => {
-                    if (gameState.gameOver) return;
-                    if (piece === '__') {
-                        // Simulate a move
-                        const newBoard = JSON.parse(JSON.stringify(gameState.board));
-                        newBoard[row][col] = currentPlayerColor;
-                        gameState.board = newBoard;
-                        gameState.currentPlayer = 1 - gameState.currentPlayer;
-                        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
-                        updateBoard();
-                    }
-                });
-
-                rowElement.appendChild(pieceElement);
-            }
-
-            boardElement.appendChild(rowElement);
-        }
-    }
-
-    // Handle user input
-    document.addEventListener('click', (event) => {
-        if (event.target && event.target.classList.contains('piece')) {
-            const piece = event.target;
-            const row = Array.from(piece.parentElement).indexOf(piece);
-            const col = Array.from(piece.parentElement.children).indexOf(piece);
-
-            if (gameState.gameOver) return;
-
-            // Check if the move is valid
-            if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
-                if (row === 0 || row === 6 || col === 0 || col === 6) {
-                    // Invalid move, do nothing
-                    return;
-                }
-            } else if (gameState.currentPlayer === 1 && gameState.player2 === 'Black') {
-                if (row === 0 || row === 6 || col === 0 || col === 6) {
-                    // Invalid move, do nothing
-                    return;
-                }
-            }
-
-            // Simulate a valid move
-            const newBoard = JSON.parse(JSON.stringify(gameState.board));
-            newBoard[row][col] = gameState.currentPlayer === 0 ? 'White' : 'Black';
-            gameState.board = newBoard;
-            gameState.currentPlayer = 1 - gameState.currentPlayer;
-            gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
-            updateBoard();
-        }
-    });
-
-    // Progression system
-    function progress() {\n        if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {\n            progression += 1;\n            if (progression >= 3) {\n                alert('You won!');\n            }\n        }\n    }
-        if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
-            progression += 1;
-            resource += 5;
-        } else if (gameState.currentPlayer === 1 && gameState.player2 === 'Black') {
-            progression += 1;
-            resource += 5;
-        }
-
-if (progression >= 10) {\n    gameState.gameOver = true;\n    gameState.result = 'Progression complete! You have gained 50 resources.';\n    gameState.resources += 50;\n}
-            gameState.gameOver = true;
-            gameState.result = 'Progression complete! You have gained 50 resources.';
-        }
-    }
-
-    // Resource system
-function getResource() { return resource; }
-        return resource;
-    }
-
-    // Game loop
-    function gameLoop() {
-        if (gameState.gameOver) {
-            alert(gameState.result);
-            return;
-        }
-
-        if (checkWinCondition()) {
-            return;
-        }
-
-        // Check for draw
-        const board = gameState.board;
-        let draw = true;
-
-        for (let row = 0; row < 7; row++) {
-            for (let col = 0; col < 7; col++) {
-                if (board[row][col] === '__') {
-                    draw = false;
-                    break;
-                }
-            }
-            if (!draw) break;
-        }
-
-        if (draw) {
-            gameState.gameOver = true;
-            gameState.result = 'It\'s a draw!';
-            return;
-        }
-
-        // Switch players
-        gameState.currentPlayer = 1 - gameState.currentPlayer;
-        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
-        updateBoard();
-    }
-
-    // Start the game
-    updateBoard();
-    setInterval(gameLoop, 1000);
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const PIECE={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
+const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
+const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
+const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('chess-battle-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,presenceIds:new Set()};
+sessionStorage.setItem('chess-battle-id',multiplayer.playerId);
+const ui={board:$('board'),room:$('room'),status:$('status'),connection:$('connection'),role:$('role'),count:$('count'),white:$('whiteSide'),black:$('blackSide'),message:$('message')};
+let selected=null,legalTargets=[];
+function piece(type,color){return{type,color,moved:false}}
+function initialBoard(){
+ const b=Array.from({length:8},()=>Array(8).fill(null)),order=['r','n','b','q','k','b','n','r'];
+ for(let c=0;c<8;c++){b[0][c]=piece(order[c],'b');b[1][c]=piece('p','b');b[6][c]=piece('p','w');b[7][c]=piece(order[c],'w')}
+ return b
+}
+function freshState(seats={w:null,b:null}){return{board:initialBoard(),turn:'w',enPassant:null,lastMove:null,gameOver:false,winner:null,draw:false,reason:'',revision:0,seats:{w:seats.w||null,b:seats.b||null},moveNo:1}}
+let game=freshState();
+const clone=o=>JSON.parse(JSON.stringify(o)),inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8,other=c=>c==='w'?'b':'w';
+function role(){return game.seats.w===multiplayer.playerId?'w':game.seats.b===multiplayer.playerId?'b':'spectator'}
+function findKing(board,color){for(let r=0;r<8;r++)for(let c=0;c<8;c++){const p=board[r][c];if(p&&p.color===color&&p.type==='k')return{r,c}}return null}
+function attacked(board,r,c,by){
+ const pd=by==='w'?-1:1,pr=r-pd;
+ for(const dc of [-1,1]){const pc=c-dc;if(inside(pr,pc)){const p=board[pr][pc];if(p&&p.color===by&&p.type==='p')return true}}
+ for(const [dr,dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]){const rr=r+dr,cc=c+dc;if(inside(rr,cc)){const p=board[rr][cc];if(p&&p.color===by&&p.type==='n')return true}}
+ for(const [dr,dc,types] of [[-1,0,'rq'],[1,0,'rq'],[0,-1,'rq'],[0,1,'rq'],[-1,-1,'bq'],[-1,1,'bq'],[1,-1,'bq'],[1,1,'bq']]){
+  let rr=r+dr,cc=c+dc;while(inside(rr,cc)){const p=board[rr][cc];if(p){if(p.color===by&&types.includes(p.type))return true;break}rr+=dr;cc+=dc}
+ }
+ for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(inside(rr,cc)){const p=board[rr][cc];if(p&&p.color===by&&p.type==='k')return true}}
+ return false
+}
+function inCheck(board,color){const k=findKing(board,color);return !!k&&attacked(board,k.r,k.c,other(color))}
+function pseudoMoves(g,r,c){
+ const b=g.board,p=b[r][c];if(!p)return[];const out=[],push=(rr,cc,special='')=>{if(!inside(rr,cc))return;const t=b[rr][cc];if(!t||t.color!==p.color){if(!t||t.type!=='k')out.push({from:{r,c},to:{r:rr,c:cc},special})}};
+ if(p.type==='p'){
+  const d=p.color==='w'?-1:1,start=p.color==='w'?6:1,one=r+d;
+  if(inside(one,c)&&!b[one][c]){push(one,c);if(r===start&&!b[r+2*d][c])push(r+2*d,c,'double')}
+  for(const dc of [-1,1]){const rr=r+d,cc=c+dc;if(!inside(rr,cc))continue;const t=b[rr][cc];if(t&&t.color!==p.color&&t.type!=='k')push(rr,cc);else if(g.enPassant&&g.enPassant.r===rr&&g.enPassant.c===cc&&g.enPassant.color!==p.color)push(rr,cc,'enpassant')}
+ }else if(p.type==='n')for(const [dr,dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]])push(r+dr,c+dc);
+ else if(['b','r','q'].includes(p.type)){
+  const dirs=[];if(['b','q'].includes(p.type))dirs.push([-1,-1],[-1,1],[1,-1],[1,1]);if(['r','q'].includes(p.type))dirs.push([-1,0],[1,0],[0,-1],[0,1]);
+  for(const [dr,dc] of dirs){let rr=r+dr,cc=c+dc;while(inside(rr,cc)){const t=b[rr][cc];if(!t)out.push({from:{r,c},to:{r:rr,c:cc},special:''});else{if(t.color!==p.color&&t.type!=='k')out.push({from:{r,c},to:{r:rr,c:cc},special:''});break}rr+=dr;cc+=dc}}
+ }else if(p.type==='k'){
+  for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr||dc)push(r+dr,c+dc);
+  if(!p.moved&&!inCheck(b,p.color)){
+   const row=p.color==='w'?7:0;
+   if(r===row&&c===4){
+    const rk=b[row][7];if(rk&&rk.type==='r'&&rk.color===p.color&&!rk.moved&&!b[row][5]&&!b[row][6]&&!attacked(b,row,5,other(p.color))&&!attacked(b,row,6,other(p.color)))out.push({from:{r,c},to:{r:row,c:6},special:'castle-k'});
+    const rq=b[row][0];if(rq&&rq.type==='r'&&rq.color===p.color&&!rq.moved&&!b[row][1]&&!b[row][2]&&!b[row][3]&&!attacked(b,row,3,other(p.color))&&!attacked(b,row,2,other(p.color)))out.push({from:{r,c},to:{r:row,c:2},special:'castle-q'});
+   }
+  }
+ }
+ return out
+}
+function transitionBoard(g,move){
+ const b=clone(g.board),p=b[move.from.r][move.from.c];b[move.from.r][move.from.c]=null;
+ if(move.special==='enpassant'&&g.enPassant)b[g.enPassant.pawnR][g.enPassant.pawnC]=null;
+ b[move.to.r][move.to.c]=p;p.moved=true;
+ if(move.special==='castle-k'){const rook=b[move.to.r][7];b[move.to.r][7]=null;b[move.to.r][5]=rook;if(rook)rook.moved=true}
+ if(move.special==='castle-q'){const rook=b[move.to.r][0];b[move.to.r][0]=null;b[move.to.r][3]=rook;if(rook)rook.moved=true}
+ if(p.type==='p'&&(move.to.r===0||move.to.r===7))p.type='q';
+ return b
+}
+function legalMovesFor(g,r,c){const p=g.board[r][c];if(!p)return[];return pseudoMoves(g,r,c).filter(m=>!inCheck(transitionBoard(g,m),p.color))}
+function allLegal(g,color){const out=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++){const p=g.board[r][c];if(p&&p.color===color)out.push(...legalMovesFor(g,r,c))}return out}
+function sameMove(a,b){return a&&b&&a.from.r===b.from.r&&a.from.c===b.from.c&&a.to.r===b.to.r&&a.to.c===b.to.c&&String(a.special||'')===String(b.special||'')}
+function applyMove(move){
+ if(game.gameOver)return false;const p=game.board[move.from.r]?.[move.from.c];if(!p||p.color!==game.turn)return false;
+ const allowed=legalMovesFor(game,move.from.r,move.from.c),chosen=allowed.find(m=>sameMove(m,move));if(!chosen)return false;
+ const oldTurn=game.turn;game.board=transitionBoard(game,chosen);game.enPassant=null;
+ if(p.type==='p'&&Math.abs(chosen.to.r-chosen.from.r)===2)game.enPassant={r:(chosen.from.r+chosen.to.r)/2,c:chosen.from.c,pawnR:chosen.to.r,pawnC:chosen.to.c,color:p.color};
+ game.lastMove={from:chosen.from,to:chosen.to};game.turn=other(oldTurn);if(oldTurn==='b')game.moveNo++;game.revision++;
+ const moves=allLegal(game,game.turn);if(moves.length===0){game.gameOver=true;if(inCheck(game.board,game.turn)){game.winner=oldTurn;game.reason='체크메이트'}else{game.draw=true;game.reason='스테일메이트'}}
+ return true
+}
+function presencePlayers(){
+ if(!multiplayer.channel)return[];const raw=multiplayer.channel.presenceState(),players=[];
+ Object.values(raw).flat().forEach(p=>{if(p&&p.id)players.push({id:String(p.id),joinedAt:Number(p.joinedAt)||0})});
+ const uniq=new Map();for(const p of players)if(!uniq.has(p.id)||p.joinedAt<uniq.get(p.id).joinedAt)uniq.set(p.id,p);
+ return [...uniq.values()].sort((a,b)=>a.joinedAt-b.joinedAt||a.id.localeCompare(b.id))
+}
+function isHost(){return multiplayer.connected&&multiplayer.hostId===multiplayer.playerId}
+function syncPresence(){
+ const players=presencePlayers();multiplayer.presenceIds=new Set(players.map(p=>p.id));multiplayer.hostId=players[0]?.id||null;
+ if(isHost()){
+  let changed=false;for(const color of ['w','b'])if(game.seats[color]&&!multiplayer.presenceIds.has(game.seats[color])){game.seats[color]=null;changed=true}
+  for(const p of players){if(p.id===game.seats.w||p.id===game.seats.b)continue;if(!game.seats.w){game.seats.w=p.id;changed=true}else if(!game.seats.b){game.seats.b=p.id;changed=true}else break}
+  if(changed){game.revision++;sendState()}else sendState()
+ }
+ render()
+}
+function send(event,payload){if(multiplayer.channel&&multiplayer.connected)multiplayer.channel.send({type:'broadcast',event,payload})}
+function sendState(){if(isHost())send('state',{...clone(game),hostId:multiplayer.hostId})}
+function applyRemoteState(s){if(!s||!Array.isArray(s.board)||!s.seats)return;if(Number(s.revision)<Number(game.revision)&&s.hostId===multiplayer.hostId)return;game={...s,seats:{w:s.seats.w||null,b:s.seats.b||null}};selected=null;legalTargets=[];render()}
+async function connectRoom(raw){
+ const room=String(raw||'').trim(),n=Number(room);if(!/^([1-9]|10)$/.test(room)||!Number.isInteger(n)||n<1||n>10){setMessage('방 번호는 1~10만 가능해');return}
+ if(!window.supabase?.createClient){setMessage('멀티 서버를 불러오지 못했어');return}
+ await leaveRoom(false);multiplayer.room=room;multiplayer.joinedAt=Date.now();multiplayer.client=window.supabase.createClient(MULTI_SUPABASE_URL,MULTI_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+ multiplayer.channel=multiplayer.client.channel('chess-battle:'+room,{config:{broadcast:{self:false,ack:false},presence:{key:multiplayer.playerId}}});
+ multiplayer.channel
+  .on('presence',{event:'sync'},syncPresence)
+  .on('broadcast',{event:'state'},({payload})=>applyRemoteState(payload))
+  .on('broadcast',{event:'state-request'},()=>{if(isHost())sendState()})
+  .on('broadcast',{event:'move-request'},({payload})=>{if(!isHost()||!payload||payload.id!==game.seats[game.turn]||Number(payload.revision)!==game.revision)return;if(applyMove(payload.move))sendState();render()})
+  .on('broadcast',{event:'reset-request'},({payload})=>{if(!isHost()||!payload||![game.seats.w,game.seats.b].includes(payload.id))return;const seats=clone(game.seats);game=freshState(seats);game.revision=Number(payload.baseRevision||0)+1;sendState();render()})
+  .on('broadcast',{event:'resign-request'},({payload})=>{if(!isHost()||game.gameOver||!payload)return;const color=game.seats.w===payload.id?'w':game.seats.b===payload.id?'b':null;if(!color)return;game.gameOver=true;game.winner=other(color);game.reason='기권';game.revision++;sendState();render()})
+  .subscribe(async status=>{if(status==='SUBSCRIBED'){multiplayer.connected=true;ui.room.value=room;await multiplayer.channel.track({id:multiplayer.playerId,joinedAt:multiplayer.joinedAt});const u=new URL(location.href);u.searchParams.set('room',room);history.replaceState(null,'',u);syncPresence();send('state-request',{id:multiplayer.playerId});render()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){ui.connection.textContent='연결 오류'}})
+}
+async function leaveRoom(clearUrl=true){
+ if(multiplayer.channel){try{await multiplayer.channel.untrack()}catch{}try{await multiplayer.channel.unsubscribe()}catch{}}
+ multiplayer.channel=null;multiplayer.client=null;multiplayer.connected=false;multiplayer.room='';multiplayer.hostId=null;multiplayer.presenceIds.clear();game=freshState();selected=null;legalTargets=[];if(clearUrl){const u=new URL(location.href);u.searchParams.delete('room');history.replaceState(null,'',u)}render()
+}
+function setMessage(t){ui.message.textContent=t}
+function colorName(c){return c==='w'?'흰색':c==='b'?'검은색':'관전'}
+function seatText(color){const id=game.seats[color];if(!id)return '빈 자리';return id===multiplayer.playerId?'나':'상대'}
+function render(){
+ const me=role(),count=multiplayer.presenceIds.size;ui.connection.textContent=multiplayer.connected?'방 '+multiplayer.room+' 연결됨':'오프라인';ui.role.textContent=colorName(me);ui.count.textContent=String(count);ui.white.textContent='♔ 흰색 · '+seatText('w');ui.black.textContent=seatText('b')+' · 검은색 ♚';ui.white.classList.toggle('on',game.turn==='w'&&!game.gameOver);ui.black.classList.toggle('on',game.turn==='b'&&!game.gameOver);
+ if(!multiplayer.connected)ui.status.textContent='멀티 방에 참가해';else if(!game.seats.w||!game.seats.b)ui.status.textContent='상대 접속 대기 중';else if(game.gameOver)ui.status.textContent=game.draw?'무승부':colorName(game.winner)+' 승리';else ui.status.textContent=colorName(game.turn)+' 차례';
+ if(!multiplayer.connected)setMessage('방을 만들거나 참가해');else if(!game.seats.w||!game.seats.b)setMessage('두 명이 접속하면 시작돼');else if(game.gameOver)setMessage(game.draw?'무승부 · '+game.reason:colorName(game.winner)+' 승리 · '+game.reason);else if(inCheck(game.board,game.turn))setMessage(colorName(game.turn)+' 왕이 체크 상태야');else if(me==='spectator')setMessage('관전 중 · '+colorName(game.turn)+' 차례');else if(me===game.turn)setMessage('내 차례 · 움직일 말을 선택해');else setMessage('상대 차례');
+ renderBoard()
+}
+function renderBoard(){
+ const me=role(),flip=me==='b',rows=flip?[7,6,5,4,3,2,1,0]:[0,1,2,3,4,5,6,7],cols=flip?[7,6,5,4,3,2,1,0]:[0,1,2,3,4,5,6,7],checkKing=!game.gameOver&&inCheck(game.board,game.turn)?findKing(game.board,game.turn):null;
+ ui.board.innerHTML='';for(const r of rows)for(const c of cols){const cell=document.createElement('button'),p=game.board[r][c];cell.className='sq '+((r+c)%2?'dark':'light');cell.dataset.r=r;cell.dataset.c=c;
+  if(selected&&selected.r===r&&selected.c===c)cell.classList.add('selected');if(game.lastMove&&((game.lastMove.from.r===r&&game.lastMove.from.c===c)||(game.lastMove.to.r===r&&game.lastMove.to.c===c)))cell.classList.add('last');if(checkKing&&checkKing.r===r&&checkKing.c===c)cell.classList.add('check');
+  const target=legalTargets.find(m=>m.to.r===r&&m.to.c===c);if(target)cell.classList.add(game.board[r][c]||target.special==='enpassant'?'capture':'target');
+  if(p){const span=document.createElement('span');span.className='piece '+(p.color==='w'?'white':'black');span.textContent=PIECE[p.color+p.type];cell.appendChild(span)}
+  const rank=document.createElement('small');rank.className='coord rank';rank.textContent=String(8-r);cell.appendChild(rank);const file=document.createElement('small');file.className='coord file';file.textContent='abcdefgh'[c];cell.appendChild(file);cell.addEventListener('click',squareClick);ui.board.appendChild(cell)
+ }
+}
+function squareClick(e){
+ if(!multiplayer.connected||!game.seats.w||!game.seats.b||game.gameOver)return;const me=role();if(me!==game.turn)return;const r=Number(e.currentTarget.dataset.r),c=Number(e.currentTarget.dataset.c),p=game.board[r][c];
+ if(selected){const move=legalTargets.find(m=>m.to.r===r&&m.to.c===c);if(move){selected=null;legalTargets=[];if(isHost()){if(applyMove(move))sendState();render()}else send('move-request',{id:multiplayer.playerId,revision:game.revision,move});return}}
+ if(p&&p.color===me){selected={r,c};legalTargets=legalMovesFor(game,r,c)}else{selected=null;legalTargets=[]}renderBoard()
+}
+function requestReset(){if(!multiplayer.connected||role()==='spectator')return;if(isHost()){const seats=clone(game.seats),base=game.revision;game=freshState(seats);game.revision=base+1;sendState();render()}else send('reset-request',{id:multiplayer.playerId,baseRevision:game.revision})}
+function requestResign(){if(!multiplayer.connected||role()==='spectator'||game.gameOver)return;if(isHost()){const color=role();game.gameOver=true;game.winner=other(color);game.reason='기권';game.revision++;sendState();render()}else send('resign-request',{id:multiplayer.playerId})}
+$('create').addEventListener('click',()=>{const room=String(1+Math.floor(Math.random()*10));ui.room.value=room;connectRoom(room)});$('join').addEventListener('click',()=>connectRoom(ui.room.value));$('reset').addEventListener('click',requestReset);$('resign').addEventListener('click',requestResign);window.addEventListener('beforeunload',()=>{if(multiplayer.channel)multiplayer.channel.untrack().catch(()=>{})});
+const queryRoom=new URL(location.href).searchParams.get('room');render();if(queryRoom)connectRoom(queryRoom);
+})();
 </script>
 </body>
 </html>
