@@ -1219,7 +1219,8 @@
       "coding_vyhgew",
       "coding_xlrfjf",
       "coding_1ex9p6s",
-      "coding_1evhglh"
+      "coding_1evhglh",
+      "coding_g2dpq5"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4648,30 +4649,30 @@
         "lastUpdatedAt": "2026-09-20T21:33:05.955Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
-        "verifiedApplications": 63,
-        "firstCandidatePasses": 24,
-        "totalGenerationAttempts": 109,
+        "verifiedApplications": 64,
+        "firstCandidatePasses": 25,
+        "totalGenerationAttempts": 110,
         "verifiedFailures": 28,
         "games": {
           "seed-puzzle-chromatic-cascade": 29,
           "fantasy-survival": 1,
-          "seed-action-survival-rogu-echoes-of-the-lost-star": 24,
+          "seed-action-survival-rogu-echoes-of-the-lost-star": 25,
           "seed-casual-realm-weaver": 2,
           "village-dungeons": 7
         },
         "targets": {
-          "web": 63
+          "web": 64
         },
         "contextModes": {
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 60,
+            "verifiedApplications": 61,
             "verifiedFailures": 10,
-            "firstCandidatePasses": 24,
-            "totalGenerationAttempts": 103,
-            "totalContextBytes": 1253199,
-            "lastEvidence": "coding_vyhgew",
+            "firstCandidatePasses": 25,
+            "totalGenerationAttempts": 104,
+            "totalContextBytes": 1273128,
+            "lastEvidence": "coding_g2dpq5",
             "lastFailureEvidence": "coding_negative_1frs9h2",
-            "lastUpdatedAt": "2026-09-20T21:32:52.107Z"
+            "lastUpdatedAt": "2026-09-20T21:41:15.549Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -4917,28 +4918,28 @@
             "lastUpdatedAt": "2026-09-20T15:37:45.072Z"
           },
           "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 1,
-            "firstCandidatePasses": 1,
-            "totalGenerationAttempts": 1,
+            "verifiedApplications": 2,
+            "firstCandidatePasses": 2,
+            "totalGenerationAttempts": 2,
             "verifiedFailures": 0,
             "games": {
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 1
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 2
             },
             "targets": {
-              "web": 1
+              "web": 2
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_3brawv",
+            "lastEvidence": "coding_g2dpq5",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T21:24:36.266Z"
+            "lastUpdatedAt": "2026-09-20T21:41:15.549Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_vyhgew",
+        "lastEvidence": "coding_g2dpq5",
         "lastFailureEvidence": "coding_negative_1frs9h2",
-        "lastUpdatedAt": "2026-09-20T21:32:52.107Z"
+        "lastUpdatedAt": "2026-09-20T21:41:15.549Z"
       }
     }
   },
@@ -7474,7 +7475,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T21:41:02.813Z",
+    "lastBuiltAt": "2026-09-20T21:41:15.587Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9973,5 +9974,5 @@
       "knowledge_n81bwp"
     ]
   },
-  "updatedAt": "2026-09-20T21:41:02.813Z"
+  "updatedAt": "2026-09-20T21:41:15.587Z"
 }
