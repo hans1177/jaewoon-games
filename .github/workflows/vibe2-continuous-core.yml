@@ -747,7 +747,7 @@ jobs:
               if(!isAllowedSystemArchitecturePath(file)||!responsible.has(file))throw new Error('SYSTEM_CANDIDATE_PATH_FORBIDDEN:'+file);
               console.log(file);
             }
-            NODE
+          NODE
             mapfile -t system_files < /tmp/vibe2-system-candidate-files.txt
             [ "${#system_files[@]}" -gt 0 ]
             git add -- "${system_files[@]}" .vibe2/candidates
