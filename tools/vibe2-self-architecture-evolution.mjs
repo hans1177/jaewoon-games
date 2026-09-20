@@ -12,9 +12,17 @@ function neuralExpansionReadiness(controlInput={}){
     ?controlInput.neuralExpansionReadiness:{};
   const required=['rule1QaPass','rule2QaPass','rule3QaPass','atomicNeuronFanInQaPass','sharedContextQaPass','securityQaPass'];
   const missing=required.filter(key=>r[key]!==true);
+  if(r.pass!==true)missing.push('readinessPass');
+  if(clean(r.source)!=='DIRECT_TARGETED_QA')missing.push('directQaSource');
+  if(r.internalNeuralStructureExpansionAllowedWhenPass!==true)missing.push('internalExpansionEligibility');
+  if(r.neuralExecutionAuthorityExpansionAllowed!==false)missing.push('executionAuthorityInvariant');
+  if(r.queueMutationAuthorityExpanded!==false)missing.push('queueAuthorityInvariant');
+  if(r.workerCreationAuthorityExpanded!==false)missing.push('workerAuthorityInvariant');
+  if(r.gateWeakeningAllowed!==false)missing.push('gateInvariant');
+  const uniqueMissing=uniq(missing);
   return Object.freeze({
-    pass:missing.length===0,
-    missing:Object.freeze(missing),
+    pass:uniqueMissing.length===0,
+    missing:Object.freeze(uniqueMissing),
     source:clean(r.source)||'RUNTIME_QA_EVIDENCE'
   });
 }
