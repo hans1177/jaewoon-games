@@ -170,6 +170,7 @@ export function expandTargetPlatformDevelopmentCandidates(items=[]){
     if(upper(item.productionClass)!=='RELEASE_CONFIRMED'){out.push(item);continue;}
     const targets=webRevisionPropagationTargets(item);
     for(const platform of targets){
+      const sync=item.webNativeRevisionSync?.platforms?.[platform]||{};
       out.push({
         ...item,
         selectedPlatform:platform,
@@ -177,8 +178,8 @@ export function expandTargetPlatformDevelopmentCandidates(items=[]){
         webNativePropagation:true,
         webNativePropagationTarget:platform,
         webNativePropagationWebSourceIndexSha256:clean(item.webSourceIndexSha256||item.webPlatformHandoff?.sourceIndexSha256),
-        currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-        canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+        currentStep:clean(sync.currentStep)||'TARGET_PLATFORM_SOURCE_BIND',
+        canonicalState:clean(sync.canonicalState)||'TARGET_PLATFORM_REPAIR_REQUIRED',
         status:'ACTIVE'
       });
     }
