@@ -42409,6 +42409,114 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bb970f4b4c6597fd0e4f207f",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:74e5ea396ba6ce0f8cea"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f5d33f241984a2e17897c182",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:7fb007f36015601c9cd91d4ff284fbbd48295008",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:e25517630529c1fa7256"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2b3fa1cdb21e56c986941df9",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:b555ee374bc33d97d89d656dbd76b27112e45265",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:f0dfde0ebe49fcb4bdc1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -42427,7 +42535,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 54,
+        "applicationCount": 57,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -46654,6 +46762,114 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d6180e8506358685f90695aa",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:74e5ea396ba6ce0f8cea"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b329f4cdb36235aa3ea27e55",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:7fb007f36015601c9cd91d4ff284fbbd48295008",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:e25517630529c1fa7256"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_93ec04372cdf5b0a7f2c8ce1",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:b555ee374bc33d97d89d656dbd76b27112e45265",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:f0dfde0ebe49fcb4bdc1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -46672,7 +46888,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 51,
+        "applicationCount": 54,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -56777,6 +56993,114 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cb72011e51f7dbabd9ca0311",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:74e5ea396ba6ce0f8cea"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_557e4ae170fff7bd9f217b06",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:7fb007f36015601c9cd91d4ff284fbbd48295008",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:e25517630529c1fa7256"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1b90f424cb64a9413749db9e",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:b555ee374bc33d97d89d656dbd76b27112e45265",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:f0dfde0ebe49fcb4bdc1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -56795,7 +57119,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 30,
+        "applicationCount": 33,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -60300,6 +60624,114 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c5901f4bd121b43e8d3e53b2",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:74e5ea396ba6ce0f8cea"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_04d6340404b5b6757c107e69",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:7fb007f36015601c9cd91d4ff284fbbd48295008",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:e25517630529c1fa7256"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6b23e7fa23f906facf132f44",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:b555ee374bc33d97d89d656dbd76b27112e45265",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:f0dfde0ebe49fcb4bdc1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -60318,7 +60750,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 21,
+        "applicationCount": 24,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -64871,6 +65303,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5ba87aa6cd066ff76a3bd455",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:323b0982b507972e1b80"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0099807520585966d960b748",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:ccc284e553a377179bbe"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f7edcb7cc191c705ab9eb626",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:36a60684f00b35d5ec59"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -64889,7 +65420,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 36,
+        "applicationCount": 39,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -70516,7 +71047,12 @@
         "base-main:3e3d41dbd83547ce5126f3531726499bfde40cef",
         "actions-run:35505332129",
         "reservation-id:35505332129:1",
-        "coding-trace:ctrace_b97f34681ecf9e4fff5562a9"
+        "coding-trace:ctrace_b97f34681ecf9e4fff5562a9",
+        "candidate-sha:7fb007f36015601c9cd91d4ff284fbbd48295008",
+        "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+        "actions-run:35516402012",
+        "reservation-id:35516402012:1",
+        "coding-trace:ctrace_338c590cccd5ac34b9fc4eef"
       ],
       "reusablePatterns": [
         "CAPABILITY:CODING_STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH",
@@ -70538,8 +71074,8 @@
       "avoidPatterns": [],
       "verified": true,
       "reusable": true,
-      "confirmations": 4,
-      "confidence": 0.8,
+      "confirmations": 5,
+      "confidence": 0.8333,
       "capabilityApplications": [
         {
           "version": 1,
@@ -71907,6 +72443,114 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d5657861eea16567403c31f5",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:74e5ea396ba6ce0f8cea"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f61956ac1bf2753bc5bc40e2",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:7fb007f36015601c9cd91d4ff284fbbd48295008",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:e25517630529c1fa7256"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d882933933c70ae5d4f99440",
+          "taskId": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "web",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0d2630a9c5fc72b6115ab032",
+            "capability_ctrace_4046e195870c0ad506bb6c96",
+            "capability_ctrace_57338ef0f553485ab60a913f",
+            "capability_ctrace_c0c9a2df62b2a6e1e369ab66",
+            "capability_ctrace_c7b3d14091e873af94be215b"
+          ],
+          "evidence": [
+            "candidate-sha:b555ee374bc33d97d89d656dbd76b27112e45265",
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "incremental-qa-hash:30937e07868ad962d64e4b1f1fe441cea6dd9fb0142f0b81b94bb484736e987a",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:ANALYZED",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:f0dfde0ebe49fcb4bdc1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -71925,7 +72569,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "GENERALIZATION_CANDIDATE",
-        "applicationCount": 38,
+        "applicationCount": 41,
         "independentPassCount": 2,
         "crossGameVerifiedApplicationCount": 2,
         "directSupportCount": 0,
@@ -75870,7 +76514,11 @@
         "base-main:6fdb7f1efbc0850a2808389fe018d13695e6401f",
         "actions-run:35514924332",
         "reservation-id:35514924332:1",
-        "coding-trace:ctrace_11823e97d05ea9a5c82a18a0"
+        "coding-trace:ctrace_11823e97d05ea9a5c82a18a0",
+        "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+        "actions-run:35516402012",
+        "reservation-id:35516402012:1",
+        "coding-trace:ctrace_cc31ae9977ee36e3f2c8527e"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -75879,8 +76527,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 6,
-      "confidence": 0.8571,
+      "confirmations": 7,
+      "confidence": 0.875,
       "capabilityApplications": [
         {
           "version": 1,
@@ -76912,6 +77560,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bd341447238170c4f7d5e779",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:323b0982b507972e1b80"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_90434d87eb97a60ddd18721e",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:ccc284e553a377179bbe"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_45531a222f903001d41385d3",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:36a60684f00b35d5ec59"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -76930,7 +77677,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 30,
+        "applicationCount": 33,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -77001,7 +77748,11 @@
         "base-main:6fdb7f1efbc0850a2808389fe018d13695e6401f",
         "actions-run:35514924332",
         "reservation-id:35514924332:1",
-        "coding-trace:ctrace_238a2eff664460e4f96104b3"
+        "coding-trace:ctrace_238a2eff664460e4f96104b3",
+        "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+        "actions-run:35516402012",
+        "reservation-id:35516402012:1",
+        "coding-trace:ctrace_897a824c6269946069b507d1"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -77010,8 +77761,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 5,
-      "confidence": 0.8333,
+      "confirmations": 6,
+      "confidence": 0.8571,
       "capabilityApplications": [
         {
           "version": 1,
@@ -78043,6 +78794,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e7afa08f98f546d5668f7adf",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:323b0982b507972e1b80"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_831a433d6bd9833b498ec532",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:ccc284e553a377179bbe"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5eb0bac67c68cbf4d74fbe45",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:36a60684f00b35d5ec59"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -78061,7 +78911,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 30,
+        "applicationCount": 33,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -78136,7 +78986,11 @@
         "base-main:6fdb7f1efbc0850a2808389fe018d13695e6401f",
         "actions-run:35514924332",
         "reservation-id:35514924332:1",
-        "coding-trace:ctrace_3521eb82bb40950c98041829"
+        "coding-trace:ctrace_3521eb82bb40950c98041829",
+        "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+        "actions-run:35516402012",
+        "reservation-id:35516402012:1",
+        "coding-trace:ctrace_fd9bcf5c9f79292470ca9ca0"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -78145,8 +78999,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 6,
-      "confidence": 0.8571,
+      "confirmations": 7,
+      "confidence": 0.875,
       "capabilityApplications": [
         {
           "version": 1,
@@ -79178,6 +80032,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2474973014fbb1b0257d689d",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:323b0982b507972e1b80"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_08df1bbb645252976d7de7c5",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:ccc284e553a377179bbe"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0f9ddd9cb399b04f4e71f7c3",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:36a60684f00b35d5ec59"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -79196,7 +80149,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 30,
+        "applicationCount": 33,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -80435,6 +81388,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_77f2a9c2c0647233cebe0321",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:323b0982b507972e1b80"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cc2e9cb93064c7fec6b0cf42",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:ccc284e553a377179bbe"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_08f542984f3c656ea2b0ceca",
+          "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+            "capability_ctrace_2b0751d16c406d1e9fcc1004",
+            "capability_ctrace_aef89983cf0a1065407c8b3e",
+            "capability_ctrace_74d39d52bb47e6444412ec04"
+          ],
+          "evidence": [
+            "base-main:15c15eb33fe192aa2f615b94ec81f6dbfdba48a1",
+            "actions-run:35516402012",
+            "reservation-id:35516402012:1",
+            "capability-application-sample:36a60684f00b35d5ec59"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -80453,7 +81505,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 9,
+        "applicationCount": 12,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
