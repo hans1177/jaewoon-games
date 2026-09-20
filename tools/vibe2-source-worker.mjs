@@ -1255,6 +1255,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
+      if(focusedRetry&&attempt>=maxAttempts){
+        maxAttempts=attempt+1;
+        console.log(`VIBE2_FOCUSED_RETRY_BUDGET=${attempt}->${maxAttempts}:${candidateVariant}:${failureClass}`);
+      }
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
