@@ -41,3 +41,24 @@ test('mobile independent QA uses Studio device simulation and real UI interactio
   assert.match(probe, /ROBLOX_MOBILE_CONTROL_UI_PASS=YES/);
   assert.match(probe, /ROBLOX_INDEPENDENT_QA_PASS=YES/);
 });
+
+test('owner-focused secondary Roblox enters native mobile QA and regression without changing canonical Unity',()=>{
+  const workflow=read(workflowPath);
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxServerClientBoundaryPassed===true/);
+  assert.match(workflow,/artifactIdentity:artifact,secondaryOwnerFocus/);
+  assert.match(workflow,/secondaryOwnerFocus=\(\$env:SECONDARY_OWNER_FOCUS -eq 'true'\)/);
+  assert.match(workflow,/ownerFocusRobloxPostRuntimeQaEvidence/);
+  assert.match(workflow,/ownerFocusRobloxIndependentQaPassed=independent/);
+  assert.match(workflow,/ownerFocusRobloxRegressionPassed=regression/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState=regression\?'QA_READY'/);
+  const start=workflow.indexOf('if(secondaryOwnerFocus){',workflow.indexOf('Persist exact post-runtime QA state'));
+  const end=workflow.indexOf('continue;',start);
+  assert.ok(start>=0&&end>start,'secondary post-runtime persist branch missing');
+  const block=workflow.slice(start,end);
+  assert.doesNotMatch(block,/selectedPlatform\s*[:=]/);
+  assert.doesNotMatch(block,/targetPlatform\s*[:=]/);
+  assert.doesNotMatch(block,/currentStep\s*[:=]/);
+  assert.doesNotMatch(block,/canonicalState\s*[:=]/);
+});
