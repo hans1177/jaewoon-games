@@ -119,7 +119,10 @@ function listContextFiles(root,target,ignored=[]){const ignore=ignored.map(posix
 function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles=[],{maxFiles=MAX_CONTEXT_FILES,maxBytes=MAX_CONTEXT_BYTES}={}){
   const fileLimit=Math.max(1,Math.min(MAX_CONTEXT_FILES,Number(maxFiles)||MAX_CONTEXT_FILES));
   const byteLimit=Math.max(12000,Math.min(MAX_CONTEXT_BYTES,Number(maxBytes)||MAX_CONTEXT_BYTES));
-  const preferred=unique([...responsibleFiles,...explorationFiles]).slice(0,fileLimit);
+  const safeExplorationFiles=target==='system'
+    ?explorationFiles.map(posix).filter(isAllowedSystemArchitecturePath)
+    :explorationFiles;
+  const preferred=unique([...responsibleFiles,...safeExplorationFiles]).slice(0,fileLimit);
   const rows=(preferred.length?preferred.map(relative=>({full:path.join(root,relative),relative})):listContextFiles(root,target,ignored)).slice(0,fileLimit);
   const files=[];
   let total=0;
