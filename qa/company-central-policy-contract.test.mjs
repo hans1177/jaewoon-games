@@ -550,6 +550,18 @@ test('planning department is the canonical combined planning growth monetization
   assert.equal(p.timingPolicy.revenueBlockingBugUsesHotfixLane,true);
   assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,true);
   assert.equal(p.learningLoop.verifiedOutcomeReturnsToExistingVibeLearning,true);
+  assert.equal(p.departmentToVibeDecisionBoundary.departmentAuthority,'RESEARCH_ADVISORY_EVIDENCE_ONLY');
+  assert.equal(p.departmentToVibeDecisionBoundary.departmentRecommendationNeverEqualsExecutionOrder,true);
+  assert.equal(p.departmentToVibeDecisionBoundary.vibeDecisionUsesEvidenceNotDepartmentAuthority,true);
+  assert.equal(p.departmentToVibeDecisionBoundary.weakEvidenceDefault,'REQUEST_MORE_RESEARCH_OR_DEFER');
+  assert.ok(p.departmentToVibeDecisionBoundary.departmentMay.includes('ANALYZE_USER_ACQUISITION_RETENTION_MONETIZATION_AND_TRENDS'));
+  assert.ok(p.departmentToVibeDecisionBoundary.departmentMayNot.includes('FORCE_IMPLEMENTATION'));
+  assert.ok(p.departmentToVibeDecisionBoundary.vibeAuthority.includes('RUN_LIMITED_EXPERIMENT'));
+  assert.ok(p.departmentToVibeDecisionBoundary.vibeAuthority.includes('CHOOSE_APPLICATION_TIMING'));
+  assert.equal(p.dataResearchDiscipline.factsInferenceHypothesisMustBeSeparated,true);
+  assert.equal(p.dataResearchDiscipline.noUsersMeansNoPlayerBehaviorClaim,true);
+  assert.equal(p.dataResearchDiscipline.noPurchasesMeansNoConversionOrRevenueOptimizationClaim,true);
+  assert.equal(p.dataResearchDiscipline.contradictoryEvidenceMustBeShownToVibe,true);
   assert.equal(p.userBaseBeforeMonetizationPolicy.noMeaningfulUserBaseDefault,'DEFER_NONESSENTIAL_MONETIZATION');
   assert.equal(p.userBaseBeforeMonetizationPolicy.monetizationActivationRequiresEvidence,true);
   assert.equal(p.userBaseBeforeMonetizationPolicy.vanityInstallCountAloneInsufficient,true);
