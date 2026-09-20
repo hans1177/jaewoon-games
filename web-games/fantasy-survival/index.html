@@ -39,9 +39,9 @@ const WORLD={w:36000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_su
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
-const SNOW_REGION={x:18000,y:0,w:3600,h:12000};
-const JUNGLE_REGION={x:21600,y:0,w:14400,h:12000}; // 새 맵 전체 면적의 정확히 40%
-const JUNGLE_LAKES=[{x:24400,y:2600,r:360},{x:29400,y:6500,r:300},{x:34200,y:9300,r:340}];
+const JUNGLE_REGION={x:18000,y:0,w:18000,h:9600}; // 172,800,000 = 전체 맵 면적의 정확히 40%
+const SNOW_REGION={x:18000,y:9600,w:18000,h:2400}; // 밀림 바로 아래 설원
+const JUNGLE_LAKES=[{x:24400,y:2600,r:360},{x:29400,y:6500,r:300},{x:34200,y:8900,r:340}];
 const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y:8500},{x:11550,y:7000}];
 const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},SHADOW_WOLF_EGG_2={x:11480,y:9750,r:30},MAP_CELL=400;
 const GIANT_LAKE_SURFACE={x:0,y:0,w:14400,h:2000};
@@ -168,6 +168,7 @@ const recipes=[
 {id:'meal-lake-hare-greens',name:'토끼 야채구이',where:'meal',cost:{},desc:'밥 +80 · 초당 체력 18 회복 · 4초',kind:'consumable',hunger:80,foodRegen:18,foodRegenSeconds:4},
 {id:'meal-lake-lizard-greens',name:'도마뱀 야채볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
 {id:'meal-lake-deer-greens',name:'수정사슴 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
+{id:'meal-cooked-greens',name:'구운 야채 한상',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 16 회복 · 4초',kind:'consumable',hunger:70,foodRegen:16,foodRegenSeconds:4},
 {id:'leech-cleaver',name:'거머리 흡혈도',where:'junglebench',cost:{leechSucker:4,monopolyIngot:5,goldIngot:4},desc:'공격력 185 · 밀림 3티어 무기',kind:'weapon',power:185,range:88,cooldown:800},
 {id:'gorilla-armor',name:'고릴라 중갑',where:'junglebench',cost:{gorillaHide:6,monopolyIngot:8,goldIngot:7},desc:'최대 체력 +250 · 받는 피해 23% 감소 · 4티어',kind:'armor',maxHp:250,reduce:.23},
 {id:'gorilla-guard-armor',name:'고릴라 수호갑',where:'junglebench',cost:{gorillaHide:8,monopolyIngot:10,goldIngot:8},desc:'최대 체력 +270 · 받는 피해 24% 감소 · 4티어',kind:'armor',maxHp:270,reduce:.24},
@@ -348,8 +349,8 @@ function randomVolcanoPoint(zone='volcano'){
  let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
 function regionAt(x,y){
- if(pointInJungle(x,y))return'jungle';
  if(pointInSnow(x,y))return'snow';
+ if(pointInJungle(x,y))return'jungle';
  if(pointInCrystalRegion(x,y))return'crystal';
  if(pointInGiantLakeSurface(x,y))return'giantlake';
  if(pointInWorldTree(x,y))return'worldtree';
@@ -615,7 +616,7 @@ function initWorld(){
   for(const p of [{x:5200,y:1700},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   for(let i=0;i<6;i++){const p={x:2200+i*2450,y:650+(i%3)*720};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   // 설원 생태계
-  {const e=spawnAt(creatures.yetileader,19800,2600,null);e.noRespawn=true;state.enemies.push(e)}
+  {const e=spawnAt(creatures.yetileader,27000,10800,null);e.noRespawn=true;state.enemies.push(e)}
   for(let i=0;i<4;i++)state.enemies.push(spawnCreature(creatures.polarbear,i));
   for(let i=0;i<5;i++)state.enemies.push(spawnCreature(creatures.polarwolf,i));
   for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.polarfox,i));
@@ -796,7 +797,7 @@ function drawMap(){
    m.fillStyle=mapTerrainColorAt(cx,cy);
    m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
  }
- if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,700*sy)}
+ if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,(SNOW_REGION.y+SNOW_REGION.h/2)*sy)}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
  if(state.discovered.giantlake){m.strokeStyle='#4ba6c8';m.lineWidth=2;m.strokeRect(GIANT_LAKE_SURFACE.x*sx,GIANT_LAKE_SURFACE.y*sy,GIANT_LAKE_SURFACE.w*sx,GIANT_LAKE_SURFACE.h*sy);m.fillStyle='#a8e8ff';m.font='bold 11px system-ui';m.fillText('거대 호수',6800*sx,900*sy)}
  if(state.discovered.crystal){m.strokeStyle='#9a84e8';m.lineWidth=2;m.strokeRect(CRYSTAL_REGION.x*sx,0,CRYSTAL_REGION.w*sx,WORLD.h*sy);m.fillStyle='#d7ccff';m.font='bold 11px system-ui';m.fillText('수정 지대',15500*sx,800*sy);m.beginPath();m.arc(CRYSTAL_HEART.x*sx,CRYSTAL_HEART.y*sy,5,0,Math.PI*2);m.fill()}
@@ -2433,9 +2434,9 @@ function drawBackground(cx,cy,w,h){
  // 설원
  ctx.fillStyle='#d7e7ee';ctx.fillRect(SNOW_REGION.x,SNOW_REGION.y,SNOW_REGION.w,SNOW_REGION.h);
  ctx.strokeStyle='#a8cbd9';ctx.lineWidth=24;ctx.strokeRect(SNOW_REGION.x+12,SNOW_REGION.y+12,SNOW_REGION.w-24,SNOW_REGION.h-24);
- for(let i=0;i<60;i++){const x=SNOW_REGION.x+100+(i*811)%3400,y=140+(i*557)%11600;ctx.fillStyle=i%2?'#f4fbff':'#bfd8e3';ctx.beginPath();ctx.arc(x,y,18+(i%5)*6,0,Math.PI*2);ctx.fill()}
- ctx.fillStyle='#496978';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText('설원',SNOW_REGION.x+SNOW_REGION.w/2,110);
- ctx.font='bold 11px system-ui';ctx.fillText('추위 게이지가 빠르게 오른다',SNOW_REGION.x+SNOW_REGION.w/2,145);
+ for(let i=0;i<60;i++){const x=SNOW_REGION.x+100+(i*811)%(SNOW_REGION.w-200),y=SNOW_REGION.y+100+(i*557)%(SNOW_REGION.h-200);ctx.fillStyle=i%2?'#f4fbff':'#bfd8e3';ctx.beginPath();ctx.arc(x,y,18+(i%5)*6,0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle='#496978';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText('설원',SNOW_REGION.x+SNOW_REGION.w/2,SNOW_REGION.y+110);
+ ctx.font='bold 11px system-ui';ctx.fillText('추위 게이지가 빠르게 오른다',SNOW_REGION.x+SNOW_REGION.w/2,SNOW_REGION.y+145);
  // 밀림 · 새 맵 전체 면적의 40%
  ctx.fillStyle='#153a22';ctx.fillRect(JUNGLE_REGION.x,JUNGLE_REGION.y,JUNGLE_REGION.w,JUNGLE_REGION.h);
  ctx.strokeStyle='#346b3f';ctx.lineWidth=28;ctx.strokeRect(JUNGLE_REGION.x+14,JUNGLE_REGION.y+14,JUNGLE_REGION.w-28,JUNGLE_REGION.h-28);

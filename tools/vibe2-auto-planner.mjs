@@ -504,6 +504,16 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     ]);
     out.workUnits=4;
     out.assetProductionLane=true;
+    out.estimatedRisk='high';
+    out.speculativeEligible=true;
+    out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
+    out.atomicCompletionRequired=true;
+    out.evidence=[...new Set([
+      ...(out.evidence||[]),
+      'atomic-neuron-stream:presentation',
+      'atomic-neuron-micro-fanin:per-task',
+      'graphics-atomic-candidate-isolation-required'
+    ])];
     return out;
   }
   return null;
@@ -549,7 +559,20 @@ export function findWeatherPresentationTask(project,repoRoot,queue){
     'platform-native-presentation-required',
     'web-native-direct-asset-reuse:FORBIDDEN'
   ]);
-  out.workUnits=5;out.assetProductionLane=true;out.weatherPresentationLane=true;return out;
+  out.workUnits=5;
+  out.assetProductionLane=true;
+  out.weatherPresentationLane=true;
+  out.estimatedRisk='high';
+  out.speculativeEligible=true;
+  out.atomicNeuronMode='PER_TASK_MICRO_FANIN';
+  out.atomicCompletionRequired=true;
+  out.evidence=[...new Set([
+    ...(out.evidence||[]),
+    'atomic-neuron-stream:presentation',
+    'atomic-neuron-micro-fanin:per-task',
+    'graphics-atomic-candidate-isolation-required'
+  ])];
+  return out;
 }
 
 function scanExplicitMarkerTask(project,repoRoot,queue){

@@ -28,6 +28,34 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('legacy presentation tasks migrate into atomic graphics neuron metadata on queue normalization',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[{
+    id:'legacy-presentation',
+    gameId:'fantasy-survival',
+    target:'web',
+    department:'development',
+    type:'implementation',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 그래픽 개선',
+    status:'running',
+    sourceRoot:'web-games/fantasy-survival',
+    responsibleFiles:['web-games/fantasy-survival/index.html'],
+    estimatedRisk:'medium',
+    speculativeEligible:false,
+    evidence:['presentation-quality-pipeline:v1','presentation-pass:ASSET_ADAPTATION'],
+    neuronExpectedVariants:3
+  }]});
+  const task=queue.tasks[0];
+  assert.equal(task.status,'running');
+  assert.equal(task.estimatedRisk,'high');
+  assert.equal(task.speculativeEligible,true);
+  assert.equal(task.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
+  assert.equal(task.atomicCompletionRequired,true);
+  assert.equal(task.neuronExpectedVariants,3);
+  assert.ok(task.evidence.includes('atomic-neuron-stream:presentation'));
+  assert.ok(task.evidence.includes('atomic-neuron-micro-fanin:per-task'));
+  assert.ok(task.evidence.includes('graphics-atomic-candidate-isolation-required'));
+});
+
 test('learning-idle lane reservation uses its own cap instead of game adaptive cap',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-lane-'));
   const queueFile=path.join(dir,'queue.json');
