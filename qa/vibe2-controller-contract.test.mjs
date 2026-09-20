@@ -791,6 +791,6 @@ test('continuous core connects existing evidence reasoning into self-generated s
   assert.match(workflow,/\.vibe2\/web-roblox-handoffs\.json/);
   assert.match(workflow,/execution_lane:process\.env\.VIBE2_EXECUTION_LANE/);
   assert.doesNotMatch(workflow,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \] && \[ "\$\{continue_required:-NO\}" = 'YES' \]/);
-  assert.equal(roadmap.developmentLifecycleMachine?.continuousExecution?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
-  assert.equal(roadmap.developmentLifecycleMachine?.continuousExecution?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+  assert.equal(roadmap.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
+  assert.equal(roadmap.selfRecoveryAndBottleneckRelief?.automaticGateRepairLoop?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
 });
