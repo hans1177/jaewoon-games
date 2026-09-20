@@ -113,3 +113,39 @@ test('player living motion keeps authoritative movement, weapon direction and at
   assert.match(player,/currentRange\(\)\*\.72/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
+
+test('animation feel uses authoritative attack timestamps for anticipation impact and recovery without mutating combat state',()=>{
+  const enemyPose=functionBody('fantasyEnemyAttackPose');
+  assert.match(enemyPose,/nextAttackAt/);
+  assert.match(enemyPose,/attackAt/);
+  assert.match(enemyPose,/hitAt/);
+  assert.match(enemyPose,/anticipation/);
+  assert.match(enemyPose,/impact/);
+  assert.match(enemyPose,/recovery/);
+  assert.doesNotMatch(enemyPose,/e\.(?:nextAttackAt|attackAt|hitAt)\s*=/);
+  const playerPose=functionBody('fantasyPlayerAttackPose');
+  assert.match(playerPose,/p\?\.attackAt/);
+  assert.match(playerPose,/attackActive/);
+  assert.match(playerPose,/anticipation/);
+  assert.match(playerPose,/impact/);
+  assert.match(playerPose,/recovery/);
+  assert.doesNotMatch(playerPose,/p\.(?:attackAt|attackFx)\s*=/);
+});
+
+test('dedicated creature strikes now peak on the authoritative attack event and recover afterward',()=>{
+  assert.match(functionBody('drawFantasyCreatureAssetLocal'),/Math\.max\(0,1-phase\)/);
+  assert.match(functionBody('drawWolfBodyLocal'),/strike=phase>=0\?Math\.max\(0,1-phase\):0/);
+  assert.match(functionBody('drawBearBodyLocal'),/strike=phase>=0\?Math\.max\(0,1-phase\):0/);
+  assert.match(functionBody('drawFireSnakeModel'),/strike=phase>=0\?Math\.max\(0,1-phase\):0/);
+  assert.match(functionBody('drawWolfModel'),/fantasyEnemyAttackPose\(e,now\)/);
+  assert.match(functionBody('drawBearModel'),/fantasyEnemyAttackPose\(e,now\)/);
+  assert.match(functionBody('drawFireSnakeModel'),/fantasyEnemyAttackPose\(e,now\)/);
+});
+
+test('player attack feel stays inside the existing attack presentation window and preserves range ownership',()=>{
+  const player=functionBody('drawPlayer');
+  assert.match(player,/fantasyPlayerAttackPose\(p,now,attackActive\)/);
+  assert.match(player,/weaponOffset/);
+  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
+});
