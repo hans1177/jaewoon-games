@@ -67,8 +67,8 @@ test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 
   assert.match(homepage,/function developmentRows\(catalog,status\)/);
   assert.match(homepage,/function webPublishedRows\(catalog\)/);
   assert.match(homepage,/function canonicalWebHref\(row\)/);
-  assert.match(homepage,/function buildFocus\(catalog,status\)/);
-  assert.match(homepage,/function buildGameCenter\(catalog,status\)/);
+  assert.match(homepage,/function buildFocus\(catalog,status,runtimeMediaIndex\)/);
+  assert.match(homepage,/function buildGameCenter\(catalog,status,runtimeMediaIndex\)/);
   assert.match(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
   assert.match(homepage,/buildShelf\(hub,'homeWebGameCenter'/);
   assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter'/);
@@ -97,6 +97,7 @@ test('homepage exposes current Web to selected-platform to live-focus developmen
   assert.match(homepage,/dataset\.selectedPlatformCount/);
   assert.match(homepage,/dataset\.focusRunnerActive/);
   assert.match(homepage,/buildDevelopmentPipeline\(catalog,status,testManifest\|\|\{\}\)/);
+  assert.match(homepage,/getJson\('\/assets\/runtime-evidence\/index\.json'\)/);
 });
 
 test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
@@ -172,4 +173,21 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
   assert.equal(policy.secondHomepageSupervisorForbidden,true);
   assert.match(manager,/HOMEPAGE_MANAGER_COUNT=1/);
   assert.match(manager,/HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1/);
+});
+
+
+test('homepage release publication refreshes on Unity and Roblox release completion and only uses verified exact runtime media',()=>{
+  assert.match(workflow,/Vibe2 Unity Release Result/);
+  assert.match(workflow,/Company DEVELOPMENT_CONFIRMED Roblox Release Promotion/);
+  assert.match(workflow,/Build verified runtime gameplay media index/);
+  assert.match(workflow,/homepage-runtime-media-index\.mjs/);
+  assert.match(workflow,/homepage-runtime-media-index\.test\.mjs/);
+  assert.match(homepage,/function releaseIdentity\(row\)/);
+  assert.match(homepage,/function verifiedRuntimeMedia\(row,index\)/);
+  assert.match(homepage,/homepageRepresentative===false/);
+  assert.match(homepage,/runtimeVerification/);
+  assert.match(homepage,/identity\.artifacts\.includes\(artifact\)\|\|identity\.sources\.includes\(source\)/);
+  assert.match(homepage,/homepageRuntimeMediaVerified/);
+  assert.match(homepage,/실제 플레이/);
+  assert.match(homepage,/unityBuildSourceRevision/);
 });
