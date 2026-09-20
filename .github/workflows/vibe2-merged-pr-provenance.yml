@@ -1,0 +1,88 @@
+name: Vibe2 Merged PR Provenance
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vibe2-control-state-vibe2-unreal-core
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout trusted merged main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          path: source
+
+      - name: Checkout Vibe2 control branch
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+          path: control
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate provenance collector
+        working-directory: source
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-capability-distillation.mjs
+          node --check tools/vibe2-merged-pr-provenance.mjs
+          node --test qa/vibe2-merged-pr-provenance.test.mjs
+
+      - name: Record merged PR provenance
+        id: ingest
+        shell: bash
+        run: |
+          set -euo pipefail
+          node source/tools/vibe2-merged-pr-provenance.mjs \
+            --event="$GITHUB_EVENT_PATH" \
+            --repo-root="$GITHUB_WORKSPACE/source" \
+            --ledger="$GITHUB_WORKSPACE/control/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-merged-pr-provenance.log
+          trace_id="$(sed -n 's/^VIBE2_MERGED_PR_TRACE_ID=//p' /tmp/vibe2-merged-pr-provenance.log | tail -n1)"
+          echo "trace_id=$trace_id" >> "$GITHUB_OUTPUT"
+
+      - name: Persist provenance ledger only
+        shell: bash
+        working-directory: control
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- .vibe2/coding-trace-ledger.json)" ]; then
+            echo 'VIBE2_MERGED_PR_LEDGER_WRITE=NO_CHANGE'
+            exit 0
+          fi
+
+          git config user.name 'jaewoon-vibe2-provenance'
+          git config user.email 'vibe2-provenance@users.noreply.github.com'
+          git add .vibe2/coding-trace-ledger.json
+          git commit -m "vibe2: record merged PR provenance [skip ci]"
+
+          pushed=0
+          for attempt in 1 2 3; do
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            git rebase --abort 2>/dev/null || true
+            git fetch origin vibe2-unreal-core --quiet
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_MERGED_PR_LEDGER_WRITE=PASS'
+          echo 'VIBE2_QUEUE_MUTATION=NO'
+          echo 'VIBE2_WAVE_REORDER=NO'
+          echo 'VIBE2_AUTHORITY_EXPANSION=NO'

@@ -4,6 +4,7 @@
 // 원칙: trace 자체는 학습 정답이 아니며, full regression/검증된 실패 원인 전에는 재사용 권한이 없다.
 
 import crypto from 'node:crypto';
+import { createVibeExperienceMemory, searchVibeExperience } from '../assets/vibe-experience-memory.js';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -276,4 +277,83 @@ export function mergeCodingTraceLedger(ledgerInput={},traces=[]){
     traces:Object.freeze(rows),
     stats:Object.freeze({added,refreshed,total:rows.length,verified,failures})
   });
+}
+
+
+export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5}={}){
+  const memory=createVibeExperienceMemory(experienceInput);
+  const records=memory.records.filter(record=>
+    record?.verified===true
+    &&record?.reusable===true
+    &&clean(record?.taskType)==='coding-capability-distillation'
+  );
+  const capabilityMemory=createVibeExperienceMemory({records});
+  const result=searchVibeExperience(capabilityMemory,{
+    gameId:clean(task.gameId),
+    engine:clean(task.target||task.engine).toLowerCase(),
+    taskType:'coding-capability-distillation',
+    departments:safeArray(task.departments||(task.department?[task.department]:[]),8),
+    problem:clean(task.problem||task.goal),
+    goal:clean(task.goal),
+    text:[
+      clean(task.goal),
+      safeArray(task.responsibleFiles,8).join(' '),
+      safeArray(task.evidence,12).join(' ')
+    ].filter(Boolean).join(' ')
+  },{limit:Math.max(1,Math.min(8,Number(limit)||5)),minimumScore:5});
+  const selected=result.matches
+    .filter(({reasons})=>(reasons||[]).some(reason=>reason==='same-game'||reason==='same-engine'||reason.startsWith('keyword-overlap:')))
+    .map(({record,score,reasons})=>Object.freeze({
+    id:record.id,
+    fingerprint:record.fingerprint,
+    gameId:record.gameId,
+    engine:record.engine,
+    outcome:record.outcome,
+    problem:record.problem,
+    change:record.change,
+    failureCause:record.failureCause,
+    reusablePatterns:Object.freeze([...(record.reusablePatterns||[])]),
+    avoidPatterns:Object.freeze([...(record.avoidPatterns||[])]),
+    evidence:Object.freeze([...(record.evidence||[])]),
+    confirmations:Number(record.confirmations||1),
+    confidence:Number(record.confidence||0),
+    relevance:Number(score||0),
+    reasons:Object.freeze([...(reasons||[])])
+  }));
+  return Object.freeze({
+    version:1,
+    kind:'verified-coding-capability-retrieval',
+    records:Object.freeze(selected),
+    count:selected.length,
+    verifiedOnly:true,
+    advisoryOnly:true,
+    rawTraceUsed:false,
+    rawCodeUsed:false,
+    writableScopeExpansionAllowed:false,
+    qaBypassAllowed:false,
+    authorityExpanded:false
+  });
+}
+
+export function verifiedCapabilityGuidance(retrieval={}){
+  const records=Array.isArray(retrieval?.records)?retrieval.records:[];
+  if(!records.length)return'';
+  const lines=[
+    '[VERIFIED CAPABILITY MEMORY - advisory only]',
+    'These are previously verified coding capability lessons. Use them only when applicable to the current responsibility and evidence.',
+    'They MUST NOT expand writable scope, bypass QA/security/runtime gates, copy raw unrelated source, or change protected gameplay/save semantics.'
+  ];
+  for(const record of records.slice(0,5)){
+    const parts=[
+      `id=${clean(record.id)}`,
+      `outcome=${clean(record.outcome)}`,
+      record.reusablePatterns?.length?`reuse=${record.reusablePatterns.join(' | ').slice(0,420)}`:'',
+      record.avoidPatterns?.length?`avoid=${record.avoidPatterns.join(' | ').slice(0,420)}`:'',
+      record.failureCause?`verifiedFailure=${clean(record.failureCause).slice(0,240)}`:'',
+      `confidence=${Number(record.confidence||0).toFixed(4)}`,
+      `relevance=${Number(record.relevance||0).toFixed(2)}`
+    ].filter(Boolean);
+    lines.push('- '+parts.join('; '));
+  }
+  return lines.join('\n');
 }
