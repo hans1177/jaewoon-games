@@ -1,5 +1,5 @@
 {
-  "version": 171,
+  "version": 172,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6098,7 +6098,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE1_SHADOW_DIAGNOSIS_CALIBRATION_CRITIC_CANDIDATE",
+    "status": "PHASE1_SHADOW_CRITIC_CAUSAL_EVIDENCE_CANDIDATE",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6418,7 +6418,18 @@
         "learningEligible": false,
         "authorityPromotionEligible": false,
         "unresolvedRequiresMoreEvidence": true,
-        "contradictionMustRemainVisible": true
+        "contradictionMustRemainVisible": true,
+        "causalRepairVerification": {
+          "requires": [
+            "CAUSAL_REPLAY_PREPATCH_REPRODUCED",
+            "CAUSAL_REPLAY_EXECUTED_PASS"
+          ],
+          "result": "CAUSAL_REPAIR_VERIFIED",
+          "rootCauseSystemVerified": false,
+          "runtimeOrIndependentQaStillRequired": true,
+          "responsibleSystemMappingStillRequired": true,
+          "mayGrantExecutionAuthority": false
+        }
       }
     }
   }
