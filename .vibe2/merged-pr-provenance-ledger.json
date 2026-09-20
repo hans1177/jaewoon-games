@@ -4166,11 +4166,172 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3d7b011278fe6499843ab169",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-1998",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3e1ad5eccc275c81f007125ccb39cef266bc4e2c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 1998,
+        "baseBranch": "main",
+        "headBranch": "assistant/central-learning-closed-loop-v6",
+        "baseSha": "3e1ad5eccc275c81f007125ccb39cef266bc4e2c",
+        "headSha": "d47f3e4f3ec61b31a7d8ee2c0449a87e5f0aeb1c",
+        "mergeCommitSha": "f7ce0952a7a5e9e50cd252225acd42c4064ec8b6",
+        "mergedAt": "2026-09-20T08:37:22Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d82e1cb1a1e48f0c5aba158c85fe65bde807274bd25e6dcb8738d9657d7111dd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/central-learning-closed-loop-v6",
+        "candidateSha": "d47f3e4f3ec61b31a7d8ee2c0449a87e5f0aeb1c"
+      },
+      "changeStats": {
+        "changedFileCount": 24,
+        "codingRelevantFileCount": 23,
+        "addedLineCount": 1135,
+        "deletedLineCount": 56,
+        "changedFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "COMPANY_FLOW.md",
+          "company-learning/company-architecture-map.json",
+          "company-learning/external-ai-distillation-policy.json",
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/vibe2-learning-motor.json",
+          "game-catalog.json",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/company-web-contract-adapter.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/vibe2-web-experience-ingest.test.mjs",
+          "tools/company-development-web-bootstrap.mjs",
+          "tools/company-web-contract-adapter.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-learning-motor.mjs",
+          "tools/vibe2-web-experience-ingest.mjs",
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-v15.js",
+          "web-games/daechung-rpg/patch-v18.js"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/external-ai-distillation-policy.json",
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/vibe2-learning-motor.json",
+          "game-catalog.json",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/company-web-contract-adapter.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/vibe2-web-experience-ingest.test.mjs",
+          "tools/company-development-web-bootstrap.mjs",
+          "tools/company-web-contract-adapter.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-learning-motor.mjs",
+          "tools/vibe2-web-experience-ingest.mjs",
+          "web-games/daechung-rpg/index.html",
+          "web-games/daechung-rpg/patch-v15.js",
+          "web-games/daechung-rpg/patch-v18.js"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:1998",
+        "merge-commit:f7ce0952a7a5e9e50cd252225acd42c4064ec8b6",
+        "base-main:3e1ad5eccc275c81f007125ccb39cef266bc4e2c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 34
+    "total": 35
   }
 }
