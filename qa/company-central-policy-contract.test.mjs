@@ -656,4 +656,15 @@ test('runtime gameplay media policy publishes native actual-runtime captures and
   assert.equal(policy.homepagePromotion.nativeGameplayMediaOnly,true);
   assert.equal(policy.homepagePromotion.webGameplayMediaIgnored,true);
   assert.equal(policy.homepagePromotion.generatedIndex,'homepage-runtime-media.json');
+  assert.equal(policy.motionMedia.enabled,true);
+  assert.equal(policy.captureRules.motionClipMustHaveCoreMotionFocus,true);
+  assert.ok(policy.motionMedia.coreMotionPriority.includes('ATTACK_HIT_IMPACT'));
+  assert.ok(policy.motionMedia.coreMotionPriority.includes('GATHERING_ACTION'));
+  assert.ok(policy.motionMedia.coreMotionPriority.includes('BOSS_CORE_PATTERN'));
+  assert.equal(policy.motionMedia.homepage.onePrimaryMotionLoopPerCard,true);
+  assert.equal(policy.motionMedia.homepage.muted,true);
+  assert.equal(policy.motionMedia.homepage.playsInline,true);
+  assert.equal(policy.platformCapture.UNITY.motionCapture.automaticScreenRecordAllowed,true);
+  assert.equal(policy.platformCapture.ROBLOX.motionCapture.unattendedStudioRecordingForbidden,true);
+  assert.equal(policy.homepagePromotion.coreMotionOnlyForAutoLoop,true);
 });
