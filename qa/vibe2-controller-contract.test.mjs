@@ -78,7 +78,7 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,4);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
-  assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,20);
+  assert.equal(runtime.adaptiveBackpressure.baselineAdaptiveWave,256);
   assert.equal(runtime.adaptiveBackpressure.minimumAdaptiveWave,4);
   assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
 });
