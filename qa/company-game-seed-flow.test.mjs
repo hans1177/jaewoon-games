@@ -229,9 +229,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/canary_mode=/);
   assert.match(seedDesignWorkflow,/engine_digest=/);
   assert.match(seedDesignWorkflow,/pending_total=/);
-  assert.match(seedDesignWorkflow,/pending\.slice\(0,2\)/);
-  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
-  assert.match(seedDesignWorkflow,/Math\.min\(canaryVerified\?designWipMax:1/);
+  assert.match(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:2\)/);
+  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:2\)/);
+  assert.match(seedDesignWorkflow,/Math\.min\(preservationOnly\?1:\(canaryVerified\?designWipMax:1\)/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
   assert.match(seedDesignWorkflow,/DESIGN_ENGINE_CANARY=VERIFIED/);
@@ -240,7 +240,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/sleep 15/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.ok((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length>=5);
-  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=CANONICAL_ROADMAP/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=\$\{unboundedByPolicy\?'CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH':'CANONICAL_ROADMAP_NUMERIC_CAP'\}/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_SCHEDULING_MODE=/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_ROBLOX_FIRST=/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_FORCE_PROMOTION=NO/);

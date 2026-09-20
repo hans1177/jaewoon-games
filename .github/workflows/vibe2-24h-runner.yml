@@ -218,6 +218,7 @@ jobs:
             node /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs \
               --queue=/tmp/vibe2-company-runtime-queue.json \
               --experience=.vibe2/experience.json \
+              --external-ai-distilled=.vibe2/external-ai-distilled-knowledge.json \
               --company-runtime-ref=origin/company-runtime | tee /tmp/vibe2-web-experience-ingest.log
 
             node --check /tmp/vibe2-main/tools/vibe2-code-pattern-ingest.mjs
@@ -351,7 +352,7 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
@@ -366,6 +367,8 @@ jobs:
               commit_message='vibe2: queue post-release focused development [skip ci]'
             elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
               commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
+            elif grep -Eq '^VIBE2_WEB_EXTERNAL_AI_DISTILLED_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-web-experience-ingest.log; then
+              commit_message='vibe2: absorb verified external AI distilled knowledge [skip ci]'
             elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*$' /tmp/vibe2-learning-motor.log; then
               commit_message='vibe2: absorb verified development mastery [skip ci]'
             elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
