@@ -829,6 +829,9 @@ jobs:
             hiddenChainOfThoughtStored:false,
             authorityExpanded:false
           };
+          const capabilityGeneralizationBenchmark=workOrder?.capabilityGeneralizationBenchmark&&typeof workOrder.capabilityGeneralizationBenchmark==='object'
+            ?{...workOrder.capabilityGeneralizationBenchmark,rawCodeStored:false,rawModelOutputStored:false,hiddenChainOfThoughtStored:false,authorityExpanded:false}
+            :{enabled:false,reason:'NOT_CONFIGURED',role:null,authorityExpanded:false};
           const candidateFailureClass=sourceGenerationAttempted&&!candidateOk?(clean(process.env.CANDIDATE_FAILURE_CLASS)||null):null;
           const candidateFailureMessage=sourceGenerationAttempted&&!candidateOk?(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null):null;
           const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
@@ -997,7 +1000,7 @@ jobs:
             telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
           const neuralDiagnosis=workOrder?.neuralDiagnosis&&typeof workOrder.neuralDiagnosis==='object'?workOrder.neuralDiagnosis:null;
-          const result={version:11,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,neuralDiagnosis,capabilityApplication,durationMs:metrics.workerTotalMs,metrics};
+          const result={version:12,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,neuralDiagnosis,capabilityApplication,capabilityGeneralizationBenchmark,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
@@ -1006,6 +1009,9 @@ jobs:
           console.log(`VIBE2_IMPLEMENTATION_ROLE=${roleResults.implementation}`);
           console.log(`VIBE2_TEST_ROLE=${roleResults.test}`);
           console.log(`VIBE2_PERFORMANCE_ROLE=${roleResults.performance}`);
+          console.log(`VIBE2_CAPABILITY_GENERALIZATION_BENCHMARK=${capabilityGeneralizationBenchmark.enabled?'YES':'NO'}`);
+          console.log(`VIBE2_CAPABILITY_GENERALIZATION_ROLE=${capabilityGeneralizationBenchmark.role||'NONE'}`);
+          console.log(`VIBE2_CAPABILITY_GENERALIZATION_PAIR=${capabilityGeneralizationBenchmark.pairId||'NONE'}`);
           NODE
 
       - name: Upload worker result for fan-in
