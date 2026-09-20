@@ -20201,111 +20201,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_3275fb19ab4eb0763357bcbe",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "candidate-sha:35cede69c1d069615601062bc294bef1ef6d7496",
-            "base-main:2614c908bf5b859cc47aed447eff83051d712bdb",
-            "causal-replay-status:EXECUTED_FAIL",
-            "actions-run:35523310251",
-            "reservation-id:35523310251:1",
-            "capability-application-sample:75f92dc815357f566d2e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_029991cfacd41fd04a56e9c0",
-          "taskId": "amusement-tycoon-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_8dd29220b77c4ca8abc65221",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_107b55ca6e8e05ede28f9b9f"
-          ],
-          "evidence": [
-            "base-main:aec03640e6f6b81f3414418d41e02e02c1f3d61d",
-            "actions-run:35523114008",
-            "reservation-id:35523114008:1",
-            "capability-application-sample:2fe5ab0708248ec9eea5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_4faa04b468e4519df1fa42ff",
-          "taskId": "amusement-tycoon-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_8dd29220b77c4ca8abc65221",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_107b55ca6e8e05ede28f9b9f"
-          ],
-          "evidence": [
-            "candidate-sha:899127995b43ff9271a3998eeb715b3de4e33e45",
-            "base-main:aec03640e6f6b81f3414418d41e02e02c1f3d61d",
-            "incremental-qa-hash:7679c08505d0885707399a3de11bad60435c9ebfe18789be4ac548e7b83b733f",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35523114008",
-            "reservation-id:35523114008:1",
-            "capability-application-sample:2cd38b4040de40fbc152"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1272f45f244eed7542b0fda6",
           "taskId": "amusement-tycoon-web-runtime-repair-v1",
           "workKey": null,
@@ -22460,6 +22355,105 @@
             "actions-run:35527709842",
             "reservation-id:35527709842:1",
             "capability-application-sample:330411418ededca2ad87"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7aebb084e885aca39405ccae",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:077ba95dfd9002ef7af1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d528ab2308994ac91906deb8",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:fd8773d9b8efdeda282c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_47e126f05e08f780dc0649e9",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:c203e377bb82f72f3509"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -56248,6 +56242,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_876abdd40b7f739cddd5f219",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:077ba95dfd9002ef7af1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2550bce4e7a67e7b639c1049",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:fd8773d9b8efdeda282c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3342f3097d6e67131aac4b28",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:c203e377bb82f72f3509"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -56266,7 +56359,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 61,
+        "applicationCount": 64,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -57307,6 +57400,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1a274598cec3c4981e8a43c9",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:077ba95dfd9002ef7af1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6048e0c527a529f80bce364d",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:fd8773d9b8efdeda282c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6d7b90dc56ce019211c3faf5",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:c203e377bb82f72f3509"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -57325,7 +57517,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 27,
+        "applicationCount": 30,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -57392,7 +57584,11 @@
         "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
         "actions-run:35524782711",
         "reservation-id:35524782711:1",
-        "coding-trace:ctrace_b298f4516136dc50de040df7"
+        "coding-trace:ctrace_b298f4516136dc50de040df7",
+        "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+        "actions-run:35527923721",
+        "reservation-id:35527923721:1",
+        "coding-trace:ctrace_1bc1e3c5bc5495043324f631"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -57401,8 +57597,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 4,
-      "confidence": 0.8,
+      "confirmations": 5,
+      "confidence": 0.8333,
       "capabilityApplications": [
         {
           "version": 1,
@@ -58042,6 +58238,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c8495db5465e72109d5d622e",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:077ba95dfd9002ef7af1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f173776424b3c05801be65a1",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:fd8773d9b8efdeda282c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_efdac68de1fbd6ee5985f5eb",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:c203e377bb82f72f3509"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -58060,7 +58355,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 18,
+        "applicationCount": 21,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -58345,6 +58640,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_40d2ef3193e1f18d5e36b74b",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:077ba95dfd9002ef7af1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8fa46aa0969577a109352d73",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:fd8773d9b8efdeda282c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4f6f8c2abe2db4aed328df24",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:bc5a80bd72e91a64abe2083dc7f02a662164c6f1",
+            "actions-run:35527923721",
+            "reservation-id:35527923721:1",
+            "capability-application-sample:c203e377bb82f72f3509"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -58363,7 +58757,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 6,
+        "applicationCount": 9,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
