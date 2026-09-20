@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_SHADOW_LIVE_EVIDENCE_WITH_CAPACITY_AWARE_20_SLOT_EXECUTION",
+    "currentState": "PHASE2_SHADOW_POST_REPAIR_VALIDATION_WITH_CAPACITY_AWARE_20_SLOT_EXECUTION",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -419,12 +419,22 @@
       "authorityOnContradiction": "REQUEST_EVIDENCE_ONLY",
       "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
       "neuralExecutionAuthority": "NONE",
-      "activeRepairPRs": [
-        1815,
-        1817
-      ],
+      "activeRepairPRs": [],
       "bottleneckRepresentation": "PRIMARY_PLUS_SECONDARY_EVIDENCE_RANKED",
-      "safetyInvariant": "UNAUTHORIZED_SHADOW_FIRE_COUNT_MUST_REMAIN_ZERO"
+      "safetyInvariant": "UNAUTHORIZED_SHADOW_FIRE_COUNT_MUST_REMAIN_ZERO",
+      "mergedRepairs": [
+        {
+          "pr": 1815,
+          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
+          "system": "SOURCE_GENERATION_RECOVERY"
+        },
+        {
+          "pr": 1817,
+          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
+          "system": "BOTTLENECK_DIAGNOSIS"
+        }
+      ],
+      "currentStage": "NEXT_PRODUCTION_WAVE_CAUSAL_VALIDATION"
     }
   }
 }
