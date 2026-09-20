@@ -231,7 +231,7 @@ ownerCurrentProductionContract:
     globalAcrossConfiguredSelectedPlatformExecutors: true
     parallelExecutionDefault: true
     webValidationParallelismTarget: 20
-    webValidationParallelismMax: null
+    webValidationParallelismMax: 20
     adaptiveExpansionSteps: [20, 32, 64, 128, 256]
     independentGamesMustRunInParallelWhenCapacityExists: true
     sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true
@@ -239,10 +239,11 @@ ownerCurrentProductionContract:
     sharedSaveSchemaWritesExclusive: true
     centralPolicyWritesExclusive: true
     parallelismContractGateRequired: true
+    sharedRuntimeStatePersistedBySingleAggregationStep: true
     atomicNeuronIngressLightweight: true
     pendingVariantCallbackRunsHeavyReserve: false
     taskMicroFanInDispatchesSingleRefill: true
-    sharedRuntimeStatePersistedByOptimisticAtomicCommit: true
+    vibe2RuntimeStatePersistedByOptimisticAtomicCommit: true
     validationTiers:
       - MICRO_TARGETED_CHECK
       - FAST_INITIAL_INTEGRATION
@@ -751,7 +752,7 @@ ownerCurrentProductionContract:
     concurrentGameWipScope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
     externalProviderBoundary: 256
     webValidationParallelismTarget: 20
-    webValidationParallelismMax: null
+    webValidationParallelismMax: 20
     webValidationParallelFirst: true
     runtimeCapacityMayReduceActualConcurrency: true
     idleAutonomousProduction:
