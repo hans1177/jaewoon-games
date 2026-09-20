@@ -90,7 +90,7 @@ function timerSignals(body=''){
 }
 function exactEventRegistrations(source=''){
   const raw=scriptsFromHtml(source),rows=[];
-  for(const m of raw.matchAll(/addEventListener\s*\(\s*['"]([^'"]+)['"]\s*,\s*([A-Za-z_$][\w$]*)\s*\)/g))rows.push(`${m[1]}::${m[2]}`);
+  for(const m of raw.matchAll(/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\.addEventListener\s*\(\s*['"]([^'"]+)['"]\s*,\s*([A-Za-z_$][\w$]*)\s*\)/g))rows.push(`${m[1]}::${m[2]}::${m[3]}`);
   return rows;
 }
 
