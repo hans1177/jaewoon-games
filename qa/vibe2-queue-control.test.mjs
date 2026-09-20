@@ -411,6 +411,39 @@ test('spare adaptive worker slots are shared across high-risk tasks before a thi
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
 });
 
+test('fan-in persists neural shadow calibration without granting learning or routing authority', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
+  queue=add(queue,'neural-feedback','neural-feedback','web',{estimatedRisk:'high',speculativeEligible:true});
+  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2}).queue;
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'neural-feedback',
+    variant:'primary',
+    outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'MALFORMED_OUTPUT'},
+    roleResults:{exploration:'PASS',implementation:'FAIL',test:'FAIL',performance:'FAIL'},
+    neuralDiagnosis:{
+      mode:'PHASE1_SHADOW_ADVISORY',
+      responsibility:{system:'SOURCE_GENERATION',confidence:.91},
+      actionRecommendation:{failureStage:'WEB_REPAIR'},
+      bottleneck:{score:81}
+    },
+    evidence:['actions-run:neural-feedback-test']
+  }]);
+  const task=merged.queue.tasks.find(row=>row.id==='neural-feedback');
+  const marker=task.evidence.find(value=>value.startsWith('neural-shadow-feedback:'));
+  assert.ok(marker);
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-shadow-feedback:'.length)));
+  assert.equal(payload.predictedResponsibility,'SOURCE_GENERATION');
+  assert.equal(payload.observedResponsibility,'SOURCE_GENERATION');
+  assert.equal(payload.matchState,'MATCH');
+  assert.equal(payload.rootCauseVerified,false);
+  assert.equal(payload.learningEligible,false);
+  assert.equal(payload.authorityPromotionEligible,false);
+  assert.ok(task.evidence.includes('neural-shadow-match:MATCH'));
+  assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);
+});
+
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});
