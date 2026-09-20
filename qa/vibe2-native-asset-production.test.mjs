@@ -19,6 +19,25 @@ function tempRoot(){
   return root;
 }
 
+test('web-only assets are never reused directly by Unity or Roblox',()=>{
+  const manifest={version:1,assets:[
+    {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
+    {id:'unity-ui',path:'',types:['ui'],tags:['UI'],license:'CC0',platforms:['unity']},
+    {id:'generic-vfx',path:'',types:['effect'],tags:['이펙트'],license:'CC0'}
+  ]};
+  const task={gameId:'fantasy-survival',goal:'숲 나무 UI 이펙트 그래픽 개선'};
+  const unity=buildVibeAssetProductionPlan({task,target:'unity',manifest,presetCatalog:{version:1,presets:[]}});
+  const roblox=buildVibeAssetProductionPlan({task,target:'roblox',manifest,presetCatalog:{version:1,presets:[]}});
+  const unityReuse=unity.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
+  const robloxReuse=roblox.decisions.flatMap(row=>row.reuseCandidates.map(asset=>asset.id));
+  assert.equal(unityReuse.includes('web-tree'),false);
+  assert.equal(robloxReuse.includes('web-tree'),false);
+  assert.equal(unityReuse.includes('unity-ui'),true);
+  assert.equal(robloxReuse.includes('unity-ui'),false);
+  assert.equal(unity.policy.crossPlatformWebAssetDirectReuseForbidden,true);
+  assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
+});
+
 test('asset production planner exposes native source authoring for Unity and Roblox',()=>{
   const base={
     task:{gameId:'fantasy-survival',goal:'플레이어 캐릭터 적 몬스터 숲 나무 바위 UI 이펙트 애니메이션 그래픽 개선'},
