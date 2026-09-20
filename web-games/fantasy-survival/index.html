@@ -2082,7 +2082,7 @@ function loadGame(){
      const [gx,gy]=key.split(',').map(Number);
      let wx,wy;
      if(version<8){wx=(gx*300+150)*2;wy=(gy*300+150)*2}else{wx=gx*MAP_CELL+MAP_CELL/2;wy=gy*MAP_CELL+MAP_CELL/2}
-     if(version<13){wx+=3000;wy+=2000}
+if(version<13){wx+=3000;wy+=2000}
      state.explored[Math.floor(wx/MAP_CELL)+','+Math.floor(wy/MAP_CELL)]=1
    }
   }else state.explored={};
