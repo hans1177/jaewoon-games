@@ -41,7 +41,6 @@ env:
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
-  VIBE2_OWNER_MINIMUM_WAVE: '20'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -200,7 +199,6 @@ jobs:
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_OWNER_MINIMUM_WAVE"; fi
           if [ "${active_worker_reservations:-0}" -gt 0 ]; then
             echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
           else
@@ -1109,11 +1107,11 @@ jobs:
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
 
           lane_min='1'
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_OWNER_MINIMUM_WAVE"; fi
           node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
             --min="$lane_min" \
             --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
