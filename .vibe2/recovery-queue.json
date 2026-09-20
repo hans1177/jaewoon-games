@@ -3490,7 +3490,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T03:05:59.755Z"
+      "updatedAt": "2026-09-20T03:06:23.874Z"
     },
     {
       "id": "recovery-30d0f7d9f4575fe5f49d",
@@ -5730,7 +5730,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:15:42.089Z",
-      "updatedAt": "2026-09-20T03:05:59.753Z"
+      "updatedAt": "2026-09-20T03:06:23.872Z"
     },
     {
       "id": "recovery-45105d34a22a09aa9f42",
@@ -6417,7 +6417,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:28:49.708Z",
-      "updatedAt": "2026-09-20T03:05:59.754Z"
+      "updatedAt": "2026-09-20T03:06:23.873Z"
     },
     {
       "id": "recovery-0714f07f6ea25ccb4da5",
@@ -7118,11 +7118,11 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T03:05:59.752Z"
+      "updatedAt": "2026-09-20T03:06:23.870Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "high",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
@@ -7981,7 +7981,11 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T03:05:59.752Z"
+      "updatedAt": "2026-09-20T03:06:23.922Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-09-20T03:06:23.922Z"
+      ]
     }
   ]
 }
