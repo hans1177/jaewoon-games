@@ -2938,11 +2938,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0aee4b417f58badcbd1b2bf5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-1956",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 1956,
+        "baseBranch": "main",
+        "headBranch": "assistant/security-recovery-atomic-review-v1",
+        "baseSha": "4e19376095e85553d3b7d7cbc3597b5df371624d",
+        "headSha": "a7273bbadddb2030a63caaff32b3acbdf1b4ab29",
+        "mergeCommitSha": "bc473e5c0b24960a8af8a88baab9e0a5b117dd6a",
+        "mergedAt": "2026-09-20T06:46:32Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1d8bd3c6b0f9d52ea3e7920313a3fa26e79587ab1348c4bf79056fc43f3bfa52",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/security-recovery-atomic-review-v1",
+        "candidateSha": "a7273bbadddb2030a63caaff32b3acbdf1b4ab29"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 274,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          ".github/workflows/company-security-recovery-review.yml",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "tools/company-system-ai-queue.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-security-recovery-review.yml",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "tools/company-system-ai-queue.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:1956",
+        "merge-commit:bc473e5c0b24960a8af8a88baab9e0a5b117dd6a",
+        "base-main:4e19376095e85553d3b7d7cbc3597b5df371624d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 24
+    "total": 25
   }
 }
