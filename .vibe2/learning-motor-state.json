@@ -1256,7 +1256,8 @@
       "coding_cylkry",
       "coding_1otthbp",
       "coding_10yc5it",
-      "coding_1ek961c"
+      "coding_1ek961c",
+      "coding_1spj1co"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4685,30 +4686,30 @@
         "lastUpdatedAt": "2026-09-20T22:10:46.978Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
-        "verifiedApplications": 69,
+        "verifiedApplications": 70,
         "firstCandidatePasses": 26,
-        "totalGenerationAttempts": 121,
+        "totalGenerationAttempts": 123,
         "verifiedFailures": 28,
         "games": {
-          "seed-puzzle-chromatic-cascade": 31,
+          "seed-puzzle-chromatic-cascade": 32,
           "fantasy-survival": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 26,
           "seed-casual-realm-weaver": 2,
           "village-dungeons": 9
         },
         "targets": {
-          "web": 69
+          "web": 70
         },
         "contextModes": {
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 66,
+            "verifiedApplications": 67,
             "verifiedFailures": 10,
             "firstCandidatePasses": 26,
-            "totalGenerationAttempts": 115,
-            "totalContextBytes": 1381515,
-            "lastEvidence": "coding_15cryal",
+            "totalGenerationAttempts": 117,
+            "totalContextBytes": 1402665,
+            "lastEvidence": "coding_1spj1co",
             "lastFailureEvidence": "coding_negative_1frs9h2",
-            "lastUpdatedAt": "2026-09-20T21:59:27.103Z"
+            "lastUpdatedAt": "2026-09-20T22:12:59.874Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -4763,23 +4764,23 @@
             "lastUpdatedAt": "2026-09-20T07:24:22.900Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 40,
+            "verifiedApplications": 41,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 89,
+            "totalGenerationAttempts": 91,
             "verifiedFailures": 0,
             "games": {
-              "seed-puzzle-chromatic-cascade": 31,
+              "seed-puzzle-chromatic-cascade": 32,
               "village-dungeons": 9
             },
             "targets": {
-              "web": 40
+              "web": 41
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_15cryal",
+            "lastEvidence": "coding_1spj1co",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T21:59:27.103Z"
+            "lastUpdatedAt": "2026-09-20T22:12:59.874Z"
           },
           "web|OTHER": {
             "verifiedApplications": 1,
@@ -4973,9 +4974,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_15cryal",
+        "lastEvidence": "coding_1spj1co",
         "lastFailureEvidence": "coding_negative_1frs9h2",
-        "lastUpdatedAt": "2026-09-20T21:59:27.103Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.874Z"
       }
     }
   },
@@ -7511,7 +7512,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T22:11:16.921Z",
+    "lastBuiltAt": "2026-09-20T22:12:59.905Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -7519,11 +7520,11 @@
     "version": 1,
     "domains": {
       "CORE_LOOP": {
-        "verifiedApplications": 90,
+        "verifiedApplications": 91,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -7538,15 +7539,15 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_n81bwp",
-        "lastUpdatedAt": "2026-09-20T21:20:18.145Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.902Z"
       },
       "STATE_MACHINE": {
-        "verifiedApplications": 97,
+        "verifiedApplications": 98,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -7562,8 +7563,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_n81bwp",
-        "lastUpdatedAt": "2026-09-20T21:20:18.146Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.902Z"
       },
       "COMBAT": {
         "verifiedApplications": 82,
@@ -7588,7 +7589,7 @@
         "lastUpdatedAt": "2026-09-20T21:20:18.146Z"
       },
       "AI": {
-        "verifiedApplications": 31,
+        "verifiedApplications": 32,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7596,19 +7597,20 @@
           "daechung-rpg": 7,
           "line-defense": 5,
           "seed-idle-growth-rpg-crystal-bloom": 1,
-          "seed-single-defense-strat-celestial-bastion": 2
+          "seed-single-defense-strat-celestial-bastion": 2,
+          "seed-puzzle-chromatic-cascade": 1
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_p3swoi",
-        "lastUpdatedAt": "2026-09-20T21:06:09.915Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.902Z"
       },
       "PROGRESSION": {
-        "verifiedApplications": 79,
+        "verifiedApplications": 80,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -7622,8 +7624,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_n81bwp",
-        "lastUpdatedAt": "2026-09-20T21:20:18.146Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.903Z"
       },
       "ECONOMY": {
         "verifiedApplications": 0,
@@ -7646,11 +7648,11 @@
         "lastUpdatedAt": "2026-09-20T18:55:29.211Z"
       },
       "MOBILE_INPUT": {
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 4,
           "monster-adventure": 7,
@@ -7663,8 +7665,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_p3swoi",
-        "lastUpdatedAt": "2026-09-20T21:06:09.915Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.903Z"
       },
       "UI_STATE": {
         "verifiedApplications": 13,
@@ -7680,11 +7682,11 @@
         "lastUpdatedAt": "2026-09-20T20:33:18.907Z"
       },
       "DEBUGGING": {
-        "verifiedApplications": 108,
+        "verifiedApplications": 109,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -7701,8 +7703,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_n81bwp",
-        "lastUpdatedAt": "2026-09-20T21:20:18.146Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.903Z"
       },
       "RECOVERY": {
         "verifiedApplications": 0,
@@ -7829,11 +7831,11 @@
         "lastUpdatedAt": null
       },
       "QUEST_DESIGN": {
-        "verifiedApplications": 86,
+        "verifiedApplications": 87,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -7848,8 +7850,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_n81bwp",
-        "lastUpdatedAt": "2026-09-20T21:20:18.146Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.903Z"
       },
       "CHARACTER_ARC": {
         "verifiedApplications": 0,
@@ -7870,12 +7872,12 @@
         "lastUpdatedAt": null
       },
       "WEB_RUNTIME": {
-        "verifiedApplications": 119,
+        "verifiedApplications": 120,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -7891,8 +7893,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_n81bwp",
-        "lastUpdatedAt": "2026-09-20T21:20:18.146Z"
+        "lastEvidence": "knowledge_kovh7v",
+        "lastUpdatedAt": "2026-09-20T22:12:59.903Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 0,
@@ -8005,12 +8007,12 @@
     "entries": {
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8025,22 +8027,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8055,22 +8057,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8085,22 +8087,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8115,22 +8117,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8145,22 +8147,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8175,22 +8177,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 122,
+        "verifiedApplications": 123,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 20,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8205,22 +8207,22 @@
           "survival": 3
         },
         "targets": {
-          "web": 119,
+          "web": 120,
           "unity": 3
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "EXPERIENCE:exp_security_28453669955c43a85d166c5c": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 113,
+        "verifiedApplications": 114,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8235,21 +8237,21 @@
           "survival": 3
         },
         "targets": {
-          "web": 113
+          "web": 114
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "bug-defense": 11,
@@ -8261,21 +8263,21 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "CODE_PATTERN:pat_1avbmmv": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "bug-defense": 11,
@@ -8287,21 +8289,21 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "CODE_PATTERN:pat_1vgfuno": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "bug-defense": 11,
@@ -8313,21 +8315,21 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "CODE_PATTERN:pat_3f780w": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "bug-defense": 11,
@@ -8339,21 +8341,21 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "CODE_PATTERN:pat_9pwgix": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "bug-defense": 11,
@@ -8365,21 +8367,21 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "CODE_PATTERN:pat_m3ipio": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 93,
+        "verifiedApplications": 94,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 17,
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "bug-defense": 11,
@@ -8391,20 +8393,20 @@
           "survival": 3
         },
         "targets": {
-          "web": 93
+          "web": 94
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 4,
           "monster-adventure": 7,
@@ -8416,20 +8418,20 @@
           "seed-idle-growth-rpg-crystal-bloom": 1
         },
         "targets": {
-          "web": 74
+          "web": 75
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_p3swoi",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:06:09.912Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 79,
+        "verifiedApplications": 80,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "seed-puzzle-chromatic-cascade": 5,
+          "seed-puzzle-chromatic-cascade": 6,
           "seed-single-defense-strat-celestial-bastion": 12,
           "village-dungeons": 7,
           "monster-adventure": 7,
@@ -8442,12 +8444,12 @@
           "survival": 3
         },
         "targets": {
-          "web": 79
+          "web": 80
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_n81bwp",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -8561,33 +8563,33 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_4046e195870c0ad506bb6c96": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 5,
+        "verifiedApplications": 6,
         "verifiedFailures": 0,
         "games": {
-          "seed-puzzle-chromatic-cascade": 5
+          "seed-puzzle-chromatic-cascade": 6
         },
         "targets": {
-          "web": 5
+          "web": 6
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_m8qcx6",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:29:35.570Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_c0c9a2df62b2a6e1e369ab66": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 5,
+        "verifiedApplications": 6,
         "verifiedFailures": 0,
         "games": {
-          "seed-puzzle-chromatic-cascade": 5
+          "seed-puzzle-chromatic-cascade": 6
         },
         "targets": {
-          "web": 5
+          "web": 6
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_m8qcx6",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:29:35.570Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_1043ce56a6f9995f20532594": {
         "source": "VERIFIED_CAPABILITY",
@@ -8996,18 +8998,18 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_57338ef0f553485ab60a913f": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 3,
+        "verifiedApplications": 4,
         "verifiedFailures": 0,
         "games": {
-          "seed-puzzle-chromatic-cascade": 3
+          "seed-puzzle-chromatic-cascade": 4
         },
         "targets": {
-          "web": 3
+          "web": 4
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_m8qcx6",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:29:35.570Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d": {
         "source": "VERIFIED_CAPABILITY",
@@ -9083,19 +9085,19 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0d2630a9c5fc72b6115ab032": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 3,
+        "verifiedApplications": 4,
         "verifiedFailures": 0,
         "games": {
-          "seed-puzzle-chromatic-cascade": 2,
+          "seed-puzzle-chromatic-cascade": 3,
           "daechung-rpg": 1
         },
         "targets": {
-          "web": 3
+          "web": 4
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_m8qcx6",
+        "lastEvidence": "knowledge_kovh7v",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:29:35.570Z"
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_31bc6402f5611fd66c298fb4": {
         "source": "VERIFIED_CAPABILITY",
@@ -9883,6 +9885,21 @@
         "lastEvidence": "knowledge_n81bwp",
         "lastFailureEvidence": null,
         "lastUpdatedAt": "2026-09-20T21:20:18.143Z"
+      },
+      "VERIFIED_CAPABILITY:capability_ctrace_1f1be9a0c88f2a521e3fb20f": {
+        "source": "VERIFIED_CAPABILITY",
+        "verifiedApplications": 1,
+        "verifiedFailures": 0,
+        "games": {
+          "seed-puzzle-chromatic-cascade": 1
+        },
+        "targets": {
+          "web": 1
+        },
+        "state": "CANDIDATE",
+        "lastEvidence": "knowledge_kovh7v",
+        "lastFailureEvidence": null,
+        "lastUpdatedAt": "2026-09-20T22:12:59.901Z"
       }
     },
     "seenOutcomeIds": [
@@ -10007,8 +10024,9 @@
       "knowledge_10lljh4",
       "knowledge_1ftc1pw",
       "knowledge_p3swoi",
-      "knowledge_n81bwp"
+      "knowledge_n81bwp",
+      "knowledge_kovh7v"
     ]
   },
-  "updatedAt": "2026-09-20T22:11:16.921Z"
+  "updatedAt": "2026-09-20T22:12:59.905Z"
 }
