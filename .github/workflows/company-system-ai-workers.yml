@@ -226,8 +226,30 @@ jobs:
           echo "SYSTEM_AI_BRANCH=$branch" >> "$GITHUB_ENV"
           git checkout -b "$branch"
 
+      - name: Verify existing verifier contract before model
+        id: preverify
+        if: startsWith(matrix.taskId, 'sys-verify-')
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/system-ai-preverify-commands.txt
+          const fs=require('fs');
+          const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
+          const commands=Array.isArray(task.verificationCommands)?task.verificationCommands:[];
+          if(!commands.length)throw new Error('SYSTEM_AI_PREVERIFY_COMMAND_REQUIRED');
+          for(const cmd of commands)process.stdout.write(String(cmd).replace(/[\r\n]+/g,' ')+'\n');
+          NODE
+          while IFS= read -r cmd; do
+            [ -n "$cmd" ] || continue
+            echo "COMPANY_SYSTEM_AI_PREVERIFY=$cmd"
+            timeout 240s bash -lc "$cmd"
+          done < /tmp/system-ai-preverify-commands.txt
+          echo 'COMPANY_SYSTEM_AI_PREVERIFY_SATISFIED=YES'
+
       - name: Execute external AI assignment
         id: implement
+        if: steps.preverify.outcome != 'success'
         continue-on-error: true
         shell: bash
         run: |
@@ -317,6 +339,7 @@ jobs:
           IMPLEMENT_OUTCOME: ${{ steps.implement.outcome }}
           VERIFY_OUTCOME: ${{ steps.verify.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          PREVERIFY_OUTCOME: ${{ steps.preverify.outcome }}
           CURRENT_MAIN_OUTCOME: ${{ steps.current_main.outcome }}
           PR_URL: ${{ steps.publish.outputs.pr_url }}
         shell: bash
@@ -336,18 +359,21 @@ jobs:
               findings:(report.findings||[]).map(x=>({rule:x.rule,severity:x.severity,category:x.category,file:x.file,line:x.line,evidenceSha256:x.evidenceSha256,disposition:x.disposition||'QUARANTINE'}))
             };
           }
-          const currentMainSatisfied=process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success';
+          const preverified=process.env.PREVERIFY_OUTCOME==='success';
+          const currentMainSatisfied=preverified||(process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success');
           const candidateOk=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
           const blocker=currentMainSatisfied||candidateOk?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
           const row={
-            version:3,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,
+            version:4,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,
             candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
             evidence:[
               `actions-run:${process.env.GITHUB_RUN_ID}`,
               `implementation:${process.env.IMPLEMENT_OUTCOME||'unknown'}`,
               `verification:${process.env.VERIFY_OUTCOME||'unknown'}`,
               `publish:${process.env.PUBLISH_OUTCOME||'unknown'}`,
+              `pre-model-verification:${process.env.PREVERIFY_OUTCOME||'unknown'}`,
               `current-main-verification:${process.env.CURRENT_MAIN_OUTCOME||'unknown'}`,
+              ...(preverified?['model-call-skipped:deterministic-verifier-already-satisfied']:[]),
               ...(currentMainSatisfied?['no-candidate-required:current-main-already-satisfies-task']:[]),
               ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
               worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
