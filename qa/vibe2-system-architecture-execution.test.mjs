@@ -47,3 +47,38 @@ test('system architecture task bypasses game design pipeline but keeps central w
   assert.equal(order.compiledWorkContract.invariants.qualityEvidenceAndSecurityGatesMustRemainUnchanged,true);
   assert.deepEqual(order.source.responsibleFiles,t.responsibleFiles);
 });
+
+
+test('neural expansion readiness PASS reaches the system work order without expanding execution authority',()=>{
+  const t={
+    ...task(),
+    id:'SYS-ARCH-neural-v1',
+    responsibleFiles:[
+      'tools/vibe2-neural-event-router.mjs',
+      'tools/vibe2-fan-in-review.mjs',
+      'qa/vibe2-neural-event-router.test.mjs',
+      'qa/vibe2-neural-fanin-root-cause.test.mjs'
+    ],
+    evidence:[
+      'vibe-self-architecture-evolution',
+      'architecture-authority-expansion:NO',
+      'architecture-gate-weakening:NO',
+      'architecture-system-construction-allowed',
+      'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
+      'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
+      'architecture-neural-expansion-readiness:PASS',
+      'architecture-neural-expansion-allowed:YES'
+    ]
+  };
+  const policy=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
+  const order=buildVibeContinuousWorkOrder({
+    runtime:{continuous:{enabled:true,maxWorkMinutes:20},safety:{paidAIAllowed:false,paidRunnerAllowed:false}},
+    queue:{tasks:[t]},taskId:t.id,centralPolicySnapshot:policy
+  });
+  assert.equal(order.run,true);
+  assert.equal(order.workerPolicy.neuralExpansionReadiness,'PASS');
+  assert.equal(order.workerPolicy.neuralExpansionAllowed,true);
+  assert.equal(order.workerPolicy.neuralExecutionAuthorityExpansionAllowed,false);
+  assert.equal(order.workerPolicy.authorityExpansionAllowed,false);
+  assert.equal(order.workerPolicy.gateWeakeningAllowed,false);
+});
