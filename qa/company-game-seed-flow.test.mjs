@@ -229,9 +229,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/canary_mode=/);
   assert.match(seedDesignWorkflow,/engine_digest=/);
   assert.match(seedDesignWorkflow,/pending_total=/);
-  assert.match(seedDesignWorkflow,/pending\.slice\(0,2\)/);
-  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
-  assert.match(seedDesignWorkflow,/Math\.min\(canaryVerified\?designWipMax:1/);
+  assert.match(seedDesignWorkflow,/pending\.slice\(0,preservationOnly\?1:2\)/);
+  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,preservationOnly\?1:2\)/);
+  assert.match(seedDesignWorkflow,/Math\.min\(preservationOnly\?1:\(canaryVerified\?designWipMax:1\)/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
   assert.match(seedDesignWorkflow,/DESIGN_ENGINE_CANARY=VERIFIED/);
