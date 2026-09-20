@@ -58,7 +58,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     concurrency:
-      group: vibe2-control-state-vibe2-unreal-core
+      # Neuron completion events must never share one pending GitHub concurrency slot:
+      # GitHub cancels older pending members of the same group. Give every immutable
+      # completion its own ingress key, then reconcile shared state optimistically below.
+      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete' && format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name) || 'vibe2-control-state-vibe2-unreal-core' }}
       cancel-in-progress: false
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
@@ -155,8 +158,6 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-scheduler'
           git config user.email 'vibe2-scheduler@users.noreply.github.com'
-          git fetch origin vibe2-unreal-core --quiet
-          git reset --hard origin/vibe2-unreal-core
           control_root="$PWD"
 
           callback_ref="${GITHUB_REF_NAME:-}"
@@ -178,10 +179,17 @@ jobs:
             echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
           fi
 
-          node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-steward.log
-          echo 'VIBE2_RESERVE_STEWARD=PASS'
+          state_persisted=0
+          state_write='NO'
+          for state_attempt in 1 2 3 4 5; do
+            echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt/5"
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+
+            node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-steward.log
+            echo 'VIBE2_RESERVE_STEWARD=PASS'
 
           if [ "$callback_kind" = 'neuron' ]; then
             neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
@@ -254,21 +262,25 @@ jobs:
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
-          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
-            echo 'VIBE2_BATCH_RESERVATION_WRITE=NO'
-          else
+            if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
+              state_persisted=1
+              state_write='NO'
+              break
+            fi
+
             git add .vibe2/queue.json .vibe2/parallelism-control.json
             git commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
-            pushed=0
-            for attempt in 1 2 3; do
-              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
-              git rebase --abort 2>/dev/null || true
-              git fetch origin vibe2-unreal-core --quiet
-              sleep $((attempt * 2))
-            done
-            test "$pushed" = 1
-            echo 'VIBE2_BATCH_RESERVATION_WRITE=YES'
-          fi
+            if git push origin HEAD:vibe2-unreal-core; then
+              state_persisted=1
+              state_write='YES'
+              break
+            fi
+
+            echo "VIBE2_CONTROL_OPTIMISTIC_RETRY=$state_attempt"
+            sleep $((state_attempt * 2))
+          done
+          test "$state_persisted" = 1
+          echo "VIBE2_BATCH_RESERVATION_WRITE=$state_write"
 
           if [ "$callback_cleanup" = 'yes' ]; then
             git push origin --delete "$callback_ref" >/dev/null 2>&1 || true
