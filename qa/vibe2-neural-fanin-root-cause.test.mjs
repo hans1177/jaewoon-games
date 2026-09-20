@@ -122,3 +122,24 @@ test('explicit independently verified responsible system can verify root cause w
   assert.equal(payload.rootCauseVerified,true);
   assert.equal(payload.phase2AuthorityEligible,false);
 });
+
+test('cohort audit does not redispatch a candidate already finalized by atomic micro fan-in',()=>{
+  const first=finalizeVibe2FanInReview({
+    queue:{tasks:[baseTask()]},
+    results:[baseResult()],
+    taskIds:['neural-root-task'],
+    microFanIn:true
+  });
+  assert.equal(first.releaseCandidates.length,1);
+  assert.ok(first.queue.tasks[0].evidence.includes('atomic-micro-fanin-review:PASS'));
+
+  const cohort=finalizeVibe2FanInReview({
+    queue:first.queue,
+    results:[baseResult()],
+    taskIds:['neural-root-task'],
+    microFanIn:false
+  });
+  assert.equal(cohort.releaseCandidates.length,0);
+  assert.equal(cohort.reviewed[0].pass,true);
+});
+
