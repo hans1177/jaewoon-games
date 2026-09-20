@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-queue-control.mjs
 // 역할: Vibe2 병렬 DAG 큐의 추가·batch 예약·QA대기·완료·실패 상태를 영속화한다.
-// 원칙: 서로 다른 source root만 병렬 예약하고 동일 root/file은 잠근다. 상태 쓰기는 fan-in에서 한 번에 합친다.
+// 원칙: 동일 source root라도 책임 파일이 명확히 분리되면 병렬 예약하고, 동일 책임 파일만 잠근다. 원자 뉴런 완료는 task micro fan-in으로 즉시 합친다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -666,6 +666,9 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
   if (task.status !== 'running') {
     return { updated:false, ready:false, slotReleased:false, stale:true, reason:`TASK_${clean(task.status).toUpperCase()}_NOT_RUNNING`, taskId, variant, expectedVariants:expected, resultCount:(task.neuronResults || []).length, queue };
   }
+  if (isWorkerCapacityReleasedBlocker(task.blocker) && Number(task.neuronExpectedVariants || 0) === 0) {
+    return { updated:false, ready:false, slotReleased:true, stale:false, reason:'TASK_ALREADY_MICRO_FANIN_COMPLETE', taskId, variant, expectedVariants:expected, resultCount:0, queue };
+  }
   const currentResults = Array.isArray(task.neuronResults) ? task.neuronResults : [];
   const duplicate = currentResults.some((row) => (clean(row?.variant) || 'primary') === variant && resultReservationId(row) === rowReservationId);
   if (duplicate) {
@@ -690,6 +693,7 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
   return {
     updated:true, ready:true, slotReleased, stale:false, reason:'TASK_MICRO_FANIN_COMPLETE',
     taskId, variant, expectedVariants:joinedExpected, resultCount:nextResults.length,
+    microFanInResults:nextResults,
     applied:merged.applied, neuralCalibration:merged.neuralCalibration, neuralEventTelemetry:merged.neuralEventTelemetry, queue
   };
 }
@@ -811,6 +815,10 @@ export function runQueueCommand(args = {}) {
     const neuron = recordVibeNeuronResult(queue, row, { expectedVariants: optionalMaxConcurrent(args['expected-variants']) ?? 1 });
     queue = neuron.queue;
     if (neuron.updated) writeJson(file, queue);
+    const microOutput=clean(args.output);
+    if(microOutput&&neuron.ready===true&&Array.isArray(neuron.microFanInResults)){
+      writeJson(microOutput,{version:3,microFanIn:true,taskId:neuron.taskId,reservationId:resultReservationId(row),results:neuron.microFanInResults,tasks:queue.tasks||[]});
+    }
     result = {
       command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks,
       reservationMaxConcurrentTasks, adaptiveControl, ...neuron,
