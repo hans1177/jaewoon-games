@@ -2083,7 +2083,8 @@
       "FALSIFICATION",
       "RELEARNING",
       "HARDER_BENCHMARK",
-      "CROSS_DOMAIN_TRANSFER"
+      "CROSS_DOMAIN_TRANSFER",
+      "SELF_IMPROVEMENT"
     ],
     "totalSignalGenerationLimit": null,
     "totalBranchGenerationLimit": null,
@@ -2095,6 +2096,10 @@
     "noSilentTerminalSignal": true,
     "busyLoopForbidden": true,
     "positiveLearningRequiresVerifiedEvidence": true,
-    "authorityChange": "NONE"
+    "authorityChange": "NONE",
+    "fixedPerRefreshCandidateCapsForbidden": true,
+    "everyEligibleDomainMaySeedBranches": true,
+    "everyRepeatedFailureMaySeedBranches": true,
+    "lowPriorityBranchStarvationForbidden": true
   }
 }

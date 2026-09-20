@@ -308,7 +308,8 @@
         "FALSIFICATION",
         "RELEARNING",
         "HARDER_BENCHMARK",
-        "CROSS_DOMAIN_TRANSFER"
+        "CROSS_DOMAIN_TRANSFER",
+        "SELF_IMPROVEMENT"
       ],
       "triggerEvidence": [
         "INSUFFICIENT_VERIFIED_EVIDENCE",
@@ -329,8 +330,15 @@
       "busyLoopForbidden": true,
       "positiveMasteryStillRequiresVerifiedProjectOutcome": true,
       "authorityExpansion": false,
-      "gateWeakening": false
-    }
+      "gateWeakening": false,
+      "fixedPerRefreshCandidateCapsForbidden": true,
+      "everyEligibleDomainMaySeedBranches": true,
+      "everyRepeatedFailureMaySeedBranches": true,
+      "lowPriorityBranchStarvationForbidden": true
+    },
+    "selfGeneratedSignalGenerationAlwaysOn": true,
+    "selfGeneratedSignalGenerationLimit": null,
+    "selfGeneratedBranchGenerationLimit": null
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",

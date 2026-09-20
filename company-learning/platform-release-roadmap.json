@@ -1223,7 +1223,12 @@
       "externalKnowledgeCandidateLimit": null,
       "freeCapacityControlsPracticeExecutionNotPracticeExistence": true,
       "domainMasteryLevelLimit": null,
-      "verifiedMasteryGrowthUnbounded": true
+      "verifiedMasteryGrowthUnbounded": true,
+      "selfGeneratedSignalAlwaysOn": true,
+      "selfGeneratedSignalLimit": null,
+      "selfGeneratedBranchLimit": null,
+      "fixedSeedCountCapForbidden": true,
+      "selfImprovementGapSignalGeneration": true
     },
     "webFirstImplementation": {
       "authority": "VIBE_IMPLEMENTATION_OWNER",
@@ -8785,7 +8790,10 @@
       "selfGeneratedSignalGenerationAlwaysOn": true,
       "performanceGapMeaning": "EMIT_CAUSAL_QUESTION_EXPERIMENT_RELEARNING_OR_HARDER_BENCHMARK_EVENT",
       "insufficientEvidenceMeaning": "EMIT_TESTABLE_CURIOSITY_QUESTION_EVENT",
-      "verifiedSuccessMeaning": "EMIT_HARDER_BENCHMARK_TRANSFER_OR_GENERALIZATION_EVENT"
+      "verifiedSuccessMeaning": "EMIT_HARDER_BENCHMARK_TRANSFER_OR_GENERALIZATION_EVENT",
+      "totalSelfGeneratedSignalLimit": null,
+      "totalLearningBranchLimit": null,
+      "fixedPerRefreshCandidateCapsForbidden": true
     }
   },
   "assistantRoadmapOrchestration": {
@@ -9576,7 +9584,12 @@
         "PERFORMANCE_OR_CONFIDENCE_GAP",
         "MASTERY_PLATEAU",
         "CAPABILITY_GAP",
-        "UNRESOLVED_QUESTION"
+        "UNRESOLVED_QUESTION",
+        "OPEN_QUESTION",
+        "UNKNOWN_OR_LOW_CONFIDENCE",
+        "INSUFFICIENT_RESULT",
+        "HARDER_CHALLENGE_REQUIRED",
+        "TRANSFER_GAP"
       ],
       "loops": [
         "REPLAY",
@@ -9589,7 +9602,10 @@
         "REPEAT",
         "ASK_TESTABLE_QUESTION",
         "ALTERNATIVE_HYPOTHESIS",
-        "REVALIDATE"
+        "REVALIDATE",
+        "CURIOSITY_BRANCH",
+        "SELF_IMPROVEMENT_BRANCH",
+        "ALTERNATIVE_HYPOTHESIS_BRANCH"
       ],
       "practiceSignalGenerationNeverStops": true,
       "executionMayWaitForLowerPriorityCapacity": true,
@@ -9599,7 +9615,9 @@
       "selfGeneratedBranchGenerationLimit": null,
       "externalPromptRequiredForNextLearningSignal": false,
       "functionalCuriosityMeaning": "EVIDENCE_GAP_DRIVEN_TESTABLE_QUESTION_GENERATION_NOT_SENTIENCE_CLAIM",
-      "multiverseBranching": "UNBOUNDED_SUCCESSIVE_SIGNAL_GENERATIONS_WITH_FINITE_PHYSICAL_EXECUTION_WINDOW"
+      "multiverseBranching": "UNBOUNDED_SUCCESSIVE_SIGNAL_GENERATIONS_WITH_FINITE_PHYSICAL_EXECUTION_WINDOW",
+      "totalSelfGeneratedSignalLimit": null,
+      "totalLearningBranchLimit": null
     },
     "capabilityGrowth": {
       "objective": "UNBOUNDED_VERIFIED_CAPABILITY_IMPROVEMENT",
@@ -9816,7 +9834,7 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; THIS CONTRACT DEFINES_RULE_2_AND_RULE_3",
     "rule2": {
@@ -9890,7 +9908,8 @@
         "HARDER_BENCHMARK",
         "CROSS_DOMAIN_TRANSFER",
         "FRESH_PROJECT_APPLICATION",
-        "REVALIDATION"
+        "REVALIDATION",
+        "SELF_IMPROVEMENT_GAP"
       ],
       "functionalCuriosityMeaning": "EVIDENCE_GAP_DRIVEN_TESTABLE_QUESTION_GENERATION_NOT_EMOTION_SENTIENCE_OR_SUBJECTIVE_THIRST_CLAIM",
       "multiverseMeaning": "UNBOUNDED_SUCCESSIVE_BRANCH_GENERATIONS_WITH_CAUSAL_PROVENANCE; NOT_INFINITE_SIMULTANEOUS_EXECUTION",
@@ -9901,7 +9920,11 @@
       "verifiedProjectOutcomeRequiredForPositiveMastery": true,
       "authorityExpansion": false,
       "gateWeakening": false,
-      "existingLearningMotorOnly": true
+      "existingLearningMotorOnly": true,
+      "fixedPerRefreshCandidateCapsForbidden": true,
+      "everyEligibleDomainMaySeedBranches": true,
+      "everyRepeatedFailureMaySeedBranches": true,
+      "lowPriorityBranchStarvationForbidden": true
     }
   }
 }

@@ -521,3 +521,25 @@ test('제3원칙 keeps self-generated learning signal branches unbounded while e
   assert.equal(universe?.totalSelfGeneratedLearningSignalLimit,null);
   assert.equal(universe?.selfGeneratedSignalGenerationAlwaysOn,true);
 });
+
+
+test('제3원칙 forbids fixed candidate caps and keeps every eligible learning branch live',()=>{
+  const rule=roadmap.ownerCanonicalRules?.rule3;
+  const motor=roadmap.developmentLifecycleMachine?.learningMotor;
+  const universe=roadmap.neuralDevelopmentBrain?.unboundedWorkUniverse;
+  const loop=roadmap.learningClosedLoopContract?.continuousRelearning;
+  assert.equal(rule?.fixedPerRefreshCandidateCapsForbidden,true);
+  assert.equal(rule?.everyEligibleDomainMaySeedBranches,true);
+  assert.equal(rule?.everyRepeatedFailureMaySeedBranches,true);
+  assert.equal(rule?.lowPriorityBranchStarvationForbidden,true);
+  assert.ok(rule?.branchFamilies?.includes('SELF_IMPROVEMENT_GAP'));
+  assert.equal(motor?.selfGeneratedSignalLimit,null);
+  assert.equal(motor?.selfGeneratedBranchLimit,null);
+  assert.equal(motor?.fixedSeedCountCapForbidden,true);
+  assert.equal(universe?.totalSelfGeneratedSignalLimit,null);
+  assert.equal(universe?.totalLearningBranchLimit,null);
+  assert.equal(universe?.fixedPerRefreshCandidateCapsForbidden,true);
+  assert.equal(loop?.totalSelfGeneratedSignalLimit,null);
+  assert.equal(loop?.totalLearningBranchLimit,null);
+  assert.ok(loop?.triggers?.includes('PERFORMANCE_OR_CONFIDENCE_GAP'));
+});

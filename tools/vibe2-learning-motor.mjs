@@ -1087,6 +1087,7 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   if(kind==='CURIOSITY_QUESTION_DRILL')return'현재 증거로 설명되지 않은 부분, 실패 경계, 더 나은 메커니즘을 질문으로 만들고 최소 검증 실험을 설계한다. 질문 자체는 사실이나 mastery가 아니다.';
+  if(kind==='SELF_IMPROVEMENT_GAP_DRILL')return'검증 성과가 부족하거나 confidence가 낮은 이유를 측정 가능한 격차로 정의하고, 가장 작은 개선 실험과 성공/실패 판정을 설계한다.';
   if(kind==='HYPOTHESIS_FALSIFICATION_DRILL')return'현재 설명과 대안 설명을 분리하고 둘을 구분할 반증 가능한 실험, 예상 결과, 실패 기준을 만든다.';
   if(kind==='CROSS_DOMAIN_TRANSFER_DRILL')return'한 영역의 검증된 메커니즘을 다른 영역에 표면 복사하지 말고 인과 구조만 전이해 fresh verification으로 검증한다.';
   if(kind==='HARDER_BENCHMARK_DRILL')return'현재 mastery보다 어려운 문제를 만들고 기존 성공 전략이 더 높은 난이도에서도 유지되는지 독립 검증한다.';
@@ -1100,12 +1101,11 @@ export function buildSelfGeneratedLearningDrills(masteryInput={}){
     domain,row,
     confidence:Number(state.productionConfidence?.domains?.[domain]?.level||1)
   })).sort((a,b)=>a.row.level-b.row.level||a.confidence-b.confidence||a.domain.localeCompare(b.domain));
-  const weakest=ranked.slice(0,3);
-  const strongest=[...ranked].sort((a,b)=>b.row.level-a.row.level||b.confidence-a.confidence||a.domain.localeCompare(b.domain)).slice(0,2);
+  const weakest=ranked;
+  const strongest=[...ranked].sort((a,b)=>b.row.level-a.row.level||b.confidence-a.confidence||a.domain.localeCompare(b.domain));
   const repeated=Object.entries(state.failureSignatures||{})
     .filter(([,row])=>Number(row?.count||0)>=2)
-    .sort((a,b)=>Number(b[1]?.count||0)-Number(a[1]?.count||0)||a[0].localeCompare(b[0]))
-    .slice(0,3);
+    .sort((a,b)=>Number(b[1]?.count||0)-Number(a[1]?.count||0)||a[0].localeCompare(b[0]));
   const drills=[];
 
   for(const item of weakest){
@@ -1115,6 +1115,14 @@ export function buildSelfGeneratedLearningDrills(masteryInput={}){
       domains:[item.domain],selfGenerated:true,analysisOnly:true,branchFamily:'CURIOSITY',
       signalOrigin:item.confidence<=1?'INSUFFICIENT_VERIFIED_EVIDENCE':'MASTERY_GAP'
     });
+    if(item.confidence<=1||Number(item.row.verifiedSuccesses||0)===0){
+      drills.push({
+        id:`self-improve-${lower(item.domain)}-l${item.row.level}-pc${item.confidence}`,
+        kind:'SELF_IMPROVEMENT_GAP_DRILL',priority:'low',productionPreemptible:true,countsAsProductionPass:false,
+        domains:[item.domain],selfGenerated:true,analysisOnly:true,branchFamily:'SELF_IMPROVEMENT',
+        signalOrigin:'PERFORMANCE_OR_CONFIDENCE_GAP'
+      });
+    }
   }
 
   for(const [sig,row] of repeated){
@@ -1160,7 +1168,7 @@ export function buildSelfGeneratedLearningDrills(masteryInput={}){
 export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
-  const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
+  const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count));
   const selfGenerated=buildSelfGeneratedLearningDrills(state);
   const phase4Drills=(benchmarkInput?.cases||[])
     .filter(row=>row?.track==='CAPABILITY_GENERALIZATION'&&row?.state==='READY_FOR_UNSEEN_SCREEN'&&row?.screenOnly===true)

@@ -918,3 +918,25 @@ test('rule 3 self-generated branch advances generations without a lifetime ceili
   assert.equal(third.practiceGeneration,3);
   assert.match(third.task.id,/-g3$/);
 });
+
+
+test('rule 3 removes fixed seed caps and creates self-improvement signals for every eligible weak domain',()=>{
+  const domains={};
+  const names=['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','WEB_RUNTIME'];
+  for(const name of names)domains[name]={xp:0,verifiedSuccesses:0};
+  const failures={};
+  for(let i=0;i<8;i++)failures['failure-'+i]={count:2+i,domains:['DEBUGGING']};
+  const state=createMasteryState({domains,failureSignatures:failures});
+  const generated=buildSelfGeneratedLearningDrills(state);
+  const curiosity=generated.drills.filter(row=>row.kind==='CURIOSITY_QUESTION_DRILL');
+  const improvement=generated.drills.filter(row=>row.kind==='SELF_IMPROVEMENT_GAP_DRILL');
+  const falsify=generated.drills.filter(row=>row.kind==='HYPOTHESIS_FALSIFICATION_DRILL');
+  assert.ok(curiosity.length>=names.length);
+  assert.ok(improvement.length>=names.length);
+  assert.equal(falsify.length,8);
+  assert.ok(generated.drills.every(row=>row.selfGenerated===true));
+  const idle=buildIdlePracticeQueue(state);
+  assert.ok(idle.drills.some(row=>row.kind==='SELF_IMPROVEMENT_GAP_DRILL'));
+  assert.equal(idle.selfGeneratedSignalGenerationLimit,null);
+  assert.equal(idle.selfGeneratedBranchGenerationLimit,null);
+});
