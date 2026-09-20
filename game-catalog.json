@@ -2963,6 +2963,156 @@
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID"
     },
     {
+      "id": "human-go-temp",
+      "name": "휴먼 GO!",
+      "description": "사용자 직접 업로드 웹게임",
+      "genre": [
+        "RPG",
+        "생존",
+        "액션",
+        "스포츠"
+      ],
+      "image": "",
+      "webPath": "/web-games/human-go-temp/",
+      "hasWebArchive": true,
+      "homepageWebPlayable": true,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
+      "homepageCategory": "design-only",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "40809da52d3823de288d5ae40ba856f905603662c1487d1eb8cda60611d4904e",
+      "ownerWebEntryFile": "web-games/human-go-temp/index.html",
+      "webDevelopmentResetRequired": false,
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "플랫폼 선택 필요",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG",
+          "생존",
+          "액션",
+          "스포츠"
+        ],
+        "genreLabel": "장르 미평가",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "개발 작업 정보 없음",
+        "updatedAt": "2026-09-19",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      },
+      "selectedPlatform": "ROBLOX",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 21,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "human-go-temp",
+          "name": "휴먼 GO!",
+          "description": "사용자 직접 업로드 웹게임",
+          "genres": [
+            "RPG",
+            "생존",
+            "액션",
+            "스포츠"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DESIGN_ONLY",
+          "classSource": "OWNER_WEB_DIRECT_UPLOAD",
+          "target": "",
+          "handling": "",
+          "selectedPlatform": "ROBLOX",
+          "stage": ""
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/human-go-temp/",
+            "archive": true,
+            "playable": true,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "design-only",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "",
+          "recentWork": "",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "플랫폼 선택 필요",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG",
+              "생존",
+              "액션",
+              "스포츠"
+            ],
+            "genreLabel": "장르 미평가",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "개발 작업 정보 없음",
+            "updatedAt": "2026-09-19",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
+          }
+        }
+      },
+      "catalogOrder": 21
+    },
+    {
       "id": "island-village",
       "name": "무인도 마을",
       "description": "무인도에서 마을을 키우는 생활·생존 게임",
@@ -3013,7 +3163,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -3106,7 +3256,7 @@
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3167,7 +3317,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival2",
@@ -3258,7 +3408,7 @@
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3319,7 +3469,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -3410,7 +3560,7 @@
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3431,10 +3581,10 @@
     "FORTNITE_UEFN"
   ],
   "runtimeCounts": {
-    "canonicalGames": 23,
-    "homepageInfo": 23,
-    "normalizedGames": 23,
-    "ownerWebAdded": 0,
+    "canonicalGames": 24,
+    "homepageInfo": 24,
+    "normalizedGames": 24,
+    "ownerWebAdded": 1,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0
   },
