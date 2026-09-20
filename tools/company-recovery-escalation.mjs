@@ -54,7 +54,7 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
   };
 }
 export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput={},recoveryInput={}}={}){
-  let queue=normalizeRecoveryQueue(recoveryInput);const added=[];
+  let queue=normalizeRecoveryQueue(recoveryInput);const added=[],reactivated=[];
   const gameTasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const sysTasks=Array.isArray(systemAiQueueInput.tasks)?systemAiQueueInput.tasks:[];
   const candidates=[];
@@ -86,15 +86,15 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
     const result=enqueueRecovery(queue,escalationRow({
       sourceQueue:first.sourceQueue,task:first.task,signature:first.signature,stage:first.stage,
       blastRadius:'portfolio:'+rows.length,relatedTaskIds:ids
-    }));
-    queue=result.queue;if(result.added)added.push(result.id);rows.forEach(x=>handled.add(x.sourceQueue+'|'+clean(x.task.id)));
+    }),{reactivateDispatched:rows.some(x=>clean(x.task.status).toLowerCase()==='failed')});
+    queue=result.queue;if(result.added)added.push(result.id);if(result.reactivated)reactivated.push(result.id);rows.forEach(x=>handled.add(x.sourceQueue+'|'+clean(x.task.id)));
   }
   for(const row of candidates){
     if(handled.has(row.sourceQueue+'|'+clean(row.task.id)))continue;
-    const result=enqueueRecovery(queue,escalationRow({sourceQueue:row.sourceQueue,task:row.task,signature:row.signature,stage:row.stage}));
-    queue=result.queue;if(result.added)added.push(result.id);
+    const result=enqueueRecovery(queue,escalationRow({sourceQueue:row.sourceQueue,task:row.task,signature:row.signature,stage:row.stage}),{reactivateDispatched:clean(row.task.status).toLowerCase()==='failed'});
+    queue=result.queue;if(result.added)added.push(result.id);if(result.reactivated)reactivated.push(result.id);
   }
-  return{queue,added};
+  return{queue,added,reactivated};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
@@ -106,4 +106,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   writeJson(recoveryFile,result.queue);
   console.log('RECOVERY_ESCALATION_ADDED='+result.added.length);
+  console.log('RECOVERY_ESCALATION_REACTIVATED='+result.reactivated.length);
 }
