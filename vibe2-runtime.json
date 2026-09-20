@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 14,
+      "runtime": 15,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -220,6 +220,23 @@
       "controlBranchRole": "STATE_ONLY",
       "mainChangesAfterReservationApplyToNextWaveOnly": true,
       "fanInRegressionAgainstReservedContract": true
+    },
+    "workerPreflightSynchronization": {
+      "enabled": true,
+      "requiredBeforeEveryWorkerStarts": true,
+      "controlStateBranch": "vibe2-unreal-core",
+      "canonicalContractBranch": "main",
+      "requiredReservationFields": [
+        "taskId",
+        "reservationId",
+        "reservationRunId",
+        "reservationRunAttempt",
+        "reservedAt"
+      ],
+      "pinnedMainContractShaRequired": true,
+      "sharedContextSyncRequired": true,
+      "mismatchAction": "INHIBIT_WORKER_AND_REPLAN_OR_REQUEUE_EXACT_STAGE",
+      "validator": "tools/vibe2-queue-control.mjs::verifyVibeWorkerSynchronization"
     },
     "taskLocalExploration": {
       "enabled": true,

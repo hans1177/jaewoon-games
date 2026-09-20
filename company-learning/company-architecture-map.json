@@ -1,5 +1,5 @@
 {
-  "version": 64,
+  "version": 65,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -257,10 +257,10 @@
     }
   },
   "neuralWorkGraphTopology": {
-    "version": 1,
+    "version": 2,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_SHADOW_POST_REPAIR_VALIDATION_WITH_CAPACITY_AWARE_20_SLOT_EXECUTION",
+    "currentState": "ATOMIC_NEURON_STREAM_WITH_WORKER_PREFLIGHT_SYNC_AND_CONTINUOUS_CAUSAL_REFILL",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -302,6 +302,36 @@
         "RECOVERY_FALLBACK"
       ],
       "globalWaveBarrierForbiddenWhenIndependentNodesCanProgress": true
+    },
+    "circulationModel": {
+      "brainNeverGloballyStops": true,
+      "mainArtery": "GAME_PRIMARY_ATOMIC_NEURON_STREAM",
+      "mainArteryCycle": [
+        "EVENT",
+        "SENSOR",
+        "FACT_HYPOTHESIS",
+        "CAUSAL_RESPONSIBILITY",
+        "PLAN",
+        "COMPILED_WORK_CONTRACT",
+        "WORKER_PREFLIGHT_SYNC",
+        "ATOMIC_IMPLEMENTATION",
+        "QA_RUNTIME_CRITIC",
+        "VERIFIED_CHECKPOINT",
+        "MEMORY",
+        "NEXT_EVENT"
+      ],
+      "auxiliaryVessels": [
+        "RECOVERY_FAST",
+        "CONTROL_FAST",
+        "LEARNING_IDLE",
+        "RELEASE_WAIT",
+        "SECURITY",
+        "PERFORMANCE",
+        "QA_AND_RUNTIME_EVIDENCE"
+      ],
+      "auxiliaryReturn": "CAUSAL_EVIDENCE_RETURNS_TO_MAIN_ARTERY",
+      "inhibitorMeaning": "BLOCK_ONLY_THE_UNSAFE_ACTION_OR_ROUTE_NOT_THE_BRAIN",
+      "noSafeActionMeaning": "DORMANT_ACTION_NODE_UNTIL_EVENT_OR_RECOVERY; SENSOR_AND_DIAGNOSIS_REMAIN_LIVE"
     },
     "auditability": {
       "everyActionLinksToEvidence": true,
@@ -659,6 +689,15 @@
       "gamePrimaryFixedInternalCap": null,
       "ownerUnlimitedConcurrencyDirective": "2026-09-20",
       "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
+      "workerPreflightSynchronization": {
+        "required": true,
+        "controlBranch": "vibe2-unreal-core",
+        "canonicalContractBranch": "main",
+        "reservationIdentityMustMatch": true,
+        "pinnedMainShaMustMatchReservedContract": true,
+        "sharedContextMustPassBeforeWork": true,
+        "unsynchronizedWorkerAction": "INHIBIT_AND_REPLAN_OR_REQUEUE"
+      },
       "authorityChange": "NONE"
     },
     "liveShadowRepairLoop": {
