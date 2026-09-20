@@ -493,3 +493,38 @@ test('제2규칙 binds every observable external AI action to security quarantin
   assert.equal(security.monitorAllObservableExternalAiActivity,true);
   assert.equal(security.quarantineBlocksCandidatePublication,true);
 });
+
+
+test('Vibe may evolve its own internal architecture from verified structural evidence without authority expansion',()=>{
+  const e=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.selfArchitectureEvolution;
+  assert.equal(e.enabled,true);
+  assert.equal(e.actor,'VIBE2_VIBE3');
+  assert.equal(e.externalPromptRequired,false);
+  assert.equal(e.totalEvolutionGenerationLimit,null);
+  assert.equal(e.proposalGenerationLimit,null);
+  assert.equal(e.systemConstructionAllowed,true);
+  assert.equal(e.existingSystemRefactorAllowed,true);
+  assert.equal(e.unchangedEvidenceBusyLoopForbidden,true);
+  assert.equal(e.newEvidenceMayGenerateNextEvolution,true);
+  assert.equal(e.beforeAfterComparisonRequired,true);
+  assert.equal(e.fullRegressionRequired,true);
+  assert.equal(e.securityVerificationRequired,true);
+  assert.equal(e.rollbackOnRegressionOrNoImprovement,true);
+  assert.equal(e.authorityExpansionForbidden,true);
+  assert.equal(e.gateWeakeningForbidden,true);
+  assert.equal(e.executionUsesExistingScheduler,true);
+});
+
+
+test('Vibe self-architecture evolution is executable and adopted only after verified improvement',()=>{
+  const e=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.selfArchitectureEvolution;
+  assert.equal(e.executionLaneConnected24h,true);
+  assert.equal(e.executionLane,'RECOVERY_FAST');
+  assert.equal(e.protectedSlots,1);
+  assert.equal(e.adoptionProof,'SAME_CHANGED_REGRESSION_TEST_BASE_FAIL_CANDIDATE_PASS');
+  assert.equal(e.candidateSecurityScanRequired,true);
+  assert.equal(e.centralAuthorityProjectionMustRemainIdentical,true);
+  assert.equal(e.runtimeSafetyProjectionMustRemainIdentical,true);
+  assert.equal(e.automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass,true);
+  assert.equal(e.directMainWriteForbidden,true);
+});

@@ -2073,5 +2073,32 @@
     "rawHostilePayloadRetention": false,
     "externalProviderAttack": false,
     "authorityChange": "NONE"
+  },
+  "vibeSelfArchitectureEvolution": {
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.selfArchitectureEvolution",
+    "sensor": "tools/vibe2-self-architecture-evolution.mjs",
+    "scheduler": "EXISTING_VIBE_DAG_RECOVERY_FAST",
+    "executor": "VIBE2_VIBE3_SYSTEM_ARCHITECTURE_CANDIDATE",
+    "verification": [
+      "SAME_FAILURE_RECHECK",
+      "RELATED_REGRESSION",
+      "FULL_REGRESSION",
+      "SECURITY",
+      "BEFORE_AFTER_METRICS"
+    ],
+    "totalGenerationLimit": null,
+    "proposalGenerationLimit": null,
+    "directMainWrite": false,
+    "authorityExpansion": false,
+    "gateWeakening": false,
+    "lane": "RECOVERY_FAST",
+    "laneRunner": ".github/workflows/vibe2-24h-runner.yml",
+    "workOrder": "tools/vibe2-continuous-runner.mjs",
+    "sourceWorker": "tools/vibe2-source-worker.mjs",
+    "pathGuard": "tools/vibe2-system-architecture-contract.mjs",
+    "candidateVerifier": "tools/vibe2-system-evolution-verify.mjs",
+    "promotion": ".github/workflows/vibe2-system-evolution-release.yml",
+    "adoptionProof": "BASE_FAIL_CANDIDATE_PASS_SAME_REGRESSION_TEST",
+    "automaticPrAdoption": true
   }
 }

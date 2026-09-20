@@ -221,23 +221,20 @@ export function compileVibeCentralWorkContract({
   const boundary=orchestration?.executionBoundary||{};
   const supervised=supervisionContract?.required===true;
   const supervisionApproved=!supervised||supervisionContract?.approved===true||task?.supervisionApproved===true;
-  const protectedSemantics=uniq([
-    'GAME_IDENTITY',
-    'SAVE_KEY_AND_SAVE_MEANING',
-    'CORE_LOOP',
-    'PROGRESSION',
-    'MOBILE_INPUT',
-    'EXISTING_VALID_FEATURES',
-    ...(supervisionContract?.protectedSemantics||[]),
-    ...(presentationQuality?.preserve||[]),
-    ...(task?.protectedSemantics||[])
+  const systemArchitecture=clean(plan?.target||task?.target).toLowerCase()==='system'&&task?.systemSteward===true&&clean(task?.department).toLowerCase()==='system-architecture';
+  const protectedSemantics=uniq(systemArchitecture?[
+    'CENTRAL_POLICY_AUTHORITY_BOUNDARY','SECURITY_GATES','QUALITY_AND_EVIDENCE_GATES','VERIFIED_LEARNING',
+    'EXISTING_PUBLIC_AND_RUNTIME_CONTRACTS','EXISTING_SCHEDULER_AUTHORITY',...(task?.protectedSemantics||[])
+  ]:[
+    'GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES',
+    ...(supervisionContract?.protectedSemantics||[]),...(presentationQuality?.preserve||[]),...(task?.protectedSemantics||[])
   ]);
-  const forbidden=uniq([
-    'WRAPPER_OR_SHADOW_PIPELINE',
-    'UNRELATED_SYSTEM_MUTATION',
-    'SAVE_RESET_WITHOUT_MIGRATION',
-    'FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH',
-    'RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT',
+  const forbidden=uniq(systemArchitecture?[
+    'AUTHORITY_EXPANSION','GATE_OR_THRESHOLD_WEAKENING','SECURITY_WEAKENING','VERIFIED_LEARNING_DELETION',
+    'FABRICATED_PASS','WRAPPER_OR_SHADOW_PIPELINE','UNRELATED_SYSTEM_MUTATION','RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT'
+  ]:[
+    'WRAPPER_OR_SHADOW_PIPELINE','UNRELATED_SYSTEM_MUTATION','SAVE_RESET_WITHOUT_MIGRATION',
+    'FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH','RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT',
     ...(supervisionContract?.hardReject||[])
   ]);
   const passConditions=uniq([
@@ -297,9 +294,11 @@ export function compileVibeCentralWorkContract({
     invariants:{
       protectedSemantics,
       forbiddenChanges:forbidden,
-      saveMeaningMustRemainCompatible:true,
+      saveMeaningMustRemainCompatible:!systemArchitecture,
       unrelatedBalanceMutationForbidden:true,
-      existingValidFeaturesMustRemainFunctional:true
+      existingValidFeaturesMustRemainFunctional:true,
+      authorityMustRemainUnchanged:systemArchitecture,
+      qualityEvidenceAndSecurityGatesMustRemainUnchanged:systemArchitecture
     },
     failureRoute,
     passConditions,
@@ -324,13 +323,13 @@ export function compileVibeCentralWorkContract({
       supervisorPassRequired:supervised,
       supervisorApproved:supervisionApproved
     },
-    preflightChecks:[
-      'READ_EXISTING_RESPONSIBLE_SYSTEM',
-      'VERIFY_EXACT_WRITABLE_SCOPE',
-      'PRESERVE_PROTECTED_SEMANTICS',
-      'NO_WRAPPER_OR_SHADOW_PIPELINE',
-      'TRACE_FAILURE_TO_RESPONSIBLE_SYSTEM',
-      'PLAN_RUNTIME_VERIFIABLE_RESULT'
+    preflightChecks:systemArchitecture?[
+      'READ_EXISTING_RESPONSIBLE_SYSTEM','VERIFY_STRUCTURAL_CAUSE','COMPARE_AT_LEAST_TWO_ALTERNATIVES',
+      'VERIFY_EXACT_WRITABLE_SCOPE','PRESERVE_AUTHORITY_AND_GATES','NO_WRAPPER_OR_SHADOW_PIPELINE',
+      'PLAN_SAME_FAILURE_RECHECK','PLAN_BEFORE_AFTER_METRIC_COMPARISON'
+    ]:[
+      'READ_EXISTING_RESPONSIBLE_SYSTEM','VERIFY_EXACT_WRITABLE_SCOPE','PRESERVE_PROTECTED_SEMANTICS',
+      'NO_WRAPPER_OR_SHADOW_PIPELINE','TRACE_FAILURE_TO_RESPONSIBLE_SYSTEM','PLAN_RUNTIME_VERIFIABLE_RESULT'
     ],
     authorityExpanded:false
   };

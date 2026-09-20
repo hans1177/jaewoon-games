@@ -1,7 +1,7 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "MACHINE_EXECUTION_CONTRACT",
-  "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
+  "purpose": "Turn verified Web, Roblox, Unity, and Fortnite UEFN development outcomes plus continuously generated practice, relearning, hypothesis, falsification, benchmark, holdout, and transfer signals into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
     "vibeImplementationOwner": "VIBE2_VIBE3",
     "webRole": [
@@ -16,7 +16,24 @@
     "noAutoPass": true,
     "verifiedEvidenceOnlyForPositiveMastery": true,
     "verifiedFailureMayTeachAvoidPatterns": true,
-    "authorityNeverExpandsWithMastery": true
+    "authorityNeverExpandsWithMastery": true,
+    "unifiedPlatformLearningNetwork": true,
+    "supportedEvidenceTargets": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "unityRole": [
+      "SELECTED_PLATFORM_NATIVE_IMPLEMENTATION",
+      "NATIVE_LEARNING_STAGE"
+    ],
+    "fortniteUefnRole": [
+      "SELECTED_PLATFORM_NATIVE_IMPLEMENTATION",
+      "VERSE_UEFN_NATIVE_LEARNING_STAGE"
+    ],
+    "platformSpecificParallelTrainerForbidden": true,
+    "nativePositiveMasteryRequiresMatchingRuntimeQa": true
   },
   "mastery": {
     "replacesDepartmentLevel": false,
@@ -52,7 +69,13 @@
       "ANIMATION_FEEL",
       "VFX",
       "AUDIO_FEEL",
-      "CAMERA_LANGUAGE"
+      "CAMERA_LANGUAGE",
+      "UNITY_RUNTIME",
+      "UNITY_PHYSICS",
+      "UNITY_NETCODE",
+      "UEFN_RUNTIME",
+      "UEFN_VERSE",
+      "UEFN_REPLICATION"
     ],
     "verifiedSuccessXp": 12,
     "verifiedFailureLessonXp": 5,
@@ -88,7 +111,18 @@
         "ROBLOX_REMOTE_SECURITY",
         "ROBLOX_REPLICATION",
         "ROBLOX_MULTIPLAYER"
-      ]
+      ],
+      "UNITY_NATIVE_ONLY": [
+        "UNITY_RUNTIME",
+        "UNITY_PHYSICS",
+        "UNITY_NETCODE"
+      ],
+      "FORTNITE_UEFN_NATIVE_ONLY": [
+        "UEFN_RUNTIME",
+        "UEFN_VERSE",
+        "UEFN_REPLICATION"
+      ],
+      "NATIVE_RUNTIME_EVIDENCE_IS_PLATFORM_SCOPED": true
     },
     "legacyDepartmentLevelCeilingAppliesOnlyToLegacyField": true,
     "domainMasteryLevelLimit": null,
@@ -219,7 +253,9 @@
       "ANIMATION_FEEL",
       "VFX",
       "AUDIO_FEEL",
-      "CAMERA_LANGUAGE"
+      "CAMERA_LANGUAGE",
+      "UNITY_NATIVE",
+      "FORTNITE_UEFN_NATIVE"
     ],
     "levels": null,
     "runOn": [
@@ -270,7 +306,9 @@
       "SELF_MODEL_CALIBRATION_DRILL",
       "CROSS_DOMAIN_TRANSFER_DRILL",
       "EXTERNAL_REFERENCE_SYNTHESIS_DRILL",
-      "RELEARNING_REPLAY_DRILL"
+      "RELEARNING_REPLAY_DRILL",
+      "UNITY_NATIVE_DRILL",
+      "FORTNITE_UEFN_NATIVE_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -296,7 +334,11 @@
     "relearningGenerationLimit": null,
     "practiceQueueItemLimit": null,
     "executionMayYieldToHigherPriorityProduction": true,
-    "productionPresenceDoesNotSuppressPracticeGeneration": true
+    "productionPresenceDoesNotSuppressPracticeGeneration": true,
+    "hypothesisGenerationLimit": null,
+    "falsificationGenerationLimit": null,
+    "previousResultComparisonRequired": true,
+    "nextSignalAfterCompletedGenerationRequired": true
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",

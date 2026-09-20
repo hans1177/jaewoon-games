@@ -44,7 +44,13 @@ on:
       - 'qa/company-security-steward.test.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'tools/vibe2-system-steward.mjs'
+      - 'tools/vibe2-neural-expansion-readiness.mjs'
       - 'qa/vibe2-system-steward.test.mjs'
+      - 'qa/vibe2-neural-expansion-readiness.test.mjs'
+      - 'qa/vibe2-owner-rule1-continuity.test.mjs'
+      - 'qa/vibe2-owner-rule2-external-ai.test.mjs'
+      - 'qa/vibe2-owner-rule3-unbounded-learning.test.mjs'
+      - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-shared-context.test.mjs'
@@ -104,6 +110,7 @@ jobs:
       active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}
       game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
+      recovery_fast_queued: ${{ steps.queue_state.outputs.recovery_fast_queued }}
     concurrency:
       group: vibe2-control-state-vibe2-unreal-core
       cancel-in-progress: false
@@ -175,6 +182,12 @@ jobs:
               node --test qa/company-development-web-runtime.test.mjs
               node --test qa/vibe2-practice-distillation.test.mjs
               node --test qa/vibe2-design-intelligence.test.mjs
+
+              # Rule 4 final-stage neural expansion readiness is derived from direct targeted QA.
+              node --check tools/vibe2-neural-expansion-readiness.mjs
+              node tools/vibe2-neural-expansion-readiness.mjs \
+                --root=. \
+                --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
             )
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
@@ -182,7 +195,8 @@ jobs:
             node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-system-steward.log
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-system-steward.log
 
             node --check /tmp/vibe2-main/tools/vibe2-handoff.mjs
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
@@ -419,6 +433,7 @@ jobs:
           const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
           const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
+          const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
           const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
           const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||20));
@@ -434,13 +449,15 @@ jobs:
             'free_worker_slots='+freeWorkerSlots+'\n'+
             'active_worker_reservations='+activeGame+'\n'+
             'game_primary_queued='+gameQueued+'\n'+
-            'learning_idle_queued='+learningQueued+'\n');
+            'learning_idle_queued='+learningQueued+'\n'+
+            'recovery_fast_queued='+recoveryQueued+'\n');
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
           console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
           console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
           console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
           console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
+          console.log('VIBE2_24H_RECOVERY_FAST_QUEUED='+recoveryQueued);
           console.log('VIBE2_24H_WAVE_READY='+waveReady);
           NODE
           echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
@@ -543,6 +560,8 @@ jobs:
             /tmp/vibe2-web-experience-ingest.log
             /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
+            /tmp/vibe2-neural-expansion-readiness.json
+            /tmp/vibe2-neural-expansion-readiness.log
             /tmp/vibe2-system-steward.log
             /tmp/vibe2-recovery-escalation.log
             /tmp/vibe2-recovery-dispatch.log
@@ -554,6 +573,17 @@ jobs:
             /tmp/vibe2-plan-summary.log
           if-no-files-found: warn
           retention-days: 7
+
+  recovery_fast:
+    needs: plan
+    if: ${{ needs.plan.outputs.recovery_fast_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: recovery-fast
+      lane_max: '1'
+    permissions:
+      contents: write
+      actions: write
 
   continuous:
     needs: plan
@@ -586,8 +616,8 @@ jobs:
       actions: write
 
   refill:
-    needs: [plan, continuous, learning_idle, game_study]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success')) }}
+    needs: [plan, recovery_fast, continuous, learning_idle, game_study]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0' && needs.game_study.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:

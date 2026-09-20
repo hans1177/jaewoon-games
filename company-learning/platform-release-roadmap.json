@@ -2830,6 +2830,63 @@
             }
           }
         ]
+      },
+      "selfArchitectureEvolution": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-21",
+        "enabled": true,
+        "objective": "VIBE_MAY_PROPOSE_DESIGN_IMPLEMENT_VERIFY_AND_ITERATE_ITS_OWN_INTERNAL_ARCHITECTURE_WHEN_VERIFIED_STRUCTURAL_EVIDENCE_JUSTIFIES_IT",
+        "actor": "VIBE2_VIBE3",
+        "externalPromptRequired": false,
+        "loop": [
+          "DETECT_STRUCTURAL_BOTTLENECK",
+          "VERIFY_CAUSAL_STRUCTURE",
+          "GENERATE_AT_LEAST_TWO_ARCHITECTURE_ALTERNATIVES",
+          "SELECT_SMALLEST_CAUSAL_UPGRADE",
+          "IMPLEMENT_IN_ISOLATED_CANDIDATE",
+          "RUN_SAME_FAILURE_RECHECK",
+          "RUN_RELATED_AND_FULL_REGRESSION",
+          "RUN_SECURITY_CHECK",
+          "COMPARE_BEFORE_AFTER_METRICS",
+          "ADOPT_ONLY_IF_VERIFIED_IMPROVEMENT",
+          "DISTILL_RESULT_AND_GENERATE_NEXT_SIGNAL"
+        ],
+        "totalEvolutionGenerationLimit": null,
+        "proposalGenerationLimit": null,
+        "systemConstructionAllowed": true,
+        "existingSystemRefactorAllowed": true,
+        "directResponsibleSystemModificationPreferred": true,
+        "wrapperOrShadowSystemForbidden": true,
+        "unchangedEvidenceBusyLoopForbidden": true,
+        "newEvidenceMayGenerateNextEvolution": true,
+        "candidateBranchRequired": true,
+        "directMainWriteForbidden": true,
+        "beforeAfterComparisonRequired": true,
+        "fullRegressionRequired": true,
+        "securityVerificationRequired": true,
+        "rollbackOnRegressionOrNoImprovement": true,
+        "authorityExpansionForbidden": true,
+        "gateWeakeningForbidden": true,
+        "thresholdReductionForbidden": true,
+        "runtimePassFabricationForbidden": true,
+        "verifiedLearningDeletionForbidden": true,
+        "humanOrSecretBoundActionsRemainInhibited": true,
+        "executionUsesExistingScheduler": true,
+        "systemStewardProtectedLane": "RECOVERY_FAST",
+        "producer": "tools/vibe2-self-architecture-evolution.mjs",
+        "steward": "tools/vibe2-system-steward.mjs",
+        "executionLaneConnected24h": true,
+        "executionLane": "RECOVERY_FAST",
+        "protectedSlots": 1,
+        "exactWritablePathGuard": "tools/vibe2-system-architecture-contract.mjs",
+        "candidateVerifier": "tools/vibe2-system-evolution-verify.mjs",
+        "promotionWorkflow": ".github/workflows/vibe2-system-evolution-release.yml",
+        "adoptionProof": "SAME_CHANGED_REGRESSION_TEST_BASE_FAIL_CANDIDATE_PASS",
+        "candidateFullRegression": "ALL_VIBE2_TESTS_PLUS_CENTRAL_POLICY_CONTRACT",
+        "candidateSecurityScanRequired": true,
+        "centralAuthorityProjectionMustRemainIdentical": true,
+        "runtimeSafetyProjectionMustRemainIdentical": true,
+        "automaticAdoptionViaPrAllowedAfterAllEvolutionGatesPass": true
       }
     },
     "webIterationPolicy": {
@@ -9796,9 +9853,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 1,
+    "version": 4,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; THIS CONTRACT DEFINES_ONLY_RULE_2",
+    "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -9835,7 +9892,273 @@
       "isolateOnlyOwnedRepositoryCiCandidateAndExecutionContext": true,
       "authorityExpansion": false,
       "gateWeakening": false,
-      "existingPipelinesOnly": true
-    }
+      "existingPipelinesOnly": true,
+      "operationalStatus": "IMPLEMENTED_PENDING_BRANCH_QA",
+      "mergedPrProvenanceCapture": "tools/vibe2-merged-pr-provenance.mjs",
+      "mergedPrProvenanceWorkflow": ".github/workflows/vibe2-merged-pr-provenance.yml",
+      "externalAiDistillation": "tools/vibe2-external-ai-distillation.mjs",
+      "securitySteward": "tools/company-security-steward.mjs",
+      "securityLearning": "tools/company-security-learning.mjs",
+      "assistantAtomicNeuronBinding": {
+        "source": "tools/vibe2-fan-in-review.mjs",
+        "eventType": "SUPERVISOR_RESULT",
+        "verifiedSupervisionRequired": true,
+        "rawOutputStored": false,
+        "queueMutationAuthority": false,
+        "executionAuthority": false,
+        "automaticPromotionAuthority": false
+      },
+      "provenanceGapResolution": {
+        "externalAssistantMergedPrDurablyCaptured": true,
+        "humanMergedPrDurablyCapturedAsProvenanceOnly": true,
+        "otherAiMergedPrDurablyCapturedWhenObservable": true,
+        "mergeDoesNotEqualCapabilityVerification": true,
+        "freshIndependentQaRequiredBeforeReuse": true
+      }
+    },
+    "rule4": {
+      "id": "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION",
+      "label": "제4규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_AND_MAY_EXPAND_ITS_INTERNAL_NEURAL_STRUCTURE_AT_THE_FINAL_ORDERED_STAGE_WHEN_CAUSAL_EVIDENCE_AND_ALL_EXISTING_QA_SECURITY_AND_AUTHORITY_INVARIANTS_PASS",
+      "vibeIsPrimary": true,
+      "externalAndAssistantAiRole": "SUPPORTING_ONLY_WITHIN_EXISTING_CENTRAL_CONTRACT",
+      "evolutionCycle": [
+        "OBSERVE_VERIFIED_BOTTLENECK_OR_CAPABILITY_GAP",
+        "PROPOSE_INTERNAL_SYSTEM_OR_ARCHITECTURE_CHANGE",
+        "COMPARE_AT_LEAST_TWO_ALTERNATIVES_WHEN_STRUCTURAL_CHANGE_IS_REQUIRED",
+        "DESIGN_SMALLEST_CAUSAL_CHANGE",
+        "IMPLEMENT_IN_EXISTING_RESPONSIBLE_SYSTEM",
+        "RUN_SAME_FAILURE_RECHECK",
+        "RUN_RELATED_AND_FULL_REGRESSION",
+        "RUN_SECURITY_AND_POLICY_INVARIANCE_CHECK",
+        "COMPARE_BEFORE_AND_AFTER_EVIDENCE",
+        "ADOPT_ONLY_VERIFIED_IMPROVEMENT",
+        "ROLL_BACK_OR_REQUEUE_WHEN_IMPROVEMENT_IS_NOT_VERIFIED",
+        "GENERATE_NEXT_LEARNING_OR_EVOLUTION_SIGNAL"
+      ],
+      "architectureEvolutionGenerationLimit": null,
+      "capabilityGrowthGenerationLimit": null,
+      "neuralExpansion": {
+        "phase": "LAST_STAGE_ONLY",
+        "mayBeginOnlyAfter": [
+          "RULE_1_CONTINUOUS_DEVELOPMENT_CONTRACT_QA_PASS",
+          "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION_IS_OPERATIONALLY_CLOSED",
+          "RULE_3_SELF_GENERATED_UNBOUNDED_LEARNING_SIGNAL_MULTIVERSE_IS_OPERATIONALLY_CLOSED",
+          "ATOMIC_NEURON_COMPLETION_AND_TASK_MICRO_FAN_IN_ARE_STABLE",
+          "SHARED_CONTEXT_SYNC_IS_ENFORCED_BEFORE_AND_AFTER_WORK",
+          "SECURITY_QA_RELEASE_GATES_REMAIN_INTACT"
+        ],
+        "method": [
+          "PROPOSE",
+          "DESIGN",
+          "IMPLEMENT",
+          "QA",
+          "SECURITY_VERIFY",
+          "BEFORE_AFTER_COMPARE",
+          "ADOPT_OR_ROLLBACK",
+          "REPEAT_WITHOUT_GENERATION_CEILING"
+        ],
+        "autonomousAuthorityExpansion": false,
+        "automaticPolicyCreation": false,
+        "automaticGateWeakening": false,
+        "currentAuthorization": "EVIDENCE_GATED",
+        "state": "ELIGIBLE_WHEN_RUNTIME_READINESS_EVIDENCE_PASS",
+        "automaticActivationForbidden": false,
+        "activationMode": "VIBE_SELF_ACTIVATES_WHEN_VERIFIED_READINESS_EVIDENCE_PASSES",
+        "evidenceGatedSelfActivationAllowed": true,
+        "ownerApprovalRequiredAfterPrerequisites": false,
+        "ungatedAutomaticActivationForbidden": true,
+        "internalNeuralStructureExpansionAllowed": true,
+        "neuralExecutionAuthorityExpansionAllowed": false,
+        "runtimeReadinessEvidence": [
+          "RULE_1_QA_PASS",
+          "RULE_2_QA_PASS",
+          "RULE_3_QA_PASS",
+          "ATOMIC_NEURON_AND_MICRO_FANIN_QA_PASS",
+          "SHARED_CONTEXT_SYNC_QA_PASS",
+          "SECURITY_IMMUNE_QA_PASS"
+        ],
+        "adoptionStillRequires": [
+          "STRUCTURAL_CAUSE_JUSTIFIES_NEURAL_EXPANSION",
+          "AT_LEAST_TWO_ALTERNATIVES_COMPARED",
+          "SAME_FAILURE_BEFORE_FAIL_AFTER_PASS",
+          "RELATED_AND_FULL_REGRESSION_PASS",
+          "SECURITY_PASS",
+          "BEFORE_AFTER_METRIC_IMPROVED",
+          "EXECUTION_AUTHORITY_UNCHANGED",
+          "QA_SECURITY_RELEASE_GATES_UNCHANGED"
+        ]
+      },
+      "invariants": {
+        "authorityExpansion": false,
+        "qaGateWeakening": false,
+        "securityGateWeakening": false,
+        "releaseGateBypass": false,
+        "directMainWrite": false,
+        "fabricatedPassForbidden": true,
+        "verifiedLearningDeletionForbidden": true,
+        "existingResponsibleSystemDirectModificationPreferred": true,
+        "wrapperOrShadowDuplicateSystemForbidden": true,
+        "existingGameRulesProgressionSaveAndBalanceMustRemainProtected": true
+      },
+      "adoptionRequires": [
+        "VERIFIED_CAUSAL_IMPROVEMENT",
+        "SAME_FAILURE_RECHECK_PASS",
+        "RELATED_REGRESSION_PASS",
+        "FULL_REGRESSION_WHEN_APPLICABLE",
+        "SECURITY_PASS",
+        "AUTHORITY_UNCHANGED",
+        "GATES_UNCHANGED",
+        "BEFORE_AFTER_EVIDENCE_IMPROVED"
+      ],
+      "failureBehavior": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING",
+      "completionIsCheckpointNotStop": true,
+      "operationalStatus": "SELF_ARCHITECTURE_PIPELINE_IMPLEMENTED_NEURAL_EXPANSION_EVIDENCE_GATED",
+      "currentNeuralExpansionAuthorization": "EVIDENCE_GATED_SELF_ACTIVATION",
+      "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITH_EVIDENCE_GATED_FINAL_NEURAL_EXPANSION"
+    },
+    "rule1": {
+      "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
+      "label": "제1규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "VIBE_GAME_DEVELOPMENT_CONTINUES_WITHOUT_A_TERMINAL_DONE_STATE_UNTIL_THE_OWNER_EXPLICITLY_INSTRUCTS_IT_TO_STOP",
+      "doneCommandRemoved": true,
+      "terminalDoneStateForbidden": true,
+      "verifiedCompletionMeaning": "VERIFIED_CHECKPOINT_NOT_TERMINATION",
+      "verifiedCheckpointMustGenerateNextCausalInput": true,
+      "noIndependentSafeAutonomousTaskMeaning": "TRIGGER_CAUSAL_REPLAN_OR_NEW_GAME_DEVELOPMENT_NEURON_NOT_SYSTEM_STOP",
+      "emptyQueueMeaning": "TRIGGER_PLANNER_REFILL_GAME_STUDY_OR_NEXT_SAFE_DEVELOPMENT_SIGNAL",
+      "continuousCycle": [
+        "READ_LATEST_SHARED_CONTEXT",
+        "PLAN_OR_RESERVE_NEXT_SAFE_GAME_DEVELOPMENT_WORK",
+        "EXECUTE_ATOMIC_WORK",
+        "VERIFY_RESULT",
+        "FAN_IN_VERIFIED_EVIDENCE",
+        "PERSIST_CHECKPOINT",
+        "GENERATE_OR_REFILL_NEXT_CAUSAL_WORK",
+        "DISPATCH_NEXT_CYCLE"
+      ],
+      "completionIsCheckpointNotStop": true,
+      "ownerExplicitStopRequired": true,
+      "hourlyScheduleRole": "SAFETY_NET_ONLY_NOT_PRIMARY_CONTINUATION",
+      "primaryContinuation": "EVENT_OR_WORKFLOW_DISPATCH_CHAIN",
+      "invariants": {
+        "authorityExpansion": false,
+        "qaGateWeakening": false,
+        "securityGateWeakening": false,
+        "paidResourceAutoUse": false,
+        "unsafeWorkGenerationForbidden": true,
+        "busyLoopWithoutUsefulPlanningForbidden": true
+      }
+    },
+    "rule3": {
+      "id": "RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE",
+      "label": "제3규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "VIBE_CONTINUOUSLY_GENERATES_NEW_LEARNING_SIGNALS_FROM_WORK_RESULTS_PRACTICE_FAILURES_HYPOTHESES_FALSIFICATION_BENCHMARKS_HOLDOUTS_AND_CROSS_PROJECT_TRANSFER_WITHOUT_A_TOTAL_SIGNAL_OR_GENERATION_CEILING",
+      "vibeIsPrimaryLearningAgent": true,
+      "totalLearningSignalLimit": null,
+      "practiceQueueItemLimit": null,
+      "practiceGenerationLimit": null,
+      "relearningGenerationLimit": null,
+      "benchmarkGenerationLimit": null,
+      "hypothesisGenerationLimit": null,
+      "crossProjectTransferGenerationLimit": null,
+      "multiverseProjectVariantLimit": null,
+      "signalGenerationAlwaysOn": true,
+      "executionResourceBoundedSignalExistenceUnbounded": true,
+      "everyNewVerifiedOrFailedResultGeneratesNextLearningCandidate": true,
+      "learningLoop": [
+        "INGEST_NEW_RESULT_OR_OBSERVATION",
+        "COMPARE_WITH_PREVIOUS_VERIFIED_RESULTS",
+        "GENERATE_HYPOTHESIS_OR_RELEARNING_SIGNAL",
+        "CREATE_PRACTICE_OR_BENCHMARK_OR_HOLDOUT",
+        "ATTEMPT_FALSIFICATION",
+        "RUN_INDEPENDENT_VERIFICATION",
+        "DISTILL_VERIFIED_POSITIVE_OR_NEGATIVE_LESSON",
+        "APPLY_TO_FRESH_PROJECT_OR_DIFFERENT_CONTEXT",
+        "COMPARE_OUTCOME_WITH_BASELINE_AND_PRIOR_GENERATIONS",
+        "GENERATE_NEXT_SIGNAL_AND_REPEAT"
+      ],
+      "requiredSignalClasses": [
+        "REAL_PROJECT_IMPLEMENTATION",
+        "REAL_PROJECT_FAILURE",
+        "PRACTICE",
+        "RELEARNING",
+        "HYPOTHESIS",
+        "FALSIFICATION",
+        "BENCHMARK",
+        "HOLDOUT",
+        "PREVIOUS_RESULT_COMPARISON",
+        "CROSS_DOMAIN_TRANSFER",
+        "CROSS_PROJECT_TRANSFER",
+        "NEW_PROJECT_OR_VARIANT_RESULT",
+        "EXTERNAL_VERIFIED_REFERENCE"
+      ],
+      "canonicalLearningNetwork": {
+        "source": "tools/vibe2-learning-motor.mjs",
+        "policy": "company-learning/vibe2-learning-motor.json",
+        "oneSharedNetwork": true,
+        "parallelPlatformSpecificTrainerForbidden": true,
+        "supportedEvidenceTargets": [
+          "WEB",
+          "ROBLOX",
+          "UNITY",
+          "FORTNITE_UEFN"
+        ],
+        "platformNativeDomains": {
+          "WEB": [
+            "WEB_RUNTIME"
+          ],
+          "ROBLOX": [
+            "ROBLOX_STUDIO",
+            "ROBLOX_DATASTORE",
+            "ROBLOX_REMOTE_SECURITY",
+            "ROBLOX_REPLICATION",
+            "ROBLOX_MULTIPLAYER"
+          ],
+          "UNITY": [
+            "UNITY_RUNTIME",
+            "UNITY_PHYSICS",
+            "UNITY_NETCODE"
+          ],
+          "FORTNITE_UEFN": [
+            "UEFN_RUNTIME",
+            "UEFN_VERSE",
+            "UEFN_REPLICATION"
+          ]
+        },
+        "nativeRuntimeEvidenceRequiredForNativePositiveMastery": true,
+        "webEvidenceCannotSubstituteNativeRuntimePass": true
+      },
+      "multiverse": {
+        "unit": "PROJECT_VARIANT_OR_NEW_PROJECT",
+        "conceptualExpansionUnbounded": true,
+        "executionResourceBounded": true,
+        "verifiedMechanismGeneralizationOnly": true,
+        "gameSpecificValuesDoNotBecomeUniversalLaw": true,
+        "canonicalProjectIdentityProtected": true,
+        "branchMustNotOverwriteCanonicalProject": true
+      },
+      "positiveMasteryRequiresVerifiedEvidence": true,
+      "verifiedFailureMayBecomeAvoidLesson": true,
+      "rawPracticeOutputMayDirectlyEnterCanonicalLearning": false,
+      "rawExternalAiOutputMayDirectlyEnterCanonicalLearning": false,
+      "benchmarkAloneCountsAsProductionPass": false,
+      "practiceAloneCountsAsProductionPass": false,
+      "authorityExpansion": false,
+      "gateWeakening": false
+    },
+    "implementationOrder": [
+      "RULE_1",
+      "RULE_2",
+      "RULE_3",
+      "RULE_4"
+    ],
+    "orderedImplementationRequired": true
   }
 }

@@ -21,7 +21,8 @@ const TARGET_EXTENSIONS=Object.freeze({
   web:new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']),
   unity:new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']),
   unreal:new Set(['.h','.hpp','.cpp','.cc','.cxx','.cs','.ini','.uproject','.uplugin','.json']),
-  godot:new Set(['.gd','.tscn','.tres','.godot','.cfg','.json'])
+  godot:new Set(['.gd','.tscn','.tres','.godot','.cfg','.json']),
+  system:new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md'])
 });
 const BINARY_EXTENSIONS=new Set(['.rbxl','.rbxlx','.uasset','.umap','.controller','.anim','.avatar','.fbx','.blend','.png','.jpg','.jpeg','.webp','.wav','.mp3','.ogg']);
 const MAX_SCAN_FILES=180;
@@ -33,7 +34,7 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function extensions(target){const set=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!set)throw new Error(`지원하지 않는 exploration target: ${target}`);return set;}
 function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
-function assertRoot(root,target){const normalized=posix(root),prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 exploration source root: ${root}`);return normalized;}
+function assertRoot(root,target){const normalized=posix(root);if(target==='system'){if(normalized!=='.')throw new Error(`system exploration root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 exploration source root: ${root}`);return normalized;}
 function normalizeRelative(value,root){const normalized=posix(value);return normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;}
 function sourceRootBootstrapAllowed(order,target,root){
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
@@ -337,6 +338,25 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     learningAuthorityExpanded:false
   };
 }
+function compileSystemEditContract({order={},responsibleFiles=[],testTargets=[]}={}){
+  const failures=taskFailureEvidence(order);
+  return{
+    version:1,mode:'SYSTEM_ARCHITECTURE_EDIT_CONTRACT',strategyHint:'STRUCTURAL_CAUSE_FIRST',responsibilityConfidence:'MEDIUM',
+    primaryTargets:responsibleFiles.slice(0,8),allowedResponsibleFiles:responsibleFiles,allowedDependentSymbolsOrSystems:[],
+    primarySystems:['VIBE_SYSTEM_ARCHITECTURE'],dependentSystems:[],ownedState:[],readState:[],
+    preserveSemantics:['CENTRAL_POLICY_AUTHORITY_BOUNDARY','QUALITY_AND_EVIDENCE_GATES','SECURITY_GATES','VERIFIED_LEARNING'],
+    failureOrRequirementCausalChain:failures.slice(0,16),
+    requiredObservableResult:'VERIFIED_STRUCTURAL_IMPROVEMENT_WITHOUT_AUTHORITY_OR_GATE_CHANGE',
+    semanticDiffBudget:{allowedSystems:[],preferredPrimarySymbols:[],maxSystemCount:4,unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]},
+    requiredFocusedChecks:['SAME_FAILURE_RECHECK','RELATED_REGRESSION','SECURITY','BEFORE_AFTER_METRICS',...(testTargets||[]).map(v=>'TEST_TARGET:'+v)].slice(0,24),
+    causalReplay:{version:1,required:failures.length>0,prePatchReproduced:false,nodeTestTargets:(testTargets||[]).slice(0,8),executable:false,mode:'PLAN_ONLY',status:'STRUCTURAL_RECHECK_REQUIRED',identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false},
+    patchRecipe:{version:1,mode:'SYSTEM_ARCHITECTURE_CAUSAL_RECIPE',failureFingerprint:null,verifiedMemoryIds:[],verifiedMemoryCount:0,reusePatterns:[],avoidPatterns:[],steps:['VERIFY_STRUCTURAL_CAUSE','COMPARE_AT_LEAST_TWO_ALTERNATIVES','PATCH_DIRECT_RESPONSIBILITY','RUN_SAME_FAILURE_RECHECK','COMPARE_BEFORE_AFTER_METRICS'],primaryTargets:responsibleFiles.slice(0,8),dependentSymbolsOrSystems:[],ownedState:[],focusedChecks:['RELATED_REGRESSION','SECURITY'],protectedSemantics:['AUTHORITY_UNCHANGED','GATES_UNCHANGED'],verifiedMemoryOnly:true,scopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false},
+    codingArchitecture:{developmentMode:'PRESERVE_PATCH',stateOwnershipSystems:['VIBE_SYSTEM_ARCHITECTURE'],apiNames:[],invariantIds:['AUTHORITY_UNCHANGED','GATES_UNCHANGED'],impactRule:'SYSTEM_ARCHITECTURE_CHANGES_REQUIRE_RELATED_AND_FULL_REGRESSION'},
+    architectureSnapshot:{version:1,nodeCount:0,edgeCount:0,maxFunctionBodyBytes:0,maxCallsPerFunction:0,maxCalledByPerFunction:0,maxStateWritesPerFunction:0,maxSystemsPerFunction:0,multiWriterStateCount:0,stateWriterLinkCount:0,multiOwnerStorageKeyCount:0,storageOwnerLinkCount:0,timerFunctionCount:0,eventBindingCount:0,largeFunctionCount:0,broadSystemFunctionCount:0},
+    responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
+    failureEvidence:failures,writableScopeExpansionAllowed:false,learningAuthorityExpanded:false
+  };
+}
 function bootstrapEditContract(order={},responsibleFiles=[]){
   return{
     version:1,mode:'COMPILED_EDIT_CONTRACT',strategyHint:'ARCHITECTURE_FIRST_GREENFIELD',responsibilityConfidence:'LOW',
@@ -401,7 +421,9 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
   const sourceText=responsibilityRows.map(row=>row.text).filter(Boolean).join('\n\n');
   const diagnosticReplayBaseline=verifyDiagnosticReplayBaseline({order,target,root});
-  const editContract=compileEditContract({order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
+  const editContract=target==='system'
+    ?compileSystemEditContract({order,responsibleFiles:responsible,testTargets})
+    :compileEditContract({order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
     version:1,
