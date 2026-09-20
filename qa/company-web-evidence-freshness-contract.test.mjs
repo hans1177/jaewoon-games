@@ -7,8 +7,8 @@ const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.m
 const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const homepage=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 
-test('current Web validation evidence is schema15, real-game-substance and source-bound',()=>{
-  assert.match(validator,/VALIDATION_SCHEMA_VERSION=15/);
+test('current Web validation evidence is schema16, real-game-substance and source-bound',()=>{
+  assert.match(validator,/VALIDATION_SCHEMA_VERSION=16/);
   assert.match(validator,/sourceIndexSha256/);
   assert.match(validator,/designBaselineSha256/);
   assert.match(validator,/validationSchemaVersion:VALIDATION_SCHEMA_VERSION/);
