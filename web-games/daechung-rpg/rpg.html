@@ -199,7 +199,7 @@ if(!AUDIO.ctx)return; const now=AUDIO.ctx.currentTime;
  if(v&&!AUDIO.lastAggro)sfx(boss?'bossAggro':'humanoidAggro');
  AUDIO.lastAggro=v;AUDIO.aggro=v;
 }
-function toggleSound(){
+function setAggro(v,boss=false){
  if(!AUDIO.started)initAudio();
  AUDIO.muted=!AUDIO.muted;
  if(AUDIO.master)AUDIO.master.gain.setTargetAtTime(AUDIO.muted?0:.62,AUDIO.ctx.currentTime,.04);
