@@ -82,9 +82,9 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
     </div>
   </div>
   <div class="pills">
-    <div class="pill"><b id="pollen">120</b><small>꽃가루</small></div>
-    <div class="pill"><b id="plantHp">100</b><small>식물 HP</small></div>
-    <div class="pill"><b id="waveNo">1 / 6</b><small>웨이브</small></div>
+    <div class="pill"><b id="resource">120</b><small>꽃가루</small></div>
+    <div class="pill"><b id="health">100</b><small>식물 HP</small></div>
+    <div class="pill"><b><span id="wave">1</span> / 6</b><small>웨이브</small></div>
     <div class="pill"><b id="score">0</b><small>생태 경험</small></div>
   </div>
   <div class="controls">
@@ -155,9 +155,9 @@ var ctx=canvas.getContext('2d');
 var W=canvas.width,H=canvas.height;
 var DPR=Math.max(1,Math.min(2,window.devicePixelRatio||1));
 var ui={
-  pollen:document.getElementById('pollen'),
-  plantHp:document.getElementById('plantHp'),
-  waveNo:document.getElementById('waveNo'),
+  pollen:document.getElementById('resource'),
+  plantHp:document.getElementById('health'),
+  waveNo:document.getElementById('wave'),
   knowledge:document.getElementById('score'),
   waveBtn:document.getElementById('waveBtn'),
   speedBtn:document.getElementById('speedBtn'),
@@ -302,7 +302,7 @@ function updateUi(){
   ui.volumeCtl.value=String(state.volume);
   ui.pollen.textContent=Math.floor(state.pollen);
   ui.plantHp.textContent=Math.max(0,Math.ceil(state.plantHp));
-  ui.waveNo.textContent=Math.min(state.wave+1,waves.length)+' / '+waves.length;
+  ui.waveNo.textContent=String(Math.min(state.wave+1,waves.length));
   ui.knowledge.textContent=state.knowledge;
   ui.speedBtn.textContent='속도 ×'+state.speed;
   ui.pauseBtn.textContent=state.paused?'계속':'일시정지';
