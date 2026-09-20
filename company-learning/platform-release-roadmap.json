@@ -1,5 +1,5 @@
 {
-  "version": 211,
+  "version": 212,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3290,7 +3290,7 @@
       "actionableDevelopmentBottleneckRouting": "MAXIMIZE_ELIGIBLE_FREE_AI_ON_CAUSAL_UNBLOCKING_AND_GAME_DEVELOPMENT"
     },
     "securityImmuneSystem": {
-      "version": 2,
+      "version": 3,
       "policyFile": "company-learning/security-immune-system.json",
       "steward": "tools/company-security-steward.mjs",
       "incidentTool": "tools/company-security-incident.mjs",
@@ -3346,6 +3346,69 @@
         "qa": "qa/company-system-ai-worker.test.mjs",
         "behavior": "SANITIZED_SECURITY_FINDINGS_PERSIST_BEFORE_PR_AND_QUARANTINED_CANDIDATES_ROUTE_TO_RECOVERY_QUEUE",
         "malformedWorkflowGuard": "QA_BLOCKS_BROKEN_FAN_IN_SECURITY_LOOP"
+      },
+      "policyReviewSourceIdentity": {
+        "version": 1,
+        "state": "MERGED_MAIN_VERIFIED",
+        "exactSourceUrlRequired": true,
+        "acceptedSourceForms": [
+          "EXACT_PULL_REQUEST_URL",
+          "EXACT_PULL_REQUEST_REVIEW_ANCHOR_WITH_NUMERIC_REVIEW_ID"
+        ],
+        "rejectedSourceForms": [
+          "ADJACENT_PULL_REQUEST_NUMBER",
+          "PULL_REQUEST_FILES_VIEW",
+          "QUERY_STRING",
+          "ISSUE_COMMENT_FRAGMENT",
+          "NON_NUMERIC_PULL_REQUEST_REVIEW_ANCHOR"
+        ],
+        "implementation": {
+          "sourcePr": 1968,
+          "mergedCommit": "0bc52a266f2e218f50e938298cf6ec869284b55b",
+          "implementationCommit": "98afb3a7da0508fe22b8ded04f07df8900d7265c",
+          "incidentTool": "tools/company-security-incident.mjs",
+          "regressionTest": "qa/company-security-steward.test.mjs"
+        },
+        "verification": {
+          "companySecurityImmuneSystem": {
+            "state": "PASS",
+            "runId": 35496240787,
+            "scanJob": "PASS",
+            "enforceJob": "PASS",
+            "incidentRecordJob": "SKIPPED_NO_INCIDENT"
+          },
+          "vibeQa": {
+            "state": "PASS",
+            "runId": 35496240788
+          },
+          "companyEvolutionQa": {
+            "state": "PASS",
+            "runId": 35496240873
+          },
+          "integratedRegression": {
+            "state": "PASS",
+            "runId": 35496240801
+          },
+          "vibe3EngineContract": {
+            "state": "PASS",
+            "runId": 35496240804
+          },
+          "mergedPrProvenance": {
+            "state": "PASS",
+            "runId": 35496273845
+          }
+        },
+        "invariants": {
+          "exactPrimaryAiReviewMarkerUnchanged": true,
+          "scanIdentityAndFindingCountChecksUnchanged": true,
+          "regressionRequirementUnchanged": true,
+          "reviewedPolicyLearningHoldUnchanged": true,
+          "recoveryQueueAuthorityChange": "NONE",
+          "workerAuthorityChange": "NONE",
+          "mergeAuthorityChange": "NONE",
+          "directMainAuthorityChange": "NONE"
+        },
+        "nextGate": "KEEP_SECURITY_RECOVERY_LOOP_STABLE_AND_REQUIRE_EXACT_POLICY_REVIEW_PROVENANCE_FOR_AUTHORIZED_RESOLUTION"
       }
     }
   },
