@@ -19,6 +19,8 @@ import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
+import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
+import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -422,10 +424,38 @@ function neuralWorkerFeedback(row = {}) {
     evidence:Array.isArray(row?.evidence)?row.evidence:[]
   });
 }
+function neuralWorkerEventType(row={}) {
+  const evidence=(Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(Boolean);
+  const roles=row?.roleResults&&typeof row.roleResults==='object'?row.roleResults:{};
+  if(clean(roles.test).toUpperCase()==='FAIL'||evidence.some(value=>value.startsWith('incremental-qa-failure-signature:')))return'QA_RESULT';
+  return'WORKER_RESULT';
+}
 function neuralWorkerEvidence(row = {}) {
+  const rowEvidence=Array.isArray(row?.evidence)?row.evidence:[];
   const feedback=neuralWorkerFeedback(row);
-  const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:Array.isArray(row?.evidence)?row.evidence:[]});
-  return [...neuralFeedbackEvidence(feedback),...neuralCriticEvidence(critic)];
+  const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:rowEvidence});
+  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence});
+  const eventRoute=simulateNeuralEventRoute({
+    event:{
+      type:neuralWorkerEventType(row),
+      taskId:clean(row?.taskId)||null,
+      outcome:clean(row?.outcome).toUpperCase()||null,
+      stage:clean(feedback?.observed?.stage)||null,
+      signature:clean(feedback?.observed?.failureSignature)||null,
+      evidence:rowEvidence
+    },
+    diagnosis:row?.neuralDiagnosis||null,
+    rootCause,
+    policyFresh:true,
+    lockConflict:false,
+    securityBlocked:rowEvidence.map(clean).includes('SECURITY_POLICY_BLOCK')
+  });
+  return[
+    ...neuralFeedbackEvidence(feedback),
+    ...neuralCriticEvidence(critic),
+    ...neuralRootCauseEvidence(rootCause),
+    ...neuralEventRouteEvidence(eventRoute)
+  ];
 }
 function reusableWorkerEvidence(row = {}) {
   const evidence=[];
