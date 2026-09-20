@@ -95,6 +95,27 @@ test('speculative candidates use a shorter retry budget without lowering primary
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-4'}),3);
 });
 
+test('speculative diagnostic retry actually gets the promised third attempt',async()=>{
+  const cwd=tempRoot();
+  const bad1=path.join(cwd,'diag-bad-1.json');
+  const bad2=path.join(cwd,'diag-bad-2.json');
+  const good=path.join(cwd,'diag-good-3.json');
+  const source='<html><body><script>let timer=setInterval(()=>{},1000);</script></body></html>\n';
+  write(path.join(cwd,'web-games/demo/rpg.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/rpg.html'],taskId:'speculative-diagnostic-third-attempt'});
+  workOrder.goal='[DIAGNOSTIC_BUNDLE] rpg.html 반복 타이머 생명주기와 중복 실행을 점검하고 필요한 해제 경로를 추가한다.';
+  workOrder.candidateStrategyRole={variant:'speculative-1'};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(bad1,JSON.stringify({replace:'<script>let timer=setInterval(()=>{},900);</script>'}));
+  write(bad2,JSON.stringify({replace:'<script>let timer=setInterval(()=>{},800);</script>'}));
+  write(good,JSON.stringify({replace:'<script>let timer=setInterval(()=>{},800);addEventListener("pagehide",()=>clearInterval(timer),{once:true});</script>'}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.speculativeAttemptBudgetApplied,true);
+  assert.equal(result.codingMethod.generationAttempts,3);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/speculative-diagnostic-third-attempt/files/rpg.html'),'utf8'),/clearInterval/);
+});
+
 test('Unity text source produces isolated candidate without touching source', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
