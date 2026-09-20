@@ -172,4 +172,28 @@ test('different retry sample identities remain distinct durable feedback markers
   const summary=summarizeNeuralFeedbackEvidence([ma,mb]);
   assert.equal(summary.durableEvidenceSamples,2);
   assert.equal(summary.calibrationEligible,2);
+  assert.equal(summary.duplicateSampleRows,0);
+  assert.equal(summary.sampleConflicts,0);
+});
+
+test('duplicate calibration sample identity counts once and conflicting result stays visible',()=>{
+  const a=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.8),
+    outcome:'FAIL',candidateFailure:{class:'NO_OP'},roleResults:{implementation:'FAIL'},
+    sampleId:'task-r|run-1:1|primary|candidate-a'
+  });
+  const markerA=neuralFeedbackEvidence(a).find(x=>x.startsWith('neural-shadow-feedback:'));
+  const payload=JSON.parse(decodeURIComponent(markerA.slice('neural-shadow-feedback:'.length)));
+  const markerConflict='neural-shadow-feedback:'+encodeURIComponent(JSON.stringify({
+    ...payload,
+    predictedResponsibility:'GAME_RUNTIME',
+    matchState:'MISMATCH',
+    responsibilityMatch:false
+  }));
+  const summary=summarizeNeuralFeedbackEvidence([markerA,markerA,markerConflict]);
+  assert.equal(summary.rawEvidenceRows,3);
+  assert.equal(summary.durableEvidenceSamples,1);
+  assert.equal(summary.calibrationEligible,1);
+  assert.equal(summary.duplicateSampleRows,2);
+  assert.equal(summary.sampleConflicts,1);
 });

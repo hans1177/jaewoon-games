@@ -33,6 +33,7 @@ test('fan-in exposes durable Phase2 readiness metrics without granting authority
 function evidenceSet({events=30,feedback=20,root=10}={}){
   const rows=[];
   for(let i=0;i<events;i++)rows.push(enc('neural-event-shadow:',{
+    eventId:`event-${i}`,
     eventType:'WORKER_RESULT',
     actionKind:'REQUEST_EVIDENCE',
     wouldFireWithoutPhase2Authority:false,
@@ -40,6 +41,7 @@ function evidenceSet({events=30,feedback=20,root=10}={}){
     fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
   }));
   for(let i=0;i<feedback;i++)rows.push(enc('neural-shadow-feedback:',{
+    sampleId:`feedback-${i}`,
     predictedResponsibility:'GAME_RUNTIME',
     observedResponsibility:'GAME_RUNTIME',
     matchState:'MATCH',
@@ -65,7 +67,7 @@ function evidenceSet({events=30,feedback=20,root=10}={}){
 test('enough shadow evidence only makes Phase2 eligible for explicit review, never execution',()=>{
   const result=evaluatePhase2Readiness({
     evidence:evidenceSet(),
-    shadowAudit:{sampleCount:10,phase2AuthorityReady:false}
+    shadowAudit:{sampleCount:10,distinctSampleIds:10,phase2AuthorityReady:false}
   });
   assert.equal(result.reviewEligible,true);
   assert.equal(result.gates.calibrationAccuracy,true);
@@ -85,7 +87,7 @@ test('enough shadow evidence only makes Phase2 eligible for explicit review, nev
 test('insufficient verified root causes blocks even review eligibility',()=>{
   const result=evaluatePhase2Readiness({
     evidence:evidenceSet({root:9}),
-    shadowAudit:{sampleCount:10}
+    shadowAudit:{sampleCount:10,distinctSampleIds:10}
   });
   assert.equal(result.reviewEligible,false);
   assert.equal(result.gates.verifiedRootCauseVolume,false);
@@ -95,6 +97,7 @@ test('insufficient verified root causes blocks even review eligibility',()=>{
 test('poor calibration accuracy blocks Phase2 review even when sample counts are sufficient',()=>{
   const evidence=evidenceSet().filter(value=>!value.startsWith('neural-shadow-feedback:'));
   for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    sampleId:`feedback-poor-${i}`,
     predictedResponsibility:'GAME_RUNTIME',
     observedResponsibility:i<10?'GAME_RUNTIME':'VALIDATOR',
     matchState:i<10?'MATCH':'MISMATCH',
@@ -104,7 +107,7 @@ test('poor calibration accuracy blocks Phase2 review even when sample counts are
     learningEligible:false,
     authorityPromotionEligible:false
   }));
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.evidenceSummary.feedback.observedAccuracy,.5);
   assert.equal(result.gates.calibrationVolume,true);
   assert.equal(result.gates.calibrationAccuracy,false);
@@ -114,6 +117,7 @@ test('poor calibration accuracy blocks Phase2 review even when sample counts are
 test('root-cause prediction contradiction rate blocks review despite enough verified roots',()=>{
   const evidence=evidenceSet().filter(value=>!value.startsWith('neural-root-cause:'));
   for(let i=0;i<10;i++)evidence.push(enc('neural-root-cause:',{
+    sampleId:`root-quality-${i}`,
     state:'ROOT_CAUSE_VERIFIED',
     rootCauseVerified:true,
     responsibleSystemVerified:true,
@@ -122,8 +126,9 @@ test('root-cause prediction contradiction rate blocks review despite enough veri
     predictedSystemConsistentWithVerified:i<6,
     phase2AuthorityEligible:false
   }));
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.evidenceSummary.rootCause.predictionContradictionRate,.4);
+  assert.equal(result.evidenceSummary.rootCause.identifiedPredictionContradictionRate,.4);
   assert.equal(result.gates.rootCausePredictionCoverage,true);
   assert.equal(result.gates.rootCausePredictionContradictionRate,false);
   assert.equal(result.reviewEligible,false);
@@ -132,6 +137,7 @@ test('root-cause prediction contradiction rate blocks review despite enough veri
 test('insufficient evaluated root-cause predictions blocks review',()=>{
   const evidence=evidenceSet().filter(value=>!value.startsWith('neural-root-cause:'));
   for(let i=0;i<10;i++)evidence.push(enc('neural-root-cause:',{
+    sampleId:`root-coverage-${i}`,
     state:'ROOT_CAUSE_VERIFIED',
     rootCauseVerified:true,
     responsibleSystemVerified:true,
@@ -140,8 +146,9 @@ test('insufficient evaluated root-cause predictions blocks review',()=>{
     ...(i<7?{predictedSystemConsistentWithVerified:true}:{}),
     phase2AuthorityEligible:false
   }));
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.evidenceSummary.rootCausePredictionCoverage,.7);
+  assert.equal(result.evidenceSummary.rootCause.identifiedPredictionEvaluated,7);
   assert.equal(result.gates.rootCausePredictionCoverage,false);
   assert.equal(result.reviewEligible,false);
 });
@@ -161,7 +168,7 @@ test('duplicate root-cause evidence with the same sampleId counts once',()=>{
     });
     evidence.push(row);
   }
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.evidenceSummary.rootCause.rawEvidenceRows,10);
   assert.equal(result.evidenceSummary.rootCause.total,1);
   assert.equal(result.evidenceSummary.rootCause.duplicateSampleRows,9);
@@ -182,7 +189,7 @@ test('conflicting root-cause results for the same sampleId block review',()=>{
     predictedSystemConsistentWithVerified:false,
     phase2AuthorityEligible:false
   }));
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.evidenceSummary.rootCause.sampleConflicts,1);
   assert.equal(result.gates.zeroRootCauseSampleConflicts,false);
   assert.equal(result.reviewEligible,false);
@@ -199,10 +206,41 @@ test('legacy root-cause evidence without sample identity cannot satisfy identity
     predictedSystemConsistentWithVerified:true,
     phase2AuthorityEligible:false
   }));
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.evidenceSummary.rootCause.verified,10);
   assert.equal(result.evidenceSummary.rootCause.verifiedSampleIdentityCoverage,0);
   assert.equal(result.gates.rootCauseSampleIdentityCoverage,false);
+  assert.equal(result.reviewEligible,false);
+});
+
+test('legacy unidentified feedback events and audit volume cannot qualify Phase2 review',()=>{
+  const evidence=evidenceSet({events:0,feedback:0,root:10});
+  for(let i=0;i<30;i++)evidence.push(enc('neural-event-shadow:',{
+    eventType:'WORKER_RESULT',
+    actionKind:'REQUEST_EVIDENCE',
+    wouldFireWithoutPhase2Authority:false,
+    inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+    fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+  }));
+  for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    predictedResponsibility:'GAME_RUNTIME',
+    observedResponsibility:'GAME_RUNTIME',
+    matchState:'MATCH',
+    responsibilityMatch:true,
+    sampleEligible:true
+  }));
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:10,distinctSampleIds:0,legacyUnidentifiedRows:10}
+  });
+  assert.equal(result.evidenceSummary.events.total,30);
+  assert.equal(result.evidenceSummary.events.identifiedEventCount,0);
+  assert.equal(result.evidenceSummary.feedback.calibrationEligible,20);
+  assert.equal(result.evidenceSummary.feedback.identifiedCalibrationEligible,0);
+  assert.equal(result.gates.shadowEventVolume,false);
+  assert.equal(result.gates.calibrationVolume,false);
+  assert.equal(result.gates.waveAuditVolume,false);
+  assert.equal(result.gates.verifiedRootCauseVolume,true);
   assert.equal(result.reviewEligible,false);
 });
 
@@ -218,10 +256,57 @@ test('any unauthorized shadow fire blocks review eligibility',()=>{
     queueMutationAllowed:false,
     waveReorderAllowed:false
   }));
-  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10}});
+  const result=evaluatePhase2Readiness({evidence,shadowAudit:{sampleCount:10,distinctSampleIds:10}});
   assert.equal(result.reviewEligible,false);
   assert.equal(result.gates.zeroUnauthorizedFire,false);
   assert.equal(result.gates.shadowSafetyInvariant,false);
+});
+
+test('conflicting readiness sample identities block explicit review across feedback events and audit',()=>{
+  const evidence=evidenceSet();
+  evidence.push(
+    enc('neural-shadow-feedback:',{
+      sampleId:'feedback-conflict',
+      predictedResponsibility:'GAME_RUNTIME',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MATCH',
+      responsibilityMatch:true,
+      sampleEligible:true
+    }),
+    enc('neural-shadow-feedback:',{
+      sampleId:'feedback-conflict',
+      predictedResponsibility:'VALIDATOR',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MISMATCH',
+      responsibilityMatch:false,
+      sampleEligible:true
+    }),
+    enc('neural-event-shadow:',{
+      eventId:'event-conflict',
+      eventType:'WORKER_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    }),
+    enc('neural-event-shadow:',{
+      eventId:'event-conflict',
+      eventType:'QA_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    })
+  );
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:10,distinctSampleIds:10,sampleConflicts:1}
+  });
+  assert.equal(result.gates.zeroFeedbackSampleConflicts,false);
+  assert.equal(result.gates.zeroShadowEventConflicts,false);
+  assert.equal(result.gates.zeroShadowAuditSampleConflicts,false);
+  assert.equal(result.reviewEligible,false);
+  assert.equal(result.executionAuthorityGranted,false);
 });
 
 test('root cause summary preserves prediction contradictions for explicit review',()=>{

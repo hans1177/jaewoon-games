@@ -1,5 +1,5 @@
 {
-  "version": 183,
+  "version": 188,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6090,7 +6090,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE_CAPACITY_AWARE_20_SLOT_EXECUTION",
+    "status": "PHASE2_SHADOW_OBSERVATION_ACTIVE_POST_REPAIR_VALIDATION",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6318,14 +6318,18 @@
       "phase2ReviewRequiresQualityAndVolume": true,
       "sampleVolumeAloneCannotQualifyPhase2Review": true,
       "duplicateRootCauseSamplesCannotInflateReadiness": true,
-      "conflictingRootCauseSampleEvidenceBlocksReview": true
+      "conflictingRootCauseSampleEvidenceBlocksReview": true,
+      "duplicateReadinessSamplesCannotInflateVolume": true,
+      "conflictingReadinessSampleEvidenceBlocksReview": true,
+      "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true,
+      "legacyUnidentifiedReadinessEvidenceCannotSatisfyQualityMetrics": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
       "documentedAt": "2026-09-20",
       "summary": "Vibe evolves from wave-primary execution toward an event-driven neural work graph. Waves remain the safe execution engine during migration and end as an optional synchronization pattern only.",
       "architectureMap": "company-learning/company-architecture-map.json",
-      "phase1ImplementationCommitState": "CANDIDATE_BRANCH",
+      "phase1ImplementationCommitState": "MERGED_MAIN_SHADOW_ACTIVE",
       "phase1Bindings": [
         "tools/vibe2-neural-diagnosis.mjs",
         "tools/vibe2-auto-planner.mjs",
@@ -6334,14 +6338,32 @@
         ".github/workflows/vibe2-core-qa.yml",
         ".github/workflows/vibe2-continuous-core.yml"
       ],
-      "phase1CalibrationState": "CANDIDATE_BRANCH",
+      "phase1CalibrationState": "MERGED_MAIN_SHADOW_ACTIVE",
       "phase1CalibrationBindings": [
         "tools/vibe2-neural-feedback.mjs",
         "tools/vibe2-queue-control.mjs",
         ".github/workflows/vibe2-continuous-core.yml",
         "qa/vibe2-neural-feedback.test.mjs",
         "qa/vibe2-queue-control.test.mjs"
-      ]
+      ],
+      "postMergeHardening": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1806,
+        "sourceBranch": "assistant/neural-shadow-hardening-main-v1",
+        "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+        "consolidatedSupportPrs": [
+          1795,
+          1797,
+          1801,
+          1803
+        ],
+        "securityFollowupPr": 1808,
+        "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
+        "authorityChange": "NONE",
+        "currentSecurityFollowupPr": 1826,
+        "currentSecurityFollowupState": "MERGED_MAIN",
+        "currentSecurityFollowupCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
+      }
     },
     "phase1Implementation": {
       "mode": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
@@ -6628,7 +6650,14 @@
           "disagreementRemainsVisible": true,
           "qualityGateMayGrantExecutionAuthority": false,
           "qualityGateMayAutoPromote": false,
-          "rationale": "PHASE2_REVIEW_REQUIRES_SUFFICIENT_DISTINCT_AUDITABLE_SAMPLES_AND_ACCEPTABLE_SHADOW_DIAGNOSTIC_QUALITY"
+          "rationale": "PHASE2_REVIEW_REQUIRES_SUFFICIENT_DISTINCT_AUDITABLE_SAMPLES_AND_ACCEPTABLE_SHADOW_DIAGNOSTIC_QUALITY",
+          "readinessEvidenceDeduplicatedByIdentity": true,
+          "conflictingFeedbackEventOrAuditSampleEvidenceBlocksReview": true,
+          "identifiedVolumeRequiredForReview": true,
+          "legacyUnidentifiedEvidenceCannotSatisfyVolumeThresholds": true,
+          "rootCausePredictionQualityUsesIdentifiedSamplesOnly": true,
+          "waveAuditVolumeRequiresDistinctSampleIdentity": true,
+          "legacyUnidentifiedEvidenceCannotAffectReadinessQualityPass": true
         },
         "sampleIdentity": {
           "source": "neural-root-cause.sampleId",
@@ -6636,7 +6665,27 @@
           "legacyUnidentifiedEvidenceMayRemainVisible": true,
           "legacyUnidentifiedEvidenceCannotAloneSatisfyIdentityCoverage": true,
           "conflictingSameSampleResultsBlockReview": true,
-          "duplicateSameSampleCountsOnce": true
+          "duplicateSameSampleCountsOnce": true,
+          "readinessEvidence": {
+            "calibrationFeedback": "sampleId",
+            "shadowEvent": "eventId",
+            "rootCause": "sampleId",
+            "waveAudit": "sampleId"
+          },
+          "duplicateSameIdentityCountsOnceAcrossReadinessEvidence": true,
+          "conflictingSameIdentityBlocksReview": true,
+          "identifiedVolumeThresholdSources": {
+            "shadowEvents": "DISTINCT_eventId",
+            "calibrationEligible": "DISTINCT_sampleId_WITH_sampleEligible",
+            "verifiedRootCause": "DISTINCT_sampleId_WITH_rootCauseVerified",
+            "waveAuditSamples": "DISTINCT_sampleId"
+          },
+          "identifiedQualityMetricSources": {
+            "calibrationAccuracy": "DISTINCT_sampleId",
+            "rootCausePredictionCoverage": "DISTINCT_verified_sampleId",
+            "rootCausePredictionContradictionRate": "DISTINCT_verified_sampleId",
+            "waveAuditVolume": "DISTINCT_sampleId"
+          }
         },
         "hardening": {
           "branch": "assistant/neural-shadow-hardening-main-v1",
@@ -6645,7 +6694,18 @@
           "neuralExecutionAuthorityGranted": false,
           "automaticPromotionAllowed": false,
           "automaticLearningAllowed": false,
-          "automaticTuningAllowed": false
+          "automaticTuningAllowed": false,
+          "state": "MERGED_MAIN",
+          "sourcePr": 1806,
+          "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+          "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79"
+        },
+        "distinctEvidenceHardening": {
+          "state": "CANDIDATE_BRANCH",
+          "branch": "assistant/neural-shadow-readiness-consolidated-v1",
+          "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY",
+          "executionAuthorityChange": "NONE",
+          "legacyEvidenceRule": "VISIBLE_FOR_AUDIT_BUT_EXCLUDED_FROM_REVIEW_VOLUME_THRESHOLDS"
         }
       },
       "sampleIdentity": {
@@ -6666,7 +6726,7 @@
     },
     "activation": {
       "mode": "MERGED_MAIN_SHADOW_OBSERVATION",
-      "mainCommit": "42d6863a1d47bd7ad7863457e8562a22136b3c5a",
+      "mainCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
       "activated": true,
       "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
       "neuralExecutionAuthority": false,
@@ -6676,7 +6736,10 @@
       "neuralLearningAuthority": false,
       "neuralAutomaticPromotionAuthority": false,
       "readinessMeaning": "REVIEW_ELIGIBILITY_ONLY",
-      "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY"
+      "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY",
+      "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+      "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
+      "syncedMainHead": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
     },
     "currentWaveExecution": {
       "mode": "CAPACITY_AWARE_FREE_SLOT_REFILL",
@@ -6695,6 +6758,127 @@
       "adaptiveBackpressureMayLowerBelow20": true,
       "adaptiveBackpressureMayNotRaiseGamePrimaryAbove20": true,
       "rationale": "Independent game work must not wait for all active workers when safe capacity remains."
+    },
+    "liveShadowObservation": {
+      "observedAt": "2026-09-20",
+      "continuousRunId": 35482102418,
+      "fanInJobId": 106003001893,
+      "runtimeEvidenceCommit": "3e949b0ddf09463f4d7941c73682a08de766bb71",
+      "centralPolicyVersionObservedByWorker": 181,
+      "fanIn": {
+        "status": "PASS",
+        "reviewed": 5,
+        "skipped": 3,
+        "releaseCandidates": 5,
+        "experiencePromoted": false
+      },
+      "inspectedRuntimeDiffSample": {
+        "shadowEvents": 11,
+        "eventTypes": {
+          "WORKER_RESULT": 9,
+          "CI_RESULT": 2
+        },
+        "proposedActions": {
+          "REQUEST_EVIDENCE": 11
+        },
+        "unauthorizedFireCount": 0,
+        "hypotheticalFireCount": 0,
+        "feedback": {
+          "MISMATCH": 2,
+          "UNKNOWN": 7,
+          "calibrationEligible": 2
+        },
+        "durableWaveAuditSamples": 2,
+        "note": "COUNTS_ARE_FROM_THE_INSPECTED_RUNTIME_COMMIT_DIFF_SAMPLE_NOT_A_CLAIM_OF_TOTAL_HISTORICAL_QUEUE_VOLUME"
+      },
+      "firstObservedPredictionContradiction": {
+        "exampleTask": "amusement-tycoon-web-runtime-repair-v1",
+        "neuralPredictedResponsibility": "VALIDATOR",
+        "observedBlockingStage": "SOURCE_GENERATION",
+        "criticVerdict": "PIPELINE_CONTRADICTED",
+        "action": "REQUEST_EVIDENCE",
+        "confidenceMutationAllowed": false,
+        "learningEligible": false,
+        "executionAuthorityGranted": false
+      },
+      "productionWaveBottleneck": {
+        "workerResults": 24,
+        "actualPeakConcurrency": 20,
+        "sourceGenerationFailures": 8,
+        "sourceGenerationFailureClasses": {
+          "MALFORMED_OUTPUT": 5,
+          "TIMEOUT": 1,
+          "EDIT_MATCH": 2
+        },
+        "packageCycleAvgMs": 479574.38,
+        "previousTelemetryPrimaryLabel": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "reviewedEvidencePrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "secondaryBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "rationale": "DIRECT_FAILURE_EVIDENCE_MUST_NOT_BE_HIDDEN_BY_PEAK_BELOW_TARGET"
+      },
+      "activeRepairs": [
+        {
+          "pr": 1815,
+          "branch": "assistant/vibe2-focused-replace-recovery-v1",
+          "purpose": "RECOVER_COMPLETE_FOCUSED_REPLACE_STRING_FROM_MALFORMED_OUTER_JSON_AFTER_TIMEOUT_ESCALATION",
+          "status": "MERGED_MAIN",
+          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
+          "mergedCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966"
+        },
+        {
+          "pr": 1817,
+          "branch": "assistant/vibe2-evidence-ranked-bottlenecks-v1",
+          "purpose": "RANK_DIRECT_SOURCE_FAILURE_EVIDENCE_AS_PRIMARY_AND_PRESERVE_RUNNER_AS_SECONDARY_BOTTLENECK",
+          "status": "MERGED_MAIN",
+          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
+          "mergedCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7"
+        }
+      ],
+      "nextVerification": [
+        "OBSERVE_NEXT_PRODUCTION_WAVE_SOURCE_GENERATION_FAILURE_COUNT_AND_CLASSES",
+        "VERIFY_CODING_FOCUSED_REPLACE_STRING_RECOVERY_MARKER_WHEN_APPLICABLE",
+        "VERIFY_PRIMARY_AND_SECONDARY_BOTTLENECK_LABELS_MATCH_DIRECT_EVIDENCE",
+        "VERIFY_CURRENT_WAVE_THROUGHPUT_DOES_NOT_REGRESS",
+        "KEEP_UNAUTHORIZED_SHADOW_FIRE_COUNT_AT_ZERO",
+        "DO_NOT_GRANT_PHASE2_EXECUTION_AUTHORITY_FROM_REPAIR_SUCCESS"
+      ],
+      "repairIntegration": {
+        "focusedReplaceRecovery": {
+          "pr": 1815,
+          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
+          "verifiedBeforeMerge": [
+            "VIBE2_CORE_QA_PASS",
+            "VIBE_INTEGRATED_REGRESSION_PASS",
+            "COMPANY_SECURITY_IMMUNE_PASS",
+            "CENTRAL_POLICY_CONTRACT_PASS"
+          ],
+          "expectedNextWaveSignal": "coding-focused-replace-string-recovery:YES"
+        },
+        "evidenceRankedBottlenecks": {
+          "pr": 1817,
+          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
+          "primaryRule": "DIRECT_DOMINANT_SOURCE_GENERATION_FAILURE_EVIDENCE_PRECEDES_RUNNER_UNDERUTILIZATION",
+          "secondaryEvidencePreserved": true,
+          "expectedNextWaveSignal": "VIBE2_PARALLEL_SECONDARY_BOTTLENECKS"
+        }
+      },
+      "currentFollowups": [
+        {
+          "pr": 1825,
+          "branch": "assistant/neural-shadow-readiness-consolidated-v1",
+          "purpose": "DISTINCT_DURABLE_READINESS_EVIDENCE_AND_LIVE_SHADOW_STATE_CONSOLIDATION",
+          "status": "CI_PENDING",
+          "authorityChange": "NONE"
+        },
+        {
+          "pr": 1826,
+          "branch": "assistant/neural-policy-incident-hold-v2",
+          "purpose": "DEFAULT_AUTHORIZED_POLICY_REVIEW_TO_HOLD_POLICY_REVIEW_ONLY",
+          "status": "MERGED_MAIN",
+          "authorityChange": "NONE",
+          "mergedCommit": "775ebdc691d300af4d82618c1919e3efe3a94bb3"
+        }
+      ]
     }
   }
 }

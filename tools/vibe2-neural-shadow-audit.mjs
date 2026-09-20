@@ -92,16 +92,36 @@ export function parseNeuralShadowAuditEvidence(values=[]){
 }
 
 export function summarizeDurableNeuralShadowAudit(values=[]){
-  const rows=parseNeuralShadowAuditEvidence(values);
+  const parsedRows=parseNeuralShadowAuditEvidence(values);
+  const bySample=new Map();
+  const legacyRows=[];
+  let duplicateSampleRows=0,sampleConflicts=0;
+  for(const row of parsedRows){
+    const sampleId=clean(row.sampleId);
+    if(!sampleId){legacyRows.push(row);continue;}
+    if(bySample.has(sampleId)){
+      duplicateSampleRows+=1;
+      if(JSON.stringify(bySample.get(sampleId))!==JSON.stringify(row))sampleConflicts+=1;
+      continue;
+    }
+    bySample.set(sampleId,row);
+  }
+  const rows=[...bySample.values(),...legacyRows];
   const counts={};
   for(const row of rows){
     const key=clean(row.comparisonClass)||'UNKNOWN';
     counts[key]=(counts[key]||0)+1;
   }
   return{
-    version:1,
+    version:2,
     mode:'PHASE2_DURABLE_SHADOW_VS_WAVE_AUDIT',
+    rawEvidenceRows:parsedRows.length,
     sampleCount:rows.length,
+    distinctSampleIds:bySample.size,
+    identifiedSampleCount:bySample.size,
+    legacyUnidentifiedRows:legacyRows.length,
+    duplicateSampleRows,
+    sampleConflicts,
     counts,
     phase2AuthorityReady:false,
     automaticLearningAllowed:false,

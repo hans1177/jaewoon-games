@@ -35,9 +35,11 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
     }
     bySample.set(sampleId,row);
   }
-  const rows=[...bySample.values(),...legacyRows];
+  const identifiedRows=[...bySample.values()];
+  const rows=[...identifiedRows,...legacyRows];
   const states={};
   let verified=0,systemVerified=0,predictionConsistent=0,predictionContradicted=0,sampleIdentified=0,verifiedSampleIdentified=0;
+  let identifiedPredictionConsistent=0,identifiedPredictionContradicted=0;
   for(const row of rows){
     const state=clean(row.state)||'UNRESOLVED';
     const identified=Boolean(clean(row.sampleId));
@@ -48,10 +50,17 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
       if(identified)verifiedSampleIdentified+=1;
     }
     if(row.responsibleSystemVerified===true)systemVerified+=1;
-    if(row.predictedSystemConsistentWithVerified===true)predictionConsistent+=1;
-    if(row.predictedSystemConsistentWithVerified===false)predictionContradicted+=1;
+    if(row.predictedSystemConsistentWithVerified===true){
+      predictionConsistent+=1;
+      if(identified)identifiedPredictionConsistent+=1;
+    }
+    if(row.predictedSystemConsistentWithVerified===false){
+      predictionContradicted+=1;
+      if(identified)identifiedPredictionContradicted+=1;
+    }
   }
   const predictionEvaluated=predictionConsistent+predictionContradicted;
+  const identifiedPredictionEvaluated=identifiedPredictionConsistent+identifiedPredictionContradicted;
   return{
     version:2,
     rawEvidenceRows:parsedRows.length,
@@ -70,6 +79,11 @@ export function summarizeNeuralRootCauseEvidence(values=[]){
     predictionContradicted,
     predictionConsistencyRate:predictionEvaluated?predictionConsistent/predictionEvaluated:null,
     predictionContradictionRate:predictionEvaluated?predictionContradicted/predictionEvaluated:null,
+    identifiedPredictionEvaluated,
+    identifiedPredictionConsistent,
+    identifiedPredictionContradicted,
+    identifiedPredictionConsistencyRate:identifiedPredictionEvaluated?identifiedPredictionConsistent/identifiedPredictionEvaluated:null,
+    identifiedPredictionContradictionRate:identifiedPredictionEvaluated?identifiedPredictionContradicted/identifiedPredictionEvaluated:null,
     states
   };
 }
@@ -93,25 +107,34 @@ export function evaluatePhase2Readiness({
     rootCauseSampleIdentityCoverage:Math.max(0,Math.min(1,Number(thresholds.rootCauseSampleIdentityCoverage??0.8))),
     maxRootCausePredictionContradictionRate:Math.max(0,Math.min(1,Number(thresholds.maxRootCausePredictionContradictionRate??0.3)))
   };
-  const predictionCoverage=rootCause.verified>0?rootCause.predictionEvaluated/rootCause.verified:0;
+  const predictionCoverage=rootCause.verifiedSampleIdentified>0
+    ?rootCause.identifiedPredictionEvaluated/rootCause.verifiedSampleIdentified
+    :0;
+  const identifiedShadowEvents=Number(events.identifiedEventCount||0);
+  const identifiedCalibrationEligible=Number(feedback.identifiedCalibrationEligible||0);
+  const identifiedCalibrationAccuracy=feedback.identifiedObservedAccuracy;
+  const identifiedWaveAuditSamples=Number(audit.distinctSampleIds??audit.identifiedSampleCount??0);
   const gates={
-    shadowEventVolume:events.total>=required.shadowEvents,
-    calibrationVolume:feedback.calibrationEligible>=required.calibrationEligible,
-    calibrationAccuracy:feedback.observedAccuracy!==null&&feedback.observedAccuracy>=required.calibrationAccuracy,
-    verifiedRootCauseVolume:rootCause.verified>=required.verifiedRootCause,
+    shadowEventVolume:identifiedShadowEvents>=required.shadowEvents,
+    calibrationVolume:identifiedCalibrationEligible>=required.calibrationEligible,
+    calibrationAccuracy:identifiedCalibrationAccuracy!==null&&identifiedCalibrationAccuracy!==undefined&&identifiedCalibrationAccuracy>=required.calibrationAccuracy,
+    verifiedRootCauseVolume:rootCause.verifiedSampleIdentified>=required.verifiedRootCause,
     rootCauseSampleIdentityCoverage:rootCause.verifiedSampleIdentityCoverage>=required.rootCauseSampleIdentityCoverage,
+    zeroFeedbackSampleConflicts:Number(feedback.sampleConflicts||0)===0,
+    zeroShadowEventConflicts:Number(events.eventConflicts||0)===0,
     zeroRootCauseSampleConflicts:rootCause.sampleConflicts===0,
+    zeroShadowAuditSampleConflicts:Number(audit.sampleConflicts||0)===0,
     rootCausePredictionCoverage:predictionCoverage>=required.rootCausePredictionCoverage,
-    rootCausePredictionContradictionRate:rootCause.predictionContradictionRate!==null
-      &&rootCause.predictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
-    waveAuditVolume:Number(audit.sampleCount||0)>=required.waveAuditSamples,
+    rootCausePredictionContradictionRate:rootCause.identifiedPredictionContradictionRate!==null
+      &&rootCause.identifiedPredictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
+    waveAuditVolume:identifiedWaveAuditSamples>=required.waveAuditSamples,
     zeroUnauthorizedFire:events.unauthorizedFireCount===0,
     shadowSafetyInvariant:events.safetyInvariantPass===true
   };
   const reviewEligible=Object.values(gates).every(Boolean);
 
   return{
-    version:1,
+    version:2,
     mode:'PHASE2_READINESS_REVIEW_GATE',
     required,
     gates,
@@ -121,7 +144,11 @@ export function evaluatePhase2Readiness({
       events,
       rootCause,
       rootCausePredictionCoverage:predictionCoverage,
-      shadowAuditSamples:Number(audit.sampleCount||0)
+      identifiedShadowEvents,
+      identifiedCalibrationEligible,
+      identifiedCalibrationAccuracy,
+      shadowAuditSamples:Number(audit.sampleCount||0),
+      identifiedShadowAuditSamples:identifiedWaveAuditSamples
     },
     phase2AuthorityReady:false,
     executionAuthorityGranted:false,
