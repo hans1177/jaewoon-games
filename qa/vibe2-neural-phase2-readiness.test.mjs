@@ -398,3 +398,36 @@ test('Phase2 calibration quality evaluates the newest prediction contract cohort
   assert.equal(result.gates.calibrationVolume,true);
   assert.equal(result.gates.calibrationAccuracy,true);
 });
+
+test('unverified prediction rows cannot inflate verified root-cause prediction coverage above one',()=>{
+  const evidence=evidenceSet().filter(value=>!value.startsWith('neural-root-cause:'));
+  for(let i=0;i<3;i++)evidence.push(enc('neural-root-cause:',{
+    sampleId:`verified-${i}`,
+    state:'ROOT_CAUSE_VERIFIED',
+    rootCauseVerified:true,
+    responsibleSystemVerified:true,
+    responsibleSystem:'GAME_RUNTIME',
+    predictedResponsibleSystem:'GAME_RUNTIME',
+    predictedSystemConsistentWithVerified:true,
+    phase2AuthorityEligible:false
+  }));
+  for(let i=0;i<4;i++)evidence.push(enc('neural-root-cause:',{
+    sampleId:`unverified-${i}`,
+    state:'CAUSAL_REPAIR_VERIFIED_AWAITING_INDEPENDENT_CONFIRMATION',
+    rootCauseVerified:false,
+    responsibleSystemVerified:true,
+    responsibleSystem:'GAME_RUNTIME',
+    predictedResponsibleSystem:'GAME_RUNTIME',
+    predictedSystemConsistentWithVerified:true,
+    phase2AuthorityEligible:false
+  }));
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:10,distinctSampleIds:10},
+    thresholds:{verifiedRootCause:3}
+  });
+  assert.equal(result.evidenceSummary.rootCause.identifiedPredictionEvaluated,7);
+  assert.equal(result.evidenceSummary.rootCause.identifiedVerifiedPredictionEvaluated,3);
+  assert.equal(result.evidenceSummary.rootCausePredictionCoverage,1);
+  assert.ok(result.evidenceSummary.rootCausePredictionCoverage<=1);
+});
