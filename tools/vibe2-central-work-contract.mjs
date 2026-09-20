@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
@@ -75,6 +76,38 @@ export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CAN
   };
 }
 
+export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),policyPath=CANONICAL_VIBE_POLICY_PATH,required=false,ref='origin/main',fetchRemote=true}={}){
+  const resolvedRef=clean(ref)||'origin/main';
+  try{
+    const gitRoot=clean(execFileSync('git',['-C',repoRoot,'rev-parse','--show-toplevel'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+    if(!gitRoot)throw new Error('GIT_ROOT_MISSING');
+    if(fetchRemote===true){
+      const slash=resolvedRef.indexOf('/');
+      if(slash<=0||slash===resolvedRef.length-1)throw new Error('LIVE_REF_MUST_BE_REMOTE_BRANCH');
+      const remote=resolvedRef.slice(0,slash);
+      const branch=resolvedRef.slice(slash+1);
+      execFileSync('git',['-C',gitRoot,'fetch','--quiet','--no-tags',remote,`+refs/heads/${branch}:refs/remotes/${remote}/${branch}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    }
+    const raw=execFileSync('git',['-C',gitRoot,'show',`${resolvedRef}:${policyPath}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+    const document=JSON.parse(raw);
+    const errors=policyValidationErrors(document);
+    return{
+      required:required===true,present:true,valid:errors.length===0,path:policyPath,
+      fingerprint:sha256(raw),version:Number(document.version)||null,
+      status:clean(document.status)||null,policySource:clean(document.policySource)||null,
+      syncMode:clean(document?.developmentLifecycleMachine?.sharedWorkerContext?.syncMode)||null,
+      errors,document,source:'GIT_REF',ref:resolvedRef
+    };
+  }catch(error){
+    const detail=clean(error?.stderr||error?.message||error).replace(/\s+/g,' ').slice(0,240)||'UNKNOWN';
+    return{
+      required:required===true,present:false,valid:required!==true,path:policyPath,
+      fingerprint:null,version:null,status:null,policySource:null,syncMode:null,
+      errors:required===true?[`CENTRAL_POLICY_LIVE_REF:${detail}`]:[],document:null,source:'GIT_REF',ref:resolvedRef
+    };
+  }
+}
+
 function taggedValue(evidence=[],prefixes=[]){
   for(const row of evidence){
     for(const prefix of prefixes){
@@ -118,7 +151,8 @@ export function compileVibeCentralWorkContract({
   responsibleFiles=[],
   presentationQuality={},
   supervisionContract=null,
-  mainSha=''
+  mainSha='',
+  livePolicyRef=''
 }={}){
   const source=snapshot||{required:false,present:false,valid:true,path:CANONICAL_VIBE_POLICY_PATH,document:null};
   const policy=source.document||{};
@@ -214,7 +248,10 @@ export function compileVibeCentralWorkContract({
       staleMayNotStart:shared.staleContextMayNotStartWork===true,
       staleMayNotComplete:shared.staleContextMayNotCompleteWork===true,
       mismatchAction:clean(shared.mismatchAction)||'BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE',
-      compare:'SHA256'
+      liveMainRequired:Boolean(clean(livePolicyRef)),
+      liveMainRef:clean(livePolicyRef)||null,
+      liveMainRefreshBeforeCheck:Boolean(clean(livePolicyRef)),
+      compare:clean(livePolicyRef)?'SHA256_LOCAL_AND_LIVE_MAIN':'SHA256_LOCAL'
     },
     learning:{
       reusableLearningAllowed:supervisionApproved,
@@ -245,6 +282,7 @@ export function compiledWorkContractGuidance(contract={}){
   return[
     '[CENTRAL ROADMAP WORK CONTRACT]',
     `policy=${contract.policy?.path||CANONICAL_VIBE_POLICY_PATH}; version=${contract.policy?.version??'unknown'}; sha256=${contract.policy?.fingerprint||'missing'}`,
+    contract.freshness?.liveMainRequired===true?`live-main-ref=${contract.freshness?.liveMainRef||'origin/main'}; refresh-before-check=YES`:'',
     `work-key=${request.workKey||'NONE'}; next-gate=${request.nextGate||'NONE'}; dedupe-key=${request.dedupeKey||'NONE'}`,
     `exact-writable-files=${(contract.writableScope?.exactResponsibleFiles||[]).join(', ')||'NONE'}`,
     `preserve=${(contract.invariants?.protectedSemantics||[]).join(', ')}`,
@@ -262,14 +300,30 @@ export function compiledWorkContractGuidance(contract={}){
 export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},phase='WORK'}={}){
   if(contract?.required!==true)return{status:'NOT_REQUIRED',phase,fresh:true};
   if(contract?.validAtCompile!==true)throw new Error(`CENTRAL_POLICY_INVALID_AT_COMPILE:${phase}`);
-  const current=loadCentralPolicySnapshot({repoRoot:cwd,policyPath:contract?.policy?.path||CANONICAL_VIBE_POLICY_PATH,required:true});
+  const policyPath=contract?.policy?.path||CANONICAL_VIBE_POLICY_PATH;
+  const current=loadCentralPolicySnapshot({repoRoot:cwd,policyPath,required:true});
   if(!current.valid)throw new Error(`CENTRAL_POLICY_INVALID:${phase}:${current.errors.join('|')||'UNKNOWN'}`);
   if(!contract?.policy?.fingerprint)throw new Error(`CENTRAL_POLICY_FINGERPRINT_MISSING:${phase}`);
   if(current.fingerprint!==contract.policy.fingerprint){
     throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.fingerprint}->${current.fingerprint}`);
   }
+  let liveMain=null;
+  if(contract?.freshness?.liveMainRequired===true){
+    liveMain=loadCentralPolicySnapshotFromGitRef({
+      repoRoot:cwd,
+      policyPath,
+      required:true,
+      ref:contract?.freshness?.liveMainRef||'origin/main',
+      fetchRemote:contract?.freshness?.liveMainRefreshBeforeCheck!==false
+    });
+    if(!liveMain.valid)throw new Error(`CENTRAL_POLICY_LIVE_INVALID:${phase}:${liveMain.errors.join('|')||'UNKNOWN'}`);
+    if(liveMain.fingerprint!==contract.policy.fingerprint){
+      throw new Error(`CENTRAL_POLICY_STALE:${phase}:${contract.policy.fingerprint}->${liveMain.fingerprint}`);
+    }
+  }
   return{
     status:'PASS',phase,fresh:true,path:current.path,version:current.version,
-    fingerprint:current.fingerprint,syncMode:current.syncMode
+    fingerprint:current.fingerprint,syncMode:current.syncMode,
+    liveMainRef:liveMain?.ref||null,liveMainVersion:liveMain?.version||null,liveMainFingerprint:liveMain?.fingerprint||null
   };
 }
