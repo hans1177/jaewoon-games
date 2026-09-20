@@ -82,6 +82,61 @@ test('game-primary summary uses current atomic reservation cap instead of extern
   assert.equal(reserved.summary.freeSlots,0);
 });
 
+test('settling the final dependency emits shadow DAG readiness evidence without scheduler authority',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'dep-a',gameId:'dep-a',target:'web',department:'development',type:'implementation',
+      goal:'dependency A',status:'running',sourceRoot:'web-games/dep-a',responsibleFiles:['index.html'],
+      reservationId:'run-1:1',reservationRunId:'run-1',reservedAt:new Date().toISOString()
+    },
+    {
+      id:'next-b',gameId:'next-b',target:'web',department:'development',type:'implementation',
+      goal:'next B',status:'queued',sourceRoot:'web-games/next-b',responsibleFiles:['index.html'],
+      dependencies:['dep-a']
+    },
+    {
+      id:'still-waiting',gameId:'still-waiting',target:'web',department:'development',type:'implementation',
+      goal:'still waiting',status:'queued',sourceRoot:'web-games/still-waiting',responsibleFiles:['index.html'],
+      dependencies:['dep-a','dep-x']
+    },
+    {
+      id:'dep-x',gameId:'dep-x',target:'web',department:'development',type:'implementation',
+      goal:'dependency X',status:'queued',sourceRoot:'web-games/dep-x',responsibleFiles:['index.html']
+    }
+  ]});
+
+  const settled=settleVibeTask(queue,{taskId:'dep-a',outcome:'PASS',evidence:['verified:done'],retryable:false});
+  assert.equal(settled.dependencyShadowEvents.length,1);
+  assert.equal(settled.dependencyShadowEvents[0].taskId,'next-b');
+  assert.equal(settled.dependencyShadowEvents[0].actionKind,'REEVALUATE_DEPENDENCY_GRAPH');
+  assert.equal(settled.dependencyShadowEvents[0].wouldFireWithoutPhase2Authority,true);
+  assert.equal(settled.dependencyShadowEvents[0].fireAllowed,false);
+
+  const next=settled.queue.tasks.find(task=>task.id==='next-b');
+  const eventMarker=next.evidence.find(value=>value.startsWith('neural-event-shadow:'));
+  assert.ok(eventMarker);
+  const event=JSON.parse(decodeURIComponent(eventMarker.slice('neural-event-shadow:'.length)));
+  assert.equal(event.eventType,'DEPENDENCY_READY');
+  assert.equal(event.actionKind,'REEVALUATE_DEPENDENCY_GRAPH');
+  assert.equal(event.fireAllowed,false);
+  assert.equal(event.workerCreationAllowed,false);
+  assert.equal(event.queueMutationAllowed,false);
+  assert.equal(event.waveReorderAllowed,false);
+
+  const graphMarker=next.evidence.find(value=>value.startsWith('neural-work-graph-shadow:'));
+  assert.ok(graphMarker);
+  const graph=JSON.parse(decodeURIComponent(graphMarker.slice('neural-work-graph-shadow:'.length)));
+  assert.equal(graph.dependencyCount,1);
+  assert.equal(graph.unsatisfiedDependencyCount,0);
+  assert.equal(graph.executionAllowed,false);
+  assert.equal(graph.authorityPromotionAllowed,false);
+
+  const waiting=settled.queue.tasks.find(task=>task.id==='still-waiting');
+  assert.equal(waiting.evidence.some(value=>value.startsWith('neural-dependency-ready:')),false);
+  const selected=selectVibeQueueBatch(settled.queue,{maxConcurrentTasks:4,lane:'game-primary'}).selected.map(task=>task.id);
+  assert.ok(selected.includes('next-b'));
+});
+
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-aux-fanin-'));
   const queueFile=path.join(dir,'queue.json');
