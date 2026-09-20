@@ -6811,11 +6811,154 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b5eba53d87666318a65dc0a9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2097",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "037bd02b8b4bbacf06e801c958d98bad57b431ca",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2097,
+        "baseBranch": "main",
+        "headBranch": "assistant/vibe2-commercial-readiness-genre-ui-animation-v1",
+        "baseSha": "037bd02b8b4bbacf06e801c958d98bad57b431ca",
+        "headSha": "3481511ef87c31cd5ba2410c0c8f3cfd74cf4be7",
+        "mergeCommitSha": "189221619d701553c2024a6c605fa00b7c34d795",
+        "mergedAt": "2026-09-20T13:17:57Z",
+        "authorLogin": "hans1177",
+        "titleHash": "36641fc3d42cc8acd1d55a2f674f697b8ccaa9b5cdf26759548c9ca1c807a654",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/vibe2-commercial-readiness-genre-ui-animation-v1",
+        "candidateSha": "3481511ef87c31cd5ba2410c0c8f3cfd74cf4be7"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 688,
+        "deletedLineCount": 99,
+        "changedFiles": [
+          ".github/agents/development.agent.md",
+          ".github/agents/graphics.agent.md",
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          "COMPANY_FLOW.md",
+          "company-directive.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-speed-sequence-workflow.test.mjs",
+          "qa/company-top30-platform-promotion-learning.test.mjs",
+          "qa/company-web-evidence-freshness-contract.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-web-gameplay-validation.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          "company-directive.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-speed-sequence-workflow.test.mjs",
+          "qa/company-top30-platform-promotion-learning.test.mjs",
+          "qa/company-web-evidence-freshness-contract.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-web-gameplay-validation.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2097",
+        "merge-commit:189221619d701553c2024a6c605fa00b7c34d795",
+        "base-main:037bd02b8b4bbacf06e801c958d98bad57b431ca"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 55
+    "total": 56
   }
 }
