@@ -446,10 +446,11 @@ function neuralWorkerEvidence(row = {}) {
   const feedback=neuralWorkerFeedback(row);
   const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:rowEvidence});
   const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence,sampleId:neuralWorkerSampleId(row)});
+  const eventType=neuralWorkerEventType(row);
   const eventRoute=simulateNeuralEventRoute({
     event:{
-      id:neuralWorkerSampleId(row),
-      type:neuralWorkerEventType(row),
+      id:[neuralWorkerSampleId(row),eventType].filter(Boolean).join('|')||null,
+      type:eventType,
       taskId:clean(row?.taskId)||null,
       outcome:clean(row?.outcome).toUpperCase()||null,
       stage:clean(feedback?.observed?.stage)||null,
