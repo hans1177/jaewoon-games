@@ -72,6 +72,8 @@ test('web candidate release blocks inline script syntax and historical save-key 
   assert.match(section,/VIBE2_WEB_INLINE_SCRIPT_QA=PASS/);
   assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
   assert.match(section,/node --check/);
+  assert.match(section,/\.filter\(match=>!\/\\bsrc\\s\*=\\s\*\/i\.test/);
   assert.match(section,/const historicalSaveKey="const key='jg-final:'\+C\.id;"/);
   assert.match(section,/VIBE2_WEB_SAVE_KEY_REGRESSION/);
+  assert.match(releaseWorkflow,/git -C \/tmp\/vibe2-control fetch origin main:refs\/remotes\/origin\/main --quiet/);
 });
