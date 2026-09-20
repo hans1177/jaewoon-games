@@ -36608,114 +36608,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_f2b37b4a8d308c5e2d702304",
-          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_09fb3dc022e16d1c42bed600",
-            "capability_ctrace_0e9fdf52178d86cbd776a629",
-            "capability_ctrace_699cc26cf79f103969fec776",
-            "capability_ctrace_69cfb4bdf6a2aa948c5c6bce",
-            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
-          ],
-          "evidence": [
-            "candidate-sha:60c99a1faa55d422b107936ad45e006eba38deb6",
-            "base-main:f9f232c1e2a7c34a064da5dd5fcec900b576ef2a",
-            "incremental-qa-hash:9c92dbe27dfc45ec7d38d39b7cb8f72a680bad3db22285396ea0267285c020dd",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35493977719",
-            "reservation-id:35493977719:1",
-            "capability-application-sample:347292c92d54c64fedd5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_8330c41ca18948338af0c479",
-          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0e9fdf52178d86cbd776a629",
-            "capability_ctrace_09fb3dc022e16d1c42bed600",
-            "capability_ctrace_699cc26cf79f103969fec776",
-            "capability_ctrace_69cfb4bdf6a2aa948c5c6bce",
-            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
-          ],
-          "evidence": [
-            "base-main:cffee757a64e9d1e0dcafb3abadb493972766457",
-            "actions-run:35494504456",
-            "reservation-id:35494504456:1",
-            "capability-application-sample:32d808f9e093d8007e9c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_68ed09705ebb21b9a105b789",
-          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "web",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0e9fdf52178d86cbd776a629",
-            "capability_ctrace_09fb3dc022e16d1c42bed600",
-            "capability_ctrace_699cc26cf79f103969fec776",
-            "capability_ctrace_69cfb4bdf6a2aa948c5c6bce",
-            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
-          ],
-          "evidence": [
-            "candidate-sha:7a2670422c3a403f7a938d72e3fb415be763a22f",
-            "base-main:cffee757a64e9d1e0dcafb3abadb493972766457",
-            "incremental-qa-hash:9c92dbe27dfc45ec7d38d39b7cb8f72a680bad3db22285396ea0267285c020dd",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35494504456",
-            "reservation-id:35494504456:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:c8cdb495c102fd126c72"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_635d01eca864e4f7a2f7f557",
           "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
           "workKey": null,
@@ -38818,6 +38710,105 @@
             "reservation-id:35514974625:1",
             "fan-in-review:PASS",
             "capability-application-sample:749558440195fd9fc98c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_23524d164a515fd5cd753022",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:8a63d47ff231931f5cc3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d460366365b654f4304b83d6",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:9d4849b621450711121d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_782f1b71635e3a9500202621",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:1536101fbb2346b909be"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -58833,6 +58824,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d73737d7ca3c0a598af0003d",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:8a63d47ff231931f5cc3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_49d12d9f3c6e82ef3dea6a39",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:9d4849b621450711121d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6332dff283c45cdd1caa192c",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:1536101fbb2346b909be"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -58851,7 +58941,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 40,
+        "applicationCount": 43,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -60233,6 +60323,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7f8a44ce61122848a4999866",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:8a63d47ff231931f5cc3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a058892e2051ce50c3a6a6b8",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:9d4849b621450711121d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4ca2920b30f9961ea31f6e44",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:1536101fbb2346b909be"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -60251,7 +60440,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 12,
+        "applicationCount": 15,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -65906,7 +66095,11 @@
         "base-main:6fdb7f1efbc0850a2808389fe018d13695e6401f",
         "actions-run:35514974625",
         "reservation-id:35514974625:1",
-        "coding-trace:ctrace_c04aac1ea16ec2ce13627ead"
+        "coding-trace:ctrace_c04aac1ea16ec2ce13627ead",
+        "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+        "actions-run:35515852736",
+        "reservation-id:35515852736:1",
+        "coding-trace:ctrace_56ce70d19e763bae91b04d0c"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -65915,8 +66108,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 8,
-      "confidence": 0.8889,
+      "confirmations": 9,
+      "confidence": 0.9,
       "capabilityApplications": [
         {
           "version": 1,
@@ -67284,6 +67477,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_84d4143e045260ba550a950d",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:8a63d47ff231931f5cc3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_94a332de08a54f48eb30b4b2",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:9d4849b621450711121d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e85baf0918a7a359cb8b7b0f",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:1536101fbb2346b909be"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -67302,7 +67594,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 40,
+        "applicationCount": 43,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -67385,7 +67677,11 @@
         "base-main:f1b65ce370c4157782da156fd79bca5f9d404e47",
         "actions-run:35514543929",
         "reservation-id:35514543929:1",
-        "coding-trace:ctrace_7953008023942c8c3ea9a7c2"
+        "coding-trace:ctrace_7953008023942c8c3ea9a7c2",
+        "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+        "actions-run:35515852736",
+        "reservation-id:35515852736:1",
+        "coding-trace:ctrace_7dd8414df50c582d13f94ae0"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -67394,8 +67690,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 8,
-      "confidence": 0.8889,
+      "confirmations": 9,
+      "confidence": 0.9,
       "capabilityApplications": [
         {
           "version": 1,
@@ -69080,6 +69376,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e467a220a59e6eb1d1fb7b54",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:8a63d47ff231931f5cc3"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bb45c9781164b029c94fa1cd",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:9d4849b621450711121d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e36b27f291390ef8da3f2121",
+          "taskId": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "capability_ctrace_31bc6402f5611fd66c298fb4",
+            "capability_ctrace_0f382275217b8135a0aa8d56",
+            "capability_ctrace_0414fec2ce54477011434789",
+            "capability_ctrace_e14af29ee3ffa5dd1f31281a"
+          ],
+          "evidence": [
+            "base-main:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+            "actions-run:35515852736",
+            "reservation-id:35515852736:1",
+            "capability-application-sample:1536101fbb2346b909be"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -69098,7 +69493,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 49,
+        "applicationCount": 52,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
