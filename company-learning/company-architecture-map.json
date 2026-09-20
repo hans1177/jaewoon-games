@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_SHADOW_EVENT_ROUTER_CONNECTED",
+    "currentState": "PHASE2_SHADOW_ROUTER_AND_WAVE_AUDIT_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -350,7 +350,13 @@
       "waveReorderAuthority": "NONE",
       "lockAuthority": "NONE",
       "policyMutationAuthority": "NONE",
-      "learningAuthority": "NONE"
+      "learningAuthority": "NONE",
+      "audit": "tools/vibe2-neural-shadow-audit.mjs",
+      "auditBinding": "tools/vibe2-fan-in-review.mjs",
+      "auditAuthority": "OBSERVE_COMPARE_ONLY",
+      "winnerSelectionAuthority": "NONE",
+      "automaticTuningAuthority": "NONE",
+      "automaticLearningAuthority": "NONE"
     }
   }
 }
