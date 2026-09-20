@@ -1107,7 +1107,7 @@ function multiTick(now){
  if(now>=multiplayer.sendAt){
   multiplayer.sendAt=now+120;
   const p=state.player;
-  multiSend('player-state',{id:multiplayer.playerId,x:p.x,y:p.y,area:state.area,faceX:p.faceX,faceY:p.faceY,weapon:p.weapon,armor:p.armor,hp:p.hp,maxHp:p.maxHp,pet:petAlive()?{x:state.pet.x,y:state.pet.y,hp:state.pet.hp,maxHp:state.pet.maxHp,mounted:state.pet.mounted}:null})
+  multiSend('player-state',{id:multiplayer.playerId,x:p.x,y:p.y,area:state.area,faceX:p.faceX,faceY:p.faceY,weapon:p.weapon,armor:p.armor,torchEquipped:!!(p.torchEquipped&&p.torch&&p.torchDurability>0),hp:p.hp,maxHp:p.maxHp,pet:petAlive()?{x:state.pet.x,y:state.pet.y,hp:state.pet.hp,maxHp:state.pet.maxHp,mounted:state.pet.mounted}:null})
  }
  if(multiIsHost()&&now>=multiplayer.worldAt){multiplayer.worldAt=now+250;multiSend('world-state',serializeWorld())}
 }
@@ -1928,8 +1928,25 @@ function drawStoryLab2(cx,cy,w,h){
 }
 
 function drawQuestDarkness(){
- if(state.area!=='questcave')return;const p=state.player,x=p.x-state.camera.x,y=p.y-state.camera.y,lit=p.torchEquipped&&p.torch&&p.torchDurability>0,r=lit?230:55;
- const g=ctx.createRadialGradient(x,y,Math.max(8,r*.18),x,y,r);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(.55,lit?'rgba(0,0,0,.15)':'rgba(0,0,0,.65)');g.addColorStop(1,'rgba(0,0,0,.96)');ctx.fillStyle=g;ctx.fillRect(0,0,innerWidth,innerHeight)
+ if(state.area!=='questcave')return;
+ const p=state.player,lights=[],now=performance.now();
+ lights.push({x:p.x-state.camera.x,y:p.y-state.camera.y,lit:!!(p.torchEquipped&&p.torch&&p.torchDurability>0)});
+ for(const r of multiplayer.remote.values()){
+  if(!r||r.area!==state.area||now-(r.seenAt||0)>2000||!r.torchEquipped)continue;
+  lights.push({x:r.x-state.camera.x,y:r.y-state.camera.y,lit:true})
+ }
+ ctx.save();
+ ctx.fillStyle='rgba(0,0,0,.96)';ctx.fillRect(0,0,innerWidth,innerHeight);
+ ctx.globalCompositeOperation='destination-out';
+ for(const light of lights){
+  const radius=light.lit?230:55;
+  const g=ctx.createRadialGradient(light.x,light.y,Math.max(8,radius*.18),light.x,light.y,radius);
+  g.addColorStop(0,'rgba(0,0,0,1)');
+  g.addColorStop(.55,light.lit?'rgba(0,0,0,.84)':'rgba(0,0,0,.32)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(light.x-radius,light.y-radius,radius*2,radius*2)
+ }
+ ctx.restore()
 }
 function drawNode(n,cx,cy){
  const x=n.x-cx,y=n.y-cy;if(x<-40||y<-40||x>innerWidth+40||y>innerHeight+40)return;
@@ -2109,7 +2126,12 @@ function drawRemotePlayers(cx,cy){
   ctx.save();ctx.globalAlpha=.88;ctx.fillStyle='#b6d7ff';ctx.beginPath();ctx.arc(x,y-11,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3f7bb5';roundRect(x-11,y-2,22,25,6);ctx.fill();
   ctx.fillStyle='#dcecff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('동료 '+id.slice(-4),x,y-25);
   ctx.fillStyle='#102030';ctx.fillRect(x-20,y+37,40,4);ctx.fillStyle='#62b6ff';ctx.fillRect(x-20,y+37,40*Math.max(0,Math.min(1,(r.hp||0)/(r.maxHp||1))),4);
-  if(r.pet&&!r.pet.mounted){ctx.fillStyle='#5d5278';ctx.beginPath();ctx.arc(r.pet.x-cx,r.pet.y-cy,14,0,Math.PI*2);ctx.fill()}if(r.weapon){ctx.strokeStyle='#bcdcff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+(r.faceX||1)*25,y+4+(r.faceY||0)*25);ctx.stroke()}ctx.restore()
+  if(r.pet&&!r.pet.mounted){ctx.fillStyle='#5d5278';ctx.beginPath();ctx.arc(r.pet.x-cx,r.pet.y-cy,14,0,Math.PI*2);ctx.fill()}
+  if(r.torchEquipped){
+   ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();
+   ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill()
+  }
+  if(r.weapon){ctx.strokeStyle='#bcdcff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+(r.faceX||1)*25,y+4+(r.faceY||0)*25);ctx.stroke()}ctx.restore()
  }
 }
 function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawDeathEffects(cx,cy,now);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness()}
