@@ -837,6 +837,60 @@
       "createdAt": "2026-09-20",
       "lastVerifiedAt": "2026-09-20",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "exp_security_53422c69113706740dd73f5a",
+      "fingerprint": "security_53422c69113706740dd73f5a",
+      "gameId": null,
+      "engine": "system",
+      "departments": [
+        "security",
+        "infrastructure",
+        "qa",
+        "learning"
+      ],
+      "taskType": "security-recovery",
+      "problem": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "goal": "detect contain recover and prevent recurrence without storing attack payload",
+      "change": "PRIMARY_AI_REVIEW_CONFIRMED_FAIL_CLOSED_SHADOW_ONLY_AUTHORITY; RETAIN_EXISTING_WAVE_EXECUTION_AUTHORITY_AND_EXPLICIT_PROMOTION_GATE",
+      "outcome": "PASS",
+      "failureCause": "OWNER_AUTHORIZED_NEURAL_SHADOW_POLICY_MUTATION_REQUIRING_DIRECT_SECURITY_REVIEW",
+      "qa": [
+        "primary-ai-pr-review:#1800:5258869639",
+        "central-policy-contract-qa:PASS",
+        "vibe-integrated-regression:PASS",
+        "authorized-policy-review:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "build": null,
+      "evidence": [
+        "primary-ai-pr-review:#1800:5258869639",
+        "central-policy-contract-qa:PASS",
+        "vibe-integrated-regression:PASS",
+        "authorized-policy-review:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS",
+        "security-evidence-sha256:e2f2e683ea00fd1b3c28ddbd225c2f45351b71049dec9764b7f9d5d18391bfa5"
+      ],
+      "reusablePatterns": [
+        "SECURITY_REVIEW_REQUIRED:CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+        "SECURITY_PRESERVE_GATE:NO_BYPASS",
+        "SECURITY_AUTHORIZED_REVIEW:PRIMARY_AI_REVIEW_CONFIRMED_FAIL_CLOSED_SHADOW_ONLY_AUTHORITY; RETAIN_EXISTING_WAVE_EXECUTION_AUTHORITY_AND_EXPLICIT_PROMOTION_GATE"
+      ],
+      "avoidPatterns": [
+        "SECURITY_AVOID:POLICY_REVIEW_BYPASS"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SECURITY_IMMUNE_LEARNING",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "sourceSecurityIncidentId": "sec_abf75536e7eefccfa75e0bab",
+      "createdAt": "2026-09-20T01:49:56.519Z",
+      "lastVerifiedAt": "2026-09-20T01:49:56.519Z"
     }
   ]
 }

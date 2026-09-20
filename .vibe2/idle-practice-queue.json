@@ -204,26 +204,6 @@
       ]
     },
     {
-      "id": "gap-combat-l2",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "COMBAT"
-      ]
-    },
-    {
-      "id": "gap-progression-l2",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "PROGRESSION"
-      ]
-    },
-    {
       "id": "gap-security-l2",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -241,6 +221,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-combat-l3",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "COMBAT"
       ]
     },
     {
@@ -264,23 +254,13 @@
       ]
     },
     {
-      "id": "gap-save-l3",
+      "id": "gap-progression-l3",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "SAVE"
-      ]
-    },
-    {
-      "id": "gap-state_machine-l3",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE"
+        "PROGRESSION"
       ]
     },
     {
@@ -301,6 +281,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "MOBILE_INPUT"
+      ]
+    },
+    {
+      "id": "gap-save-l4",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "SAVE"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l4",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE"
       ]
     },
     {

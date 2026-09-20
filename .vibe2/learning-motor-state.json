@@ -12,18 +12,18 @@
       "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "STATE_MACHINE": {
-      "xp": 113,
-      "level": 3,
-      "verifiedSuccesses": 12,
+      "xp": 125,
+      "level": 4,
+      "verifiedSuccesses": 13,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "supervised_bug-defense_35476177742_revise"
+      "lastEvidence": "exp_security_53422c69113706740dd73f5a"
     },
     "COMBAT": {
-      "xp": 65,
-      "level": 2,
-      "verifiedSuccesses": 5,
+      "xp": 77,
+      "level": 3,
+      "verifiedSuccesses": 6,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "supervised_bug-defense_35476177742_revise"
+      "lastEvidence": "exp_security_53422c69113706740dd73f5a"
     },
     "AI": {
       "xp": 120,
@@ -33,11 +33,11 @@
       "lastEvidence": "pat_ypohyy"
     },
     "PROGRESSION": {
-      "xp": 65,
-      "level": 2,
-      "verifiedSuccesses": 5,
+      "xp": 77,
+      "level": 3,
+      "verifiedSuccesses": 6,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "supervised_bug-defense_35476177742_revise"
+      "lastEvidence": "exp_security_53422c69113706740dd73f5a"
     },
     "ECONOMY": {
       "xp": 29,
@@ -47,11 +47,11 @@
       "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "SAVE": {
-      "xp": 113,
-      "level": 3,
-      "verifiedSuccesses": 12,
+      "xp": 125,
+      "level": 4,
+      "verifiedSuccesses": 13,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "supervised_bug-defense_35476177742_revise"
+      "lastEvidence": "exp_security_53422c69113706740dd73f5a"
     },
     "MOBILE_INPUT": {
       "xp": 137,
@@ -68,25 +68,25 @@
       "lastEvidence": "pat_zf15dc"
     },
     "DEBUGGING": {
-      "xp": 93,
+      "xp": 101,
       "level": 3,
-      "verifiedSuccesses": 11,
+      "verifiedSuccesses": 12,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "supervised_bug-defense_35476177742_revise"
+      "lastEvidence": "pat_security_53422c69113706740dd73f5a"
     },
     "RECOVERY": {
-      "xp": 17,
+      "xp": 29,
       "level": 1,
-      "verifiedSuccesses": 1,
+      "verifiedSuccesses": 2,
       "verifiedFailureLessons": 1,
-      "lastEvidence": "supervised_bug-defense_35476177742_revise"
+      "lastEvidence": "exp_security_53422c69113706740dd73f5a"
     },
     "SECURITY": {
-      "xp": 40,
+      "xp": 60,
       "level": 2,
-      "verifiedSuccesses": 4,
+      "verifiedSuccesses": 6,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_security_b72c29be3a79e4c5a56017dd"
+      "lastEvidence": "pat_security_53422c69113706740dd73f5a"
     },
     "PERFORMANCE": {
       "xp": 24,
@@ -230,7 +230,8 @@
     "exp_rg6lvy",
     "exp_security_policy_review_authorized_v1",
     "exp_security_b72c29be3a79e4c5a56017dd",
-    "supervised_bug-defense_35476177742_revise"
+    "supervised_bug-defense_35476177742_revise",
+    "exp_security_53422c69113706740dd73f5a"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -279,7 +280,8 @@
     "pat_8vynqw",
     "pat_bl3edd",
     "pat_security_policy_review_authorized_v1",
-    "pat_security_b72c29be3a79e4c5a56017dd"
+    "pat_security_b72c29be3a79e4c5a56017dd",
+    "pat_security_53422c69113706740dd73f5a"
   ],
   "failureSignatures": {
     "fail_173wlx": {
@@ -332,6 +334,19 @@
         "DEBUGGING",
         "RECOVERY",
         "WEB_RUNTIME"
+      ]
+    },
+    "fail_5imhv1": {
+      "count": 1,
+      "lastEvidence": "exp_security_53422c69113706740dd73f5a",
+      "example": "OWNER_AUTHORIZED_NEURAL_SHADOW_POLICY_MUTATION_REQUIRING_DIRECT_SECURITY_REVIEW",
+      "domains": [
+        "STATE_MACHINE",
+        "COMBAT",
+        "PROGRESSION",
+        "SAVE",
+        "RECOVERY",
+        "SECURITY"
       ]
     }
   },
@@ -4732,9 +4747,9 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T01:47:49.287Z",
+    "lastBuiltAt": "2026-09-20T01:49:56.598Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
-  "updatedAt": "2026-09-20T01:47:49.287Z"
+  "updatedAt": "2026-09-20T01:49:56.598Z"
 }
