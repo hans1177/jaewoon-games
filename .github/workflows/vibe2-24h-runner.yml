@@ -76,6 +76,7 @@ env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
+  VIBE2_GAME_PRIMARY_ACTIVE_MAX: '20'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
@@ -93,6 +94,8 @@ jobs:
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
       wave_ready: ${{ steps.queue_state.outputs.wave_ready }}
+      game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}
+      free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}
       active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}
       game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
@@ -402,13 +405,25 @@ jobs:
           const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
           const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
+          const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
+          const activeWaveMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ACTIVE_MAX||20));
+          const externalEffectiveMax=Math.max(1,Math.min(configuredMax,Number(control.currentMax||configuredMax)));
+          const effectiveMax=Math.min(activeWaveMax,externalEffectiveMax);
+          const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
           const waveReady=activeGame===0?'YES':'NO';
+          const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
             'wave_ready='+waveReady+'\n'+
+            'game_refill_ready='+gameRefillReady+'\n'+
+            'free_worker_slots='+freeWorkerSlots+'\n'+
             'active_worker_reservations='+activeGame+'\n'+
             'game_primary_queued='+gameQueued+'\n'+
             'learning_idle_queued='+learningQueued+'\n');
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
+          console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
+          console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
+          console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
           console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
           console.log('VIBE2_24H_WAVE_READY='+waveReady);
@@ -507,11 +522,11 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
-      lane_max: '256'
+      lane_max: '20'
     permissions:
       contents: write
       actions: write
