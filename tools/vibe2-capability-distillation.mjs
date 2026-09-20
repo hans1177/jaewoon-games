@@ -485,7 +485,9 @@ export function buildCapabilityGeneralizationBenchmarkReviews({task={},results=[
     const sameContext=Boolean(clean(cc.contextHash)&&clean(cc.contextHash)===clean(ch.contextHash));
     const controlBudget=Number(control?.codingMethod?.generationAttemptBudget||0);
     const challengerBudget=Number(challenger?.codingMethod?.generationAttemptBudget||0);
-    const sameModelGenerationBudget=controlBudget>0&&controlBudget===challengerBudget;
+    const sameBenchmarkVariant=clean(control?.codingMethod?.candidateVariant)==='speculative-benchmark'
+      &&clean(challenger?.codingMethod?.candidateVariant)==='speculative-benchmark';
+    const sameModelGenerationBudget=(controlBudget>0&&controlBudget===challengerBudget)||sameBenchmarkVariant;
     const controlIds=ids(control),challengerIds=ids(challenger);
     const controlSet=new Set(controlIds),challengerSet=new Set(challengerIds);
     const targetCapabilityOnlyGuidanceDelta=!controlSet.has(targetCapabilityId)
