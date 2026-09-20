@@ -30,6 +30,7 @@ jobs:
       verdict: ${{ steps.scan.outputs.verdict }}
       highest: ${{ steps.scan.outputs.highest }}
       findings: ${{ steps.scan.outputs.findings }}
+      review_only: ${{ steps.scan.outputs.review_only }}
       artifact_id: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v4
@@ -95,8 +96,11 @@ jobs:
           const r=JSON.parse(fs.readFileSync('/tmp/security-report.json','utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`verdict=${r.verdict}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`highest=${r.highestSeverity}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`findings=${(r.findings||[]).length}\n`);
-          console.log('SECURITY_REPORT='+JSON.stringify({verdict:r.verdict,highestSeverity:r.highestSeverity,findings:(r.findings||[]).length}));
+          const findings=r.findings||[];
+          const reviewOnly=r.verdict==='REVIEW'&&findings.length>0&&findings.every(row=>row.disposition==='REVIEW'&&row.rule==='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`findings=${findings.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`review_only=${reviewOnly?'YES':'NO'}\n`);
+          console.log('SECURITY_REPORT='+JSON.stringify({verdict:r.verdict,highestSeverity:r.highestSeverity,findings:findings.length,reviewOnly}));
           NODE
 
           case "$scan_code" in
@@ -180,12 +184,43 @@ jobs:
     timeout-minutes: 2
     permissions:
       contents: read
+      pull-requests: read
     steps:
+      - name: Verify exact-head Primary-AI direct policy review
+        id: direct_review
+        if: ${{ github.event_name == 'pull_request' && needs.scan.outputs.verdict == 'REVIEW' && needs.scan.outputs.review_only == 'YES' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPO/pulls/$PR_NUMBER/reviews?per_page=100" > /tmp/security-pr-reviews.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const reviews=JSON.parse(fs.readFileSync('/tmp/security-pr-reviews.json','utf8'));
+          const owner=String(process.env.REPO_OWNER||'').toLowerCase();
+          const head=String(process.env.HEAD_SHA||'');
+          const pass=reviews.some(row=>
+            String(row.state||'').toUpperCase()==='APPROVED' &&
+            String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS' &&
+            String(row.commit_id||'')===head &&
+            String(row.user?.login||'').toLowerCase()===owner
+          );
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass=${pass?'YES':'NO'}\n`);
+          console.log('VIBE_SECURITY_PRIMARY_AI_DIRECT_REVIEW='+(pass?'PASS':'MISSING'));
+          NODE
+
       - name: Enforce quarantine verdict
         env:
           VERDICT: ${{ needs.scan.outputs.verdict }}
           HIGHEST: ${{ needs.scan.outputs.highest }}
           EVENT_NAME: ${{ github.event_name }}
+          REVIEW_ONLY: ${{ needs.scan.outputs.review_only }}
+          DIRECT_REVIEW_PASS: ${{ steps.direct_review.outputs.pass || 'NO' }}
         run: |
           set -euo pipefail
           echo "VIBE_SECURITY_FINAL=$VERDICT"
@@ -196,7 +231,12 @@ jobs:
           fi
           if [ "$VERDICT" = 'REVIEW' ]; then
             echo 'VIBE_SECURITY_ACTION=PRIMARY_AI_DIRECT_REVIEW_REQUIRED'
-            if [ "$EVENT_NAME" = 'pull_request' ]; then exit 1; fi
+            if [ "$EVENT_NAME" = 'pull_request' ]; then
+              test "$REVIEW_ONLY" = 'YES'
+              test "$DIRECT_REVIEW_PASS" = 'YES'
+              echo 'VIBE_SECURITY_REVIEW_STATE=EXACT_HEAD_OWNER_PRIMARY_AI_REVIEW_PASS'
+              exit 0
+            fi
             echo 'VIBE_SECURITY_REVIEW_STATE=RECORDED_NONBLOCKING_PUSH'
             exit 0
           fi
