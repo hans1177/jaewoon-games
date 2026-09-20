@@ -1,5 +1,5 @@
 {
-  "version": 180,
+  "version": 181,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6322,7 +6322,10 @@
       "phase2ShadowCannotCreateWorkers": true,
       "phase2ShadowCannotReorderWave": true,
       "phase2ShadowCannotAcquireLocks": true,
-      "phase2ShadowCannotPromoteItself": true
+      "phase2ShadowCannotPromoteItself": true,
+      "phase2ReviewRequiresQualityAndVolume": true,
+      "sampleVolumeAloneCannotQualifyPhase2Review": true,
+      "duplicateRootCauseSamplesCannotInflateReadiness": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6620,7 +6623,36 @@
         "explicitCentralPolicyPromotionRequired": true,
         "disagreementReviewRequired": true,
         "waveAuditSampleSource": "DURABLE_QUEUE_EVIDENCE",
-        "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true
+        "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true,
+        "qualityGates": {
+          "calibrationAccuracyMinimum": 0.7,
+          "rootCausePredictionCoverageMinimum": 0.8,
+          "rootCausePredictionContradictionRateMaximum": 0.3,
+          "rootCauseSampleIdentityCoverageMinimum": 0.8,
+          "zeroRootCauseSampleConflictsRequired": true,
+          "duplicateSampleIdCountsOnce": true,
+          "sampleVolumeAloneSufficient": false,
+          "disagreementRemainsVisible": true,
+          "qualityGateMayGrantExecutionAuthority": false,
+          "qualityGateMayAutoPromote": false
+        },
+        "sampleIdentity": {
+          "source": "neural-root-cause.sampleId",
+          "requiredForVerifiedReadinessSample": true,
+          "legacyUnidentifiedEvidenceMayRemainVisible": true,
+          "legacyUnidentifiedEvidenceCannotAloneSatisfyIdentityCoverage": true,
+          "conflictingSameSampleResultsBlockReview": true,
+          "rationale": "PHASE2_REVIEW_MUST_BE_BASED_ON_DISTINCT_AUDITABLE_CAUSAL_SAMPLES_NOT_REPEATED_OR_UNTRACEABLE_EVIDENCE"
+        },
+        "supportPatch": {
+          "stackBase": "assistant/neural-root-sample-identity-v1",
+          "branch": "assistant/neural-readiness-distinct-quality-v1",
+          "commits": {
+            "distinctAndQualityGate": "014e7319edb48bd0cfdcbd7a1444cbb7053d1fc0",
+            "regression": "1cd4d0c27214e23e985cd47ddb9bfc156e363ddf"
+          },
+          "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY"
+        }
       },
       "sampleIdentity": {
         "workerAndQa": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
