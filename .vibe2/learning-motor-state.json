@@ -2071,14 +2071,15 @@
       "coding_negative_r3uify",
       "coding_negative_1jjmpeh",
       "coding_negative_1b5nlqp",
-      "coding_negative_16fj6tn"
+      "coding_negative_16fj6tn",
+      "coding_negative_1h9of71"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 50,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 126,
-        "verifiedFailures": 346,
+        "verifiedFailures": 347,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -2142,13 +2143,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 0,
-            "verifiedFailures": 6,
+            "verifiedFailures": 7,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
             "totalContextBytes": 0,
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_r3uify",
-            "lastUpdatedAt": "2026-09-20T18:41:04.904Z"
+            "lastFailureEvidence": "coding_negative_1h9of71",
+            "lastUpdatedAt": "2026-09-20T19:04:17.405Z"
           }
         },
         "failureFingerprints": {
@@ -2705,22 +2706,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 20,
+            "verifiedFailures": 21,
             "games": {},
             "targets": {},
             "failureGames": {
               "monster-adventure": 14,
-              "ant-simulator": 6
+              "ant-simulator": 7
             },
             "failureTargets": {
-              "web": 20
+              "web": 21
             },
             "failureClasses": {
-              "MALFORMED_OUTPUT": 20
+              "MALFORMED_OUTPUT": 21
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_r3uify",
-            "lastUpdatedAt": "2026-09-20T18:41:04.904Z"
+            "lastFailureEvidence": "coding_negative_1h9of71",
+            "lastUpdatedAt": "2026-09-20T19:04:17.405Z"
           },
           "web|INVALID_PATH|TIMEOUT": {
             "verifiedApplications": 0,
@@ -2763,8 +2764,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_45ilbr",
-        "lastFailureEvidence": "coding_negative_16fj6tn",
-        "lastUpdatedAt": "2026-09-20T18:53:23.046Z"
+        "lastFailureEvidence": "coding_negative_1h9of71",
+        "lastUpdatedAt": "2026-09-20T19:04:17.405Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 50,
@@ -7278,7 +7279,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T19:04:08.082Z",
+    "lastBuiltAt": "2026-09-20T19:04:17.430Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9687,5 +9688,5 @@
       "knowledge_1q12hvd"
     ]
   },
-  "updatedAt": "2026-09-20T19:04:08.082Z"
+  "updatedAt": "2026-09-20T19:04:17.430Z"
 }
