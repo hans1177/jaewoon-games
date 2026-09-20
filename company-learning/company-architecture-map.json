@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -313,7 +313,11 @@
       "durableEvidencePrefix": "neural-shadow-feedback:",
       "calibrationAuthority": "OBSERVE_AND_MEASURE_ONLY",
       "learningAuthority": "NONE",
-      "eventRoutingAuthority": "NONE"
+      "eventRoutingAuthority": "NONE",
+      "qaFailureSignatureProducer": "tools/vibe2-incremental-qa.mjs",
+      "qaFailureSignatureTransport": ".github/workflows/vibe2-continuous-core.yml",
+      "qaFailureSignatureConsumer": "tools/vibe2-neural-feedback.mjs",
+      "qaSignatureAuthority": "EVIDENCE_ONLY_NO_ROOT_CAUSE_AUTHORITY"
     }
   }
 }
