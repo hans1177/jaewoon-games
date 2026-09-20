@@ -15,6 +15,9 @@ function marker(payload){
     workerCreationAllowed:false,
     queueMutationAllowed:false,
     waveReorderAllowed:false,
+    lockAcquisitionAllowed:false,
+    policyMutationAllowed:false,
+    learningEligible:false,
     authorityPromotionEligible:false,
     ...payload
   }));
