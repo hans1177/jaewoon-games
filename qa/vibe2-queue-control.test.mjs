@@ -1218,7 +1218,7 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-test('shared control-state and 24h cycle concurrency keep pending jobs instead of replacing them',()=>{
+test('shared reserve state stays serialized while fan-in uses run-unique pending slots',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
@@ -1230,9 +1230,17 @@ test('shared control-state and 24h cycle concurrency keep pending jobs instead o
   const planHeader=runner.slice(planStart,planSteps);
   assert.match(planHeader,/group: vibe2-control-state-vibe2-unreal-core\n\s+cancel-in-progress: false\n\s+queue: max/);
 
-  const sharedGroup='vibe2-control-state-vibe2-unreal-core';
-  const sharedMentions=core.split(sharedGroup).length-1;
-  const queuedShared=core.match(/group:[^\n]*vibe2-control-state-vibe2-unreal-core[^\n]*\n\s+cancel-in-progress: false\n\s+queue: max/g)||[];
-  assert.ok(sharedMentions>=2);
-  assert.equal(queuedShared.length,sharedMentions);
+  const reserveStart=core.indexOf('\n  reserve:');
+  const reserveSteps=core.indexOf('\n    steps:',reserveStart);
+  assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
+  const reserveHeader=core.slice(reserveStart,reserveSteps);
+  assert.match(reserveHeader,/group:[^\n]*vibe2-control-state-vibe2-unreal-core[^\n]*\n\s+cancel-in-progress: false\n\s+queue: max/);
+
+  const fanInStart=core.indexOf('\n  fan_in:');
+  const fanInSteps=core.indexOf('\n    steps:',fanInStart);
+  assert.ok(fanInStart>=0&&fanInSteps>fanInStart);
+  const fanInHeader=core.slice(fanInStart,fanInSteps);
+  assert.match(fanInHeader,/group: \$\{\{ format\('vibe2-control-state-fanin-\{0\}-\{1\}', github\.run_id, github\.run_attempt\) \}\}/);
+  assert.match(fanInHeader,/cancel-in-progress: false/);
+  assert.doesNotMatch(fanInHeader,/group: vibe2-control-state-vibe2-unreal-core/);
 });
