@@ -1,5 +1,5 @@
 {
-  "version": 192,
+  "version": 193,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6929,5 +6929,104 @@
         "nextGate": "OBSERVE_NEXT_PRODUCTION_WAVE_WITH_IDENTIFIED_DISTINCT_SHADOW_EVIDENCE"
       }
     }
+  },
+  "assistantRoadmapOrchestration": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "objective": "CONTINUOUS_ASSISTANT_COLLABORATION_DRIVEN_BY_CENTRAL_ROADMAP_NOT_BLOCKER_ONLY",
+    "blockerOnly": false,
+    "operatingModel": {
+      "canonicalInput": "LATEST_MAIN_CENTRAL_ROADMAP",
+      "preferredTrigger": "ROADMAP_STATE_CHANGE_OR_ACTIONABLE_NEXT_GATE",
+      "safetyNetCadence": "HOURLY_WHEN_EXTERNAL_ASSISTANT_AUTOMATION_IS_AVAILABLE",
+      "durableHandoff": "GITHUB_ISSUE_OR_PULL_REQUEST",
+      "oneActiveClaimPerWorkKey": true,
+      "dedupeRequired": true,
+      "staleClaimMustBeRevalidatedAgainstLatestMain": true
+    },
+    "triggerKinds": [
+      "ROADMAP_NEXT_GATE_READY",
+      "PHASE_ADVANCE_READY",
+      "POST_MERGE_CENTRAL_SYNC_REQUIRED",
+      "PRODUCTION_WAVE_EVIDENCE_AVAILABLE",
+      "CI_OR_RUNTIME_REGRESSION_REQUIRES_REPAIR",
+      "BLOCKER_ESCALATION",
+      "QA_REVALIDATION_REQUIRED"
+    ],
+    "lifecycle": [
+      "LOAD_LATEST_MAIN_AND_CENTRAL_ROADMAP",
+      "SELECT_HIGHEST_PRIORITY_ACTIONABLE_ROADMAP_ITEM",
+      "VERIFY_NO_CONFLICTING_ACTIVE_CHANGE",
+      "CLAIM_DURABLY_WITH_SOURCE_VERSION_AND_MAIN_SHA",
+      "IMPLEMENT_WITHIN_EXISTING_ARCHITECTURE",
+      "RUN_REQUIRED_QA_AND_SECURITY_GATES",
+      "OPEN_OR_UPDATE_PULL_REQUEST",
+      "SYNC_CENTRAL_DOCUMENT_AFTER_MERGE",
+      "ADVANCE_ONLY_WHEN_DOCUMENTED_GATE_PASSES"
+    ],
+    "workRequestContract": {
+      "requiredFields": [
+        "workKey",
+        "roadmapVersion",
+        "mainSha",
+        "scope",
+        "nextGate",
+        "requiredEvidence",
+        "authorityBoundary",
+        "dedupeKey"
+      ],
+      "claimStateValues": [
+        "READY",
+        "CLAIMED",
+        "IN_PROGRESS",
+        "VERIFYING",
+        "PR_OPEN",
+        "MERGED",
+        "SYNC_REQUIRED",
+        "DONE",
+        "REPAIR_REQUIRED",
+        "HOLD_POLICY_REVIEW_ONLY"
+      ],
+      "completionRequires": [
+        "REQUIRED_QA_PASS",
+        "SECURITY_POLICY_PASS",
+        "NO_UNDOCUMENTED_AUTHORITY_EXPANSION",
+        "MERGE_STATE_CONFIRMED",
+        "CENTRAL_DOCUMENT_SYNC_WHEN_REQUIRED"
+      ]
+    },
+    "assistantRole": {
+      "mayReadLatestRepositoryState": true,
+      "mayPrepareImplementation": true,
+      "mayOpenPullRequest": true,
+      "mayInspectAndRespondToCiFailures": true,
+      "mayPreparePostMergeCentralSync": true,
+      "mayCreateExecutionWorker": false,
+      "mayMutateWaveQueue": false,
+      "mayReorderWave": false,
+      "mayMutateLocksOrPolicy": false,
+      "mayAutoPromoteLearningOrTuning": false,
+      "mayExpandNeuralAuthority": false
+    },
+    "executionBoundary": {
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": false,
+      "workerCreationAuthority": false,
+      "queueMutationAuthority": false,
+      "waveReorderAuthority": false,
+      "lockPolicyMutationAuthority": false,
+      "automaticLearningTuningPromotionAuthority": false,
+      "centralAuthorityDocumentChangeRequiresPrimarySecurityReview": true
+    },
+    "externalAssistantIntegration": {
+      "contractIsProviderNeutral": true,
+      "chatWebSessionAutomationIsNotAssumed": true,
+      "credentialsOrBrowserSessionMustNotBeStoredInRepository": true,
+      "githubArtifactsAreDurableHandoffSurface": true,
+      "automationMustFailClosedWhenAssistantRuntimeIsUnavailable": true
+    },
+    "priorityRule": "ROADMAP_PRIORITY_AND_DOCUMENTED_NEXT_GATE_FIRST; BLOCKER_HELP_IS_ONE_TRIGGER_NOT_THE_PRIMARY_MODEL",
+    "successDefinition": "ASSISTANTS_CONTINUOUSLY_ADVANCE_DOCUMENTED_ROADMAP_WORK_WITHOUT_BYPASSING_EXISTING_WAVE_EXECUTION_OR_CENTRAL_SECURITY_AUTHORITY"
   }
 }

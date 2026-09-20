@@ -1,5 +1,5 @@
 {
-  "version": 34,
+  "version": 35,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -488,5 +488,46 @@
       "mergedReadinessHardeningPR": 1825,
       "mergedReadinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
     }
+  },
+  "roadmapAssistantOrchestration": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json::assistantRoadmapOrchestration",
+    "role": "DURABLE_ROADMAP_WORK_HANDOFF_AND_ASSISTANT_COLLABORATION",
+    "sourceSelection": "LATEST_MAIN_CENTRAL_ROADMAP_ACTIONABLE_NEXT_GATE",
+    "blockerOnly": false,
+    "durableHandoff": [
+      "GITHUB_ISSUE",
+      "GITHUB_PULL_REQUEST"
+    ],
+    "lifecycle": [
+      "LOAD_LATEST_SHARED_CONTEXT",
+      "SELECT_ACTIONABLE_ROADMAP_WORK",
+      "DEDUP_AND_CLAIM",
+      "IMPLEMENT_WITHIN_EXISTING_AUTHORITY",
+      "DETERMINISTIC_QA_AND_SECURITY_REVIEW",
+      "PULL_REQUEST_OR_DURABLE_EVIDENCE",
+      "POST_MERGE_CENTRAL_SYNC"
+    ],
+    "providerBoundary": {
+      "providerNeutral": true,
+      "chatWebSessionAutomationAssumed": false,
+      "repositoryCredentialStorageForbidden": true,
+      "failClosedWhenExternalAssistantUnavailable": true
+    },
+    "executionBoundary": {
+      "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": "NONE",
+      "workerCreation": false,
+      "queueMutation": false,
+      "waveReorder": false,
+      "lockOrPolicyMutation": false,
+      "automaticLearningTuningPromotion": false
+    },
+    "safetyInvariants": [
+      "NO_DUPLICATE_WORK_KEY",
+      "NO_STALE_MAIN_CLAIM",
+      "NO_UNDOCUMENTED_AUTHORITY_EXPANSION",
+      "CENTRAL_AUTHORITY_CHANGES_REQUIRE_PRIMARY_SECURITY_REVIEW"
+    ]
   }
 }
