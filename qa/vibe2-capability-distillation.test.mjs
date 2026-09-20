@@ -7,6 +7,8 @@ import {
   buildVerifiedCapabilityExperienceReview,
   buildCapabilityApplicationReviews,
   applyCapabilityApplicationReviews,
+  applyCapabilityBenchmarkReviews,
+  applyCapabilityPortfolioDecisions,
   mergeCodingTraceLedger,
   retrieveVerifiedCapabilities,
   verifiedCapabilityGuidance
@@ -385,4 +387,162 @@ test('continuous runner injects verified capability memory once and partitions i
   const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(fanIn,/buildCapabilityApplicationReviews/);
   assert.match(fanIn,/capabilityApplicationReviews/);
+});
+
+
+test('phase 4 requires two independent unseen paired benchmarks before strong generalization',()=>{
+  const memory={records:[{
+    id:'cap-phase4-generalize',
+    gameId:'source-game',
+    engine:'web',
+    departments:['development','qa'],
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore flow',
+    change:'verified save restore strategy',
+    outcome:'PASS',
+    qa:['full-fan-in-regression-pass'],
+    evidence:['actions-run:400','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE'],
+    verified:true
+  }]};
+  const applications=[
+    {
+      version:1,capabilityId:'cap-phase4-generalize',applicationId:'app-phase4-a',
+      taskId:'task-a',workKey:'game-a:web:save',gameId:'game-a',engine:'web',
+      outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true,
+      capabilitySpecificSupport:false,capabilitySpecificContradiction:false,
+      coAppliedCapabilityIds:['cap-phase4-generalize'],evidence:['actions-run:401','fan-in-review:PASS']
+    },
+    {
+      version:1,capabilityId:'cap-phase4-generalize',applicationId:'app-phase4-b',
+      taskId:'task-b',workKey:'game-b:web:save',gameId:'game-b',engine:'web',
+      outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true,
+      capabilitySpecificSupport:false,capabilitySpecificContradiction:false,
+      coAppliedCapabilityIds:['cap-phase4-generalize'],evidence:['actions-run:402','fan-in-review:PASS']
+    }
+  ];
+  const observed=applyCapabilityApplicationReviews(memory,applications);
+  let record=observed.memory.records.find(row=>row.id==='cap-phase4-generalize');
+  assert.equal(record.capabilityLifecycle.generalizationCandidate,true);
+  assert.equal(record.capabilityLifecycle.state,'GENERALIZATION_CANDIDATE');
+  assert.equal(record.capabilityLifecycle.strongGeneralizationVerified,false);
+
+  const baseBenchmark={
+    version:1,capabilityId:'cap-phase4-generalize',
+    engine:'web',unseenGame:true,independent:true,pairedControlChallenger:true,
+    controlFreshQaPass:false,challengerFreshQaPass:true,freshIndependentQaPass:true,
+    fullRegressionPass:true,nativeRuntimeRequired:false,nativeRuntimePass:false,
+    nonTargetContextFixed:true,writableScopeFixed:true,modelBudgetFixed:true,qaContractFixed:true,
+    capabilitySpecificPositiveSupport:true,capabilitySpecificContradiction:false,
+    evidence:['benchmark-control:verified','benchmark-challenger:verified']
+  };
+  const one=applyCapabilityBenchmarkReviews(observed.memory,[{
+    ...baseBenchmark,benchmarkId:'bench-u1',caseId:'case-u1',pairId:'pair-u1',
+    gameId:'unseen-game-1',unseenProblemFingerprint:'fp-unseen-1'
+  }]);
+  record=one.memory.records.find(row=>row.id==='cap-phase4-generalize');
+  assert.equal(record.capabilityLifecycle.unseenBenchmarkPassCount,1);
+  assert.equal(record.capabilityLifecycle.state,'GENERALIZATION_CANDIDATE');
+
+  const two=applyCapabilityBenchmarkReviews(one.memory,[{
+    ...baseBenchmark,benchmarkId:'bench-u2',caseId:'case-u2',pairId:'pair-u2',
+    gameId:'unseen-game-2',unseenProblemFingerprint:'fp-unseen-2'
+  }]);
+  record=two.memory.records.find(row=>row.id==='cap-phase4-generalize');
+  assert.equal(record.capabilityLifecycle.unseenBenchmarkPassCount,2);
+  assert.equal(record.capabilityLifecycle.unseenBenchmarkDistinctGameCount,2);
+  assert.equal(record.capabilityLifecycle.strongGeneralizationVerified,true);
+  assert.equal(record.capabilityLifecycle.state,'GENERALIZED_VERIFIED');
+  assert.equal(record.capabilityLifecycle.authorityExpanded,false);
+});
+
+test('phase 4 neutral or contradictory benchmark evidence cannot establish strong generalization',()=>{
+  const memory={records:[{
+    id:'cap-phase4-guard',
+    gameId:'source-game',
+    engine:'web',
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore flow',
+    change:'verified save strategy',
+    outcome:'PASS',
+    evidence:['actions-run:410','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE'],
+    verified:true,
+    capabilityApplications:[
+      {applicationId:'guard-app-1',taskId:'g1',workKey:'g1:web:save',gameId:'g1',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:'guard-app-2',taskId:'g2',workKey:'g2:web:save',gameId:'g2',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  }]};
+  const common={
+    version:1,capabilityId:'cap-phase4-guard',engine:'web',unseenGame:true,independent:true,
+    pairedControlChallenger:true,controlFreshQaPass:false,challengerFreshQaPass:true,
+    freshIndependentQaPass:true,fullRegressionPass:true,nativeRuntimeRequired:false,
+    nonTargetContextFixed:true,writableScopeFixed:true,modelBudgetFixed:true,qaContractFixed:true,
+    evidence:['benchmark-control:verified','benchmark-challenger:verified']
+  };
+  const neutral=applyCapabilityBenchmarkReviews(memory,[{
+    ...common,benchmarkId:'guard-neutral',caseId:'guard-neutral',pairId:'guard-neutral',
+    gameId:'unseen-n1',unseenProblemFingerprint:'fp-neutral',
+    capabilitySpecificPositiveSupport:false,capabilitySpecificContradiction:false
+  }]);
+  let record=neutral.memory.records.find(row=>row.id==='cap-phase4-guard');
+  assert.equal(record.capabilityLifecycle.unseenBenchmarkPassCount,0);
+  assert.equal(record.capabilityLifecycle.state,'GENERALIZATION_CANDIDATE');
+
+  const contradicted=applyCapabilityBenchmarkReviews(neutral.memory,[
+    {...common,benchmarkId:'guard-good-1',caseId:'guard-good-1',pairId:'guard-good-1',gameId:'unseen-c1',unseenProblemFingerprint:'fp-c1',capabilitySpecificPositiveSupport:true,capabilitySpecificContradiction:false},
+    {...common,benchmarkId:'guard-good-2',caseId:'guard-good-2',pairId:'guard-good-2',gameId:'unseen-c2',unseenProblemFingerprint:'fp-c2',capabilitySpecificPositiveSupport:true,capabilitySpecificContradiction:false},
+    {...common,benchmarkId:'guard-contradiction',caseId:'guard-contradiction',pairId:'guard-contradiction',gameId:'unseen-c3',unseenProblemFingerprint:'fp-c3',capabilitySpecificPositiveSupport:false,capabilitySpecificContradiction:true}
+  ]);
+  record=contradicted.memory.records.find(row=>row.id==='cap-phase4-guard');
+  assert.equal(record.capabilityLifecycle.unseenBenchmarkPassCount,2);
+  assert.equal(record.capabilityLifecycle.benchmarkContradictionCount,1);
+  assert.equal(record.capabilityLifecycle.strongGeneralizationVerified,false);
+  assert.equal(record.capabilityLifecycle.state,'GENERALIZATION_CANDIDATE');
+});
+
+test('phase 4 reviewed deprecation or supersession removes capability from retrieval without deleting provenance',()=>{
+  const memory={records:[{
+    id:'cap-phase4-supersede',
+    gameId:'bug-defense',
+    engine:'web',
+    departments:['development'],
+    taskType:'coding-capability-distillation',
+    problem:'save restore bug',
+    goal:'repair save restore flow',
+    change:'older save strategy',
+    outcome:'PASS',
+    evidence:['actions-run:420','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:SAVE_RESTORE_OLD'],
+    verified:true
+  }]};
+  const rejected=applyCapabilityPortfolioDecisions(memory,[{
+    capabilityId:'cap-phase4-supersede',decisionId:'decision-bad',state:'SUPERSEDED',
+    supersededByCapabilityId:'cap-new',reviewed:false,capabilitySpecificEvidence:true,
+    evidence:['only-one-proof']
+  }]);
+  assert.equal(rejected.applied,0);
+  assert.equal(rejected.rejected,1);
+
+  const applied=applyCapabilityPortfolioDecisions(memory,[{
+    capabilityId:'cap-phase4-supersede',decisionId:'decision-good',state:'SUPERSEDED',
+    supersededByCapabilityId:'cap-new',reviewed:true,capabilitySpecificEvidence:true,
+    reason:'new capability dominates on matched verified evidence',
+    evidence:['benchmark-comparison:PASS','review:PASS']
+  }]);
+  const stored=applied.memory.records.find(row=>row.id==='cap-phase4-supersede');
+  assert.equal(stored.capabilityPortfolio.state,'SUPERSEDED');
+  assert.equal(stored.capabilityLifecycle.state,'SUPERSEDED');
+  assert.equal(stored.capabilityLifecycle.retrievalEligible,false);
+  assert.equal(stored.reusable,true);
+  assert.equal(stored.evidence.includes('actions-run:420'),true);
+
+  const retrieval=retrieveVerifiedCapabilities({
+    experienceInput:applied.memory,
+    task:{gameId:'bug-defense',target:'web',department:'development',goal:'repair save restore flow'}
+  });
+  assert.equal(retrieval.records.some(row=>row.id==='cap-phase4-supersede'),false);
+  assert.equal(retrieval.deprecatedOrSupersededRetrievalEligible,false);
 });
