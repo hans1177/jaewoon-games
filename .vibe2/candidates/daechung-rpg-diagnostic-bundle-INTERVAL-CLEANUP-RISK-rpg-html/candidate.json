@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": " AUDIO.timer=setInterval(()=>{",
+      "replace": "AUDIO.timer=setInterval(()=>{if(!AUDIO.ctx||AUDIO.muted||!run)return;\nconst i=AUDIO.musicStep++%normal.length,zoneShift=zone==='town'?1:zone==='cave'?.75:1+Math.max(0,Number((zone||'f1').slice(1))-1)*.025;\n\ttone(normal[i]*zoneShift,.28,'triangle',.045,0,1,AUDIO.musicBus);\n\tif(i%2===0)tone(normal[(i+5)%normal.length]*.5,.5,'sine',.028,0,1,AUDIO.musicBus);\n\ttone(aggro[i],.18,i%2?'square':'sawtooth',.052,0,.92,AUDIO.aggroBus);\n\tif(i%4===0)noise(.055,.025,420,0,AUDIO.aggroBus);,\n\tclearInterval(AUDIO.timer);}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
