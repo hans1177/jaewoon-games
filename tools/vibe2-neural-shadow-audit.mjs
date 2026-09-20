@@ -118,6 +118,7 @@ export function summarizeDurableNeuralShadowAudit(values=[]){
     rawEvidenceRows:parsedRows.length,
     sampleCount:rows.length,
     distinctSampleIds:bySample.size,
+    identifiedSampleCount:bySample.size,
     legacyUnidentifiedRows:legacyRows.length,
     duplicateSampleRows,
     sampleConflicts,
