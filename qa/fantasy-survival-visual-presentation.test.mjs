@@ -59,3 +59,29 @@ test('world regions use cached contextual material patterns instead of flat colo
   assert.match(source,/fillFantasyRegionTexturePolygon\(CANYON_POLY,'wasteland'/);
   assert.match(source,/fillFantasyRegionTexturePolygon\(WORLD_TREE_POLY,'forest'/);
 });
+
+
+test('living motion reads authoritative combat state without mutating combat timing',()=>{
+  const pose=functionBody('fantasyCreatureMotionPose');
+  assert.match(pose,/nextAttackAt/);
+  assert.match(pose,/attackAt/);
+  assert.match(pose,/hitAt/);
+  assert.match(pose,/moving/);
+  assert.match(pose,/windup/);
+  assert.match(pose,/impact/);
+  assert.match(pose,/recovery/);
+  assert.doesNotMatch(pose,/e\.(?:nextAttackAt|attackAt|hitAt)\s*=/);
+  const themed=functionBody('drawThemedCreatureAsset');
+  assert.match(themed,/fantasyCreatureMotionPose\(e,now\)/);
+  assert.match(themed,/ctx\.scale\(pose\.scaleX,pose\.scaleY\)/);
+});
+
+test('player attack presentation derives motion from existing attack window only',()=>{
+  const player=functionBody('drawPlayer');
+  assert.match(player,/p\.attackFx/);
+  assert.match(player,/p\.attackAt/);
+  assert.match(player,/attackProgress/);
+  assert.match(player,/bodyLunge/);
+  assert.match(player,/weaponAngle/);
+  assert.doesNotMatch(player,/p\.(?:attackFx|attackAt)\s*=/);
+});
