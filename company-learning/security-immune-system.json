@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -87,7 +87,10 @@
     ],
     "existingLearningMotorReused": true,
     "shadowTrainerForbidden": true,
-    "externalSecurityMaterialUse": "AUTHORIZED_OR_PUBLIC_GENERALIZED_DEFENSIVE_REFERENCE_ONLY_AFTER_VERIFICATION"
+    "externalSecurityMaterialUse": "AUTHORIZED_OR_PUBLIC_GENERALIZED_DEFENSIVE_REFERENCE_ONLY_AFTER_VERIFICATION",
+    "automaticPromotionEligibility": "LEARNING_PROMOTION_MUST_EQUAL_PENDING",
+    "holdState": "HOLD_POLICY_REVIEW_ONLY",
+    "heldPolicyReviewMayNotAutoPromote": true
   },
   "limits": {
     "repositoryAndCiSecurityOnlyUnlessAdditionalInfrastructureTelemetryIsConnected": true,
@@ -134,7 +137,8 @@
     "automaticTrust": false,
     "directReviewRequired": true,
     "bypassForbidden": true,
-    "authorizedResolutionMode": "AUTHORIZED_POLICY_REVIEW_PASS"
+    "authorizedResolutionMode": "AUTHORIZED_POLICY_REVIEW_PASS",
+    "reviewedPolicyLearningDefault": "HOLD_POLICY_REVIEW_ONLY_UNLESS_SEPARATELY_APPROVED"
   },
   "externalAiCandidateQuarantine": {
     "persistBeforePullRequest": true,
