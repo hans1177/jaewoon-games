@@ -11174,5 +11174,72 @@
       "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
       "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
     }
+  },
+  "homepageReleaseEvidenceBundle": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "appliesTo": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "chain": [
+      "GAME_RELEASE_STATE",
+      "EXACT_SOURCE_REVISION",
+      "EXACT_ARTIFACT_IDENTITY",
+      "TARGET_RUNTIME_PASS",
+      "INDEPENDENT_QA_AND_REGRESSION",
+      "VERIFIED_PUBLICATION_TARGET_OR_DOWNLOAD",
+      "SAME_ARTIFACT_RUNTIME_SCREENSHOT",
+      "HOMEPAGE_CARD_AND_PLATFORM_LINK"
+    ],
+    "requiredIdentity": [
+      "gameId",
+      "platform",
+      "sourceRevision",
+      "artifactIdentity",
+      "releaseVersion"
+    ],
+    "runtimeMediaRequired": [
+      "mediaPath",
+      "captureAt",
+      "sha256",
+      "runtimeVerification",
+      "verified"
+    ],
+    "platformLinkRequiresCompleteBundle": true,
+    "homepageRuntimeImageRequiresSameArtifact": true,
+    "generatedMarketingMockCannotSatisfyRuntimeScreenshot": true,
+    "webScreenshotCannotSatisfyNativeRuntimeScreenshot": true,
+    "unverifiedLinkOrRuntimeScreenshotExposureForbidden": true,
+    "keepLastVerifiedScreenshotOnCaptureFailure": true,
+    "screenshotRefreshTrigger": "VERIFIED_NATIVE_GRAPHICS_OR_PRESENTATION_RELEASE_CHANGE",
+    "unity": {
+      "downloadRequires": [
+        "ready",
+        "mobileReady",
+        "homepagePublished",
+        "signatureVerified",
+        "runtimeInstallLaunchVerified",
+        "releaseEvidenceVerified"
+      ],
+      "sourceRevisionRequired": true,
+      "artifactIdentityRequired": true,
+      "runtimeMediaMustMatchSourceAndArtifact": true
+    },
+    "roblox": {
+      "currentReleaseRequires": [
+        "verified",
+        "published",
+        "currentReleaseClaim",
+        "actualStudioRuntime",
+        "postRuntimeIndependentQa",
+        "regression"
+      ],
+      "sourceRevisionRequired": true,
+      "artifactIdentityRequired": true,
+      "runtimeMediaMustMatchSourceAndArtifact": true,
+      "historicalDeploymentLinkMayRemainWhenClearlyLabeledHistorical": true
+    }
   }
 }
