@@ -444,7 +444,10 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   const eventMarker=task.evidence.find(value=>value.startsWith('neural-event-shadow:'));
   assert.ok(eventMarker);
   const eventPayload=JSON.parse(decodeURIComponent(eventMarker.slice('neural-event-shadow:'.length)));
+  assert.equal(eventPayload.version,2);
+  assert.equal(eventPayload.eventIdentityVersion,2);
   assert.equal(eventPayload.eventType,'WORKER_RESULT');
+  assert.match(eventPayload.eventId,/\|WORKER_RESULT$/);
   assert.equal(eventPayload.fireAllowed,false);
   assert.equal(eventPayload.workerCreationAllowed,false);
   assert.equal(eventPayload.queueMutationAllowed,false);

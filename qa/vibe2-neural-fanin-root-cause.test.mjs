@@ -64,6 +64,7 @@ test('fan-in regression and review confirm causal repair but do not invent respo
   assert.equal(review.rootCause.rootCauseVerified,false);
   assert.equal(review.rootCause.phase2AuthorityEligible,false);
   assert.equal(review.neuralEventRoute.mode,'PHASE2_SHADOW_EVENT_ROUTER');
+  assert.match(review.neuralEventRoute.event.id,/\|CI_RESULT$/);
   assert.equal(review.neuralEventRoute.proposedAction.kind,'REQUEST_RESPONSIBLE_SYSTEM_VERIFICATION');
   assert.equal(review.neuralEventRoute.fireAllowed,false);
   assert.equal(review.neuralEventRoute.queueMutationAllowed,false);

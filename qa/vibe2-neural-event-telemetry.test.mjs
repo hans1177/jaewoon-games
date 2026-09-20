@@ -67,11 +67,13 @@ test('distinct event identities prevent retry shadow samples from collapsing',()
 });
 
 test('duplicate event identity counts once and conflicting replay stays visible',()=>{
-  const a=marker({eventId:'task-r|run-1:1|primary|candidate-a'});
-  const duplicate=marker({eventId:'task-r|run-1:1|primary|candidate-a'});
+  const a=marker({version:2,eventIdentityVersion:2,eventId:'task-r|run-1:1|primary|candidate-a'});
+  const duplicate=marker({version:2,eventIdentityVersion:2,eventId:'task-r|run-1:1|primary|candidate-a'});
   const conflict=marker({
+    version:2,
+    eventIdentityVersion:2,
     eventId:'task-r|run-1:1|primary|candidate-a',
-    eventType:'QA_RESULT',
+    eventType:'WORKER_RESULT',
     actionKind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',
     fireAllowed:true
   });
@@ -82,4 +84,19 @@ test('duplicate event identity counts once and conflicting replay stays visible'
   assert.equal(summary.eventConflicts,1);
   assert.equal(summary.unauthorizedFireCount,1);
   assert.equal(summary.safetyInvariantPass,false);
+});
+
+
+test('legacy v1 sample-only event ids are separated by event type without hiding raw safety bits',()=>{
+  const worker=marker({eventId:'task-r|run-1:1|primary|candidate-a',eventType:'WORKER_RESULT'});
+  const ci=marker({eventId:'task-r|run-1:1|primary|candidate-a',eventType:'CI_RESULT'});
+  const summary=summarizeNeuralEventShadowEvidence([worker,ci]);
+  assert.equal(summary.rawEvidenceRows,2);
+  assert.equal(summary.total,2);
+  assert.equal(summary.distinctEventIds,2);
+  assert.equal(summary.duplicateEventRows,0);
+  assert.equal(summary.eventConflicts,0);
+  assert.equal(summary.byEventType.WORKER_RESULT,1);
+  assert.equal(summary.byEventType.CI_RESULT,1);
+  assert.equal(summary.unauthorizedFireCount,0);
 });

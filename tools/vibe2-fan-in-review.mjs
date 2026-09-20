@@ -87,7 +87,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       for(const marker of neuralRootCauseEvidence(rootCause))evidence.add(marker);
       const neuralEventRoute=simulateNeuralEventRoute({
         event:{
-          id:resultSampleId(selectedResult)||clean(task.id),
+          id:[resultSampleId(selectedResult)||clean(task.id),'CI_RESULT'].filter(Boolean).join('|'),
           type:'CI_RESULT',
           taskId:clean(task.id),
           gameId:clean(task.gameId),

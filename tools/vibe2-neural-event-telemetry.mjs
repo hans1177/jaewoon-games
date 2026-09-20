@@ -22,13 +22,23 @@ function increment(map,key){
   map[normalized]=(map[normalized]||0)+1;
 }
 
+function durableEventIdentity(row={}){
+  const eventId=clean(row.eventId);
+  if(!eventId)return null;
+  if(Number(row.version)===1&&!row.eventIdentityVersion){
+    const eventType=clean(row.eventType).toUpperCase()||'UNKNOWN';
+    return `${eventId}|${eventType}`;
+  }
+  return eventId;
+}
+
 export function summarizeNeuralEventShadowEvidence(values=[]){
   const parsedRows=parseNeuralEventShadowEvidence(values);
   const byEventId=new Map();
   const legacyRows=[];
   let duplicateEventRows=0,eventConflicts=0;
   for(const row of parsedRows){
-    const eventId=clean(row.eventId);
+    const eventId=durableEventIdentity(row);
     if(!eventId){legacyRows.push(row);continue;}
     if(byEventId.has(eventId)){
       duplicateEventRows+=1;
