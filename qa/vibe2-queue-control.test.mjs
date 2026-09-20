@@ -457,6 +457,11 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);
   assert.equal(merged.neuralCalibration.durableEvidenceSamples,1);
   assert.equal(merged.neuralCalibration.matches,1);
+  assert.equal(merged.neuralEventTelemetry.total,1);
+  assert.equal(merged.neuralEventTelemetry.byEventType.WORKER_RESULT,1);
+  assert.equal(merged.neuralEventTelemetry.unauthorizedFireCount,0);
+  assert.equal(merged.neuralEventTelemetry.safetyInvariantPass,true);
+  assert.equal(merged.neuralEventTelemetry.phase2AuthorityReady,false);
   assert.equal(merged.neuralCalibration.phase2AuthorityReady,false);
   assert.equal(merged.neuralCalibration.automaticAuthorityEscalationForbidden,true);
 });
