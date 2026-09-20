@@ -168,6 +168,19 @@ test('24h planner uses latest main contract and tools while control branch store
   assert.equal(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
 });
 
+test('24h planner retries concurrent control-state writes from the latest branch instead of rebasing JSON state',()=>{
+  const start=safetyNetWorkflow.indexOf('- name: Plan from latest main and persist control queue');
+  const end=safetyNetWorkflow.indexOf('- name: Read queue continuation state',start);
+  assert.ok(start>=0&&end>start);
+  const block=safetyNetWorkflow.slice(start,end);
+  assert.match(block,/for attempt in 1 2 3; do/);
+  assert.match(block,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(block,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(block,/VIBE2_AUTOPLAN_OPTIMISTIC_RETRY=\$attempt/);
+  assert.doesNotMatch(block,/git pull --rebase origin vibe2-unreal-core/);
+  assert.doesNotMatch(block,/git rebase --abort/);
+});
+
 test('controller pins each isolated candidate to the reserve-time main contract and never writes main directly',()=>{
   assert(workflow.includes('git fetch --depth=1 --no-tags origin main --quiet'));
   assert(workflow.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
