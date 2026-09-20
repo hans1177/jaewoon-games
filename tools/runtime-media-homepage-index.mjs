@@ -61,13 +61,14 @@ export function collectHomepageRuntimeMedia({root=ROOT}={}){
 }
 
 export function buildHomepageRuntimeMediaIndex(opts={}){
+  const items=collectHomepageRuntimeMedia(opts);
   return{
     version:1,
     authority:'VERIFIED_RUNTIME_MEDIA_MANIFESTS_ONLY',
-    generatedAt:new Date().toISOString(),
+    generatedAt:items.map(row=>row.captureAt).sort().at(-1)||null,
     generatedFrom:RECORD_ROOT,
     syntheticOrConceptArtForbidden:true,
-    items:collectHomepageRuntimeMedia(opts)
+    items
   };
 }
 
