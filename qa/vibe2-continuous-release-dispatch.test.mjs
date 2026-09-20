@@ -50,3 +50,18 @@ test('candidate release selects the manifest bound to the submitted branch',()=>
   assert.match(releaseWorkflow,/VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=/);
   assert.doesNotMatch(releaseWorkflow,/reason=manifest-count-invalid/);
 });
+
+
+test('web candidate release checks inline scripts and preserves historical save-key meaning',()=>{
+  const start=releaseWorkflow.indexOf('      - name: Web syntax QA');
+  const end=releaseWorkflow.indexOf('      - name: Promote approved web source root through reviewed PR',start);
+  const section=releaseWorkflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(section,/BASE_SHA:/);
+  assert.match(section,/matchAll\(\/<script\\b/);
+  assert.match(section,/execFileSync\(process\.execPath,\['--check',tmp\]/);
+  assert.match(section,/const historicalSaveKey="const key='jg-final:'\+C\.id;"/);
+  assert.match(section,/VIBE2_WEB_SAVE_KEY_REGRESSION/);
+  assert.match(section,/VIBE2_WEB_INLINE_SCRIPT_QA=PASS/);
+  assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
+});
