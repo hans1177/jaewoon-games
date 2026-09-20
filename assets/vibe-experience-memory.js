@@ -33,6 +33,83 @@ function confidenceFor(confirmations = 1) {
   return Number((1 - (1 / (count + 1))).toFixed(4));
 }
 
+function normalizeCapabilityApplications(values = []) {
+  const rows = [];
+  const seen = new Set();
+  for (const raw of Array.isArray(values) ? values : []) {
+    const applicationId = clean(raw?.applicationId);
+    if (!applicationId || seen.has(applicationId)) continue;
+    seen.add(applicationId);
+    rows.push(freeze({
+      version: 1,
+      applicationId,
+      taskId: clean(raw?.taskId) || null,
+      workKey: clean(raw?.workKey) || null,
+      gameId: clean(raw?.gameId) || null,
+      engine: clean(raw?.engine) || null,
+      outcome: clean(raw?.outcome).toUpperCase() || 'OBSERVED_NOT_FINAL',
+      selected: raw?.selected === true,
+      finalReviewPass: raw?.finalReviewPass === true,
+      freshTaskQaPass: raw?.freshTaskQaPass === true,
+      independent: raw?.independent === true,
+      capabilitySpecificSupport: raw?.capabilitySpecificSupport === true,
+      capabilitySpecificContradiction: raw?.capabilitySpecificContradiction === true,
+      coAppliedCapabilityIds: freezeList(raw?.coAppliedCapabilityIds || []),
+      evidence: freezeList(raw?.evidence || []),
+      observedAt: clean(raw?.observedAt) || null,
+      rawCodeStored: false,
+      rawModelOutputStored: false,
+      hiddenChainOfThoughtStored: false,
+      authorityExpanded: false
+    }));
+  }
+  return rows.slice(-64);
+}
+
+function capabilityLifecycleFor(taskType = '', applications = []) {
+  if (clean(taskType) !== 'coding-capability-distillation') return null;
+  const rows = normalizeCapabilityApplications(applications);
+  const verifiedApplications = rows.filter((row) =>
+    row.independent === true
+    && row.selected === true
+    && row.finalReviewPass === true
+    && row.freshTaskQaPass === true
+  );
+  const uniqueTasks = new Set(verifiedApplications.map((row) => [row.gameId, row.taskId, row.workKey].filter(Boolean).join('|')).filter(Boolean));
+  const independentPassCount = uniqueTasks.size;
+  const crossGameVerifiedApplicationCount = new Set(verifiedApplications.map((row) => clean(row.gameId)).filter(Boolean)).size;
+  const contradictionCount = rows.filter((row) => row.capabilitySpecificContradiction === true).length;
+  const directSupportCount = rows.filter((row) => row.capabilitySpecificSupport === true).length;
+  const state = independentPassCount >= 2
+    ? 'REPEATED_APPLICATION_VERIFIED'
+    : independentPassCount >= 1
+      ? 'APPLICATION_OBSERVED'
+      : 'VERIFIED_REUSABLE';
+  const confidence = independentPassCount >= 2
+    ? Number((1 - (1 / (independentPassCount + 2))).toFixed(4))
+    : 0.5;
+  return freeze({
+    version: 1,
+    state,
+    applicationCount: rows.length,
+    independentPassCount,
+    crossGameVerifiedApplicationCount,
+    directSupportCount,
+    contradictionCount,
+    confidence,
+    singlePassAutomaticPromotion: false,
+    singleFailureAutomaticDeprecation: false,
+    unrelatedFailurePenaltyApplied: false,
+    confidenceDecayApplied: false,
+    generalizationCandidate: independentPassCount >= 2 && crossGameVerifiedApplicationCount >= 2,
+    strongGeneralizationVerified: false,
+    unseenProblemBenchmarkRequired: true,
+    automaticDeprecation: false,
+    automaticSupersession: false,
+    authorityExpanded: false
+  });
+}
+
 function laterTimestamp(...values) {
   return values.map(clean).filter(Boolean).sort().at(-1) || null;
 }
@@ -69,7 +146,8 @@ export function createVibeExperienceRecord({
   verified = false,
   confirmations = 1,
   createdAt = '',
-  lastVerifiedAt = ''
+  lastVerifiedAt = '',
+  capabilityApplications = []
 } = {}) {
   const normalizedOutcome = ['PASS', 'FAIL', 'REVISE'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'REVISE';
   const proof = freezeList(evidence);
@@ -80,6 +158,8 @@ export function createVibeExperienceRecord({
   const seed = [fingerprint, proof.join('|')].join('::');
   const confirmationCount = normalizeConfirmations(confirmations);
   const firstVerifiedAt = clean(createdAt) || null;
+  const normalizedCapabilityApplications = normalizeCapabilityApplications(capabilityApplications);
+  const capabilityLifecycle = capabilityLifecycleFor(clean(taskType), normalizedCapabilityApplications);
   return freeze({
     version: 3,
     id: clean(id) || `exp_${hash(seed)}`,
@@ -102,6 +182,9 @@ export function createVibeExperienceRecord({
     reusable: learningValid,
     confirmations: confirmationCount,
     confidence: confidenceFor(confirmationCount),
+    capabilityApplications: freeze(normalizedCapabilityApplications),
+    capabilityLifecycle,
+    capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: firstVerifiedAt,
     lastVerifiedAt: clean(lastVerifiedAt) || firstVerifiedAt,
     authority: 'retrieval-context-only-no-automatic-gameplay-mutation'
@@ -110,6 +193,8 @@ export function createVibeExperienceRecord({
 
 function mergeVerifiedExperience(left, right) {
   const confirmations = normalizeConfirmations((left?.confirmations || 1) + (right?.confirmations || 1));
+  const capabilityApplications = normalizeCapabilityApplications([...(left?.capabilityApplications || []), ...(right?.capabilityApplications || [])]);
+  const capabilityLifecycle = capabilityLifecycleFor(clean(left?.taskType || right?.taskType), capabilityApplications);
   return freeze({
     ...left,
     version: 3,
@@ -120,6 +205,9 @@ function mergeVerifiedExperience(left, right) {
     avoidPatterns: freezeList([...(left?.avoidPatterns || []), ...(right?.avoidPatterns || [])]),
     confirmations,
     confidence: confidenceFor(confirmations),
+    capabilityApplications: freeze(capabilityApplications),
+    capabilityLifecycle,
+    capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: clean(left?.createdAt) || clean(right?.createdAt) || null,
     lastVerifiedAt: laterTimestamp(left?.lastVerifiedAt, left?.createdAt, right?.lastVerifiedAt, right?.createdAt),
     verified: true,
@@ -160,6 +248,30 @@ export function createVibeExperienceMemory(seed = {}) {
     }),
     records: freeze(records)
   });
+}
+
+export function recordVibeCapabilityApplication(memory, application = {}) {
+  const current = createVibeExperienceMemory(memory);
+  const capabilityId = clean(application?.capabilityId);
+  const applicationId = clean(application?.applicationId);
+  if (!capabilityId || !applicationId) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-and-application-id-required', memory: current, record: null });
+  }
+  const target = current.records.find((item) => item.id === capabilityId && item.taskType === 'coding-capability-distillation');
+  if (!target) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-not-found', memory: current, record: null });
+  }
+  if ((target.capabilityApplications || []).some((row) => row.applicationId === applicationId)) {
+    return freeze({ updated: false, duplicate: true, reason: 'capability-application-duplicate', memory: current, record: target });
+  }
+  const nextRecord = createVibeExperienceRecord({
+    ...target,
+    capabilityApplications: [...(target.capabilityApplications || []), application]
+  });
+  const nextRecords = current.records.map((item) => item.id === target.id ? nextRecord : item);
+  const nextMemory = createVibeExperienceMemory(nextRecords);
+  const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
+  return freeze({ updated: true, duplicate: false, reason: 'capability-application-recorded', memory: nextMemory, record });
 }
 
 export function addVibeExperience(memory, recordInput = {}) {
