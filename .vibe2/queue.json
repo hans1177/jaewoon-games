@@ -29752,6 +29752,1773 @@
             "ollamaCacheHit": true,
             "ollamaRuntimeSource": "CACHE"
           }
+        },
+        {
+          "version": 13,
+          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
+          "reservationId": "35534980638:1",
+          "variant": "speculative-2",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "6748d21c75963d269cc418dc53fd950c6c91b344",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "DIAGNOSTIC_POSTCONDITION",
+            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:DOM_NULL_EVENT_BIND:index.html:DOM_NULL_EVENT_BIND_STILL_UNSAFE"
+          },
+          "evidence": [
+            "base-main:6748d21c75963d269cc418dc53fd950c6c91b344",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+            "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:4",
+            "coding-primary-targets:%5B%22tone%22%2C%22gainXp%22%2C%22update%22%2C%22fire%22%5D",
+            "coding-primary-systems:%5B%22AI%22%2C%22PROGRESSION%22%2C%22GOAL_STATE%22%2C%22CORE_STATE%22%2C%22INTERACTION%22%2C%22COMBAT%22%2C%22PRESENTATION%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
+            "coding-semantic-system-budget:8",
+            "coding-failure-fingerprint:web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A73a2ceb29bb96077cecf%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9c328ab0d2941e9c1b3c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_75b5fa57def3b59f52b59ebf%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_c7e0044a2814605c1a0bc7e7%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_2b0751d16c406d1e9fcc1004%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_dd1edc1a11a1e7a360dfda28%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7022dd1d29e03580f9fab379%22%5D",
+            "actions-run:35534980638",
+            "reservation-id:35534980638:1",
+            "variant:speculative-2",
+            "shared-context-sync:MISSING"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": false,
+            "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
+            "packageId": "seed-action-survival-rogu-echoes-of-the-lost-star-wp-2yql0i",
+            "target": "web",
+            "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+            "baseMainSha": "6748d21c75963d269cc418dc53fd950c6c91b344",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "impactFiles": [
+              "index.html"
+            ],
+            "contextFiles": [
+              "index.html"
+            ],
+            "relatedFiles": [],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "KEEP_AND_CONTINUE",
+              "confidence": "HIGH",
+              "reasons": [
+                "STRONG_EXISTING_GAMEPLAY",
+                "APPROVED_SCOPE_MOSTLY_REPRESENTED",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 20209,
+                "sourceSha256": "ceb5499007ba2b1a3cfaeefb9e04a46d94cbe7a3ef5a6aec411cb10fdba99269",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 9,
+                "gameplaySignals": {
+                  "input": true,
+                  "runtimeLoop": true,
+                  "mutableState": true,
+                  "gameplayOutcome": true,
+                  "progression": true,
+                  "combat": true,
+                  "spatial": true,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": true
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+              "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+              "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "index.html",
+                "hash": "ceb5499007ba2b1a",
+                "bytes": 20209
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "HIGH",
+                "matched": [
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "tone",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "gainXp",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "update",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "fire",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "AI",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "PROGRESSION",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "GOAL_STATE",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  },
+                  {
+                    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "CORE_STATE",
+                    "verifiedRegressionFailures": 3,
+                    "verifiedPasses": 1,
+                    "lastFailureEvidence": "coding_hotspot_1fad6ba",
+                    "lastPassEvidence": "coding_hotspot_16vpa17",
+                    "lastUpdatedAt": "2026-09-19T17:20:54.709Z",
+                    "risk": {
+                      "score": 8,
+                      "level": "HIGH"
+                    }
+                  }
+                ],
+                "focusedChecksAdded": [
+                  "HOTSPOT_RECHECK:SYMBOL:tone",
+                  "HOTSPOT_RECHECK:SYMBOL:gainXp",
+                  "HOTSPOT_RECHECK:SYMBOL:update",
+                  "HOTSPOT_RECHECK:SYMBOL:fire",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+                ],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "tone",
+                "gainXp",
+                "update",
+                "fire"
+              ],
+              "allowedResponsibleFiles": [
+                "index.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "spawnBoss",
+                "fire",
+                "hurt",
+                "levelUp",
+                "dash",
+                "update",
+                "dist2",
+                "tone",
+                "spawnEnemy",
+                "clamp",
+                "burst",
+                "rnd",
+                "gainXp",
+                "updateUi",
+                "loop",
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "COMBAT",
+                "PRESENTATION",
+                "INTERACTION",
+                "INPUT"
+              ],
+              "primarySystems": [
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "COMBAT",
+                "PRESENTATION"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "directDependentSystems": [
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "COMBAT",
+                "PRESENTATION",
+                "INTERACTION",
+                "INPUT"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "ownedState": [
+                "o",
+                "g",
+                "i",
+                "target",
+                "d",
+                "a",
+                "count",
+                "spread",
+                "player",
+                "e",
+                "hp",
+                "b",
+                "r",
+                "mx",
+                "ml",
+                "hit",
+                "j",
+                "k",
+                "rr",
+                "sp",
+                "p",
+                "x",
+                "y"
+              ],
+              "readState": [
+                "o",
+                "g",
+                "player",
+                "i",
+                "e",
+                "target",
+                "d",
+                "a",
+                "count",
+                "spread",
+                "r",
+                "x",
+                "y",
+                "ui",
+                "W",
+                "keys",
+                "joy",
+                "dx",
+                "hp",
+                "b",
+                "mx",
+                "ml",
+                "hit",
+                "j"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:tone",
+                "STATE_WRITE:o",
+                "STATE_WRITE:g",
+                "RESPONSIBLE_FUNCTION:gainXp",
+                "STATE_WRITE:player",
+                "DOWNSTREAM:levelUp",
+                "RESPONSIBLE_FUNCTION:update",
+                "STATE_WRITE:i",
+                "STATE_WRITE:e",
+                "STATE_WRITE:hp",
+                "DOWNSTREAM:tone",
+                "DOWNSTREAM:spawnBoss",
+                "DOWNSTREAM:spawnEnemy",
+                "DOWNSTREAM:clamp",
+                "RESPONSIBLE_FUNCTION:fire",
+                "STATE_WRITE:target",
+                "STATE_WRITE:d",
+                "STATE_WRITE:a",
+                "DOWNSTREAM:dist2"
+              ],
+              "requiredObservableResult": "[WEB_REPAIR] 게임: 잃어버린 별의 메아리\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-02620b843b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-4ddabdebf7|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-e8fb936567|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-502c80f53d|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-67894b5176|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-02620b843b -> #dashBtn | mechanic=core-dashbtn | family=CORE | confidence=LOW | evidence=direct-core-family:MOVEMENT,shared:처치하고,메아리,피하며 - scope-coreloop-0-4ddabdebf7 -> #startBtn | mechanic=combat-startbtn | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT,shared:메아리 - scope-coreloop-1-e8fb936567 -> #startBtn | mechanic=interaction-startbtn | family=INTERACTION | confidence=LOW | evidence=nearby-family:INTERACTION,shared:메아리,빌드를,entity-interaction - scope-mobileux-67894b5176 -> #dashBtn | mechanic=interaction-dashbtn | family=INTERACTION | confidence=LOW | evidence=nearby-family:INTERACTION,entity-interaction - UNMAPPED scope-coreloop-2-502c80f53d | PROGRESSION/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에\nlast-validation-at=2026-09-20T19:03:25.805Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "AI",
+                  "PROGRESSION",
+                  "GOAL_STATE",
+                  "CORE_STATE",
+                  "INTERACTION",
+                  "COMBAT",
+                  "PRESENTATION",
+                  "INPUT"
+                ],
+                "preferredPrimarySymbols": [
+                  "tone",
+                  "gainXp",
+                  "update",
+                  "fire"
+                ],
+                "maxSystemCount": 8,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "AI",
+                  "PROGRESSION",
+                  "ECONOMY",
+                  "COMBAT",
+                  "WORLD"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PRESENTATION",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_INTERACTION",
+                "MICRO_PROGRESSION",
+                "MICRO_GOAL_STATE",
+                "MICRO_INPUT",
+                "HOTSPOT_RECHECK:SYMBOL:tone",
+                "HOTSPOT_RECHECK:SYMBOL:gainXp",
+                "HOTSPOT_RECHECK:SYMBOL:update",
+                "HOTSPOT_RECHECK:SYMBOL:fire",
+                "HOTSPOT_RECHECK:SYSTEM:AI",
+                "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+                "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": true,
+                "nodeTestTargets": [],
+                "executable": true,
+                "mode": "DIAGNOSTIC_RESCAN",
+                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+                "diagnosticType": "DOM_NULL_EVENT_BIND",
+                "diagnosticFile": "index.html",
+                "diagnosticLine": 88,
+                "diagnosticNeedle": "document.getElementById('dashBtn').addEventListener(",
+                "diagnosticMicroTask": "index.html의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.",
+                "verifiedResponsibleSystem": "GAME_INPUT",
+                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "tone",
+                  "gainXp",
+                  "update",
+                  "fire"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "spawnBoss",
+                  "fire",
+                  "hurt",
+                  "levelUp",
+                  "dash",
+                  "update",
+                  "dist2",
+                  "tone",
+                  "spawnEnemy",
+                  "clamp",
+                  "burst",
+                  "rnd",
+                  "gainXp",
+                  "updateUi",
+                  "loop",
+                  "AI",
+                  "PROGRESSION",
+                  "GOAL_STATE",
+                  "CORE_STATE",
+                  "COMBAT",
+                  "PRESENTATION",
+                  "INTERACTION",
+                  "INPUT"
+                ],
+                "ownedState": [
+                  "o",
+                  "g",
+                  "i",
+                  "target",
+                  "d",
+                  "a",
+                  "count",
+                  "spread",
+                  "player",
+                  "e",
+                  "hp",
+                  "b",
+                  "r",
+                  "mx",
+                  "ml",
+                  "hit",
+                  "j",
+                  "k",
+                  "rr",
+                  "sp",
+                  "p",
+                  "x",
+                  "y"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PRESENTATION",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_INTERACTION",
+                  "MICRO_PROGRESSION",
+                  "MICRO_GOAL_STATE",
+                  "MICRO_INPUT",
+                  "HOTSPOT_RECHECK:SYMBOL:tone",
+                  "HOTSPOT_RECHECK:SYMBOL:gainXp",
+                  "HOTSPOT_RECHECK:SYMBOL:update",
+                  "HOTSPOT_RECHECK:SYMBOL:fire",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "HOTSPOT_RECHECK:SYSTEM:PROGRESSION",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 22,
+                "edgeCount": 29,
+                "maxFunctionBodyBytes": 2253,
+                "maxCallsPerFunction": 10,
+                "maxCalledByPerFunction": 6,
+                "maxStateWritesPerFunction": 20,
+                "maxSystemsPerFunction": 6,
+                "multiWriterStateCount": 15,
+                "stateWriterLinkCount": 63,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 1,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 3
+              },
+              "responsibilityGraph": {
+                "nodeCount": 22,
+                "relevantNodes": [
+                  {
+                    "name": "tone",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "spawnBoss",
+                      "fire",
+                      "hurt",
+                      "levelUp",
+                      "dash",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "o",
+                      "g"
+                    ],
+                    "stateWrites": [
+                      "o",
+                      "g"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "rnd",
+                    "systems": [],
+                    "calls": [],
+                    "calledBy": [
+                      "spawnEnemy",
+                      "burst",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "a",
+                      "b"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "clamp",
+                    "systems": [],
+                    "calls": [],
+                    "calledBy": [
+                      "dash",
+                      "update",
+                      "updateUi",
+                      "draw"
+                    ],
+                    "stateReads": [
+                      "a",
+                      "b"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "dist2",
+                    "systems": [],
+                    "calls": [],
+                    "calledBy": [
+                      "fire"
+                    ],
+                    "stateReads": [
+                      "dx",
+                      "a",
+                      "b",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "dx"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "spawnEnemy",
+                    "systems": [
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION"
+                    ],
+                    "calls": [
+                      "rnd"
+                    ],
+                    "calledBy": [
+                      "update"
+                    ],
+                    "stateReads": [
+                      "W",
+                      "side",
+                      "scale",
+                      "e",
+                      "hp",
+                      "r",
+                      "hit",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "side",
+                      "scale",
+                      "e",
+                      "x",
+                      "y"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "spawnBoss",
+                    "systems": [
+                      "COMBAT",
+                      "PROGRESSION",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "tone"
+                    ],
+                    "calledBy": [
+                      "update"
+                    ],
+                    "stateReads": [
+                      "ui",
+                      "W",
+                      "hp",
+                      "r",
+                      "hit",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "hp"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "fire",
+                    "systems": [
+                      "INTERACTION",
+                      "COMBAT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "dist2",
+                      "tone"
+                    ],
+                    "calledBy": [
+                      "update"
+                    ],
+                    "stateReads": [
+                      "player",
+                      "i",
+                      "e",
+                      "target",
+                      "d",
+                      "a",
+                      "count",
+                      "spread",
+                      "r",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "i",
+                      "target",
+                      "d",
+                      "a",
+                      "count",
+                      "spread"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "burst",
+                    "systems": [],
+                    "calls": [
+                      "rnd"
+                    ],
+                    "calledBy": [
+                      "hurt",
+                      "dash",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "i",
+                      "a",
+                      "r",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "i",
+                      "a"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "hurt",
+                    "systems": [],
+                    "calls": [
+                      "burst",
+                      "tone",
+                      "endGame"
+                    ],
+                    "calledBy": [
+                      "update"
+                    ],
+                    "stateReads": [
+                      "player",
+                      "hp",
+                      "dmg",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "player",
+                      "hp",
+                      "dmg"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "levelUp",
+                    "systems": [
+                      "PROGRESSION",
+                      "INPUT",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "tone",
+                      "updateUi"
+                    ],
+                    "calledBy": [
+                      "gainXp"
+                    ],
+                    "stateReads": [
+                      "player",
+                      "d",
+                      "a",
+                      "upgrades",
+                      "pool",
+                      "b"
+                    ],
+                    "stateWrites": [
+                      "player",
+                      "pool",
+                      "b"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "gainXp",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION"
+                    ],
+                    "calls": [
+                      "levelUp"
+                    ],
+                    "calledBy": [
+                      "update"
+                    ],
+                    "stateReads": [
+                      "player"
+                    ],
+                    "stateWrites": [
+                      "player"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "dash",
+                    "systems": [],
+                    "calls": [
+                      "clamp",
+                      "burst",
+                      "tone"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "W",
+                      "keys",
+                      "joy",
+                      "player",
+                      "dx",
+                      "d",
+                      "a",
+                      "len",
+                      "r",
+                      "x",
+                      "y"
+                    ],
+                    "stateWrites": [
+                      "player",
+                      "dx",
+                      "len",
+                      "x",
+                      "y"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "update",
+                    "systems": [
+                      "CORE_STATE",
+                      "INTERACTION",
+                      "COMBAT",
+                      "AI",
+                      "PROGRESSION",
+                      "PRESENTATION"
+                    ],
+                    "calls": [
+                      "tone",
+                      "spawnBoss",
+                      "spawnEnemy",
+                      "clamp",
+                      "fire",
+                      "burst",
+                      "rnd",
+                      "hurt",
+                      "gainXp",
+                      "updateUi"
+                    ],
+                    "calledBy": [
+                      "loop"
+                    ],
+                    "stateReads": [
+                      "ui",
+                      "W",
+                      "keys",
+                      "joy",
+                      "player",
+                      "i",
+                      "dx",
+                      "e",
+                      "hp",
+                      "d",
+                      "a",
+                      "count",
+                      "b",
+                      "r",
+                      "mx",
+                      "ml",
+                      "hit",
+                      "j",
+                      "k",
+                      "rr",
+                      "g",
+                      "sp",
+                      "p",
+                      "x",
+                      "y",
+                      "dt"
+                    ],
+                    "stateWrites": [
+                      "player",
+                      "i",
+                      "e",
+                      "hp",
+                      "d",
+                      "a",
+                      "count",
+                      "b",
+                      "r",
+                      "mx",
+                      "ml",
+                      "hit",
+                      "j",
+                      "k",
+                      "rr",
+                      "g",
+                      "sp",
+                      "p",
+                      "x",
+                      "y"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "updateUi",
+                    "systems": [
+                      "PRESENTATION",
+                      "CORE_STATE",
+                      "COMBAT",
+                      "PROGRESSION"
+                    ],
+                    "calls": [
+                      "clamp"
+                    ],
+                    "calledBy": [
+                      "reset",
+                      "levelUp",
+                      "update"
+                    ],
+                    "stateReads": [
+                      "ui",
+                      "player",
+                      "hp"
+                    ],
+                    "stateWrites": [],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "loop",
+                    "systems": [
+                      "PROGRESSION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "update",
+                      "draw"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "dt"
+                    ],
+                    "stateWrites": [
+                      "dt"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "reset",
+                    "to": "updateUi",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "spawnEnemy",
+                    "to": "rnd",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "spawnBoss",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "fire",
+                    "to": "dist2",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "fire",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "burst",
+                    "to": "rnd",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hurt",
+                    "to": "burst",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hurt",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "hurt",
+                    "to": "endGame",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "levelUp",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "levelUp",
+                    "to": "updateUi",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "gainXp",
+                    "to": "levelUp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "dash",
+                    "to": "clamp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "dash",
+                    "to": "burst",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "dash",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "tone",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "spawnBoss",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "spawnEnemy",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "clamp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "fire",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "burst",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "rnd",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "hurt",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "gainXp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "update",
+                    "to": "updateUi",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "updateUi",
+                    "to": "clamp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "draw",
+                    "to": "clamp",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "loop",
+                    "to": "update",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "loop",
+                    "to": "draw",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 90,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "BROAD_STATE_MUTATION_RESPONSIBILITY",
+                    "severity": "WARN",
+                    "detail": "update:20"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "player:hurt,levelUp,gainXp,dash,update"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "FAIL",
+                "web-stage:WEB_REPAIR",
+                "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "recovery-exact-stage:WEB_REPAIR",
+                "role-result:exploration:FAIL",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "shared-context-sync:MISSING",
+                "failure-cause:source-candidate-generation-failed",
+                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+                "system-steward:failure-signature:source-candidate-generation-failed",
+                "recovery-queue:recovery-b604759a4b7b6772ff03",
+                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+                "recovery-exact-stage:UNKNOWN_STAGE",
+                "recovery-queue:recovery-7f578ec759bfde044675"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "debff0493d7111e3d2a3d1ba",
+            "generatedAt": "2026-09-20T20:18:14.113Z"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "CAUSAL_TRACE_CROSSCHECK",
+            "candidateVariant": "speculative-2",
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "tone",
+              "gainXp",
+              "update",
+              "fire"
+            ],
+            "primarySystems": [
+              "AI",
+              "PROGRESSION",
+              "GOAL_STATE",
+              "CORE_STATE",
+              "INTERACTION",
+              "COMBAT",
+              "PRESENTATION"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "AI",
+              "PROGRESSION",
+              "ECONOMY",
+              "COMBAT",
+              "WORLD"
+            ],
+            "ownedState": [
+              "o",
+              "g",
+              "i",
+              "target",
+              "d",
+              "a",
+              "count",
+              "spread",
+              "player",
+              "e",
+              "hp",
+              "b",
+              "r",
+              "mx",
+              "ml",
+              "hit",
+              "j",
+              "k",
+              "rr",
+              "sp",
+              "p",
+              "x",
+              "y"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "AI",
+                "PROGRESSION",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "COMBAT",
+                "PRESENTATION",
+                "INPUT"
+              ],
+              "preferredPrimarySymbols": [
+                "tone",
+                "gainXp",
+                "update",
+                "fire"
+              ],
+              "maxSystemCount": 8,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": null,
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": true,
+              "nodeTestTargets": [],
+              "executable": true,
+              "mode": "DIAGNOSTIC_RESCAN",
+              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+              "diagnosticType": "DOM_NULL_EVENT_BIND",
+              "diagnosticFile": "index.html",
+              "diagnosticLine": 88,
+              "diagnosticNeedle": "document.getElementById('dashBtn').addEventListener(",
+              "diagnosticMicroTask": "index.html의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.",
+              "verifiedResponsibleSystem": "GAME_INPUT",
+              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "generationAttempts": 0,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "WORK_ORDER_FALLBACK"
+          },
+          "presentationQuality": null,
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "web-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "recovery-exact-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-7",
+                "value": "recovery-exact-stage:UNKNOWN_STAGE",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "current-deterministic-diagnostic-dom-null-event-bind",
+                "system": "GAME_INPUT",
+                "confidence": 0.99,
+                "reason": "현재 task의 결정론적 diagnostic DOM_NULL_EVENT_BIND(index.html)가 GAME_INPUT 책임 가설을 직접 지지함",
+                "diagnosticType": "DOM_NULL_EVENT_BIND",
+                "diagnosticFile": "index.html",
+                "verified": false,
+                "advisoryOnly": true
+              },
+              {
+                "id": "validator-classification-or-contract",
+                "system": "VALIDATOR",
+                "confidence": 0.92,
+                "reason": "검증 분류·scope 계약이 실제 게임 요구와 어긋났을 가능성"
+              },
+              {
+                "id": "runtime-gameplay-cycle",
+                "system": "GAME_RUNTIME",
+                "confidence": 0.9,
+                "reason": "실제 플레이 사이클 또는 결과 상태 연결 누락 가능성"
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "audio-runtime-binding",
+                "system": "GAME_AUDIO",
+                "confidence": 0.86,
+                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "current-deterministic-diagnostic-dom-null-event-bind",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.99,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "validator-classification-or-contract",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.92,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "runtime-gameplay-cycle",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 3
+              },
+              {
+                "from": "save-compatibility",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 4
+              }
+            ],
+            "responsibility": {
+              "system": "GAME_INPUT",
+              "confidence": 0.99,
+              "alternatives": [
+                {
+                  "system": "VALIDATOR",
+                  "confidence": 0.16942909760589317
+                },
+                {
+                  "system": "GAME_RUNTIME",
+                  "confidence": 0.16574585635359115
+                },
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.16574585635359115
+                }
+              ],
+              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 5,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 1,
+                "evidenceConfidence": 0.99
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "WEB_REPAIR",
+              "responsibleSystem": "GAME_INPUT",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "SECURITY_POLICY_BLOCK"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_75b5fa57def3b59f52b59ebf",
+              "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+              "capability_ctrace_2b0751d16c406d1e9fcc1004",
+              "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_75b5fa57def3b59f52b59ebf",
+              "capability_ctrace_c7e0044a2814605c1a0bc7e7",
+              "capability_ctrace_2b0751d16c406d1e9fcc1004",
+              "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 72482,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "CODE_PATTERN:pat_130jf9c",
+              "CODE_PATTERN:pat_1avbmmv",
+              "CODE_PATTERN:pat_1vgfuno",
+              "CODE_PATTERN:pat_3f780w",
+              "CODE_PATTERN:pat_9pwgix",
+              "CODE_PATTERN:pat_m3ipio",
+              "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf",
+              "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c",
+              "VERIFIED_CAPABILITY:capability_ctrace_75b5fa57def3b59f52b59ebf",
+              "VERIFIED_CAPABILITY:capability_ctrace_c7e0044a2814605c1a0bc7e7",
+              "VERIFIED_CAPABILITY:capability_ctrace_2b0751d16c406d1e9fcc1004",
+              "VERIFIED_CAPABILITY:capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "VERIFIED_CAPABILITY:capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35534980638:1",
+            "reservedAt": "2026-09-20T20:17:03Z",
+            "workerStartedAt": 1789935465684,
+            "workerFinishedAt": 1789935538166,
+            "checkoutMs": 2832,
+            "modelPrepMs": 4469,
+            "candidateMs": 43645,
+            "qaMs": 0,
+            "workerTotalMs": 72482,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
         }
       ],
       "companyContext": null,
