@@ -10822,6 +10822,176 @@
       "missingDataCanGenerateResearchTask": true,
       "contradictoryEvidenceMustBeShownToVibe": true,
       "cherryPickingPositiveEvidenceForbidden": true
+    },
+    "postReleaseCommercializationEngine": {
+      "version": 1,
+      "objective": "GROW_REAL_PLAYERS_THEN_COMPOUND_RETENTION_COMMUNITY_AND_REVENUE_WITH_EVIDENCE",
+      "executionOrder": [
+        "DISCOVERY_AND_POSITIONING",
+        "FIRST_SESSION_ACTIVATION",
+        "RETENTION_AND_RETURN",
+        "SOCIAL_AND_COMMUNITY_COMPOUNDING",
+        "MONETIZATION_READINESS",
+        "LIMITED_MONETIZATION_EXPERIMENT",
+        "REVENUE_OPTIMIZATION",
+        "REINVESTMENT_IN_GAME_AND_ACQUISITION"
+      ],
+      "phases": {
+        "ZERO_TO_FIRST_COHORT": {
+          "objective": "GET_REAL_TARGET_PLAYERS_INTO_THE_GAME",
+          "focus": [
+            "STORE_POSITIONING",
+            "ICON_THUMBNAIL_TITLE_DESCRIPTION_CREATIVE",
+            "PLATFORM_ORGANIC_DISCOVERY",
+            "SEARCH_DISCOVERY",
+            "SHORT_FORM_VIDEO_AND_CREATOR_OUTREACH",
+            "OWN_PORTFOLIO_CROSS_PROMOTION",
+            "SMALL_OWNER_AUTHORIZED_PAID_UA_TEST_ONLY_IF_MEASURABLE"
+          ],
+          "monetizationPriority": "LOW_PREPARE_ONLY"
+        },
+        "FIRST_COHORT_TO_RETURNING_PLAYERS": {
+          "objective": "PROVE_THE_GAME_CREATES_RETURN_BEHAVIOR",
+          "focus": [
+            "FIRST_FIVE_MINUTE_ACTIVATION",
+            "CORE_LOOP_COMPLETION",
+            "SESSION_DEPTH",
+            "RETURNING_PLAYER_BEHAVIOR",
+            "CONTENT_GAPS_AND_PROGRESS_BLOCKERS",
+            "SOCIAL_AND_FRIEND_PLAY_MOTIVATION",
+            "UPDATE_AND_EVENT_RETURN_REASONS"
+          ],
+          "monetizationPriority": "DEFER_OR_SMALL_PILOT_ONLY_WITH_DEMAND_EVIDENCE"
+        },
+        "RETAINED_AUDIENCE_TO_REVENUE": {
+          "objective": "MONETIZE_PROVEN_PLAYER_VALUE_WITHOUT_DAMAGING_TRUST_OR_RETENTION",
+          "focus": [
+            "PURCHASE_INTENT_AND_PLAYER_DEMAND",
+            "COSMETIC_CONVENIENCE_ACCESS_OR_CONTENT_VALUE_FIT",
+            "PRICE_AND_BUNDLE_EXPERIMENTS",
+            "SUBSCRIPTION_MEMBERSHIP_WHEN_PLATFORM_AND_GAME_FIT",
+            "AD_REVENUE_WHEN_PLATFORM_AND_PLAYER_EXPERIENCE_FIT",
+            "PAYER_AND_NONPAYER_RETENTION",
+            "REFUND_COMPLAINT_AND_TRUST_SIGNALS"
+          ],
+          "monetizationPriority": "EVIDENCE_GATED"
+        },
+        "SCALE_AND_REINVEST": {
+          "objective": "SCALE_ONLY_WHAT_HAS_PROVEN_DOWNSTREAM_VALUE",
+          "focus": [
+            "CHANNEL_COHORT_QUALITY",
+            "ACQUISITION_COST_WHEN_PAID",
+            "DOWNSTREAM_RETENTION_BY_SOURCE",
+            "REVENUE_PER_ACTIVE_PLAYER_WHEN_MEANINGFUL",
+            "CONTENT_AND_SERVER_CAPACITY",
+            "UPDATE_CADENCE",
+            "REINVESTMENT_ALLOCATION"
+          ],
+          "paidAcquisitionScalingRequiresRetentionProof": true
+        }
+      },
+      "creativeLab": {
+        "required": true,
+        "surfaces": [
+          "ICON",
+          "THUMBNAIL",
+          "TITLE",
+          "SHORT_DESCRIPTION",
+          "TRAILER_OR_SHORT_VIDEO",
+          "STORE_SCREENSHOTS"
+        ],
+        "method": [
+          "ONE_MAJOR_VARIABLE_PER_EXPERIMENT",
+          "COMPARE_CLICK_THROUGH_AND_PLAY_START",
+          "CHECK_DOWNSTREAM_ACTIVATION_AND_RETENTION",
+          "DO_NOT_KEEP_CLICKBAIT_THAT_HURTS_PLAYER_TRUST_OR_RETENTION"
+        ],
+        "winnerSelectionAuthority": "VIBE"
+      },
+      "firstFiveMinuteLab": {
+        "required": true,
+        "questions": [
+          "DOES_THE_PLAYER_UNDERSTAND_WHAT_TO_DO",
+          "HOW_FAST_DOES_THE_PLAYER_REACH_CORE_FUN",
+          "IS_THE_FIRST_REWARD_MEANINGFUL",
+          "IS_THERE_A_CLEAR_NEXT_GOAL",
+          "WHERE_DO_PLAYERS_QUIT_OR_GET_STUCK",
+          "IS_RETURN_MOTIVATION_VISIBLE_BEFORE_EXIT"
+        ],
+        "outputs": [
+          "ACTIVATION_BLOCKERS",
+          "CORE_FUN_TIME_TO_VALUE",
+          "EARLY_EXIT_POINTS",
+          "RETURN_HOOK_QUALITY"
+        ]
+      },
+      "retentionEngine": {
+        "hypotheses": [
+          "MEANINGFUL_SHORT_TERM_GOALS",
+          "VISIBLE_MEDIUM_TERM_PROGRESSION",
+          "SOCIAL_OR_COOPERATIVE_REASON_TO_RETURN",
+          "ROTATING_OR_PERIODIC_CONTENT_WHEN_GAME_FIT",
+          "UPDATE_EVENT_OR_CHALLENGE_RETURN_MOMENTS",
+          "PLAYER_COLLECTION_CUSTOMIZATION_OR_MASTERY_GOALS"
+        ],
+        "noDarkPatternRequirement": true,
+        "retainedPlayerValueMustRemainPrimary": true
+      },
+      "trendRadar": {
+        "continuous": true,
+        "compare": [
+          "PLATFORM_HOME_AND_SEARCH_DISCOVERY",
+          "RISING_GAME_GENRES_AND_SUBGENRES",
+          "NEW_PLAYER_EXPECTATIONS",
+          "CREATOR_VIDEO_AND_STREAM_CONTENT",
+          "SEASONAL_EVENT_PATTERNS",
+          "POPULAR_THUMBNAIL_AND_STORE_PRESENTATION_PATTERNS",
+          "MONETIZATION_PATTERN_CHANGES",
+          "PLATFORM_DISCOVERY_ADS_AND_POLICY_CHANGES"
+        ],
+        "output": [
+          "WHAT_IS_GROWING",
+          "WHY_IT_MAY_BE_GROWING",
+          "WHAT_IS_SATURATED",
+          "WHAT_PLAYERS_APPEAR_TO_BE_REJECTING",
+          "TRANSFERABLE_MECHANIC_OR_PRESENTATION_PATTERN",
+          "DO_NOT_COPY_LIST",
+          "TIMING_WINDOW"
+        ],
+        "directTrendCopyForbidden": true
+      },
+      "channelCohortAnalysis": {
+        "requiredWhenDataAvailable": true,
+        "channels": [
+          "ORGANIC_HOME",
+          "SEARCH",
+          "SPONSORED_OR_PAID",
+          "SOCIAL_VIDEO",
+          "CREATOR_OR_INFLUENCER",
+          "FRIEND_OR_SOCIAL",
+          "CROSS_PROMOTION",
+          "RETURNING_DIRECT"
+        ],
+        "compare": [
+          "PLAY_START_RATE",
+          "FIRST_SESSION_ACTIVATION",
+          "SESSION_DEPTH",
+          "RETURN_RATE",
+          "RETENTION",
+          "SOCIAL_ACTIONS",
+          "CONVERSION_WHEN_ACTIVE"
+        ],
+        "cheapTrafficWithPoorRetentionNotGrowth": true
+      },
+      "commercialExperimentRules": {
+        "smallExperimentFirst": true,
+        "scaleOnlyAfterMeasuredDownstreamValue": true,
+        "stopLossRequiredForPaidCampaign": true,
+        "stopWhenTrustRetentionOrCoreFunDegrades": true,
+        "keepControlOrBaselineWhenPractical": true,
+        "exactChangeAndDateTrackingRequired": true,
+        "vibeCanStopOrReverseAnyExperiment": true
+      }
     }
   }
 }
