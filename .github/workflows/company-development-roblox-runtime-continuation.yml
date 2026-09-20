@@ -57,8 +57,11 @@ jobs:
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=6)break;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const productionClass=String(item.productionClass||'').toUpperCase();
+            const sync=item.webNativeRevisionSync?.platforms?.ROBLOX||{};
+            const webNativePropagation=productionClass==='RELEASE_CONFIRMED'&&Boolean(sync.requestedWebSourceIndexSha256)&&sync.completedWebSourceIndexSha256!==sync.requestedWebSourceIndexSha256;
+            if(productionClass!=='DEVELOPMENT_CONFIRMED'&&!webNativePropagation)continue;
+            if(!webNativePropagation&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
@@ -270,8 +273,11 @@ jobs:
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=runnerWip)break;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const productionClass=String(item.productionClass||'').toUpperCase();
+            const sync=item.webNativeRevisionSync?.platforms?.ROBLOX||{};
+            const webNativePropagation=productionClass==='RELEASE_CONFIRMED'&&Boolean(sync.requestedWebSourceIndexSha256)&&sync.completedWebSourceIndexSha256!==sync.requestedWebSourceIndexSha256;
+            if(productionClass!=='DEVELOPMENT_CONFIRMED'&&!webNativePropagation)continue;
+            if(!webNativePropagation&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
             const retryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
             const maxRetryableFailures=2;
@@ -623,7 +629,7 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-next.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-next.json','utf8'));const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');let n=0;
-          for(const item of q.items||[]){if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+          for(const item of q.items||[]){const productionClass=String(item.productionClass||'').toUpperCase();const sync=item.webNativeRevisionSync?.platforms?.ROBLOX||{};const webNativePropagation=productionClass==='RELEASE_CONFIRMED'&&Boolean(sync.requestedWebSourceIndexSha256)&&sync.completedWebSourceIndexSha256!==sync.requestedWebSourceIndexSha256;if(productionClass!=='DEVELOPMENT_CONFIRMED'&&!webNativePropagation)continue;if(!webNativePropagation&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const rev=String(item.robloxSourceCommit||'');const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===rev&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
             const buildPassedAt=Date.parse(String(item.robloxBuildPassedAt||''));const preflightFailedAt=Date.parse(String(item.robloxBuildPreflightFailedAt||''));
             const stalePreflightFailure=Boolean(item.robloxBuildPreflightFailedAt)&&Number.isFinite(buildPassedAt)&&Number.isFinite(preflightFailedAt)&&preflightFailedAt<buildPassedAt;
