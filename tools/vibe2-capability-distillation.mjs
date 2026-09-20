@@ -454,7 +454,8 @@ export function capabilityGeneralizationBenchmarkGuidance(benchmark={}){
   ].join('\n');
 }
 
-export function buildCapabilityGeneralizationBenchmarkReviews({task={},results=[],verifiedSampleIds=new Set()}={}){
+export function buildCapabilityGeneralizationBenchmarkReviews({task={},results=[],fanInRegressionPass=false}={}){
+  if(fanInRegressionPass!==true)return Object.freeze([]);
   const rows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
   const groups=new Map();
   for(const row of rows){
@@ -467,37 +468,39 @@ export function buildCapabilityGeneralizationBenchmarkReviews({task={},results=[
     groups.set(key,group);
   }
   const reviews=[];
-  const sampleId=row=>[
-    clean(row?.taskId),
-    clean(row?.reservationId||row?.metrics?.reservationId),
-    clean(row?.variant)||'primary',
-    clean(row?.candidateBranch)
-  ].filter(Boolean).join('|');
   const workerPass=row=>{
     const roles=normalizeRoleResults(row?.roleResults||{});
     return upper(row?.outcome)==='PASS'&&roles.test==='PASS'&&roles.performance==='PASS';
   };
+  const ids=row=>unique(safeArray(row?.capabilityApplication?.exactInjectedCapabilityIds,8));
   for(const group of groups.values()){
     const control=group.control,challenger=group.challenger;
     if(!control||!challenger)continue;
     const cc=control.capabilityGeneralizationBenchmark||{},ch=challenger.capabilityGeneralizationBenchmark||{};
     const targetCapabilityId=clean(ch.targetCapabilityId);
     if(!targetCapabilityId||targetCapabilityId!==clean(cc.targetCapabilityId))continue;
-    const controlFinalVerified=verifiedSampleIds.has(sampleId(control));
-    const challengerFinalVerified=verifiedSampleIds.has(sampleId(challenger));
     const controlWorkerPass=workerPass(control);
     const challengerWorkerPass=workerPass(challenger);
     const sameSourceBaseline=Boolean(clean(control.baseMainSha)&&clean(control.baseMainSha)===clean(challenger.baseMainSha));
     const sameContext=Boolean(clean(cc.contextHash)&&clean(cc.contextHash)===clean(ch.contextHash));
+    const controlBudget=Number(control?.codingMethod?.generationAttemptBudget||0);
+    const challengerBudget=Number(challenger?.codingMethod?.generationAttemptBudget||0);
+    const sameModelGenerationBudget=controlBudget>0&&controlBudget===challengerBudget;
+    const controlIds=ids(control),challengerIds=ids(challenger);
+    const controlSet=new Set(controlIds),challengerSet=new Set(challengerIds);
+    const targetCapabilityOnlyGuidanceDelta=!controlSet.has(targetCapabilityId)
+      &&challengerSet.has(targetCapabilityId)
+      &&controlIds.every(id=>challengerSet.has(id))
+      &&challengerIds.filter(id=>id!==targetCapabilityId).every(id=>controlSet.has(id));
     const invariantPair=sameSourceBaseline
       &&sameContext
-      &&cc.sameModelGenerationBudgetRequired===true&&ch.sameModelGenerationBudgetRequired===true
+      &&sameModelGenerationBudget
       &&cc.sameWritableScopeRequired===true&&ch.sameWritableScopeRequired===true
       &&cc.sameQaContractRequired===true&&ch.sameQaContractRequired===true
       &&cc.nonTargetContextFixed===true&&ch.nonTargetContextFixed===true
-      &&cc.targetCapabilityOnlyGuidanceDelta===true&&ch.targetCapabilityOnlyGuidanceDelta===true;
-    const capabilitySpecificSupport=invariantPair&&challengerFinalVerified&&!controlWorkerPass;
-    const capabilitySpecificContradiction=invariantPair&&controlFinalVerified&&!challengerWorkerPass;
+      &&targetCapabilityOnlyGuidanceDelta;
+    const capabilitySpecificSupport=invariantPair&&challengerWorkerPass&&!controlWorkerPass;
+    const capabilitySpecificContradiction=invariantPair&&controlWorkerPass&&!challengerWorkerPass;
     const inconclusive=!capabilitySpecificSupport&&!capabilitySpecificContradiction;
     const benchmarkId='gbench_'+hashObject([
       group.pairId,targetCapabilityId,clean(ch.gameId||task.gameId),clean(ch.problemFingerprint)
@@ -517,21 +520,24 @@ export function buildCapabilityGeneralizationBenchmarkReviews({task={},results=[
       unseenProblem:ch.unseenProblem===true&&cc.unseenProblem===true,
       pairedControlChallenger:true,
       sameSourceBaseline,
-      sameModelGenerationBudget:invariantPair,
+      sameModelGenerationBudget,
       sameWritableScope:invariantPair,
       sameQaContract:invariantPair,
       nonTargetContextFixed:sameContext&&invariantPair,
-      targetCapabilityOnlyGuidanceDelta:invariantPair,
-      controlFreshQaPass:controlFinalVerified&&controlWorkerPass,
-      challengerFreshQaPass:challengerFinalVerified&&challengerWorkerPass,
+      targetCapabilityOnlyGuidanceDelta,
+      controlFreshQaPass:controlWorkerPass,
+      challengerFreshQaPass:challengerWorkerPass,
       capabilitySpecificSupport,
       capabilitySpecificContradiction,
       inconclusive,
       evidence:Object.freeze(unique([
+        'generalization-fan-in-regression:PASS',
         sameSourceBaseline?'generalization-same-source-baseline:PASS':'',
         sameContext?'generalization-nontarget-context:PASS':'',
-        controlFinalVerified?'generalization-control-fan-in:PASS':'',
-        challengerFinalVerified?'generalization-challenger-fan-in:PASS':'',
+        sameModelGenerationBudget?'generalization-generation-budget:PASS':'',
+        targetCapabilityOnlyGuidanceDelta?'generalization-target-only-guidance-delta:PASS':'',
+        controlWorkerPass?'generalization-control-fresh-qa:PASS':'generalization-control-fresh-qa:FAIL',
+        challengerWorkerPass?'generalization-challenger-fresh-qa:PASS':'generalization-challenger-fresh-qa:FAIL',
         capabilitySpecificSupport?'capability-specific-support:'+targetCapabilityId:'',
         capabilitySpecificContradiction?'capability-specific-contradiction:'+targetCapabilityId:'',
         'generalization-pair:'+group.pairId
