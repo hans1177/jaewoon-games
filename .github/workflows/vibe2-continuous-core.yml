@@ -1261,9 +1261,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     concurrency:
-      group: vibe2-control-state-vibe2-unreal-core
+      # Fan-in jobs must not share one pending GitHub concurrency slot.
+      # Every fan-in reconciles control state with optimistic fetch/reset/push retries below.
+      group: ${{ format('vibe2-control-state-fanin-{0}-{1}', github.run_id, github.run_attempt) }}
       cancel-in-progress: false
-      queue: max
     outputs:
       refill: ${{ steps.persist.outputs.refill }}
     steps:
