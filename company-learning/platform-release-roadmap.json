@@ -1,5 +1,5 @@
 {
-  "version": 218,
+  "version": 219,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -1646,7 +1646,7 @@
           "recoveryAdaptiveStep": 16
         },
         "ownerPreferredCurrentWave": 20,
-        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
+        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-20",
         "gameImplementationPreemptsNonblockingSupervision": true,
         "nonblockingSupervisionUsesSpareCapacityOnly": true,
         "ownerAndSystemStewardProtectionPreserved": true,
@@ -1666,6 +1666,14 @@
           "tools/vibe2-queue-control.mjs",
           ".github/workflows/vibe2-continuous-core.yml",
           "vibe2-runtime.json"
+        ],
+        "selfAdaptiveExpansionAbovePreferredWave": true,
+        "selfAdaptiveExpansionSteps": [
+          20,
+          32,
+          64,
+          128,
+          256
         ]
       },
       "invariants": {
