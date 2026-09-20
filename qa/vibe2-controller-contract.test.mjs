@@ -777,3 +777,20 @@ test('continuous worker runs Web practice artifacts and returns improvement evid
   assert.match(workflow,/VIBE2_PRACTICE_PRODUCTION_PASS=NO/);
   assert.match(workflow,/VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO/);
 });
+
+
+test('continuous core connects existing evidence reasoning into self-generated signal cycles without stopping the lane',()=>{
+  assert.match(workflow,/github\.event\.client_payload\.execution_lane/);
+  assert.match(workflow,/tools\/vibe2-learning-motor\.mjs/);
+  assert.match(workflow,/VIBE2_SELF_SIGNAL_MESH=PASS/);
+  assert.match(workflow,/VIBE2_SELF_SIGNAL_AFTER_FANIN=PASS:/);
+  assert.match(workflow,/--state="\$control_root\/\.vibe2\/learning-motor-state\.json"/);
+  assert.match(workflow,/--queue="\$control_root\/\.vibe2\/queue\.json"/);
+  assert.match(workflow,/\.vibe2\/benchmark-ladder\.json/);
+  assert.match(workflow,/\.vibe2\/idle-practice-queue\.json/);
+  assert.match(workflow,/\.vibe2\/web-roblox-handoffs\.json/);
+  assert.match(workflow,/execution_lane:process\.env\.VIBE2_EXECUTION_LANE/);
+  assert.doesNotMatch(workflow,/if \[ "\$VIBE2_EXECUTION_LANE" = 'game-primary' \] && \[ "\$\{continue_required:-NO\}" = 'YES' \]/);
+  assert.equal(roadmap.developmentLifecycleMachine?.continuousExecution?.brainLiveness,'NEVER_GLOBAL_STOP; SENSOR_CAUSAL_DIAGNOSIS_RECOVERY_AND_REPLAN_CONTINUE');
+  assert.equal(roadmap.developmentLifecycleMachine?.continuousExecution?.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+});
