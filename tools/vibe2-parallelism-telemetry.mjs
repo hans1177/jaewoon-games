@@ -143,10 +143,30 @@ export function computeParallelismTelemetry(input={}){
   }
   const sourceGenerationFailureCount=Object.values(sourceFailureClasses).reduce((sum,value)=>sum+value,0);
   const failedWorkerCount=outcomes.FAIL+outcomes.BLOCKED;
+  const workerFailureStages={};
+  if(sourceGenerationFailureCount>0)workerFailureStages.SOURCE_CANDIDATE_GENERATION=sourceGenerationFailureCount;
+  for(const row of rows){
+    if(clean(row?.outcome).toUpperCase()!=='FAIL')continue;
+    const blocker=clean(row?.blocker).toLowerCase();
+    const stage=blocker==='incremental-qa-failed'
+      ?'INCREMENTAL_QA'
+      :blocker==='performance-sanity-failed'
+        ?'PERFORMANCE_SANITY'
+        :'';
+    if(stage)workerFailureStages[stage]=(workerFailureStages[stage]||0)+1;
+  }
+  const classifiedWorkerFailureCount=Object.values(workerFailureStages).reduce((sum,value)=>sum+value,0);
+  const directFailureCoverageSufficient=classifiedWorkerFailureCount>0
+    &&classifiedWorkerFailureCount>=Math.max(1,Math.ceil(failedWorkerCount*.5));
+  const directFailureOrder=['SOURCE_CANDIDATE_GENERATION','INCREMENTAL_QA','PERFORMANCE_SANITY'];
+  const rankedDirectFailureStages=Object.entries(workerFailureStages)
+    .sort((a,b)=>b[1]-a[1]||directFailureOrder.indexOf(a[0])-directFailureOrder.indexOf(b[0]))
+    .map(([stage])=>stage);
   const bottleneckCandidates=[];
   const sourceGenerationDominant=sourceGenerationFailureCount>0
     &&sourceGenerationFailureCount>=Math.max(1,Math.ceil(failedWorkerCount*.5));
   if(sourceGenerationDominant)bottleneckCandidates.push('SOURCE_CANDIDATE_GENERATION');
+  else if(directFailureCoverageSufficient)bottleneckCandidates.push(...rankedDirectFailureStages);
   if(workerCount&&peak<targetPeak)bottleneckCandidates.push('RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION');
   if(cacheKnown.length&&cacheHits/cacheKnown.length<.8)bottleneckCandidates.push('OLLAMA_CACHE_MISS_RATE');
   if(qa.p95Ms>0&&qa.p95Ms>candidate.p95Ms*1.25)bottleneckCandidates.push('INCREMENTAL_QA');
@@ -184,6 +204,11 @@ export function computeParallelismTelemetry(input={}){
       ratePct:round(workerCount?sourceGenerationFailureCount/workerCount*100:0),
       classes:sourceFailureClasses
     },
+    workerFailureStages:{
+      count:classifiedWorkerFailureCount,
+      coveragePct:round(failedWorkerCount?classifiedWorkerFailureCount/failedWorkerCount*100:0),
+      classes:workerFailureStages
+    },
     workload,
     bottleneck,
     secondaryBottlenecks,
@@ -210,6 +235,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PARALLEL_FAILURE_RATE=${t.failureRatePct}`);
   console.log(`VIBE2_SOURCE_GENERATION_FAILURES=${t.sourceGenerationFailures.count}`);
   console.log(`VIBE2_SOURCE_GENERATION_FAILURE_CLASSES=${Object.entries(t.sourceGenerationFailures.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);
+  console.log(`VIBE2_WORKER_FAILURE_STAGES=${Object.entries(t.workerFailureStages.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);
+  console.log(`VIBE2_WORKER_FAILURE_STAGE_COVERAGE=${t.workerFailureStages.coveragePct}`);
   console.log(`VIBE2_WORKLOAD_FEATURES_COMPLETED=${t.workload.completedFeatureCount}`);
   console.log(`VIBE2_WORKLOAD_CHANGED_FILES=${t.workload.changedFileCount}`);
   console.log(`VIBE2_WORKLOAD_CHANGED_LINES=${t.workload.changedLineCount}`);
