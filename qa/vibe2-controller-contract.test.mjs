@@ -458,6 +458,14 @@ test('fan-in blocks release when only durable supervised evidence survives queue
   assert.equal(result.reviewed[0].releaseBlocker,'SUPERVISED_APPROVAL_REQUIRED');
   assert.equal(result.queue.tasks[0].blocker,'candidate-awaiting-supervised-review');
 });
+test('fan-in review persists neural shadow versus wave audit without authority',()=>{
+  const source=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(source,/buildNeuralShadowAudit/);
+  assert.match(source,/neuralShadowAudit/);
+  assert.match(source,/version:4,role:'review'/);
+  assert.match(source,/phase2AuthorityReady:false|buildNeuralShadowAudit/);
+});
+
 test('fan-in workflow persists verified supervised review learning before release dispatch',()=>{
   assert.match(workflow,/vibe2-experience-control\.mjs/);
   assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
