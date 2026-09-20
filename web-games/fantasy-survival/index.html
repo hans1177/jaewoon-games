@@ -524,7 +524,7 @@ function playerCombatActive(){
  return state.enemies.some(e=>{if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;if(e.type.boss||e.type.labBoss)return true;const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,e.type.detect||430));return(e.hostile||e.enemyTarget||state.pet.targetId===e.netId)&&d<range})
 }
 function desiredMusicTheme(){
- const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
+ const p=state.player,boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
  if(boss){music.battleActive=false;music.battleTheme=null;return'boss'}
  const battle=playerCombatActive();
  if(battle){if(!music.battleActive){music.battleActive=true;music.battleTheme=pickBattleTheme()}return music.battleTheme||'battle2'}
