@@ -124,6 +124,62 @@ test('batch promotion persists phase 3 capability application evidence without d
   assert.equal(stored.capabilityLifecycle.unrelatedFailurePenaltyApplied,false);
 });
 
+
+
+test('batch promotion persists phase 4 capability benchmark evidence without automatic authority promotion',()=>{
+  const writes=[];
+  const capability=successfulReview({
+    id:'capability-phase4-1',
+    gameId:'origin-web',
+    engine:'web',
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore ordering',
+    change:'verified save restoration sequence',
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE']
+  });
+  const benchmark={
+    version:1,
+    benchmarkId:'gbench_demo_1',
+    pairId:'gpair_demo_1',
+    capabilityId:'capability-phase4-1',
+    taskId:'unseen-task-1',
+    workKey:'unseen:web:save:1',
+    gameId:'unseen-web',
+    engine:'web',
+    problemFingerprint:'gbench_problem_demo_1',
+    sourceCapabilityGameId:'origin-web',
+    unseenGame:true,
+    unseenProblem:true,
+    pairedControlChallenger:true,
+    sameSourceBaseline:true,
+    sameModelGenerationBudget:true,
+    sameWritableScope:true,
+    sameQaContract:true,
+    nonTargetContextFixed:true,
+    targetCapabilityOnlyGuidanceDelta:true,
+    controlFreshQaPass:false,
+    challengerFreshQaPass:true,
+    capabilitySpecificSupport:true,
+    capabilitySpecificContradiction:false,
+    inconclusive:false,
+    evidence:['generalization-fan-in-regression:PASS','capability-specific-support:capability-phase4-1'],
+    authorityExpanded:false
+  };
+  const payload={experienceReviews:[capability],capabilityGeneralizationBenchmarkReviews:[benchmark,{...benchmark}]};
+  const result=runExperiencePromotionBatch({reviews:payload,memoryFile:'',writeMemory:(_file,value)=>writes.push(value)});
+  assert.equal(result.promotedCount,1);
+  assert.equal(result.capabilityGeneralizationBenchmarkApplied,1);
+  assert.equal(result.capabilityGeneralizationBenchmarkDuplicates,1);
+  assert.equal(result.persisted,true);
+  const stored=writes[0].records.find(record=>record.id==='capability-phase4-1');
+  assert.equal(stored.capabilityBenchmarks.length,1);
+  assert.equal(stored.capabilityLifecycle.benchmarkSupportCount,1);
+  assert.equal(stored.capabilityLifecycle.strongGeneralizationVerified,false);
+  assert.equal(stored.capabilityLifecycle.automaticSupersession,false);
+  assert.equal(stored.capabilityLifecycle.authorityExpanded,false);
+});
+
 function revoteFixture({ buildConclusion = 'success', buildError = '', buildStage = 'Unity Android build', directorDecision = 'PASS' } = {}) {
   const request = {
     version: 1,
