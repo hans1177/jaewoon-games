@@ -102,6 +102,7 @@ jobs:
             tools/vibe2-auto-planner.mjs \
             tools/vibe2-continuous-runner.mjs \
             tools/vibe2-neural-diagnosis.mjs \
+            tools/vibe2-neural-feedback.mjs \
             tools/vibe2-exploration-worker.mjs \
             tools/vibe2-source-worker.mjs \
             tools/vibe2-performance-sanity.mjs \
@@ -970,7 +971,8 @@ jobs:
             },
             telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
-          const result={version:9,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
+          const neuralDiagnosis=workOrder?.neuralDiagnosis&&typeof workOrder.neuralDiagnosis==='object'?workOrder.neuralDiagnosis:null;
+          const result={version:10,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,neuralDiagnosis,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
