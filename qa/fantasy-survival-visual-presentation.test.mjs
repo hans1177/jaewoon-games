@@ -48,3 +48,14 @@ test('protected save key and representative balance values remain present',()=>{
   assert.match(source,/worldtreebear:\{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30/);
   assert.match(source,/firesnake:\{id:'firesnake',name:'화염 뱀',mood:'aggressive',hp:300,dmg:25,speed:105,r:23/);
 });
+
+test('world regions use cached contextual material patterns instead of flat color only',()=>{
+  assert.match(source,/fantasyRegionPatternCache=new Map\(\)/);
+  assert.match(source,/ctx\.createPattern\(image,'repeat'\)/);
+  assert.match(source,/fillFantasyRegionTextureRect\(SNOW_REGION,'snow'/);
+  assert.match(source,/fillFantasyRegionTextureRect\(JUNGLE_REGION,'jungle'/);
+  assert.match(source,/fillFantasyRegionTextureRect\(CRYSTAL_REGION,'crystal'/);
+  assert.match(source,/fillFantasyRegionTextureRect\(GIANT_LAKE_WATER,'water'/);
+  assert.match(source,/fillFantasyRegionTexturePolygon\(CANYON_POLY,'wasteland'/);
+  assert.match(source,/fillFantasyRegionTexturePolygon\(WORLD_TREE_POLY,'forest'/);
+});

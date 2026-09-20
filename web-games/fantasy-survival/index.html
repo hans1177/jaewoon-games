@@ -2455,42 +2455,79 @@ function update(dt,now){
   updateHud()
 }
 function roundRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h)}
+const fantasyRegionPatternCache=new Map();
+function fantasyRegionTextureSvg(kind){
+ const tiles={
+  forest:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#1d392b"/><path d="M8 22 Q24 4 39 22 Q25 38 8 22M75 13 Q92-2 108 17 Q91 31 75 13M45 76 Q62 56 81 75 Q61 94 45 76M5 108 Q23 91 40 108 Q21 124 5 108M91 104 Q109 87 126 105 Q109 121 91 104" fill="#31583a" opacity=".78"/><path d="M20 0L14 128M66 0L72 128M112 0L105 128" stroke="#244a31" stroke-width="3" opacity=".6"/></svg>',
+  snow:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#d7e7ee"/><path d="M14 22l12 6-12 6-12-6zM91 16l9 5-9 5-9-5zM56 70l14 7-14 7-14-7zM104 101l12 6-12 6-12-6zM24 112l8 4-8 4-8-4z" fill="#f6fbff" opacity=".95"/><path d="M0 61 Q31 48 64 61 T128 61M18 95 Q45 84 77 96 T128 93" fill="none" stroke="#b8d4df" stroke-width="3" opacity=".65"/></svg>',
+  jungle:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#153a22"/><path d="M9 29 Q28 4 43 25 Q29 48 9 29M69 21 Q92-2 114 25 Q91 46 69 21M38 78 Q62 51 82 78 Q60 101 38 78M85 104 Q105 83 124 105 Q104 124 85 104M3 111 Q19 91 36 108 Q20 128 3 111" fill="#2d6b39"/><path d="M26 27l8-9M90 22l9-11M58 77l10-12M104 104l9-10" stroke="#73a95e" stroke-width="3" opacity=".72"/></svg>',
+  water:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#1d6b91"/><path d="M-8 24 Q16 10 40 24 T88 24 T136 24M-12 60 Q12 46 36 60 T84 60 T132 60M-4 98 Q20 84 44 98 T92 98 T140 98" fill="none" stroke="#73bdd0" stroke-width="5" opacity=".58"/><path d="M10 42 Q30 33 50 42M72 78 Q92 69 112 78" fill="none" stroke="#c1edf2" stroke-width="2" opacity=".65"/></svg>',
+  crystal:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#30264f"/><path d="M17 62L31 14 45 62 31 84ZM67 102L82 46 98 102 82 121ZM99 42L108 8 118 42 108 57Z" fill="#775fc4" stroke="#cbbdff" stroke-width="3"/><path d="M0 90L128 57M0 116L128 83" stroke="#57458e" stroke-width="4" opacity=".6"/></svg>',
+  volcano:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#51231f"/><path d="M0 23L24 42 10 66 37 83 25 128M71 0L63 31 89 50 73 76 106 94 91 128M128 21L111 39 123 58" fill="none" stroke="#ff6d32" stroke-width="6" opacity=".55"/><path d="M0 82L22 74M52 106L75 98M99 18L119 10" stroke="#ffb04d" stroke-width="3" opacity=".62"/></svg>',
+  wasteland:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#8a6239"/><path d="M12 28l21-11 17 14-20 14zM77 19l28-8 14 17-25 15zM43 83l27-13 22 17-28 17zM6 112l19-9 14 12-21 11z" fill="#6f4e31" opacity=".5"/><path d="M0 58Q29 49 57 59T128 56M5 98Q37 88 71 99T128 96" fill="none" stroke="#b98852" stroke-width="3"/></svg>',
+  ruin:'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="#6c3527"/><path d="M4 15h52v28H4zM70 5h52v34H70zM17 59h45v31H17zM76 54h48v37H76zM1 100h56v25H1zM66 98h59v27H66z" fill="#7e4938" stroke="#a97159" stroke-width="3"/><path d="M29 15v28M96 5v34M40 59v31M101 54v37" stroke="#4b2c25" stroke-width="3"/></svg>'
+ };
+ return tiles[kind]||tiles.forest
+}
+function fantasyRegionPattern(kind){
+ const cached=fantasyRegionPatternCache.get(kind);
+ if(cached)return cached;
+ const image=fantasyVisualImage('region:'+kind,fantasyRegionTextureSvg(kind));
+ if(!image.complete||!image.naturalWidth)return null;
+ const pattern=ctx.createPattern(image,'repeat');
+ if(pattern)fantasyRegionPatternCache.set(kind,pattern);
+ return pattern
+}
+function fillFantasyRegionTextureRect(rect,kind,alpha=.3){
+ const pattern=fantasyRegionPattern(kind);if(!pattern)return;
+ ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=pattern;ctx.fillRect(rect.x,rect.y,rect.w,rect.h);ctx.restore()
+}
+function fillFantasyRegionTexturePolygon(poly,kind,alpha=.3){
+ if(!Array.isArray(poly)||poly.length<3)return;
+ const pattern=fantasyRegionPattern(kind);if(!pattern)return;
+ let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+ ctx.save();ctx.beginPath();ctx.moveTo(poly[0].x,poly[0].y);
+ for(let i=1;i<poly.length;i++){ctx.lineTo(poly[i].x,poly[i].y);minX=Math.min(minX,poly[i].x);minY=Math.min(minY,poly[i].y);maxX=Math.max(maxX,poly[i].x);maxY=Math.max(maxY,poly[i].y)}
+ minX=Math.min(minX,poly[0].x);minY=Math.min(minY,poly[0].y);maxX=Math.max(maxX,poly[0].x);maxY=Math.max(maxY,poly[0].y);
+ ctx.closePath();ctx.clip();ctx.globalAlpha=alpha;ctx.fillStyle=pattern;ctx.fillRect(minX,minY,maxX-minX,maxY-minY);ctx.restore()
+}
+
 function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#1d392b';ctx.fillRect(0,0,w,h);
  ctx.save();ctx.translate(-cx,-cy);
  // 설원
- ctx.fillStyle='#d7e7ee';ctx.fillRect(SNOW_REGION.x,SNOW_REGION.y,SNOW_REGION.w,SNOW_REGION.h);
+ ctx.fillStyle='#d7e7ee';ctx.fillRect(SNOW_REGION.x,SNOW_REGION.y,SNOW_REGION.w,SNOW_REGION.h);fillFantasyRegionTextureRect(SNOW_REGION,'snow',.42);
  ctx.strokeStyle='#a8cbd9';ctx.lineWidth=24;ctx.strokeRect(SNOW_REGION.x+12,SNOW_REGION.y+12,SNOW_REGION.w-24,SNOW_REGION.h-24);
  for(let i=0;i<60;i++){const x=SNOW_REGION.x+100+(i*811)%(SNOW_REGION.w-200),y=SNOW_REGION.y+100+(i*557)%(SNOW_REGION.h-200);ctx.fillStyle=i%2?'#f4fbff':'#bfd8e3';ctx.beginPath();ctx.arc(x,y,18+(i%5)*6,0,Math.PI*2);ctx.fill()}
  ctx.fillStyle='#496978';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText('설원',SNOW_REGION.x+SNOW_REGION.w/2,SNOW_REGION.y+110);
  ctx.font='bold 11px system-ui';ctx.fillText('추위 게이지가 빠르게 오른다',SNOW_REGION.x+SNOW_REGION.w/2,SNOW_REGION.y+145);
  // 밀림 · 새 맵 전체 면적의 40%
- ctx.fillStyle='#153a22';ctx.fillRect(JUNGLE_REGION.x,JUNGLE_REGION.y,JUNGLE_REGION.w,JUNGLE_REGION.h);
+ ctx.fillStyle='#153a22';ctx.fillRect(JUNGLE_REGION.x,JUNGLE_REGION.y,JUNGLE_REGION.w,JUNGLE_REGION.h);fillFantasyRegionTextureRect(JUNGLE_REGION,'jungle',.42);
  ctx.strokeStyle='#346b3f';ctx.lineWidth=28;ctx.strokeRect(JUNGLE_REGION.x+14,JUNGLE_REGION.y+14,JUNGLE_REGION.w-28,JUNGLE_REGION.h-28);
  for(let i=0;i<110;i++){const x=JUNGLE_REGION.x+180+(i*997)%13800,y=180+(i*613)%11600;ctx.fillStyle=i%3?'#22552d':'#2e6b38';ctx.beginPath();ctx.arc(x,y,45+(i%4)*14,0,Math.PI*2);ctx.fill()}
  for(const l of JUNGLE_LAKES){ctx.fillStyle='#285d58';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6d9b75';ctx.lineWidth=18;ctx.stroke()}
  ctx.fillStyle='#b6e8a7';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText('밀림',JUNGLE_REGION.x+JUNGLE_REGION.w/2,120);
  ctx.font='bold 12px system-ui';ctx.fillText('독점석 광맥의 독가스를 조심해',JUNGLE_REGION.x+JUNGLE_REGION.w/2,155);
  // 거대 호수 · 화산 위 일반 지역
- ctx.fillStyle='#557c69';ctx.fillRect(GIANT_LAKE_SURFACE.x,GIANT_LAKE_SURFACE.y,GIANT_LAKE_SURFACE.w,GIANT_LAKE_SURFACE.h);
- ctx.fillStyle='#1d6b91';ctx.fillRect(GIANT_LAKE_WATER.x,GIANT_LAKE_WATER.y,GIANT_LAKE_WATER.w,GIANT_LAKE_WATER.h);
+ ctx.fillStyle='#557c69';ctx.fillRect(GIANT_LAKE_SURFACE.x,GIANT_LAKE_SURFACE.y,GIANT_LAKE_SURFACE.w,GIANT_LAKE_SURFACE.h);fillFantasyRegionTextureRect(GIANT_LAKE_SURFACE,'forest',.24);
+ ctx.fillStyle='#1d6b91';ctx.fillRect(GIANT_LAKE_WATER.x,GIANT_LAKE_WATER.y,GIANT_LAKE_WATER.w,GIANT_LAKE_WATER.h);fillFantasyRegionTextureRect(GIANT_LAKE_WATER,'water',.55);
  ctx.strokeStyle='#9fcfbc';ctx.lineWidth=26;ctx.strokeRect(GIANT_LAKE_WATER.x,GIANT_LAKE_WATER.y,GIANT_LAKE_WATER.w,GIANT_LAKE_WATER.h);
  ctx.fillStyle='#c8f3ff';ctx.font='bold 30px system-ui';ctx.textAlign='center';ctx.fillText('거대 호수',7200,90);
  ctx.font='bold 12px system-ui';ctx.fillText('물 가까이에서 두 번 누르면 잠수',7200,125);
  // 수정 지대 · 전체 맵의 1/5
- ctx.fillStyle='#30264f';ctx.fillRect(CRYSTAL_REGION.x,CRYSTAL_REGION.y,CRYSTAL_REGION.w,CRYSTAL_REGION.h);
+ ctx.fillStyle='#30264f';ctx.fillRect(CRYSTAL_REGION.x,CRYSTAL_REGION.y,CRYSTAL_REGION.w,CRYSTAL_REGION.h);fillFantasyRegionTextureRect(CRYSTAL_REGION,'crystal',.48);
  ctx.strokeStyle='#8d79d6';ctx.lineWidth=20;ctx.strokeRect(CRYSTAL_REGION.x+10,CRYSTAL_REGION.y+10,CRYSTAL_REGION.w-20,CRYSTAL_REGION.h-20);
  ctx.fillStyle='#c8baff';ctx.font='bold 26px system-ui';ctx.textAlign='center';ctx.fillText('수정 지대',CRYSTAL_REGION.x+CRYSTAL_REGION.w/2,520);
  for(let i=0;i<22;i++){const x=CRYSTAL_REGION.x+180+(i*157)%3200,y=900+(i*487)%10000;ctx.fillStyle=i%2?'#765fc4':'#a38ce8';ctx.beginPath();ctx.moveTo(x,y-30);ctx.lineTo(x+18,y);ctx.lineTo(x,y+36);ctx.lineTo(x-17,y);ctx.closePath();ctx.fill()}
  ctx.save();ctx.translate(CRYSTAL_HEART.x,CRYSTAL_HEART.y);ctx.fillStyle='#4f3a93';ctx.strokeStyle='#d7ccff';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(0,-150);ctx.lineTo(105,-35);ctx.lineTo(70,115);ctx.lineTo(0,155);ctx.lineTo(-75,110);ctx.lineTo(-110,-35);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#eee8ff';ctx.font='bold 18px system-ui';ctx.fillText(state.story.stage==='touch-crystal'?'큰 수정 · 만지기':'수정 돌 · 봉인 핵',0,205);ctx.font='bold 11px system-ui';ctx.fillText(state.story.stage==='touch-crystal'?'두 번 눌러 만지기':state.crystalSealReleased?'봉인 해제됨':'3번 클릭하면 봉인 해제',0,227);ctx.restore();
  // 화산 전체 2/5
- ctx.fillStyle='#51231f';ctx.fillRect(2400,2000,12000,3200);
+ ctx.fillStyle='#51231f';ctx.fillRect(2400,2000,12000,3200);fillFantasyRegionTextureRect({x:2400,y:2000,w:12000,h:3200},'volcano',.36);
  // 서쪽: 오래된 황무지와 오아시스
- ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,WASTELAND.y,WASTELAND.w,WASTELAND.h);
+ ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,WASTELAND.y,WASTELAND.w,WASTELAND.h);fillFantasyRegionTextureRect(WASTELAND,'wasteland',.42);
  ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,WASTELAND.y+240);
  ctx.fillStyle='#2f7a73';ctx.beginPath();ctx.arc(OASIS.x,OASIS.y,OASIS.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#cbb56a';ctx.lineWidth=45;ctx.stroke();ctx.fillStyle='#d7f5e8';ctx.font='bold 15px system-ui';ctx.fillText('오아시스 · 서쪽',OASIS.x,OASIS.y);
  // 북쪽: 부서진 콜로세움
- ctx.fillStyle='#6c3527';ctx.fillRect(COLOSSEUM.x,COLOSSEUM.y,COLOSSEUM.w,COLOSSEUM.h);
+ ctx.fillStyle='#6c3527';ctx.fillRect(COLOSSEUM.x,COLOSSEUM.y,COLOSSEUM.w,COLOSSEUM.h);fillFantasyRegionTextureRect(COLOSSEUM,'ruin',.34);
  ctx.strokeStyle='#a66e56';ctx.lineWidth=28;ctx.strokeRect(COLOSSEUM.x+70,COLOSSEUM.y+55,COLOSSEUM.w-140,COLOSSEUM.h-110);
  ctx.strokeStyle='#52372d';ctx.lineWidth=15;ctx.setLineDash([100,55]);ctx.strokeRect(COLOSSEUM.x+220,COLOSSEUM.y+180,COLOSSEUM.w-440,COLOSSEUM.h-330);ctx.setLineDash([]);
  ctx.fillStyle='#e2b59a';ctx.font='bold 23px system-ui';ctx.fillText('부서진 콜로세움 · 북쪽',COLOSSEUM.x+COLOSSEUM.w/2,COLOSSEUM.y+105);
@@ -2501,20 +2538,20 @@ function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#2c1715';ctx.beginPath();ctx.moveTo(7250,4220);ctx.lineTo(8600,3160);ctx.lineTo(9950,4220);ctx.closePath();ctx.fill();
  ctx.fillStyle='#ff6d32';ctx.beginPath();ctx.ellipse(8600,3280,360,115,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffb04d';ctx.font='bold 24px system-ui';ctx.fillText('거대한 화산 · 가운데',8600,3600);
  // 남쪽: 부서진 공사장
- ctx.fillStyle='#4b4038';ctx.fillRect(CONSTRUCTION.x,CONSTRUCTION.y,CONSTRUCTION.w,CONSTRUCTION.h);ctx.fillStyle='#86715d';ctx.font='bold 22px system-ui';ctx.fillText('부서진 공사장 · 남쪽',CONSTRUCTION.x+CONSTRUCTION.w/2,CONSTRUCTION.y+90);
+ ctx.fillStyle='#4b4038';ctx.fillRect(CONSTRUCTION.x,CONSTRUCTION.y,CONSTRUCTION.w,CONSTRUCTION.h);fillFantasyRegionTextureRect(CONSTRUCTION,'ruin',.22);ctx.fillStyle='#86715d';ctx.font='bold 22px system-ui';ctx.fillText('부서진 공사장 · 남쪽',CONSTRUCTION.x+CONSTRUCTION.w/2,CONSTRUCTION.y+90);
  for(let i=0;i<16;i++){const x=CONSTRUCTION.x+140+(i*193)%3200,y=CONSTRUCTION.y+150+(i*113)%430;ctx.fillStyle=i%4===0?'#3a2724':'#75675e';ctx.fillRect(x,y,55+(i%3)*20,18+(i%2)*15)}
  for(let i=0;i<5;i++){const x=CONSTRUCTION.x+380+i*610,y=CONSTRUCTION.y+330+(i%2)*150;ctx.strokeStyle='#4b2020';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(x-18,y);ctx.lineTo(x+18,y+12);ctx.stroke();ctx.fillStyle='#5a332b';ctx.beginPath();ctx.arc(x-24,y-5,9,0,Math.PI*2);ctx.fill()}
  ctx.fillStyle='#d8c99a';ctx.beginPath();ctx.arc(CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff4c0';ctx.font='bold 10px system-ui';ctx.fillText('일기 · 두 번 누르기',CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y+42);
  // 용암 웅덩이
  for(const l of LAVA_POOLS){ctx.fillStyle='#ff5229';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ffb03f';ctx.lineWidth=13;ctx.stroke()}
  // 협곡
- ctx.beginPath();ctx.moveTo(CANYON_POLY[0].x,CANYON_POLY[0].y);for(let i=1;i<CANYON_POLY.length;i++)ctx.lineTo(CANYON_POLY[i].x,CANYON_POLY[i].y);ctx.closePath();ctx.fillStyle='#523824';ctx.fill();ctx.strokeStyle='#a27750';ctx.lineWidth=18;ctx.stroke();ctx.fillStyle='#d0ad85';ctx.font='bold 24px system-ui';ctx.fillText('동쪽 철 협곡',12900,6850);
+ ctx.beginPath();ctx.moveTo(CANYON_POLY[0].x,CANYON_POLY[0].y);for(let i=1;i<CANYON_POLY.length;i++)ctx.lineTo(CANYON_POLY[i].x,CANYON_POLY[i].y);ctx.closePath();ctx.fillStyle='#523824';ctx.fill();fillFantasyRegionTexturePolygon(CANYON_POLY,'wasteland',.34);ctx.strokeStyle='#a27750';ctx.lineWidth=18;ctx.stroke();ctx.fillStyle='#d0ad85';ctx.font='bold 24px system-ui';ctx.fillText('동쪽 철 협곡',12900,6850);
  // 죽기 직전의 생존자
  ctx.fillStyle=state.story.treated?'#86a878':'#7d655d';ctx.beginPath();ctx.arc(SURVIVOR.x,SURVIVOR.y,18,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d8c3ae';ctx.beginPath();ctx.arc(SURVIVOR.x,SURVIVOR.y-19,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff0d8';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(state.story.treated?'생존자 · 두 번 눌러 대화':'죽기 직전의 생존자 · 두 번 눌러 치료',SURVIVOR.x,SURVIVOR.y+42);
  // 황무지 서쪽 동굴
  ctx.fillStyle='#120f10';ctx.beginPath();ctx.ellipse(WASTELAND_CAVE.x,WASTELAND_CAVE.y,75,55,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6f5a48';ctx.lineWidth=10;ctx.stroke();ctx.fillStyle='#ead6bd';ctx.font='bold 10px system-ui';ctx.fillText('동굴 · 두 번 눌러 들어가기',WASTELAND_CAVE.x,WASTELAND_CAVE.y+80);
  // 세계수 지역
- ctx.beginPath();ctx.moveTo(WORLD_TREE_POLY[0].x,WORLD_TREE_POLY[0].y);for(let i=1;i<WORLD_TREE_POLY.length;i++)ctx.lineTo(WORLD_TREE_POLY[i].x,WORLD_TREE_POLY[i].y);ctx.closePath();ctx.fillStyle='#163820';ctx.fill();ctx.strokeStyle='#315d39';ctx.lineWidth=18;ctx.stroke();
+ ctx.beginPath();ctx.moveTo(WORLD_TREE_POLY[0].x,WORLD_TREE_POLY[0].y);for(let i=1;i<WORLD_TREE_POLY.length;i++)ctx.lineTo(WORLD_TREE_POLY[i].x,WORLD_TREE_POLY[i].y);ctx.closePath();ctx.fillStyle='#163820';ctx.fill();fillFantasyRegionTexturePolygon(WORLD_TREE_POLY,'forest',.38);ctx.strokeStyle='#315d39';ctx.lineWidth=18;ctx.stroke();
  ctx.fillStyle='#8fc78e';ctx.fillText('세계수',WORLD_TREE.x,WORLD_TREE.y-250);ctx.fillStyle='#6b4930';ctx.fillRect(WORLD_TREE.x-60,WORLD_TREE.y-70,120,300);ctx.fillStyle='#24572f';ctx.beginPath();ctx.arc(WORLD_TREE.x,WORLD_TREE.y-150,240,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2f6b39';ctx.beginPath();ctx.arc(WORLD_TREE.x-155,WORLD_TREE.y-70,165,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(WORLD_TREE.x+165,WORLD_TREE.y-60,175,0,Math.PI*2);ctx.fill();
  ctx.fillStyle='#080604';ctx.beginPath();ctx.ellipse(TREE_HOLE.x,TREE_HOLE.y,58,32,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d6efc6';ctx.font='bold 10px system-ui';ctx.fillText('닿으면 지하 진입',TREE_HOLE.x,TREE_HOLE.y+55);
  if(state.story.labUnlocked){
