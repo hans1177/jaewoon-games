@@ -374,6 +374,7 @@ test('development router carries presentation contract without changing canonica
 });
 
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
   assert.match(workflow,/source_revision=\$merge_sha/);
   assert.match(workflow,/sourceRevision:\/\^\[0-9a-f\]\{40\}\$\/i/);
