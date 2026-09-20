@@ -17,6 +17,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
+import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -410,6 +411,18 @@ function codingStrategyFailureEvidence(row = {}) {
   };
   return[`coding-strategy-negative:${encodeURIComponent(JSON.stringify(payload))}`];
 }
+function neuralWorkerFeedback(row = {}) {
+  return evaluateNeuralDiagnosisFeedback({
+    diagnosis:row?.neuralDiagnosis||null,
+    outcome:row?.outcome,
+    blocker:row?.blocker,
+    candidateFailure:row?.candidateFailure||null,
+    roleResults:row?.roleResults||{}
+  });
+}
+function neuralWorkerEvidence(row = {}) {
+  return neuralFeedbackEvidence(neuralWorkerFeedback(row));
+}
 function reusableWorkerEvidence(row = {}) {
   const evidence=[];
   const exploration=row?.exploration||{};
@@ -454,11 +467,14 @@ export function applyVibeFanInResults(queueInput, results = []) {
     }
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
+    const neuralVariantFeedback=variants.map(neuralWorkerFeedback);
+    const neuralVariantEvidence=variants.flatMap(neuralWorkerEvidence);
     const allEvidence = [...new Set(variants.flatMap((row) => [
       ...(Array.isArray(row.evidence) ? row.evidence : []),
       ...workloadEvidence(row),
       ...reusableWorkerEvidence(row),
-      ...codingStrategyFailureEvidence(row)
+      ...codingStrategyFailureEvidence(row),
+      ...neuralWorkerEvidence(row)
     ]).map(clean).filter(Boolean))];
     if (passes.length) {
       const practiceWinner=passes.find(row=>{
@@ -490,9 +506,9 @@ export function applyVibeFanInResults(queueInput, results = []) {
         taskId,
         blocker: clean(winner.blocker) || 'candidate-awaiting-qa-and-deployment',
         expectedReservationId,
-        evidence: [...winnerEvidence, ...losingStrategyFailureEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
+        evidence: [...winnerEvidence, ...losingStrategyFailureEvidence, ...neuralVariantEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
       });
-      applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary' });
+      applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary', neuralFeedback:neuralVariantFeedback });
       continue;
     }
     const blocked = variants.every((row) => clean(row.outcome).toUpperCase() === 'BLOCKED');
@@ -506,7 +522,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       retryable: outcome === 'FAIL'
     });
     queue = settled.queue;
-    applied.push({ taskId, outcome });
+    applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback });
   }
   return { queue, applied, summary: summarizeVibeContinuousQueue(queue) };
 }
