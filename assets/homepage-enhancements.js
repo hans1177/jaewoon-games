@@ -3,6 +3,7 @@
 const SYNC_INTERVAL_MS=5000;
 let refreshInFlight=false;
 let lastSignature='';
+let runtimeMediaIndex={version:1,items:[]};
 
 const getJson=async path=>{
   const stamp=Date.now();
@@ -63,6 +64,14 @@ const productionClassOf=row=>String(runtimeInfo(row).productionClass||production
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
 const catalogOrderOf=row=>{const raw=canonicalOf(row).catalogOrder??row?.catalogOrder;const n=Number(raw);return Number.isFinite(n)&&n>0?n:Number.MAX_SAFE_INTEGER;};
 const catalogOrderCompare=(a,b)=>catalogOrderOf(a)-catalogOrderOf(b)||gameIdOf(a).localeCompare(gameIdOf(b));
+const runtimeMediaOf=row=>{
+  const id=gameIdOf(row),platform=normalizePlatform(selectedPlatform(row));
+  if(!id||!platform)return null;
+  const items=Array.isArray(runtimeMediaIndex?.items)?runtimeMediaIndex.items:[];
+  const media=items.find(item=>String(item?.gameId||'').trim()===id&&normalizePlatform(item?.platform)===platform);
+  const path=String(media?.mediaPath||'').trim();
+  return path.startsWith('/assets/runtime-evidence/')?{...media,mediaPath:path}:null;
+};
 
 function latestVerifiedUnityBuilds(status){
   const map=new Map();
@@ -141,11 +150,19 @@ function verifiedRobloxDeploymentRows(catalog){
 }
 function mergeGame(row){
   const displayMode=String(row?.homepageDisplayMode||'').trim();
-  const identity=identityOf(row),web=sourcesOf(row).web||{};
+  const identity=identityOf(row),web=sourcesOf(row).web||{},runtimeMedia=runtimeMediaOf(row);
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
   const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  return {
+    ...row,
+    id:gameIdOf(row),
+    name:identity.name||row?.name||gameIdOf(row),
+    webPath,
+    image:runtimeMedia?.mediaPath||identity.image||row?.image||'assets/pwa-icon-512.png',
+    runtimeMedia,
+    description:identity.description||row?.description||'개발 중인 게임.'
+  };
 }
 function platformHref(game){
   const p=normalizePlatform(selectedPlatform(game));
@@ -206,7 +223,7 @@ function buildFocus(catalog,status){
   const seen=new Set();
   const rows=[...releaseRows(catalog,status),...webPublishedRows(catalog),...developmentRows(catalog,status)].filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
   if(!rows.length)return;
-  const row=rows[0],game=mergeGame(row),released=String(runtimeInfo(row).productionClass||'').toUpperCase()==='RELEASE_CONFIRMED',statusLabel=classState(row),score=scoreState(row),genre=genreState(row),play=playState(row),progress=progressState(row),web=game.webPath,updated=formatDate(updatedAt(row));
+  const row=rows[0],game=mergeGame(row),released=String(runtimeInfo(row).productionClass||'').toUpperCase()==='RELEASE_CONFIRMED',statusLabel=classState(row),score=scoreState(row),genre=genreState(row),play=playState(row),progress=progressState(row),web=game.webPath,platform=platformHref(game),platformName=platformLabel(selectedPlatform(game)),updated=formatDate(updatedAt(row));
   const scoreMeta=score.label&&score.label!==statusLabel?`<span>${esc(score.label)}</span>`:'';
   hero.className='panel hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'",'%27')}')`);
@@ -214,7 +231,11 @@ function buildFocus(catalog,status){
   hero.dataset.serverScore=String(score.score??'');
   hero.dataset.serverScoreSource=String(score.source||'');
   hero.dataset.serverProgressState=progress;
-  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p><div class="homeFocusMeta"><span>${esc(statusLabel)}</span>${scoreMeta}<span>${esc(platformLabel(selectedPlatform(game)))}</span><span>${esc(genre)}</span><span>${esc(play)}</span></div><small style="margin-top:9px">진행: ${esc(latestWork(row))} · ${esc(progress)}${updated?` · ${esc(updated)}`:''}</small>${web?`<a class="homeFocusBtn" href="${esc(web)}">웹게임 시작</a>`:''}</div>`;
+  hero.dataset.runtimeMedia=game.runtimeMedia?'verified':'fallback';
+  const runtimeMediaMeta=game.runtimeMedia?'<span>실제 플레이 화면</span>':'';
+  const webAction=web?`<a class="homeFocusBtn" href="${esc(web)}">웹게임 시작</a>`:'';
+  const platformAction=platform?`<a class="homeFocusBtn" href="${esc(platform)}">${esc(platformName)} 실행</a>`:'';
+  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p><div class="homeFocusMeta"><span>${esc(statusLabel)}</span>${scoreMeta}<span>${esc(platformName)}</span><span>${esc(genre)}</span><span>${esc(play)}</span>${runtimeMediaMeta}</div><small style="margin-top:9px">진행: ${esc(latestWork(row))} · ${esc(progress)}${updated?` · ${esc(updated)}`:''}</small>${webAction}${platformAction}</div>`;
 }
 function buildCard(row){
   const game=mergeGame(row),released=String(runtimeInfo(row).productionClass||'').toUpperCase()==='RELEASE_CONFIRMED',statusLabel=classState(row),score=scoreState(row),genre=genreState(row),play=playState(row),progress=progressState(row),web=game.webPath,updated=formatDate(updatedAt(row)),artbook=game.homepageArtbookPath||'',platform=platformHref(game),p=normalizePlatform(selectedPlatform(game));
@@ -222,9 +243,10 @@ function buildCard(row){
   const artbookBtn=artbook?`<a class="foldGameBtn secondary" href="${esc(artbook)}">아트북</a>`:'<span class="foldGameBtn off">아트북</span>';
   const platformBtn=platform?`<a class="foldGameBtn platformAction" href="${esc(platform)}">${p==='UNITY'?'Unity APK':p==='ROBLOX'?'Roblox':p==='FORTNITE_UEFN'?'Fortnite UEFN':'플랫폼게임'}</a>`:'<span class="foldGameBtn off">플랫폼게임</span>';
   const scoreBadge=score.label&&score.label!==statusLabel?`<span class="foldBadge score">${esc(score.label)}</span>`:'';
+  const runtimeMediaBadge=game.runtimeMedia?'<span class="foldBadge play">실제 플레이 화면</span>':'';
   const historicalRoblox=String(row?.homepageDisplayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT';
   const recordTag=historicalRoblox?'<span class="releaseTag">배포 기록</span>':released?'<span class="releaseTag">출시</span>':'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}">${recordTag}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}" data-runtime-media="${game.runtimeMedia?'verified':'fallback'}">${recordTag}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span>${runtimeMediaBadge}</div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
@@ -326,12 +348,19 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,testManifest]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/test-game-candidates.json')]);
+    const [catalog,status,testManifest,mediaIndex]=await Promise.all([
+      getJson('/game-catalog.json'),
+      getJson('/company-status.json'),
+      getJson('/test-game-candidates.json'),
+      getJson('/runtime-media-index.json')
+    ]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
-    const sig=JSON.stringify([catalog,status,testManifest]);
+    runtimeMediaIndex=mediaIndex&&Array.isArray(mediaIndex.items)?mediaIndex:{version:1,items:[]};
+    const sig=JSON.stringify([catalog,status,testManifest,runtimeMediaIndex]);
     if(sig!==lastSignature){buildFocus(catalog,status);buildDevelopmentPipeline(catalog,status,testManifest||{});buildGameCenter(catalog,status);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
+    document.documentElement.dataset.homeRuntimeMediaCount=String(runtimeMediaIndex.items.length);
   }finally{refreshInFlight=false;}
 }
 function main(){
