@@ -63,14 +63,39 @@ const productionClassOf=row=>String(runtimeInfo(row).productionClass||production
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
 const catalogOrderOf=row=>{const raw=canonicalOf(row).catalogOrder??row?.catalogOrder;const n=Number(raw);return Number.isFinite(n)&&n>0?n:Number.MAX_SAFE_INTEGER;};
 const catalogOrderCompare=(a,b)=>catalogOrderOf(a)-catalogOrderOf(b)||gameIdOf(a).localeCompare(gameIdOf(b));
+const exactRevision=value=>/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/.test(String(value||'').trim());
+const exactArtifactIdentity=value=>String(value||'').trim().length>=8;
+function verifiedRuntimeMedia(media={},gameId='',platform='',sourceRevision='',artifactIdentity=''){
+  const p=normalizePlatform(platform),slug=p==='UNITY'?'unity':p==='ROBLOX'?'roblox':p==='FORTNITE_UEFN'?'fortnite-uefn':'';
+  const mediaPath=String(media?.mediaPath||media?.path||'').trim(),sha256=String(media?.sha256||'').trim();
+  const runtime=media?.runtimeVerification===true||['PASS','PASSED','VERIFIED'].includes(String(media?.runtimeVerification||'').toUpperCase());
+  const captured=Date.parse(media?.captureAt||media?.capturedAt||'');
+  if(!slug||media?.verified!==true||!runtime||!Number.isFinite(captured)||!exactRevision(sourceRevision)||!exactArtifactIdentity(artifactIdentity))return null;
+  if(String(media?.gameId||'').trim()!==String(gameId||'').trim()||normalizePlatform(media?.platform)!==p)return null;
+  if(String(media?.sourceRevision||'').trim()!==String(sourceRevision||'').trim()||String(media?.artifactIdentity||'').trim()!==String(artifactIdentity||'').trim())return null;
+  if(!/^[0-9a-f]{64}$/.test(sha256)||!mediaPath.startsWith(`assets/runtime-evidence/${slug}/${gameId}/`))return null;
+  return{...media,mediaPath};
+}
+function verifiedRobloxReleaseBundle(game){
+  if(normalizePlatform(selectedPlatform(game))!=='ROBLOX')return null;
+  const publication=publicationOf(game).roblox||{},placeId=String(publication?.placeId||'').trim();
+  const sourceRevision=String(publication?.sourceRevision||'').trim(),artifactIdentity=String(publication?.artifactIdentity||'').trim();
+  if(!/^[1-9][0-9]*$/.test(placeId)||publication?.verified!==true||publication?.published!==true||publication?.currentReleaseClaim!==true)return null;
+  if(publication?.actualStudioRuntime!==true||publication?.postRuntimeIndependentQa!==true||publication?.regression!==true)return null;
+  const media=verifiedRuntimeMedia(publication?.runtimeMedia||{},gameIdOf(game),'ROBLOX',sourceRevision,artifactIdentity);
+  return media?{placeId,sourceRevision,artifactIdentity,media}:null;
+}
 
 function latestVerifiedUnityBuilds(status){
   const map=new Map();
   for(const build of Array.isArray(status?.testBuilds)?status.testBuilds:[]){
     const id=String(build?.gameId||'').trim();
-    const download=String(build?.download||'').trim();
+    const download=String(build?.download||'').trim(),sourceRevision=String(build?.sourceRevision||'').trim(),artifactIdentity=String(build?.artifactIdentity||'').trim();
+    const releaseVersion=String(build?.releaseVersion||build?.versionName||build?.version||'').trim();
     const runtimePassed=build?.installAndLaunchVerified===true||build?.runtimeInstallLaunchVerified===true||String(build?.runtimeVerification||'').toLowerCase().endsWith('-passed');
-    if(!id||!download||build?.status!=='ready'||build?.mobileReady!==true||build?.homepagePublished!==true||build?.signatureVerified!==true||!runtimePassed)continue;
+    const media=verifiedRuntimeMedia(build?.runtimeMedia||{},id,'UNITY',sourceRevision,artifactIdentity);
+    if(!id||!download||!releaseVersion||!exactRevision(sourceRevision)||!exactArtifactIdentity(artifactIdentity)||build?.releaseEvidenceVerified!==true||build?.status!=='ready'||build?.mobileReady!==true||build?.homepagePublished!==true||build?.signatureVerified!==true||!runtimePassed||!media)continue;
+    build.__verifiedRuntimeMedia=media;
     const old=map.get(id);
     const t=Date.parse(build?.builtAt||build?.homepagePublishedAt||'')||0;
     const oldT=Date.parse(old?.builtAt||old?.homepagePublishedAt||'')||0;
@@ -81,7 +106,7 @@ function latestVerifiedUnityBuilds(status){
 function bindVerifiedUnityBuild(row,status){
   if(normalizePlatform(selectedPlatform(row))!=='UNITY')return row;
   const build=latestVerifiedUnityBuilds(status).get(gameIdOf(row));
-  return build?{...row,unityBuildUrl:build.download,unityBuildSha256:build.sha256,unityBuildApplicationId:build.applicationId,unityBuildVerified:true}:row;
+  return build?{...row,unityBuildUrl:build.download,unityBuildSha256:build.sha256,unityBuildApplicationId:build.applicationId,unityBuildSourceRevision:build.sourceRevision,unityBuildArtifactIdentity:build.artifactIdentity,unityReleaseVersion:build.releaseVersion||build.versionName||build.version,homepageRuntimeImage:build.__verifiedRuntimeMedia.mediaPath,unityReleaseBundleVerified:true}:row;
 }
 function classRank(row){
   const cls=String(runtimeInfo(row).productionClass||'').toUpperCase();
@@ -141,19 +166,26 @@ function verifiedRobloxDeploymentRows(catalog){
 }
 function mergeGame(row){
   const displayMode=String(row?.homepageDisplayMode||'').trim();
-  const identity=identityOf(row),web=sourcesOf(row).web||{};
+  const identity=identityOf(row),web=sourcesOf(row).web||{},robloxBundle=verifiedRobloxReleaseBundle(row);
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
   const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  const runtimeImage=String(row?.homepageRuntimeImage||robloxBundle?.media?.mediaPath||'').trim();
+  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:runtimeImage||identity.image||row?.image||'assets/pwa-icon-512.png',homepageRuntimeImageVerified:Boolean(runtimeImage),description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformHref(game){
   const p=normalizePlatform(selectedPlatform(game));
-  const canonical=publicationOf(game).roblox||{};
-  const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
-  const placeId=String(target?.placeId||'').trim();
-  if(p==='ROBLOX'&&/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true))return `https://www.roblox.com/games/${placeId}`;
-  return String(game?.homepagePlatformPath||game?.homepagePlatformUrl||game?.platformGamePath||game?.platformUrl||game?.platformGameUrl||game?.robloxGameUrl||game?.robloxUrl||game?.unityBuildUrl||game?.uefnUrl||'').trim();
+  if(p==='UNITY')return game?.unityReleaseBundleVerified===true?String(game?.unityBuildUrl||'').trim():'';
+  if(p==='ROBLOX'){
+    const displayMode=String(game?.homepageDisplayMode||'').toUpperCase();
+    if(displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT'){
+      const publication=publicationOf(game).roblox||{},placeId=String(publication?.placeId||'').trim();
+      return /^[1-9][0-9]*$/.test(placeId)&&publication?.verified===true&&publication?.historical===true&&publication?.historicalPublicationTargetVerified===true?`https://www.roblox.com/games/${placeId}`:'';
+    }
+    const bundle=verifiedRobloxReleaseBundle(game);
+    return bundle?`https://www.roblox.com/games/${bundle.placeId}`:'';
+  }
+  return String(game?.homepagePlatformPath||game?.homepagePlatformUrl||game?.platformGamePath||game?.platformUrl||game?.platformGameUrl||game?.uefnUrl||'').trim();
 }
 
 function installStyles(){
