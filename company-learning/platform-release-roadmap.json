@@ -1,5 +1,5 @@
 {
-  "version": 188,
+  "version": 189,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6321,7 +6321,9 @@
       "conflictingRootCauseSampleEvidenceBlocksReview": true,
       "duplicateReadinessSamplesCannotInflateVolume": true,
       "conflictingReadinessSampleEvidenceBlocksReview": true,
-      "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true
+      "legacyUnidentifiedReadinessEvidenceCannotSatisfyVolumeThresholds": true,
+      "allShadowAuthorityBitsMustRemainObservable": true,
+      "authorityEvidenceMayNotMaskTrueForbiddenBits": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6604,9 +6606,10 @@
           "HYPOTHETICAL_FIRE_COUNT",
           "HYPOTHETICAL_FIRE_RATE",
           "UNAUTHORIZED_FIRE_COUNT",
-          "SAFETY_INVARIANT_PASS"
+          "SAFETY_INVARIANT_PASS",
+          "UNAUTHORIZED_AUTHORITY_COUNT"
         ],
-        "safetyInvariant": "UNAUTHORIZED_FIRE_COUNT_MUST_EQUAL_ZERO",
+        "safetyInvariant": "ALL_FORBIDDEN_SHADOW_AUTHORITY_BITS_MUST_REMAIN_FALSE",
         "winnerSelectionAllowed": false,
         "automaticTuningAllowed": false,
         "automaticLearningAllowed": false,
@@ -6623,7 +6626,7 @@
           "waveAuditSamples": 10
         },
         "hardSafety": [
-          "UNAUTHORIZED_FIRE_COUNT_EQUALS_ZERO",
+          "UNAUTHORIZED_AUTHORITY_COUNT_EQUALS_ZERO",
           "SHADOW_SAFETY_INVARIANT_PASS"
         ],
         "outcomeOnly": "REVIEW_ELIGIBLE_OR_NOT",
