@@ -6843,7 +6843,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:28:49.708Z",
-      "updatedAt": "2026-09-20T05:08:20.883Z"
+      "updatedAt": "2026-09-20T05:09:00.827Z"
     },
     {
       "id": "recovery-0714f07f6ea25ccb4da5",
@@ -7893,7 +7893,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T05:08:20.877Z"
+      "updatedAt": "2026-09-20T05:09:00.820Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -8967,7 +8967,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T05:08:20.881Z"
+      "updatedAt": "2026-09-20T05:09:00.823Z"
     },
     {
       "id": "recovery-3ca7e1812e127f215428",
@@ -9773,7 +9773,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-20T05:08:20.882Z"
+      "updatedAt": "2026-09-20T05:09:00.825Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -10454,7 +10454,8 @@
         "repair-mode:CAUSAL_REGENERATION_GENERATION_8",
         "system-steward:failure-signature:source-candidate-generation-failed",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-e4930ee11f82b66a871f"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -10470,11 +10471,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T05:08:20.885Z",
-      "updatedAt": "2026-09-20T05:08:20.957Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-20T05:08:20.957Z"
-      ]
+      "updatedAt": "2026-09-20T05:09:00.830Z"
     }
   ]
 }
