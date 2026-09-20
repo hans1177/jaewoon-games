@@ -2631,25 +2631,31 @@ function drawQuestDarkness(){
 }
 function drawNode(n,cx,cy){
  const x=n.x-cx,y=n.y-cy;if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;
- if(n.kind==='tree'){ctx.fillStyle='#6f4f32';ctx.fillRect(x-5,y,10,28);ctx.fillStyle='#4e8f58';ctx.beginPath();ctx.arc(x,y-8,21,0,Math.PI*2);ctx.fill()}
- else if(n.kind==='rock'){ctx.fillStyle='#95a4a5';ctx.beginPath();ctx.moveTo(x-18,y+12);ctx.lineTo(x-12,y-12);ctx.lineTo(x+7,y-18);ctx.lineTo(x+20,y+8);ctx.closePath();ctx.fill()}
- else if(n.kind==='iron'){ctx.fillStyle='#59646b';ctx.beginPath();ctx.moveTo(x-18,y+13);ctx.lineTo(x-10,y-15);ctx.lineTo(x+8,y-19);ctx.lineTo(x+20,y+9);ctx.closePath();ctx.fill();ctx.fillStyle='#c1d0d8';ctx.fillRect(x-7,y-7,6,5);ctx.fillRect(x+5,y+1,7,5)}
- else if(n.kind==='gold'){ctx.fillStyle='#6f4b2d';ctx.beginPath();ctx.moveTo(x-20,y+13);ctx.lineTo(x-12,y-17);ctx.lineTo(x+9,y-20);ctx.lineTo(x+22,y+9);ctx.closePath();ctx.fill();ctx.fillStyle='#f5c84c';ctx.fillRect(x-8,y-8,8,7);ctx.fillRect(x+5,y+2,9,6)}
- else if(n.kind==='poisonstone'){ctx.fillStyle='rgba(94,180,74,.16)';ctx.beginPath();ctx.arc(x,y,78,0,Math.PI*2);ctx.fill();ctx.fillStyle='#405d35';ctx.beginPath();ctx.moveTo(x-38,y+25);ctx.lineTo(x-27,y-28);ctx.lineTo(x+12,y-42);ctx.lineTo(x+42,y+18);ctx.closePath();ctx.fill();ctx.fillStyle='#9be35e';ctx.fillRect(x-16,y-13,13,10);ctx.fillRect(x+9,y+4,15,11);ctx.fillStyle='#d5f6bd';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('독점석 '+n.hp+'/10',x,y+52)}
- else if(n.kind==='essence'){ctx.fillStyle='#a98cff';ctx.beginPath();ctx.moveTo(x,y-24);ctx.lineTo(x+16,y);ctx.lineTo(x,y+25);ctx.lineTo(x-16,y);ctx.closePath();ctx.fill();ctx.strokeStyle='#e5dcff';ctx.lineWidth=2;ctx.stroke()}
- else if(n.kind==='carrot'){ctx.fillStyle='#e78b31';ctx.beginPath();ctx.moveTo(x,y+15);ctx.lineTo(x-8,y-8);ctx.lineTo(x+8,y-8);ctx.closePath();ctx.fill();ctx.strokeStyle='#70a956';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x,y-8);ctx.lineTo(x-7,y-20);ctx.moveTo(x,y-8);ctx.lineTo(x+8,y-19);ctx.stroke()}
- else{ctx.strokeStyle='#76b96f';ctx.lineWidth=3;for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(x,y+13);ctx.quadraticCurveTo(x+i*6,y,x+i*7,y-13);ctx.stroke()}}
+ const kind=n.kind==='fiber'?'fiber':n.kind,size=n.kind==='poisonstone'?92:n.kind==='tree'?76:58;
+ if(n.kind==='poisonstone'){ctx.fillStyle='rgba(94,180,74,.16)';ctx.beginPath();ctx.arc(x,y,78,0,Math.PI*2);ctx.fill()}
+ if(!drawFantasyWorldObject(kind,x,y,size,size)){
+  if(n.kind==='tree'){ctx.fillStyle='#6f4f32';ctx.fillRect(x-5,y,10,28);ctx.fillStyle='#4e8f58';ctx.beginPath();ctx.arc(x,y-8,21,0,Math.PI*2);ctx.fill()}
+  else if(n.kind==='essence'){ctx.fillStyle='#a98cff';ctx.beginPath();ctx.moveTo(x,y-24);ctx.lineTo(x+16,y);ctx.lineTo(x,y+25);ctx.lineTo(x-16,y);ctx.closePath();ctx.fill()}
+  else if(n.kind==='carrot'){ctx.fillStyle='#e78b31';ctx.beginPath();ctx.moveTo(x,y+15);ctx.lineTo(x-8,y-8);ctx.lineTo(x+8,y-8);ctx.closePath();ctx.fill()}
+  else{ctx.fillStyle=n.kind==='gold'?'#8f7133':n.kind==='iron'?'#69777d':n.kind==='poisonstone'?'#405d35':'#89989a';ctx.beginPath();ctx.moveTo(x-18,y+13);ctx.lineTo(x-10,y-15);ctx.lineTo(x+8,y-19);ctx.lineTo(x+20,y+9);ctx.closePath();ctx.fill()}
+ }
+ if(n.kind==='poisonstone'){ctx.fillStyle='#d5f6bd';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('독점석 '+n.hp+'/10',x,y+56)}
 }
 function drawStructure(s,cx,cy,type){
  if(!s)return;const x=s.x-cx,y=s.y-cy;if(x<-80||y<-80||x>innerWidth+80||y>innerHeight+80)return;ctx.textAlign='center';
- if(type==='bench'){ctx.fillStyle='#8d663f';ctx.fillRect(x-25,y-12,50,24);ctx.fillStyle='#ccb07a';ctx.fillRect(x-28,y-15,56,8);ctx.fillStyle='#fff1bf';ctx.font='bold 9px system-ui';ctx.fillText('제작대',x,y+28)}
- else if(type==='furnace'){ctx.fillStyle='#3b342f';roundRect(x-24,y-20,48,42,10);ctx.fill();ctx.fillStyle='#e07139';ctx.beginPath();ctx.arc(x,y+5,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffe1bd';ctx.font='bold 9px system-ui';ctx.fillText('화로 · 두 번 누르기',x,y+34)}
- else if(type==='incubator'){ctx.fillStyle='#343849';roundRect(x-30,y-22,60,45,10);ctx.fill();ctx.strokeStyle='#8ea0c8';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#171c27';ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);ctx.fill();if(state.incubation.eggPlaced){ctx.fillStyle='#2b263b';ctx.beginPath();ctx.ellipse(x,y,9,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#8f79b9';ctx.stroke()}ctx.fillStyle='#dce7ff';ctx.font='bold 9px system-ui';const remain=Math.max(0,state.incubation.hatchAt-Date.now());ctx.fillText(state.incubation.eggPlaced?(remain>0?'부화기 · '+Math.ceil(remain/60000)+'분':'부화 완료'):'부화기 · 두 번 누르기',x,y+36)}
- else if(type==='cookingstation'){ctx.fillStyle='#6b4933';ctx.fillRect(x-30,y-14,60,28);ctx.fillStyle='#c98b52';ctx.fillRect(x-33,y-18,66,8);ctx.fillStyle='#2b2018';ctx.beginPath();ctx.arc(x,y-2,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffe0b0';ctx.font='bold 9px system-ui';ctx.fillText('요리대 · 두 번 누르기',x,y+32)}
- else if(type==='junglebench'){ctx.fillStyle='#355c37';ctx.fillRect(x-29,y-14,58,28);ctx.fillStyle='#8ac46e';ctx.fillRect(x-32,y-18,64,8);ctx.fillStyle='#dff7c9';ctx.font='bold 9px system-ui';ctx.fillText('독점석 제작대',x,y+30)}
- else if(type==='goldbench'){ctx.fillStyle='#8a6b1e';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#f0cf57';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#fff1a2';ctx.font='bold 9px system-ui';ctx.fillText('금 제작대',x,y+29)}
- else if(type==='flag'){ctx.strokeStyle='#d8d1b2';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+24);ctx.lineTo(x,y-28);ctx.stroke();ctx.fillStyle='#f2c94c';ctx.beginPath();ctx.moveTo(x,y-28);ctx.lineTo(x+30,y-18);ctx.lineTo(x,y-7);ctx.closePath();ctx.fill();ctx.fillStyle='#fff3be';ctx.font='bold 9px system-ui';ctx.fillText('깃발',x,y+38)}
- else{ctx.fillStyle='#59666b';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#aebdc2';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#dce8ec';ctx.font='bold 9px system-ui';ctx.fillText('철 제작대',x,y+29)}
+ const visualKind=type==='ironbench'?'ironbench':type;
+ if(!drawFantasyWorldObject(visualKind,x,y,type==='flag'?66:76,type==='flag'?82:68)){
+  ctx.fillStyle=type==='furnace'?'#3b342f':type==='incubator'?'#343849':type==='junglebench'?'#355c37':type==='goldbench'?'#8a6b1e':'#6b4933';roundRect(x-28,y-18,56,38,8);ctx.fill()
+ }
+ let label='철 제작대',labelColor='#dce8ec',labelY=y+34;
+ if(type==='bench'){label='제작대';labelColor='#fff1bf'}
+ else if(type==='furnace'){label='화로 · 두 번 누르기';labelColor='#ffe1bd'}
+ else if(type==='incubator'){const remain=Math.max(0,state.incubation.hatchAt-Date.now());label=state.incubation.eggPlaced?(remain>0?'부화기 · '+Math.ceil(remain/60000)+'분':'부화 완료'):'부화기 · 두 번 누르기';labelColor='#dce7ff'}
+ else if(type==='cookingstation'){label='요리대 · 두 번 누르기';labelColor='#ffe0b0'}
+ else if(type==='junglebench'){label='독점석 제작대';labelColor='#dff7c9'}
+ else if(type==='goldbench'){label='금 제작대';labelColor='#fff1a2'}
+ else if(type==='flag'){label='깃발';labelColor='#fff3be';labelY=y+48}
+ ctx.fillStyle=labelColor;ctx.font='bold 9px system-ui';ctx.fillText(label,x,labelY)
 }
 const FANTASY_VISUAL_STYLE_LOCK=Object.freeze({
  version:1,
@@ -2721,6 +2727,26 @@ function fantasyCreatureVisualAsset(type){
 function fantasyPlayerVisualAsset(){
  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="80" height="88" viewBox="-40 -44 80 88"><g stroke="#101812" stroke-width="4" stroke-linejoin="round"><ellipse cx="0" cy="8" rx="24" ry="30" fill="#355f63"/><path d="M-24 9 Q0 30 24 9 L18 35 Q0 44-18 35Z" fill="#253d48"/><circle cx="0" cy="-18" r="16" fill="#d8b99c"/><path d="M-19-17 Q0-42 20-17 L13-6 Q0-17-13-6Z" fill="#274c3e"/><path d="M-22 1 L-34 22 M22 1 L34 22" fill="none" stroke="#d8b99c" stroke-width="7" stroke-linecap="round"/><path d="M-10 34 L-13 43 M10 34 L13 43" fill="none" stroke="#1b2630" stroke-width="8" stroke-linecap="round"/><path d="M-7 7 L0 0 L8 7 L0 14Z" fill="#9fd6b1" stroke="#173326" stroke-width="2"/></g></svg>';
  return fantasyVisualImage('player:forest-mage',svg)
+}
+function fantasyWorldObjectSvg(kind){
+ const defs='<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7efc0"/><stop offset="1" stop-color="#527354"/></linearGradient></defs>';
+ let art='';
+ if(kind==='tree')art='<path d="M-11 42L-8-6H9L13 42Z" fill="#6b4a2d" stroke="#241c17" stroke-width="5"/><path d="M-42-2Q-34-35-8-31Q5-49 24-31Q48-30 44-3Q34 19 5 14Q-25 22-42-2Z" fill="#3f7b4d" stroke="#173423" stroke-width="5"/><path d="M-27-7Q-8-22 9-8M2-25Q17-15 29-6" fill="none" stroke="#85b86e" stroke-width="5"/>';
+ else if(['rock','iron','gold','poisonstone'].includes(kind)){const base=kind==='poisonstone'?'#405d35':kind==='gold'?'#735235':kind==='iron'?'#59666d':'#89989a',vein=kind==='poisonstone'?'#a4ed68':kind==='gold'?'#f6cc52':kind==='iron'?'#d0dde2':'#b8c7c8';art='<path d="M-38 28L-45 3-25-31 8-39 39-17 44 18 20 36-18 39Z" fill="'+base+'" stroke="#20292a" stroke-width="5"/><path d="M-24 5L-8-16 3-3 18-24 29-13M-14 22L3 8 17 20" fill="none" stroke="'+vein+'" stroke-width="7" stroke-linecap="round"/>'}
+ else if(kind==='essence')art='<path d="M0-43L24-8 13 31 0 43-15 28-25-8Z" fill="#8f6fd7" stroke="#302452" stroke-width="5"/><path d="M0-34L8-7 0 28-8-7Z" fill="#e7dcff"/><path d="M-16-7L0 0 17-8" fill="none" stroke="#c7b7ff" stroke-width="4"/>';
+ else if(kind==='carrot')art='<path d="M-15-8Q0-19 15-8L7 38 0 45-8 37Z" fill="#e88b32" stroke="#6f3d1c" stroke-width="4"/><path d="M0-9Q-18-20-25-35M1-10Q15-25 24-34M0-8Q-3-29 4-40" fill="none" stroke="#65a153" stroke-width="6" stroke-linecap="round"/>';
+ else if(kind==='fiber')art='<path d="M-26 35Q-24 5-10-31M-9 37Q-5 4 2-37M10 37Q12 2 25-27M-18 12Q-5 4 3 13M3 1Q14-8 24 1" fill="none" stroke="#78b66f" stroke-width="6" stroke-linecap="round"/>';
+ else if(kind==='furnace')art='<path d="M-33 35V-5Q-30-34 0-38Q30-34 33-5V35Z" fill="#4c4540" stroke="#211d1b" stroke-width="6"/><path d="M-17 34V9Q0-4 17 9V34Z" fill="#291b16" stroke="#17100d" stroke-width="4"/><path d="M-9 23Q0 2 10 23Q5 34 0 36Q-6 34-9 23Z" fill="#ed7138"/>';
+ else if(kind==='incubator')art='<path d="M-38 32V-18Q0-43 38-18V32Z" fill="#394052" stroke="#171c26" stroke-width="6"/><ellipse cx="0" cy="-2" rx="20" ry="27" fill="#141a27" stroke="#8ea0c8" stroke-width="5"/><ellipse cx="0" cy="0" rx="10" ry="15" fill="#43395b" stroke="#9c89c9" stroke-width="3"/><path d="M-24 32H24" stroke="#aab8d8" stroke-width="5"/>';
+ else if(kind==='flag')art='<path d="M-12 43V-38" stroke="#d5d0bd" stroke-width="7"/><path d="M-9-37Q17-29 37-14Q17 1-9-5Z" fill="#e5bd47" stroke="#6f571a" stroke-width="4"/><path d="M-23 42H6" stroke="#6f6655" stroke-width="6"/>';
+ else {const accent=kind==='goldbench'?'#efcc54':kind==='junglebench'?'#86c66c':kind==='cookingstation'?'#c88a52':kind==='bench'?'#c9a66f':'#b4c3c9';art='<path d="M-42 9H42V30H-42Z" fill="#5f4935" stroke="#262019" stroke-width="5"/><path d="M-47-2H47V12H-47Z" fill="'+accent+'" stroke="#30271f" stroke-width="5"/><path d="M-30 30V43M30 30V43" stroke="#30271f" stroke-width="7"/><path d="M-20-4L-7-25M5-4L21-22" stroke="'+accent+'" stroke-width="6" stroke-linecap="round"/>'}
+ return'<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="-56 -56 112 112">'+defs+art+'</svg>'
+}
+function fantasyWorldObjectAsset(kind){return fantasyVisualImage('world-object:'+kind,fantasyWorldObjectSvg(kind))}
+function drawFantasyWorldObject(kind,x,y,w=64,h=64){
+ const image=fantasyWorldObjectAsset(kind);
+ if(!image.complete||!image.naturalWidth)return false;
+ ctx.drawImage(image,x-w*.5,y-h*.5,w,h);return true
 }
 function drawFantasyCreatureVectorFallback(type,r){
  const accent=fantasyVisualAccent(type),body=type?.color||'#698164';
