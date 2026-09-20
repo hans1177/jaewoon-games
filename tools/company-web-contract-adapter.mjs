@@ -61,6 +61,15 @@ function candidateLabel(tag,attrs,nearby){
     nearby.slice(0,180)
   ].filter(Boolean).join(' '))||tag;
 }
+function directCandidateText(source,tag,attrs,offset,openTagLength){
+  const contentStart=offset+openTagLength;
+  const tail=source.slice(contentStart,Math.min(source.length,contentStart+220));
+  const innerText=(tag==='button'||tag==='a')?(tail.match(/^([^<]{0,120})<\//i)?.[1]||''):'';
+  return clean([
+    attrs.id,attrs['aria-label'],attrs.title,attrs.name,attrs.class,attrs.value,
+    attrs['data-mechanic-id'],attrs['data-gameplay-action'],innerText
+  ].filter(Boolean).join(' '));
+}
 export function extractWebGameplayCandidates(html=''){
   const source=String(html??''),rows=[],seen=new Set();
   const tagRe=/<(button|input|select|textarea|canvas|a)\b([^>]*)>/gi;
@@ -70,13 +79,17 @@ export function extractWebGameplayCandidates(html=''){
     const key=id?'id:'+id:'offset:'+offset;
     if(seen.has(key))continue;
     seen.add(key);
-    const semanticText=candidateLabel(tag,attrs,nearby)+' '+nearby;
+    const label=candidateLabel(tag,attrs,nearby);
+    const directText=directCandidateText(source,tag,attrs,offset,match[0].length);
+    const semanticText=label+' '+nearby;
     rows.push({
-      key,tag,id:id||null,label:candidateLabel(tag,attrs,nearby),
+      key,tag,id:id||null,label,
       existingScopeId:clean(attrs['data-scope-id'])||null,
       existingMechanicId:clean(attrs['data-mechanic-id'])||null,
       gameplayAction:attrs['data-gameplay-action']!=null,
+      directFamilies:familyRows(directText),
       families:familyRows(semanticText),
+      directSemanticText:directText.slice(0,500),
       semanticText:clean(semanticText).slice(0,1400),
       sourceOffset:offset
     });
@@ -89,9 +102,16 @@ function tokenList(text=''){
 function scoreCandidate(item,candidate){
   const family=scopeFamily(item),requirement=approvedScopeRequirement(item);
   const candidateFamilies=new Map((candidate.families||[]).map(row=>[row.family,row.score]));
+  const directFamilies=new Map((candidate.directFamilies||[]).map(row=>[row.family,row.score]));
   let score=0;const evidence=[];
   if(candidate.existingScopeId===item.id){score+=100;evidence.push('existing-scope-binding');}
-  if(candidateFamilies.has(family)){score+=30+Math.min(15,(candidateFamilies.get(family)||0)*3);evidence.push('family:'+family);}
+  if(directFamilies.has(family)){
+    score+=48+Math.min(16,(directFamilies.get(family)||0)*4);
+    evidence.push('direct-family:'+family);
+  }else if(candidateFamilies.has(family)){
+    score+=18+Math.min(9,(candidateFamilies.get(family)||0)*2);
+    evidence.push('nearby-family:'+family);
+  }
   const shared=tokenList(clean(item.path)+' '+clean(item.label)).filter(token=>lower(candidate.semanticText).includes(token));
   if(shared.length){score+=Math.min(20,shared.length*4);evidence.push('shared:'+shared.slice(0,4).join(','));}
   if(requirement==='SPATIAL_WORLD'&&candidateFamilies.has('MOVEMENT')){score+=18;evidence.push('spatial-input');}
