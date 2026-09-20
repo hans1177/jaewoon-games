@@ -2301,3 +2301,16 @@ learningClosedLoop:
   executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
   authorityExpansion: false
 
+## 장르별 표현 / 상업용 준비 계약
+
+이 항목은 새 파이프라인이 아니다. 기존 canonical 순서인 `Web 구현 → ASSET_ADAPTATION → LIVING_MOTION → ANIMATION_FEEL → VFX → AUDIO_FEEL(Web) → CAMERA_LANGUAGE → POLISH_MOBILE → Web runtime/independent revalidation → 선택 플랫폼 이관`을 그대로 사용한다.
+
+- 구현 시작 전에 승인 설계/아트북에서 게임별 아트 방향과 Style Lock을 확정한다.
+- UI는 장르와 실제 게임 규칙에서 생성한다. 서로 다른 장르에 동일 HUD를 복사해 완료로 인정하지 않는다.
+- 애니메이션은 캐릭터 체형, 무기, 몬스터 생태/공격 방식, 상호작용 의미에서 생성한다. 색만 다른 동일 적 모델은 별도 몬스터 표현으로 인정하지 않는다.
+- 장르별 핵심 UI/모션은 RPG뿐 아니라 생존, 디펜스, 타이쿤/시뮬레이터, 액션/로그라이크, 슈터, 퍼즐, 공포, 레이싱, 전략, 생활/힐링에 각각 다르게 적용한다.
+- Web에서 플레이어·몬스터·배경·UI·VFX·오디오·공격/피격/이동/사망 표현을 실제 구현한 뒤 선택된 Roblox/Unity/UEFN으로 이어간다.
+- 임시 모형 몹, 단순 도형 최종 캐릭터, 세계관과 맞지 않는 배경, metadata만 있는 표현 증거는 PASS 금지다.
+- 최종 Web/native 이관 전 Commercial Readiness를 검사한다: 첫 10분/온보딩, UI, 아트 일관성, 애니메이션, 피드백, 오디오, 모바일 성능, 접근성, 저장 안정성, 콘텐츠 구조/재방문 동기, 수익화 UI 분리와 플랫폼 정책 호환.
+- Commercial Readiness 실패는 `REPAIR_REQUIRED`로 돌리고 기존 검증 단계에서 즉시 재검증한다. 별도 WAITING/shadow pipeline을 만들지 않는다.
+- 그래픽/표현 변경은 게임 규칙, 밸런스, 세이브 의미를 바꾸지 않는다.
