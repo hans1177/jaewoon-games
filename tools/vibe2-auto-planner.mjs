@@ -218,7 +218,7 @@ function supervisedWebBuildRequired(project={},goal=''){
 }
 function supervisedWebBuildContract(){
   return{
-    version:2,
+    version:3,
     mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
     required:true,
     status:'REVIEW_REQUIRED',
@@ -237,7 +237,8 @@ function supervisedWebBuildContract(){
       'SUPERVISED_PROMOTION'
     ],
     protectedSemantics:['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES'],
-    hardReject:['PLACEHOLDER_SOURCE','PLACEHOLDER_MONSTER_OR_CHARACTER','CONTEXT_MISMATCH_BACKGROUND','INCOMPLETE_ACTION_MOTION_SET','STATIC_PRESENTATION_EVIDENCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BROKEN_MOBILE_INPUT']
+    hardReject:['PLACEHOLDER_SOURCE','PLACEHOLDER_MONSTER_OR_CHARACTER','CONTEXT_MISMATCH_BACKGROUND','INCOMPLETE_ACTION_MOTION_SET','STATIC_PRESENTATION_EVIDENCE','COLOR_ONLY_ENEMY_VARIANT','GENERIC_CROSS_GENRE_HUD','COMMERCIAL_READINESS_INCOMPLETE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BROKEN_MOBILE_INPUT'],
+    completionRequirements:['GENRE_SPECIFIC_UI','GENRE_SPECIFIC_ANIMATION','STYLE_LOCK_CONSISTENCY','MOBILE_ACCESSIBILITY','AUDIO_CONTROLS','SAVE_STABILITY_WHEN_APPLICABLE','COMMERCIAL_READINESS_BEFORE_NATIVE_HANDOFF']
   };
 }
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
@@ -339,6 +340,10 @@ function webRepairImplementationHints(evidence=[]){
   add(/MUSIC_VOLUME_CONTROL_REQUIRED/,'실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.');
   add(/PRESENTATION_RUNTIME_QUALITY_REQUIRED/,'승인 설계와 최신 아트북에서 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞게 실제 렌더링하고 idle/move/death를 포함한 연속 모션을 구현한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 사용하지 않는다.');
   add(/ACTION_PRESENTATION_QUALITY_REQUIRED/,'액션·전투 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격을 anticipation/windup → active/contact → recovery/follow-through로 이어지게 하며 피격 VFX·SFX·화면/카메라 반응을 동일 impact 이벤트에 동기화한다.');
+  add(/GENRE_PRESENTATION_IDENTITY_REQUIRED/,'현재 장르와 실제 규칙에서 HUD·아이콘·정보 우선순위·UI Motion Language를 다시 만들고 unrelated 장르의 공용 HUD 복사나 색만 다른 적을 제거한다.');
+  add(/ENEMY_PRESENTATION_DISTINCTIVENESS_REQUIRED/,'적 종류별 실루엣·이동·공격·피격·사망·전투 역할 중 최소 하나 이상의 실제 차이를 만들고 색상만 다른 동일 모델을 별도 타입으로 인정하지 않는다.');
+  add(/ACCESSIBILITY_RUNTIME_REQUIRED/,'핵심 텍스트 크기/대비/44px 터치 영역을 보장하고 색 하나만으로 상태를 구분하지 않으며 화면 흔들림·번쩍임·진동을 줄이는 접근성 제어를 실제 UI에 연결한다.');
+  add(/COMMERCIAL_READINESS_REQUIRED/,'기존 POLISH_MOBILE과 runtime validation 안에서 첫 10분/장르 UI/아트/애니/피드백/오디오/성능/접근성/저장/콘텐츠 구조/수익화 UI 분리를 수리하고 별도 우회 파이프를 만들지 않는다.');
   add(/SCRIPT_SRC_FORBIDDEN/,'외부 script src 의존을 제거하고 허용된 기존 index.html 내부 런타임 코드로 유지한다.');
   add(/REAL_GAME_FOOTPRINT_TOO_SMALL|REAL_GAME_LOGIC_TOO_SMALL/,'문자 수를 채우지 말고 위 검증 실패를 해결하는 실제 gameplay 로직·상태·입력 연결을 추가한다.');
   return [...new Set(hints)].slice(0,12);
@@ -363,7 +368,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
   if(missing){
     const id=`${project.gameId}-web-base-implementation-v1`;if(hasTask(queue,id))return null;
-    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING']);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
@@ -427,23 +432,43 @@ function presentationSourceForProject(project,repoRoot){
         :[];
   return candidates.find(relative=>fs.existsSync(sourceFile(repoRoot,relative)))||null;
 }
+function genreCommercialGuidance(project={}){
+  const text=clean([project.genre,project.category,project.gameCategory,project.name,project.gameId].filter(Boolean).join(' ')).toLowerCase();
+  const common='UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다.';
+  if(/survival|생존/.test(text))return common+' 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.';
+  if(/defense|tower|디펜스|타워/.test(text))return common+' 디펜스는 웨이브·재화·기지 HP·설치 정보를 우선하고 타워별 발사/투사체와 적 역할별 이동·피격을 구분한다.';
+  if(/tycoon|simulator|simulation|경영|타이쿤|시뮬/.test(text))return common+' 타이쿤/시뮬레이션은 돈·만족도·건설·업그레이드와 손님/대기열/작업자/시설 작동을 실제 월드 애니메이션으로 보여준다.';
+  if(/shooter|fps|tps|shoot|슈터|사격|총/.test(text))return common+' 슈터는 탄약·조준점·재장전·HP를 우선하고 반동·발사·재장전·피격·적 조준/엄폐/추격 반응을 분리한다.';
+  if(/puzzle|퍼즐/.test(text))return common+' 퍼즐은 규칙·목표·조작 결과를 즉시 읽히게 하고 정답/오답/연쇄/완료 애니메이션을 구분한다.';
+  if(/horror|공포/.test(text))return common+' 공포는 최소 UI와 위협 가독성을 유지하면서 탐색→발견→추적 상태, 조명·시야·음향 변화를 실제 상태와 동기화한다.';
+  if(/racing|race|레이싱/.test(text))return common+' 레이싱은 속도·순위·랩/경로를 우선하고 가속·감속·드리프트·충돌과 속도감/카메라 반응을 연결한다.';
+  if(/strategy|전략|tactic/.test(text))return common+' 전략은 선택·자원·생산·명령 정보를 우선하고 유닛 이동·공격·건설·생산을 실제 월드 상태에 연결한다.';
+  if(/life|healing|cozy|생활|힐링|농사|낚시/.test(text))return common+' 생활/힐링은 활동·인벤토리·시간/날씨를 우선하고 낚시·농사·요리·채집·NPC 일상 모션을 활동별로 구분한다.';
+  if(/action|rogue|combat|액션|로그|전투/.test(text))return common+' 액션/로그라이크는 HP/자원/스킬 쿨다운/런 진행을 우선하고 무기별 anticipation→active/contact→recovery와 hit/death 반응을 분리한다.';
+  return common+' RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 무기/스킬/NPC 상호작용 모션을 역할별로 구분한다.';
+}
+function commercialReadinessGuidance(){
+  return '상업용 준비 기준: 첫 10분 안에 핵심 재미와 학습 흐름이 실제 플레이로 드러나야 하며, 버튼/보상/피격/구매/제작/레벨업/퀘스트 완료 피드백을 실제 이벤트와 연결한다. BGM/SFX/UI/환경음은 역할을 분리하고 mute/volume 및 반복음 변형을 제공한다. 모바일 핵심 조작은 44px 이상과 엄지 도달성을 지키고, 과도한 흔들림·번쩍임·진동은 조절 가능해야 하며 텍스트/상태를 색 하나만으로 구분하지 않는다. 저장이 있는 게임은 업데이트 후 기존 저장 의미를 보존하고 실패 시 전체 데이터 손실을 피한다. 초반/중반/후반 목표와 반복 플레이 이유를 만들고, 수익화가 있으면 일반 게임 UI와 구매/광고 UI를 분리하며 결제 없이는 핵심 루프가 막히지 않게 한다. 이 기준이 실패하면 기존 repair/revalidation으로 되돌린다.';
+}
+
 function presentationStagesForProject(project={}){
   const engine=clean(project.engine).toLowerCase();
   const finalMarker=engine==='web'
-    ?'gameplay root 또는 body에 data-presentation-quality-version="1"을 실제 품질 계약 선언으로 기록한다.'
+    ?'gameplay root 또는 body에 data-presentation-quality-version="2"와 data-commercial-readiness-version="1"을 실제 품질 계약 선언으로 기록한다.'
     :engine==='unity'
-      ?'표현 책임 C# 소스에 public const int PresentationQualityVersion = 1 형태의 실제 품질 계약 마커를 기록한다.'
-      :'표현 책임 Luau 소스에 local PRESENTATION_QUALITY_VERSION = 1 형태의 실제 품질 계약 마커를 기록한다.';
+      ?'표현 책임 C# 소스에 public const int PresentationQualityVersion = 2 형태의 실제 품질 계약 마커를 기록한다.'
+      :'표현 책임 Luau 소스에 local PRESENTATION_QUALITY_VERSION = 2 형태의 실제 품질 계약 마커를 기록한다.';
   const stages=[
-    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/임시 placeholder는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.'},
-    {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 판정·이동속도·밸런스는 변경하지 않는다.'},
-    {key:'animation-feel',pass:'ANIMATION_FEEL',goal:'[PRESENTATION_PASS:ANIMATION_FEEL] 주요 공격/상호작용 하나 이상을 준비→가속→impact→짧은 표현용 hit-stop→반동→복귀 흐름으로 다듬는다. 빠른 동작은 smear/trail, 무거운 동작은 overshoot/settle을 검토한다. 실제 데미지/쿨다운/판정 시점은 기존 authoritative gameplay event를 보존하고 표현만 동기화한다.'},
-    {key:'vfx',pass:'VFX',goal:'[PRESENTATION_PASS:VFX] 핵심 행동의 시각 피드백을 hit flash, trail/afterimage, impact wave/particle, danger telegraph, reward emphasis 중 게임에 맞는 방식으로 강화한다. 효과는 모바일 입력과 위험 정보를 가리지 않게 제한하고 무제한 파티클 생성이나 매 프레임 불필요한 객체 생성을 피한다.'},
-    {key:'camera-language',pass:'CAMERA_LANGUAGE',goal:'[PRESENTATION_PASS:CAMERA_LANGUAGE] 일반 행동은 미세한 카메라 반응, 강한 행동은 짧고 강한 반응, 보스/중요 순간은 통제된 hero moment가 되도록 카메라 언어를 정리한다. 줌/흔들림/추적은 모바일 가독성과 조작을 해치지 않고 멀미를 유발할 정도로 지속되지 않게 한다.'},
-    {key:'polish-mobile',pass:'POLISH_MOBILE',goal:`[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다. 앞선 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→CAMERA_LANGUAGE 패스가 실제 구현된 상태를 보존한 뒤 ${finalMarker}`}
+    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/임시 placeholder는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.'},
+    {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 판정·이동속도·밸런스는 변경하지 않는다.'},
+    {key:'animation-feel',pass:'ANIMATION_FEEL',goal:'[PRESENTATION_PASS:ANIMATION_FEEL] 주요 공격/상호작용 하나 이상을 준비→가속→impact→짧은 표현용 hit-stop→반동→복귀 흐름으로 다듬는다. 빠른 동작은 smear/trail, 무거운 동작은 overshoot/settle을 검토한다. idle/move/attack/hit/death를 실제 상태와 연결하고 게임 핵심이면 equip/interact/use-item/skill/celebrate도 전용 전환으로 구현한다. 무기·캐릭터 체형·몬스터 공격 방식이 다르면 같은 공격 애니메이션을 기계적으로 복제하지 않는다. 실제 데미지/쿨다운/판정 시점은 기존 authoritative gameplay event를 보존하고 표현만 동기화한다.'},
+    {key:'vfx',pass:'VFX',goal:'[PRESENTATION_PASS:VFX] 핵심 행동의 시각 피드백을 hit flash, trail/afterimage, impact wave/particle, danger telegraph, reward emphasis 중 게임에 맞는 방식으로 강화한다. 공격 성공·피격·구매·제작·레벨업·보상·퀘스트 완료 등 실제 이벤트는 상황에 맞는 화면/UI/VFX 피드백을 가지며 같은 이펙트를 모든 상황에 무차별 재사용하지 않는다. 효과는 모바일 입력과 위험 정보를 가리지 않게 제한하고 무제한 파티클 생성이나 매 프레임 불필요한 객체 생성을 피한다.'},
+    {key:'camera-language',pass:'CAMERA_LANGUAGE',goal:'[PRESENTATION_PASS:CAMERA_LANGUAGE] 일반 행동은 미세한 카메라 반응, 강한 행동은 짧고 강한 반응, 보스/중요 순간은 통제된 hero moment가 되도록 카메라 언어를 정리한다. 줌/흔들림/추적은 모바일 가독성과 조작을 해치지 않고 멀미를 유발할 정도로 지속되지 않게 하며 화면 흔들림/번쩍임을 줄일 수 있는 접근성 설정과 충돌하지 않아야 한다.'},
+    {key:'polish-mobile',pass:'POLISH_MOBILE',goal:`[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다. 첫 10분의 핵심 재미/학습 흐름, 장르별 UI, 아트 일관성, 애니메이션 연속성, 피드백, 오디오 제어/반복 변형, 모바일 성능, 접근성, 저장/업데이트 안정성, 초중후반 목표/반복 동기, 수익화 UI 분리까지 Commercial Readiness를 확인한다. 앞선 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→CAMERA_LANGUAGE 패스가 실제 구현된 상태를 보존한 뒤 ${finalMarker}`}
   ];
-  if(engine==='web')stages.splice(4,0,{key:'audio-feel',pass:'AUDIO_FEEL',goal:'[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다. 타격음은 기존 impact event와 맞추고 반복음은 기계적인 반복감을 줄인다.'});
-  return stages;
+  if(engine==='web')stages.splice(4,0,{key:'audio-feel',pass:'AUDIO_FEEL',goal:'[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다. BGM·전투음·UI음·환경음의 역할을 분리하고 타격음은 기존 impact event와 맞추며 반복음은 pitch/sample/volume 미세 변형 등으로 기계적인 반복감을 줄인다.'});
+  const genreGuide=genreCommercialGuidance(project),commercialGuide=commercialReadinessGuidance();
+  return stages.map(stage=>({...stage,goal:`${stage.goal}\n[GENRE_PRESENTATION_GUIDANCE] ${genreGuide}\n[COMMERCIAL_READINESS_GUIDANCE] ${commercialGuide}`}));
 }
 export function findPresentationQualityTask(project,repoRoot,queue){
   const engine=clean(project.engine).toLowerCase();
@@ -469,6 +494,9 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       `presentation-pass:${stage.pass}`,
       'quality-contract:livingMotionVisualQualityContract',
       'quality-contract:assetProductionParallelContract',
+      'quality-contract:genrePresentationQualityContract',
+      'quality-contract:commercialReadinessGate',
+      'presentation-canonical-order-preserved',
       'presentation-preserve-gameplay-semantics',
       'presentation-runtime-qa-required',
       'graphics-pass-real-asset-binding-runtime-required',
