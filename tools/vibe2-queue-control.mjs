@@ -16,7 +16,7 @@ import {
   DEFAULT_MAX_CONCURRENT_TASKS
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
-import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
+import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, DEFAULT_ADAPTIVE_TARGET } from './vibe2-adaptive-backpressure.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
@@ -48,7 +48,7 @@ function readParallelismControl(args) {
   try {
     return createParallelismControl(readJson(controlFileFrom(args), {}));
   } catch {
-    return createParallelismControl({ lastReason: 'INVALID_STATE_DEFAULT_EXTERNAL_CAPACITY' });
+    return createParallelismControl({ lastReason: `INVALID_STATE_ADAPTIVE_TARGET_${DEFAULT_ADAPTIVE_TARGET}` });
   }
 }
 function priority(value, ownerDirective) { if (ownerDirective) return 'owner-immediate'; return ['critical','high','normal','low'].includes(clean(value)) ? clean(value) : 'normal'; }
@@ -618,7 +618,7 @@ export function runQueueCommand(args = {}) {
     const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
@@ -628,7 +628,7 @@ export function runQueueCommand(args = {}) {
     const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
@@ -689,7 +689,7 @@ export function runQueueCommand(args = {}) {
     const executionLane=clean(args.lane)||'game-primary';
     const adaptiveEligible=executionLane==='game-primary';
     const currentControl=readParallelismControl(args);
-    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_TARGET;
     const firstMetrics=rows.find((row)=>row?.metrics)?.metrics || {};
     const taskCount=new Set(rows.map((row)=>clean(row?.taskId)).filter(Boolean)).size;
     const telemetry=computeParallelismTelemetry({
