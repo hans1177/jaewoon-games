@@ -7013,7 +7013,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "portfolio:5",
-      "checkpoint": "2026-09-20T09:10:55Z",
+      "checkpoint": "2026-09-20T09:24:43Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -8460,7 +8460,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T09:24:11.775Z"
+      "updatedAt": "2026-09-20T09:27:39.945Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -8472,7 +8472,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "incremental-qa-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T09:18:51Z",
+      "checkpoint": "2026-09-20T09:27:19Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -10080,7 +10080,29 @@
         "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501580855%3A1%7Cspeculative-2%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501580855%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "system-steward:retry-exhausted-regenerated:generation-24",
-        "repair-mode:CAUSAL_REGENERATION_GENERATION_24"
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_24",
+        "base-main:c48253b4e78ebef2140887a8ec91014c664f660f",
+        "actions-run:35501942379",
+        "reservation-id:35501942379:1",
+        "workload:prep-ms:6282",
+        "workload:cycle-ms:73946",
+        "exploration-reuse:fc8f00c5c3a759fb2e45ca13",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cprimary%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cprimary%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "workload:prep-ms:6212",
+        "workload:cycle-ms:72633",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-1%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-1%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "workload:prep-ms:6605",
+        "workload:cycle-ms:74468",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-2%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-2%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-2%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -10096,7 +10118,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T09:24:11.778Z"
+      "updatedAt": "2026-09-20T09:27:39.947Z"
     },
     {
       "id": "recovery-3ca7e1812e127f215428",
@@ -11329,7 +11351,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-20T09:24:11.779Z"
+      "updatedAt": "2026-09-20T09:27:39.949Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -11341,7 +11363,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T09:18:51Z",
+      "checkpoint": "2026-09-20T09:27:19Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -12671,7 +12693,39 @@
         "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501580855%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501580855-1%22%2C%22feedback%22%3A%22UNKNOWN%22%2C%22critic%22%3A%22UNRESOLVED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
         "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501580855%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501580855-1%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.3488372093023256%2C%22observedStage%22%3A%22PERFORMANCE_SANITY%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501580855%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501580855-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
-        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501580855%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501580855-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501580855%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501580855-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "base-main:c48253b4e78ebef2140887a8ec91014c664f660f",
+        "actions-run:35501942379",
+        "reservation-id:35501942379:1",
+        "workload:prep-ms:11072",
+        "workload:cycle-ms:279440",
+        "exploration-reuse:fa02324eec04ea4ecedc0a87",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cprimary%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.3488372093023256%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cprimary%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-1-35501942379-1",
+        "candidate-sha:4b7ca6268ae6307f30e5456c1c3577b1229e6327",
+        "shared-context-policy:61afea028f7fa4f2f859c747573519b5b4dc41be7a9cba14bb6d77c137805766",
+        "shared-context-architecture:d2f643b19dd01d32d8d7d34e48d92b6bcfc2b1cc2ed89857510f7e80064b6f13",
+        "workload:prep-ms:6537",
+        "workload:cycle-ms:218406",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7COTHER%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35501942379%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-1-35501942379-1%22%2C%22feedback%22%3A%22UNKNOWN%22%2C%22critic%22%3A%22UNRESOLVED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-1-35501942379-1%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.3488372093023256%2C%22observedStage%22%3A%22PERFORMANCE_SANITY%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-1-35501942379-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-1-35501942379-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501942379-1",
+        "candidate-sha:97b6fef56f8200f7c73090ff720b08231844ba37",
+        "workload:prep-ms:5469",
+        "workload:cycle-ms:229413",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7COTHER%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35501942379%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501942379-1%22%2C%22feedback%22%3A%22UNKNOWN%22%2C%22critic%22%3A%22UNRESOLVED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501942379-1%22%2C%22predictedResponsibility%22%3A%22SAVE_SYSTEM%22%2C%22predictedConfidence%22%3A0.3488372093023256%2C%22observedStage%22%3A%22PERFORMANCE_SANITY%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501942379-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22fantasy-survival-presentation-asset-adaptation-v1%7C35501942379%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-asset-adaptation-v1-speculative-2-35501942379-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "system-steward:retry-exhausted-regenerated:generation-16",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_16"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -12687,7 +12741,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T05:08:20.885Z",
-      "updatedAt": "2026-09-20T09:24:11.781Z"
+      "updatedAt": "2026-09-20T09:27:39.951Z"
     },
     {
       "id": "recovery-b6f54ab5f0fa70464656",
@@ -12959,7 +13013,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T07:24:23.306Z",
-      "updatedAt": "2026-09-20T09:24:11.782Z"
+      "updatedAt": "2026-09-20T09:27:39.952Z"
     }
   ]
 }
