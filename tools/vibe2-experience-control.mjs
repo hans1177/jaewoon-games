@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory, addVibeExperience } from '../assets/vibe-experience-memory.js';
 import { validateDesignAwareExperience } from './vibe2-design-intelligence.mjs';
+import { applyCapabilityApplicationReviews } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
@@ -313,6 +314,7 @@ export function runExperiencePromotionBatch({
 } = {}) {
   const payload=reviews||(clean(reviewsFile)?readJson(reviewsFile,null):null);
   const rows=Array.isArray(payload)?payload:(Array.isArray(payload?.experienceReviews)?payload.experienceReviews:[]);
+  const capabilityApplicationRows=Array.isArray(payload?.capabilityApplicationReviews)?payload.capabilityApplicationReviews:[];
   let memory=readJson(memoryFile,{records:[]});
   const results=[];
   for(const review of rows){
@@ -321,12 +323,33 @@ export function runExperiencePromotionBatch({
     if(result.promoted)memory=result.memory;
   }
   const promotedCount=results.filter(row=>row.promoted).length;
-  if(promotedCount){
+  const capabilityApplications=applyCapabilityApplicationReviews(memory,capabilityApplicationRows);
+  if(capabilityApplications.applied>0)memory=capabilityApplications.memory;
+  const changed=promotedCount>0||capabilityApplications.applied>0;
+  if(changed){
     try{writeMemory(memoryFile,memory);}catch(error){
-      return Object.freeze({promoted:false,persisted:false,promotedCount:0,total:rows.length,results:Object.freeze(results),reason:'experience-storage-failed',storageError:clean(error?.message||error),memory});
+      return Object.freeze({
+        promoted:false,persisted:false,promotedCount:0,total:rows.length,results:Object.freeze(results),
+        capabilityApplicationTotal:capabilityApplicationRows.length,capabilityApplicationApplied:0,
+        capabilityApplicationDuplicates:capabilityApplications.duplicates,capabilityApplicationMissing:capabilityApplications.missing,
+        reason:'experience-storage-failed',storageError:clean(error?.message||error),memory
+      });
     }
   }
-  return Object.freeze({promoted:promotedCount>0,persisted:promotedCount>0,promotedCount,total:rows.length,results:Object.freeze(results),reason:promotedCount?'verified-reviewed-experience-batch-promoted':'no-reviewed-experience-promoted',authority:'unchanged',memory});
+  return Object.freeze({
+    promoted:promotedCount>0,
+    persisted:changed,
+    promotedCount,
+    total:rows.length,
+    results:Object.freeze(results),
+    capabilityApplicationTotal:capabilityApplicationRows.length,
+    capabilityApplicationApplied:capabilityApplications.applied,
+    capabilityApplicationDuplicates:capabilityApplications.duplicates,
+    capabilityApplicationMissing:capabilityApplications.missing,
+    reason:changed?'verified-reviewed-experience-batch-updated':'no-reviewed-experience-promoted',
+    authority:'unchanged',
+    memory
+  });
 }
 export function runRevoteExperiencePromotion({
   memoryFile = '.vibe2/experience.json',
@@ -370,7 +393,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_EXPERIENCE_PERSISTED=${result.persisted ? 'YES' : 'NO'}`);
   console.log(`VIBE2_EXPERIENCE_REASON=${result.reason}`);
   console.log(`VIBE2_EXPERIENCE_AUTHORITY=${result.authority}`);
-  if(batchReview){console.log(`VIBE2_EXPERIENCE_BATCH_TOTAL=${result.total||0}`);console.log(`VIBE2_EXPERIENCE_BATCH_PROMOTED=${result.promotedCount||0}`);}
+  if(batchReview){
+    console.log(`VIBE2_EXPERIENCE_BATCH_TOTAL=${result.total||0}`);
+    console.log(`VIBE2_EXPERIENCE_BATCH_PROMOTED=${result.promotedCount||0}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_TOTAL=${result.capabilityApplicationTotal||0}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_APPLIED=${result.capabilityApplicationApplied||0}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_DUPLICATES=${result.capabilityApplicationDuplicates||0}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_MISSING=${result.capabilityApplicationMissing||0}`);
+  }
   if (result.review) {
     console.log(`VIBE2_EXPERIENCE_REVOTE_DECISION=${result.review.revoteDecision}`);
     console.log(`VIBE2_EXPERIENCE_REVIEW_VERIFIED=${result.review.reviewVerified ? 'YES' : 'NO'}`);
