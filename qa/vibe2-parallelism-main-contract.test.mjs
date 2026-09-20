@@ -36,3 +36,20 @@ test('PARALLELISM_CONTRACT_GATE uses machine-readable authority only',()=>{
   assert.equal(runtime.documentation.humanDocumentLimit,0);
   assert.equal(runtime.documentation.machineSourceOfTruth,'vibe2-runtime.json');
 });
+
+test('24H game-primary refill does not wait for every active worker to finish',()=>{
+  const continuous=runner.slice(runner.indexOf('  continuous:'),runner.indexOf('  learning_idle:'));
+  const learning=runner.slice(runner.indexOf('  learning_idle:'),runner.indexOf('  game_study:'));
+  const study=runner.slice(runner.indexOf('  game_study:'),runner.indexOf('  refill:'));
+  const refill=runner.slice(runner.indexOf('  refill:'));
+
+  assert.match(continuous,/continue_required == 'YES'/);
+  assert.match(continuous,/game_primary_queued != '0'/);
+  assert.doesNotMatch(continuous,/wave_ready/,'independent production refill must not wait for a global zero-worker barrier');
+
+  assert.match(learning,/wave_ready == 'YES'/,'idle learning stays behind the zero-active-game safety barrier');
+  assert.match(study,/wave_ready == 'YES'/,'game study stays behind the zero-active-game safety barrier');
+
+  assert.match(refill,/needs\.continuous\.result == 'success'/);
+  assert.doesNotMatch(refill,/wave_ready/,'next production cycle may refill while unrelated workers remain active');
+});
