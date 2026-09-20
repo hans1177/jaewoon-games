@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE1_ROOT_CAUSE_VERIFIER_CONNECTED",
+    "currentState": "PHASE2_SHADOW_EVENT_ROUTER_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -337,6 +337,20 @@
       "rootCauseSystemRequiresIndependentExplicitEvidence": true,
       "causalRepairDoesNotImplyRootCause": true,
       "phase2Authority": "NONE"
+    },
+    "phase2Shadow": {
+      "eventRouter": "tools/vibe2-neural-event-router.mjs",
+      "fanIn": "tools/vibe2-fan-in-review.mjs",
+      "evidencePrefix": "neural-event-shadow:",
+      "actionEvidencePrefix": "neural-event-shadow-action:",
+      "comparisonTarget": "CURRENT_WAVE_SCHEDULER_OUTCOME",
+      "executionAuthority": "NONE",
+      "workerCreationAuthority": "NONE",
+      "queueMutationAuthority": "NONE",
+      "waveReorderAuthority": "NONE",
+      "lockAuthority": "NONE",
+      "policyMutationAuthority": "NONE",
+      "learningAuthority": "NONE"
     }
   }
 }
