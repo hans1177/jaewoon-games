@@ -13,6 +13,156 @@
   },
   "games": [
     {
+      "id": "ant-simulator",
+      "name": "개미 시뮬레이터",
+      "description": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
+      "genre": [
+        "시뮬레이션",
+        "오픈월드",
+        "멀티플레이",
+        "생존"
+      ],
+      "image": "assets/insect-main-v3.webp",
+      "webPath": "/web-games/ant-simulator/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · Web 멀티 검증 → Roblox",
+      "homepageRecentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "시뮬레이션",
+          "오픈월드",
+          "멀티플레이",
+          "생존"
+        ],
+        "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+        "updatedAt": "2026-09-20",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 1,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "ant-simulator",
+          "name": "개미 시뮬레이터",
+          "description": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
+          "genres": [
+            "시뮬레이션",
+            "오픈월드",
+            "멀티플레이",
+            "생존"
+          ],
+          "image": "assets/insect-main-v3.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "roblox",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Web 멀티 검증 → Roblox"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/ant-simulator/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 멀티 검증 → Roblox",
+          "recentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "시뮬레이션",
+              "오픈월드",
+              "멀티플레이",
+              "생존"
+            ],
+            "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+            "updatedAt": "2026-09-20",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 1,
+      "selectedPlatform": "ROBLOX"
+    },
+    {
       "id": "amusement-tycoon",
       "name": "놀이공원 타이쿤",
       "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
@@ -58,13 +208,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-        "updatedAt": "2026-09-20T05:56:22.261Z",
+        "updatedAt": "2026-09-20T07:53:04.089Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 1,
+        "catalogOrder": 2,
         "authority": "company-runtime",
         "identity": {
           "gameId": "amusement-tycoon",
@@ -153,13 +303,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-            "updatedAt": "2026-09-20T05:56:22.261Z",
+            "updatedAt": "2026-09-20T07:53:04.089Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 1,
+      "catalogOrder": 2,
       "selectedPlatform": "UNITY"
     },
     {
@@ -207,13 +357,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:37.824Z",
+        "updatedAt": "2026-09-20T07:52:42.820Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 2,
+        "catalogOrder": 3,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -300,13 +450,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:37.824Z",
+            "updatedAt": "2026-09-20T07:52:42.820Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 2,
+      "catalogOrder": 3,
       "selectedPlatform": "UNITY"
     },
     {
@@ -360,13 +510,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:26.146Z",
+        "updatedAt": "2026-09-20T07:52:28.278Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 3,
+        "catalogOrder": 4,
         "authority": "company-runtime",
         "identity": {
           "gameId": "daechung-rpg",
@@ -453,13 +603,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:26.146Z",
+            "updatedAt": "2026-09-20T07:52:28.278Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 3
+      "catalogOrder": 4
     },
     {
       "id": "line-defense",
@@ -505,13 +655,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
-        "updatedAt": "2026-09-20T05:56:36.545Z",
+        "updatedAt": "2026-09-20T07:52:25.810Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 4,
+        "catalogOrder": 5,
         "authority": "company-runtime",
         "identity": {
           "gameId": "line-defense",
@@ -598,13 +748,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
-            "updatedAt": "2026-09-20T05:56:36.545Z",
+            "updatedAt": "2026-09-20T07:52:25.810Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 4,
+      "catalogOrder": 5,
       "selectedPlatform": "UNITY"
     },
     {
@@ -653,13 +803,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
-        "updatedAt": "2026-09-20T05:56:24.527Z",
+        "updatedAt": "2026-09-20T07:52:30.149Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 6,
         "authority": "company-runtime",
         "identity": {
           "gameId": "village-dungeons",
@@ -748,13 +898,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
-            "updatedAt": "2026-09-20T05:56:24.527Z",
+            "updatedAt": "2026-09-20T07:52:30.149Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 5,
+      "catalogOrder": 6,
       "selectedPlatform": "UNITY"
     },
     {
@@ -780,7 +930,7 @@
       "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
-      "ownerWebSourceRevision": "3a398be6d6d2f3df331941251f111b3f80992109ceaba79e0be892c578b78ab3",
+      "ownerWebSourceRevision": "5ed8b653d6be18e685fc3758cbd86f95de8026fbe7e22449f0ca6608dc2f13c2",
       "ownerWebEntryFile": "web-games/fantasy-survival/index.html",
       "webDevelopmentResetRequired": true,
       "homepageInfo": {
@@ -803,14 +953,14 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "VIBE_WEB_BASE_IMPLEMENTATION",
-        "updatedAt": "2026-09-20T05:56:56.054Z",
+        "updatedAt": "2026-09-20T07:52:35.728Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 7,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -899,13 +1049,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "VIBE_WEB_BASE_IMPLEMENTATION",
-            "updatedAt": "2026-09-20T05:56:56.054Z",
+            "updatedAt": "2026-09-20T07:52:35.728Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 7,
       "productionTarget": "unity-android",
       "homepageStage": "개발확정 · Web 전체분량 검증 → Unity Android"
     },
@@ -953,13 +1103,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:23.323Z",
+        "updatedAt": "2026-09-20T07:52:31.227Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 8,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -1046,13 +1196,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:23.323Z",
+            "updatedAt": "2026-09-20T07:52:31.227Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 8,
       "selectedPlatform": "UNITY"
     },
     {
@@ -1100,13 +1250,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:21.809Z",
+        "updatedAt": "2026-09-20T07:52:28.849Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 8,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1191,13 +1341,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:21.809Z",
+            "updatedAt": "2026-09-20T07:52:28.849Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 8
+      "catalogOrder": 9
     },
     {
       "id": "seed-casual-realm-weaver",
@@ -1244,13 +1394,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:57:10.238Z",
+        "updatedAt": "2026-09-20T07:52:28.677Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -1335,13 +1485,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:57:10.238Z",
+            "updatedAt": "2026-09-20T07:52:28.677Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 9
+      "catalogOrder": 10
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom",
@@ -1388,13 +1538,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:56.869Z",
+        "updatedAt": "2026-09-20T07:52:34.821Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 10,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1479,13 +1629,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:56.869Z",
+            "updatedAt": "2026-09-20T07:52:34.821Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 10
+      "catalogOrder": 11
     },
     {
       "id": "seed-puzzle-chromatic-cascade",
@@ -1532,13 +1682,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:58.642Z",
+        "updatedAt": "2026-09-20T07:52:28.339Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -1623,13 +1773,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:58.642Z",
+            "updatedAt": "2026-09-20T07:52:28.339Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 11
+      "catalogOrder": 12
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion",
@@ -1676,13 +1826,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:26.130Z",
+        "updatedAt": "2026-09-20T07:52:29.175Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 12,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -1767,13 +1917,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:26.130Z",
+            "updatedAt": "2026-09-20T07:52:29.175Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 12,
+      "catalogOrder": 13,
       "homepageDisplayMode": "WEB_PUBLISHED",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -1826,13 +1976,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:56:25.103Z",
+        "updatedAt": "2026-09-20T07:52:24.479Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -1917,13 +2067,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:56:25.103Z",
+            "updatedAt": "2026-09-20T07:52:24.479Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 13
+      "catalogOrder": 14
     },
     {
       "id": "survival",
@@ -1969,13 +2119,13 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T05:57:08.975Z",
+        "updatedAt": "2026-09-20T07:52:27.849Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -2060,13 +2210,13 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T05:57:08.975Z",
+            "updatedAt": "2026-09-20T07:52:27.849Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 14
+      "catalogOrder": 15
     },
     {
       "id": "crystal-defense",
@@ -2111,13 +2261,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.565Z",
+        "updatedAt": "2026-09-20T07:57:17.930Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 15,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "crystal-defense",
@@ -2202,13 +2352,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.565Z",
+            "updatedAt": "2026-09-20T07:57:17.930Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 15,
+      "catalogOrder": 16,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -2266,13 +2416,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.959Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -2359,13 +2509,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.959Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 16
+      "catalogOrder": 17
     },
     {
       "id": "chess-battle",
@@ -2410,13 +2560,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.959Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -2501,13 +2651,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.959Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 17,
+      "catalogOrder": 18,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -2564,13 +2714,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.959Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cozy-island",
@@ -2657,13 +2807,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.959Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 18,
+      "catalogOrder": 19,
       "selectedPlatform": "ROBLOX"
     },
     {
@@ -2709,13 +2859,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.959Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "egg-heist",
@@ -2800,13 +2950,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.959Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 19,
+      "catalogOrder": 20,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -2862,13 +3012,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.959Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -2953,13 +3103,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.959Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID"
     },
     {
@@ -3007,13 +3157,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.959Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -3100,13 +3250,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.959Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3161,13 +3311,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.960Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival2",
@@ -3252,13 +3402,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.960Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3313,13 +3463,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.960Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -3404,13 +3554,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.960Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3465,16 +3615,16 @@
         ],
         "genreLabel": "선택형 · 생존 · 좀비 · 스토리",
         "subgenre": "",
-        "playMode": "SINGLE_PLAYER",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
         "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-        "updatedAt": "2026-09-20T06:28:34.646Z",
+        "updatedAt": "2026-09-20T07:57:17.960Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -3560,167 +3710,17 @@
             ],
             "genreLabel": "선택형 · 생존 · 좀비 · 스토리",
             "subgenre": "",
-            "playMode": "SINGLE_PLAYER",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-            "updatedAt": "2026-09-20T06:28:34.646Z",
+            "updatedAt": "2026-09-20T07:57:17.960Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 24,
-      "selectedPlatform": "UNITY"
-    },
-    {
-      "id": "ant-simulator",
-      "name": "개미 시뮬레이터",
-      "description": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
-      "genre": [
-        "시뮬레이션",
-        "오픈월드",
-        "멀티플레이",
-        "생존"
-      ],
-      "image": "assets/insect-main-v3.webp",
-      "webPath": "/web-games/ant-simulator/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": true,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
-      "productionTarget": "roblox",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "개발확정 · Web 멀티 검증 → Roblox",
-      "homepageRecentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "시뮬레이션",
-          "오픈월드",
-          "멀티플레이",
-          "생존"
-        ],
-        "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
-        "subgenre": "",
-        "playMode": "multiplayer",
-        "playModeLabel": "실시간 멀티플레이",
-        "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-        "updatedAt": "2026-09-20T06:55:00.000Z",
-        "status": "WEB_VIBE_IMPLEMENTED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 25,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "ant-simulator",
-          "name": "개미 시뮬레이터",
-          "description": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
-          "genres": [
-            "시뮬레이션",
-            "오픈월드",
-            "멀티플레이",
-            "생존"
-          ],
-          "image": "assets/insect-main-v3.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_DIRECT_GAME_BUILD",
-          "target": "roblox",
-          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Web 멀티 검증 → Roblox"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/ant-simulator/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Web 멀티 검증 → Roblox",
-          "recentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "시뮬레이션",
-              "오픈월드",
-              "멀티플레이",
-              "생존"
-            ],
-            "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
-            "subgenre": "",
-            "playMode": "multiplayer",
-            "playModeLabel": "실시간 멀티플레이",
-            "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
-            "updatedAt": "2026-09-20T06:55:00.000Z",
-            "status": "WEB_VIBE_IMPLEMENTED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
       "catalogOrder": 25,
-      "selectedPlatform": "ROBLOX"
+      "selectedPlatform": "UNITY"
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -3731,11 +3731,11 @@
     "FORTNITE_UEFN"
   ],
   "runtimeCounts": {
-    "canonicalGames": 24,
-    "homepageInfo": 24,
-    "normalizedGames": 24,
+    "canonicalGames": 25,
+    "homepageInfo": 25,
+    "normalizedGames": 25,
     "ownerWebAdded": 0,
-    "ownerWebUpdated": 0,
+    "ownerWebUpdated": 1,
     "ownerWebDisabled": 0
   },
   "catalogSchemaVersion": 2,
