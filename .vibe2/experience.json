@@ -1034,6 +1034,67 @@
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_a5381be270464bcf8da90edf",
+      "fingerprint": "fp_fbl0i8",
+      "gameId": "amusement-tycoon",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo",
+      "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo",
+      "change": "strategy PRIMARY_RESPONSIBILITY_MINIMAL | variant primary | attempts 2 | context PRIMARY_SYMBOL_WINDOWS | changed-files 1",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "incremental-qa-pass",
+        "performance-sanity-pass",
+        "full-fan-in-regression-pass",
+        "package-review-pass"
+      ],
+      "build": "actions-run:35489583055",
+      "evidence": [
+        "candidate-sha:659d49a4d4a1304fadd5b31c3b3e05f6beabc63c",
+        "base-main:a805dd219184f35bb2ea88c73463e7aae1366803",
+        "incremental-qa-hash:e105ff07119727408a759278d7a45e5ae285f631aa9a5f2054a0a176af6cd179",
+        "causal-replay-status:PLAN_ONLY",
+        "architecture-drift-status:ANALYZED",
+        "actions-run:35489583055",
+        "reservation-id:35489583055:1",
+        "coding-trace:ctrace_a5381be270464bcf8da90edf",
+        "fan-in-review:PASS"
+      ],
+      "reusablePatterns": [
+        "CAPABILITY:CODING_STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL",
+        "CAPABILITY:RESPONSIBILITY_LOCALIZATION:PLACEMENT+PRESENTATION+WORLD",
+        "CAPABILITY:CONTEXT_SELECTION:PRIMARY_SYMBOL_WINDOWS",
+        "CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION",
+        "CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND",
+        "CAPABILITY_DOMAIN:TOOL_ORCHESTRATION",
+        "CAPABILITY_DOMAIN:RESPONSIBILITY_LOCALIZATION",
+        "CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING",
+        "CAPABILITY_DOMAIN:CONTEXT_SELECTION",
+        "CAPABILITY_DOMAIN:ARCHITECTURE_JUDGMENT",
+        "CAPABILITY_DOMAIN:FAILURE_RECOVERY",
+        "CAPABILITY_DOMAIN:QA_DESIGN",
+        "CAPABILITY_DOMAIN:REGRESSION_REASONING",
+        "CAPABILITY_DOMAIN:RESOURCE_EFFICIENCY",
+        "CAPABILITY_DOMAIN:PROBLEM_DECOMPOSITION"
+      ],
+      "avoidPatterns": [],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }
