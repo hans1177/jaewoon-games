@@ -1,5 +1,5 @@
 {
-  "version": 166,
+  "version": 167,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -2956,7 +2956,7 @@
       }
     },
     "sharedWorkerContext": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-19",
       "requiredForAllWorkers": true,
       "appliesTo": [
@@ -3032,7 +3032,14 @@
           ".github/workflows/director-supervisor.yml",
           ".github/workflows/homepage-manager.yml"
         ]
-      }
+      },
+      "compiledWorkContractRequired": true,
+      "compiledWorkContractCompiler": "tools/vibe2-central-work-contract.mjs",
+      "compiledWorkContractConsumer": "tools/vibe2-source-worker.mjs",
+      "policyFingerprintCheckedBeforeSourceGeneration": true,
+      "policyFingerprintCheckedBeforeCandidateWrite": true,
+      "exactFailureStageRepairRequired": true,
+      "invariantLockRequired": true
     },
     "primaryAiOrchestration": {
       "version": 2,
@@ -6093,6 +6100,69 @@
           "coreCi": "PASS"
         }
       }
+    }
+  },
+  "vibeCentralWorkContract": {
+    "version": 1,
+    "required": true,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "compiler": "tools/vibe2-central-work-contract.mjs",
+    "runnerBinding": "tools/vibe2-continuous-runner.mjs",
+    "sourceWorkerBinding": "tools/vibe2-source-worker.mjs",
+    "qa": "qa/vibe2-central-work-contract.test.mjs",
+    "purpose": "Compile the central roadmap into a task-local executable contract instead of relying on a long advisory prompt.",
+    "compileFields": [
+      "EXACT_WRITABLE_SCOPE",
+      "PROTECTED_GAMEPLAY_INVARIANTS",
+      "FORBIDDEN_CHANGE_CLASSES",
+      "EXACT_FAILURE_STAGE_ROUTE",
+      "PASS_CONDITIONS",
+      "LEARNING_AND_PROMOTION_GATES",
+      "CENTRAL_POLICY_SHA256"
+    ],
+    "defaultProtectedSemantics": [
+      "GAME_IDENTITY",
+      "SAVE_KEY_AND_SAVE_MEANING",
+      "CORE_LOOP",
+      "PROGRESSION",
+      "MOBILE_INPUT",
+      "EXISTING_VALID_FEATURES"
+    ],
+    "forbiddenChanges": [
+      "WRAPPER_OR_SHADOW_PIPELINE",
+      "UNRELATED_SYSTEM_MUTATION",
+      "SAVE_RESET_WITHOUT_MIGRATION",
+      "FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH",
+      "RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT"
+    ],
+    "failureRouting": {
+      "mode": "EXACT_FAILURE_STAGE_REPAIR",
+      "preserveAlreadyPassedStages": true,
+      "restartFromBeginning": false,
+      "automaticScopeExpansion": false,
+      "immediateRevalidation": true
+    },
+    "freshnessGate": {
+      "hash": "SHA256",
+      "beforeSourceGeneration": true,
+      "beforeCandidateWrite": true,
+      "staleAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
+    },
+    "supervisedGate": {
+      "traceOnlyUntilSupervisorPass": true,
+      "reusableLearningBeforeSupervisorPass": false,
+      "automaticMainPromotionBeforeSupervisorPass": false
+    },
+    "changeRecord": {
+      "id": "VIBE_CENTRAL_COMPILED_WORK_CONTRACT_V1_2026-09-20",
+      "documentedAt": "2026-09-20",
+      "summary": "Central roadmap now compiles into an exact Vibe work contract with invariant locks, exact failure routing, and two-phase policy fingerprint freshness enforcement.",
+      "codeBindings": [
+        "tools/vibe2-central-work-contract.mjs",
+        "tools/vibe2-continuous-runner.mjs",
+        "tools/vibe2-source-worker.mjs",
+        "qa/vibe2-central-work-contract.test.mjs"
+      ]
     }
   }
 }
