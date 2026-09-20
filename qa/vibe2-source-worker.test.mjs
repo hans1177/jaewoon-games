@@ -1562,7 +1562,8 @@ test('timeout final retry prompt strips read-only context and asks for one compa
   assert.match(retry,/exceeded the time budget/);
   assert.match(retry,/FINAL FOCUSED RETRY/);
   assert.doesNotMatch(retry,/config\.js/);
-  assert.match(retry,/output only \{\"edits\":\[/);
+  assert.match(retry,/output only one edits object/);
+  assert.doesNotMatch(retry,/EXACT_ALLOWED_PATH|EXACT_UNIQUE_SOURCE_TEXT|MINIMAL_REAL_REPLACEMENT/);
 });
 
 test('generation recovery remains bounded and keeps strict output contracts', () => {
