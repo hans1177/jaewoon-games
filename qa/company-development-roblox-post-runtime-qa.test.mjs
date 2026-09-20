@@ -12,10 +12,10 @@ function read(path) {
 test('Roblox post-runtime QA stays exact-artifact and real-Studio only', () => {
   const workflow = read(workflowPath);
   assert.match(workflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'/);
-  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3/);
-  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES/);
-  assert.match(workflow, /max-parallel: 3/);
+  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'/);
+  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1/);
+  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION/);
+  assert.match(workflow, /max-parallel: 1/);
   assert.match(workflow, /EXPECTED_ARTIFACT/);
   assert.match(workflow, /Get-FileHash -Algorithm SHA256/);
   assert.match(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
@@ -61,4 +61,22 @@ test('owner-focused secondary Roblox enters native mobile QA and regression with
   assert.doesNotMatch(block,/targetPlatform\s*[:=]/);
   assert.doesNotMatch(block,/currentStep\s*[:=]/);
   assert.doesNotMatch(block,/canonicalState\s*[:=]/);
+});
+
+
+test('post-runtime Studio QA is manual-only, exact-game, single-session and local-place',()=>{
+  const workflow=read(workflowPath);
+  assert.match(workflow,/studio_qa_approved:/);
+  assert.match(workflow,/game_id:/);
+  assert.match(workflow,/STUDIO_QA_APPROVED: \$\{\{ inputs\.studio_qa_approved \}\}/);
+  assert.match(workflow,/GITHUB_EVENT_NAME==='workflow_dispatch'/);
+  assert.match(workflow,/GITHUB_ACTOR\|\|''\)!=='github-actions\[bot\]'/);
+  assert.match(workflow,/ROBLOX_STUDIO_QA_UNATTENDED_AUTORUN=FORBIDDEN/);
+  assert.match(workflow,/ROBLOX_STUDIO_QA_MANUAL_APPROVAL_REQUIRED=YES/);
+  assert.match(workflow,/if\(item\.gameId!==manualGameId\)continue;/);
+  assert.match(workflow,/max-parallel: 1/);
+  assert.match(workflow,/--localPlaceFile/);
+  assert.doesNotMatch(workflow,/--placeId/);
+  assert.doesNotMatch(workflow,/--universeId/);
+  assert.doesNotMatch(workflow,/PublishAsync/);
 });
