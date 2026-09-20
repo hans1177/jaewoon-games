@@ -343,7 +343,38 @@ test('verified Web repair checkpoint creates the next causal repair generation w
   const next=result.tasks.find(row=>row.id===`${gameId}-web-runtime-repair-v2`);
   assert.ok(next);
   assert.ok(next.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
+  assert.ok(next.evidence.includes('real-web-artifact-practice-loop:v1'));
+  assert.ok(next.evidence.includes('practice-input:ACTUAL_WEB_GAME_SOURCE'));
+  assert.ok(next.evidence.includes('practice-repeat-on-verified-improvement:YES'));
   assert.equal(result.queue.tasks.filter(row=>row.id.startsWith(`${gameId}-web-runtime-repair-v`)).length,2);
+
+  const sameRuntimeAgain=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Repair Generation',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{gameId,gameName:'Repair Generation',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED'}]},
+    queue:result.queue,repoRoot:root,maxConcurrentTasks:20
+  });
+  const preservedV2=sameRuntimeAgain.queue.tasks.find(row=>row.id===`${gameId}-web-runtime-repair-v2`);
+  assert.ok(preservedV2);
+  assert.equal(preservedV2.status,'queued');
+  assert.notEqual(preservedV2.blocker,'superseded-by:VIBE_WEB_REPAIR');
+
+  const verifiedV2Queue={
+    ...sameRuntimeAgain.queue,
+    tasks:sameRuntimeAgain.queue.tasks.map(row=>row.id===`${gameId}-web-runtime-repair-v2`
+      ?{...row,status:'verified',blocker:null,lastOutcome:'PASS',evidence:[...(row.evidence||[]),'signal-state:VERIFIED_CHECKPOINT','practice-improvement:VERIFIED_BETTER_BASELINE']}
+      :row)
+  };
+  const third=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Repair Generation',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{gameId,gameName:'Repair Generation',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED'}]},
+    queue:verifiedV2Queue,repoRoot:root,maxConcurrentTasks:20
+  });
+  const v3=third.queue.tasks.find(row=>row.id===`${gameId}-web-runtime-repair-v3`);
+  assert.ok(v3);
+  assert.equal(v3.status,'queued');
+  assert.ok(v3.evidence.includes('practice-baseline:CURRENT_VERIFIED_WEB_ARTIFACT'));
 });
 
 test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
