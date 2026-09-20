@@ -1,5 +1,5 @@
 {
-  "version": 161,
+  "version": 162,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3758,28 +3758,24 @@
     }
   },
   "changeRecord": {
-    "id": "ASSISTANT_VIBE_COAUTHORING_TRACE_REQUIRED_2026-09-20",
+    "id": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_PARTIAL_PASS_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "SUPERVISED_WEB_FIRST_PILOT_BUG_DEFENSE_2026-09-20",
-    "reason": "OWNER REQUIRES EVERY ASSISTANT-LED VIBE WEB COAUTHORING ACTION TO BE DOCUMENTED AS TRACEABLE LEARNING EVIDENCE. RAW ACTION TRACE IS PROVENANCE ONLY; VERIFIED PASS/REVISE/DROP MUST REUSE THE EXISTING SUPERVISION REVIEW -> VIBE EXPERIENCE MEMORY -> CANONICAL TRAINING PIPELINE.",
+    "previousChangeRecordId": "ASSISTANT_VIBE_COAUTHORING_TRACE_REQUIRED_2026-09-20",
+    "reason": "SYNC THE FIRST ASSISTANT+VIBE COAUTHORING CANDIDATE WITH OBSERVED PR QA. FOUR CHECKS ARE PASS; VIBE QA AND FINAL SUPERVISOR PLAYABILITY REVIEW ARE NOT COMPLETE, SO MAIN PROMOTION REMAINS BLOCKED.",
     "invariants": {
-      "everyAssistantCoauthoringActionDocumented": true,
-      "rawTraceDoesNotAutoPromote": true,
-      "verifiedOutcomeRequiredForReusableLearning": true,
-      "existingExperienceMemoryReused": true,
-      "canonicalTrainingPipelineReused": true,
-      "shadowLearningPipelineForbidden": true,
-      "qaGatesNotWeakened": true,
-      "authorityExpansionForbidden": true,
-      "protectedGameplayMutationStillRequiresOwnerAuthorization": true
+      "exactCandidateCommit": "185c418c5458e14147b360af4bf3f2f01d6577fc",
+      "draftPr": 1743,
+      "partialCiDoesNotEqualProductionPass": true,
+      "runtimeOrSupervisorEvidenceNotInvented": true,
+      "automaticPromotionBlocked": true,
+      "coauthoringTraceUpdated": true
     },
     "next": [
-      "KEEP_WRITING_ASSISTANT_COAUTHORING_TRACE_FOR_EVERY_SOURCE_REVIEW_CHANGE_QA_AND_DECISION",
-      "VERIFY_BUG_DEFENSE_PR_1743_CI",
-      "RUN_SUPERVISOR_PLAYABILITY_REVIEW_ON_EXACT_CANDIDATE",
-      "PROMOTE_PASS_OR_REVISE_ONLY_AFTER_VERIFIED_EVIDENCE",
-      "DISTILL_REUSABLE_AND_AVOID_PATTERNS_THROUGH_EXISTING_EXPERIENCE_CONTROL"
+      "WAIT_FOR_OR_INSPECT_VIBE_QA_RUN_35477567582",
+      "REVIEW_EXACT_CANDIDATE_FOR_PLAYABILITY_AND_DESIGN_TRACEABILITY",
+      "WRITE_VERIFIED_PASS_OR_REVISE_TO_COAUTHORING_TRACE_AND_SUPERVISION_REVIEW",
+      "PROMOTE_ONLY_IF_ALL_REQUIRED_GATES_PASS"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5864,7 +5860,7 @@
         "branch": "assistant/supervised-bug-defense-v1",
         "candidateCommit": "185c418c5458e14147b360af4bf3f2f01d6577fc",
         "draftPr": 1743,
-        "state": "CI_AND_SUPERVISOR_REVIEW_PENDING",
+        "state": "CI_PARTIAL_PASS_VIBE_QA_PENDING_SUPERVISOR_REVIEW_PENDING",
         "mainPromotionAllowed": false,
         "staticSourceReview": {
           "validationHarnessAbsent": true,
@@ -5877,7 +5873,41 @@
           "versionedPersistence": true,
           "duplicateFunctionDeclarations": false
         },
-        "learningTrace": "company-learning/assistant-vibe-coauthoring-log.json#assistant_bug_defense_playable_candidate_v1_20260920"
+        "learningTrace": "company-learning/assistant-vibe-coauthoring-log.json#assistant_bug_defense_playable_candidate_v1_20260920",
+        "qa": {
+          "companyEvolutionQa": {
+            "runId": 35477567584,
+            "conclusion": "success"
+          },
+          "integratedRegression": {
+            "runId": 35477567579,
+            "conclusion": "success"
+          },
+          "securityImmuneSystem": {
+            "runId": 35477567597,
+            "conclusion": "success"
+          },
+          "vibe3EngineContract": {
+            "runId": 35477567578,
+            "conclusion": "success"
+          },
+          "vibeQa": {
+            "runId": 35477567582,
+            "conclusion": "queued"
+          },
+          "homepageManager": {
+            "runId": 35477567590,
+            "conclusion": "queued",
+            "releaseAuthority": "NOT_APPLICABLE_UNTIL_SUPERVISOR_PASS"
+          }
+        },
+        "finalSupervisorDecision": "PENDING",
+        "learningTraceCommits": [
+          "9f59d01e09ed9ad8e67aec5cb0565b679e0605ec",
+          "17d24e636365a942e22e9a6c2ffcb55f3eaff428",
+          "cdd09445397866ef64cc902d28f1626e2da4938e",
+          "b9e19df8ab46e06a57b22903e86c61259eb441ca"
+        ]
       }
     }
   }
