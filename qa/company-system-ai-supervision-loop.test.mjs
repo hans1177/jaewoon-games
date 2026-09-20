@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
-import { assignSecurityRecovery, PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION } from '../tools/company-system-ai-queue.mjs';
+import { assignSecurityRecovery, PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION, reserveSecurityRecoveryTask } from '../tools/company-system-ai-queue.mjs';
 import { securityRepairEvidence } from '../tools/company-recovery-queue.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
@@ -229,4 +229,43 @@ test('Primary AI security recovery assignment workflow is manual-only and atomic
   assert.match(securityAssignmentWorkflow,/SECURITY_RECOVERY_ASSIGNMENT_AUTO_DISPATCH=NO/);
   assert.doesNotMatch(securityAssignmentWorkflow,/company-system-ai-cycle/);
   assert.doesNotMatch(securityAssignmentWorkflow,/refs\/heads\/main|HEAD:main/);
+});
+
+
+test('targeted security recovery dispatch and reservation touch only the explicitly assigned task',()=>{
+  const assigned=assignSecurityRecovery({tasks:[{
+    id:'unrelated-task',status:'queued',priority:'critical',goal:'unrelated',responsibleFiles:['qa/unrelated.test.mjs'],verificationCommands:['node --test qa/unrelated.test.mjs'],evidence:['existing-general-task']
+  }]},{tasks:[{
+    id:'recovery-security-target',status:'blocked-primary-ai-assignment-required',sourceQueue:'security',sourceTaskId:'security-run-target',recoveryOwner:'SYSTEM_AI',
+    evidence:['security-repair-file:tools/security-target.mjs']
+  }]},{recoveryId:'recovery-security-target',decision:PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION});
+  const dispatched=dispatchRecovery({
+    recoveryInput:assigned.recovery,
+    gameQueueInput:{tasks:[]},
+    systemAiQueueInput:assigned.queue,
+    route:'system-ai',
+    sourceTaskId:'security-run-target'
+  });
+  assert.equal(dispatched.recovery.tasks[0].status,'dispatched');
+  assert.equal(dispatched.systemAi.tasks.find(x=>x.id==='unrelated-task').status,'queued');
+  const reserved=reserveSecurityRecoveryTask(dispatched.systemAi,{id:'security-run-target',reservationId:'security-targeted:test'});
+  assert.deepEqual(reserved.reserved.map(x=>x.id),['security-run-target']);
+  assert.equal(reserved.queue.tasks.find(x=>x.id==='security-run-target').status,'running');
+  assert.equal(reserved.queue.tasks.find(x=>x.id==='unrelated-task').status,'queued');
+});
+
+test('targeted security recovery reservation rejects ordinary queued system-AI tasks',()=>{
+  assert.throws(()=>reserveSecurityRecoveryTask({tasks:[{
+    id:'ordinary',status:'queued',priority:'critical',goal:'ordinary',responsibleFiles:['qa/ordinary.test.mjs'],verificationCommands:['node --test qa/ordinary.test.mjs'],evidence:['ordinary-task'],supervisorReviewRequired:true
+  }]},{id:'ordinary',reservationId:'security-targeted:test'}),/ASSIGNMENT_EVIDENCE_REQUIRED/);
+});
+
+test('Company System AI Workers manual security target cannot pull unrelated queued work or trigger generic refill',()=>{
+  assert.match(workflow,/security_recovery_task_id:/);
+  assert.match(workflow,/SECURITY_RECOVERY_TASK_ID: \$\{\{ inputs\.security_recovery_task_id \|\| '' \}\}/);
+  assert.match(workflow,/--source-task="\$SECURITY_RECOVERY_TASK_ID"/);
+  assert.match(workflow,/--command=reserve-security-recovery/);
+  assert.match(workflow,/--id="\$SECURITY_RECOVERY_TASK_ID"/);
+  assert.match(workflow,/targeted_security_recovery=/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_REFILL=SKIPPED_TARGETED_SECURITY_RECOVERY/);
 });
