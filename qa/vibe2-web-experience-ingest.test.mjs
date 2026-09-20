@@ -122,3 +122,45 @@ test('non-formal Web item is ignored and cannot become positive learning',()=>{
   assert.equal(result.promotedCount,0);
   assert.equal(result.memory.records.length,0);
 });
+
+test('verified Web outcome can distill a hash-only external AI advisory candidate',()=>{
+  const item={...validItem(),webExternalAiLearningCandidate:{
+    version:1,id:'g1-web-contract-abc123',sourceKind:'external-ai',provider:'GEMINI',model:'gemini-test',
+    rawOutputSha256:'b'.repeat(64),engine:'web',gameId:'g1',domains:['WEB_RUNTIME','UI_STATE'],
+    distilledPatterns:['Map existing real gameplay controls to approved scope before creating new validation controls.'],
+    cautions:['External AI is advisory only.'],sourceWrite:false,productionPass:false,authorityExpanded:false
+  }};
+  const result=ingestFormalWebExperiences({
+    queueInput:{items:[item]},
+    memoryInput:{version:1,records:[]},
+    externalAiKnowledgeInput:{version:1,entries:[]},
+    evidenceLoader:()=>validReport(),
+    designLoader:()=>({path:'design/g1/design-after-web.json',data:validDesign()})
+  });
+  assert.equal(result.promotedCount,1);
+  assert.equal(result.externalAiAcceptedCount,1);
+  assert.equal(result.externalAiKnowledge.entries.length,1);
+  const row=result.externalAiKnowledge.entries[0];
+  assert.equal(row.sourceKind,'external-ai-distilled');
+  assert.equal(row.rawOutputStored,false);
+  assert.equal(row.directSourceWrite,false);
+  assert.equal(row.directProductionPass,false);
+  assert.equal(row.verification.independent,true);
+  assert.ok(row.verification.evidence.some(value=>value.startsWith('runtime:')));
+  assert.ok(row.verification.evidence.some(value=>value.startsWith('source:')));
+  assert.equal('rawOutput' in row,false);
+});
+
+test('external AI candidate is never distilled when formal Web verification fails',()=>{
+  const item={...validItem(),formalImplementationPassed:false,webExternalAiLearningCandidate:{
+    version:1,id:'bad',sourceKind:'external-ai',provider:'GEMINI',model:'m',
+    rawOutputSha256:'c'.repeat(64),distilledPatterns:['candidate pattern']
+  }};
+  const result=ingestFormalWebExperiences({
+    queueInput:{items:[item]},memoryInput:{version:1,records:[]},
+    externalAiKnowledgeInput:{version:1,entries:[]},evidenceLoader:()=>validReport()
+  });
+  assert.equal(result.externalAiAcceptedCount,0);
+  assert.equal(result.externalAiKnowledge.entries.length,0);
+});
+
