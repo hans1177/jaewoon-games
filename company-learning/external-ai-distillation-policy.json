@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Use external AI only as a knowledge source. Raw external model output never becomes game source, production evidence, Mastery credit, or canonical training data directly.",
@@ -35,7 +35,17 @@
     "directMasteryCredit": false,
     "directCanonicalTrainingSample": false,
     "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
-    "authorityExpanded": false
+    "authorityExpanded": false,
+    "lifecycleStates": [
+      "CANDIDATE",
+      "VERIFIED",
+      "PREFERRED",
+      "DEMOTED",
+      "RETIRED"
+    ],
+    "freshProjectOutcomeAttributionRequired": true,
+    "infrastructureFailureMayPenalizeKnowledge": false,
+    "retiredKnowledgeRetrievalForbidden": true
   },
   "retrieval": {
     "distilledKnowledgePath": ".vibe2/external-ai-distilled-knowledge.json",
@@ -43,7 +53,19 @@
     "collector": "tools/vibe2-multisource-learning-collector.mjs",
     "rawExternalAiAvailableToPlanner": false,
     "rawGameplayValuesAvailableToPlanner": false,
-    "externalAiAdvisoryLast": true
+    "externalAiAdvisoryLast": true,
+    "continuousRunnerInjectionRequired": true,
+    "exactInjectedKnowledgeIdTraceRequired": true,
+    "rankAfterInternalVerifiedKnowledge": true
   },
-  "gateWeakening": false
+  "gateWeakening": false,
+  "closedLoop": {
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract",
+    "productionConfidenceSeparateFromMasteryXp": true,
+    "directProductionConfidenceCredit": false,
+    "verifiedProjectOutcomeRequiredForProductionConfidence": true,
+    "singleSuccessDoesNotProveGeneralization": true,
+    "holdoutEvidenceRequiredForStrongGeneralization": true,
+    "authorityExpanded": false
+  }
 }
