@@ -97,6 +97,15 @@ export function validateCompanyRecord(file,{checkReferences=true,checkMediaHash=
     if(clean(row.data?.platform).toUpperCase()!==clean(row.scope?.platform).toUpperCase())errors.push('data.platform:SCOPE_MISMATCH');
     if(!/^[0-9a-f]{64}$/.test(clean(row.data?.sha256)))errors.push('data.sha256:INVALID');
     const media=clean(row.data?.mediaPath);
+    const mediaKind=clean(row.data?.mediaKind).toUpperCase();
+    const motionFocus=clean(row.data?.motionFocus).toUpperCase();
+    const allowedMotionFocus=['ATTACK_HIT_IMPACT','ENEMY_ATTACK_OR_BEHAVIOR','ENEMY_DEATH_OR_REACTION','BOSS_CORE_PATTERN','GATHERING_ACTION','CRAFTING_ACTION','SKILL_OR_ULTIMATE','PLAYER_LOCOMOTION','ENVIRONMENT_REACTION','COOP_OR_MULTIPLAYER_INTERACTION'];
+    if(mediaKind&&!['STILL','MOTION'].includes(mediaKind))errors.push('data.mediaKind:INVALID');
+    if(mediaKind==='STILL'&&!/\.(?:png|jpe?g|webp)$/i.test(media))errors.push('data.mediaPath:STILL_FORMAT_INVALID');
+    if(mediaKind==='MOTION'){
+      if(!/\.(?:mp4|webm|gif|webp)$/i.test(media))errors.push('data.mediaPath:MOTION_FORMAT_INVALID');
+      if(!allowedMotionFocus.includes(motionFocus))errors.push('data.motionFocus:CORE_MOTION_REQUIRED');
+    }
     if(media&&!/^assets\/runtime-evidence\/(?:roblox|unity|fortnite-uefn|web)\//.test(media))errors.push('data.mediaPath:CANONICAL_RUNTIME_MEDIA_ROOT_REQUIRED');
     if(media&&checkMediaHash){
       if(!existsRel(media))errors.push('data.mediaPath:MISSING');
