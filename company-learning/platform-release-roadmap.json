@@ -1,5 +1,5 @@
 {
-  "version": 209,
+  "version": 210,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8330,7 +8330,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -8429,6 +8429,120 @@
       "gameplayBalanceSaveProgressionAndHitSemanticsMustNotChangeFromAssetOnlyWork": true,
       "existingAssetLicenseAndProvenancePolicyReused": true,
       "qualitySecurityEvidenceAndSaveCompatibilityGatesUnchanged": true
+    },
+    "platformAssetSeparation": {
+      "webRole": "PLAYABLE_GAMEPLAY_AND_ART_DIRECTION_REFERENCE_SURFACE",
+      "webAssetDirectReuseIntoUnityForbidden": true,
+      "webAssetDirectReuseIntoRobloxForbidden": true,
+      "unityAssetsMustBeUnityNativeOrExplicitlyUnityCompatible": true,
+      "robloxAssetsMustBeRobloxNativeOrExplicitlyRobloxCompatible": true,
+      "unityRobloxDirectCrossReuseForbiddenUnlessExplicitCompatibilityVerified": true,
+      "platformSpecificReauthoringExpected": true,
+      "sharedStyleIdentityOnly": [
+        "GAME_STYLE_LOCK",
+        "PALETTE",
+        "SILHOUETTE_LANGUAGE",
+        "CHARACTER_AND_MONSTER_IDENTITY",
+        "REGION_IDENTITY",
+        "MATERIAL_AND_LIGHTING_LANGUAGE",
+        "VFX_LANGUAGE",
+        "UI_MOTION_LANGUAGE"
+      ]
+    },
+    "webPresentationQuality": {
+      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
+      "prototypeOnlyGraphicsForbiddenAtFinalPass": true,
+      "primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass": true,
+      "characterEnemyAndCoreObjectVisualIdentityRequired": true,
+      "regionalAtmosphereDifferentiationRequired": true,
+      "animationVfxUiAndCameraPolishRequired": true,
+      "mobileTouchReadabilityRequired": true,
+      "mobilePerformanceBudgetRequired": true,
+      "webDoesNotNeedToImitateHighEndNative3D": true
     }
+  },
+  "weatherPresentationContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "enabled": true,
+    "firstAdoption": {
+      "gameId": "fantasy-survival",
+      "name": "마력숲 생존기",
+      "surfaces": [
+        "WEB_COMPANION",
+        "UNITY",
+        "ROBLOX"
+      ]
+    },
+    "purpose": "ADD_SYNCHRONIZED_WEATHER_AS_PRESENTATION_WITHOUT_SILENTLY_CHANGING_GAMEPLAY_BALANCE",
+    "canonicalStates": [
+      "CLEAR",
+      "RAIN",
+      "FOG",
+      "SNOW",
+      "STORM"
+    ],
+    "regionalExtensions": [
+      "VOLCANIC_ASH",
+      "HEAT_HAZE"
+    ],
+    "semantics": {
+      "presentationOnlyByDefault": true,
+      "attackHealthDropRateMovementSpeedEconomyAndProgressionUnchanged": true,
+      "futureGameplayWeatherEffectsRequireSeparateApprovedDesignChange": true,
+      "transitionControllerRequired": true,
+      "timedOrRegionDrivenTransitionsAllowed": true,
+      "weatherStateMustBeObservableAndTestable": true
+    },
+    "visualAudioLayers": {
+      "skyAndSceneTone": true,
+      "precipitationParticles": true,
+      "fogOrAtmosphere": true,
+      "windAndFoliageMotion": true,
+      "lightningFlashForStorm": true,
+      "ambientWeatherAudio": true,
+      "rainWindThunderAudioWhenApplicable": true,
+      "weatherMustNotMaskCriticalGameplaySignals": true
+    },
+    "multiplayer": {
+      "canonicalWeatherStateSharedByAllPlayers": true,
+      "hostOrAuthoritativeRuntimeOwnsWeatherState": true,
+      "clientsMustObserveSameSemanticWeatherState": true,
+      "localPerformanceMayReduceParticleDensityButMayNotChangeWeatherMeaning": true,
+      "joinInProgressMustReceiveCurrentWeatherState": true
+    },
+    "platformImplementation": {
+      "WEB": {
+        "implementation": "CANVAS_DOM_CSS_WEB_AUDIO_OR_EXISTING_RENDER_PIPELINE",
+        "targetQuality": "POLISHED_MOBILE_WEB_PRESENTATION",
+        "touchAndFrameStabilityRequired": true
+      },
+      "UNITY": {
+        "implementation": "UNITY_NATIVE_PARTICLES_FOG_LIGHTING_MATERIALS_AUDIO",
+        "webRenderAssetsDirectCopyForbidden": true
+      },
+      "ROBLOX": {
+        "implementation": "ROBLOX_NATIVE_PARTICLEEMITTER_ATMOSPHERE_LIGHTING_COLORCORRECTION_SOUND",
+        "webRenderAssetsDirectCopyForbidden": true
+      }
+    },
+    "mobilePerformance": {
+      "adaptiveEffectDensityRequired": true,
+      "particleCapsRequired": true,
+      "unboundedWeatherEffectsForbidden": true,
+      "lowEndModeMayReduceVisualDensityOnly": true,
+      "criticalTouchAndHazardReadabilityMustRemain": true
+    },
+    "qa": {
+      "actualRuntimeVisualEvidenceRequired": true,
+      "actualRuntimeAudioEvidenceWhenAudioPresent": true,
+      "multiplayerSynchronizationEvidenceRequiredForMultiplayerGames": true,
+      "mobilePerformanceEvidenceRequired": true,
+      "gameplaySemanticsRegressionRequired": true,
+      "weatherTextOrSpecAloneCannotPass": true,
+      "failedWeatherScopeRoutesTo": "ASSET_REPAIR_REQUIRED"
+    },
+    "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "authorityExpansion": false
   }
 }
