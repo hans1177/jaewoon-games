@@ -13,7 +13,13 @@ on:
       - 'tools/vibe2-architecture-neuron-consistency.mjs'
       - 'tools/vibe2-system-architecture-contract.mjs'
       - 'tools/vibe2-self-architecture-evolution.mjs'
+      - 'tools/vibe2-architecture-neuron-consistency.mjs'
+      - 'tools/vibe2-system-architecture-contract.mjs'
+      - 'tools/vibe2-self-architecture-evolution.mjs'
       - 'qa/company-shared-context.test.mjs'
+      - 'qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs'
+      - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
+      - 'qa/vibe2-system-architecture-execution.test.mjs'
       - 'qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs'
       - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
       - 'qa/vibe2-system-architecture-execution.test.mjs'
@@ -101,7 +107,13 @@ on:
       - 'tools/vibe2-architecture-neuron-consistency.mjs'
       - 'tools/vibe2-system-architecture-contract.mjs'
       - 'tools/vibe2-self-architecture-evolution.mjs'
+      - 'tools/vibe2-architecture-neuron-consistency.mjs'
+      - 'tools/vibe2-system-architecture-contract.mjs'
+      - 'tools/vibe2-self-architecture-evolution.mjs'
       - 'qa/company-shared-context.test.mjs'
+      - 'qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs'
+      - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
+      - 'qa/vibe2-system-architecture-execution.test.mjs'
       - 'qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs'
       - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
       - 'qa/vibe2-system-architecture-execution.test.mjs'
@@ -191,6 +203,9 @@ jobs:
           node --check tools/company-shared-context.mjs
           node --test qa/company-shared-context.test.mjs
           node --test qa/company-long-horizon-vision.test.mjs
+          node --check tools/vibe2-architecture-neuron-consistency.mjs
+          node tools/vibe2-architecture-neuron-consistency.mjs
+          node --test qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs qa/vibe2-owner-rule4-self-architecture.test.mjs qa/vibe2-system-architecture-execution.test.mjs
           node --check tools/vibe2-architecture-neuron-consistency.mjs
           node tools/vibe2-architecture-neuron-consistency.mjs
           node --test qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs qa/vibe2-owner-rule4-self-architecture.test.mjs qa/vibe2-system-architecture-execution.test.mjs
