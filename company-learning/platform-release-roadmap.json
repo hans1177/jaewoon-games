@@ -3907,6 +3907,24 @@
       "autoRegisterNewWebGameAs": "DESIGN_ONLY_WEB_PUBLISHED",
       "preserveExistingIdentity": true,
       "publishAfterRuntimeSyncAndHomepageQa": true
+    },
+    "homepageControlAuthority": {
+      "authority": "VIBE_HOMEPAGE_PRIMARY_OPERATOR",
+      "primaryOperator": "VIBE",
+      "executionLaneOwner": "VIBE2_VIBE3",
+      "homepageManagerRole": "VIBE_OWNED_EXECUTION_SURFACE",
+      "vibeOwnsPlanning": true,
+      "vibeOwnsPriority": true,
+      "vibeOwnsImplementationAndRepair": true,
+      "nonVibeAiRole": "ASSIST_REVIEW_DIAGNOSE_VALIDATE_ONLY",
+      "nonVibeAiIsHomepageOwner": false,
+      "nonVibeAiMayOverrideVibe": false,
+      "nonVibeAiMayPublishIndependently": false,
+      "directorRole": "POST_WORK_VERIFICATION_AND_BLOCKING_ONLY",
+      "directorOwnsImplementation": false,
+      "deterministicQaAndPublicationGatesRemainAuthoritative": true,
+      "ownerDirectiveAlwaysHighestAuthority": true,
+      "authorityExpansion": false
     }
   },
   "longHorizonVision": {
@@ -9836,6 +9854,16 @@
       "authorityExpansion": false,
       "gateWeakening": false,
       "existingPipelinesOnly": true
+    },
+    "homepageVibePrimary": {
+      "id": "HOMEPAGE_VIBE_PRIMARY_AI_ASSIST_ONLY",
+      "enabled": true,
+      "primaryOperator": "VIBE",
+      "nonVibeAiRole": "ASSIST_ONLY",
+      "aiMayOwnHomepage": false,
+      "aiMayOverrideVibe": false,
+      "aiMayBypassQaOrPublicationGate": false,
+      "ownerDirectiveAlwaysHighestAuthority": true
     }
   }
 }

@@ -125,7 +125,21 @@
       "executionPath": "tools/game-catalog-normalization.mjs",
       "runsInsideExistingCompanyStatusSync": true,
       "humanDocumentRequired": false
-    }
+    },
+    "primaryOperator": "VIBE",
+    "executionLaneOwner": "VIBE2_VIBE3",
+    "managerMeaning": "VIBE_OWNED_HOMEPAGE_EXECUTION_LANE",
+    "managerIsIndependentAiAuthority": false,
+    "vibeOwnsHomepagePlanningAndExecution": true,
+    "vibeOwnsHomepagePriorityAndRepairSignals": true,
+    "nonVibeAiRole": "ASSIST_REVIEW_DIAGNOSE_VALIDATE_ONLY",
+    "nonVibeAiIsHomepageOwner": false,
+    "nonVibeAiMayOverrideVibeHomepageDecision": false,
+    "nonVibeAiMayPublishHomepageIndependently": false,
+    "supervisorMeaning": "POST_WORK_VERIFICATION_AND_BLOCKING_ONLY",
+    "directorOwnsHomepageImplementation": false,
+    "aiAssistanceRequiresVibeOrCanonicalTaskContext": true,
+    "ownerDirectiveAlwaysHighestAuthority": true
   },
   "production": {
     "classificationMode": "SEMANTIC_EVIDENCE_DYNAMIC_MEMBERSHIP",

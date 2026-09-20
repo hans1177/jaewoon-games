@@ -2073,5 +2073,20 @@
     "rawHostilePayloadRetention": false,
     "externalProviderAttack": false,
     "authorityChange": "NONE"
+  },
+  "homepageControlTopology": {
+    "centralContract": "company-learning/platform-release-roadmap.json#serverHomepageIntegration.homepageControlAuthority",
+    "primaryOperator": "VIBE",
+    "executionLaneOwner": "VIBE2_VIBE3",
+    "executionSurface": ".github/workflows/homepage-manager.yml + tools/homepage-manager.mjs",
+    "managerRoleName": "HOMEPAGE",
+    "managerRoleMeaning": "VIBE_OWNED_EXECUTION_SURFACE",
+    "nonVibeAiRole": "ASSIST_REVIEW_DIAGNOSE_VALIDATE_ONLY",
+    "nonVibeAiIndependentAuthority": "NONE",
+    "directorRole": "POST_WORK_VERIFICATION_AND_BLOCKING_ONLY",
+    "directorImplementationAuthority": "NONE",
+    "publicationAuthority": "EXISTING_DETERMINISTIC_QA_DIRECTOR_SUPERVISION_AND_PR_GATE",
+    "ownerDirectiveAlwaysHighestAuthority": true,
+    "authorityExpansion": "NONE"
   }
 }

@@ -493,3 +493,27 @@ test('제2규칙 binds every observable external AI action to security quarantin
   assert.equal(security.monitorAllObservableExternalAiActivity,true);
   assert.equal(security.quarantineBlocksCandidatePublication,true);
 });
+
+
+test('Vibe is the homepage primary operator and non-Vibe AI is assist-only',()=>{
+  const hp=directive.homepageOperations;
+  const control=roadmap.serverHomepageIntegration?.homepageControlAuthority;
+  assert.equal(hp.primaryOperator,'VIBE');
+  assert.equal(hp.executionLaneOwner,'VIBE2_VIBE3');
+  assert.equal(hp.manager,'HOMEPAGE');
+  assert.equal(hp.managerMeaning,'VIBE_OWNED_HOMEPAGE_EXECUTION_LANE');
+  assert.equal(hp.managerIsIndependentAiAuthority,false);
+  assert.equal(hp.vibeOwnsHomepagePlanningAndExecution,true);
+  assert.equal(hp.nonVibeAiRole,'ASSIST_REVIEW_DIAGNOSE_VALIDATE_ONLY');
+  assert.equal(hp.nonVibeAiIsHomepageOwner,false);
+  assert.equal(hp.nonVibeAiMayOverrideVibeHomepageDecision,false);
+  assert.equal(hp.nonVibeAiMayPublishHomepageIndependently,false);
+  assert.equal(hp.directorOwnsHomepageImplementation,false);
+  assert.equal(control.primaryOperator,'VIBE');
+  assert.equal(control.homepageManagerRole,'VIBE_OWNED_EXECUTION_SURFACE');
+  assert.equal(control.nonVibeAiRole,'ASSIST_REVIEW_DIAGNOSE_VALIDATE_ONLY');
+  assert.equal(control.nonVibeAiIsHomepageOwner,false);
+  assert.equal(control.nonVibeAiMayOverrideVibe,false);
+  assert.equal(control.directorOwnsImplementation,false);
+  assert.equal(control.deterministicQaAndPublicationGatesRemainAuthoritative,true);
+});
