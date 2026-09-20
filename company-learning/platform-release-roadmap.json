@@ -9853,9 +9853,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; THIS CONTRACT DEFINES_ONLY_RULE_2",
+    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; RULE_2_AND_RULE_4_ARE_CANONICALIZED_HERE; RULE_3_REMAINS_EXISTING_EXECUTION_CONTRACT_UNTIL_ITS_EXPLICIT_CANONICALIZATION",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -9893,6 +9893,78 @@
       "authorityExpansion": false,
       "gateWeakening": false,
       "existingPipelinesOnly": true
+    },
+    "rule4": {
+      "id": "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION",
+      "label": "제4규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_WITHOUT_EXPANDING_AUTHORITY_OR_WEAKENING_EXISTING_SECURITY_QA_AND_RELEASE_GATES",
+      "vibeIsPrimary": true,
+      "externalAndAssistantAiRole": "SUPPORTING_ONLY_WITHIN_EXISTING_CENTRAL_CONTRACT",
+      "evolutionCycle": [
+        "OBSERVE_VERIFIED_BOTTLENECK_OR_CAPABILITY_GAP",
+        "PROPOSE_INTERNAL_SYSTEM_OR_ARCHITECTURE_CHANGE",
+        "COMPARE_AT_LEAST_TWO_ALTERNATIVES_WHEN_STRUCTURAL_CHANGE_IS_REQUIRED",
+        "DESIGN_SMALLEST_CAUSAL_CHANGE",
+        "IMPLEMENT_IN_EXISTING_RESPONSIBLE_SYSTEM",
+        "RUN_SAME_FAILURE_RECHECK",
+        "RUN_RELATED_AND_FULL_REGRESSION",
+        "RUN_SECURITY_AND_POLICY_INVARIANCE_CHECK",
+        "COMPARE_BEFORE_AND_AFTER_EVIDENCE",
+        "ADOPT_ONLY_VERIFIED_IMPROVEMENT",
+        "ROLL_BACK_OR_REQUEUE_WHEN_IMPROVEMENT_IS_NOT_VERIFIED",
+        "GENERATE_NEXT_LEARNING_OR_EVOLUTION_SIGNAL"
+      ],
+      "architectureEvolutionGenerationLimit": null,
+      "capabilityGrowthGenerationLimit": null,
+      "neuralExpansion": {
+        "phase": "LAST_STAGE_ONLY",
+        "mayBeginOnlyAfter": [
+          "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION_IS_OPERATIONALLY_CLOSED",
+          "RULE_3_SELF_GENERATED_UNBOUNDED_LEARNING_SIGNAL_MULTIVERSE_IS_OPERATIONALLY_CLOSED",
+          "ATOMIC_NEURON_COMPLETION_AND_TASK_MICRO_FAN_IN_ARE_STABLE",
+          "SHARED_CONTEXT_SYNC_IS_ENFORCED_BEFORE_AND_AFTER_WORK",
+          "SECURITY_QA_RELEASE_GATES_REMAIN_INTACT"
+        ],
+        "method": [
+          "PROPOSE",
+          "DESIGN",
+          "IMPLEMENT",
+          "QA",
+          "SECURITY_VERIFY",
+          "BEFORE_AFTER_COMPARE",
+          "ADOPT_OR_ROLLBACK",
+          "REPEAT_WITHOUT_GENERATION_CEILING"
+        ],
+        "autonomousAuthorityExpansion": false,
+        "automaticPolicyCreation": false,
+        "automaticGateWeakening": false
+      },
+      "invariants": {
+        "authorityExpansion": false,
+        "qaGateWeakening": false,
+        "securityGateWeakening": false,
+        "releaseGateBypass": false,
+        "directMainWrite": false,
+        "fabricatedPassForbidden": true,
+        "verifiedLearningDeletionForbidden": true,
+        "existingResponsibleSystemDirectModificationPreferred": true,
+        "wrapperOrShadowDuplicateSystemForbidden": true,
+        "existingGameRulesProgressionSaveAndBalanceMustRemainProtected": true
+      },
+      "adoptionRequires": [
+        "VERIFIED_CAUSAL_IMPROVEMENT",
+        "SAME_FAILURE_RECHECK_PASS",
+        "RELATED_REGRESSION_PASS",
+        "FULL_REGRESSION_WHEN_APPLICABLE",
+        "SECURITY_PASS",
+        "AUTHORITY_UNCHANGED",
+        "GATES_UNCHANGED",
+        "BEFORE_AFTER_EVIDENCE_IMPROVED"
+      ],
+      "failureBehavior": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING",
+      "completionIsCheckpointNotStop": true
     }
   }
 }
