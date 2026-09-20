@@ -442,6 +442,10 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   assert.equal(payload.authorityPromotionEligible,false);
   assert.ok(task.evidence.includes('neural-shadow-match:MATCH'));
   assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);
+  assert.equal(merged.neuralCalibration.durableEvidenceSamples,1);
+  assert.equal(merged.neuralCalibration.matches,1);
+  assert.equal(merged.neuralCalibration.phase2AuthorityReady,false);
+  assert.equal(merged.neuralCalibration.automaticAuthorityEscalationForbidden,true);
 });
 
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
