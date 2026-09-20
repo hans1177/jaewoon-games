@@ -1,5 +1,5 @@
 {
-  "version": 210,
+  "version": 211,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8548,6 +8548,122 @@
       "failedWeatherScopeRoutesTo": "ASSET_REPAIR_REQUIRED"
     },
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "authorityExpansion": false
+  },
+  "webValidationBottleneckAdapterContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "enabled": true,
+    "purpose": "MAP_EXISTING_REAL_WEB_GAMEPLAY_TO_APPROVED_SCOPE_BEFORE_GENERATING_REPAIR",
+    "deterministicFirst": true,
+    "externalAiAdvisoryOnlyForAmbiguousMappings": true,
+    "externalAiProviderPriority": [
+      "GEMINI",
+      "VIBE_LOCAL_OLLAMA"
+    ],
+    "externalAiDirectSourceWrite": false,
+    "externalAiDirectPassAuthority": false,
+    "hiddenOrSyntheticValidationControlsForbidden": true,
+    "actualRuntimeInteractionStillRequired": true,
+    "firstPilotGameId": "fantasy-survival",
+    "generalizeAfterPilotQa": true,
+    "existingWaveSchedulerOnly": true,
+    "authorityExpansion": false
+  },
+  "learningClosedLoopContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "enabled": true,
+    "objective": "CLOSE_THE_LOOP_FROM_VERIFIED_KNOWLEDGE_RETRIEVAL_TO_FRESH_PROJECT_OUTCOME_AND_BACK_TO_CONFIDENCE",
+    "baselineAtAdoption": {
+      "controlBranch": "vibe2-unreal-core",
+      "masteryTotalXp": 4512,
+      "verifiedCodePatterns": 57,
+      "verifiedExperienceRecords": 0,
+      "practiceDistilledEntries": 3,
+      "externalAiDistilledEntries": 0,
+      "codingStrategies": {
+        "VERIFIED": 3,
+        "PREFERRED": 0
+      }
+    },
+    "experienceMemory": {
+      "canonicalStore": ".vibe2/experience.json",
+      "formalVerifiedProjectOutcomePromotionRequired": true,
+      "webBottleneckAdapterFeedsRepairUntilFormalPass": true,
+      "successfulFanInReviewAlreadyUses": "tools/vibe2-experience-control.mjs",
+      "sameGameVerifiedRetrievalMustBecomePopulated": true,
+      "candidatePassAloneInsufficient": true
+    },
+    "externalAiRetrieval": {
+      "store": ".vibe2/external-ai-distilled-knowledge.json",
+      "rawExternalOutputForbidden": true,
+      "independentlyVerifiedDistilledOnly": true,
+      "rankAfterInternalVerified": true,
+      "actualContinuousRunnerInjectionRequired": true,
+      "externalAiMayNotWriteSourceOrClaimPass": true
+    },
+    "knowledgeAttribution": {
+      "exactInjectedKnowledgeIdsRequired": true,
+      "sources": [
+        "EXPERIENCE",
+        "CODE_PATTERN",
+        "PRACTICE_DISTILLED",
+        "EXTERNAL_AI_DISTILLED",
+        "VERIFIED_CAPABILITY"
+      ],
+      "bindToFreshIndependentQaOutcome": true,
+      "singleSuccessDoesNotProveGeneralization": true,
+      "verifiedFailureMayReduceConfidence": true,
+      "infrastructureFailureMustNotPenalizeKnowledge": true
+    },
+    "productionConfidence": {
+      "separateFromMasteryXp": true,
+      "masteryXpRetained": true,
+      "increasesOnlyFromVerifiedProjectApplication": true,
+      "crossGameEvidenceWeightedHigher": true,
+      "holdoutEvidenceRequiredForStrongGeneralization": true,
+      "levels": 5
+    },
+    "strategyPromotion": {
+      "thresholdsUnchanged": true,
+      "preferredRequiresVerifiedApplicationsMin": 5,
+      "preferredRequiresDistinctGamesMin": 2,
+      "preferredRequiresFirstCandidatePassRateMin": 0.6,
+      "useControlChallengerToFillMissingEvidence": true,
+      "verifiedStateMustNotBeTreatedAsPreferred": true
+    },
+    "commonKnowledgeLifecycle": {
+      "states": [
+        "CANDIDATE",
+        "VERIFIED",
+        "PREFERRED",
+        "DEMOTED",
+        "RETIRED"
+      ],
+      "appliesTo": [
+        "CODE_PATTERN",
+        "PRACTICE_DISTILLED",
+        "EXTERNAL_AI_DISTILLED",
+        "GENERALIZED_CAPABILITY"
+      ],
+      "repeatedVerifiedFailureCanDemote": true,
+      "staleWithoutFreshSuccessCanDemote": true,
+      "retiredKnowledgeNotRetrieved": true,
+      "thresholdsMayNotBeLoweredToForcePromotion": true
+    },
+    "rollout": [
+      "WEB_CONTRACT_ADAPTER_PILOT_FANTASY_SURVIVAL",
+      "POPULATE_VERIFIED_EXPERIENCE_MEMORY",
+      "INJECT_EXTERNAL_AI_DISTILLED_RETRIEVAL",
+      "TRACE_EXACT_KNOWLEDGE_IDS",
+      "ATTRIBUTE_FRESH_QA_OUTCOMES",
+      "CALCULATE_PRODUCTION_CONFIDENCE",
+      "PROMOTE_STRATEGIES_ONLY_BY_EXISTING_THRESHOLDS",
+      "GENERALIZE_TO_ALL_ACTIVE_DEVELOPMENT_GAMES"
+    ],
+    "existingWaveSchedulerOnly": true,
+    "gateWeakening": false,
     "authorityExpansion": false
   }
 }
