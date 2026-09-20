@@ -86949,6 +86949,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_556af51618552a1ca133be30",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:e132027c18153808391c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a304dd05d86d252b410eea6a",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:2536aaf8df3567b0215d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_47bae50b1b62175bb89ae052",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:9d13f60f5b372a12df8a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -86967,7 +87066,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 57,
+        "applicationCount": 60,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -87092,7 +87191,11 @@
         "base-main:8ee6efeaedb69b9afac9202df34c9aca35448f5e",
         "actions-run:35528473795",
         "reservation-id:35528473795:1",
-        "coding-trace:ctrace_c2a97f20c2dae0809cca2893"
+        "coding-trace:ctrace_c2a97f20c2dae0809cca2893",
+        "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+        "actions-run:35528785446",
+        "reservation-id:35528785446:1",
+        "coding-trace:ctrace_d36d727cd5a03e2e1dc0f7ac"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -87101,8 +87204,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 20,
-      "confidence": 0.9524,
+      "confirmations": 21,
+      "confidence": 0.9545,
       "capabilityApplications": [
         {
           "version": 1,
@@ -88974,6 +89077,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_601b2fc5e08ad3af91c458cf",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:e132027c18153808391c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_69e422297156b895e6d18bcd",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:2536aaf8df3567b0215d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a8bbc0f800f8ecf08b9f2a47",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:9d13f60f5b372a12df8a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -88992,7 +89194,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 57,
+        "applicationCount": 60,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -89113,7 +89315,11 @@
         "base-main:8ee6efeaedb69b9afac9202df34c9aca35448f5e",
         "actions-run:35528473795",
         "reservation-id:35528473795:1",
-        "coding-trace:ctrace_63d887380de9078bd62e4e4c"
+        "coding-trace:ctrace_63d887380de9078bd62e4e4c",
+        "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+        "actions-run:35528785446",
+        "reservation-id:35528785446:1",
+        "coding-trace:ctrace_387bcc63216ee2e499b38dea"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -89122,8 +89328,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 19,
-      "confidence": 0.95,
+      "confirmations": 20,
+      "confidence": 0.9524,
       "capabilityApplications": [
         {
           "version": 1,
@@ -91028,6 +91234,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0497d49267377e38d89344c4",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:e132027c18153808391c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3b476ef1ab501f76fd8b0455",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:2536aaf8df3567b0215d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3b3dafc5436a3caa706f4607",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:9d13f60f5b372a12df8a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -91046,7 +91351,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 58,
+        "applicationCount": 61,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -91160,7 +91465,11 @@
         "base-main:5b80378d88771b61395dcaa65677c8c958b55bdd",
         "actions-run:35528073642",
         "reservation-id:35528073642:1",
-        "coding-trace:ctrace_64b6e9fcfd042290b0b8c73d"
+        "coding-trace:ctrace_64b6e9fcfd042290b0b8c73d",
+        "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+        "actions-run:35528785446",
+        "reservation-id:35528785446:1",
+        "coding-trace:ctrace_e7d5cbccc3e6dd7264f14a80"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -91169,8 +91478,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 17,
-      "confidence": 0.9444,
+      "confirmations": 18,
+      "confidence": 0.9474,
       "capabilityApplications": [
         {
           "version": 1,
@@ -92949,6 +93258,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_60da2b72f0e5e8b51eece9de",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:e132027c18153808391c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3e83d956fc6a9eda33ce6ce2",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:2536aaf8df3567b0215d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7201a344dc2d44504416a5aa",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:9d13f60f5b372a12df8a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -92967,7 +93375,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 54,
+        "applicationCount": 57,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -103969,6 +104377,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7b6d60f55d6f26627d4a4a80",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:e132027c18153808391c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_09e3b1894ba253e45f5abf57",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:2536aaf8df3567b0215d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f4ada4440ed7ea63cfedd359",
+          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_cc6bed7b5957878fd2293955",
+            "capability_ctrace_c42b48a673bc1019bd202884",
+            "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+            "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+            "capability_ctrace_328d0c1d1272087207a460af"
+          ],
+          "evidence": [
+            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
+            "actions-run:35528785446",
+            "reservation-id:35528785446:1",
+            "capability-application-sample:9d13f60f5b372a12df8a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -103987,7 +104494,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "REPEATED_APPLICATION_VERIFIED",
-        "applicationCount": 30,
+        "applicationCount": 33,
         "independentPassCount": 2,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
