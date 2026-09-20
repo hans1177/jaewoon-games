@@ -32,7 +32,7 @@ function causalEvidence(evidence=[]){
   };
 }
 
-export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId=''}={}){
+export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId='',verificationStage=''}={}){
   const rows=uniq(evidence);
   const causal=causalEvidence(rows);
   const responsible=explicitResponsibleSystem(rows);
@@ -40,6 +40,7 @@ export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId=''}={
   const independentConfirmation=causal.regressionPass&&causal.reviewPass;
   const predicted=clean(diagnosis?.responsibility?.system).toUpperCase()||null;
   const systemConsistent=Boolean(responsible?.system&&predicted&&responsible.system===predicted);
+  const stage=clean(verificationStage).toUpperCase()||(causal.regressionPass&&causal.reviewPass?'FAN_IN_REVIEW':'WORKER_RESULT');
 
   let state='UNRESOLVED';
   if(causalRepairVerified&&independentConfirmation&&!responsible)state='CAUSAL_REPAIR_CONFIRMED_SYSTEM_UNVERIFIED';
@@ -56,9 +57,10 @@ export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId=''}={
   if(causalRepairVerified&&independentConfirmation&&!responsible)nextEvidenceRequired.push('VERIFIED_RESPONSIBLE_SYSTEM_EVIDENCE');
 
   return{
-    version:1,
+    version:2,
     mode:'PHASE1_ROOT_CAUSE_VERIFIER',
     sampleId:clean(sampleId)||null,
+    verificationStage:stage,
     state,
     causalRepairVerified,
     independentConfirmation,
@@ -89,8 +91,9 @@ export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId=''}={
 export function neuralRootCauseEvidence(result={}){
   if(clean(result.mode)!=='PHASE1_ROOT_CAUSE_VERIFIER')return[];
   const payload={
-    version:1,
+    version:2,
     sampleId:clean(result.sampleId)||null,
+    verificationStage:clean(result.verificationStage).toUpperCase()||(result.independentConfirmation===true?'FAN_IN_REVIEW':'WORKER_RESULT'),
     state:clean(result.state)||'UNRESOLVED',
     causalRepairVerified:result.causalRepairVerified===true,
     independentConfirmation:result.independentConfirmation===true,
