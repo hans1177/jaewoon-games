@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<canvas id=\"game\"></canvas>",
+      "replace": " <button class=\"upgrade\" id=\"upWallet\" type=\"button\"><b>최대 재화 강화</b><span id=\"walletLv\">Lv.1</span><small id=\"walletCost\">100G</small></button>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
