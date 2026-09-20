@@ -6,6 +6,7 @@ import {Script} from 'node:vm';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
+import {buildWebContractAdapterPlan,webContractAdapterGuidance} from './company-web-contract-adapter.mjs';
 import {buildVibeDevelopmentContext,clipPreservedSourceForModel} from './company-vibe2-gameplay-intelligence.mjs';
 
 const REAL_ARTIFACT_TYPE='REAL_PLAYABLE_GAME';
@@ -28,6 +29,65 @@ const safeId=v=>clean(v).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeText=v=>clean(v).replace(/https?:\/\/\S+/gi,'').replace(/\b(?:XMLHttpRequest|WebSocket|fetch)\b/gi,'runtime').slice(0,420);
 const clip=(value,max=18000)=>{const text=typeof value==='string'?value:JSON.stringify(value);return text.length>max?text.slice(0,max):text;};
+
+function compactWebContractAdapterHint(plan={},advisory={}){
+  const mapped=(plan.bindings||[]).slice(0,6).map(row=>clean(row.scopeId)+'>'+clean(row.selector||row.candidateKey)+'>'+clean(row.proposedMechanicId)+'>'+clean(row.confidence));
+  const missing=(plan.unmapped||[]).slice(0,3).map(row=>clean(row.scopeId)+'>UNMAPPED>'+clean(row.family));
+  const ai=(advisory?.suggestedBindings||[]).slice(0,3).map(row=>clean(row.scopeId)+'>'+clean(row.selector||row.candidateKey)+'>'+clean(row.mechanicId));
+  const parts=[];
+  if(mapped.length||missing.length)parts.push('WEB_CONTRACT_ADAPTER:'+mapped.concat(missing).join(','));
+  if(ai.length)parts.push('WEB_CONTRACT_EXTERNAL_AI:'+ai.join(','));
+  return clean(parts.join('|')).slice(0,850);
+}
+function sanitizeExternalAdvisory(value={}){
+  const suggestedBindings=(Array.isArray(value?.suggestedBindings)?value.suggestedBindings:[]).slice(0,8).map(row=>({
+    scopeId:clean(row?.scopeId).slice(0,120),
+    selector:clean(row?.selector).slice(0,120)||null,
+    candidateKey:clean(row?.candidateKey).slice(0,120)||null,
+    mechanicId:clean(row?.mechanicId).slice(0,120)||null,
+    reason:clean(row?.reason).slice(0,240)
+  })).filter(row=>row.scopeId&&(row.selector||row.candidateKey));
+  const repairTargets=(Array.isArray(value?.repairTargets)?value.repairTargets:[]).map(clean).filter(Boolean).slice(0,6).map(x=>x.slice(0,220));
+  return{suggestedBindings,repairTargets};
+}
+async function requestWebContractExternalAdvisory({gameId='',plan={}}={}){
+  if(plan?.externalAiReviewRequired!==true)return{used:false,provider:null,reason:'NOT_REQUIRED',suggestedBindings:[],repairTargets:[]};
+  const apiKey=clean(process.env.GEMINI_API_KEY);
+  if(!apiKey)return{used:false,provider:'GEMINI',reason:'GEMINI_API_KEY_UNAVAILABLE',suggestedBindings:[],repairTargets:[]};
+  try{
+    const directive=readJson('company-directive.json');
+    const ai=directive?.ai||{},designer=ai?.gameDesigner||{};
+    if(designer.externalProvidersAllowed!==true)return{used:false,provider:'GEMINI',reason:'EXTERNAL_PROVIDER_DISABLED',suggestedBindings:[],repairTargets:[]};
+    const allowed=[clean(designer.geminiModel),...(designer.geminiFallbackModels||[]).map(clean)].filter(Boolean);
+    const model=clean(designer.geminiModel);
+    if(!model||!allowed.includes(model))return{used:false,provider:'GEMINI',reason:'GEMINI_MODEL_NOT_AUTHORIZED',suggestedBindings:[],repairTargets:[]};
+    const advisoryInput={
+      gameId:clean(gameId),
+      ambiguous:(plan.ambiguous||[]).slice(0,8),
+      unmapped:(plan.unmapped||[]).slice(0,8),
+      deterministicBindings:(plan.bindings||[]).filter(row=>row.confidence!=='LOW').slice(0,8)
+    };
+    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent?key='+encodeURIComponent(apiKey),{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({
+        systemInstruction:{parts:[{text:'You are an advisory-only gameplay contract mapper. Choose only from supplied real controls/candidate keys. Do not invent gameplay, do not decide PASS/FAIL, do not output chain-of-thought. Return JSON with suggestedBindings and repairTargets only.'}]},
+        contents:[{role:'user',parts:[{text:'Resolve only ambiguous Web gameplay scope mappings. Existing deterministic mappings remain authoritative unless clearly contradicted by supplied evidence. INPUT='+JSON.stringify(advisoryInput)}]}],
+        generationConfig:{temperature:0,maxOutputTokens:900,responseMimeType:'application/json'}
+      }),
+      signal:AbortSignal.timeout(25000)
+    });
+    if(!response.ok)return{used:false,provider:'GEMINI',model,reason:'GEMINI_HTTP_'+response.status,suggestedBindings:[],repairTargets:[]};
+    const body=await response.json();
+    const raw=clean((body?.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
+    if(!raw)return{used:false,provider:'GEMINI',model,reason:'GEMINI_EMPTY_RESPONSE',suggestedBindings:[],repairTargets:[]};
+    const parsed=JSON.parse(raw);
+    return{used:true,provider:'GEMINI',model,reason:null,...sanitizeExternalAdvisory(parsed)};
+  }catch(error){
+    return{used:false,provider:'GEMINI',reason:'GEMINI_ADVISORY_ERROR:'+clean(error?.message||error).slice(0,220),suggestedBindings:[],repairTargets:[]};
+  }
+}
+
 
 function scripts(text){return [...String(text??'').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];}
 function mechanics(text){return [...new Set([...String(text??'').matchAll(/data-mechanic-id=["']([^"']+)["']/gi)].map(x=>clean(x[1])).filter(Boolean))];}
@@ -229,17 +289,23 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
   const preserved=buildPreservedSharedGame({gameId,gameName,sourcePath,inventory})||buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory});
   const preservationBlockers=[...(preserved?.review?.blockers||[])];
   if(forceRepair)preservationBlockers.push(`RUNTIME_REWORK_REQUIRED:${clean(repairReason)||'CANONICAL_DEVELOPMENT_REWORK'}`);
+  const adapterPlan=preserved?buildWebContractAdapterPlan({html:preserved.html,inventory}):null;
+  const externalAiAdvisory=adapterPlan?await requestWebContractExternalAdvisory({gameId,plan:adapterPlan}):{used:false,provider:null,reason:'SOURCE_MISSING',suggestedBindings:[],repairTargets:[]};
   const developmentContext=buildVibeDevelopmentContext({gameId,genre:inferDevelopmentGenre({gameId,baseline}),baseline,inventory,existingHtml:preserved?.html||'',blockers:preservationBlockers});
   if(!preserved)throw new Error('VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING');
   if(forceRepair||preserved.preservationEligible!==true){
-    const reason=preservationBlockers.join('|')||'WEB_RUNTIME_OR_CONTRACT_REPAIR_REQUIRED';
-    throw new Error(`VIBE_WEB_IMPLEMENTATION_REQUIRED:${forceRepair?'WEB_REPAIR':'WEB_BASE_IMPLEMENTATION'}:${reason}`);
+    const adapterHint=compactWebContractAdapterHint(adapterPlan,externalAiAdvisory);
+    const reason=[adapterHint,...preservationBlockers].filter(Boolean).join('|')||'WEB_RUNTIME_OR_CONTRACT_REPAIR_REQUIRED';
+    const error=new Error(`VIBE_WEB_IMPLEMENTATION_REQUIRED:${forceRepair?'WEB_REPAIR':'WEB_BASE_IMPLEMENTATION'}:${reason}`);
+    error.webContractAdapterPlan=adapterPlan;
+    error.webContractExternalAiAdvisory=externalAiAdvisory;
+    throw error;
   }
   const result=preserved,review=preserved.review;
-  const generation={mode:'SOURCE_PRESERVED_VALIDATION_ONLY',modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null,developmentContext,developmentOwner:'VIBE2_VIBE3',nonVibeGameSourceWrite:false};
+  const generation={mode:'SOURCE_PRESERVED_VALIDATION_ONLY',modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null,developmentContext,developmentOwner:'VIBE2_VIBE3',nonVibeGameSourceWrite:false,webContractAdapter:adapterPlan,externalAiAdvisory};
   fs.mkdirSync(candidatePath,{recursive:true});
   fs.writeFileSync(path.join(candidatePath,'index.html'),result.html+'\n','utf8');
-  return{result,review,generation,approvedScopeInventory:result.approvedScopeInventory||inventory};
+  return{result,review,generation,approvedScopeInventory:result.approvedScopeInventory||inventory,webContractAdapter:adapterPlan,externalAiAdvisory};
 }
 
 async function main(){
@@ -253,19 +319,21 @@ async function main(){
     const failureSignature=clean(error?.message||error).replace(/\s+/g,' ').slice(0,1800);
     const signal=/^VIBE_WEB_IMPLEMENTATION_REQUIRED:(WEB_BASE_IMPLEMENTATION|WEB_REPAIR):(.+)$/.exec(failureSignature);
     writeJson(evidenceFile,{
-      version:14,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,
+      version:15,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,
       pass:false,realPlayableGame:false,sourcePreserved:false,sourceRepaired:false,
       failureSignature,
       vibeWebImplementationRequired:Boolean(signal),
       vibeWebRequestedStage:signal?.[1]||null,
       vibeWebImplementationReason:signal?.[2]||null,
+      webContractAdapter:error?.webContractAdapterPlan||null,
+      externalAiAdvisory:error?.webContractExternalAiAdvisory||null,
       createdAt:new Date().toISOString()
     });
     throw error;
   }
-  const {result,review,generation,approvedScopeInventory}=built;
+  const {result,review,generation,approvedScopeInventory,webContractAdapter,externalAiAdvisory}=built;
   const sourceRepaired=false;
-  writeJson(evidenceFile,{version:14,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,webRole:'PREPLATFORM_PLAYABLE_GAME',testHarness:false,sourcePreserved:generation.sourcePreserved,sourceRepaired,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},preplatformImplementationPolicy:WEB_PREPLATFORM_IMPLEMENTATION_POLICY,vibeDevelopmentContext:generation.developmentContext,generation,bootstrapContract:review,createdAt:new Date().toISOString()});
+  writeJson(evidenceFile,{version:15,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,webRole:'PREPLATFORM_PLAYABLE_GAME',testHarness:false,sourcePreserved:generation.sourcePreserved,sourceRepaired,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},preplatformImplementationPolicy:WEB_PREPLATFORM_IMPLEMENTATION_POLICY,vibeDevelopmentContext:generation.developmentContext,webContractAdapter,externalAiAdvisory,generation,bootstrapContract:review,createdAt:new Date().toISOString()});
   void LEGACY_WORKFLOW_PROBE;
   console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');
   console.log('WEB_ARTIFACT_TYPE='+REAL_ARTIFACT_TYPE);
@@ -284,6 +352,8 @@ async function main(){
   console.log('VIBE_IMPLEMENTATION_OWNER=YES');
   console.log('MODEL_INVOKED=NO');
   console.log('MODEL_USED=NO');
+  console.log('WEB_CONTRACT_ADAPTER=ENABLED');
+  console.log('WEB_CONTRACT_EXTERNAL_AI_ADVISORY='+(externalAiAdvisory?.used===true?'USED':(externalAiAdvisory?.reason||'NOT_USED')));
   console.log('FORCED_REPAIR='+(generation.forcedRepair?'YES':'NO'));
   console.log('GAMEPLAY_SKETCH_SOURCE='+(generation.developmentContext?.gameplaySketch?.source||'NONE'));
   console.log('VIBE_PATCH_TASKS='+(generation.developmentContext?.patchPlan?.tasks?.length||0));
