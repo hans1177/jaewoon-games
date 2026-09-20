@@ -912,7 +912,7 @@
       ]
     },
     {
-      "id": "gap-save-l6",
+      "id": "gap-save-l7",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -922,7 +922,7 @@
       ]
     },
     {
-      "id": "gap-ai-l8",
+      "id": "gap-ai-l9",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -949,16 +949,6 @@
       "countsAsProductionPass": false,
       "domains": [
         "ANIMATION_FEEL"
-      ]
-    },
-    {
-      "id": "gap-combat-l10",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "COMBAT"
       ]
     },
     {
@@ -992,6 +982,16 @@
       ]
     },
     {
+      "id": "gap-combat-l11",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "COMBAT"
+      ]
+    },
+    {
       "id": "gap-progression-l11",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1012,16 +1012,6 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "WEB_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-debugging-l12",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1039,6 +1029,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
       ]
     }
   ]
