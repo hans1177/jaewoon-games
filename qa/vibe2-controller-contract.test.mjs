@@ -96,7 +96,7 @@ test('graphics presentation uses atomic neuron task micro-fan-in without expandi
   assert.equal(presentation.rules.placeholderPrimitiveCharacterOrMonsterCompletionForbidden,true);
   assert.deepEqual(presentation.rules.actionStateMotionCoverageRequired,['IDLE','MOVE','ATTACK','HIT','DEATH']);
   assert.equal(presentation.rules.markerOnlyOrStaticDescriptionCompletionForbidden,true);
-  assert.equal(presentation.runtimeObservation.validatorSchemaVersion,15);
+  assert.equal(presentation.runtimeObservation.validatorSchemaVersion,16);
   assert.equal(assets.version>=4,true);
   assert.equal(assets.parallelism.executionAuthority,'EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK');
   assert.equal(assets.parallelism.graphicsAtomicNeuronMode,'PER_TASK_MICRO_FANIN');
