@@ -32000,7 +32000,765 @@
       "reservationRunAttempt": 1,
       "reservedAt": "2026-09-20T16:06:21Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [],
+      "neuronResults": [
+        {
+          "version": 13,
+          "taskId": "seed-casual-realm-weaver-web-runtime-repair-v1",
+          "reservationId": "35521623187:1",
+          "variant": "speculative-1",
+          "outcome": "PASS",
+          "blocker": "candidate-awaiting-qa-and-deployment",
+          "candidateBranch": "vibe2/candidate/seed-casual-realm-weaver-web-runtime-repair-v1-speculative-1-35521623187-1",
+          "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+          "candidateIdentity": {
+            "taskId": "seed-casual-realm-weaver-web-runtime-repair-v1",
+            "gameId": "seed-casual-realm-weaver",
+            "target": "web",
+            "sourceRoot": "web-games/seed-casual-realm-weaver",
+            "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+            "manifestPath": "/tmp/vibe2-candidate-seed-casual-realm-weaver-web-runtime-repair-v1-speculative-1-35521623187/.vibe2/candidates/seed-casual-realm-weaver-web-runtime-repair-v1/manifest.json"
+          },
+          "candidateFailure": null,
+          "evidence": [
+            "vibe2/candidate/seed-casual-realm-weaver-web-runtime-repair-v1-speculative-1-35521623187-1",
+            "candidate-sha:a7c841a6ce12dddfee42314390be8ca45f18095b",
+            "base-main:9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+            "incremental-qa-hash:120b7dec3f5d0111bedb931ceb6a59abe795ace072a9b36bbfebae3c0a88290c",
+            "incremental-qa-cache:HIT",
+            "causal-replay-status:PLAN_ONLY",
+            "causal-replay-executed:NO",
+            "causal-replay-prepatch-reproduced:NO",
+            "architecture-drift-status:ANALYZED",
+            "architecture-drift-risk:LOW",
+            "architecture-drift-score:0",
+            "architecture-drift-signals:NONE",
+            "presentation-static-qa-status:NOT_REQUIRED",
+            "role-result:exploration:PASS",
+            "role-result:implementation:PASS",
+            "role-result:test:PASS",
+            "role-result:performance:PASS",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "coding-strategy:PHASE4_FIXED_CONTEXT_CONTROLLED_AB",
+            "coding-responsibility-confidence:LOW",
+            "coding-generation-attempts:3",
+            "coding-generation-attempt-budget:3",
+            "coding-focused-final-retry:YES",
+            "coding-focused-replace-only:YES",
+            "coding-focused-minimal-json:YES",
+            "coding-context-mode:BOUNDED_FILE_EXCERPT_FALLBACK",
+            "coding-context-bytes:615",
+            "coding-candidate-first-attempt:NO",
+            "coding-semantic-diff-mode:OBSERVE_ONLY",
+            "coding-semantic-diff-pass:YES",
+            "coding-failure-fingerprint:web|NO_OP",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9c328ab0d2941e9c1b3c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_dd1edc1a11a1e7a360dfda28%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7022dd1d29e03580f9fab379%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_107b55ca6e8e05ede28f9b9f%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_31bc6402f5611fd66c298fb4%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1a453e3e34004eb1c376197d%22%5D",
+            "actions-run:35521623187",
+            "reservation-id:35521623187:1",
+            "variant:speculative-1",
+            "shared-context-policy:81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+            "shared-context-log-map:340b6653b3adf2b4fff3aa2094d4e38d3fd787726acf3504e51d658d2c4ab417",
+            "shared-context-architecture:63ae6cce3ea91b2bf8cd0072fac9610caaeb8dcbe65f085929c71ef49a05d78b",
+            "shared-context-sync:PASS"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": true,
+            "taskId": "seed-casual-realm-weaver-web-runtime-repair-v1",
+            "packageId": "seed-casual-realm-weaver-wp-2aszxt",
+            "target": "web",
+            "sourceRoot": "web-games/seed-casual-realm-weaver",
+            "baseMainSha": "9ec42c8d5719a0180dbcdbf79bce87040ebea197",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "impactFiles": [
+              "index.html"
+            ],
+            "contextFiles": [
+              "index.html"
+            ],
+            "relatedFiles": [],
+            "testTargets": [],
+            "protectedScopeSignals": [],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "MAJOR_REWORK",
+              "confidence": "MEDIUM",
+              "reasons": [
+                "REUSABLE_SOURCE_EXISTS",
+                "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
+                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 615,
+                "sourceSha256": "4c1acfe8334d88d26cd7278ce5b64de747dd5921c1014fe406956a93877eca95",
+                "validationScore": 0,
+                "approvedDesign": false,
+                "gameplaySignalCount": 1,
+                "gameplaySignals": {
+                  "input": false,
+                  "runtimeLoop": false,
+                  "mutableState": false,
+                  "gameplayOutcome": false,
+                  "progression": false,
+                  "combat": false,
+                  "spatial": false,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": false
+                },
+                "prototypeMarkerCount": 0,
+                "approvedScopeRequiredCount": 0,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 0,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "seed-casual-realm-weaver",
+              "sourceRoot": "web-games/seed-casual-realm-weaver",
+              "sourcePath": "web-games/seed-casual-realm-weaver/index.html",
+              "designBaselinePath": null
+            },
+            "fileDigests": [
+              {
+                "path": "index.html",
+                "hash": "4c1acfe8334d88d2",
+                "bytes": 615
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "PRESERVE_PATCH_RESPONSIBLE_SCOPE",
+              "responsibilityConfidence": "LOW",
+              "rawResponsibilityConfidence": "LOW",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": false,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [],
+                "focusedChecksAdded": [],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [],
+              "allowedResponsibleFiles": [
+                "index.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [],
+              "primarySystems": [],
+              "dependentSystems": [],
+              "directDependentSystems": [],
+              "readOnlyImpactSystems": [],
+              "ownedState": [],
+              "readState": [],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBILITY_NOT_RESOLVED"
+              ],
+              "requiredObservableResult": "[WEB_REPAIR] 게임: 세계의 직조자\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-5b52385f9a -> #a0 | mechanic=action-primary | family=COMBAT | confidence=HIGH | evidence=existing-scope-binding,nearby-family:COMBAT,shared:corefun,existing-mechanic,gameplay-action - scope-coreloop-0-b46035eaa3 -> #a1 | mechanic=action-secondary | family=MOVEMENT | confidence=HIGH | evidence=existing-scope-binding,shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-1-a21a6e21b0 -> #a2 | mechanic=action-tertiary | family=OBJECTIVE | confidence=HIGH | evidence=existing-scope-binding,shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-2-edebd26130 -> #a3 | mechanic=action-support | family=OBJECTIVE | confidence=HIGH | evidence=existing-scope-binding,shared:coreloop,existing-mechanic,gameplay-action -\nlast-validation-at=2026-09-20T15:49:51.111Z\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [],
+                "preferredPrimarySymbols": [],
+                "maxSystemCount": 1,
+                "readOnlyImpactSystems": [],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": false,
+                "nodeTestTargets": [],
+                "executable": false,
+                "mode": "PLAN_ONLY",
+                "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+                "diagnosticType": null,
+                "diagnosticFile": null,
+                "diagnosticLine": null,
+                "diagnosticNeedle": null,
+                "diagnosticMicroTask": null,
+                "verifiedResponsibleSystem": null,
+                "diagnosticVerifier": null,
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|NO_OP",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE",
+                  "DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES",
+                  "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_TASK_LOCAL_INCREMENTAL_QA"
+                ],
+                "primaryTargets": [],
+                "dependentSymbolsOrSystems": [],
+                "ownedState": [],
+                "focusedChecks": [],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 0,
+                "edgeCount": 0,
+                "maxFunctionBodyBytes": 0,
+                "maxCallsPerFunction": 0,
+                "maxCalledByPerFunction": 0,
+                "maxStateWritesPerFunction": 0,
+                "maxSystemsPerFunction": 0,
+                "multiWriterStateCount": 0,
+                "stateWriterLinkCount": 0,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 0,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 0
+              },
+              "responsibilityGraph": {
+                "nodeCount": 0,
+                "relevantNodes": [],
+                "relevantEdges": []
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 100,
+                "hardBlockers": [],
+                "issues": []
+              },
+              "failureEvidence": [
+                "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+                "web-stage:WEB_REPAIR",
+                "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "recovery-exact-stage:WEB_REPAIR",
+                "role-result:exploration:FAIL",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "shared-context-sync:MISSING",
+                "failure-cause:source-candidate-generation-failed",
+                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+                "system-steward:failure-signature:source-candidate-generation-failed",
+                "recovery-queue:recovery-b604759a4b7b6772ff03",
+                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+                "recovery-exact-stage:UNKNOWN_STAGE",
+                "recovery-queue:recovery-7f578ec759bfde044675"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "ca42147826a4be2ccbb327af",
+            "generatedAt": "2026-09-20T16:07:51.716Z",
+            "reusedFrom": ".vibe2/exploration.json"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "PHASE4_FIXED_CONTEXT_CONTROLLED_AB",
+            "compiledStrategyHint": "PRESERVE_PATCH_RESPONSIBLE_SCOPE",
+            "candidateVariant": "phase4-controlled",
+            "generationAttemptBudget": 3,
+            "speculativeAttemptBudgetApplied": false,
+            "fullWebInitialSeedStrategy": false,
+            "fullWebInitialSeedTargetBytes": [],
+            "responsibilityConfidence": "LOW",
+            "primaryTargets": [],
+            "primarySystems": [],
+            "dependentSystems": [],
+            "ownedState": [],
+            "semanticDiffBudget": {
+              "allowedSystems": [],
+              "preferredPrimarySymbols": [],
+              "maxSystemCount": 1,
+              "readOnlyImpactSystems": [],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": {
+              "version": 1,
+              "mode": "OBSERVE_ONLY",
+              "hardGate": false,
+              "pass": true,
+              "confidence": "LOW",
+              "developmentMode": "PRESERVE_PATCH",
+              "markerCount": 0,
+              "editCount": 1,
+              "touchedSystems": [],
+              "allowedSystems": [],
+              "unexpectedSystems": [],
+              "unprovenEditPaths": [],
+              "protectedSaveKeyCount": 0,
+              "saveKeyViolations": [],
+              "violations": [],
+              "ambiguousClassificationObserved": true,
+              "writableScopeExpansionAllowed": false,
+              "authorityExpanded": false,
+              "diagnosticPostcondition": {
+                "required": false,
+                "pass": true,
+                "type": null,
+                "file": null,
+                "reason": null
+              }
+            },
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": false,
+              "nodeTestTargets": [],
+              "executable": false,
+              "mode": "PLAN_ONLY",
+              "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+              "diagnosticType": null,
+              "diagnosticFile": null,
+              "diagnosticLine": null,
+              "diagnosticNeedle": null,
+              "diagnosticMicroTask": null,
+              "verifiedResponsibleSystem": null,
+              "diagnosticVerifier": null,
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "requiredFocusedChecks": [],
+            "failureFingerprint": "web|NO_OP",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "contextFiles": 1,
+            "contextBytes": 615,
+            "contextMode": "BOUNDED_FILE_EXCERPT_FALLBACK",
+            "contextPreferenceRequested": null,
+            "contextPreferenceApplied": false,
+            "focusedSymbolCount": 0,
+            "exactSourceWindows": false,
+            "fullFileContextFallback": true,
+            "fullWebExpansionStages": 0,
+            "fullWebExpansionDocumentSeedRecoveries": 0,
+            "fullWebClosedHtmlEarlyStop": false,
+            "fullWebFinalAdditiveExpansion": false,
+            "fullWebAdditiveAttemptCreditUsed": false,
+            "fullWebProgressCreditCount": 0,
+            "fullWebProgressCreditUsed": false,
+            "baseAttemptBudget": 3,
+            "effectiveAttemptBudget": 3,
+            "fullWebRetryPromptCompacted": false,
+            "fullWebRetryPromptBytes": 0,
+            "fullWebFallbackBestPartialBytes": 0,
+            "intermediateGrowthBytes": [],
+            "intermediateGrowthTotalBytes": 0,
+            "repeatedIntermediateOutputs": 0,
+            "expansionStageTargets": [],
+            "generationAttempts": 3,
+            "generationRecoveryUsed": true,
+            "partialTimeoutRecovery": false,
+            "partialMalformedRecovery": false,
+            "streamedPartialEditRecovery": false,
+            "focusedFirstEditEarlyStop": false,
+            "focusedFinalRetry": true,
+            "focusedReplaceOnly": true,
+            "focusedReplaceStringRecovery": false,
+            "focusedFirstAttemptFastPath": false,
+            "malformedFastEscalation": false,
+            "focusedReplaceAnchorRotations": 0,
+            "focusedReplaceNoOpCreditUsed": false,
+            "focusedMinimalJsonContract": true,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": true,
+            "incrementalQaPass": true,
+            "performanceSanityPass": true,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "PLAN_ONLY",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "ANALYZED",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "CANDIDATE_MANIFEST"
+          },
+          "presentationQuality": {
+            "required": false,
+            "pass": null,
+            "authorityExpanded": false,
+            "staticQaStatus": "NOT_REQUIRED",
+            "staticQaPass": "NONE",
+            "runtimeQaRequired": false
+          },
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "PASS",
+            "test": "PASS",
+            "performance": "PASS",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/seed-casual-realm-weaver",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "web-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "recovery-exact-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-7",
+                "value": "recovery-exact-stage:UNKNOWN_STAGE",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "source-generation-path",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 1
+              }
+            ],
+            "responsibility": {
+              "system": "SOURCE_GENERATION",
+              "confidence": 1,
+              "alternatives": [],
+              "basis": "WEIGHTED_SHADOW_HYPOTHESES",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 5,
+                "recurrence": 2,
+                "sharedScope": 3,
+                "priority": 1,
+                "evidenceConfidence": 0.86
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "WEB_REPAIR",
+              "responsibleSystem": "SOURCE_GENERATION",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "SECURITY_POLICY_BLOCK"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "capability_ctrace_7022dd1d29e03580f9fab379",
+              "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+              "capability_ctrace_31bc6402f5611fd66c298fb4",
+              "capability_ctrace_1a453e3e34004eb1c376197d"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "capability_ctrace_7022dd1d29e03580f9fab379",
+              "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+              "capability_ctrace_31bc6402f5611fd66c298fb4",
+              "capability_ctrace_1a453e3e34004eb1c376197d"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": {
+            "version": 1,
+            "active": true,
+            "role": "CHALLENGER",
+            "capabilityId": "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+            "caseId": "phase4-runtime-case-2a265a0962b9048ecb8b09bb",
+            "pairId": "phase4-runtime-pair-765a8a70fefff61dc5231481",
+            "gameId": "seed-casual-realm-weaver",
+            "engine": "web",
+            "unseenGame": true,
+            "unseenProblemFingerprint": "phase4-runtime-b261b193928fc35a40fc4574",
+            "fixedContextFingerprint": "phase4-context-f13d74e5a3c6a5f379883171",
+            "nonTargetContextFixed": true,
+            "writableScopeFixed": true,
+            "modelBudgetFixed": true,
+            "qaContractFixed": true,
+            "nativeRuntimeRequired": false,
+            "naturalProductionOverlay": true,
+            "screenOnly": false,
+            "authorityExpanded": false
+          },
+          "durationMs": 289608,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "CODE_PATTERN:pat_130jf9c",
+              "CODE_PATTERN:pat_1avbmmv",
+              "CODE_PATTERN:pat_1vgfuno",
+              "CODE_PATTERN:pat_3f780w",
+              "CODE_PATTERN:pat_9pwgix",
+              "CODE_PATTERN:pat_m3ipio",
+              "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c",
+              "VERIFIED_CAPABILITY:capability_ctrace_dd1edc1a11a1e7a360dfda28",
+              "VERIFIED_CAPABILITY:capability_ctrace_7022dd1d29e03580f9fab379",
+              "VERIFIED_CAPABILITY:capability_ctrace_107b55ca6e8e05ede28f9b9f",
+              "VERIFIED_CAPABILITY:capability_ctrace_31bc6402f5611fd66c298fb4",
+              "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35521623187:1",
+            "reservedAt": "2026-09-20T16:06:21Z",
+            "workerStartedAt": 1789920427058,
+            "workerFinishedAt": 1789920716666,
+            "checkoutMs": 3738,
+            "modelPrepMs": 7035,
+            "candidateMs": 241040,
+            "qaMs": 53,
+            "workerTotalMs": 289608,
+            "changedFileCount": 1,
+            "addedLineCount": 1,
+            "deletedLineCount": 1,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
+        }
+      ],
       "companyContext": null,
       "sourceRoot": "web-games/seed-casual-realm-weaver",
       "speculativeEligible": true,
