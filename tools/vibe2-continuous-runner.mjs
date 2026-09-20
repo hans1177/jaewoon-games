@@ -138,13 +138,13 @@ function buildPresentationQualityContract(task = {}, target = '') {
   const pass=presentationPassFromTask(task);
   if(!pass)return freeze({required:false,pass:null,authorityExpanded:false});
   const checks={
-    ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
-    LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','secondary-motion','gameplay-speed-unchanged'],
-    ANIMATION_FEEL:['anticipation','impact-sync','hit-stop-presentation-only','recoil-recovery','authoritative-hit-event-preserved'],
+    ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','context-matched-background','non-placeholder-character-enemy-models','runtime-render-binding','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
+    LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','secondary-motion','state-driven-motion-not-decorative-only','gameplay-speed-unchanged'],
+    ANIMATION_FEEL:['anticipation','impact-sync','attack-hit-death-state-coverage','hit-stop-presentation-only','recoil-recovery','authoritative-hit-event-preserved'],
     VFX:['impact-feedback','effect-budget','mobile-readability','bounded-particles-or-transients','gameplay-readability-preserved'],
     AUDIO_FEEL:['first-gesture-audio-web','mute-volume','no-duplicate-resume-playback','state-transition-audio','impact-audio-sync'],
-    CAMERA_LANGUAGE:['subtle-normal-response','strong-action-response','hero-moment-control','mobile-readability','no-critical-input-obscure'],
-    POLISH_MOBILE:['animation-pop-removal','vfx-clutter-check','audio-transition-check','touch-during-effects','frame-stability','save-gameplay-semantics-unchanged']
+    CAMERA_LANGUAGE:['subtle-normal-response','strong-action-response','hero-moment-control','runtime-camera-binding','mobile-readability','no-critical-input-obscure'],
+    POLISH_MOBILE:['animation-pop-removal','vfx-clutter-check','audio-transition-check','touch-during-effects','frame-stability','actual-runtime-presentation-hardgate','save-gameplay-semantics-unchanged']
   };
   const runtimeChecks={
     ASSET_ADAPTATION:['same-scene-before-after-readability'],
@@ -157,13 +157,24 @@ function buildPresentationQualityContract(task = {}, target = '') {
   };
   return freeze({
     required:true,
-    version:1,
+    version:2,
     pass,
     policyRefs:freezeList(['company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract','company-learning/platform-release-roadmap.json#audioMusicQualityContract']),
     preserve:freezeList(['GAMEPLAY_BALANCE','SAVE_MEANING','PROGRESSION','HIT_SEMANTICS','NETWORK_AUTHORITY']),
     staticChecks:freezeList(checks[pass]||[]),
     runtimeChecks:freezeList(runtimeChecks[pass]||[]),
     target:clean(target).toLowerCase()||null,
+    realImplementation:freeze({
+      backgroundAndEnvironmentMustRender:true,
+      contextMatchedVisualDirectionRequired:true,
+      placeholderPrimitiveCompletionForbidden:true,
+      characterAndMonsterModelDetailRequired:true,
+      actionStateCoverage:freezeList(['IDLE','MOVE','ATTACK','HIT','DEATH']),
+      vfxMustBindToGameplayEvents:true,
+      cameraMustBindToRuntimeState:true,
+      mobileTouchAndFrameEvidenceRequired:true,
+      markerOnlyOrStaticDescriptionCannotPass:true
+    }),
     atomicNeuron:freeze({
       mode:'PER_TASK_MICRO_FANIN',
       completionEvent:'vibe2-neuron-complete',
@@ -187,6 +198,8 @@ function presentationQualityGuidance(contract = {}) {
     `preserve=${(contract.preserve||[]).join(',')}`,
     `static-checks=${(contract.staticChecks||[]).join(',')}`,
     `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
+    '실제 Web 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
+    '마커·설명문·정적 CSS 장식만 추가하거나 컨셉 불일치 배경/모형 몹을 남긴 상태는 presentation 완료로 인정하지 않는다.',
     `atomic-neuron=${contract.atomicNeuron?.mode||'NONE'}; max-variants=${contract.atomicNeuron?.maxVariants||1}; task-micro-fanin=required`,
     '후보는 격리 브랜치에서 생성하고 같은 task 안에서 micro-fan-in으로 하나만 선택한다. 전역 wave 완료를 기다리지 않는다.',
     '기존 책임 시스템을 직접 수정하고 wrapper/shadow 표현 파이프라인을 만들지 않는다.',
