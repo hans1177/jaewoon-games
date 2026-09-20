@@ -56,8 +56,7 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.deepEqual(directive.gameSeed.multiplayerModes,[...GAME_SEED_POLICY.multiplayerModes]);
   assert.equal(directive.gameSeed.requiredFieldsSource,'tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS');
   assert.deepEqual(directive.gameSeed.requiredFields,[...GAME_SEED_REQUIRED_FIELDS]);
-  assert.ok(directive.gameSeed.requiredFields.includes('REFERENCE_INPUTS'));
-  assert.ok(!directive.gameSeed.requiredFields.includes('REFERENCE_GAMES'));
+  assert.deepEqual(directive.gameSeed.requiredFields,[]);
   assert.match(flow,/poolTarget: 100/);
   assert.match(flow,/materialIsGame: false/);
   assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
@@ -139,7 +138,7 @@ test('owner may explicitly override portfolio expansion without restoring one-fo
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
 });
 
-test('seed material pool is fixed at 100 and composed seeds use mixed material inputs',()=>{
+test('seed material cache is optional guidance and does not constrain Vibe composition',()=>{
   const state=normalizeSeedState({seeds:[]});
   ensureSeedMaterialPool(state,{timestamp:'2026-09-13T00:00:00Z'});
   assert.equal(state.seedMaterials.length,100);
@@ -147,7 +146,7 @@ test('seed material pool is fixed at 100 and composed seeds use mixed material i
   assert.match(bootstrap,/composeSeedMaterials/);
   assert.match(bootstrap,/consumeSeedMaterials/);
   assert.match(bootstrap,/SEED_MATERIAL_IDS/);
-  assert.match(bootstrap,/TARGET_SESSION_MINUTES:30/);
+  assert.match(bootstrap,/GAME_SEED는 참고자료일 뿐 창작 제약이 아니다/);
   assert.match(bootstrap,/MULTIPLAYER_DESIGN_MODE/);
   assert.match(bootstrap,/GAME_SEED_CONCEPT_DUPLICATE/);
   assert.match(platformProfileTool,/ANDROID_MOBILE.*UNITY/s);
@@ -176,8 +175,8 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
 test('workflow uses canonical trigger for 24h idle unlimited-total production with bounded WIP',()=>{
   assert.match(seedWorkflow,/IDLE_24H_AUTONOMOUS_PRODUCTION/);
   assert.match(seedWorkflow,/GAME_SEED_IDLE_TARGET_COUNT/);
-  assert.match(seedWorkflow,/SEED_MATERIAL_POOL_TARGET=100/);
-  assert.match(seedWorkflow,/TARGET_SESSION_MINUTES=30/);
+  assert.match(seedWorkflow,/GAME_SEED_GUIDANCE_ONLY=YES/);
+  assert.match(seedWorkflow,/GAME_SEED_CREATIVE_CONSTRAINTS=NONE/);
   assert.match(seedWorkflow,/request_count=\$count|request_count=/);
   assert.doesNotMatch(seedWorkflow,/PLATFORM_REPRESENTATIVE_SET_FILL/);
   assert.doesNotMatch(seedWorkflow,/vacancy\/discard alone/i);
@@ -185,27 +184,17 @@ test('workflow uses canonical trigger for 24h idle unlimited-total production wi
   assert.equal(cronMatches.length,1);
 });
 
-test('semantic normalization preserves platform choice multiplayer decision and 30-minute contract',()=>{
-  assert.doesNotMatch(semanticNormalize,/original global mobile single-player/i);
-  assert.doesNotMatch(semanticNormalize,/short touch sessions/i);
-  assert.match(semanticNormalize,/TARGET_SESSION_MINUTES/);
-  assert.match(semanticNormalize,/MULTIPLAYER_DESIGN_MODE/);
-  assert.match(semanticNormalize,/GAME_SEED_POLICY\.initialPlayMode/);
-  assert.match(semanticNormalize,/ANDROID_MOBILE.*UNITY/s);
-  assert.match(semanticNormalize,/FORTNITE_UEFN/);
+test('semantic normalization does not rewrite creative seed choices',()=>{
+  assert.match(semanticNormalize,/ADVISORY_ENRICHMENT_ONLY/);
+  assert.match(semanticNormalize,/GAME_SEED_CREATIVE_REWRITE=NO/);
 });
 
-test('quality gate applies material count only to material-composed seeds and leaves duplicate detection at creation time',()=>{
-  assert.match(qualityGate,/MATERIAL_COMPOSED_GENERATIONS/);
-  assert.match(qualityGate,/isMaterialComposed\(seed\)&&\(materialIds\.length<2\|\|materialIds\.length>4\)/);
-  assert.match(qualityGate,/LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO/);
-  assert.match(qualityGate,/CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY/);
-  assert.doesNotMatch(qualityGate,/concept-duplicate:/);
-  assert.match(bootstrap,/GAME_SEED_CONCEPT_DUPLICATE/);
-  assert.match(qualityGate,/GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO/);
-  assert.match(qualityGate,/GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO/);
-  assert.match(qualityGate,/TARGET_SESSION_MINUTES/);
-  assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
+test('quality gate enforces integrity but not GAME_SEED creative choices',()=>{
+  assert.match(qualityGate,/GAME_SEED_CREATIVE_QUALITY_HARD_GATE=NO/);
+  assert.match(qualityGate,/GAME_SEED_MATERIAL_POOL_LIMIT=NONE/);
+  assert.match(qualityGate,/GAME_SEED_MATERIAL_COMBINE_LIMIT=NONE/);
+  assert.match(qualityGate,/GAME_SEED_SESSION_DURATION_LIMIT=NONE/);
+  assert.match(qualityGate,/GAME_SEED_MULTIPLAYER_FORM_LIMIT=NONE_AT_SEED_STAGE/);
 });
 
 test('autonomous runtime pins verified design engines, canaries two games, then expands to central WIP without weakening gates',()=>{
@@ -261,11 +250,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/gemini-3\.5-flash-lite/);
   assert.match(seedDesignWorkflow,/GEMINI_API_KEY_REQUIRED_FOR_GATE=NO/);
 
-  assert.match(designSeedNormalize,/DESIGN_SEED_REFERENCE_GAMES_OPTIONAL_EMPTY=/);
-  assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
-  assert.match(designSeedNormalize,/assertGameSeed\(seed\)/);
-  assert.match(gate,/GAME_SEED_REQUIRED_FIELDS/);
-  assert.doesNotMatch(gate,/directive\.gameSeed\?\.requiredFields/);
+  assert.match(designSeedNormalize,/DESIGN_SEED_REQUIRED=NO/);
+  assert.match(designSeedNormalize,/DESIGN_CREATIVE_AUTHORITY=VIBE_SELF_COMPOSITION/);
+  assert.doesNotMatch(gate,/active-game-seed-required/);
 
   assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
   assert.match(design,/DESIGN_CHECKPOINT_MIGRATED=\$\{previousContractVersion===2\?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'\}/);
@@ -329,7 +316,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
 });
 
 test('DESIGN_ONLY uses one designer plus deterministic department evidence without AI meetings',()=>{
-  assert.match(design,/GAME_SEED_REQUIRED/);
+  assert.doesNotMatch(design,/throw new Error\(\`GAME_SEED_REQUIRED/);
   assert.match(design,/sameModelAsDraft:false/);
   assert.match(design,/fiveDepartmentLeadReviewCompleted:false/);
   assert.match(design,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);

@@ -9837,5 +9837,39 @@
       "gateWeakening": false,
       "existingPipelinesOnly": true
     }
+  },
+  "gameSeedGuidanceContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "role": "OPTIONAL_REFERENCE_AND_IDEA_CONTEXT_ONLY",
+    "creativeConstraints": "NONE",
+    "requiredBeforeDesignerDraft": false,
+    "gameSeedMayBeAbsent": true,
+    "vibeSelfCompositionAuthority": true,
+    "vibeMayIgnoreAllSeedGuidance": true,
+    "vibeMayCreateNewMaterials": true,
+    "vibeMayUseZeroOneOrAnyMaterialCount": true,
+    "materialPoolLimit": null,
+    "materialCombinationLimit": null,
+    "sessionDurationLimit": null,
+    "multiplayerFormLimitAtSeedStage": null,
+    "categorySlotLimit": null,
+    "transformationModeLimit": null,
+    "starterReferenceMaterialCount": 100,
+    "suggestedMaterialCombineRange": [
+      2,
+      4
+    ],
+    "suggestedSessionMinutes": 30,
+    "suggestionsAreNeverPassFailGates": true,
+    "actualGameCountLimit": null,
+    "hardGateScope": [
+      "SECURITY",
+      "LEGAL_COPY_PROTECTION",
+      "EVIDENCE_INTEGRITY",
+      "DOWNSTREAM_TARGET_PLATFORM_AND_RELEASE_GATES"
+    ],
+    "seedMayNotExpandAuthority": true,
+    "seedMayNotWeakenDownstreamQa": true
   }
 }

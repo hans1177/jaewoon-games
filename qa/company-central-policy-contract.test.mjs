@@ -50,14 +50,17 @@ test('platform-release-roadmap is the single machine execution policy source',()
 });
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
   assert.equal(directive.gameSeed.enabled,true);
-  assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
-  assert.equal(directive.gameSeed.selectionMode,'MIXED_SEED_MATERIAL_COMPOSITION');
-  assert.deepEqual(directive.gameSeed.transformationModes,['HOMAGE','REINTERPRETATION','ORIGINAL_COMPOSITION']);
-  assert.equal(directive.gameSeed.materialMustBeExistingGame,false);
-  assert.equal(directive.gameSeed.seedMaterialPoolTarget,100);
-  assert.equal(directive.gameSeed.requiredFieldsSource,'tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS');
-  assert.ok(directive.gameSeed.requiredFields.includes('REFERENCE_INPUTS'));
-  assert.ok(!directive.gameSeed.requiredFields.includes('REFERENCE_GAMES'));
+  assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,false);
+  assert.equal(directive.gameSeed.selectionMode,'VIBE_SELF_COMPOSITION_GUIDANCE_ONLY');
+  assert.equal(directive.gameSeed.guidanceOnly,true);
+  assert.equal(directive.gameSeed.creativeConstraints,'NONE');
+  assert.equal(directive.gameSeed.vibeSelfCompositionAuthority,true);
+  assert.equal(directive.gameSeed.gameSeedMayBeAbsent,true);
+  assert.equal(directive.gameSeed.seedMaterialPoolTarget,null);
+  assert.equal(directive.gameSeed.seedMaterialCombineMin,null);
+  assert.equal(directive.gameSeed.seedMaterialCombineMax,null);
+  assert.equal(directive.gameSeed.targetSessionMinutes,null);
+  assert.deepEqual(directive.gameSeed.requiredFields,[]);
   assert.equal(directive.gameSeed.sourceCodeRule,'IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE');
   assert.equal(directive.gameSeed.bootstrap.count,6);
   assert.equal(directive.gameSeed.bootstrap.historicalInitialSeedBatchOnly,true);
@@ -118,7 +121,7 @@ test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes ar
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
-  assert.match(designCycle,/GAME_SEED_REQUIRED/);
+  assert.doesNotMatch(designCycle,/throw new Error\(\`GAME_SEED_REQUIRED/);
   assert.match(designCycle,/sameModelAsDraft:false/);
   assert.match(designCycle,/fiveDepartmentLeadReviewCompleted:false/);
   assert.match(designCycle,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);
@@ -492,4 +495,21 @@ test('제2규칙 binds every observable external AI action to security quarantin
   assert.equal(worker.hostileAttemptMayNotPublishCandidate,true);
   assert.equal(security.monitorAllObservableExternalAiActivity,true);
   assert.equal(security.quarantineBlocksCandidatePublication,true);
+});
+
+
+test('GAME_SEED cannot constrain Vibe creative composition',()=>{
+  const rule=roadmap.gameSeedGuidanceContract;
+  assert.equal(rule.creativeConstraints,'NONE');
+  assert.equal(rule.requiredBeforeDesignerDraft,false);
+  assert.equal(rule.gameSeedMayBeAbsent,true);
+  assert.equal(rule.vibeMayIgnoreAllSeedGuidance,true);
+  assert.equal(rule.vibeMayCreateNewMaterials,true);
+  assert.equal(rule.vibeMayUseZeroOneOrAnyMaterialCount,true);
+  assert.equal(rule.materialPoolLimit,null);
+  assert.equal(rule.materialCombinationLimit,null);
+  assert.equal(rule.sessionDurationLimit,null);
+  assert.equal(rule.multiplayerFormLimitAtSeedStage,null);
+  assert.equal(rule.suggestionsAreNeverPassFailGates,true);
+  assert.equal(rule.actualGameCountLimit,null);
 });
