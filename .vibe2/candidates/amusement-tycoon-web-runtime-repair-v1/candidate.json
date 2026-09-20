@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function capacity(b){",
+      "replace": "var hire=document.createElement(\"button\");\nhire.type=\"button\";\nhire.className=\"infoBtn\";\nhire.textContent=\"직원 추가 \" + (stat / 1000) + \"명\";\nhire.disabled=stat < 1000;\nhire.addEventListener(\"click\",function(){if(stat < 1000)return;\nstate.money += 1000;\nstat += 1000;\ntoast(\"직원 추가!\");\nrenderInfo();updateHud();renderBuildBar();});\nactions.appendChild(hire);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
