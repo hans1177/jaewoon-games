@@ -60,3 +60,23 @@ test('verified final-stage readiness allows Vibe to consider neural expansion wi
   assert.ok(task.completionCriteria.includes('NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF'));
   assert.ok(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
 });
+
+
+test('neural bottlenecks route to neural architecture responsibilities when structure needs expansion',()=>{
+  const rows=[
+    failure('n1','neural-event-router-bottleneck'),
+    failure('n2','neural-event-router-bottleneck'),
+    failure('n3','neural-event-router-bottleneck')
+  ];
+  const result=injectSelfArchitectureEvolutionTasks({tasks:rows},{
+    neuralExpansionReadiness:{
+      rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
+      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true
+    }
+  });
+  assert.equal(result.added.length,1);
+  const task=result.added[0];
+  assert.ok(task.responsibleFiles.includes('tools/vibe2-neural-event-router.mjs'));
+  assert.ok(task.responsibleFiles.includes('tools/vibe2-fan-in-review.mjs'));
+  assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:YES'));
+});
