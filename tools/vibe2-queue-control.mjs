@@ -772,14 +772,16 @@ export function runQueueCommand(args = {}) {
       effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
       taskCount
     });
-    const nextControl=adaptiveEligible
+    const merged = applyVibeFanInResults(queue, rows);
+    const acceptedResult=merged.applied.some(row=>clean(row?.outcome)!=='STALE_RESULT_SKIPPED');
+    const adaptiveUpdateApplied=adaptiveEligible&&acceptedResult;
+    const nextControl=adaptiveUpdateApplied
       ? decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks })
       : currentControl;
-    const merged = applyVibeFanInResults(queue, rows);
     queue = merged.queue;
     writeJson(file, queue);
-    if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
-    result = { command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
+    if(adaptiveUpdateApplied)writeJson(controlFileFrom(args), nextControl);
+    result = { command, executionLane, adaptiveEligible, adaptiveUpdateApplied, updated:acceptedResult, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
   } else if (['pass','fail','block','cancel'].includes(command)) {
     const outcome = command === 'pass' ? 'PASS' : command === 'fail' ? 'FAIL' : command === 'block' ? 'BLOCKED' : 'CANCELLED';
     const settled = settleVibeTask(queue, {
