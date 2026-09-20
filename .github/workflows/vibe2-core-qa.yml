@@ -25,6 +25,7 @@ on:
       - 'tools/vibe2-neural-critic.mjs'
       - 'tools/vibe2-neural-root-cause.mjs'
       - 'tools/vibe2-neural-event-router.mjs'
+      - 'tools/vibe2-neural-work-graph.mjs'
       - 'tools/vibe2-neural-shadow-audit.mjs'
       - 'tools/vibe2-neural-event-telemetry.mjs'
       - 'tools/vibe2-neural-phase2-readiness.mjs'
@@ -106,6 +107,7 @@ on:
       - 'tools/vibe2-neural-critic.mjs'
       - 'tools/vibe2-neural-root-cause.mjs'
       - 'tools/vibe2-neural-event-router.mjs'
+      - 'tools/vibe2-neural-work-graph.mjs'
       - 'tools/vibe2-neural-shadow-audit.mjs'
       - 'tools/vibe2-neural-event-telemetry.mjs'
       - 'tools/vibe2-neural-phase2-readiness.mjs'
@@ -178,6 +180,7 @@ jobs:
           node --check tools/vibe2-neural-critic.mjs
           node --check tools/vibe2-neural-root-cause.mjs
           node --check tools/vibe2-neural-event-router.mjs
+          node --check tools/vibe2-neural-work-graph.mjs
           node --check tools/vibe2-neural-shadow-audit.mjs
           node --check tools/vibe2-neural-event-telemetry.mjs
           node --check tools/vibe2-neural-phase2-readiness.mjs
@@ -219,6 +222,7 @@ jobs:
           node --check qa/vibe2-neural-critic.test.mjs
           node --check qa/vibe2-neural-root-cause.test.mjs
           node --check qa/vibe2-neural-event-router.test.mjs
+          node --check qa/vibe2-neural-work-graph.test.mjs
           node --check qa/vibe2-neural-shadow-audit.test.mjs
           node --check qa/vibe2-neural-event-telemetry.test.mjs
           node --check qa/vibe2-neural-phase2-readiness.test.mjs
@@ -251,6 +255,7 @@ jobs:
           node --test qa/vibe2-neural-critic.test.mjs
           node --test qa/vibe2-neural-root-cause.test.mjs
           node --test qa/vibe2-neural-event-router.test.mjs
+          node --test qa/vibe2-neural-work-graph.test.mjs
           node --test qa/vibe2-neural-shadow-audit.test.mjs
           node --test qa/vibe2-neural-event-telemetry.test.mjs
           node --test qa/vibe2-neural-phase2-readiness.test.mjs
