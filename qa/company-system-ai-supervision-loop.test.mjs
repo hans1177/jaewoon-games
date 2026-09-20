@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
-import { assignSecurityRecovery, PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION, reserveSecurityRecoveryTask } from '../tools/company-system-ai-queue.mjs';
+import { assignSecurityRecovery, PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION, PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS, PRIMARY_AI_SECURITY_RECOVERY_REVIEW_REWORK, reserveSecurityRecoveryTask, reviewSecurityRecovery } from '../tools/company-system-ai-queue.mjs';
 import { applySecurityRecoverySystemAiFanIn, securityRepairEvidence } from '../tools/company-recovery-queue.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
@@ -10,6 +10,7 @@ const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
 const queue=fs.readFileSync('tools/company-system-ai-queue.mjs','utf8');
 const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
 const securityAssignmentWorkflow=fs.readFileSync('.github/workflows/company-security-recovery-assignment.yml','utf8');
+const securityReviewWorkflow=fs.readFileSync('.github/workflows/company-security-recovery-review.yml','utf8');
 
 test('System AI supervision is reserve then implementation then verification then PR then fan-in',()=>{
   const reserve=workflow.indexOf('- name: Reserve disjoint supervised assignments');
@@ -335,4 +336,88 @@ test('System AI fan-in persists exact security recovery review linkage before co
   assert.ok(systemFanIn>=0&&recoveryFanIn>systemFanIn&&commit>recoveryFanIn);
   assert.match(fanIn,/--system-ai=\/tmp\/system-ai-control\/\.vibe2\/system-ai-queue\.json/);
   assert.match(fanIn,/--results=\/tmp\/company-system-ai-results/);
+});
+
+
+test('Primary AI security recovery PASS review atomically verifies recovery and accepts exact candidate task',()=>{
+  const result=reviewSecurityRecovery({tasks:[{
+    id:'security-run-review',status:'awaiting-supervisor',lastOutcome:'PASS',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9997',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-review']
+  }]},{tasks:[{
+    id:'recovery-review',status:'awaiting-primary-ai-review',sourceQueue:'security',sourceTaskId:'security-run-review',recoveryOwner:'SYSTEM_AI',primaryAiReview:'PENDING',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-review'],learningPromotion:'PENDING'
+  }]},{recoveryId:'recovery-review',decision:PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS,evidence:['review-anchor:example']});
+  const task=result.queue.tasks[0],rec=result.recovery.tasks[0];
+  assert.equal(task.status,'done');
+  assert.equal(task.lastOutcome,'PRIMARY_AI_ACCEPTED');
+  assert.ok(task.evidence.includes('primary-ai-review:PASS'));
+  assert.ok(task.evidence.includes('security-recovery-review:recovery-review'));
+  assert.equal(rec.status,'verified');
+  assert.equal(rec.primaryAiReview,'PASS');
+  assert.equal(rec.learningPromotion,'PENDING');
+  assert.ok(rec.evidence.includes('primary-ai-recovery-review:PASS'));
+  assert.ok(rec.evidence.includes('review-anchor:example'));
+});
+
+test('Primary AI security recovery PASS review accepts deterministic current-main result without losing its outcome evidence',()=>{
+  const result=reviewSecurityRecovery({tasks:[{
+    id:'security-run-current-review',status:'done',lastOutcome:'DETERMINISTIC_CURRENT_MAIN_SATISFIED',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-current-review']
+  }]},{tasks:[{
+    id:'recovery-current-review',status:'awaiting-primary-ai-review',sourceQueue:'security',sourceTaskId:'security-run-current-review',recoveryOwner:'SYSTEM_AI',primaryAiReview:'PENDING',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-current-review'],learningPromotion:'PENDING'
+  }]},{recoveryId:'recovery-current-review',decision:PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS});
+  assert.equal(result.queue.tasks[0].status,'done');
+  assert.equal(result.queue.tasks[0].lastOutcome,'DETERMINISTIC_CURRENT_MAIN_SATISFIED');
+  assert.ok(result.queue.tasks[0].evidence.includes('primary-ai-review:PASS'));
+  assert.equal(result.recovery.tasks[0].status,'verified');
+});
+
+test('Primary AI security recovery REWORK review requeues both exact linked rows and clears candidate state',()=>{
+  const result=reviewSecurityRecovery({tasks:[{
+    id:'security-run-rework',status:'awaiting-supervisor',lastOutcome:'PASS',candidateBranch:'system-ai/candidate/x',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9996',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:recovery-rework']
+  },{id:'unrelated',status:'awaiting-supervisor',evidence:['unrelated']}]},{tasks:[{
+    id:'recovery-rework',status:'awaiting-primary-ai-review',sourceQueue:'security',sourceTaskId:'security-run-rework',recoveryOwner:'SYSTEM_AI',primaryAiReview:'PENDING',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-rework'],learningPromotion:'PENDING'
+  },{id:'other-recovery',status:'awaiting-primary-ai-review',sourceQueue:'security',sourceTaskId:'other',recoveryOwner:'SYSTEM_AI',evidence:[]}]},{recoveryId:'recovery-rework',decision:PRIMARY_AI_SECURITY_RECOVERY_REVIEW_REWORK});
+  const task=result.queue.tasks.find(x=>x.id==='security-run-rework');
+  const rec=result.recovery.tasks.find(x=>x.id==='recovery-rework');
+  assert.equal(task.status,'queued');
+  assert.equal(task.candidateBranch,null);
+  assert.equal(task.pullRequestUrl,null);
+  assert.equal(task.blocker,'security-recovery-primary-ai-rework');
+  assert.equal(rec.status,'queued');
+  assert.equal(rec.primaryAiReview,'REWORK');
+  assert.equal(result.queue.tasks.find(x=>x.id==='unrelated').status,'awaiting-supervisor');
+  assert.equal(result.recovery.tasks.find(x=>x.id==='other-recovery').status,'awaiting-primary-ai-review');
+});
+
+test('Primary AI security recovery review requires exact marker and exact bidirectional linkage',()=>{
+  const queue={tasks:[{
+    id:'security-run-exact',status:'awaiting-supervisor',lastOutcome:'PASS',pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9995',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','security-recovery:wrong-recovery']
+  }]};
+  const recovery={tasks:[{
+    id:'recovery-exact',status:'awaiting-primary-ai-review',sourceQueue:'security',sourceTaskId:'security-run-exact',recoveryOwner:'SYSTEM_AI',
+    evidence:['primary-ai-security-recovery-assignment:APPROVE','system-ai-assignment:security-run-exact']
+  }]};
+  assert.throws(()=>reviewSecurityRecovery(queue,recovery,{recoveryId:'recovery-exact',decision:'PASS'}),/EXACT_REVIEW_REQUIRED/);
+  assert.throws(()=>reviewSecurityRecovery(queue,recovery,{recoveryId:'recovery-exact',decision:PRIMARY_AI_SECURITY_RECOVERY_REVIEW_PASS}),/TASK_LINK_MISMATCH/);
+});
+
+test('security recovery review workflow is manual-only, exact-decision, atomic, and never auto-merges or promotes',()=>{
+  assert.match(securityReviewWorkflow,/on:\n  workflow_dispatch:/);
+  assert.doesNotMatch(securityReviewWorkflow,/\n  schedule:/);
+  assert.doesNotMatch(securityReviewWorkflow,/\n  push:/);
+  assert.doesNotMatch(securityReviewWorkflow,/\n  repository_dispatch:/);
+  assert.match(securityReviewWorkflow,/PRIMARY_AI_SECURITY_RECOVERY_REVIEW=PASS/);
+  assert.match(securityReviewWorkflow,/PRIMARY_AI_SECURITY_RECOVERY_REVIEW=REWORK/);
+  assert.match(securityReviewWorkflow,/--command=review-security-recovery/);
+  assert.match(securityReviewWorkflow,/git add \.vibe2\/system-ai-queue\.json \.vibe2\/recovery-queue\.json/);
+  assert.match(securityReviewWorkflow,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(securityReviewWorkflow,/SECURITY_RECOVERY_REVIEW_CONTROL_REFRESH_RETRY/);
+  assert.match(securityReviewWorkflow,/SECURITY_RECOVERY_REVIEW_AUTO_MERGE=NO/);
+  assert.match(securityReviewWorkflow,/SECURITY_RECOVERY_REVIEW_AUTO_PROMOTION=NO/);
+  assert.doesNotMatch(securityReviewWorkflow,/gh pr merge|HEAD:main|refs\/heads\/main/);
 });
