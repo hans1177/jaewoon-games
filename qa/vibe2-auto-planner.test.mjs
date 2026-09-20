@@ -879,6 +879,9 @@ test('presentation quality passes are queued in canonical order',()=>{
   assert.ok(first.evidence.includes('atomic-neuron-stream:presentation'));
   assert.ok(first.evidence.includes('atomic-neuron-micro-fanin:per-task'));
   assert.ok(first.evidence.includes('graphics-atomic-candidate-isolation-required'));
+  assert.ok(first.evidence.includes('presentation-real-runtime-graphics:v2'));
+  assert.ok(first.evidence.includes('presentation-marker-only-pass:forbidden'));
+  assert.ok(first.evidence.includes('presentation-placeholder-primitives:forbidden'));
   queue={tasks:[done(first.id)]};
   const second=findWebPresentationQualityTask(project,root,queue);
   assert.equal(second.id,`${gameId}-presentation-living-motion-v1`);
@@ -936,9 +939,13 @@ test('web art direction and presentation are mandatory before platform handoff',
   assert.equal(task.supervisionContract.version,3);
   assert.ok(task.supervisionContract.stages.includes('GAME_ART_DIRECTION_STYLE_LOCK'));
   assert.ok(task.supervisionContract.stages.includes('PRESENTATION_IMPLEMENTATION'));
+  assert.ok(task.supervisionContract.stages.includes('REAL_RUNTIME_VISUAL_EVIDENCE_REVIEW'));
   assert.ok(task.supervisionContract.hardReject.includes('PLACEHOLDER_MONSTER_OR_CHARACTER'));
+  assert.ok(task.supervisionContract.hardReject.includes('PRIMITIVE_ONLY_CHARACTER_OR_MONSTER'));
   assert.ok(task.supervisionContract.hardReject.includes('CONTEXT_MISMATCH_BACKGROUND'));
   assert.ok(task.supervisionContract.hardReject.includes('INCOMPLETE_ACTION_MOTION_SET'));
+  assert.ok(task.supervisionContract.hardReject.includes('MISSING_COMBAT_DEATH_MOTION'));
+  assert.ok(task.supervisionContract.hardReject.includes('MARKER_ONLY_PRESENTATION_PASS'));
   assert.match(task.goal,/게임별 아트 방향과 Style Lock/);
   assert.match(task.goal,/idle\/move\/attack\/hit\/death/);
   assert.match(task.goal,/임시 모형 몹/);
