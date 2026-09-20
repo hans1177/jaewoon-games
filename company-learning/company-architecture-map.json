@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 29,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_SHADOW_WITH_CAPACITY_AWARE_GAME_PRIMARY_CAP_20",
+    "currentState": "PHASE2_SHADOW_POST_REPAIR_VALIDATION_WITH_CAPACITY_AWARE_20_SLOT_EXECUTION",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -378,14 +378,38 @@
       "sampleIdentity": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
       "sampleIdentityDeterministic": true,
       "sampleDedupScope": "EXACT_EVENT_SAMPLE_ONLY",
-      "retrySamplesAcrossReservationsRemainDistinct": true
+      "retrySamplesAcrossReservationsRemainDistinct": true,
+      "policyAndResourceLockCalibrationDoesNotRequireUnrelatedRootCauseProof": true,
+      "readinessQualityGates": {
+        "calibrationAccuracyMinimum": 0.7,
+        "rootCausePredictionCoverageMinimum": 0.8,
+        "rootCausePredictionContradictionRateMaximum": 0.3,
+        "rootCauseSampleIdentityCoverageMinimum": 0.8,
+        "duplicateSampleIdCountsOnce": true,
+        "conflictingSameSampleResultsBlockReview": true,
+        "legacyUnidentifiedEvidenceCannotAloneQualifyReview": true,
+        "sampleVolumeAloneSufficient": false,
+        "feedbackDeduplicatedBySampleId": true,
+        "shadowEventsDeduplicatedByEventId": true,
+        "waveAuditDeduplicatedBySampleId": true,
+        "conflictingFeedbackEventOrAuditIdentityBlocksReview": true
+      },
+      "readinessDistinctEvidenceHardening": {
+        "state": "CANDIDATE_BRANCH",
+        "branch": "assistant/neural-shadow-readiness-consolidated-v1",
+        "authority": "REVIEW_ELIGIBILITY_ONLY",
+        "executionAuthority": "NONE"
+      }
     },
     "activation": {
-      "mainCommit": "42d6863a1d47bd7ad7863457e8562a22136b3c5a",
+      "mainCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
       "shadowObservationActive": true,
       "eventRoutingExecutionAuthority": "NONE",
       "waveSchedulerAuthority": "UNCHANGED_AND_AUTHORITATIVE",
-      "promotionAuthority": "EXPLICIT_CENTRAL_POLICY_ONLY"
+      "promotionAuthority": "EXPLICIT_CENTRAL_POLICY_ONLY",
+      "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+      "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
+      "syncedMainHead": "d4588b5509a2adcdb95b441c27074bdfd8a86490"
     },
     "currentWaveExecution": {
       "outerReadiness": ".github/workflows/vibe2-24h-runner.yml::game_refill_ready",
@@ -400,6 +424,47 @@
       "refillExample": "ACTIVE_8_FREE_12",
       "externalSpareBeyond20": "NOT_GAME_PRIMARY_EXECUTION_AUTHORITY",
       "adaptiveControl": "MAY_DOWNSHIFT_BELOW_20_BUT_MAY_NOT_EXCEED_20_FOR_GAME_PRIMARY"
+    },
+    "liveShadowRepairLoop": {
+      "path": [
+        "WORKER_OR_CI_EVENT",
+        "NEURAL_SHADOW_DIAGNOSIS",
+        "CRITIC_MATCH_MISMATCH_UNKNOWN",
+        "ROOT_CAUSE_VERIFIER",
+        "SHADOW_EVENT_ROUTER",
+        "HARD_INHIBITOR",
+        "CURRENT_WAVE_EXECUTION",
+        "RUNTIME_DIFF_EVIDENCE",
+        "RESPONSIBLE_SYSTEM_REPAIR"
+      ],
+      "firstProductionRun": 35482102418,
+      "firstRuntimeEvidenceCommit": "3e949b0ddf09463f4d7941c73682a08de766bb71",
+      "observedPredictionContradiction": "VALIDATOR_PREDICTION_VS_SOURCE_GENERATION_BLOCKER",
+      "authorityOnContradiction": "REQUEST_EVIDENCE_ONLY",
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": "NONE",
+      "activeRepairPRs": [],
+      "bottleneckRepresentation": "PRIMARY_PLUS_SECONDARY_EVIDENCE_RANKED",
+      "safetyInvariant": "UNAUTHORIZED_SHADOW_FIRE_COUNT_MUST_REMAIN_ZERO",
+      "mergedRepairs": [
+        {
+          "pr": 1815,
+          "mainCommit": "e4bd076c5192f426ac15b80d26c2d7a1ae593966",
+          "system": "SOURCE_GENERATION_RECOVERY"
+        },
+        {
+          "pr": 1817,
+          "mainCommit": "bbb9c2da1cdb0436625161fbefe5b33d00d30bf7",
+          "system": "BOTTLENECK_DIAGNOSIS"
+        }
+      ],
+      "currentStage": "NEXT_PRODUCTION_WAVE_CAUSAL_VALIDATION",
+      "mergedRepairPRs": [
+        1815,
+        1817
+      ],
+      "activeSecurityFollowupPR": 1826,
+      "currentReadinessHardeningPR": 1825
     }
   }
 }
