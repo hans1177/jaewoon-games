@@ -1234,23 +1234,38 @@ jobs:
           regression_rc=$?
           set -e
           if [ "$regression_rc" -ne 0 ]; then
-            node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --input=/tmp/vibe2-fan-in.json \
-              --blocker=fan-in-regression-failed
-            git add .vibe2/queue.json .vibe2/parallelism-control.json
-            if ! git diff --cached --quiet; then
+            regression_state_persisted=0
+            for state_attempt in 1 2 3 4 5; do
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$state_attempt/5"
+              git fetch origin vibe2-unreal-core --quiet
+              git reset --hard origin/vibe2-unreal-core
+
+              node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --lane="$VIBE2_EXECUTION_LANE" \
+                --min="$lane_min" \
+                --input=/tmp/vibe2-fan-in.json >/tmp/vibe2-fan-in-regression-reapply.log
+              node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --input=/tmp/vibe2-fan-in.json \
+                --blocker=fan-in-regression-failed
+
+              git add .vibe2/queue.json .vibe2/parallelism-control.json
+              if git diff --cached --quiet; then
+                regression_state_persisted=1
+                break
+              fi
               git commit -m "vibe2: requeue after fan-in regression failure [skip ci]"
-              pushed=0
-              for attempt in 1 2 3; do
-                if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
-                git rebase --abort 2>/dev/null || true
-                git fetch origin vibe2-unreal-core --quiet
-                sleep $((attempt * 2))
-              done
-              test "$pushed" = 1
-            fi
+              if git push origin HEAD:vibe2-unreal-core; then
+                regression_state_persisted=1
+                break
+              fi
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY=$state_attempt"
+              sleep $((state_attempt * 2))
+            done
+            test "$regression_state_persisted" = 1
             echo 'VIBE2_REGRESSION_ROLE=FAIL_REQUEUED'
             echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
             exit "$regression_rc"
@@ -1262,41 +1277,58 @@ jobs:
             echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
           fi
 
-          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
-            --fanin=/tmp/vibe2-fan-in.json \
-            --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
+          fanin_state_persisted=0
+          fanin_state_write='NO'
+          for state_attempt in 1 2 3 4 5; do
+            echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$state_attempt/5"
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
 
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
-            node "$contract_root/tools/vibe2-fan-in-review.mjs" \
+            node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
               --queue="$control_root/.vibe2/queue.json" \
-              --input=/tmp/vibe2-fan-in.json \
-              --output=/tmp/vibe2-package-review.json \
-              --trace-ledger="$control_root/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-package-review.log
-            node "$contract_root/tools/vibe2-experience-control.mjs" \
-              --memory="$control_root/.vibe2/experience.json" \
-              --batch-review=/tmp/vibe2-package-review.json | tee /tmp/vibe2-supervised-experience.log
-          else
-            printf '%s\n' '{"version":1,"releaseCandidates":[],"experienceReviews":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
-            echo "VIBE2_REVIEW_ROLE=AUXILIARY_NO_RELEASE:$VIBE2_EXECUTION_LANE" | tee /tmp/vibe2-package-review.log
-          fi
-          echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --lane="$VIBE2_EXECUTION_LANE" \
+              --min="$lane_min" \
+              --input=/tmp/vibe2-fan-in.json >/tmp/vibe2-fan-in-persist.log
 
-          if [ -z "$(git status --porcelain -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json)" ]; then
-            echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
-          else
+            node "$contract_root/tools/vibe2-practice-distillation.mjs" \
+              --fanin=/tmp/vibe2-fan-in.json \
+              --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
+
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+              node "$contract_root/tools/vibe2-fan-in-review.mjs" \
+                --queue="$control_root/.vibe2/queue.json" \
+                --input=/tmp/vibe2-fan-in.json \
+                --output=/tmp/vibe2-package-review.json \
+                --trace-ledger="$control_root/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-package-review.log
+              node "$contract_root/tools/vibe2-experience-control.mjs" \
+                --memory="$control_root/.vibe2/experience.json" \
+                --batch-review=/tmp/vibe2-package-review.json | tee /tmp/vibe2-supervised-experience.log
+            else
+              printf '%s\n' '{"version":1,"releaseCandidates":[],"experienceReviews":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
+              echo "VIBE2_REVIEW_ROLE=AUXILIARY_NO_RELEASE:$VIBE2_EXECUTION_LANE" | tee /tmp/vibe2-package-review.log
+            fi
+            echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
+
+            if [ -z "$(git status --porcelain -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json)" ]; then
+              fanin_state_persisted=1
+              fanin_state_write='NO'
+              break
+            fi
+
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json
             test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
             git commit -m "vibe2: fan in parallel worker results [skip ci]"
-            pushed=0
-            for attempt in 1 2 3; do
-              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
-              git rebase --abort 2>/dev/null || true
-              git fetch origin vibe2-unreal-core --quiet
-              sleep $((attempt * 2))
-            done
-            test "$pushed" = 1
-            echo 'VIBE2_FAN_IN_QUEUE_WRITE=YES'
-          fi
+            if git push origin HEAD:vibe2-unreal-core; then
+              fanin_state_persisted=1
+              fanin_state_write='YES'
+              break
+            fi
+            echo "VIBE2_FAN_IN_OPTIMISTIC_RETRY=$state_attempt"
+            sleep $((state_attempt * 2))
+          done
+          test "$fanin_state_persisted" = 1
+          echo "VIBE2_FAN_IN_QUEUE_WRITE=$fanin_state_write"
 
           node "$contract_root/tools/vibe2-handoff.mjs" --check \
             --runtime="$contract_root/vibe2-runtime.json" \
