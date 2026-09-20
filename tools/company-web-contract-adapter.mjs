@@ -114,6 +114,7 @@ function scoreCandidate(item,candidate){
   const directFamilies=new Map((candidate.directFamilies||[]).map(row=>[row.family,row.score]));
   let score=0;const evidence=[];
   if(candidate.existingScopeId===item.id){score+=100;evidence.push('existing-scope-binding');}
+  if(family==='CORE'&&candidate.tag==='canvas'){score+=90;evidence.push('core-gameplay-surface');}
   if(family==='CORE'){
     const preferred=['GATHER','CRAFT','COMBAT','MOVEMENT','INTERACTION'],direct=preferred.filter(name=>directFamilies.has(name)).sort((a,b)=>(directFamilies.get(b)||0)-(directFamilies.get(a)||0))[0];
     if(direct){score+=54+Math.min(12,(directFamilies.get(direct)||0)*4);evidence.push('direct-core-family:'+direct);}
