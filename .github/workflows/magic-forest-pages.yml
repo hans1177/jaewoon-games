@@ -50,18 +50,27 @@ jobs:
           git commit -m "pages: publish magic forest"
           git push origin HEAD:gh-pages --force
 
-      - name: Enable branch-based GitHub Pages
+      - name: Ensure branch-based GitHub Pages when integration permits
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
+          payload='{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}'
           if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" --input -
+            if printf '%s\n' "$payload" | gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" --input -; then
+              echo 'MAGIC_FOREST_PAGES_CONFIG=UPDATED'
+            else
+              echo 'MAGIC_FOREST_PAGES_CONFIG=EXISTING_CONFIG_UPDATE_NOT_PERMITTED'
+              echo 'MAGIC_FOREST_GH_PAGES_BRANCH_PUBLISHED=YES'
+            fi
           else
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input -
+            if printf '%s\n' "$payload" | gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input -; then
+              echo 'MAGIC_FOREST_PAGES_CONFIG=CREATED'
+            else
+              echo 'MAGIC_FOREST_PAGES_CONFIG=CREATE_NOT_PERMITTED'
+              echo 'MAGIC_FOREST_GH_PAGES_BRANCH_PUBLISHED=YES'
+            fi
           fi
 
       - name: Show play URL
