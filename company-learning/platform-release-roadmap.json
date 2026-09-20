@@ -1,5 +1,5 @@
 {
-  "version": 164,
+  "version": 165,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4849,8 +4849,8 @@
     }
   },
   "vibeRecoveryLearningLoop": {
-    "version": 1,
-    "status": "DOCUMENTED_IMPLEMENTATION_PENDING",
+    "version": 2,
+    "status": "RECOVERY_EVENT_CHAIN_RUNTIME_ACTIVE_CI_VERIFIED",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "flow": [
       "FAILURE_DETECTED",
@@ -4873,7 +4873,65 @@
     "unverifiedRecoveryCannotBecomePreferredStrategy": true,
     "failureLocalRetrievalImplemented": true,
     "patchRecipeCompilerImplemented": true,
-    "sameGameSameFailurePriority": true
+    "sameGameSameFailurePriority": true,
+    "canonicalSupersedeReactivation": {
+      "enabled": true,
+      "rule": "SOURCE_REFALURE_REACTIVATES_DISPATCHED_CANONICAL_RECOVERY_THROUGH_SUPERSEDED_DUPLICATE_LINK",
+      "duplicateTerminalStatesRemainTerminal": true,
+      "canonicalRecoveryRequeued": true,
+      "evidenceMarker": "recovery-reactivated-after-source-refailure",
+      "sourceCommits": {
+        "recoveryQueue": "d6554025d15456e8b0dea83a220e2d646b5bb3f4",
+        "recoveryEscalation": "664aec816cbefb09bf418da39f658e446d0ee408",
+        "workflowBinding": "cbf6e04a8440047ef2b4f1874f93e95f78383bbd",
+        "qa": "3b5f2463f6e85d04cc6d19e4fbd3e7e6ef715c24"
+      }
+    },
+    "systemAiRecoveryEventChain": {
+      "enabled": true,
+      "order": [
+        "RECOVERY_ESCALATION",
+        "RECOVERY_DISPATCH",
+        "SYSTEM_AI_RESERVE"
+      ],
+      "cronRole": "WATCHDOG_ONLY",
+      "eventChainPrimary": true,
+      "runtimeEvidence": {
+        "workflowRunId": 35478923812,
+        "reserveJobId": 105993019180,
+        "recoveryDispatchCount": 1,
+        "canonicalRecoveryId": "recovery-system-ai-core-implementation-v1",
+        "systemAiTasksTouched": 5,
+        "afterReserveCounts": {
+          "running": 5,
+          "queued": 7
+        },
+        "controlBranch": "vibe2-unreal-core"
+      }
+    },
+    "latestCi": {
+      "head": "3b5f2463f6e85d04cc6d19e4fbd3e7e6ef715c24",
+      "companyEvolutionQa": {
+        "runId": 35478928647,
+        "conclusion": "success"
+      },
+      "integratedRegression": {
+        "runId": 35478928677,
+        "conclusion": "success"
+      },
+      "vibeQa": {
+        "runId": 35478928669,
+        "conclusion": "success"
+      },
+      "vibe3EngineContract": {
+        "runId": 35478928671,
+        "conclusion": "success"
+      },
+      "securityImmuneSystem": {
+        "runId": 35478928668,
+        "conclusion": "success"
+      }
+    }
   },
   "causalCodingLearning": {
     "version": 1,
