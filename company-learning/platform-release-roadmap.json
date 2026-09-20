@@ -11180,7 +11180,6 @@
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "purpose": "PUBLISH_FRESH_VERIFIED_ACTUAL_GAMEPLAY_MEDIA_AFTER_GRAPHICS_OR_PRESENTATION_UPDATES",
     "appliesTo": [
-      "WEB",
       "UNITY",
       "ROBLOX",
       "FORTNITE_UEFN"
@@ -11201,14 +11200,11 @@
       "sha256Required": true,
       "runtimeVerificationPassRequired": true,
       "canonicalRecordDomain": "runtime-media",
-      "canonicalMediaRoot": "assets/runtime-evidence"
+      "canonicalMediaRoot": "assets/runtime-evidence",
+      "webGameplayScreenshotNotRequired": true,
+      "webRemainsValidationAndPlayableLinkSurface": true
     },
     "platformCapture": {
-      "WEB": {
-        "automaticCaptureAllowed": true,
-        "source": "ACTUAL_BROWSER_RUNTIME",
-        "afterRuntimeQaPass": true
-      },
       "UNITY": {
         "automaticCaptureAllowed": true,
         "source": "ACTUAL_ANDROID_RUNTIME_OR_APPROVED_NATIVE_RUNTIME",
@@ -11235,7 +11231,9 @@
       "brokenOrUnverifiedMediaNeverPublished": true,
       "releaseLinkAndScreenshotMustRemainPlatformAware": true,
       "generatedIndex": "homepage-runtime-media.json",
-      "syncTool": "tools/homepage-runtime-media-sync.mjs"
+      "syncTool": "tools/homepage-runtime-media-sync.mjs",
+      "nativeGameplayMediaOnly": true,
+      "webGameplayMediaIgnored": true
     }
   }
 }
