@@ -50,6 +50,7 @@ test('root cause becomes verified only with explicit verified responsible-system
 test('verified system disagreement stays visible instead of being coerced into the neural prediction',()=>{
   const result=verifyNeuralRootCause({
     diagnosis,
+    sampleId:'sample-runtime-validator-1',
     evidence:[
       'causal-replay-prepatch-reproduced:YES',
       'causal-replay-executed:YES',
@@ -63,9 +64,11 @@ test('verified system disagreement stays visible instead of being coerced into t
   assert.equal(result.responsibleSystem,'VALIDATOR');
   assert.equal(result.predictedResponsibleSystem,'GAME_RUNTIME');
   assert.equal(result.predictedSystemConsistentWithVerified,false);
+  assert.equal(result.sampleId,'sample-runtime-validator-1');
   const evidence=neuralRootCauseEvidence(result);
   const marker=evidence.find(x=>x.startsWith('neural-root-cause:'));
   const payload=JSON.parse(decodeURIComponent(marker.slice('neural-root-cause:'.length)));
+  assert.equal(payload.sampleId,'sample-runtime-validator-1');
   assert.equal(payload.predictedSystemConsistentWithVerified,false);
   assert.equal(payload.phase2AuthorityEligible,false);
 });
