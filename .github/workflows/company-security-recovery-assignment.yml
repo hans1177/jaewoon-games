@@ -1,0 +1,100 @@
+name: Company Security Recovery Assignment
+
+on:
+  workflow_dispatch:
+    inputs:
+      recovery_id:
+        description: 'Exact blocked security recovery id'
+        required: true
+        type: string
+      decision:
+        description: 'Exact approval marker: PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-security-recovery-assignment
+  cancel-in-progress: false
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify assignment contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/company-system-ai-queue.mjs
+          node --check tools/company-recovery-queue.mjs
+          node --test qa/company-system-ai-supervision-loop.test.mjs
+
+      - name: Persist explicit Primary-AI security recovery assignment atomically
+        env:
+          RECOVERY_ID: ${{ inputs.recovery_id }}
+          DECISION: ${{ inputs.decision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$DECISION" = 'PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE'
+          persisted=0
+
+          for attempt in 1 2 3; do
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/security-recovery-assignment-control 2>/dev/null || true
+            rm -rf /tmp/security-recovery-assignment-control
+            git worktree prune
+            git fetch origin main vibe2-unreal-core --quiet
+            git worktree add --detach /tmp/security-recovery-assignment-control origin/vibe2-unreal-core >/dev/null
+            control=/tmp/security-recovery-assignment-control
+
+            test -f "$control/.vibe2/system-ai-queue.json"
+            test -f "$control/.vibe2/recovery-queue.json"
+
+            node tools/company-system-ai-queue.mjs \
+              --command=assign-security-recovery \
+              --queue="$control/.vibe2/system-ai-queue.json" \
+              --recovery="$control/.vibe2/recovery-queue.json" \
+              --recovery-id="$RECOVERY_ID" \
+              --decision="$DECISION"
+
+            cd "$control"
+            changed="$(git diff --name-only -- .vibe2/system-ai-queue.json .vibe2/recovery-queue.json)"
+            printf '%s\n' "$changed" | grep -Fqx '.vibe2/system-ai-queue.json'
+            printf '%s\n' "$changed" | grep -Fqx '.vibe2/recovery-queue.json'
+            test "$(printf '%s\n' "$changed" | sed '/^$/d' | wc -l | tr -d ' ')" = 2
+
+            git config user.name 'jaewoon-security-recovery-assignment'
+            git config user.email 'security-recovery-assignment@users.noreply.github.com'
+            git add .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
+            git commit -m "security: assign supervised recovery $RECOVERY_ID [skip ci]"
+
+            if git push origin HEAD:vibe2-unreal-core; then
+              persisted=1
+              echo "SECURITY_RECOVERY_ASSIGNMENT_CONTROL_WRITE=YES:attempt-$attempt"
+              break
+            fi
+
+            echo "SECURITY_RECOVERY_ASSIGNMENT_CONTROL_REFRESH_RETRY=$attempt"
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/security-recovery-assignment-control 2>/dev/null || true
+            rm -rf /tmp/security-recovery-assignment-control
+            sleep $((attempt * 2))
+          done
+
+          test "$persisted" = 1
+          echo "SECURITY_RECOVERY_ASSIGNMENT=PASS"
+          echo "SECURITY_RECOVERY_ASSIGNMENT_AUTO_DISPATCH=NO"
+          echo "SECURITY_RECOVERY_ASSIGNMENT_PRIMARY_AI_REVIEW_REQUIRED=YES"
