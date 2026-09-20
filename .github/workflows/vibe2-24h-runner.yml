@@ -44,7 +44,12 @@ on:
       - 'qa/company-security-steward.test.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'tools/vibe2-system-steward.mjs'
+      - 'tools/vibe2-neural-expansion-readiness.mjs'
       - 'qa/vibe2-system-steward.test.mjs'
+      - 'qa/vibe2-owner-rule1-continuity.test.mjs'
+      - 'qa/vibe2-owner-rule2-external-ai.test.mjs'
+      - 'qa/vibe2-owner-rule3-unbounded-learning.test.mjs'
+      - 'qa/vibe2-owner-rule4-self-architecture.test.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-shared-context.test.mjs'
@@ -177,15 +182,11 @@ jobs:
               node --test qa/vibe2-practice-distillation.test.mjs
               node --test qa/vibe2-design-intelligence.test.mjs
 
-              # Rule 4 final-stage neural expansion readiness is derived from existing
-              # verified QA, not from a manual approval switch.
-              node --test \
-                qa/vibe2-owner-rule1-continuity.test.mjs \
-                qa/vibe2-owner-rule2-external-ai.test.mjs \
-                qa/vibe2-owner-rule3-unbounded-learning.test.mjs \
-                qa/vibe2-neural-fanin-root-cause.test.mjs \
-                qa/company-security-steward.test.mjs
-              node -e "const fs=require('fs');const r={version:1,source:'VIBE2_24H_VERIFIED_RULE_AND_NEURAL_QA',rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true,authorityExpansion:false,gateWeakening:false};fs.writeFileSync('/tmp/vibe2-neural-expansion-readiness.json',JSON.stringify(r,null,2)+'\\n');console.log('VIBE2_NEURAL_EXPANSION_READINESS_EVIDENCE=PASS')"
+              # Rule 4 final-stage neural expansion readiness is derived from direct targeted QA.
+              node --check tools/vibe2-neural-expansion-readiness.mjs
+              node tools/vibe2-neural-expansion-readiness.mjs \
+                --root=. \
+                --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
             )
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
@@ -558,6 +559,8 @@ jobs:
             /tmp/vibe2-web-experience-ingest.log
             /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
+            /tmp/vibe2-neural-expansion-readiness.json
+            /tmp/vibe2-neural-expansion-readiness.log
             /tmp/vibe2-system-steward.log
             /tmp/vibe2-neural-expansion-readiness.json
             /tmp/vibe2-recovery-escalation.log
