@@ -387,8 +387,10 @@ jobs:
           const currentMainSatisfied=preverified||(process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success');
           const candidateOk=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
           const blocker=currentMainSatisfied||candidateOk?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
+          const executionDisposition=security.verdict==='QUARANTINE'?'TERMINATED_QUARANTINED':security.verdict==='REVIEW'?'HELD_FOR_PRIMARY_AI_REVIEW':candidateOk?'VERIFIED_CANDIDATE':'ENDED_WITHOUT_VERIFIED_CANDIDATE';
           const row={
-            version:4,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,
+            version:5,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,
+            ownerRule2:{id:'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',automaticBinding:true,executionDisposition,candidatePublicationAllowed:security.verdict==='PASS',learningCandidate:true,reusableLearning:false,requiresIndependentVerification:true,rawExternalOutputStored:false,verifiedDefensiveAbsorptionOnly:true},
             candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
             evidence:[
               `actions-run:${process.env.GITHUB_RUN_ID}`,

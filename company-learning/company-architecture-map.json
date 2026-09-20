@@ -1,5 +1,5 @@
 {
-  "version": 67,
+  "version": 68,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2061,5 +2061,17 @@
     "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "authorityExpansion": false
+  },
+  "ownerRule2Topology": {
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule2",
+    "externalAiActivityIngress": "ALL_OBSERVABLE_EXTERNAL_AI_WORKER_AND_CANDIDATE_ACTIONS",
+    "securityMonitor": "tools/company-security-steward.mjs",
+    "incidentStore": "vibe2-unreal-core:.vibe2/security-incidents.json",
+    "hostileDisposition": "QUARANTINE_TERMINATE_AFFECTED_EXECUTION_BLOCK_PUBLICATION",
+    "learningCandidateRule": "EVERY_ACTION_CANDIDATE_ONLY_VERIFIED_DISTILLED_RESULT_REUSABLE",
+    "defensiveLearning": "tools/company-security-learning.mjs -> existing Vibe learning motor",
+    "rawHostilePayloadRetention": false,
+    "externalProviderAttack": false,
+    "authorityChange": "NONE"
   }
 }

@@ -471,3 +471,25 @@ test('24h learning is Gemini-free and provider failure cannot stop the portfolio
   assert.equal(fallback.preserveCheckpoint,true);
   assert.equal(fallback.resumeExactFailedWork,true);
 });
+
+
+test('제2규칙 binds every observable external AI action to security quarantine and verified Vibe learning',()=>{
+  const rule=roadmap.ownerCanonicalRules?.rule2;
+  const worker=roadmap.developmentLifecycleMachine.primaryAiOrchestration.externalAiWorkerPolicy;
+  const security=roadmap.developmentLifecycleMachine.securityImmuneSystem;
+  assert.equal(rule?.id,'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION');
+  assert.equal(rule?.automaticContractBinding,true);
+  assert.equal(rule?.allExternalAiWorkersBound,true);
+  assert.equal(rule?.allCodingActionsIncluded,true);
+  assert.equal(rule?.everyActionBecomesLearningCandidate,true);
+  assert.equal(rule?.securityStewardMonitorsBeforeAcceptance,true);
+  assert.equal(rule?.rawHostilePayloadMayEnterLearning,false);
+  assert.equal(rule?.attackOrDestructionOfExternalProviderForbidden,true);
+  assert.equal(rule?.authorityExpansion,false);
+  assert.equal(rule?.gateWeakening,false);
+  assert.equal(worker.ownerRule2AutomaticBinding,true);
+  assert.equal(worker.hostileAttemptTerminatesAffectedExecutionContext,true);
+  assert.equal(worker.hostileAttemptMayNotPublishCandidate,true);
+  assert.equal(security.monitorAllObservableExternalAiActivity,true);
+  assert.equal(security.quarantineBlocksCandidatePublication,true);
+});

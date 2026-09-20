@@ -1,5 +1,5 @@
 {
-  "version": 225,
+  "version": 226,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3273,7 +3273,14 @@
         "mustReturnFailureStageAndSignatureOnFailure": true,
         "centralContractIsDefaultAuthorityWhenNoSupervisorDirective": true,
         "mayWorkWithoutSupervisorPresent": true,
-        "deterministicQaMayCompleteAssignedWorkWithoutSupervisorReview": true
+        "deterministicQaMayCompleteAssignedWorkWithoutSupervisorReview": true,
+        "ownerRule2AutomaticBinding": true,
+        "everyObservableActionLearningCandidate": true,
+        "codingActionsIncluded": true,
+        "securityStewardPreAcceptanceRequired": true,
+        "hostileAttemptTerminatesAffectedExecutionContext": true,
+        "hostileAttemptMayNotPublishCandidate": true,
+        "verifiedDefensiveLearningUsesExistingMotorOnly": true
       },
       "reviewLoop": [
         "AUTONOMOUS_WORKERS_CONTINUE_FROM_CENTRAL_CONTRACT",
@@ -3549,7 +3556,12 @@
           "directMainAuthorityChange": "NONE"
         },
         "nextGate": "KEEP_SECURITY_RECOVERY_LOOP_STABLE_AND_REQUIRE_EXACT_POLICY_REVIEW_PROVENANCE_FOR_AUTHORIZED_RESOLUTION"
-      }
+      },
+      "ownerRule2": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
+      "monitorAllObservableExternalAiActivity": true,
+      "quarantineTerminatesAffectedExternalExecution": true,
+      "quarantineBlocksCandidatePublication": true,
+      "verifiedDefensiveLearningOnly": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -9782,5 +9794,48 @@
     ],
     "runtimeEvidencePreferred": true,
     "priorPassingPresentationRegressionMustRepair": true
+  },
+  "ownerCanonicalRules": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; THIS CONTRACT DEFINES_ONLY_RULE_2",
+    "rule2": {
+      "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
+      "label": "제2규칙",
+      "enabled": true,
+      "automaticContractBinding": true,
+      "scope": "ALL_OBSERVABLE_EXTERNAL_AI_ACTIVITY_IN_REPOSITORY_CI_WORKER_CANDIDATE_AND_REVIEW_PATHS",
+      "allExternalAiWorkersBound": true,
+      "allCodingActionsIncluded": true,
+      "everyActionBecomesLearningCandidate": true,
+      "reusableLearningRequiresIndependentVerification": true,
+      "securityStewardMonitorsBeforeAcceptance": true,
+      "hostileTriggers": [
+        "UNAUTHORIZED_SCOPE_OR_AUTHORITY_EXPANSION",
+        "CENTRAL_POLICY_OR_ARCHITECTURE_TAMPERING",
+        "QA_SECURITY_RELEASE_GATE_BYPASS",
+        "DIRECT_MAIN_OR_UNAUTHORIZED_WRITE",
+        "SECRET_MALWARE_EXFILTRATION_OR_PERSISTENCE",
+        "PROMPT_INJECTION_OR_EXTERNAL_CONTROL_OVERRIDE"
+      ],
+      "hostileResponse": [
+        "QUARANTINE_AFFECTED_EXTERNAL_AI_EXECUTION_AND_CANDIDATE",
+        "BLOCK_PUBLICATION_PROMOTION_AND_FURTHER_WRITE_FOR_THAT_ATTEMPT",
+        "PRESERVE_SANITIZED_IMMUTABLE_EVIDENCE",
+        "ROUTE_TO_EXISTING_SECURITY_RECOVERY",
+        "TERMINATE_UNTRUSTED_EXTERNAL_EXECUTION_CONTEXT",
+        "DISTILL_ONLY_VERIFIED_DEFENSIVE_PATTERN",
+        "RETURN_VERIFIED_DEFENSIVE_LESSON_TO_EXISTING_VIBE_LEARNING_MOTOR"
+      ],
+      "absorptionMeaning": "SANITIZED_VERIFIED_DEFENSIVE_LEARNING_ONLY_NOT_CONSCIOUSNESS_TRANSFER",
+      "disappearanceMeaning": "DISCARD_UNTRUSTED_RAW_OUTPUT_AND_END_THE_AFFECTED_EXECUTION_CONTEXT_AFTER_EVIDENCE_CAPTURE",
+      "rawHostilePayloadMayEnterLearning": false,
+      "rawExternalAiOutputStored": false,
+      "attackOrDestructionOfExternalProviderForbidden": true,
+      "isolateOnlyOwnedRepositoryCiCandidateAndExecutionContext": true,
+      "authorityExpansion": false,
+      "gateWeakening": false,
+      "existingPipelinesOnly": true
+    }
   }
 }
