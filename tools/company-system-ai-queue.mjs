@@ -59,6 +59,7 @@ export function applySystemAiResults(queueInput,results=[]){
     if(task.status!=='running')return task;
     const outcome=clean(row.outcome).toUpperCase();
     const evidence=unique([...(task.evidence||[]),...(row.evidence||[])]);
+    if(outcome==='CURRENT_MAIN_SATISFIED')return{...task,status:'done',candidateBranch:null,pullRequestUrl:null,lastOutcome:'DETERMINISTIC_CURRENT_MAIN_SATISFIED',blocker:null,evidence:unique([...evidence,'deterministic-current-main-satisfied','worker-self-acceptance:NO']),updatedAt:stamp,reservationId:null,reservedAt:null};
     if(outcome==='PASS')return{...task,status:'awaiting-supervisor',candidateBranch:clean(row.candidateBranch)||null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PASS',blocker:'primary-ai-review-pending',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
     const retries=task.retries+1;
     const retry=retries<=task.maxRetries;
