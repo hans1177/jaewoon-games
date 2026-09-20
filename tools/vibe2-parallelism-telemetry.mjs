@@ -218,5 +218,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_WORKLOAD_PACKAGE_CYCLE_AVG_MS=${t.workload.packageCycleTime.avgMs}`);
   console.log(`VIBE2_WORKLOAD_PREPARATION_RATIO=${t.workload.preparationRatioPct}`);
   console.log(`VIBE2_PARALLEL_BOTTLENECK=${t.bottleneck}`);
+  console.log(`VIBE2_PARALLEL_SECONDARY_BOTTLENECKS=${t.secondaryBottlenecks.join(',')||'NONE'}`);
   console.log(`VIBE2_PARALLEL_TELEMETRY_PASS=${t.pass?'YES':'NO'}`);
 }
