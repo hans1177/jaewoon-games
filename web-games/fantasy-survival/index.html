@@ -14,8 +14,8 @@
 <div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn">멀티</button><button id="bgmToggle" class="multiBtn">BGM ON</button></div><a class="home" href="/">홈</a></div>
 <div id="notice" class="notice"></div><div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick"><div id="knob" class="knob"></div></div>
 <div class="actions"><button id="craft" class="act craft">제작</button><div class="utilityStack"><button id="dismount" class="act dismount">내리기</button><button id="gather" class="act gather">채집</button><button id="inventory" class="act inventory">가방</button></div><div class="combatStack"><button id="map" class="act map">지도</button><button id="attack" class="act attack">공격</button></div></div>
-<div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
-<div id="smeltPanel" class="smelt"><h3>화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">사슴고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
+<div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">밀림 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
+<div id="smeltPanel" class="smelt"><h3>화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">사슴고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
 <div class="legend">E 채집 · C 제작 · I 인벤토리 · 화로 두 번 누르기 · WASD 이동</div><div id="recorderOverlay" class="recorderOverlay"><div class="recorderTitle">연구소 녹음기</div><div id="recorderCaption" class="recorderCaption"></div><div id="recorderState" class="recorderState">재생 중</div></div><div id="flash" class="flash"></div>
 <div id="multiPanel" class="multiPanel">
  <div class="multiHead"><b>멀티플레이</b><button id="multiClose">×</button></div>
@@ -28,17 +28,18 @@
 <script>
 (()=>{'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
-const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),foodfill:document.getElementById('foodfill'),foodtext:document.getElementById('foodtext'),questText:document.getElementById('questText'),recorderOverlay:document.getElementById('recorderOverlay'),recorderCaption:document.getElementById('recorderCaption'),recorderState:document.getElementById('recorderState'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),essence:document.getElementById('essence'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),dismount:document.getElementById('dismount'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),deerSmeltBtn:document.getElementById('deerSmeltBtn'),bugSmeltBtn:document.getElementById('bugSmeltBtn'),fishSmeltBtn:document.getElementById('fishSmeltBtn'),hareSmeltBtn:document.getElementById('hareSmeltBtn'),lizardSmeltBtn:document.getElementById('lizardSmeltBtn'),crystalDeerSmeltBtn:document.getElementById('crystalDeerSmeltBtn'),greensSmeltBtn:document.getElementById('greensSmeltBtn'),smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner'),multiPanel:document.getElementById('multiPanel'),multiStatus:document.getElementById('multiStatus'),multiRoom:document.getElementById('multiRoom')};
+const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),foodfill:document.getElementById('foodfill'),foodtext:document.getElementById('foodtext'),questText:document.getElementById('questText'),recorderOverlay:document.getElementById('recorderOverlay'),recorderCaption:document.getElementById('recorderCaption'),recorderState:document.getElementById('recorderState'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),essence:document.getElementById('essence'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),jungleBenchTab:document.getElementById('jungleBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),dismount:document.getElementById('dismount'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),deerSmeltBtn:document.getElementById('deerSmeltBtn'),bugSmeltBtn:document.getElementById('bugSmeltBtn'),fishSmeltBtn:document.getElementById('fishSmeltBtn'),hareSmeltBtn:document.getElementById('hareSmeltBtn'),lizardSmeltBtn:document.getElementById('lizardSmeltBtn'),crystalDeerSmeltBtn:document.getElementById('crystalDeerSmeltBtn'),greensSmeltBtn:document.getElementById('greensSmeltBtn'),birdSmeltBtn:document.getElementById('birdSmeltBtn'),goatSmeltBtn:document.getElementById('goatSmeltBtn'),monopolySmeltBtn:document.getElementById('monopolySmeltBtn'),smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner'),multiPanel:document.getElementById('multiPanel'),multiStatus:document.getElementById('multiStatus'),multiRoom:document.getElementById('multiRoom')};
 const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
 const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=36,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:36000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=37,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
+const SNOW_REGION={x:18000,y:0,w:3600,h:12000};
 const JUNGLE_REGION={x:21600,y:0,w:14400,h:12000}; // 새 맵 전체 면적의 정확히 40%
 const JUNGLE_LAKES=[{x:24400,y:2600,r:360},{x:29400,y:6500,r:300},{x:34200,y:9300,r:340}];
 const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y:8500},{x:11550,y:7000}];
@@ -167,14 +168,25 @@ const recipes=[
 {id:'meal-lake-hare-greens',name:'토끼 야채구이',where:'meal',cost:{},desc:'밥 +80 · 초당 체력 18 회복 · 4초',kind:'consumable',hunger:80,foodRegen:18,foodRegenSeconds:4},
 {id:'meal-lake-lizard-greens',name:'도마뱀 야채볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
 {id:'meal-lake-deer-greens',name:'수정사슴 야채전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 28 회복 · 5초',kind:'consumable',hunger:100,foodRegen:28,foodRegenSeconds:5},
-{id:'leech-cleaver',name:'거머리 흡혈도',where:'goldbench',cost:{leechSucker:4,monopolyStone:5,goldIngot:4},desc:'공격력 185 · 밀림 3티어 무기',kind:'weapon',power:185,range:88,cooldown:800},
-{id:'gorilla-armor',name:'고릴라 중갑',where:'goldbench',cost:{gorillaHide:6,monopolyStone:8,goldIngot:7},desc:'최대 체력 +250 · 받는 피해 23% 감소 · 4티어',kind:'armor',maxHp:250,reduce:.23},
-{id:'gorilla-guard-armor',name:'고릴라 수호갑',where:'goldbench',cost:{gorillaHide:8,monopolyStone:10,goldIngot:8},desc:'최대 체력 +270 · 받는 피해 24% 감소 · 4티어',kind:'armor',maxHp:270,reduce:.24},
-{id:'anaconda-armor',name:'아나콘다 비늘갑옷',where:'goldbench',cost:{anacondaScale:7,monopolyStone:7,goldIngot:6},desc:'최대 체력 +240 · 받는 피해 22% 감소 · 4티어',kind:'armor',maxHp:240,reduce:.22},
-{id:'mud-blade',name:'머드 워커 도',where:'goldbench',cost:{mudCore:5,monopolyStone:5,goldIngot:4},desc:'공격력 170 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:170,range:86,cooldown:760,slowChance:.10,slowDuration:3000},
-{id:'mud-spear',name:'머드 워커 창',where:'goldbench',cost:{mudCore:6,monopolyStone:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000}
+{id:'leech-cleaver',name:'거머리 흡혈도',where:'junglebench',cost:{leechSucker:4,monopolyIngot:5,goldIngot:4},desc:'공격력 185 · 밀림 3티어 무기',kind:'weapon',power:185,range:88,cooldown:800},
+{id:'gorilla-armor',name:'고릴라 중갑',where:'junglebench',cost:{gorillaHide:6,monopolyIngot:8,goldIngot:7},desc:'최대 체력 +250 · 받는 피해 23% 감소 · 4티어',kind:'armor',maxHp:250,reduce:.23},
+{id:'gorilla-guard-armor',name:'고릴라 수호갑',where:'junglebench',cost:{gorillaHide:8,monopolyIngot:10,goldIngot:8},desc:'최대 체력 +270 · 받는 피해 24% 감소 · 4티어',kind:'armor',maxHp:270,reduce:.24},
+{id:'anaconda-armor',name:'아나콘다 비늘갑옷',where:'junglebench',cost:{anacondaScale:7,monopolyIngot:7,goldIngot:6},desc:'최대 체력 +240 · 받는 피해 22% 감소 · 4티어',kind:'armor',maxHp:240,reduce:.22},
+{id:'mud-blade',name:'머드 워커 도',where:'junglebench',cost:{mudCore:5,monopolyIngot:5,goldIngot:4},desc:'공격력 170 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:170,range:86,cooldown:760,slowChance:.10,slowDuration:3000},
+{id:'mud-spear',name:'머드 워커 창',where:'junglebench',cost:{mudCore:6,monopolyIngot:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000},
+{id:'jungle-bench',name:'독점석 제작대',where:'goldbench',cost:{monopolyIngot:5,goldIngot:3,wood:2},desc:'밀림과 설원 장비를 제작하는 상위 제작대',kind:'structure'},
+{id:'cooked-bird-meat',name:'구운 꿩고기',where:'smelt',cost:{},desc:'세계수 꿩고기를 구운 음식 · 밥 +55',kind:'consumable',hunger:55},
+{id:'cooked-crystal-goat-meat',name:'구운 수정염소고기',where:'smelt',cost:{},desc:'수정염소고기를 구운 음식 · 밥 +65',kind:'consumable',hunger:65},
+{id:'yeti-horn-maul',name:'예티 뿔 대검',where:'junglebench',cost:{yetiHorn:2,yetiHide:2,monopolyIngot:8,goldIngot:5},desc:'공격력 340 · 설원 5티어 무기',kind:'weapon',power:340,range:104,cooldown:1000},
+{id:'yeti-armor',name:'예티 방어구',where:'junglebench',cost:{yetiHide:4,yetiHorn:1,monopolyIngot:10,goldIngot:6},desc:'최대 체력 +420 · 피해 38% 감소 · 추위 게이지 상승 완전 차단',kind:'armor',maxHp:420,reduce:.38,coldImmune:true},
+{id:'polar-bear-axe',name:'북극곰 발톱도끼',where:'junglebench',cost:{polarBearClaw:4,polarBearHide:2,monopolyIngot:6},desc:'공격력 205 · 4티어',kind:'weapon',power:205,range:88,cooldown:780},
+{id:'polar-bear-spear',name:'북극곰 창',where:'junglebench',cost:{polarBearClaw:3,polarBearHide:3,monopolyIngot:6,wood:3},desc:'공격력 195 · 긴 사거리 · 4티어',kind:'weapon',power:195,range:118,cooldown:900},
+{id:'polar-bear-armor',name:'북극곰 방어구',where:'junglebench',cost:{polarBearHide:7,polarBearClaw:3,monopolyIngot:7},desc:'최대 체력 +250 · 피해 23% 감소 · 추위 상승 111배 느림',kind:'armor',maxHp:250,reduce:.23,coldDivisor:111},
+{id:'polar-wolf-blade',name:'북극늑대 검',where:'junglebench',cost:{polarWolfPelt:5,monopolyIngot:5,goldIngot:3},desc:'공격력 185 · 4티어',kind:'weapon',power:185,range:86,cooldown:720},
+{id:'polar-wolf-armor',name:'북극늑대 방어구',where:'junglebench',cost:{polarWolfPelt:7,monopolyIngot:6},desc:'최대 체력 +220 · 피해 20% 감소 · 추위 상승 70배 느림',kind:'armor',maxHp:220,reduce:.20,coldDivisor:70},
+{id:'polar-wolf-hunter-armor',name:'북극늑대 사냥갑',where:'junglebench',cost:{polarWolfPelt:8,monopolyIngot:6,goldIngot:2},desc:'최대 체력 +200 · 공격력 +15 · 추위 상승 70배 느림',kind:'armor',maxHp:200,reduce:.18,bonusDamage:15,coldDivisor:70}
 ];
-const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','forest-hare-meat','world-bird-meat','canyon-lizard-meat','crystal-goat-meat','worldtree-greens','cooked-fish','cooked-crystal-deer-meat','cooked-hare-meat','cooked-lizard-meat','cooked-greens'];
+const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','cooked-hare-meat','cooked-bird-meat','cooked-lizard-meat','cooked-crystal-goat-meat','cooked-greens','cooked-fish','cooked-crystal-deer-meat'];
 const COOKING_COMBOS={
  'carrot|carrot':'meal-carrot-carrot',
  'carrot|cooked-deer-meat':'meal-carrot-deer',
@@ -186,15 +198,15 @@ const COOKING_COMBOS={
  'cooked-bug-meat|cooked-bug-meat':'meal-bug-bug',
  'cooked-bug-meat|firewolf-cooked-meat':'meal-bug-firewolf',
  'firewolf-cooked-meat|firewolf-cooked-meat':'meal-firewolf-firewolf',
- 'forest-hare-meat|forest-hare-meat':'meal-hare-roast',
- 'world-bird-meat|world-bird-meat':'meal-worldbird-roast',
- 'canyon-lizard-meat|canyon-lizard-meat':'meal-canyon-roast',
- 'crystal-goat-meat|crystal-goat-meat':'meal-crystal-roast',
- 'worldtree-greens|worldtree-greens':'meal-worldtree-greens',
- 'forest-hare-meat|worldtree-greens':'meal-hare-greens',
- 'world-bird-meat|worldtree-greens':'meal-worldbird-greens',
- 'canyon-lizard-meat|worldtree-greens':'meal-canyon-greens',
- 'crystal-goat-meat|worldtree-greens':'meal-crystal-greens',
+ 'cooked-hare-meat|cooked-hare-meat':'meal-hare-roast',
+ 'cooked-bird-meat|cooked-bird-meat':'meal-worldbird-roast',
+ 'cooked-lizard-meat|cooked-lizard-meat':'meal-canyon-roast',
+ 'cooked-crystal-goat-meat|cooked-crystal-goat-meat':'meal-crystal-roast',
+ 'cooked-greens|cooked-greens':'meal-cooked-greens',
+ 'cooked-hare-meat|cooked-greens':'meal-hare-greens',
+ 'cooked-bird-meat|cooked-greens':'meal-worldbird-greens',
+ 'cooked-lizard-meat|cooked-greens':'meal-canyon-greens',
+ 'cooked-crystal-goat-meat|cooked-greens':'meal-crystal-greens',
  'cooked-fish|cooked-greens':'meal-lake-fish-greens',
  'cooked-crystal-deer-meat|cooked-fish':'meal-lake-fish-deer',
  'cooked-fish|cooked-fish':'meal-lake-fish-fish',
@@ -204,12 +216,13 @@ const COOKING_COMBOS={
 };
 function foodComboKey(a,b){return[a,b].sort().join('|')}
 const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
-const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear']);
-const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor']);
-function itemTier(id){return ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
-const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe']);
+const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
+const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
+const ITEM_TIER_5=new Set(['yeti-horn-maul','yeti-armor']);
+function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
+const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul']);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -244,18 +257,23 @@ lakefish:{id:'lakefish',name:'호수 물고기',mood:'harmless',hp:50,dmg:0,spee
 giantleech:{id:'giantleech',name:'초거대 거머리',mood:'aggressive',hp:400,dmg:44,speed:74,r:26,color:'#55313f',detect:520,jungle:true,leechLife:44},
 gorilla:{id:'gorilla',name:'밀림 고릴라',mood:'neutral',hp:1000,dmg:50,speed:70,r:36,color:'#4a5149',detect:560,jungle:true,gorillaSpecial:true},
 anaconda:{id:'anaconda',name:'아나콘다',mood:'aggressive',hp:800,dmg:65,speed:86,r:30,color:'#416743',detect:720,jungle:true,anacondaSpecial:true},
-mudwalker:{id:'mudwalker',name:'머드 워커',mood:'aggressive',hp:750,dmg:40,speed:66,r:32,color:'#65553f',detect:650,jungle:true,mudSpecial:true}
+mudwalker:{id:'mudwalker',name:'머드 워커',mood:'aggressive',hp:750,dmg:40,speed:66,r:32,color:'#65553f',detect:650,jungle:true,mudSpecial:true},
+yetileader:{id:'yetileader',name:'예티 우두머리',mood:'aggressive',hp:2599,dmg:72,speed:68,r:42,color:'#dce9ee',detect:850,snow:true,yetiBoss:true},
+yeticub:{id:'yeticub',name:'예티 새끼',mood:'aggressive',hp:400,dmg:30,speed:82,r:23,color:'#edf4f6',detect:620,snow:true,summoned:true},
+polarbear:{id:'polarbear',name:'북극곰',mood:'aggressive',hp:1000,dmg:50,speed:72,r:34,color:'#f1f3ed',detect:620,snow:true,polarBearSpecial:true},
+polarwolf:{id:'polarwolf',name:'북극늑대',mood:'neutral',hp:650,dmg:35,speed:92,r:24,color:'#c7d4dc',detect:560,snow:true,polarWolfSpecial:true},
+polarfox:{id:'polarfox',name:'북극여우',mood:'harmless',hp:100,dmg:0,speed:95,r:16,color:'#f6f8f3',detect:0,snow:true,huntable:true}
 };
 const DROP_MATERIAL_NAMES={
  mossTusk:'이끼멧돼지 엄니',stoneCore:'돌정령 핵',goblinCharm:'고블린 부적',wolfHide:'늑대가죽',
  ironSpiritCore:'철 정령 핵',bearClaw:'곰발톱',bearHide:'곰가죽',bearFang:'곰이빨',
  sovereignCore:'근원포식자 핵',fireWolfFang:'화염 늑대 송곳니',burrowerShell:'초거대 벌레 갑각',
  walkerClaw:'샌드워커 집게',calmMagmaCore:'고요한 화염 핵',rageMagmaCore:'격노한 화염 핵',
- fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석'
+ fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽'
 };
-const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone'];
+const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
 const ACHIEVEMENTS=[
  {id:'strong-body',name:'강력한 신체',desc:'화산 또는 수정 지역 몬스터를 처치'},
  {id:'escape-step',name:'탈출의 1걸음',desc:'무전기 부품을 발견'},
@@ -311,8 +329,10 @@ function pointInWorldTree(x,y){return pointInPoly(x,y,WORLD_TREE_POLY)}
 function pointInRect(x,y,r){return x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h}
 function pointInVolcano(x,y){return pointInPoly(x,y,VOLCANO_POLY)}
 function pointInCrystalRegion(x,y){return pointInRect(x,y,CRYSTAL_REGION)}
+function pointInSnow(x,y){return pointInRect(x,y,SNOW_REGION)}
 function pointInJungle(x,y){return pointInRect(x,y,JUNGLE_REGION)}
 function pointInJungleLake(x,y){return JUNGLE_LAKES.some(l=>dist(x,y,l.x,l.y)<=l.r)}
+function randomSnowPoint(margin=120){return{x:rand(SNOW_REGION.x+margin,SNOW_REGION.x+SNOW_REGION.w-margin),y:rand(SNOW_REGION.y+margin,SNOW_REGION.y+SNOW_REGION.h-margin)}}
 function randomJunglePoint(margin=120){let x,y,tries=0;do{x=rand(JUNGLE_REGION.x+margin,JUNGLE_REGION.x+JUNGLE_REGION.w-margin);y=rand(JUNGLE_REGION.y+margin,JUNGLE_REGION.y+JUNGLE_REGION.h-margin);tries++}while(pointInJungleLake(x,y)&&tries<80);return{x,y}}
 function randomPoisonStonePoint(){const p=randomJunglePoint(500);return{x:p.x,y:p.y}}
 function pointInGiantLakeSurface(x,y){return pointInRect(x,y,GIANT_LAKE_SURFACE)}
@@ -329,6 +349,7 @@ function randomVolcanoPoint(zone='volcano'){
 }
 function regionAt(x,y){
  if(pointInJungle(x,y))return'jungle';
+ if(pointInSnow(x,y))return'snow';
  if(pointInCrystalRegion(x,y))return'crystal';
  if(pointInGiantLakeSurface(x,y))return'giantlake';
  if(pointInWorldTree(x,y))return'worldtree';
@@ -484,6 +505,7 @@ function markExplored(){
 function discoverRegion(){
   if(state.area!=='surface')return;
   const r=regionAt(state.player.x,state.player.y);
+  if(r==='snow'&&!state.discovered.snow){state.discovered.snow=true;state.dirty=true;showNotice('발견함 설원')}
   if(r==='jungle'&&!state.discovered.jungle){state.discovered.jungle=true;state.dirty=true;showNotice('발견함 밀림')}
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}
@@ -507,6 +529,7 @@ function makeNode(kind,i){
 function spawnCreature(type,index=0,anchor=null,packId=null){
  let x,y;
  if(type.underwater){const p=randomUnderwaterPoint();x=p.x;y=p.y}
+ else if(type.snow){const p=randomSnowPoint();x=p.x;y=p.y}
  else if(type.jungle){const p=randomJunglePoint();x=p.x;y=p.y}
  else if(type.lakeZone){const p=randomLakeShorePoint();x=p.x;y=p.y}
  else if(type.crystalZone){const p=randomCrystalPoint(120);x=p.x;y=p.y}
@@ -591,6 +614,11 @@ function initWorld(){
   {const e=spawnAt(creatures.lakecroc,10400,1880,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
   for(const p of [{x:5200,y:1700},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   for(let i=0;i<6;i++){const p={x:2200+i*2450,y:650+(i%3)*720};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
+  // 설원 생태계
+  {const e=spawnAt(creatures.yetileader,19800,2600,null);e.noRespawn=true;state.enemies.push(e)}
+  for(let i=0;i<4;i++)state.enemies.push(spawnCreature(creatures.polarbear,i));
+  for(let i=0;i<5;i++)state.enemies.push(spawnCreature(creatures.polarwolf,i));
+  for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.polarfox,i));
   // 밀림 생태계
   for(let i=0;i<8;i++)state.enemies.push(spawnCreature(creatures.giantleech,i));
   for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.gorilla,i));
@@ -612,8 +640,9 @@ function updateHud(){
  ui.foodfill.style.width=clamp(p.hunger,0,100)+'%';ui.foodtext.textContent=Math.ceil(p.hunger)+'/100';
  ui.weapon.textContent=nameOf(p.weapon,'맨손');ui.tool.textContent=nameOf(p.tool);ui.armor.textContent=nameOf(p.armor);
  const z=state.area==='underwater'?'underwater':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':regionAt(p.x,p.y);
- let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':'마력숲';
+ let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='snow'?'설원':'마력숲';
  if(z==='underwater')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
+ if(z==='snow')zoneName+=' · 추위 '+(item(p.armor)?.coldImmune?'면역':Math.floor(p.cold||0)+'/100');
  ui.zone.textContent=zoneName;
  ui.mapBtn.classList.toggle('ready',!!p.map);ui.mapTab.hidden=!p.map;ui.kills.textContent=p.kills;ui.wood.textContent=p.wood;ui.stone.textContent=p.stone;ui.fiber.textContent=p.fiber;ui.ironOre.textContent=p.ironOre;ui.ironIngot.textContent=p.ironIngot;ui.goldOre.textContent=p.goldOre;ui.goldIngot.textContent=p.goldIngot;ui.essence.textContent=p.essence;ui.attack.classList.toggle('ready',!!p.weapon||state.pet.mounted);ui.dismount.classList.toggle('ready',state.pet.mounted&&petAlive());ui.attack.disabled=!p.weapon&&!state.pet.mounted;ui.questText.textContent=questObjective()
 }
@@ -630,7 +659,8 @@ function costText(cost){const c=normalizeCost(cost),out=[],baseNames={wood:'나�
 function lootMaterialHtml(){return Object.entries(DROP_MATERIAL_NAMES).map(([k,n])=>state.knownMaterials[k]?'<div class="mat">'+n+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>').join('')}
 function materialInventoryRow(k,name){return state.knownMaterials[k]?'<div class="mat">'+name+' <b>'+materialAmount(k)+'</b></div>':'<div class="mat">??? <b>?</b></div>'}
 function structureInventoryRow(id,placed){const r=item(id),known=!!placed||recipeKnown(r)||state.knownItems[id];return '<div class="mat">'+(known?r.name:'???')+' <b>'+(placed?'설치됨':known?'없음':'?')+'</b></div>'}
-function nearStructure(s,range=155){return state.area==='surface'&&!!s&&dist(state.player.x,state.player.y,s.x,s.y)<range}function nearBench(){return nearStructure(state.bench)}function nearIronBench(){return nearStructure(state.ironBench)}function nearGoldBench(){return nearStructure(state.goldBench)}function nearFurnace(){return nearStructure(state.furnace,175)}function nearCookingStation(){return nearStructure(state.cookingStation,175)}
+function nearStructure(s,range=155){return state.area==='surface'&&!!s&&dist(state.player.x,state.player.y,s.x,s.y)<range}function nearBench(){return nearStructure(state.bench)}function nearIronBench(){return nearStructure(state.ironBench)}function nearGoldBench(){return nearStructure(state.goldBench)}
+function nearJungleBench(){return nearStructure(state.jungleBench)}function nearFurnace(){return nearStructure(state.furnace,175)}function nearCookingStation(){return nearStructure(state.cookingStation,175)}
 function setArmor(id){const p=state.player,old=item(p.armor);if(old?.maxHp){p.maxHp-=old.maxHp;p.hp=Math.min(p.hp,p.maxHp)}p.armor=id;const cur=item(id);if(cur?.maxHp)p.maxHp+=cur.maxHp}
 function setWeapon(id){const p=state.player,old=item(p.weapon);if(old?.maxHp){p.maxHp-=old.maxHp;p.hp=Math.min(p.hp,p.maxHp)}if(id&&isTwoHandedWeapon(id)&&p.torchEquipped&&!petAlive()){p.torchEquipped=false;showNotice('양손무기를 들어 횃불을 내렸어')}p.weapon=id;const cur=item(id);if(cur?.maxHp)p.maxHp+=cur.maxHp}
 function toggleTorch(){
@@ -656,7 +686,7 @@ function useItem(id){
  }
  state.dirty=true;updateHud();renderPanel()
 }
-function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.cookingStation,state.incubator,...state.flags].filter(Boolean)}
+function structurePositions(){return[state.bench,state.furnace,state.ironBench,state.goldBench,state.jungleBench,state.cookingStation,state.incubator,...state.flags].filter(Boolean)}
 function resolveStructureOverlaps(){
  const keys=['bench','furnace','ironBench','goldBench','cookingStation','incubator'],placed=[];
  for(const key of keys){let s=state[key];if(!s)continue;if(placed.some(p=>dist(s.x,s.y,p.x,p.y)<88)){let fixed=null;for(let ring=1;ring<=4&&!fixed;ring++)for(let i=0;i<12;i++){const a=i*Math.PI/6,pos={x:clamp(s.x+Math.cos(a)*95*ring,45,WORLD.w-45),y:clamp(s.y+Math.sin(a)*95*ring,45,WORLD.h-45)};if(placed.every(p=>dist(pos.x,pos.y,p.x,p.y)>=88)){fixed=pos;break}}if(fixed){state[key]=s=fixed;state.dirty=true}}placed.push(s)}
@@ -666,14 +696,15 @@ function findStructurePlacement(){
  for(const [ox,oy] of offs){const pos={x:clamp(p.x+ox,45,WORLD.w-45),y:clamp(p.y+oy,45,WORLD.h-45)};if(structurePositions().every(s=>dist(pos.x,pos.y,s.x,s.y)>=88))return pos}
  return null
 }
-function placeStructure(id,pos=findStructurePlacement()){if(!pos)return false;if(id==='bench')state.bench=pos;if(id==='furnace')state.furnace=pos;if(id==='iron-bench')state.ironBench=pos;if(id==='gold-bench')state.goldBench=pos;if(id==='cooking-station')state.cookingStation=pos;if(id==='shadow-wolf-incubator')state.incubator=pos;if(id==='flag')state.flags.push(pos);return true}
-function structureExists(id){return id==='bench'?!!state.bench:id==='furnace'?!!state.furnace:id==='iron-bench'?!!state.ironBench:id==='gold-bench'?!!state.goldBench:id==='cooking-station'?!!state.cookingStation:id==='shadow-wolf-incubator'?!!state.incubator:false}
+function placeStructure(id,pos=findStructurePlacement()){if(!pos)return false;if(id==='bench')state.bench=pos;if(id==='furnace')state.furnace=pos;if(id==='iron-bench')state.ironBench=pos;if(id==='gold-bench')state.goldBench=pos;if(id==='jungle-bench')state.jungleBench=pos;if(id==='cooking-station')state.cookingStation=pos;if(id==='shadow-wolf-incubator')state.incubator=pos;if(id==='flag')state.flags.push(pos);return true}
+function structureExists(id){return id==='bench'?!!state.bench:id==='furnace'?!!state.furnace:id==='iron-bench'?!!state.ironBench:id==='gold-bench'?!!state.goldBench:id==='jungle-bench'?!!state.jungleBench:id==='cooking-station'?!!state.cookingStation:id==='shadow-wolf-incubator'?!!state.incubator:false}
 function craftItem(id){
  const r=item(id);if(!r)return
  if(state.area==='underwater'&&r.kind==='structure'){showNotice('물속에서는 건축할 수 없어');return}
  if(r.where==='bench'&&!nearBench()){showNotice('제작대 가까이 가야 해');return}
  if(r.where==='ironbench'&&!nearIronBench()){showNotice('철 제작대 가까이 가야 해');return}
  if(r.where==='goldbench'&&!nearGoldBench()){showNotice('금 제작대 가까이 가야 해');return}
+ if(r.where==='junglebench'&&!nearJungleBench()){showNotice('독점석 제작대 가까이 가야 해');return}
  if(r.kind==='structure'&&structureExists(r.id)){showNotice(r.name+'는 이미 설치했어');return}
  const pos=r.kind==='structure'?findStructurePlacement():null;if(r.kind==='structure'&&!pos){showNotice('건축물이 겹치지 않는 설치 공간이 필요해');return}
  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
@@ -690,14 +721,14 @@ function craftItem(id){
  else if(r.kind==='map'){p.map=true;rememberItem(r.id);ui.mapBtn.classList.add('ready');ui.mapTab.hidden=false}
  rememberItem(r.id);checkAchievementProgress(true);showNotice(r.name+' 제작 완료');updateHud();renderPanel();saveGame(false)
 }
-function tabState(){ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');ui.ironBenchTab.textContent='철 제작대';ui.goldBenchTab.textContent='금 제작대'}
+function tabState(){ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');ui.jungleBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='junglebench');ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');ui.ironBenchTab.textContent='철 제작대';ui.goldBenchTab.textContent='금 제작대';ui.jungleBenchTab.textContent='밀림 제작대'}
 function renderCraft(){
  tabState();const mode=state.craftMode,list=recipes.filter(r=>r.where===mode);
- const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
- let head=mode==='hand'?'맨손 제작 · 어디서든 제작 가능':mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
+ const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='junglebench'?'jungle-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
+ let head=mode==='hand'?'맨손 제작 · 어디서든 제작 가능':mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='goldbench'?(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearJungleBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
  let html='<div class="info"><b>'+head+'</b><br>모든 제작법과 필요 재료가 처음부터 공개돼.</div><div class="grid">';
  for(const r of list){
-   const blocked=(r.where==='bench'&&!nearBench())||(r.where==='ironbench'&&!nearIronBench())||(r.where==='goldbench'&&!nearGoldBench())||(r.kind==='structure'&&structureExists(r.id)),disabled=!canPay(r.cost)||blocked;
+   const blocked=(r.where==='bench'&&!nearBench())||(r.where==='ironbench'&&!nearIronBench())||(r.where==='goldbench'&&!nearGoldBench())||(r.where==='junglebench'&&!nearJungleBench())||(r.kind==='structure'&&structureExists(r.id)),disabled=!canPay(r.cost)||blocked;
    html+='<button class="recipe" data-id="'+r.id+'" '+(disabled?'disabled':'')+'><b>'+r.name+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="cost">'+costText(r.cost)+'</small></button>';
  }
  html+='</div>';ui.sheetBody.innerHTML=html;ui.sheetBody.querySelectorAll('.recipe[data-id]').forEach(b=>b.addEventListener('click',()=>craftItem(b.dataset.id)))
@@ -742,7 +773,7 @@ function openCooking(){
 }
 function renderInventory(){
  tabState();const p=state.player,gear=recipes.filter(r=>['weapon','tool','armor','consumable','ingredient'].includes(r.kind)&&invCount(r.id)>0);
- let html='<div class="info"><b>인벤토리</b><br>한 번도 얻지 못한 상위 재료와 제작물은 ???로 표시돼.</div><div class="invSection">재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div><div class="invSection">설치물</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+'<div class="mat">깃발 <b>'+state.flags.length+'개</b></div></div><div class="invSection">아이템</div><div class="grid">';
+ let html='<div class="info"><b>인벤토리</b><br>한 번도 얻지 못한 상위 재료와 제작물은 ???로 표시돼.</div><div class="invSection">재료</div><div class="invMaterials"><div class="mat">나무 <b>'+p.wood+'</b></div><div class="mat">돌 <b>'+p.stone+'</b></div><div class="mat">섬유 <b>'+p.fiber+'</b></div>'+materialInventoryRow('ironOre','철광석')+materialInventoryRow('ironIngot','구운철')+materialInventoryRow('goldOre','화산 금')+materialInventoryRow('goldIngot','구운금')+materialInventoryRow('essence','정수')+lootMaterialHtml()+'</div><div class="invSection">설치물</div><div class="invMaterials">'+structureInventoryRow('bench',state.bench)+structureInventoryRow('furnace',state.furnace)+structureInventoryRow('iron-bench',state.ironBench)+structureInventoryRow('gold-bench',state.goldBench)+structureInventoryRow('jungle-bench',state.jungleBench)+structureInventoryRow('cooking-station',state.cookingStation)+structureInventoryRow('shadow-wolf-incubator',state.incubator)+'<div class="mat">깃발 <b>'+state.flags.length+'개</b></div></div><div class="invSection">아이템</div><div class="grid">';
  if(p.torch)html+='<button class="invItem" id="torchToggle"><b>마력 횃불</b><small>왼손 · 남은 내구도 '+Math.ceil(p.torchDurability/1000)+'초</small><small class="slot">'+(p.torchEquipped?'왼손 장착 중':'왼손에 들기')+'</small></button>';
  if(!gear.length&&!p.torch)html+='<div class="info">아직 보유한 장비나 소모품이 없어.</div>';
  for(const r of gear){let action='보유';if(r.kind==='weapon')action=p.weapon===r.id?'장착 중':'장착';if(r.kind==='tool')action=p.tool===r.id?'장착 중':'장착';if(r.kind==='armor')action=p.armor===r.id?'장착 중':'장착';if(r.kind==='consumable')action='사용';if(r.kind==='ingredient')action='요리 재료';const clickable=r.kind==='consumable'||(['weapon','tool','armor'].includes(r.kind)&&action!=='장착 중');html+='<button class="invItem" data-id="'+r.id+'" '+(clickable?'':'disabled')+'><b>'+r.name+' ×'+invCount(r.id)+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="slot">'+action+'</small></button>'}
@@ -750,6 +781,7 @@ function renderInventory(){
 }
 function mapTerrainColorAt(x,y){
  const r=regionAt(x,y);
+ if(r==='snow')return'#d7e7ee';
  if(r==='jungle')return pointInJungleLake(x,y)?'#285d58':'#153a22';
  if(r==='volcano'){if(dist(x,y,OASIS.x,OASIS.y)<=OASIS.r)return'#2f78b7';if(pointInRect(x,y,WASTELAND))return'#b99b3f';return'#3b1517'}
  if(r==='giantlake')return pointInGiantLakeWater(x,y)?'#1e668d':'#527868';
@@ -764,6 +796,7 @@ function drawMap(){
    m.fillStyle=mapTerrainColorAt(cx,cy);
    m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
  }
+ if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,700*sy)}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
  if(state.discovered.giantlake){m.strokeStyle='#4ba6c8';m.lineWidth=2;m.strokeRect(GIANT_LAKE_SURFACE.x*sx,GIANT_LAKE_SURFACE.y*sy,GIANT_LAKE_SURFACE.w*sx,GIANT_LAKE_SURFACE.h*sy);m.fillStyle='#a8e8ff';m.font='bold 11px system-ui';m.fillText('거대 호수',6800*sx,900*sy)}
  if(state.discovered.crystal){m.strokeStyle='#9a84e8';m.lineWidth=2;m.strokeRect(CRYSTAL_REGION.x*sx,0,CRYSTAL_REGION.w*sx,WORLD.h*sy);m.fillStyle='#d7ccff';m.font='bold 11px system-ui';m.fillText('수정 지대',15500*sx,800*sy);m.beginPath();m.arc(CRYSTAL_HEART.x*sx,CRYSTAL_HEART.y*sy,5,0,Math.PI*2);m.fill()}
@@ -1101,6 +1134,9 @@ function awardLoot(e){
  if(e.type.id==='gorilla'){addMaterial('gorillaHide',2);showNotice('전리품 · 고릴라 가죽 +2')}
  if(e.type.id==='anaconda'){addMaterial('anacondaScale',2);showNotice('전리품 · 아나콘다 비늘 +2')}
  if(e.type.id==='mudwalker'){addMaterial('mudCore',1);showNotice('전리품 · 머드 워커 진흙핵 +1')}
+ if(e.type.id==='yetileader'){addMaterial('yetiHide',4);addMaterial('yetiHorn',2);showNotice('전리품 · 예티 가죽 +4 · 예티 뿔 +2')}
+ if(e.type.id==='polarbear'){addMaterial('polarBearHide',1);addMaterial('polarBearClaw',1);showNotice('전리품 · 북극곰 가죽/발톱 +1')}
+ if(e.type.id==='polarwolf'){addMaterial('polarWolfPelt',1);showNotice('전리품 · 북극늑대 가죽 +1')}
  if(e.type.foodDrop){addInv(e.type.foodDrop,1);food.push(item(e.type.foodDrop)?.name||e.type.foodDrop)}
  if(e.type.vegetableDrop){addInv(e.type.vegetableDrop,1);food.push(item(e.type.vegetableDrop)?.name||e.type.vegetableDrop)}
  if(food.length)showNotice('전리품 · '+food.join(' + '));
@@ -1163,6 +1199,7 @@ function sharedStructureSnapshot(){
   furnace:state.furnace?{...state.furnace}:null,
   ironBench:state.ironBench?{...state.ironBench}:null,
   goldBench:state.goldBench?{...state.goldBench}:null,
+  jungleBench:state.jungleBench?{...state.jungleBench}:null,
   cookingStation:state.cookingStation?{...state.cookingStation}:null,
   incubator:state.incubator?{...state.incubator}:null,
   flags:state.flags.map(x=>({...x}))
@@ -1170,7 +1207,7 @@ function sharedStructureSnapshot(){
 }
 function hostApplyStructurePlace(payload){
  if(!multiIsHost()||!payload)return;
- const allowed=new Set(['bench','furnace','iron-bench','gold-bench','cooking-station','shadow-wolf-incubator','flag']);
+ const allowed=new Set(['bench','furnace','iron-bench','gold-bench','jungle-bench','cooking-station','shadow-wolf-incubator','flag']);
  const id=String(payload.id||'');if(!allowed.has(id))return;
  const pos=sharedStructurePos(payload.pos);if(!pos)return;
  if(id!=='flag'&&structureExists(id))return;
@@ -1204,6 +1241,7 @@ function applyRemoteEnemyEffect(payload){
  else if(payload.kind==='weaken'){p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration);showNotice('수정 수호자의 포효 · 공격력/속도 15초 절반')}
  else if(payload.kind==='poison'){p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000;showNotice('독 상태 · '+Math.round(duration/1000)+'초')}
  else if(payload.kind==='mudslow'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);showNotice('진흙 둔화 · 3초')}
+ else if(payload.kind==='coldburst'){p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);showNotice('추위 상승속도 3배 · 5초')}
  else if(payload.kind==='heavy'){showNotice((payload.sourceName||'적')+' · 특수 공격 강타')}
  else if(payload.kind==='grab'){p.grabbedUntil=Math.max(p.grabbedUntil||0,now+duration);p.grabbedBy=payload.sourceId||null;p.vulnerableUntil=Math.max(p.vulnerableUntil||0,now+duration);showNotice('적에게 붙잡혔다')}
  state.dirty=true;updateHud()
@@ -1217,6 +1255,7 @@ function applyEnemyEffectTarget(e,p,kind,duration=0){
  else if(kind==='weaken')p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration);
  else if(kind==='poison'){p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000}
  else if(kind==='mudslow')p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);
+ else if(kind==='coldburst')p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);
  else if(kind==='grab'){p.grabbedUntil=Math.max(p.grabbedUntil||0,now+duration);p.grabbedBy=e?.netId||null;p.vulnerableUntil=Math.max(p.vulnerableUntil||0,now+duration)}
 }
 
@@ -1258,7 +1297,7 @@ function applyWorldSnapshot(w){
  state.enemies=list.map(n=>{
   const type=creatures[n.typeId];if(!type)return null;
   const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0);
-  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt:old?.hitAt||0,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id}
+  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt:old?.hitAt||0,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];
  if(w.structures&&typeof w.structures==='object'){
@@ -1266,6 +1305,7 @@ function applyWorldSnapshot(w){
   state.furnace=sharedStructurePos(w.structures.furnace);
   state.ironBench=sharedStructurePos(w.structures.ironBench);
   state.goldBench=sharedStructurePos(w.structures.goldBench);
+  state.jungleBench=sharedStructurePos(w.structures.jungleBench);
   state.cookingStation=sharedStructurePos(w.structures.cookingStation);
   state.incubator=sharedStructurePos(w.structures.incubator);
   state.flags=Array.isArray(w.structures.flags)?w.structures.flags.map(sharedStructurePos).filter(Boolean):[]
@@ -1482,7 +1522,10 @@ const SMELT_SPECS={
  hare:{name:'숲토끼고기',duration:10000,has:()=>invCount('forest-hare-meat')>0,take:()=>state.player.inventory['forest-hare-meat']--,give:()=>addInv('cooked-hare-meat',1)},
  lizard:{name:'도마뱀고기',duration:10000,has:()=>invCount('canyon-lizard-meat')>0,take:()=>state.player.inventory['canyon-lizard-meat']--,give:()=>addInv('cooked-lizard-meat',1)},
  crystaldeer:{name:'수정 사슴고기',duration:10000,has:()=>invCount('raw-crystal-deer-meat')>0,take:()=>state.player.inventory['raw-crystal-deer-meat']--,give:()=>addInv('cooked-crystal-deer-meat',1)},
- greens:{name:'야채',duration:10000,has:()=>invCount('worldtree-greens')>0,take:()=>state.player.inventory['worldtree-greens']--,give:()=>addInv('cooked-greens',1)}
+ greens:{name:'야채',duration:10000,has:()=>invCount('worldtree-greens')>0,take:()=>state.player.inventory['worldtree-greens']--,give:()=>addInv('cooked-greens',1)},
+ bird:{name:'세계수 꿩고기',duration:10000,has:()=>invCount('world-bird-meat')>0,take:()=>state.player.inventory['world-bird-meat']--,give:()=>addInv('cooked-bird-meat',1)},
+ goat:{name:'수정염소고기',duration:10000,has:()=>invCount('crystal-goat-meat')>0,take:()=>state.player.inventory['crystal-goat-meat']--,give:()=>addInv('cooked-crystal-goat-meat',1)},
+ monopoly:{name:'독점석',duration:20000,has:()=>materialAmount('monopolyStone')>0,take:()=>{state.player.loot.monopolyStone=Math.max(0,materialAmount('monopolyStone')-1)},give:()=>addMaterial('monopolyIngot',1)}
 };
 function smeltDuration(kind){return SMELT_SPECS[kind]?.duration||5000}
 function beginNextSmelt(startAt=Date.now()){
@@ -1514,18 +1557,12 @@ function finishSmeltIfReady(){
 }
 function updateSmeltUi(){
  const end=state.smelting.endAt,now=Date.now(),type=state.smelting.type,spec=SMELT_SPECS[type],duration=state.smelting.duration||smeltDuration(type),q=Array.isArray(state.smelting.queue)?state.smelting.queue:[];
- const counts={iron:0,gold:0,deer:0,bug:0,fish:0,hare:0,lizard:0,crystaldeer:0,greens:0};for(const x of q)if(x in counts)counts[x]++;
- if(end>now){
-   const remain=Math.max(0,end-now),pct=100*(1-remain/duration);
-   ui.smeltText.textContent=(spec?.name||'재료')+' 처리 중 · '+(remain/1000).toFixed(1)+'초 · 대기 '+q.length;
-   ui.smeltProgress.style.width=clamp(pct,0,100)+'%'
- }else{
-   ui.smeltText.textContent='철 '+state.player.ironOre+' · 금 '+state.player.goldOre+' · 생선 '+invCount('raw-fish')+' · 토끼 '+invCount('forest-hare-meat')+' · 도마뱀 '+invCount('canyon-lizard-meat')+' · 수정사슴 '+invCount('raw-crystal-deer-meat')+' · 야채 '+invCount('worldtree-greens');
-   ui.smeltProgress.style.width='0%'
- }
- const buttons={iron:ui.smeltBtn,gold:ui.goldSmeltBtn,deer:ui.deerSmeltBtn,bug:ui.bugSmeltBtn,fish:ui.fishSmeltBtn,hare:ui.hareSmeltBtn,lizard:ui.lizardSmeltBtn,crystaldeer:ui.crystalDeerSmeltBtn,greens:ui.greensSmeltBtn};
+ const counts={iron:0,gold:0,deer:0,bug:0,fish:0,hare:0,lizard:0,crystaldeer:0,greens:0,bird:0,goat:0,monopoly:0};for(const x of q)if(x in counts)counts[x]++;
+ if(end>now){const remain=Math.max(0,end-now),pct=100*(1-remain/duration);ui.smeltText.textContent=(spec?.name||'재료')+' 처리 중 · '+(remain/1000).toFixed(1)+'초 · 대기 '+q.length;ui.smeltProgress.style.width=clamp(pct,0,100)+'%'}
+ else{ui.smeltText.textContent='철 '+state.player.ironOre+' · 금 '+state.player.goldOre+' · 독점석 '+materialAmount('monopolyStone')+' · 생선 '+invCount('raw-fish')+' · 토끼 '+invCount('forest-hare-meat')+' · 꿩 '+invCount('world-bird-meat')+' · 도마뱀 '+invCount('canyon-lizard-meat')+' · 수정염소 '+invCount('crystal-goat-meat')+' · 수정사슴 '+invCount('raw-crystal-deer-meat')+' · 야채 '+invCount('worldtree-greens');ui.smeltProgress.style.width='0%'}
+ const buttons={iron:ui.smeltBtn,gold:ui.goldSmeltBtn,deer:ui.deerSmeltBtn,bug:ui.bugSmeltBtn,fish:ui.fishSmeltBtn,hare:ui.hareSmeltBtn,lizard:ui.lizardSmeltBtn,crystaldeer:ui.crystalDeerSmeltBtn,greens:ui.greensSmeltBtn,bird:ui.birdSmeltBtn,goat:ui.goatSmeltBtn,monopoly:ui.monopolySmeltBtn};
  for(const [k,b] of Object.entries(buttons))if(b)b.disabled=!SMELT_SPECS[k].has();
- ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='사슴 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정사슴 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초'
+ ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='사슴 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정사슴 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초';ui.birdSmeltBtn.textContent='꿩 · 10초';ui.goatSmeltBtn.textContent='수정염소 · 10초';ui.monopolySmeltBtn.textContent='독점석 · 20초'
 }
 function openSmelt(){if(!state.furnace||state.area!=='surface')return;if(!nearFurnace()){showNotice('화로 가까이 가야 해');return}ui.smeltPanel.classList.add('open');updateSmeltUi()}
 function enterCave(){
@@ -1775,11 +1812,12 @@ function markEnemyAttack(e,now){
  e.attackAt=now;
  if(e.type.id==='lakecroc')e.nextAttackAt=now+rand(2000,3000);
  else if(e.type.id==='gorilla')e.nextAttackAt=now+3500;
- else if(['giantleech','anaconda','mudwalker'].includes(e.type.id))e.nextAttackAt=now+3000;
+ else if(['giantleech','anaconda','mudwalker','yetileader'].includes(e.type.id))e.nextAttackAt=now+3000;
+ else if(e.type.id==='yeticub')e.nextAttackAt=now+2000;
  else if(!enemyFastAttackException(e.type))e.nextAttackAt=now+rand(3000,4000)
 }
 function enemyHasBuiltInSpecial(type){
- return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial)
+ return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial)
 }
 function enemyCanUseCommonSpecial(e){
  return!!e&&e.type.mood!=='harmless'&&!enemyHasBuiltInSpecial(e.type)&&e.type.id!=='crystalboarjunior'
@@ -1929,6 +1967,28 @@ function updateMudSpecial(e,targetP,now,playerD){
  }
  return false
 }
+
+function summonYetiCubs(e){
+ for(let i=0;i<3;i++){const a=i*Math.PI*2/3,r=70;const c=spawnAt(creatures.yeticub,e.x+Math.cos(a)*r,e.y+Math.sin(a)*r,null);c.hostile=true;state.enemies.push(c)}
+ showNotice('예티 우두머리 · 새끼 3마리 소환')
+}
+function summonPolarWolves(e){
+ for(let i=0;i<2;i++){const a=i*Math.PI,r=65;const w=spawnAt(creatures.polarwolf,e.x+Math.cos(a)*r,e.y+Math.sin(a)*r,null);w.hostile=true;w.noRespawn=true;state.enemies.push(w)}
+ showNotice('북극늑대 · 포위 하울링')
+}
+function updateSnowSpecial(e,targetP,now,playerD){
+ if(e.type.yetiBoss&&e.hostile&&playerD<(e.type.detect||850)){
+  if(!e.nextYetiSummonAt)e.nextYetiSummonAt=now+3000;
+  if(now>=e.nextYetiSummonAt){e.nextYetiSummonAt=now+3000;if(Math.random()<.60){summonYetiCubs(e);return true}}
+  if(!e.nextYetiSlamAt)e.nextYetiSlamAt=now+4000;
+  if(now>=e.nextYetiSlamAt){e.nextYetiSlamAt=now+4000;if(Math.random()<.30){applyEnemyEffectTarget(e,targetP,'coldburst',5000);showNotice('예티 지면강타 · 5초간 추위 3배');return true}}
+ }
+ if(e.type.polarWolfSpecial&&e.hostile&&playerD<(e.type.detect||560)){
+  if(!e.nextHowlAt)e.nextHowlAt=now+8000;
+  if(now>=e.nextHowlAt){e.nextHowlAt=now+8000;summonPolarWolves(e);return true}
+ }
+ return false
+}
 function performEnemyBasicAttack(e,targetP,now){
  markEnemyAttack(e,now);
  if(e.type.id==='lakecroc'){
@@ -1949,6 +2009,13 @@ function performEnemyBasicAttack(e,targetP,now){
   if(Math.random()<.50){applyEnemyEffectTarget(e,targetP,'poison',4000);showNotice('머드 워커 독 · 4초')}
   return
  }
+ if(e.type.id==='polarbear'){
+  if(Math.random()<.30){enemyDamageTarget(e,30,true);applyEnemyEffectTarget(e,targetP,'stun',2000);showNotice('북극곰 가르기 · 30 피해 · 2초 기절');return}
+  enemyDamageTarget(e,50,false);return
+ }
+ if(e.type.id==='yetileader'){enemyDamageTarget(e,72,false);return}
+ if(e.type.id==='yeticub'){enemyDamageTarget(e,30,false);return}
+ if(e.type.id==='polarwolf'){enemyDamageTarget(e,35,false);return}
  if(e.type.id==='shark'&&Math.random()<.30){e.sharkCombo={index:0,nextHit:now};showNotice('상어 · 3연타');return}
  if(enemyCanUseCommonSpecial(e)&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*1.5,true);showCommonEnemySpecial(e);return}
  if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyEnemyEffectTarget(e,targetP,'burn',4000);return}
@@ -2137,6 +2204,19 @@ function updateCrystalBoarSpecial(e,p,now){
 }
 function updateHazards(now){
  const p=state.player;
+ const coldDt=Math.min(1,Math.max(0,(now-(p.coldTickAt||now))/1000));p.coldTickAt=now;
+ const inSnow=state.area==='surface'&&regionAt(p.x,p.y)==='snow',coldArmor=item(p.armor);
+ if(inSnow){
+  if(coldArmor?.coldImmune)p.cold=Math.max(0,(p.cold||0)-coldDt*20);
+  else{const div=Math.max(1,Number(coldArmor?.coldDivisor)||1),mult=now<(p.coldBurstUntil||0)?3:1;p.cold=clamp((p.cold||0)+coldDt*6*mult/div,0,100)}
+ }else p.cold=Math.max(0,(p.cold||0)-coldDt*8);
+ if((p.cold||0)>=100&&!p.coldFrozenAt){p.coldFrozenAt=now;p.coldDamageAt=now;showNotice('완전 동결 · 10초 안에 해제되지 않으면 즉사')}
+ if(p.coldFrozenAt){
+  p.stunnedUntil=Math.max(p.stunnedUntil||0,now+300);
+  if(now>=p.coldDamageAt){p.coldDamageAt=now+200;p.hp=Math.max(0,p.hp-3);state.dirty=true;updateHud()}
+  if(now-p.coldFrozenAt>=10000){p.hp=0;knockoutPlayer('추위에 완전히 얼어붙었다');return}
+  if(!inSnow&&p.cold<70){p.coldFrozenAt=0;p.cold=Math.min(p.cold,65);showNotice('동결이 풀렸다')}
+ }
  if(p.burnTicks>0&&now>=p.burnNext){p.hp=Math.max(0,p.hp-5);p.burnTicks--;p.burnNext=now+1000;state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('화염 피해로 쓰러졌다');return}}
  if(now<(p.poisonUntil||0)&&now>=(p.poisonNext||0)){p.poisonNext=now+1000;p.hp=Math.max(0,p.hp-5);state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독 피해로 쓰러졌다');return}}
  if(state.area==='surface'&&regionAt(p.x,p.y)==='jungle'){
@@ -2209,6 +2289,7 @@ function update(dt,now){
       if(!monsterFight&&updateGorillaSpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&updateAnacondaWrap(e,now))monsterFight=true;
       if(!monsterFight&&updateMudSpecial(e,targetP,now,playerD))monsterFight=true;
+      if(!monsterFight&&updateSnowSpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&e.type.sharkSpecial&&updateSharkCombo(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&tryTimedCommonEnemySpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&e.type.boss){const b=updateBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
@@ -2349,6 +2430,12 @@ function roundRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,
 function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#1d392b';ctx.fillRect(0,0,w,h);
  ctx.save();ctx.translate(-cx,-cy);
+ // 설원
+ ctx.fillStyle='#d7e7ee';ctx.fillRect(SNOW_REGION.x,SNOW_REGION.y,SNOW_REGION.w,SNOW_REGION.h);
+ ctx.strokeStyle='#a8cbd9';ctx.lineWidth=24;ctx.strokeRect(SNOW_REGION.x+12,SNOW_REGION.y+12,SNOW_REGION.w-24,SNOW_REGION.h-24);
+ for(let i=0;i<60;i++){const x=SNOW_REGION.x+100+(i*811)%3400,y=140+(i*557)%11600;ctx.fillStyle=i%2?'#f4fbff':'#bfd8e3';ctx.beginPath();ctx.arc(x,y,18+(i%5)*6,0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle='#496978';ctx.font='bold 32px system-ui';ctx.textAlign='center';ctx.fillText('설원',SNOW_REGION.x+SNOW_REGION.w/2,110);
+ ctx.font='bold 11px system-ui';ctx.fillText('추위 게이지가 빠르게 오른다',SNOW_REGION.x+SNOW_REGION.w/2,145);
  // 밀림 · 새 맵 전체 면적의 40%
  ctx.fillStyle='#153a22';ctx.fillRect(JUNGLE_REGION.x,JUNGLE_REGION.y,JUNGLE_REGION.w,JUNGLE_REGION.h);
  ctx.strokeStyle='#346b3f';ctx.lineWidth=28;ctx.strokeRect(JUNGLE_REGION.x+14,JUNGLE_REGION.y+14,JUNGLE_REGION.w-28,JUNGLE_REGION.h-28);
@@ -2489,6 +2576,7 @@ function drawStructure(s,cx,cy,type){
  else if(type==='furnace'){ctx.fillStyle='#3b342f';roundRect(x-24,y-20,48,42,10);ctx.fill();ctx.fillStyle='#e07139';ctx.beginPath();ctx.arc(x,y+5,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffe1bd';ctx.font='bold 9px system-ui';ctx.fillText('화로 · 두 번 누르기',x,y+34)}
  else if(type==='incubator'){ctx.fillStyle='#343849';roundRect(x-30,y-22,60,45,10);ctx.fill();ctx.strokeStyle='#8ea0c8';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#171c27';ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);ctx.fill();if(state.incubation.eggPlaced){ctx.fillStyle='#2b263b';ctx.beginPath();ctx.ellipse(x,y,9,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#8f79b9';ctx.stroke()}ctx.fillStyle='#dce7ff';ctx.font='bold 9px system-ui';const remain=Math.max(0,state.incubation.hatchAt-Date.now());ctx.fillText(state.incubation.eggPlaced?(remain>0?'부화기 · '+Math.ceil(remain/60000)+'분':'부화 완료'):'부화기 · 두 번 누르기',x,y+36)}
  else if(type==='cookingstation'){ctx.fillStyle='#6b4933';ctx.fillRect(x-30,y-14,60,28);ctx.fillStyle='#c98b52';ctx.fillRect(x-33,y-18,66,8);ctx.fillStyle='#2b2018';ctx.beginPath();ctx.arc(x,y-2,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffe0b0';ctx.font='bold 9px system-ui';ctx.fillText('요리대 · 두 번 누르기',x,y+32)}
+ else if(type==='junglebench'){ctx.fillStyle='#355c37';ctx.fillRect(x-29,y-14,58,28);ctx.fillStyle='#8ac46e';ctx.fillRect(x-32,y-18,64,8);ctx.fillStyle='#dff7c9';ctx.font='bold 9px system-ui';ctx.fillText('독점석 제작대',x,y+30)}
  else if(type==='goldbench'){ctx.fillStyle='#8a6b1e';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#f0cf57';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#fff1a2';ctx.font='bold 9px system-ui';ctx.fillText('금 제작대',x,y+29)}
  else if(type==='flag'){ctx.strokeStyle='#d8d1b2';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+24);ctx.lineTo(x,y-28);ctx.stroke();ctx.fillStyle='#f2c94c';ctx.beginPath();ctx.moveTo(x,y-28);ctx.lineTo(x+30,y-18);ctx.lineTo(x,y-7);ctx.closePath();ctx.fill();ctx.fillStyle='#fff3be';ctx.font='bold 9px system-ui';ctx.fillText('깃발',x,y+38)}
  else{ctx.fillStyle='#59666b';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#aebdc2';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#dce8ec';ctx.font='bold 9px system-ui';ctx.fillText('철 제작대',x,y+29)}
@@ -2686,7 +2774,7 @@ function draw(){
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
   for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
-  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)
+  drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);
  drawDeathEffects(cx,cy,now);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness()
@@ -2699,7 +2787,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -2710,21 +2798,21 @@ function loadGame(){
   const o=s.player,p=state.player,version=Number(s.v)||1,legacyScale=version<3,scale=legacyScale?5:(version<6?1:(version<8?2:1)),ox=Number(o.x),oy=Number(o.y),oldSurface=s.area!=='underground',shiftX=version<13?3000:0,shiftY=version<13?2000:0;
   const px=(Number.isFinite(ox)?ox:(legacyScale?1200:6000))*scale+(oldSurface?shiftX:0),py=(Number.isFinite(oy)?oy:(legacyScale?800:4000))*scale+(oldSurface?shiftY:0);
   p.x=clamp(px,25,WORLD.w-25);p.y=clamp(py,25,WORLD.h-25);
-  p.wood=Math.max(0,Number(o.wood)||0);p.stone=Math.max(0,Number(o.stone)||0);p.fiber=Math.max(0,Number(o.fiber)||0);p.ironOre=Math.max(0,Number(o.ironOre)||0);p.ironIngot=Math.max(0,Number(o.ironIngot)||0);p.goldOre=Math.max(0,Number(o.goldOre)||0);p.goldIngot=Math.max(0,Number(o.goldIngot)||0);p.essence=Math.max(0,Number(o.essence)||0);p.hunger=clamp(Number.isFinite(Number(o.hunger))?Number(o.hunger):100,0,100);p.hungerNext=performance.now()+20000;p.wolfHide=Math.max(0,Number(o.wolfHide)||0);p.walkerClaw=Math.max(0,Number(o.walkerClaw)||0);p.bearClaw=Math.max(0,Number(o.bearClaw)||0);p.bearHide=Math.max(0,Number(o.bearHide)||0);p.bearFang=Math.max(0,Number(o.bearFang)||0);p.loot=o.loot&&typeof o.loot==='object'?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.loot[k])||0);p.kills=Math.max(0,Number(o.kills)||0);
+  p.wood=Math.max(0,Number(o.wood)||0);p.stone=Math.max(0,Number(o.stone)||0);p.fiber=Math.max(0,Number(o.fiber)||0);p.ironOre=Math.max(0,Number(o.ironOre)||0);p.ironIngot=Math.max(0,Number(o.ironIngot)||0);p.goldOre=Math.max(0,Number(o.goldOre)||0);p.goldIngot=Math.max(0,Number(o.goldIngot)||0);p.essence=Math.max(0,Number(o.essence)||0);p.cold=clamp(Number(o.cold)||0,0,100);p.hunger=clamp(Number.isFinite(Number(o.hunger))?Number(o.hunger):100,0,100);p.hungerNext=performance.now()+20000;p.wolfHide=Math.max(0,Number(o.wolfHide)||0);p.walkerClaw=Math.max(0,Number(o.walkerClaw)||0);p.bearClaw=Math.max(0,Number(o.bearClaw)||0);p.bearHide=Math.max(0,Number(o.bearHide)||0);p.bearFang=Math.max(0,Number(o.bearFang)||0);p.loot=o.loot&&typeof o.loot==='object'?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.loot[k])||0);p.kills=Math.max(0,Number(o.kills)||0);
   p.inventory=o.inventory&&typeof o.inventory==='object'?{...o.inventory}:{};p.weapon=item(o.weapon)?.kind==='weapon'?o.weapon:(o.weapon==='wood-sword'?'wood-spear':null);p.tool=item(o.tool)?.kind==='tool'?o.tool:(item(o.axe)?.kind==='tool'?o.axe:(item(o.pick)?.kind==='tool'?o.pick:null));p.armor=item(o.armor)?.kind==='armor'?o.armor:(o.shield==='stone-shield'?'rune-shield':null);p.torch=!!o.torch;p.torchDurability=p.torch?clamp(Number.isFinite(Number(o.torchDurability))?Number(o.torchDurability):300000,0,300000):0;p.torchEquipped=!!o.torchEquipped&&p.torch&&p.torchDurability>0;p.map=!!o.map;p.root=Math.max(0,Number(o.root)||0);p.maxHp=100+(item(p.armor)?.maxHp||0)+(item(p.weapon)?.maxHp||0);p.hp=clamp(Number(o.hp)||p.maxHp,1,p.maxHp);ensureEquippedInInventory();
   const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(obj.y)*scale+shiftY,35,WORLD.h-35)}};
-  state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.flags=Array.isArray(s.flags)?s.flags.map(loadPos).filter(Boolean):[];resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
-  if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug','fish','hare','lizard','crystaldeer','greens'].includes(x)):[]}}
+  state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);state.jungleBench=loadPos(s.jungleBench);state.cookingStation=loadPos(s.cookingStation);state.incubator=loadPos(s.incubator);state.flags=Array.isArray(s.flags)?s.flags.map(loadPos).filter(Boolean):[];resolveStructureOverlaps();state.shadowEggTaken=!!s.shadowEggTaken;state.incubation=s.incubation&&typeof s.incubation==='object'?{eggPlaced:!!s.incubation.eggPlaced,hatchAt:Math.max(0,Number(s.incubation.hatchAt)||0)}:{eggPlaced:false,hatchAt:0};if(s.pet&&typeof s.pet==='object'){state.pet={...state.pet,...s.pet,hp:clamp(Number(s.pet.hp)||0,0,250),maxHp:250,x:Number(s.pet.x)||p.x+50,y:Number(s.pet.y)||p.y+20,respawnAt:Math.max(0,Number(s.pet.respawnAt)||0),reviveClickUntil:Math.max(0,Number(s.pet.reviveClickUntil)||0),mounted:!!s.pet.mounted&&!!s.pet.alive,targetId:null}}if(p.torchEquipped&&isTwoHandedWeapon(p.weapon)&&!petAlive())p.torchEquipped=false;
+  if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug','fish','hare','lizard','crystaldeer','greens','bird','goat','monopoly'].includes(x)):[]}}
   state.knownMaterials=s.knownMaterials&&typeof s.knownMaterials==='object'?{...s.knownMaterials}:{};
   state.knownItems=s.knownItems&&typeof s.knownItems==='object'?{...s.knownItems}:{};
   state.knownCookingRecipes=s.knownCookingRecipes&&typeof s.knownCookingRecipes==='object'?{...s.knownCookingRecipes}:{};
   for(const [id,count] of Object.entries(p.inventory||{})){const r=item(id);if(Number(count)>0&&r?.where==='meal')state.knownCookingRecipes[id]=true}
   for(const k of ['wood','stone','fiber','ironOre','ironIngot','goldOre','goldIngot','essence',...Object.keys(DROP_MATERIAL_NAMES)])if(materialAmount(k)>0)rememberMaterial(k);
   for(const [id,count] of Object.entries(p.inventory||{}))if(Number(count)>0)rememberItem(id);
-  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
+  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
   if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}
   if(s.weather&&typeof s.weather==='object')setWeather(s.weather.kind,{fromNetwork:true,changedAt:s.weather.changedAt,nextAt:s.weather.nextAt,seed:s.weather.seed});
-  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle};
+  state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal,giantlake:!!s.discovered?.giantlake,jungle:!!s.discovered?.jungle,snow:!!s.discovered?.snow};
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};
    for(const key of Object.keys(s.explored)){
@@ -2742,7 +2830,7 @@ function loadGame(){
   checkAchievementProgress(false);if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
  }catch(e){}
 }
-window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));document.getElementById('bgmToggle').addEventListener('click',toggleBgm);ui.bestiaryBtn.addEventListener('click',openBestiary);document.getElementById('achievements').addEventListener('click',openAchievements);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));ui.fishSmeltBtn.addEventListener('click',()=>startSmelt('fish'));ui.hareSmeltBtn.addEventListener('click',()=>startSmelt('hare'));ui.lizardSmeltBtn.addEventListener('click',()=>startSmelt('lizard'));ui.crystalDeerSmeltBtn.addEventListener('click',()=>startSmelt('crystaldeer'));ui.greensSmeltBtn.addEventListener('click',()=>startSmelt('greens'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
+window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));document.getElementById('bgmToggle').addEventListener('click',toggleBgm);ui.bestiaryBtn.addEventListener('click',openBestiary);document.getElementById('achievements').addEventListener('click',openAchievements);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.jungleBenchTab.addEventListener('click',()=>openCraft('junglebench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));ui.fishSmeltBtn.addEventListener('click',()=>startSmelt('fish'));ui.hareSmeltBtn.addEventListener('click',()=>startSmelt('hare'));ui.lizardSmeltBtn.addEventListener('click',()=>startSmelt('lizard'));ui.crystalDeerSmeltBtn.addEventListener('click',()=>startSmelt('crystaldeer'));ui.greensSmeltBtn.addEventListener('click',()=>startSmelt('greens'));ui.birdSmeltBtn.addEventListener('click',()=>startSmelt('bird'));ui.goatSmeltBtn.addEventListener('click',()=>startSmelt('goat'));ui.monopolySmeltBtn.addEventListener('click',()=>startSmelt('monopoly'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{once:true,capture:true});window.addEventListener('keydown',ensureMusicStarted,{once:true,capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}initWorld();loadGame();markExplored();discoverRegion();resize();updateHud();requestAnimationFrame(loop);const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('가방이 생겼어 · 동쪽 철 협곡에서 철을 찾아봐');
 })();
