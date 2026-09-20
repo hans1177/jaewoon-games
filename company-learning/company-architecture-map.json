@@ -1,5 +1,5 @@
 {
-  "version": 35,
+  "version": 36,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -528,6 +528,15 @@
       "NO_STALE_MAIN_CLAIM",
       "NO_UNDOCUMENTED_AUTHORITY_EXPANSION",
       "CENTRAL_AUTHORITY_CHANGES_REQUIRE_PRIMARY_SECURITY_REVIEW"
-    ]
+    ],
+    "implementationState": {
+      "state": "MERGED_MAIN",
+      "sourcePr": 1859,
+      "mergedCommit": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
+      "authorityChange": "NONE",
+      "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": "NONE",
+      "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6"
+    }
   }
 }
