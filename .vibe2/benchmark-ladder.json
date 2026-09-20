@@ -593,46 +593,6 @@
       "authority": "practice-and-measurement-only"
     },
     {
-      "id": "phase4-generalization-capability_ctrace_2fa9b22629238db4c1902074",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_2fa9b22629238db4c1902074",
-      "sourceGameId": "village-dungeons",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-1x586xv",
-      "unseenProblemFingerprint": "phase4-unseen-h4iqgd",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -873,6 +833,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 15,
+  "phase4GeneralizationCases": 14,
   "authority": "practice-and-measurement-only"
 }
