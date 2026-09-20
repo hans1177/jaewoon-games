@@ -12,6 +12,7 @@ import {
   compileVibeCentralWorkContract,
   assertCompiledWorkContractFresh
 } from '../tools/vibe2-central-work-contract.mjs';
+import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
 
 function tempRoot(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-central-contract-'));}
 function writePolicy(root,version=167){
@@ -79,5 +80,35 @@ test('central roadmap fingerprint is fail-closed when policy changes during work
   assert.throws(
     ()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),
     /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
+  );
+});
+
+
+test('source worker rejects a stale compiled policy before model generation',async()=>{
+  const root=tempRoot();
+  writePolicy(root,167);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const compiledWorkContract=compileVibeCentralWorkContract({
+    snapshot,
+    task:{id:'stale-worker',gameId:'demo',target:'web'},
+    plan:{target:'web'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['web-games/demo/index.html']
+  });
+  fs.mkdirSync(path.join(root,'.vibe2'),{recursive:true});
+  fs.writeFileSync(path.join(root,'.vibe2/work-order.json'),JSON.stringify({
+    run:true,
+    workMode:'source-change-candidate',
+    taskId:'stale-worker',
+    gameId:'demo',
+    target:'web',
+    source:{root:'web-games/demo',responsibleFiles:['web-games/demo/index.html']},
+    workerPolicy:{directMainWrite:false},
+    compiledWorkContract
+  },null,2)+'\n','utf8');
+  writePolicy(root,168);
+  await assert.rejects(
+    runVibe2SourceWorker({cwd:root,responseFile:path.join(root,'unused-model-output.json')}),
+    /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/
   );
 });
