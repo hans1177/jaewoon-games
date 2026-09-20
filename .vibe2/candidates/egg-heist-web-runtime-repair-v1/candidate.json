@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "let winCondition = false; // Check win condition",
+      "replace": "function checkWinCondition() {\n  if (gameState.player.health <= 0) {\n    alert(\"You lost!\");\n    resetGame();\n  } else if (gameState.player.position.x === gameState.map.width - 1 && gameState.player.position.y === gameState.map.height - 1) {\n    alert(\"You won!\");\n    winCondition = true;\n    resetGame();\n  }\n}\n\n// Trigger win condition\nsetInterval(checkWinCondition, 5000);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
