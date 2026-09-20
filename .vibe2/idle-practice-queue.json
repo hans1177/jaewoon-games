@@ -932,16 +932,6 @@
       ]
     },
     {
-      "id": "gap-mobile_input-l9",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "MOBILE_INPUT"
-      ]
-    },
-    {
       "id": "gap-animation_feel-l10",
       "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
@@ -972,6 +962,16 @@
       ]
     },
     {
+      "id": "gap-mobile_input-l10",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT"
+      ]
+    },
+    {
       "id": "gap-recovery-l10",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -989,16 +989,6 @@
       "countsAsProductionPass": false,
       "domains": [
         "COMBAT"
-      ]
-    },
-    {
-      "id": "gap-progression-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "PROGRESSION"
       ]
     },
     {
@@ -1022,13 +1012,13 @@
       ]
     },
     {
-      "id": "gap-state_machine-l12",
+      "id": "gap-progression-l12",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "STATE_MACHINE"
+        "PROGRESSION"
       ]
     },
     {
@@ -1039,6 +1029,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l13",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE"
       ]
     }
   ]
