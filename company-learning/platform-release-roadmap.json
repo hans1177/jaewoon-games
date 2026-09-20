@@ -1,5 +1,5 @@
 {
-  "version": 207,
+  "version": 208,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4983,7 +4983,7 @@
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
-      "state": "PHASE_3_IMPLEMENTATION_MERGED_RUNTIME_FEEDBACK_PENDING",
+      "state": "PHASE_3_RUNTIME_FEEDBACK_VERIFIED_GENERALIZATION_BENCHMARK_GATED",
       "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
       "teacherSources": [
         "VIBE_GENERATED_CODING",
@@ -5292,7 +5292,7 @@
         }
       },
       "implementationPhase3": {
-        "state": "MERGED_MAIN_RUNTIME_FEEDBACK_PENDING",
+        "state": "RUNTIME_FEEDBACK_VERIFIED_GENERALIZATION_BENCHMARK_GATED",
         "scope": "VERIFIED_CAPABILITY_APPLICATION_OUTCOME_ATTRIBUTION_CONFIDENCE_LIFECYCLE_AND_GENERALIZATION_GATES",
         "objective": "MEASURE_WHETHER_RETRIEVED_VERIFIED_CAPABILITIES_SURVIVE_FRESH_TASK_QA_AND_USE_REPEATED_INDEPENDENT_EVIDENCE_TO_RETAIN_DECAY_DEPRECATE_SUPERSEDE_OR_GENERALIZE_CAPABILITIES_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
         "prerequisites": {
@@ -5393,7 +5393,7 @@
           "NO_AUTHORITY_EXPANSION",
           "CI_AND_REAL_WORK_ORDER_RUNTIME_VERIFICATION"
         ],
-        "nextGate": "OBSERVE_PHASE_3_CAPABILITY_APPLICATION_EVIDENCE_IN_REAL_WORK_ORDER_THEN_VERIFY_LIFECYCLE_WITHOUT_AUTHORITY_EXPANSION",
+        "nextGate": "RUN_UNSEEN_PROBLEM_GENERALIZATION_BENCHMARK_BEFORE_ANY_STRONG_GENERALIZATION_CLAIM_WITHOUT_AUTHORITY_EXPANSION",
         "sourcePr": 1909,
         "mergedCommit": "347f96cdb95cb76dc81a57ea776139076404b73b",
         "components": [
@@ -5446,14 +5446,61 @@
           }
         },
         "productionObservation": {
-          "state": "RUNTIME_FEEDBACK_PENDING",
+          "state": "REAL_WORK_ORDER_RUNTIME_VERIFIED",
           "checkedAfterMerge": true,
           "checkedRef": "vibe2-unreal-core",
-          "experienceRecordCount": 20,
-          "capabilityApplicationRecordCount": 0,
-          "runtimeApplicationEvidenceObserved": false,
-          "runtimeLifecycleEvidenceObserved": false,
+          "observedRunId": 35491605325,
+          "observedBaseMainSha": "bae4a9013b2a1d685df369ce0c42ba539ca73826",
+          "runConclusion": "SUCCESS",
+          "workerResultCount": 18,
+          "fanInReviewPass": true,
+          "fanInReviewedTaskCount": 5,
+          "fanInSkippedTaskCount": 1,
+          "releaseCandidateCount": 5,
+          "capabilityApplicationReviewCount": 90,
+          "capabilityApplicationAppliedCount": 90,
+          "capabilityApplicationDuplicateCount": 0,
+          "capabilityApplicationMissingCount": 0,
+          "experienceRecordCount": 25,
+          "capabilityLifecycleRecordCount": 9,
+          "capabilityApplicationRecordCount": 90,
+          "applicationOutcomeCounts": {
+            "freshQaPass": 25,
+            "observedNotFinal": 50,
+            "taskFailedUnattributed": 15
+          },
+          "distinctApplicationTaskCount": 6,
+          "distinctFreshQaPassTaskCount": 5,
+          "applicationObservedRecordCount": 4,
+          "repeatedApplicationVerifiedRecordCount": 5,
+          "maxIndependentPassCount": 5,
+          "maxCrossGameVerifiedApplicationCount": 5,
+          "maxCapabilityConfidence": 0.8571,
+          "generalizationCandidateRecordCount": 5,
+          "strongGeneralizationVerifiedRecordCount": 0,
+          "contradictionCount": 0,
+          "unrelatedFailurePenaltyApplied": false,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "runtimeApplicationEvidenceObserved": true,
+          "runtimeLifecycleEvidenceObserved": true,
           "completionClaimAllowed": false
+        },
+        "runtimeVerification": {
+          "exactInjectedCapabilityIdsObserved": true,
+          "workerResultToFanInBindingObserved": true,
+          "freshQaPassObserved": true,
+          "taskFailureUnattributedObserved": true,
+          "repeatedIndependentConfidenceGrowthObserved": true,
+          "crossGameVerifiedApplicationsObserved": true,
+          "duplicateSuppressionObserved": true,
+          "missingCapabilityApplicationsObserved": false,
+          "unrelatedFailurePenaltyObserved": false,
+          "automaticPromotionObserved": false,
+          "strongGeneralizationObserved": false,
+          "strongGeneralizationStillRequiresUnseenProblemBenchmark": true,
+          "authorityChange": "NONE"
         }
       }
     }
