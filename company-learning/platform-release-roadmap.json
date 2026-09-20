@@ -1,5 +1,5 @@
 {
-  "version": 193,
+  "version": 194,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -7027,6 +7027,16 @@
       "automationMustFailClosedWhenAssistantRuntimeIsUnavailable": true
     },
     "priorityRule": "ROADMAP_PRIORITY_AND_DOCUMENTED_NEXT_GATE_FIRST; BLOCKER_HELP_IS_ONE_TRIGGER_NOT_THE_PRIMARY_MODEL",
-    "successDefinition": "ASSISTANTS_CONTINUOUSLY_ADVANCE_DOCUMENTED_ROADMAP_WORK_WITHOUT_BYPASSING_EXISTING_WAVE_EXECUTION_OR_CENTRAL_SECURITY_AUTHORITY"
+    "successDefinition": "ASSISTANTS_CONTINUOUSLY_ADVANCE_DOCUMENTED_ROADMAP_WORK_WITHOUT_BYPASSING_EXISTING_WAVE_EXECUTION_OR_CENTRAL_SECURITY_AUTHORITY",
+    "implementationState": {
+      "state": "MERGED_MAIN",
+      "sourcePr": 1859,
+      "mergedCommit": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
+      "authorityChange": "NONE",
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": false,
+      "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
+      "nextGate": "OPERATE_FROM_CENTRAL_ROADMAP_ACTIONABLE_NEXT_GATE_WITH_DURABLE_GITHUB_HANDOFF"
+    }
   }
 }
