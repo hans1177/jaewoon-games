@@ -21,8 +21,8 @@ function securityRepairFiles(rec={}){
     .filter(isSafeSecurityRepairFile));
 }
 
-export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQueueInput={},route='all'}={}){
-  const stamp=now(), mode=clean(route).toLowerCase();
+export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQueueInput={},route='all',sourceTaskId=''}={}){
+  const stamp=now(), mode=clean(route).toLowerCase(), targetSourceTaskId=clean(sourceTaskId);
   const recovery={...recoveryInput,tasks:(recoveryInput.tasks||[]).map(x=>({...x}))};
   const gameQueue={...gameQueueInput,tasks:(gameQueueInput.tasks||[]).map(x=>({...x}))};
   const systemAi={...systemAiQueueInput,tasks:(systemAiQueueInput.tasks||[]).map(x=>({...x}))};
@@ -30,6 +30,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
 
   recovery.tasks=recovery.tasks.map(rec=>{
     if(clean(rec.status)!=='queued')return rec;
+    if(targetSourceTaskId&&clean(rec.sourceTaskId)!==targetSourceTaskId)return rec;
     const owner=clean(rec.recoveryOwner).toUpperCase();
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
@@ -104,7 +105,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     recoveryInput:readJson(recoveryFile,{tasks:[]}),
     gameQueueInput:readJson(gameFile,{tasks:[]}),
     systemAiQueueInput:readJson(systemFile,{tasks:[]}),
-    route:clean(args.route)||'all'
+    route:clean(args.route)||'all',
+    sourceTaskId:args['source-task']
   });
   writeJson(recoveryFile,result.recovery);
   if(['all','vibe'].includes(clean(args.route||'all').toLowerCase()))writeJson(gameFile,result.gameQueue);
