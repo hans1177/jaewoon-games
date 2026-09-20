@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "        return out.reverse();",
+      "replace": "buildMode=null,selectedId=null;\nvar buildScroll=document.getElementById(\"buildScroll\");\nfunction renderBuildBar(){\n  buildScroll.innerHTML=\"\";\n  BUILD_ORDER.forEach(function(t){\n    var d=BUILD_DEFS[t],btn=document.createElement(\"button\");\n    btn.type=\"button\";btn.className=\"buildBtn\"+(buildMode===t?\" on\":\"\");\n    btn.dataset.type=t;\n    btn.innerHTML=\"<b>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

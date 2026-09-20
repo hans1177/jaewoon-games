@@ -383,7 +383,15 @@ function findPath(startKey,endKey){
       if(kk===endKey){
         var out=[kk],x=cur;
         while(x){out.push(x);x=prev[x];}
-        return out.reverse();
+buildMode=null,selectedId=null;
+var buildScroll=document.getElementById("buildScroll");
+function renderBuildBar(){
+  buildScroll.innerHTML="";
+  BUILD_ORDER.forEach(function(t){
+    var d=BUILD_DEFS[t],btn=document.createElement("button");
+    btn.type="button";btn.className="buildBtn"+(buildMode===t?" on":"");
+    btn.dataset.type=t;
+    btn.innerHTML="<b>
       }
       q.push(kk);
     }
