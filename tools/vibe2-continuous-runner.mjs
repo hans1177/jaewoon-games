@@ -437,7 +437,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
   const resolvedPracticeDistilledFile=clean(practiceDistilledFile)||clean(runtime?.sources?.practiceDistilledKnowledge)||'.vibe2/practice-distilled-knowledge.json';
   const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
-  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
+  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:true});
   const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, centralPolicySnapshot });
   writeJson(resolvedOutputFile, order);
   return order;
