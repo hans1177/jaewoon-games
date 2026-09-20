@@ -31,6 +31,19 @@ function setup(){
   assert.equal(task.priority,'critical');
   assert.equal(task.responsibleFiles.length,3);
   assert.match(task.goal,/POST_RELEASE_FOCUSED_DEVELOPMENT/);
+  assert.match(task.goal,/피드백은 구현 강제가 아니다/);
+  assert.match(task.goal,/HOTFIX 최고 우선순위/);
+  assert.match(task.goal,/MAJOR는 공개 버전을 유지한 채 업데이트 후보를 미리 준비/);
+  assert.equal(task.feedbackAdvisoryOnly,true);
+  assert.equal(task.feedbackDecisionAuthority,'VIBE');
+  assert.deepEqual(task.allowedFeedbackDecisions,['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT']);
+  assert.deepEqual(task.allowedUpdateScales,['HOTFIX','MINOR','MAJOR']);
+  assert.equal(task.bugEmergencyLane,true);
+  assert.equal(task.hotfixPreemptsOtherUpdateWork,true);
+  assert.equal(task.majorUpdatePrepareAhead,true);
+  assert.deepEqual(task.fastRedeployEligibleScales,['HOTFIX','MINOR']);
+  assert.equal(task.unverifiedPublicReplacementForbidden,true);
+  assert.equal(task.verifiedResultLearningRequired,true);
   assert(task.evidence.some(x=>x==='recombination-recipe:r1'));
 }
 
@@ -81,7 +94,13 @@ function setup(){
   assert(task.evidence.includes('historical-current-release-claim:NO'));
   assert(task.evidence.includes('historical-publication-universe:123'));
   assert.match(task.goal,/HISTORICAL_ROBLOX_SUSTAINED_MAINTENANCE/);
-  assert.match(task.goal,/자동 재배포는 금지/);
+  assert.match(task.goal,/피드백은 구현 명령이 아니다/);
+  assert.match(task.goal,/HOTFIX 최고 우선순위/);
+  assert.match(task.goal,/검증 전 공개 버전 교체는 금지/);
+  assert.equal(task.feedbackAdvisoryOnly,true);
+  assert.equal(task.feedbackDecisionAuthority,'VIBE');
+  assert.deepEqual(task.allowedUpdateScales,['HOTFIX','MINOR','MAJOR']);
+  assert.equal(task.bugEmergencyLane,true);
 }
 
 {
@@ -148,6 +167,27 @@ function setup(){
   assert.equal(focus.historicalDeploymentRecovery.maxActiveHistoricalMaintenanceTasks,1);
   assert.equal(focus.historicalDeploymentRecovery.currentReleaseClaimMustNotBeInvented,true);
   assert.equal(focus.historicalDeploymentRecovery.automaticRepublish,false);
+  assert.equal(focus.playtestReviewLoop.feedbackIsAdvisoryOnly,true);
+  assert.equal(focus.playtestReviewLoop.feedbackAcceptanceAuthority,'VIBE');
+  assert.equal(focus.updateScalePolicy.classes.HOTFIX.priority,'IMMEDIATE');
+  assert.equal(focus.updateScalePolicy.classes.HOTFIX.interruptsOtherUpdateWork,true);
+  assert.equal(focus.fastRedeployPolicy.hotfixPreemptsMinorAndMajor,true);
+  assert.equal(focus.majorUpdatePreparationPolicy.prepareBeforePublicVersionChange,true);
+  assert.equal(focus.bugEmergencyLane.enabled,true);
+  assert.equal(focus.bugEmergencyLane.unrelatedMajorUpdateMayNotDelayHotfix,true);
+  assert.equal(focus.generatedTaskContract.feedbackAdvisoryOnly,true);
+  assert.equal(focus.generatedTaskContract.feedbackDecisionAuthority,'VIBE');
+  assert.deepEqual(focus.generatedTaskContract.allowedUpdateScales,['HOTFIX','MINOR','MAJOR']);
+  const update=roadmap.developmentLifecycleMachine.postReleaseUpdatePolicy;
+  assert.deepEqual(update.appliesTo,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(update.feedbackNonBinding,true);
+  assert.equal(update.feedbackAuthority,'VIBE');
+  assert.equal(update.majorPrepareAhead,true);
+  assert.equal(update.minorAndHotfixFastRedeploy,true);
+  assert.equal(update.bugEmergencyLaneRequired,true);
+  assert.equal(update.hotfixMayPreemptPreparedMajorUpdate,true);
+  assert.equal(update.canonicalFlow[1],'POST_RELEASE_PLAYTEST_AND_REVIEW');
+  assert.equal(update.canonicalFlow[4],'HOTFIX_FAST_LANE_OR_MINOR_FAST_LANE_OR_MAJOR_PREPARATION_LANE');
 }
 
 console.log('PASS post-release Roblox focused development feeder enforces exact published release and one source cycle');
