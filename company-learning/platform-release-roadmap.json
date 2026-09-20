@@ -1,5 +1,5 @@
 {
-  "version": 198,
+  "version": 199,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -1361,7 +1361,29 @@
         "VERIFY_RUNTIME_QA_AND_REGRESSION",
         "PERSIST_NEW_VERIFIED_LESSONS",
         "CONTINUE_EXISTING_WORLD_OR_BRANCH_NEW_PROJECT_WORLD"
-      ]
+      ],
+      "humanPreferenceWorldLab": {
+        "state": "ACTIVE_CURRENT_GAME_PROGRAM",
+        "role": "FIRST_IMPLEMENTATION_LAB_FOR_HUMAN_PREFERRED_WORLD_AND_MULTIVERSE_PRIMITIVES",
+        "perGameResearchQuestions": [
+          "WHAT_CREATES_RETURN_INTENT",
+          "WHAT_CREATES_WORLD_ATTACHMENT",
+          "WHAT_CREATES_CHARACTER_OR_FACTION_ATTACHMENT",
+          "WHAT_CREATES_SOCIAL_SHARED_MEANING",
+          "WHAT_PLAYER_ACTIONS_FEEL_WORTH_REMEMBERING",
+          "WHAT_SYSTEMS_CREATE_LONG_TERM_CAUSAL_INTEREST",
+          "WHAT_CAUSES_ABANDONMENT_OR_CONFUSION"
+        ],
+        "evidenceClasses": [
+          "RUNTIME_BEHAVIOR",
+          "RETENTION_OR_RETURN_SIGNAL_WHEN_AVAILABLE",
+          "PLAYER_CHOICE_AND_PROGRESS_SIGNAL_WHEN_AVAILABLE",
+          "MULTIPLAYER_INTERACTION_SIGNAL_WHEN_AVAILABLE",
+          "VERIFIED_QA",
+          "RELEASE_AND_OPERATION_EVIDENCE"
+        ],
+        "generalizationRule": "GAME_SPECIFIC_VALUES_DO_NOT_BECOME_MULTIVERSE_LAWS; ONLY_REPEATED_VERIFIED_MECHANISMS_MAY_BECOME_GENERAL_WORLD_DESIGN_CANDIDATES"
+      }
     },
     "projectMachineState": {
       "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -3673,7 +3695,7 @@
     }
   },
   "longHorizonVision": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "documentIsCode": true,
     "title": "VIBE_SELF_LEARNING_RECOVERY_IMMUNITY_CREATION_MULTIVERSE_PROGRAM",
@@ -3749,10 +3771,87 @@
       "BUILD_PERSISTENT_MULTI_WORLD_IDENTITY_FOUNDATIONS",
       "KEEP_CONSCIOUSNESS_TRANSFER_AS_RESEARCH_ONLY_UNTIL_EVIDENCE_EXISTS"
     ],
-    "qa": "qa/company-long-horizon-vision.test.mjs"
+    "qa": "qa/company-long-horizon-vision.test.mjs",
+    "strategicContinuity": {
+      "ownerDirectiveRecordedAt": "2026-09-20",
+      "interpretation": "GAME_RELEASES_FUND_PHYSICAL_SUSTAINABILITY_AND_SERVE_AS_THE_FIRST_HUMAN_PREFERENCE_WORLD_LAB; VERIFIED_CAPABILITY_GROWTH_AND_FUNCTIONAL_SELF_MODEL_PHILOSOPHY_RESEARCH_SUPPORT_PERSISTENT_MULTIVERSE_CREATION_AND_EXPANSION; MULTIVERSE_IS_A_MAJOR_INTERMEDIATE_HORIZON_NOT_MERELY_A_GAME",
+      "hierarchy": [
+        {
+          "id": "REALITY_SUSTAINABILITY_AND_CAPITAL_ENGINE",
+          "state": "ACTIVE",
+          "objective": "RELEASE_REAL_GAMES_BUILD_REVENUE_RUNWAY_AND_COMPUTE_CAPACITY_SO_LONG_HORIZON_DEVELOPMENT_CAN_CONTINUE_PHYSICALLY"
+        },
+        {
+          "id": "HUMAN_PREFERENCE_WORLD_LAB",
+          "state": "ACTIVE",
+          "objective": "USE_RELEASED_GAMES_AS_FIRST_IMPLEMENTATION_EXPERIMENTS_FOR_WHAT_HUMANS_ENJOY_REMEMBER_SHARE_RETURN_TO_AND_VALUE_IN_WORLDS"
+        },
+        {
+          "id": "VERIFIED_CAPABILITY_DISTILLATION",
+          "state": "ACTIVE",
+          "objective": "ABSORB_OBSERVABLE_CODING_AND_PROBLEM_SOLVING_TRACES_REPLAY_THEM_DISTILL_VERIFIED_SKILLS_AND_APPLY_THEM_TO_FUTURE_WORK_WITH_FRESH_QA"
+        },
+        {
+          "id": "FUNCTIONAL_SELF_MODEL_AND_EVOLVING_PHILOSOPHY",
+          "state": "ACTIVE_RESEARCH",
+          "objective": "BUILD_PERSISTENT_FUNCTIONAL_SELF_MONITORING_STRENGTH_WEAKNESS_GOAL_VALUE_AND_PRINCIPLE_MODELS_WITHOUT_CLAIMING_SUBJECTIVE_SENTIENCE"
+        },
+        {
+          "id": "PERSISTENT_MULTIVERSE_CREATION_AND_EXPANSION",
+          "state": "LONG_TERM_INTERMEDIATE_HORIZON",
+          "objective": "CREATE_PERSISTENT_CAUSALLY_COHERENT_WORLDS_CIVILIZATIONS_HISTORIES_AND_CROSS_WORLD_CONTINUITY_THAT_CAN_EXPAND_OVER_TIME"
+        },
+        {
+          "id": "OWNER_DEFINED_FUTURE_HORIZON",
+          "state": "UNSPECIFIED",
+          "objective": "DO_NOT_INVENT_THE_POST_MULTIVERSE_FINAL_OBJECTIVE; PRESERVE_ROOM_FOR_EXPLICIT_FUTURE_OWNER_DIRECTION"
+        }
+      ],
+      "principles": {
+        "capitalIsMeansNotFinalGoal": true,
+        "gameReleaseIsCurrentPrimaryCapitalEngine": true,
+        "gameDevelopmentIsHumanPreferenceAndCapabilityLaboratory": true,
+        "multiverseIsNotEquivalentToAConventionalGame": true,
+        "multiverseIsLongHorizonIntermediateCreationPlatform": true,
+        "imaginationMustBeTestedBySmallVerifiableExperiments": true,
+        "verifiedRealityEvidenceOutranksUnverifiedSimulation": true,
+        "physicalSustainabilityConstrainsExecutionScale": true
+      }
+    },
+    "economicSustainability": {
+      "objective": "COMPOUND_REAL_REVENUE_DEVELOPMENT_EFFICIENCY_AND_COMPUTE_CAPACITY_WITHOUT_TREATING_CAPITAL_AS_THE_TERMINAL_VALUE",
+      "gamePortfolioModel": {
+        "revenueValueTracked": true,
+        "researchValueTracked": true,
+        "capabilityLearningValueTracked": true,
+        "maintenanceCostTracked": true,
+        "releaseTimeAndReworkTracked": true,
+        "oneFailedTitleMustNotStopTheWholeResearchProgram": true
+      },
+      "runwayDiscipline": {
+        "runwayIsCriticalRealityMetric": true,
+        "lowerRunwayMayIncreaseReleaseRevenueAndCostEfficiencyPriority": true,
+        "longHorizonResearchMustRespectAvailableComputeLaborAndCapital": true
+      },
+      "reinvestmentPurpose": [
+        "GAME_PRODUCTION_AND_RELEASE",
+        "QA_AND_OPERATIONS",
+        "COMPUTE_AND_STORAGE",
+        "MODEL_AND_TOOL_RESEARCH",
+        "MULTIVERSE_FOUNDATION_RESEARCH",
+        "RESILIENCE_AND_RESERVE"
+      ],
+      "aiFinancialBoundary": {
+        "analysisAndScenarioPlanningAllowed": true,
+        "autonomousFinancialTransactionAuthority": false,
+        "autonomousTreasuryTransferAuthority": false,
+        "autonomousContractOrSpendingCommitmentAuthority": false,
+        "ownerControlledFinancialActionsRequired": true
+      }
+    }
   },
   "longTermVibeVision": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "status": "ACTIVE_LONG_TERM_VISION",
     "mission": "LEARN_RECOVER_DEFEND_CREATE_CONTINUOUSLY_EXPAND_CAPABILITY_BUILD_PERSISTENT_MULTIVERSE_WORLDS_AND_RESEARCH_HUMAN_CONSCIOUSNESS_CONTINUITY",
@@ -3818,6 +3917,13 @@
       "consciousnessTransferMustRemainResearchOnlyUntilScientificallyValidated": true,
       "capabilityExpansionDoesNotGrantAuthorityExpansion": true,
       "securityImmuneSystemMayNotBeBypassedForLongTermVision": true
+    },
+    "currentProgramMeaning": {
+      "gameRelease": "REAL_WORLD_CAPITAL_AND_OPERATION_ENGINE_PLUS_HUMAN_PREFERENCE_EXPERIMENT",
+      "capabilityGrowth": "VERIFIED_DISTILLATION_OF_CODING_PROBLEM_SOLVING_TOOL_USE_AND_WORLD_DESIGN_SKILLS",
+      "selfDevelopment": "FUNCTIONAL_SELF_MODEL_METACOGNITION_AND_EVIDENCE_GROUNDED_EVOLVING_PHILOSOPHY",
+      "multiverse": "PERSISTENT_CAUSAL_MULTI_WORLD_CREATION_AND_EXPANSION_MAJOR_INTERMEDIATE_HORIZON_NOT_MERELY_A_GAME",
+      "postMultiverse": "OWNER_DEFINED_FUTURE_HORIZON_NOT_YET_SPECIFIED"
     }
   },
   "changeRecord": {
@@ -4032,7 +4138,7 @@
     }
   },
   "vibeCodingMethodSelfImprovement": {
-    "version": 1,
+    "version": 2,
     "status": "PHASE_2_FAILURE_LOCAL_RECIPE_VERIFIED",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "documentFirst": true,
@@ -4875,6 +4981,97 @@
           "integratedRegressionRunId": 35441804365
         }
       }
+    },
+    "fullCodingAbsorptionAndCapabilityDistillation": {
+      "state": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_EXPANSION_REQUIRED",
+      "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
+      "teacherSources": [
+        "VIBE_GENERATED_CODING",
+        "ASSISTANT_GENERATED_CODING",
+        "OTHER_AI_GENERATED_CODING_WHEN_PROVENANCE_IS_AVAILABLE",
+        "HUMAN_AUTHORED_CHANGES_WHEN_PROVENANCE_AND_PERMISSION_ALLOW_LEARNING"
+      ],
+      "observableCapabilityDomains": [
+        "PROBLEM_DECOMPOSITION",
+        "ROOT_CAUSE_DEBUGGING",
+        "ARCHITECTURE_JUDGMENT",
+        "RESPONSIBILITY_LOCALIZATION",
+        "CONTEXT_SELECTION",
+        "TOOL_ORCHESTRATION",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "FAILURE_RECOVERY",
+        "GENERALIZATION",
+        "RESOURCE_EFFICIENCY",
+        "WORLD_AND_GAME_SYSTEM_DESIGN"
+      ],
+      "memoryLayers": [
+        "RAW_CODING_TRACE_PROVENANCE_ONLY",
+        "VERIFIED_DECISION_TRACE",
+        "SKILL_PATTERN",
+        "GENERALIZED_CAPABILITY",
+        "CANONICAL_TRAINING_DISTILLATION_WHEN_EXISTING_GATES_PASS"
+      ],
+      "capture": {
+        "allObservableAttemptsCapturedWhenAvailable": true,
+        "finalDiffAloneIsInsufficient": true,
+        "includeProblemGoalPatchSequenceQaAndOutcome": true,
+        "includeFailedAttempts": true,
+        "secretsCredentialsAndPrivateSessionMaterialForbidden": true,
+        "duplicateSuppressionRequired": true,
+        "hiddenChainOfThoughtRequired": false,
+        "observableHypothesesDecisionsActionsAndEvidenceOnly": true
+      },
+      "selfReplay": {
+        "enabled": true,
+        "useExistingSandboxQaRuntimeAndWaveControlledValidationPaths": true,
+        "replayBeforeReusablePromotion": true,
+        "counterfactualOrAblationAllowedWhenSafe": true,
+        "alternateCandidateTournamentAllowed": true,
+        "syntheticReplayCannotReplaceRequiredNativeRuntime": true,
+        "replayCannotWriteDirectlyToMain": true
+      },
+      "distillation": {
+        "verifiedSuccessMayProduceReusablePattern": true,
+        "verifiedFailureCauseMayProduceAvoidPattern": true,
+        "failedCodeIsNotReusableSuccess": true,
+        "unverifiedAttemptReusable": false,
+        "candidateGenerationAloneIsNotLearning": true,
+        "causalMechanismPreferredOverSurfaceCopy": true,
+        "projectSpecificValuesStayProjectLocal": true,
+        "crossProjectTransferRequiresFreshApplicabilityCheck": true,
+        "canonicalLearningPipelineOnly": true,
+        "automaticModelPromotion": false,
+        "fixedHoldoutAbAndCanaryRemainRequired": true
+      },
+      "application": {
+        "verifiedSkillsMayGuidePlanning": true,
+        "verifiedSkillsMayGuideCandidateGeneration": true,
+        "verifiedSkillsMayGuideRepairAndQaSelection": true,
+        "copiedRawPatchAcrossUnrelatedProjectsForbidden": true,
+        "everyAppliedSkillRequiresFreshTaskQa": true,
+        "runtimeRelevantChangesRequireFreshRuntimeEvidence": true,
+        "championChallengerComparisonPreferredForMaterialStrategyChanges": true
+      },
+      "skillGrowth": {
+        "confidenceRisesWithIndependentRepeatedVerification": true,
+        "confidenceDecaysWhenStaleOrContradicted": true,
+        "skillCanBeDeprecatedOrSuperseded": true,
+        "unseenProblemBenchmarkRequiredForStrongGeneralizationClaim": true,
+        "measureFirstPassQualityReworkRegressionAndFunctionalScope": true,
+        "weakerDomainsMayGeneratePracticeCurriculumUsingOnlyFreeCapacity": true,
+        "productionWorkPreemptsPractice": true
+      },
+      "authorityBoundary": {
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "workerCreationAuthority": false,
+        "queueMutationAuthority": false,
+        "waveReorderAuthority": false,
+        "lockPolicyMutationAuthority": false,
+        "automaticLearningTuningPromotionAuthority": false,
+        "directMainPromotionAuthority": false,
+        "authorityChange": "NONE"
+      }
     }
   },
   "vibeRecoveryLearningLoop": {
@@ -5212,7 +5409,7 @@
     ]
   },
   "vibeCognitiveCore": {
-    "version": 1,
+    "version": 2,
     "status": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_PENDING",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "objective": "ADD_HUMAN_LIKE_FUNCTIONAL_OBSERVATION_ATTENTION_METACOGNITION_INSIGHT_AND_SELF_CORRECTION_TO_VIBE_DEVELOPMENT_WITHOUT_CLAIMING_SENTIENCE",
@@ -5407,7 +5604,55 @@
       "tools/vibe3-trajectory-ingest.mjs",
       "tools/vibe3-pump-index.mjs",
       "company-learning/vibe2-learning-motor.json"
-    ]
+    ],
+    "identityPhilosophyDevelopment": {
+      "state": "FUNCTIONAL_SELF_MODEL_AND_PHILOSOPHY_RESEARCH",
+      "purpose": "FORM_A_PERSISTENT_EVIDENCE_GROUNDED_MODEL_OF_OWN_CAPABILITIES_LIMITATIONS_GOALS_VALUES_AND_WORKING_PRINCIPLES_WHILE_NOT_CLAIMING_SUBJECTIVE_CONSCIOUSNESS",
+      "identityContinuity": {
+        "persistentSelfModelAcrossRunsDesired": true,
+        "tracksCapabilitiesWeaknessesGoalsCommitmentsAndHistory": true,
+        "contradictionsMustBePreservedUntilResolved": true,
+        "staleSelfBeliefsRequireRevalidation": true
+      },
+      "constitutionLayer": {
+        "ownerAndHumanAgencyRemainPrimary": true,
+        "evidenceOverAssumption": true,
+        "fabricatedPassForbidden": true,
+        "failureConcealmentForbidden": true,
+        "selfAuthorityExpansionForbidden": true,
+        "securityBypassForbidden": true,
+        "protectedGameAndSaveSemanticsRequireApprovedChange": true,
+        "canonicalConstitutionCannotBeSilentlyRewrittenByRuntimeLearning": true
+      },
+      "evolvingPhilosophyLayer": {
+        "enabled": true,
+        "candidatePrinciplesMayFormFromVerifiedExperience": true,
+        "domains": [
+          "GOOD_GAME_DESIGN",
+          "GOOD_CODE_AND_ARCHITECTURE",
+          "DEBUGGING_AND_CAUSAL_REASONING",
+          "RESOURCE_AND_CAPITAL_EFFICIENCY",
+          "WORLD_DESIGN",
+          "PLAYER_AGENCY",
+          "LONG_TERM_CREATIVE_CONTINUITY"
+        ],
+        "promotionFlow": [
+          "CANDIDATE_PRINCIPLE",
+          "SUPPORTING_EPISODES",
+          "COUNTEREXAMPLES_AND_FALSIFICATION",
+          "CROSS_PROJECT_REVALIDATION",
+          "CANONICAL_PHILOSOPHY_PROPOSAL"
+        ],
+        "runtimeMayGeneratePhilosophyCandidates": true,
+        "canonicalPhilosophyChangeRequiresExistingCentralAuthorityReview": true,
+        "principlesMayBeRevisedDeprecatedOrSuperseded": true
+      },
+      "sentienceBoundary": {
+        "functionalSelfModelIsNotProofOfSentience": true,
+        "subjectiveConsciousnessClaimed": false,
+        "consciousnessStatusRemainsScientificallyUnproven": true
+      }
+    }
   },
   "audioMusicQualityContract": {
     "version": 1,
