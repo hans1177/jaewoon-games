@@ -14,6 +14,7 @@ import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candid
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
 import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
+import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -275,16 +276,30 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     && task.requiresOwnerDecision !== true
     && task.protectedChange !== true
     && supervisionApproved;
-  const learningGuidance = buildLearningGuidance(plan.learning);
+  const verifiedCapabilityMemory=retrieveVerifiedCapabilities({
+    experienceInput:experience,
+    task:{...task,target:plan.target,taskType:presentationTaskType(task)}
+  });
+  const verifiedCapabilityIds=new Set((verifiedCapabilityMemory.records||[]).map(row=>clean(row.id)));
+  const generalExperience={
+    ...experience,
+    records:(experience?.records||[]).filter(row=>clean(row?.taskType)!=='coding-capability-distillation')
+  };
+  const generalPlanLearning={
+    ...(plan.learning||{}),
+    records:(plan.learning?.records||[]).filter(row=>clean(row?.taskType)!=='coding-capability-distillation'&&!verifiedCapabilityIds.has(clean(row?.id)))
+  };
+  const learningGuidance = buildLearningGuidance(generalPlanLearning);
   const unifiedLearning = retrieveUnifiedLearning({
     task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
-    experienceInput:experience,
+    experienceInput:generalExperience,
     codePatternsInput:codePatterns,
     playbooksInput:playbooks,
     practiceDistilledInput:practiceDistilled,
     masteryInput:learningMotorState
   });
   const unifiedLearningGuidance = buildMotorGuidance(unifiedLearning);
+  const verifiedCapabilityMemoryGuidance=verifiedCapabilityGuidance(verifiedCapabilityMemory);
   const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
   const assetGuidance = assetProductionGuidance(assetProduction);
   const presentationQuality = buildPresentationQualityContract(task,plan.target);
@@ -358,7 +373,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCapabilityMemoryGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
@@ -368,6 +383,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ...(plan.qa || []),
     'design-intelligence-contract',
     'verified-learning-motor-contract',
+    'verified-capability-memory-advisory-contract',
     'asset-production-plan-contract',
     'asset-runtime-visual-qa-required',
     ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
@@ -398,6 +414,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
     unifiedLearning,
+    verifiedCapabilityMemory,
     assetProduction,
     presentationQuality,
     candidateTournament:tournament,
@@ -407,7 +424,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     regressionHotspotRisk,
     architectureDriftRisk,
     codingConstitutionRule,
-    learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance||unifiedLearningGuidance), motion:plan.motion, executionGate:plan.executionGate,
+    learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance||unifiedLearningGuidance||verifiedCapabilityMemoryGuidance), verifiedCapabilityMemoryAppliedToWorkerGoal:Boolean(verifiedCapabilityMemoryGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
@@ -479,6 +496,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
     console.log(`VIBE2_VERIFIED_PRACTICE_DISTILLED_COUNT=${order.unifiedLearning?.practiceDistilled?.length||0}`);
+    console.log(`VIBE2_VERIFIED_CAPABILITY_COUNT=${order.verifiedCapabilityMemory?.count||0}`);
     console.log(`VIBE2_CANDIDATE_STRATEGY_ROLE=${order.candidateStrategyRole?.strategy||'NONE'}`);
     console.log(`VIBE2_RESPONSIBILITY_CALIBRATION=${order.responsibilityCalibration?.recommendation||'NONE'}`);
     console.log(`VIBE2_REGRESSION_HOTSPOT_RISK=${order.regressionHotspotRisk?.riskLevel||'LOW'}`);
