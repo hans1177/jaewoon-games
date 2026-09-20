@@ -14,7 +14,7 @@ import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candid
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
 import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
-import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance } from './vibe2-capability-distillation.mjs';
+import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance, buildCapabilityGeneralizationBenchmarkContract, applyCapabilityGeneralizationBenchmarkToRetrieval, capabilityGeneralizationBenchmarkGuidance } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -282,8 +282,15 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     && task.protectedChange !== true
     && supervisionApproved;
   const learningGuidance = buildLearningGuidance(plan.learning);
-  const verifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
+  const baseVerifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
+  const capabilityGeneralizationBenchmark=buildCapabilityGeneralizationBenchmarkContract({
+    retrieval:baseVerifiedCapabilityMemory,
+    task:{...task,target:plan.target},
+    variant
+  });
+  const verifiedCapabilityMemory=applyCapabilityGeneralizationBenchmarkToRetrieval(baseVerifiedCapabilityMemory,capabilityGeneralizationBenchmark);
   const verifiedCapabilityMemoryGuidance=verifiedCapabilityGuidance(verifiedCapabilityMemory);
+  const capabilityGeneralizationBenchmarkGuidanceText=capabilityGeneralizationBenchmarkGuidance(capabilityGeneralizationBenchmark);
   const unifiedLearning = retrieveUnifiedLearning({
     task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
     experienceInput:genericLearningExperience,
@@ -307,7 +314,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const verifiedArchitectureDriftGuidance=architectureDriftGuidance(architectureDriftRisk);
   const codingConstitutionRule=codingConstitutionRuleForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingConstitutionGuidance=codingConstitutionGuidance(codingConstitutionRule);
-  const candidateStrategy=candidateStrategyRole(variant,codingStrategyPreference);
+  const candidateStrategy=capabilityGeneralizationBenchmark.enabled===true
+    ?freeze({
+      variant:'speculative-benchmark',
+      strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',
+      directive:'Use the same primary-responsibility minimal strategy for both members of the controlled capability benchmark pair. Do not vary non-target strategy between control and challenger.'
+    })
+    :candidateStrategyRole(variant,codingStrategyPreference);
   const candidateStrategyGuidance=[
     '[CANDIDATE STRATEGY ROLE]',
     `variant=${candidateStrategy.variant}`,
@@ -366,7 +379,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, capabilityGeneralizationBenchmarkGuidanceText, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
@@ -406,6 +419,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
     verifiedCapabilityMemory,
+    capabilityGeneralizationBenchmark,
     capabilityApplicationContract:freeze({
       version:1,
       layer:'verifiedCapabilityMemory',
@@ -509,6 +523,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_VERIFIED_CAPABILITY_APPLIED=${order.verifiedCapabilityMemoryAppliedToWorkerGoal?'YES':'NO'}`);
     console.log(`VIBE2_CAPABILITY_APPLICATION_IDS=${(order.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).join(',')||'NONE'}`);
     console.log(`VIBE2_CAPABILITY_APPLICATION_BINDING=${order.capabilityApplicationContract?.binding||'NONE'}`);
+    console.log(`VIBE2_CAPABILITY_GENERALIZATION_BENCHMARK=${order.capabilityGeneralizationBenchmark?.enabled?'YES':'NO'}`);
+    console.log(`VIBE2_CAPABILITY_GENERALIZATION_ROLE=${order.capabilityGeneralizationBenchmark?.role||'NONE'}`);
+    console.log(`VIBE2_CAPABILITY_GENERALIZATION_PAIR=${order.capabilityGeneralizationBenchmark?.pairId||'NONE'}`);
+    console.log(`VIBE2_CAPABILITY_GENERALIZATION_TARGET=${order.capabilityGeneralizationBenchmark?.targetCapabilityId||'NONE'}`);
     console.log(`VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED=${order.capabilityMemoryPartition?.excludedRecordCount||0}`);
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
