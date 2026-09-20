@@ -92,7 +92,7 @@ const SFX_NAMES=[
 ];
 const SFX_INDEX=Object.fromEntries(SFX_NAMES.map((n,i)=>[n,i]));
 const AUDIO={ctx:null,master:null,sfxBus:null,musicBus:null,aggroBus:null,muted:false,started:false,musicStep:0,timer:null,aggro:false,lastAggro:false};
-const AUDIO={ctx:null,master:null,sfxBus:null,musicBus:null,aggroBus:null,muted:false,started:false,musicStep:0,timer:null,aggro:false,lastAggro:false};function initAudio(){if(AUDIO.started)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;AC.createBufferSource();
+function initAudio(){
  if(AUDIO.started)return;
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
  const ac=new AC();AUDIO.ctx=ac;
@@ -170,7 +170,7 @@ function sfx(name){
  tone(hi,.06+(i%4)*.015,wave,.035+(i%4)*.008,.045,1.05);
  if(i%3===0)noise(.045+(i%4)*.012,.03+(i%3)*.012,700+(i%8)*280,.015);
 }
-function startBgm(){ if(AUDIO.timer)return; const normal=[220,277,330,440,330,277,247,330,294,370,440,494,440,370,330,277];
+function startBgm(){
  if(AUDIO.timer)return;
  const normal=[220,277,330,440,330,277,247,330,294,370,440,494,440,370,330,277];
  const aggro=[110,110,147,110,165,147,196,147,110,220,147,196,165,147,110,98];
@@ -184,15 +184,7 @@ function startBgm(){ if(AUDIO.timer)return; const normal=[220,277,330,440,330,27
  },285);
 }
 function setAggro(v,boss=false){
-function setAggro(v,boss=false){
-function setAggro(v,boss=false){
-
-if(!AUDIO.ctx)return; const now=AUDIO.ctx.currentTime;
-
- const now=AUDIO.ctx.currentTime; /no_think
-
- const now=AUDIO.ctx.currentTime;
- AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);
+ if(!AUDIO.ctx)return;
  const now=AUDIO.ctx.currentTime;
  AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);
  AUDIO.aggroBus.gain.setTargetAtTime(v?.24:0,now,.12);
@@ -245,11 +237,7 @@ function spawn(s,px,py,z){
  if(z==='f5'&&p.lv>=9){let e=p.lv-8;hpv=Math.floor(hpv*(1+e*.12));av=Math.floor(av*(1+e*.08));lvv+=Math.floor(e/2);xpv=Math.floor(xpv*(1+e*.1));gv=Math.floor(gv*(1+e*.08))}
  mons.push({n:name,lv:lvv,x:px,y:py,hp:hpv,mhp:hpv,a:av,spd,r,xp:xpv,g:gv,type,baseType,z,hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1,aggroed:false})
 }
-spawnCaveMonster(CAVE.giant,CAVE.chest.x-120,CAVE.chest.y)
-  for(let i=0;i<4;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
-  for(let i=0;i<2;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
-  spawnCaveMonster(CAVE.troll, 1000+Math.random()*1200, 500+Math.random()*700);
-}
+function spawnCave(){
  for(let i=0;i<4;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
  for(let i=0;i<2;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
  spawnCaveMonster(CAVE.giant,CAVE.chest.x-120,CAVE.chest.y)
