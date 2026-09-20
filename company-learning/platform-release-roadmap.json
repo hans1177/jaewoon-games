@@ -1,5 +1,5 @@
 {
-  "version": 226,
+  "version": 227,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -1223,7 +1223,12 @@
       "externalKnowledgeCandidateLimit": null,
       "freeCapacityControlsPracticeExecutionNotPracticeExistence": true,
       "domainMasteryLevelLimit": null,
-      "verifiedMasteryGrowthUnbounded": true
+      "verifiedMasteryGrowthUnbounded": true,
+      "selfGeneratedSignalAlwaysOn": true,
+      "selfGeneratedSignalLimit": null,
+      "selfGeneratedBranchLimit": null,
+      "fixedSeedCountCapForbidden": true,
+      "selfImprovementGapSignalGeneration": true
     },
     "webFirstImplementation": {
       "authority": "VIBE_IMPLEMENTATION_OWNER",
@@ -8779,7 +8784,16 @@
         "contextWindowIsNotCollectionLimit": true,
         "rawExternalOutputAuthority": "NONE",
         "verificationAndDistillationRequiredBeforeReusableKnowledge": true
-      }
+      },
+      "totalQuestionItemLimit": null,
+      "totalSelfGeneratedLearningSignalLimit": null,
+      "selfGeneratedSignalGenerationAlwaysOn": true,
+      "performanceGapMeaning": "EMIT_CAUSAL_QUESTION_EXPERIMENT_RELEARNING_OR_HARDER_BENCHMARK_EVENT",
+      "insufficientEvidenceMeaning": "EMIT_TESTABLE_CURIOSITY_QUESTION_EVENT",
+      "verifiedSuccessMeaning": "EMIT_HARDER_BENCHMARK_TRANSFER_OR_GENERALIZATION_EVENT",
+      "totalSelfGeneratedSignalLimit": null,
+      "totalLearningBranchLimit": null,
+      "fixedPerRefreshCandidateCapsForbidden": true
     }
   },
   "assistantRoadmapOrchestration": {
@@ -9565,7 +9579,17 @@
         "GENERALIZATION_GAP",
         "NEW_EXTERNAL_REFERENCE",
         "NEW_GAME_CONTEXT",
-        "SELF_MODEL_CALIBRATION_GAP"
+        "SELF_MODEL_CALIBRATION_GAP",
+        "INSUFFICIENT_VERIFIED_EVIDENCE",
+        "PERFORMANCE_OR_CONFIDENCE_GAP",
+        "MASTERY_PLATEAU",
+        "CAPABILITY_GAP",
+        "UNRESOLVED_QUESTION",
+        "OPEN_QUESTION",
+        "UNKNOWN_OR_LOW_CONFIDENCE",
+        "INSUFFICIENT_RESULT",
+        "HARDER_CHALLENGE_REQUIRED",
+        "TRANSFER_GAP"
       ],
       "loops": [
         "REPLAY",
@@ -9575,11 +9599,25 @@
         "CROSS_DOMAIN_TRANSFER",
         "FRESH_PROJECT_APPLICATION",
         "FRESH_QA_ATTRIBUTION",
-        "REPEAT"
+        "REPEAT",
+        "ASK_TESTABLE_QUESTION",
+        "ALTERNATIVE_HYPOTHESIS",
+        "REVALIDATE",
+        "CURIOSITY_BRANCH",
+        "SELF_IMPROVEMENT_BRANCH",
+        "ALTERNATIVE_HYPOTHESIS_BRANCH"
       ],
       "practiceSignalGenerationNeverStops": true,
       "executionMayWaitForLowerPriorityCapacity": true,
-      "verifiedProjectOutcomeRequiredForPositiveMastery": true
+      "verifiedProjectOutcomeRequiredForPositiveMastery": true,
+      "selfGeneratedSignalGenerationAlwaysOn": true,
+      "selfGeneratedSignalGenerationLimit": null,
+      "selfGeneratedBranchGenerationLimit": null,
+      "externalPromptRequiredForNextLearningSignal": false,
+      "functionalCuriosityMeaning": "EVIDENCE_GAP_DRIVEN_TESTABLE_QUESTION_GENERATION_NOT_SENTIENCE_CLAIM",
+      "multiverseBranching": "UNBOUNDED_SUCCESSIVE_SIGNAL_GENERATIONS_WITH_FINITE_PHYSICAL_EXECUTION_WINDOW",
+      "totalSelfGeneratedSignalLimit": null,
+      "totalLearningBranchLimit": null
     },
     "capabilityGrowth": {
       "objective": "UNBOUNDED_VERIFIED_CAPABILITY_IMPROVEMENT",
@@ -9796,9 +9834,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 1,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; THIS CONTRACT DEFINES_ONLY_RULE_2",
+    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; THIS CONTRACT DEFINES_RULE_2_AND_RULE_3",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -9836,6 +9874,57 @@
       "authorityExpansion": false,
       "gateWeakening": false,
       "existingPipelinesOnly": true
+    },
+    "rule3": {
+      "id": "RULE_3_SELF_GENERATED_UNBOUNDED_LEARNING_SIGNAL_MULTIVERSE",
+      "label": "제3원칙",
+      "enabled": true,
+      "externalPromptRequired": false,
+      "selfGeneratedLearningSignalsAlwaysOn": true,
+      "totalSignalGenerationLimit": null,
+      "totalBranchGenerationLimit": null,
+      "totalQuestionGenerationLimit": null,
+      "totalHypothesisGenerationLimit": null,
+      "totalRelearningGenerationLimit": null,
+      "objective": "CONTINUOUS_SELF_DEVELOPMENT_BY_EVIDENCE_DRIVEN_QUESTION_FALSIFICATION_RELEARNING_HARDER_BENCHMARK_AND_TRANSFER_BRANCHES",
+      "triggerSources": [
+        "INSUFFICIENT_VERIFIED_EVIDENCE",
+        "MASTERY_GAP",
+        "PERFORMANCE_OR_CONFIDENCE_GAP",
+        "VERIFIED_SUCCESS",
+        "VERIFIED_FAILURE",
+        "REPEATED_FAILURE",
+        "CONTRADICTION",
+        "MASTERY_PLATEAU",
+        "CAPABILITY_GAP",
+        "STALE_KNOWLEDGE",
+        "NEW_EXTERNAL_REFERENCE",
+        "NEW_GAME_CONTEXT"
+      ],
+      "branchFamilies": [
+        "CURIOSITY_QUESTION",
+        "ALTERNATIVE_HYPOTHESIS_AND_FALSIFICATION",
+        "RELEARNING_REPLAY",
+        "HARDER_BENCHMARK",
+        "CROSS_DOMAIN_TRANSFER",
+        "FRESH_PROJECT_APPLICATION",
+        "REVALIDATION",
+        "SELF_IMPROVEMENT_GAP"
+      ],
+      "functionalCuriosityMeaning": "EVIDENCE_GAP_DRIVEN_TESTABLE_QUESTION_GENERATION_NOT_EMOTION_SENTIENCE_OR_SUBJECTIVE_THIRST_CLAIM",
+      "multiverseMeaning": "UNBOUNDED_SUCCESSIVE_BRANCH_GENERATIONS_WITH_CAUSAL_PROVENANCE; NOT_INFINITE_SIMULTANEOUS_EXECUTION",
+      "oneCycleExecutionWindowRemainsFinite": true,
+      "existingSchedulerOwnsConcurrency": true,
+      "busyLoopForbidden": true,
+      "eachReusableLessonRequiresVerification": true,
+      "verifiedProjectOutcomeRequiredForPositiveMastery": true,
+      "authorityExpansion": false,
+      "gateWeakening": false,
+      "existingLearningMotorOnly": true,
+      "fixedPerRefreshCandidateCapsForbidden": true,
+      "everyEligibleDomainMaySeedBranches": true,
+      "everyRepeatedFailureMaySeedBranches": true,
+      "lowPriorityBranchStarvationForbidden": true
     }
   }
 }

@@ -1086,12 +1086,90 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
+  if(kind==='CURIOSITY_QUESTION_DRILL')return'현재 증거로 설명되지 않은 부분, 실패 경계, 더 나은 메커니즘을 질문으로 만들고 최소 검증 실험을 설계한다. 질문 자체는 사실이나 mastery가 아니다.';
+  if(kind==='SELF_IMPROVEMENT_GAP_DRILL')return'검증 성과가 부족하거나 confidence가 낮은 이유를 측정 가능한 격차로 정의하고, 가장 작은 개선 실험과 성공/실패 판정을 설계한다.';
+  if(kind==='HYPOTHESIS_FALSIFICATION_DRILL')return'현재 설명과 대안 설명을 분리하고 둘을 구분할 반증 가능한 실험, 예상 결과, 실패 기준을 만든다.';
+  if(kind==='CROSS_DOMAIN_TRANSFER_DRILL')return'한 영역의 검증된 메커니즘을 다른 영역에 표면 복사하지 말고 인과 구조만 전이해 fresh verification으로 검증한다.';
+  if(kind==='HARDER_BENCHMARK_DRILL')return'현재 mastery보다 어려운 문제를 만들고 기존 성공 전략이 더 높은 난이도에서도 유지되는지 독립 검증한다.';
+  if(kind==='RELEARNING_REPLAY_DRILL')return'이전 실패 원인과 교정 전략을 새로운 변형 문제에서 재검증하고 같은 실패가 재발하는지 확인한다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
+
+export function buildSelfGeneratedLearningDrills(masteryInput={}){
+  const state=createMasteryState(masteryInput);
+  const ranked=Object.entries(state.domains).map(([domain,row])=>({
+    domain,row,
+    confidence:Number(state.productionConfidence?.domains?.[domain]?.level||1)
+  })).sort((a,b)=>a.row.level-b.row.level||a.confidence-b.confidence||a.domain.localeCompare(b.domain));
+  const weakest=ranked;
+  const strongest=[...ranked].sort((a,b)=>b.row.level-a.row.level||b.confidence-a.confidence||a.domain.localeCompare(b.domain));
+  const repeated=Object.entries(state.failureSignatures||{})
+    .filter(([,row])=>Number(row?.count||0)>=2)
+    .sort((a,b)=>Number(b[1]?.count||0)-Number(a[1]?.count||0)||a[0].localeCompare(b[0]));
+  const drills=[];
+
+  for(const item of weakest){
+    drills.push({
+      id:`curiosity-${lower(item.domain)}-l${item.row.level}-pc${item.confidence}`,
+      kind:'CURIOSITY_QUESTION_DRILL',priority:'low',productionPreemptible:true,countsAsProductionPass:false,
+      domains:[item.domain],selfGenerated:true,analysisOnly:true,branchFamily:'CURIOSITY',
+      signalOrigin:item.confidence<=1?'INSUFFICIENT_VERIFIED_EVIDENCE':'MASTERY_GAP'
+    });
+    if(item.confidence<=1||Number(item.row.verifiedSuccesses||0)===0){
+      drills.push({
+        id:`self-improve-${lower(item.domain)}-l${item.row.level}-pc${item.confidence}`,
+        kind:'SELF_IMPROVEMENT_GAP_DRILL',priority:'low',productionPreemptible:true,countsAsProductionPass:false,
+        domains:[item.domain],selfGenerated:true,analysisOnly:true,branchFamily:'SELF_IMPROVEMENT',
+        signalOrigin:'PERFORMANCE_OR_CONFIDENCE_GAP'
+      });
+    }
+  }
+
+  for(const [sig,row] of repeated){
+    const domains=(row?.domains||[]).map(upper).filter(Boolean);
+    drills.push({
+      id:`falsify-${hash(sig).slice(0,16)}`,kind:'HYPOTHESIS_FALSIFICATION_DRILL',priority:'high',
+      productionPreemptible:true,countsAsProductionPass:false,domains:domains.length?domains:['DEBUGGING'],
+      selfGenerated:true,analysisOnly:true,branchFamily:'FALSIFICATION',signalOrigin:'REPEATED_FAILURE',sourceFailure:sig
+    });
+    drills.push({
+      id:`relearn-${hash(sig).slice(0,16)}`,kind:'RELEARNING_REPLAY_DRILL',priority:'high',
+      productionPreemptible:true,countsAsProductionPass:false,domains:domains.length?domains:['DEBUGGING'],
+      selfGenerated:true,branchFamily:'RELEARNING',signalOrigin:'VERIFIED_FAILURE_MEMORY',sourceFailure:sig
+    });
+  }
+
+  for(const item of strongest){
+    drills.push({
+      id:`harder-${lower(item.domain)}-from-l${item.row.level}`,kind:'HARDER_BENCHMARK_DRILL',priority:'low',
+      productionPreemptible:true,countsAsProductionPass:false,domains:[item.domain],selfGenerated:true,
+      branchFamily:'HARDER_BENCHMARK',signalOrigin:item.row.verifiedSuccesses>0?'VERIFIED_SUCCESS':'MASTERY_PLATEAU'
+    });
+  }
+
+  for(let i=0;i<Math.min(strongest.length,weakest.length);i++){
+    const from=strongest[i],to=weakest[i];
+    if(from.domain===to.domain)continue;
+    drills.push({
+      id:`transfer-${lower(from.domain)}-to-${lower(to.domain)}`,kind:'CROSS_DOMAIN_TRANSFER_DRILL',priority:'low',
+      productionPreemptible:true,countsAsProductionPass:false,domains:[from.domain,to.domain],selfGenerated:true,
+      branchFamily:'CROSS_DOMAIN_TRANSFER',signalOrigin:'CAPABILITY_GAP'
+    });
+  }
+
+  const unique=[...new Map(drills.map(row=>[row.id,row])).values()];
+  return {
+    version:1,kind:'vibe2-self-generated-learning-signal-multiverse',
+    selfGenerationAlwaysOn:true,totalSignalGenerationLimit:null,totalBranchGenerationLimit:null,
+    executionConcurrencyOwnedByExistingScheduler:true,busyLoopForbidden:true,drills:unique
+  };
+}
+
 export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
-  const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
+  const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count));
+  const selfGenerated=buildSelfGeneratedLearningDrills(state);
   const phase4Drills=(benchmarkInput?.cases||[])
     .filter(row=>row?.track==='CAPABILITY_GENERALIZATION'&&row?.state==='READY_FOR_UNSEEN_SCREEN'&&row?.screenOnly===true)
     .flatMap(row=>['CONTROL','CHALLENGER'].map(role=>({
@@ -1114,9 +1192,15 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   const drills=[
     ...phase4Drills,
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
+    ...selfGenerated.drills,
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
-  return {version:2,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,phase4GeneralizationDrills:phase4Drills.length,drills};
+  return {
+    version:3,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,
+    practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,selfGeneratedSignalGenerationAlwaysOn:true,
+    selfGeneratedSignalGenerationLimit:null,selfGeneratedBranchGenerationLimit:null,selfGeneratedSignalBranches:selfGenerated.drills.length,
+    phase4GeneralizationDrills:phase4Drills.length,drills
+  };
 }
 
 function isIdlePracticeTask(task={}){
@@ -1206,7 +1290,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const {drill,next}=candidates[0];
   const id=idlePracticeTaskId(drill,next.generation);
   const phase4=drill?.phase4Benchmark===true;
-  const artifactPractice=!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','WEB_RUNTIME'].includes(upper(domain)));
+  const artifactPractice=!phase4&&drill?.analysisOnly!==true&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','WEB_RUNTIME'].includes(upper(domain)));
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
@@ -1214,6 +1298,9 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     `practiceGeneration=${next.generation}`,
     next.previousScore!==null?`previousArtifactScore=${next.previousScore}`:'',
     artifactPractice?'practiceMode=WEB_ARTIFACT':'practiceMode=ANALYSIS',
+    drill?.selfGenerated===true?'selfGeneratedSignal=YES':'',
+    clean(drill.branchFamily)?`signalBranch=${clean(drill.branchFamily)}`:'',
+    clean(drill.signalOrigin)?`signalOrigin=${clean(drill.signalOrigin)}`:'',
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
     phase4?`phase4CapabilityId=${clean(drill.phase4CapabilityId)}`:'',
     phase4?`phase4BenchmarkCaseId=${clean(drill.phase4BenchmarkCaseId)}`:'',
@@ -1242,7 +1329,14 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
-    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
+    evidence:[
+      'learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,
+      artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',
+      drill?.selfGenerated===true?'self-generated-learning-signal':null,
+      clean(drill.branchFamily)?`self-signal-branch:${clean(drill.branchFamily)}`:null,
+      clean(drill.signalOrigin)?`self-signal-origin:${clean(drill.signalOrigin)}`:null,
+      ...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence
+    ].filter(Boolean),
     completionCriteria:[artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
   return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'PRACTICE_SIGNAL_ENQUEUED',task,practiceGeneration:next.generation,previousArtifactScore:next.previousScore,artifactPractice};
@@ -1617,6 +1711,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_BENCHMARK_CASES=${result.benchmark.phase4GeneralizationCases||0}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
+  console.log(`VIBE2_SELF_GENERATED_SIGNAL_BRANCHES=${result.idlePractice.selfGeneratedSignalBranches||0}`);
+  console.log(`VIBE2_SELF_GENERATED_SIGNAL_LIMIT=${result.idlePractice.selfGeneratedSignalGenerationLimit===null?'UNBOUNDED':result.idlePractice.selfGeneratedSignalGenerationLimit}`);
   console.log(`VIBE2_PHASE4_GENERALIZATION_PRACTICE_DRILLS=${result.idlePractice.phase4GeneralizationDrills||0}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);

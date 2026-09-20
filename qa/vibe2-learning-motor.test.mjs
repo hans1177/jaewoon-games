@@ -23,6 +23,7 @@ import {
   retrieveUnifiedLearning,
   candidateTournamentPolicy,
   buildBenchmarkLadder,
+  buildSelfGeneratedLearningDrills,
   buildIdlePracticeQueue,
   injectIdlePracticeTask,
   dedupeIdlePracticeTasks,
@@ -876,3 +877,66 @@ test('verified-only strategy memory opens candidate tournament to gather preferr
   assert.equal(policy.gateBypass,false);
 });
 
+
+
+test('rule 3 self-generates multiverse learning branches from gaps success and repeated failure',()=>{
+  const state=createMasteryState({
+    domains:{
+      SAVE:{xp:0,verifiedSuccesses:0},
+      CORE_LOOP:{xp:520,verifiedSuccesses:4},
+      DEBUGGING:{xp:180,verifiedSuccesses:1}
+    },
+    productionConfidence:{domains:{SAVE:{level:1},CORE_LOOP:{level:3},DEBUGGING:{level:1}}},
+    failureSignatures:{'save-regression':{count:4,domains:['SAVE','DEBUGGING']}}
+  });
+  const generated=buildSelfGeneratedLearningDrills(state);
+  const kinds=new Set(generated.drills.map(row=>row.kind));
+  assert.equal(generated.selfGenerationAlwaysOn,true);
+  assert.equal(generated.totalSignalGenerationLimit,null);
+  assert.equal(generated.totalBranchGenerationLimit,null);
+  assert.ok(kinds.has('CURIOSITY_QUESTION_DRILL'));
+  assert.ok(kinds.has('HYPOTHESIS_FALSIFICATION_DRILL'));
+  assert.ok(kinds.has('RELEARNING_REPLAY_DRILL'));
+  assert.ok(kinds.has('HARDER_BENCHMARK_DRILL'));
+  assert.ok(kinds.has('CROSS_DOMAIN_TRANSFER_DRILL'));
+  assert.ok(generated.drills.every(row=>row.selfGenerated===true));
+});
+
+test('rule 3 self-generated branch advances generations without a lifetime ceiling',()=>{
+  const drill={id:'curiosity-save',kind:'CURIOSITY_QUESTION_DRILL',domains:['SAVE'],selfGenerated:true,analysisOnly:true,branchFamily:'CURIOSITY',signalOrigin:'INSUFFICIENT_VERIFIED_EVIDENCE'};
+  const idle={drills:[drill]};
+  const first=injectIdlePracticeTask({tasks:[]},idle);
+  assert.equal(first.practiceGeneration,1);
+  assert.match(first.task.goal,/selfGeneratedSignal=YES/);
+  assert.match(first.task.goal,/signalBranch=CURIOSITY/);
+  assert.ok(first.task.evidence.includes('self-generated-learning-signal'));
+  const done1={...first.task,status:'verified',evidence:[...first.task.evidence,'learning-practice-complete']};
+  const second=injectIdlePracticeTask({tasks:[done1]},idle);
+  assert.equal(second.practiceGeneration,2);
+  const done2={...second.task,status:'verified',evidence:[...second.task.evidence,'learning-practice-complete']};
+  const third=injectIdlePracticeTask({tasks:[done1,done2]},idle);
+  assert.equal(third.practiceGeneration,3);
+  assert.match(third.task.id,/-g3$/);
+});
+
+
+test('rule 3 removes fixed seed caps and creates self-improvement signals for every eligible weak domain',()=>{
+  const domains={};
+  const names=['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','WEB_RUNTIME'];
+  for(const name of names)domains[name]={xp:0,verifiedSuccesses:0};
+  const failures={};
+  for(let i=0;i<8;i++)failures['failure-'+i]={count:2+i,domains:['DEBUGGING']};
+  const state=createMasteryState({domains,failureSignatures:failures});
+  const generated=buildSelfGeneratedLearningDrills(state);
+  const curiosity=generated.drills.filter(row=>row.kind==='CURIOSITY_QUESTION_DRILL');
+  const improvement=generated.drills.filter(row=>row.kind==='SELF_IMPROVEMENT_GAP_DRILL');
+  const falsify=generated.drills.filter(row=>row.kind==='HYPOTHESIS_FALSIFICATION_DRILL');
+  assert.ok(curiosity.length>=names.length);
+  assert.ok(improvement.length>=names.length);
+  assert.equal(falsify.length,8);
+  assert.ok(generated.drills.every(row=>row.selfGenerated===true));
+  const idle=buildIdlePracticeQueue(state);
+  assert.ok(idle.drills.some(row=>row.kind==='SELF_IMPROVEMENT_GAP_DRILL'));
+  assert.equal(idle.selfGeneratedSignalGenerationLimit,null);
+  assert.equal(idle.selfGeneratedBranchGenerationLimit,null);
+});
