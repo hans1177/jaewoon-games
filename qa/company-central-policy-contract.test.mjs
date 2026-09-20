@@ -639,3 +639,32 @@ test('company records use one canonical format, path, retention and runtime-medi
   assert.equal(architecture.recordsGovernance.legacyMigration,'MIGRATE_ON_TOUCH');
   assert.ok(architecture.executionTopology.recordsGovernance.includes('SCHEDULED_HYGIENE_SCAN'));
 });
+
+
+test('runtime gameplay media policy publishes native actual-runtime captures and excludes web screenshots',()=>{
+  const policy=roadmap.runtimeGameplayMediaPolicy;
+  assert.deepEqual(policy.appliesTo,['UNITY','ROBLOX','FORTNITE_UEFN']);
+  assert.equal(policy.captureRules.actualRuntimeOnly,true);
+  assert.equal(policy.captureRules.syntheticOrMockGameplayScreenshotForbidden,true);
+  assert.equal(policy.captureRules.webGameplayScreenshotNotRequired,true);
+  assert.equal(policy.captureRules.webRemainsValidationAndPlayableLinkSurface,true);
+  assert.equal(policy.platformCapture.UNITY.automaticCaptureAllowed,true);
+  assert.equal(policy.platformCapture.ROBLOX.automaticUnattendedStudioCaptureAllowed,false);
+  assert.equal(policy.platformCapture.ROBLOX.approvedHumanSessionMayCapture,true);
+  assert.equal(policy.homepagePromotion.latestVerifiedGameplayCapturePreferredOverStaticCover,true);
+  assert.equal(policy.homepagePromotion.updateAsSoonAsVerifiedRecordAvailable,true);
+  assert.equal(policy.homepagePromotion.nativeGameplayMediaOnly,true);
+  assert.equal(policy.homepagePromotion.webGameplayMediaIgnored,true);
+  assert.equal(policy.homepagePromotion.generatedIndex,'homepage-runtime-media.json');
+  assert.equal(policy.motionMedia.enabled,true);
+  assert.equal(policy.captureRules.motionClipMustHaveCoreMotionFocus,true);
+  assert.ok(policy.motionMedia.coreMotionPriority.includes('ATTACK_HIT_IMPACT'));
+  assert.ok(policy.motionMedia.coreMotionPriority.includes('GATHERING_ACTION'));
+  assert.ok(policy.motionMedia.coreMotionPriority.includes('BOSS_CORE_PATTERN'));
+  assert.equal(policy.motionMedia.homepage.onePrimaryMotionLoopPerCard,true);
+  assert.equal(policy.motionMedia.homepage.muted,true);
+  assert.equal(policy.motionMedia.homepage.playsInline,true);
+  assert.equal(policy.platformCapture.UNITY.motionCapture.automaticScreenRecordAllowed,true);
+  assert.equal(policy.platformCapture.ROBLOX.motionCapture.unattendedStudioRecordingForbidden,true);
+  assert.equal(policy.homepagePromotion.coreMotionOnlyForAutoLoop,true);
+});

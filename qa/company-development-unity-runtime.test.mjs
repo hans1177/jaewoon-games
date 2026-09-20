@@ -191,6 +191,27 @@ test('runtime smoke launches the exact APK activity and fails fast on missing or
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_METRIC/);
 });
 
+test('Unity runtime smoke captures a short actual-runtime gameplay motion clip around input',()=>{
+  assert.match(runtimeSmokeSource,/screenrecord --bit-rate 4000000 --time-limit 8/);
+  assert.match(runtimeSmokeSource,/gameplay-motion\.mp4/);
+  assert.match(runtimeSmokeSource,/motion_capture_present/);
+  assert.match(runtimeSmokeSource,/gameplayMotionCapturePresent/);
+  const start=runtimeSmokeSource.indexOf('screenrecord --bit-rate 4000000 --time-limit 8');
+  const input=runtimeSmokeSource.indexOf('adb shell input tap "$center_x" "$primary_y"');
+  assert.ok(start>=0&&input>start,'motion capture must start before gameplay input');
+});
+
+test('Unity runtime workflow promotes verified still and motion media through reviewed PR',()=>{
+  assert.match(runtimeWorkflowSource,/runtime-gameplay-media-record\.mjs/);
+  assert.match(runtimeWorkflowSource,/--media-kind=STILL/);
+  assert.match(runtimeWorkflowSource,/--media-kind=MOTION/);
+  assert.match(runtimeWorkflowSource,/--motion-focus=PLAYER_LOCOMOTION/);
+  assert.match(runtimeWorkflowSource,/gh pr create/);
+  assert.match(runtimeWorkflowSource,/gh pr checks/);
+  assert.match(runtimeWorkflowSource,/gh pr merge/);
+  assert.match(runtimeWorkflowSource,/Direct main write: NO/);
+});
+
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{
   assert.match(regressionSource,/Download exact upstream build artifact/);
   assert.match(regressionSource,/actual.*expected/s);

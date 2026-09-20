@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 232,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -11173,6 +11173,139 @@
       "security": "SECURITY_FINDING_REMEDIATION_AND_RESCAN_EVIDENCE",
       "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
       "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
+    }
+  },
+  "runtimeGameplayMediaPolicy": {
+    "version": 2,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "purpose": "PUBLISH_FRESH_VERIFIED_ACTUAL_GAMEPLAY_MEDIA_AFTER_GRAPHICS_OR_PRESENTATION_UPDATES",
+    "appliesTo": [
+      "UNITY",
+      "ROBLOX",
+      "FORTNITE_UEFN"
+    ],
+    "triggers": [
+      "GRAPHICS_ASSET_UPDATE_VERIFIED",
+      "PRESENTATION_OR_MOTION_UPDATE_VERIFIED",
+      "MAJOR_VISUAL_UPDATE_VERIFIED",
+      "NEW_RELEASE_OR_REDEPLOY_VERIFIED"
+    ],
+    "captureRules": {
+      "actualRuntimeOnly": true,
+      "exactVerifiedSourceOrArtifactRequired": true,
+      "syntheticOrMockGameplayScreenshotForbidden": true,
+      "promotionalConceptArtCannotBeLabeledGameplay": true,
+      "sourceRevisionRequired": true,
+      "artifactIdentityRequired": true,
+      "sha256Required": true,
+      "runtimeVerificationPassRequired": true,
+      "canonicalRecordDomain": "runtime-media",
+      "canonicalMediaRoot": "assets/runtime-evidence",
+      "webGameplayScreenshotNotRequired": true,
+      "webRemainsValidationAndPlayableLinkSurface": true,
+      "allowedStillFormats": [
+        "PNG",
+        "JPG",
+        "JPEG",
+        "WEBP"
+      ],
+      "allowedMotionFormats": [
+        "MP4",
+        "WEBM",
+        "GIF",
+        "ANIMATED_WEBP"
+      ],
+      "motionClipMustShowRealGameplay": true,
+      "motionClipMustNotBeMenuOnly": true,
+      "motionClipMustHaveCoreMotionFocus": true
+    },
+    "platformCapture": {
+      "UNITY": {
+        "automaticCaptureAllowed": true,
+        "source": "ACTUAL_ANDROID_RUNTIME_OR_APPROVED_NATIVE_RUNTIME",
+        "afterInstallAndLaunchVerification": true,
+        "motionCapture": {
+          "automaticScreenRecordAllowed": true,
+          "source": "ACTUAL_ANDROID_RUNTIME",
+          "captureDuringGameplayInputWindow": true,
+          "publishOnlyAfterRuntimePass": true
+        }
+      },
+      "ROBLOX": {
+        "automaticUnattendedStudioCaptureAllowed": false,
+        "source": "APPROVED_ACTUAL_ROBLOX_RUNTIME_SESSION",
+        "approvedHumanSessionMayCapture": true,
+        "captureMayComeFromPublishedClientOrApprovedStudioRuntime": true,
+        "afterRuntimeAndIndependentQaEvidence": true,
+        "motionCapture": {
+          "allowed": true,
+          "unattendedStudioRecordingForbidden": true,
+          "approvedActualRuntimeSessionRequired": true,
+          "publishedClientOrApprovedStudioRuntimeAllowed": true,
+          "sourceAndArtifactBindingRequired": true
+        }
+      },
+      "FORTNITE_UEFN": {
+        "automaticCaptureAllowed": false,
+        "source": "APPROVED_ACTUAL_UEFN_OR_PUBLISHED_RUNTIME_SESSION",
+        "ownerHoldRespected": true
+      }
+    },
+    "homepagePromotion": {
+      "enabled": true,
+      "latestVerifiedGameplayCapturePreferredOverStaticCover": true,
+      "updateAsSoonAsVerifiedRecordAvailable": true,
+      "staleScreenshotSupersededByNewerVerifiedCapture": true,
+      "brokenOrUnverifiedMediaNeverPublished": true,
+      "releaseLinkAndScreenshotMustRemainPlatformAware": true,
+      "generatedIndex": "homepage-runtime-media.json",
+      "syncTool": "tools/homepage-runtime-media-sync.mjs",
+      "nativeGameplayMediaOnly": true,
+      "webGameplayMediaIgnored": true,
+      "motionMediaPreferredWhenVerified": true,
+      "stillMediaRemainsPosterAndFallback": true,
+      "coreMotionOnlyForAutoLoop": true
+    },
+    "motionMedia": {
+      "enabled": true,
+      "purpose": "SHOW_REAL_CORE_GAMEPLAY_MOTION_NOT_DECORATIVE_MENU_ACTIVITY",
+      "preferredDurationSeconds": [
+        3,
+        8
+      ],
+      "coreMotionPriority": [
+        "ATTACK_HIT_IMPACT",
+        "ENEMY_ATTACK_OR_BEHAVIOR",
+        "ENEMY_DEATH_OR_REACTION",
+        "BOSS_CORE_PATTERN",
+        "GATHERING_ACTION",
+        "CRAFTING_ACTION",
+        "SKILL_OR_ULTIMATE",
+        "PLAYER_LOCOMOTION",
+        "ENVIRONMENT_REACTION",
+        "COOP_OR_MULTIPLAYER_INTERACTION"
+      ],
+      "lowValueRepresentativeMotionForbidden": [
+        "MENU_OPEN_CLOSE_ONLY",
+        "IDLE_UI_ONLY",
+        "LOADING_SCREEN",
+        "STATIC_CAMERA_PAN_WITHOUT_GAMEPLAY",
+        "UNVERIFIED_CINEMATIC_ONLY"
+      ],
+      "homepage": {
+        "onePrimaryMotionLoopPerCard": true,
+        "autoplay": true,
+        "muted": true,
+        "loop": true,
+        "playsInline": true,
+        "controls": false,
+        "posterUsesLatestVerifiedStillWhenAvailable": true,
+        "stillFallbackRequired": true,
+        "preload": "metadata",
+        "mobileBandwidthAware": true,
+        "mayPauseOffscreen": true
+      },
+      "updateRule": "NEWER_VERIFIED_CORE_MOTION_CAPTURE_SUPERSEDES_OLDER_MATCHING_PLATFORM_CAPTURE"
     }
   }
 }

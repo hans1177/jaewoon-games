@@ -138,6 +138,19 @@ center_x=$((screen_w / 2))
 primary_y=$((screen_h * 68 / 100))
 secondary_y=$((screen_h * 84 / 100))
 
+motion_remote='/sdcard/jaewoon-gameplay-motion.mp4'
+motion_capture_started=false
+motion_capture_pid=''
+adb shell rm -f "$motion_remote" >/dev/null 2>&1 || true
+if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
+  if adb shell 'command -v screenrecord >/dev/null 2>&1'; then
+    adb shell screenrecord --bit-rate 4000000 --time-limit 8 "$motion_remote" >/dev/null 2>&1 &
+    motion_capture_pid=$!
+    motion_capture_started=true
+    sleep 1
+  fi
+fi
+
 if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
   gameplay_input_delivered=true
   adb shell input tap "$center_x" "$primary_y" || true
@@ -148,6 +161,14 @@ if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
   sleep 1
   adb shell input tap "$center_x" "$secondary_y" || true
 fi
+
+if [[ "$motion_capture_started" == "true" && -n "$motion_capture_pid" ]]; then
+  wait "$motion_capture_pid" || true
+  adb pull "$motion_remote" "$out_dir/gameplay-motion.mp4" >/dev/null 2>&1 || true
+  adb shell rm -f "$motion_remote" >/dev/null 2>&1 || true
+fi
+motion_capture_present=false
+if [[ -s "$out_dir/gameplay-motion.mp4" ]]; then motion_capture_present=true; fi
 
 if [[ "$seed_technical" == "true" && "$gameplay_input_delivered" == "true" ]]; then
   for _ in $(seq 1 15); do
@@ -201,13 +222,13 @@ if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
   fi
 fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" <<'PY'
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" "$motion_capture_present" <<'PY'
 import json,sys,datetime,pathlib
 (out,apk,package,pid,runtime_pass,fatal,update_pass,launch_command_pass,
  seed_technical,boot_observed,action_observed,save_observed,metric_observed,
  runtime_ready_timeout,gameplay_input_delivered,launch_activity,launch_component,
  process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing,
- runtime_abi_compatible,device_api,device_abis)=sys.argv[1:]
+ runtime_abi_compatible,device_api,device_abis,motion_capture_present)=sys.argv[1:]
 flag=lambda value:value.lower()=='true'
 seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
 data={
@@ -234,6 +255,7 @@ data={
   'fatalRuntimeErrorDetected':fatal=='1',
   'runtimeReadyTimeout':flag(runtime_ready_timeout),
   'gameplayInputDelivered':flag(gameplay_input_delivered),
+  'gameplayMotionCapturePresent':flag(motion_capture_present),
   'developmentSeedRuntime':{
     'required':flag(seed_technical),
     'bootObserved':flag(boot_observed),
@@ -259,7 +281,7 @@ data={
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
-    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','screenshot':'screenshot.png','gameplayMotion':'gameplay-motion.mp4','activity':'activity.txt','packageDump':'package.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
