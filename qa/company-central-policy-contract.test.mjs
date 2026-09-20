@@ -12,6 +12,8 @@ const flow=readText('COMPANY_FLOW.md');
 const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
+const architecture=readJson('company-learning/company-architecture-map.json');
+const vibeRuntime=readJson('vibe2-runtime.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
@@ -408,6 +410,37 @@ test('Vibe brain is always running and uses verified checkpoints instead of term
   assert.equal(roadmap.vibeExecutionLaneContract.signalCirculation.gameDevelopmentSignalHasNoTerminalDoneState,true);
   assert.ok(!roadmap.assistantRoadmapOrchestration.workRequestContract.claimStateValues.includes('DONE'));
   assert.ok(roadmap.assistantRoadmapOrchestration.workRequestContract.claimStateValues.includes('VERIFIED_CHECKPOINT'));
+
+  const practice=roadmap.developmentLifecycleMachine.learningMotor.realWebArtifactInfinitePractice;
+  assert.equal(practice.enabled,true);
+  assert.equal(practice.primaryPracticeSurface,'ACTUAL_WEB_GAME_SOURCE_AND_VERIFIED_RUNTIME_RESULT');
+  assert.equal(practice.sourceFreePracticeRole,'SECONDARY_ANALYSIS_ONLY');
+  assert.equal(practice.sourceFreePracticeCannotReplaceRealWebArtifactPractice,true);
+  assert.equal(practice.verifiedBetterArtifactBecomesNextBaseline,true);
+  assert.equal(practice.terminalPracticeCompletionForbidden,true);
+  assert.equal(practice.productionPromotionUsesExistingReleaseGatesOnly,true);
+  assert.equal(practice.directMainWriteForbidden,true);
+  assert.equal(brain.livenessContract.realArtifactPracticeLoopIsCausalSignalSource,true);
+  assert.equal(brain.livenessContract.verifiedImprovementMustEmitNextPracticeOrDevelopmentEvent,true);
+
+  const archPractice=architecture.learningClosedLoopTopology.realWebArtifactPracticeLoop;
+  assert.equal(archPractice.executionLane,'GAME_PRIMARY');
+  assert.equal(archPractice.baselineAdvanceRule,'VERIFIED_BETTER_ONLY');
+  assert.equal(archPractice.repeatMode,'UNBOUNDED_CAUSAL_GENERATIONS');
+  assert.equal(archPractice.sourceFreeLearningIdleMayReplaceRealArtifactPractice,false);
+  assert.equal(archPractice.productionPassAuthority,'CANONICAL_QA_AND_REVIEW_ONLY');
+  assert.equal(architecture.neuralWorkGraphTopology.circulationModel.realArtifactPracticeRule,'ACTUAL_WEB_RESULT_TO_VERIFIED_COMPARISON_TO_NEXT_CAUSAL_GENERATION; VERIFIED_BETTER_RESULT_BECOMES_NEXT_BASELINE');
+
+  const runtimePractice=vibeRuntime.continuous.realWebArtifactPracticeLoop;
+  assert.equal(vibeRuntime.version>=17,true);
+  assert.equal(runtimePractice.enabled,true);
+  assert.equal(runtimePractice.lane,'GAME_PRIMARY');
+  assert.equal(runtimePractice.repeatOnVerifiedImprovement,true);
+  assert.equal(runtimePractice.verifiedBetterArtifactBecomesNextBaseline,true);
+  assert.equal(runtimePractice.terminalCompletion,false);
+  assert.equal(runtimePractice.sourceFreeLearningIdleSecondary,true);
+  assert.equal(runtimePractice.sourceFreeLearningIdleMayWriteGameSource,false);
+  assert.equal(vibeRuntime.continuous.executionLanes.LEARNING_IDLE.sourceWriteAllowed,false);
 });
 
 test('Director supervisor consumes canonical machine policy and treats COMPANY_FLOW as legacy mirror only',()=>{
