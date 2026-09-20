@@ -99,6 +99,7 @@ test('explicit independently verified responsible system can verify root cause w
   assert.equal(review.rootCause.state,'ROOT_CAUSE_VERIFIED');
   assert.equal(review.rootCause.rootCauseVerified,true);
   assert.equal(review.rootCause.responsibleSystem,'GAME_RUNTIME');
+  assert.equal(review.rootCause.sampleId,'neural-root-task|primary|vibe2/candidate/neural-root-task-primary-run');
   assert.equal(review.rootCause.predictedSystemConsistentWithVerified,true);
   assert.equal(review.rootCause.learningEligible,false);
   assert.equal(review.rootCause.actionFiringAllowed,false);
@@ -111,6 +112,7 @@ test('explicit independently verified responsible system can verify root cause w
   const encoded=result.queue.tasks[0].evidence.find(value=>value.startsWith('neural-root-cause:'));
   assert.ok(encoded);
   const payload=JSON.parse(decodeURIComponent(encoded.slice('neural-root-cause:'.length)));
+  assert.equal(payload.sampleId,'neural-root-task|primary|vibe2/candidate/neural-root-task-primary-run');
   assert.equal(payload.rootCauseVerified,true);
   assert.equal(payload.phase2AuthorityEligible,false);
 });
