@@ -9,7 +9,7 @@ function task(){
     id:'SYS-ARCH-demo-v1',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
     executionLane:'RECOVERY_FAST',sourceRoot:'.',responsibleFiles:['tools/vibe2-source-worker.mjs','qa/vibe2-source-worker.test.mjs'],
     priority:'high',releaseState:'other',status:'queued',retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,systemSteward:true,
-    goal:'repair repeated structural bottleneck',evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed'],
+    goal:'repair repeated structural bottleneck',evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed','architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-allowed:NO'],
     completionCriteria:['RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED']
   };
 }
@@ -21,6 +21,8 @@ test('system architecture contract restricts exact repo system paths',()=>{
   const c=assertSystemArchitectureTask(task());
   assert.equal(c.valid,true);
   assert.equal(c.systemConstructionAllowed,true);
+  assert.equal(c.neuralExpansionPhase,'LAST_STAGE_ONLY');
+  assert.equal(c.neuralExpansionAllowed,false);
 });
 test('system architecture task bypasses game design pipeline but keeps central work contract',()=>{
   const t=task();
@@ -35,6 +37,8 @@ test('system architecture task bypasses game design pipeline but keeps central w
   assert.equal(order.designIntelligence.required,false);
   assert.equal(order.workerPolicy.systemArchitectureEvolution,true);
   assert.equal(order.workerPolicy.authorityExpansionAllowed,false);
+  assert.equal(order.workerPolicy.neuralExpansionPhase,'LAST_STAGE_ONLY');
+  assert.equal(order.workerPolicy.neuralExpansionAllowed,false);
   assert.equal(order.compiledWorkContract.invariants.authorityMustRemainUnchanged,true);
   assert.equal(order.compiledWorkContract.invariants.qualityEvidenceAndSecurityGatesMustRemainUnchanged,true);
   assert.deepEqual(order.source.responsibleFiles,t.responsibleFiles);
