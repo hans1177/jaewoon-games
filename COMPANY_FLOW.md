@@ -2237,3 +2237,39 @@ platformPresentationAndWeather:
   executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
   authorityExpansion: false
 
+webValidationContractAdapter:
+  version: 1
+  authority: OWNER_DIRECTIVE_2026-09-20
+  centralContract: company-learning/platform-release-roadmap.json#webValidationBottleneckAdapterContract
+  bottleneck:
+    developmentQueueGames: 14
+    webVibeRepairRequired: 14
+    webPassed: 0
+    nativeStarted: 0
+  deterministicAdapter:
+    first: true
+    sourceWrite: false
+    inferFromActualControlsHandlersStateAndWorldSignals: true
+    output: EXACT_SCOPE_TO_REAL_MECHANIC_BINDING_PLAN
+    noSyntheticGameplayEvidence: true
+    noTestHarnessControls: true
+    noGateWeakening: true
+  externalAiAdvisory:
+    enabled: true
+    providerPriority:
+      - GEMINI
+      - VIBE_LOCAL_OLLAMA
+    cloudProviderRequiresConfiguredSecret: true
+    ambiguousMappingsOnly: true
+    directGameSourceWrite: false
+    directProductionPass: false
+    directQueueMutation: false
+    mustBeRecheckedByDeterministicAndRuntimeQa: true
+    cloudFailureFallsBackWithoutBlocking: true
+  execution:
+    authority: EXISTING_WAVE_SCHEDULER_ONLY
+    maxConcurrentGames: 20
+    firstPilotGameId: fantasy-survival
+    generalizeAfterPilotQa: true
+  authorityExpansion: false
+
