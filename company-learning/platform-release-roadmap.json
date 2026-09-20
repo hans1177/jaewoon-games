@@ -1,5 +1,5 @@
 {
-  "version": 195,
+  "version": 196,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6936,32 +6936,44 @@
         "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d",
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
         "neuralExecutionAuthority": false,
-        "nextGate": "CONTINUE_PRODUCTION_SHADOW_OBSERVATION_AND_VERIFY_SOURCE_CANDIDATE_GENERATION_BOTTLENECK_AND_ZERO_UNAUTHORIZED_FIRE"
+        "nextGate": "OBSERVE_FIRST_POST_1864_PRODUCTION_WAVE_AND_VERIFY_DIRECT_FAILURE_STAGE_CLASSIFICATION_DUPLICATE_ZERO_AND_UNAUTHORIZED_FIRE_ZERO"
       },
       "latestProductionRuntimeObservation": {
         "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
         "dedupeKey": "neural-production-shadow-runtime-observation",
-        "observedAt": "2026-09-20T03:15:00Z",
-        "documentSyncBaseMainHead": "8847217bc22b6135f6eec6e3cdb3d6b0666527cf",
+        "observedAt": "2026-09-20T03:25:00Z",
+        "documentSyncBaseMainHead": "9ce184b18872013ed277a658de65644ecef3c6e8",
         "queueBranch": "vibe2-unreal-core",
-        "queueBlobSha": "1d259511f7cf10b520cc1c30a0da9a10fa62a7b0",
+        "queueBlobSha": "005492e7fdd21dde5f164fd9319d8d6c00349097",
         "currentQueueSnapshot": {
           "totalTasks": 105,
           "statusCounts": {
             "cancelled": 63,
             "done": 32,
             "blocked": 1,
-            "running": 5,
-            "queued": 4
+            "running": 9
           },
-          "latestInProgressWave": {
-            "runId": 35485977606,
-            "state": "WORKERS_IN_PROGRESS_AT_OBSERVATION",
-            "reservedTaskCount": 1,
-            "workerFanOut": 3,
-            "reservePassed": true,
-            "modelCachePassed": true,
-            "fanInObserved": false
+          "activeReservationRuns": {
+            "35486188114": {
+              "taskCount": 3,
+              "state": "RUNNING",
+              "reservedAt": "2026-09-20T03:17:44Z"
+            },
+            "35486412071": {
+              "taskCount": 4,
+              "state": "RUNNING",
+              "reservedAt": "2026-09-20T03:24:42Z"
+            },
+            "35486429764": {
+              "taskCount": 1,
+              "state": "RUNNING",
+              "reservedAt": "2026-09-20T03:23:38Z"
+            },
+            "35484753835": {
+              "taskCount": 1,
+              "state": "AWAITING_SUPERVISED_REVIEW",
+              "reservedAt": "2026-09-20T02:44:55Z"
+            }
           }
         },
         "latestCompletedPostV2Wave": {
@@ -6992,12 +7004,12 @@
           "unauthorizedAuthorityBitFireCount": 0
         },
         "durableQueueEvidenceSnapshot": {
-          "shadowEventRows": 255,
+          "shadowEventRows": 284,
           "rawVersion1EventRows": 239,
-          "eventIdentityVersion2Rows": 16,
+          "eventIdentityVersion2Rows": 45,
           "legacyV1SampleOnlyEventIdCollisionKeys": 47,
           "normalizedEventIdentityDuplicateKeys": 0,
-          "waveAuditRows": 51,
+          "waveAuditRows": 56,
           "waveAuditDuplicateSampleKeys": 0,
           "exactPerTaskEvidenceDuplicateRows": 0,
           "unauthorizedAuthorityBitFireCount": 0,
@@ -7012,7 +7024,120 @@
           "neuralLockOrPolicyMutationAuthority": false,
           "neuralAutomaticLearningTuningPromotion": false
         },
-        "nextGate": "CONTINUE_PRODUCTION_SHADOW_OBSERVATION_AND_VERIFY_SOURCE_CANDIDATE_GENERATION_BOTTLENECK_AND_ZERO_UNAUTHORIZED_FIRE"
+        "nextGate": "OBSERVE_FIRST_POST_1864_PRODUCTION_WAVE_AND_VERIFY_DIRECT_FAILURE_STAGE_CLASSIFICATION_DUPLICATE_ZERO_AND_UNAUTHORIZED_FIRE_ZERO",
+        "latestCompletedTelemetryBeforeRepair": {
+          "runId": 35485904220,
+          "workerCount": 12,
+          "effectiveMax": 20,
+          "actualPeakConcurrency": 12,
+          "effectivePeakUtilizationPct": 60,
+          "failureRatePct": 8.33,
+          "pressureLevel": "LOW",
+          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION"
+        },
+        "mixedFailureClassificationIncident": {
+          "runId": 35485787889,
+          "fanInPassed": true,
+          "shadowEventIdentityVersion": 2,
+          "shadowEventRows": 9,
+          "normalizedEventIdentityDuplicateKeys": 0,
+          "unauthorizedAuthorityBitFireCount": 0,
+          "telemetryReportedBottleneckBeforeRepair": "WORKER_FAILURES_UNCLASSIFIED",
+          "directFailureEvidence": {
+            "sourceCandidateGeneration": 3,
+            "sourceGenerationClasses": {
+              "TIMEOUT": 1,
+              "NO_OP": 2
+            },
+            "incrementalQa": 3,
+            "performanceSanity": 3
+          },
+          "rootCause": "TELEMETRY_ONLY_CLASSIFIED_DIRECT_SOURCE_FAILURE_STAGE_AND_OMITTED_DIRECT_QA_AND_PERFORMANCE_FAILURE_STAGES"
+        },
+        "mixedWorkerBottleneckClassificationRepair": {
+          "state": "MERGED_MAIN",
+          "sourcePr": 1864,
+          "mergedCommit": "9ce184b18872013ed277a658de65644ecef3c6e8",
+          "responsibleSystem": "tools/vibe2-parallelism-telemetry.mjs::computeParallelismTelemetry",
+          "triggerRun": 35485787889,
+          "triggerTelemetry": {
+            "workerCount": 9,
+            "actualPeakConcurrency": 9,
+            "failureRatePct": 100,
+            "sourceGenerationFailureCount": 3,
+            "sourceGenerationFailureClasses": {
+              "TIMEOUT": 1,
+              "NO_OP": 2
+            },
+            "incrementalQaFailureWorkers": 3,
+            "performanceSanityFailureWorkers": 3,
+            "priorReportedBottleneck": "WORKER_FAILURES_UNCLASSIFIED"
+          },
+          "correction": {
+            "directWorkerFailureStages": [
+              "SOURCE_CANDIDATE_GENERATION",
+              "INCREMENTAL_QA",
+              "PERFORMANCE_SANITY"
+            ],
+            "minimumDirectFailureCoverage": "AT_LEAST_HALF_OF_FAILED_WORKERS",
+            "sourceDominantRulePreserved": true,
+            "unclassifiedFallbackPreservedForInsufficientDirectEvidence": true,
+            "adaptiveCapPolicyChanged": false,
+            "queueMutationAuthorityChanged": false,
+            "executionAuthorityChanged": false
+          },
+          "ci": {
+            "vibe2CoreQa": "PASS",
+            "integratedRegression": "PASS",
+            "vibeQa": "PASS",
+            "vibe3EngineContract": "PASS",
+            "companyEvolutionQa": "PASS",
+            "companySecurityImmuneSystem": "PASS"
+          },
+          "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
+        }
+      },
+      "mixedWorkerBottleneckClassification": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1864,
+        "mergedCommit": "9ce184b18872013ed277a658de65644ecef3c6e8",
+        "responsibleSystem": "tools/vibe2-parallelism-telemetry.mjs::computeParallelismTelemetry",
+        "triggerRun": 35485787889,
+        "triggerTelemetry": {
+          "workerCount": 9,
+          "actualPeakConcurrency": 9,
+          "failureRatePct": 100,
+          "sourceGenerationFailureCount": 3,
+          "sourceGenerationFailureClasses": {
+            "TIMEOUT": 1,
+            "NO_OP": 2
+          },
+          "incrementalQaFailureWorkers": 3,
+          "performanceSanityFailureWorkers": 3,
+          "priorReportedBottleneck": "WORKER_FAILURES_UNCLASSIFIED"
+        },
+        "correction": {
+          "directWorkerFailureStages": [
+            "SOURCE_CANDIDATE_GENERATION",
+            "INCREMENTAL_QA",
+            "PERFORMANCE_SANITY"
+          ],
+          "minimumDirectFailureCoverage": "AT_LEAST_HALF_OF_FAILED_WORKERS",
+          "sourceDominantRulePreserved": true,
+          "unclassifiedFallbackPreservedForInsufficientDirectEvidence": true,
+          "adaptiveCapPolicyChanged": false,
+          "queueMutationAuthorityChanged": false,
+          "executionAuthorityChanged": false
+        },
+        "ci": {
+          "vibe2CoreQa": "PASS",
+          "integratedRegression": "PASS",
+          "vibeQa": "PASS",
+          "vibe3EngineContract": "PASS",
+          "companyEvolutionQa": "PASS",
+          "companySecurityImmuneSystem": "PASS"
+        },
+        "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
       }
     }
   },
