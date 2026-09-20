@@ -1,5 +1,5 @@
 {
-  "version": 160,
+  "version": 161,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3758,25 +3758,28 @@
     }
   },
   "changeRecord": {
-    "id": "SUPERVISED_WEB_FIRST_PILOT_BUG_DEFENSE_2026-09-20",
+    "id": "ASSISTANT_VIBE_COAUTHORING_TRACE_REQUIRED_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "SUPERVISED_WEB_NO_BACKLOG_STALL_2026-09-20",
-    "reason": "START FIRST ASSISTANT+VIBE WEB COAUTHORING PILOT. REJECT THE EXISTING NO-OP BUG-DEFENSE CANDIDATE, RECORD THE FAILURE AS VERIFIED NEGATIVE EXPERIENCE, AND REQUEUE THE SAME TASK AS A NON-PREEMPTIVE SUPERVISED REAL-GAME BUILD.",
+    "previousChangeRecordId": "SUPERVISED_WEB_FIRST_PILOT_BUG_DEFENSE_2026-09-20",
+    "reason": "OWNER REQUIRES EVERY ASSISTANT-LED VIBE WEB COAUTHORING ACTION TO BE DOCUMENTED AS TRACEABLE LEARNING EVIDENCE. RAW ACTION TRACE IS PROVENANCE ONLY; VERIFIED PASS/REVISE/DROP MUST REUSE THE EXISTING SUPERVISION REVIEW -> VIBE EXPERIENCE MEMORY -> CANONICAL TRAINING PIPELINE.",
     "invariants": {
-      "unrelatedWorkContinues": true,
-      "ownerImmediatePreemptionDisabledForPilot": true,
-      "verifiedNegativeLearningRecorded": true,
-      "newCandidateMustBeReviewedBeforePromotion": true,
-      "sameGameSourceLockedDuringReview": true,
-      "qaGatesNotWeakened": true
+      "everyAssistantCoauthoringActionDocumented": true,
+      "rawTraceDoesNotAutoPromote": true,
+      "verifiedOutcomeRequiredForReusableLearning": true,
+      "existingExperienceMemoryReused": true,
+      "canonicalTrainingPipelineReused": true,
+      "shadowLearningPipelineForbidden": true,
+      "qaGatesNotWeakened": true,
+      "authorityExpansionForbidden": true,
+      "protectedGameplayMutationStillRequiresOwnerAuthorization": true
     },
     "next": [
-      "TRIGGER_VIBE2_FROM_THIS_ROADMAP_PUSH",
-      "GENERATE_NEW_BUG_DEFENSE_SUPERVISED_CANDIDATE",
-      "SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW",
-      "LEARN_PASS_OR_REVISE_RESULT",
-      "KEEP_PARALLEL_REFILL_ACTIVE"
+      "KEEP_WRITING_ASSISTANT_COAUTHORING_TRACE_FOR_EVERY_SOURCE_REVIEW_CHANGE_QA_AND_DECISION",
+      "VERIFY_BUG_DEFENSE_PR_1743_CI",
+      "RUN_SUPERVISOR_PLAYABILITY_REVIEW_ON_EXACT_CANDIDATE",
+      "PROMOTE_PASS_OR_REVISE_ONLY_AFTER_VERIFIED_EVIDENCE",
+      "DISTILL_REUSABLE_AND_AVOID_PATTERNS_THROUGH_EXISTING_EXPERIENCE_CONTROL"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5721,11 +5724,12 @@
       "runtimeFlow": [
         "planner marks major Web build supervised",
         "Vibe creates isolated candidate",
+        "assistant records source review/change/QA/decision in company-learning/assistant-vibe-coauthoring-log.json",
         "fan-in QA verifies candidate identity and roles",
         "assistant supervision records verified PASS/REVISE/DROP with rationale",
         "fan-in converts supervisionReview into experienceReviews",
         "vibe2-experience-control batch promotes verified positive or negative learning",
-        "future planning/worker retrieval may reuse patterns but cannot bypass gates"
+        "future planning/worker retrieval may reuse verified patterns but cannot bypass gates"
       ],
       "implementationCommits": {
         "planner": "b0e6cd0275c18f5266cfae09c080fc41f7b526e2",
@@ -5738,6 +5742,50 @@
         "plannerTest": "c652030a115bf00799d393d4a2bd4deba671ea22",
         "releaseLearningTest": "5795faf3ecfdfa67e2a4ad5edc9b27d956c7cb77",
         "experienceLearningTest": "ac5dd717a9bae39184e7fd6be90257c5ef89c885"
+      },
+      "assistantActionTrace": {
+        "required": true,
+        "store": "company-learning/assistant-vibe-coauthoring-log.json",
+        "scope": [
+          "SOURCE_REVIEW",
+          "DESIGN_TO_SOURCE_GAP_ANALYSIS",
+          "SOURCE_CHANGE",
+          "PIPELINE_BOTTLENECK_REPAIR",
+          "QA_OR_REGRESSION_RESULT",
+          "SUPERVISOR_PASS_REVISE_DROP",
+          "RELEASE_OR_PROMOTION_DECISION"
+        ],
+        "minimumFields": [
+          "id",
+          "date",
+          "gameId",
+          "actionType",
+          "problem",
+          "decision",
+          "change",
+          "evidence",
+          "learningState"
+        ],
+        "writeTiming": "SAME_WORK_SESSION_AS_ASSISTANT_ACTION",
+        "rawTraceAuthority": "PROVENANCE_ONLY",
+        "rawTraceMayEnterRetrieval": false,
+        "rawTraceMayIncreaseMastery": false,
+        "rawTraceMayEnterCanonicalTraining": false,
+        "verifiedPromotionPath": [
+          "assistant trace",
+          "verified supervisionReview",
+          "fan-in experienceReviews",
+          "tools/vibe2-experience-control.mjs",
+          ".vibe2/experience.json",
+          "existing canonical distillation pipeline when its independent gates are satisfied"
+        ],
+        "positivePromotionRequires": "VERIFIED_PASS_WITH_ENGINE_QA_AND_MINIMUM_TWO_EVIDENCE_ITEMS",
+        "negativePromotionRequires": "VERIFIED_REVISE_OR_DROP_WITH_FAILURE_CAUSE_AND_MINIMUM_TWO_EVIDENCE_ITEMS",
+        "candidateGenerationAloneReusable": false,
+        "authorityExpandedByTrace": false,
+        "implementationEvidence": {
+          "traceLogCommit": "9f59d01e09ed9ad8e67aec5cb0565b679e0605ec"
+        }
       }
     },
     "throughputContract": {
@@ -5811,7 +5859,26 @@
         "RETRY_FLOW",
         "VERSIONED_SAVE_OR_SETTINGS_PERSISTENCE_WHEN_USED",
         "MOBILE_ONE_HAND_GAMEPLAY"
-      ]
+      ],
+      "assistantCandidate": {
+        "branch": "assistant/supervised-bug-defense-v1",
+        "candidateCommit": "185c418c5458e14147b360af4bf3f2f01d6577fc",
+        "draftPr": 1743,
+        "state": "CI_AND_SUPERVISOR_REVIEW_PENDING",
+        "mainPromotionAllowed": false,
+        "staticSourceReview": {
+          "validationHarnessAbsent": true,
+          "pointerTouchSpatialPlacement": true,
+          "habitatPositionState": true,
+          "ecologicalCounterDamageAndStatus": true,
+          "enemyMovementAndTargeting": true,
+          "pollenEconomyAndEvolution": true,
+          "reachableWinLossAndRetry": true,
+          "versionedPersistence": true,
+          "duplicateFunctionDeclarations": false
+        },
+        "learningTrace": "company-learning/assistant-vibe-coauthoring-log.json#assistant_bug_defense_playable_candidate_v1_20260920"
+      }
     }
   }
 }
