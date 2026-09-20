@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
+import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
@@ -73,6 +74,22 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))]
       });
       for(const marker of neuralRootCauseEvidence(rootCause))evidence.add(marker);
+      const neuralEventRoute=simulateNeuralEventRoute({
+        event:{
+          type:'CI_RESULT',
+          taskId:clean(task.id),
+          gameId:clean(task.gameId),
+          outcome:'PASS',
+          stage:'FAN_IN_REVIEW',
+          evidence:[...evidence]
+        },
+        diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
+        rootCause,
+        policyFresh:!evidence.has('CENTRAL_POLICY_STALE_OR_INVALID'),
+        lockConflict:false,
+        securityBlocked:evidence.has('SECURITY_POLICY_BLOCK')
+      });
+      for(const marker of neuralEventRouteEvidence(neuralEventRoute))evidence.add(marker);
       const supervised=task?.supervisionContract?.required===true
         ||evidence.has('supervised-web-build:required')
         ||clean(task?.productionMode)==='SUPERVISED_VIBE_COAUTHORING';
@@ -87,11 +104,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('supervised-promotion:BLOCKED');
         evidence.add(supervisionVerified?`supervised-review:${supervisionDecision||'REVISE'}`:'supervised-review:REQUIRED');
         const releaseBlocker=supervisionVerified&&supervisionDecision&&supervisionDecision!=='PASS'?`SUPERVISED_${supervisionDecision}`:'SUPERVISED_APPROVAL_REQUIRED';
-        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause});
+        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause,neuralEventRoute});
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
-      reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause});
+      reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
