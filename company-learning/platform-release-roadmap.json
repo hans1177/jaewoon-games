@@ -1,5 +1,5 @@
 {
-  "version": 213,
+  "version": 214,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8525,6 +8525,73 @@
           ],
           "sourcePr": 1984
         }
+      },
+      "incrementalQaBottleneckRepair": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "triggerRunId": 35497006959,
+        "observed": {
+          "workerCount": 12,
+          "effectiveGamePrimaryMax": 20,
+          "actualPeakConcurrency": 12,
+          "effectivePeakUtilizationPct": 60,
+          "failureRatePct": 91.67,
+          "bottleneck": "INCREMENTAL_QA"
+        },
+        "repeatedVerifiedFailures": [
+          {
+            "diagnostic": "INTERVAL_CLEANUP_RISK",
+            "file": "rpg.html",
+            "gameId": "daechung-rpg",
+            "candidateFailures": 3
+          },
+          {
+            "diagnostic": "TOUCH_ACTION_UNSPECIFIED",
+            "file": "index.html",
+            "gameId": "bug-defense",
+            "candidateFailures": 3
+          }
+        ],
+        "rootCause": "REPRODUCED_CAUSAL_DIAGNOSTIC_WAS_GUIDANCE_ONLY_AND_DID_NOT_OWN_THE_FIRST_EXACT_SOURCE_EDIT_ANCHOR",
+        "correction": {
+          "deterministicPrepatchRescanPreserved": true,
+          "diagnosticIdentityPreserved": [
+            "type",
+            "file",
+            "line",
+            "needle",
+            "microTask",
+            "verifiedResponsibleSystem"
+          ],
+          "firstGenerationRoute": "DIAGNOSTIC_EXACT_ANCHOR_JSON_REPLACE_ONLY",
+          "generationStagePostconditionBeforeIncrementalQa": true,
+          "intervalCleanupPostcondition": "REAL_CLEAR_INTERVAL_LIFECYCLE_PATH_REQUIRED",
+          "touchActionPostcondition": "REAL_INTERACTIVE_CSS_TOUCH_ACTION_REQUIRED",
+          "missingPostconditionAction": "RETRY_SOURCE_GENERATION_BEFORE_INCREMENTAL_QA",
+          "canonicalIncrementalQaStillRequired": true,
+          "fullRegressionStillRequired": true,
+          "qaBypassAllowed": false,
+          "writableScopeExpansionAllowed": false
+        },
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false,
+          "directMainAuthority": false,
+          "authorityChange": "NONE"
+        },
+        "responsibleSystems": [
+          "tools/vibe2-exploration-worker.mjs::verifyDiagnosticReplayBaseline",
+          "tools/vibe2-exploration-worker.mjs::compileCausalReplayPlan",
+          "tools/vibe2-source-worker.mjs::diagnosticFocusedReplaceOnlySpec",
+          "tools/vibe2-source-worker.mjs::buildDiagnosticFocusedReplaceOnlyPrompt",
+          "tools/vibe2-source-worker.mjs::evaluateDiagnosticPostcondition",
+          "tools/vibe2-incremental-qa.mjs::runCausalReplay"
+        ],
+        "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
       }
     }
   },
