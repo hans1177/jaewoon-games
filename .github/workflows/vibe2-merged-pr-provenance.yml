@@ -44,7 +44,7 @@ jobs:
           node --check tools/vibe2-merged-pr-provenance.mjs
           node --test qa/vibe2-merged-pr-provenance.test.mjs
 
-      - name: Record merged PR provenance
+      - name: Record and migrate merged PR provenance
         id: ingest
         shell: bash
         run: |
@@ -52,23 +52,24 @@ jobs:
           node source/tools/vibe2-merged-pr-provenance.mjs \
             --event="$GITHUB_EVENT_PATH" \
             --repo-root="$GITHUB_WORKSPACE/source" \
-            --ledger="$GITHUB_WORKSPACE/control/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-merged-pr-provenance.log
+            --ledger="$GITHUB_WORKSPACE/control/.vibe2/merged-pr-provenance-ledger.json" \
+            --legacy-ledger="$GITHUB_WORKSPACE/control/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-merged-pr-provenance.log
           trace_id="$(sed -n 's/^VIBE2_MERGED_PR_TRACE_ID=//p' /tmp/vibe2-merged-pr-provenance.log | tail -n1)"
           echo "trace_id=$trace_id" >> "$GITHUB_OUTPUT"
 
-      - name: Persist provenance ledger only
+      - name: Persist provenance retention files only
         shell: bash
         working-directory: control
         run: |
           set -euo pipefail
-          if [ -z "$(git status --porcelain -- .vibe2/coding-trace-ledger.json)" ]; then
+          if [ -z "$(git status --porcelain -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json)" ]; then
             echo 'VIBE2_MERGED_PR_LEDGER_WRITE=NO_CHANGE'
             exit 0
           fi
 
           git config user.name 'jaewoon-vibe2-provenance'
           git config user.email 'vibe2-provenance@users.noreply.github.com'
-          git add .vibe2/coding-trace-ledger.json
+          git add .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json
           git commit -m "vibe2: record merged PR provenance [skip ci]"
 
           pushed=0
@@ -85,4 +86,6 @@ jobs:
           echo 'VIBE2_MERGED_PR_LEDGER_WRITE=PASS'
           echo 'VIBE2_QUEUE_MUTATION=NO'
           echo 'VIBE2_WAVE_REORDER=NO'
+          echo 'VIBE2_LOCK_POLICY_MUTATION=NO'
+          echo 'VIBE2_AUTOMATIC_PROMOTION=NO'
           echo 'VIBE2_AUTHORITY_EXPANSION=NO'

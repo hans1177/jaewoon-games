@@ -232,16 +232,21 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const requiresWrite = taskRequiresWrite(task);
   if (requiresWrite && !writableTargetAllowed(runtime, task.target)) return freeze({ ...base, reason:`WRITABLE_TARGET_FORBIDDEN:${task.target}`, selectedTask:task });
 
+  const fullExperienceMemory=createVibeExperienceMemory(experience);
+  const genericLearningExperience=createVibeExperienceMemory({
+    records:(fullExperienceMemory.records||[]).filter(record=>clean(record?.taskType)!=='coding-capability-distillation')
+  });
+  const capabilityRecordsExcludedFromGenericLearning=Math.max(0,(fullExperienceMemory.records||[]).length-(genericLearningExperience.records||[]).length);
   const plan = planVibeCoreTask({
     request:task.goal, target:task.target, gameId:task.gameId, file:normalizeResponsibleFile(task),
-    experienceMemory:createVibeExperienceMemory(experience), departments:task.department?[task.department]:[], ownerDirective:task.ownerDirective
+    experienceMemory:genericLearningExperience, departments:task.department?[task.department]:[], ownerDirective:task.ownerDirective
   });
   const gateReasons = [...(plan.executionGate?.reasons || [])];
   const analysisOnlyRead = !requiresWrite && gateReasons.length === 1 && gateReasons[0] === 'source-read-only';
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
-  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience });
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
@@ -277,11 +282,11 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     && task.protectedChange !== true
     && supervisionApproved;
   const learningGuidance = buildLearningGuidance(plan.learning);
-  const verifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:experience,task:{...task,target:plan.target},limit:5});
+  const verifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
   const verifiedCapabilityMemoryGuidance=verifiedCapabilityGuidance(verifiedCapabilityMemory);
   const unifiedLearning = retrieveUnifiedLearning({
     task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
-    experienceInput:experience,
+    experienceInput:genericLearningExperience,
     codePatternsInput:codePatterns,
     playbooksInput:playbooks,
     practiceDistilledInput:practiceDistilled,
@@ -401,6 +406,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
     verifiedCapabilityMemory,
+    capabilityMemoryPartition:freeze({
+      distinctLayer:'verifiedCapabilityMemory',
+      genericLearningExcludesTaskType:'coding-capability-distillation',
+      excludedRecordCount:capabilityRecordsExcludedFromGenericLearning,
+      duplicateInjectionAllowed:false
+    }),
     unifiedLearning,
     assetProduction,
     presentationQuality,
@@ -482,6 +493,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_UNIFIED_EXPERIENCE_COUNT=${order.unifiedLearning?.experience?.length||0}`);
     console.log(`VIBE2_VERIFIED_CAPABILITY_COUNT=${order.verifiedCapabilityMemory?.count||0}`);
     console.log(`VIBE2_VERIFIED_CAPABILITY_APPLIED=${order.verifiedCapabilityMemoryAppliedToWorkerGoal?'YES':'NO'}`);
+    console.log(`VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED=${order.capabilityMemoryPartition?.excludedRecordCount||0}`);
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
     console.log(`VIBE2_VERIFIED_PRACTICE_DISTILLED_COUNT=${order.unifiedLearning?.practiceDistilled?.length||0}`);

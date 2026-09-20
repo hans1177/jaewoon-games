@@ -255,11 +255,18 @@ test('capability guidance is empty when no verified capability matches exist',()
 });
 
 
-test('continuous runner explicitly injects verified capability memory as a distinct advisory layer',()=>{
+test('continuous runner injects verified capability memory once and partitions it from generic learning',()=>{
   const source=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
-  assert.match(source,/retrieveVerifiedCapabilities/);
+  assert.match(source,/fullExperienceMemory=createVibeExperienceMemory\(experience\)/);
+  assert.match(source,/genericLearningExperience=createVibeExperienceMemory/);
+  assert.match(source,/taskType\)!=='coding-capability-distillation'/);
+  assert.match(source,/experienceMemory:genericLearningExperience/);
+  assert.match(source,/retrieveVerifiedCapabilities\(\{experienceInput:fullExperienceMemory/);
+  assert.match(source,/experienceInput:genericLearningExperience/);
   assert.match(source,/verifiedCapabilityMemoryGuidance/);
   assert.match(source,/executionGoal = \[.*verifiedCapabilityMemoryGuidance/s);
+  assert.match(source,/duplicateInjectionAllowed:false/);
   assert.match(source,/verifiedCapabilityMemoryAppliedToWorkerGoal/);
   assert.match(source,/VIBE2_VERIFIED_CAPABILITY_COUNT/);
+  assert.match(source,/VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED/);
 });
