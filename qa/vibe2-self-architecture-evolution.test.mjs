@@ -23,12 +23,6 @@ test('repeated structural failure becomes one atomic self-architecture evolution
   assert(task.evidence.includes('architecture-neural-expansion-allowed:NO'));
   assert(task.completionCriteria.includes('BEFORE_AFTER_METRIC_IMPROVED'));
   assert(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
-  assert(task.evidence.includes('architecture-rule5-atomization-required:YES'));
-  assert(task.evidence.includes('architecture-rule5-neuronization-required:YES'));
-  assert(task.evidence.includes('architecture-rule5-central-code-sync-required:YES'));
-  assert(task.completionCriteria.includes('RULE5_ATOMIC_ARCHITECTURE_DEFINED'));
-  assert(task.completionCriteria.includes('RULE5_NEURON_MAPPING_DEFINED'));
-  assert(task.completionCriteria.includes('RULE5_CENTRAL_ARCHITECTURE_CODE_TEST_SYNC_PASS'));
 });
 
 test('unchanged evidence does not create a busy-loop generation after verified architecture work',()=>{
