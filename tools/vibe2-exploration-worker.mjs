@@ -7,6 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
+import { diagnoseGame, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
 import { buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
@@ -87,7 +88,41 @@ function taskFailureEvidence(order={}){
   return unique(values).slice(0,16);
 }
 
-function compileCausalReplayPlan({order={},failures=[],testTargets=[]}={}){
+function diagnosticReplayIdentity(order={}){
+  const evidence=unique([
+    ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
+    ...(order?.selectedTask?.evidence||[])
+  ]);
+  const typeMarker=evidence.find(value=>clean(value).startsWith('diagnostic:'));
+  const keyMarker=evidence.find(value=>clean(value).startsWith('diagnostic-key:'));
+  const type=typeMarker?clean(typeMarker.slice('diagnostic:'.length)).toUpperCase():'';
+  const key=keyMarker?clean(keyMarker.slice('diagnostic-key:'.length)):'';
+  if(!type||!key)return null;
+  const prefix=type+':';
+  if(!key.toUpperCase().startsWith(prefix))return null;
+  const file=posix(key.slice(prefix.length));
+  if(!file)return null;
+  return{type,file};
+}
+function verifyDiagnosticReplayBaseline({order={},target='',root=''}={}){
+  if(clean(target).toLowerCase()!=='web'||!root)return null;
+  const identity=diagnosticReplayIdentity(order);
+  if(!identity)return null;
+  const report=diagnoseGame(root,{maxIssues:200});
+  const reproduced=(report.issues||[]).some(row=>clean(row?.type).toUpperCase()===identity.type&&posix(row?.file)===identity.file);
+  return{
+    version:1,
+    type:identity.type,
+    file:identity.file,
+    reproduced,
+    verifiedResponsibleSystem:reproduced?diagnosticResponsibleSystem(identity.type):null,
+    verifier:'AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN',
+    sourceWrite:false,
+    authorityExpanded:false
+  };
+}
+
+function compileCausalReplayPlan({order={},failures=[],testTargets=[],diagnosticReplayBaseline=null}={}){
   const evidence=unique([
     ...failures,
     ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
@@ -100,11 +135,22 @@ function compileCausalReplayPlan({order={},failures=[],testTargets=[]}={}){
     ...(order?.workPackage?.sharedContext?.causalReplay?.nodeTestTargets||[])
   ]).filter(value=>/(?:test|spec|qa)/i.test(value)&&/\.(?:mjs|cjs|js)$/i.test(value)).slice(0,8);
   const required=failures.length>0;
-  const executable=required&&prePatchReproduced&&declaredTargets.length>0;
+  const diagnosticReplay=diagnosticReplayBaseline&&diagnosticReplayBaseline.reproduced===true?diagnosticReplayBaseline:null;
+  const diagnosticExecutable=Boolean(required&&diagnosticReplay);
+  const nodeReplayExecutable=required&&prePatchReproduced&&declaredTargets.length>0;
+  const executable=diagnosticExecutable||nodeReplayExecutable;
+  const effectivePrePatchReproduced=diagnosticExecutable||prePatchReproduced;
+  const mode=diagnosticExecutable?'DIAGNOSTIC_RESCAN':nodeReplayExecutable?'NODE_TEST_TARGETS':'PLAN_ONLY';
+  const status=!required?'NOT_REQUIRED'
+    :diagnosticExecutable?'READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN'
+    :nodeReplayExecutable?'READY_FOR_POSTPATCH_REPLAY'
+    :prePatchReproduced?'NO_SUPPORTED_TEST_TARGET':'NO_VERIFIED_PREPATCH_REPRODUCTION';
   return{
-    version:1,required,prePatchReproduced,nodeTestTargets:declaredTargets,executable,
-    mode:executable?'NODE_TEST_TARGETS':'PLAN_ONLY',
-    status:!required?'NOT_REQUIRED':executable?'READY_FOR_POSTPATCH_REPLAY':prePatchReproduced?'NO_SUPPORTED_TEST_TARGET':'NO_VERIFIED_PREPATCH_REPRODUCTION',
+    version:2,required,prePatchReproduced:effectivePrePatchReproduced,nodeTestTargets:declaredTargets,executable,mode,status,
+    diagnosticType:diagnosticReplay?.type||null,
+    diagnosticFile:diagnosticReplay?.file||null,
+    verifiedResponsibleSystem:diagnosticReplay?.verifiedResponsibleSystem||null,
+    diagnosticVerifier:diagnosticReplay?.verifier||null,
     identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false
   };
 }
@@ -148,7 +194,7 @@ function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSym
   };
 }
 
-function compileEditContract({order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[]}={}){
+function compileEditContract({order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null}={}){
   const sourceAnalysis=analyzeExistingGameSource(sourceText);
   const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
   const codingArchitecture=buildCodingArchitecture({
@@ -195,7 +241,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     'HOTSPOT_RECHECK:'+clean(row?.kind).toUpperCase()+':'+clean(row?.name),
     clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
   ]).filter(Boolean);
-  const causalReplay=compileCausalReplayPlan({order,failures,testTargets});
+  const causalReplay=compileCausalReplayPlan({order,failures,testTargets,diagnosticReplayBaseline});
   const requiredFocusedChecks=unique([
     ...impactRows.flatMap(row=>row.requiredChecks||[]),
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
@@ -347,7 +393,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
   const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
   const sourceText=responsibilityRows.map(row=>row.text).filter(Boolean).join('\n\n');
-  const editContract=compileEditContract({order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets});
+  const diagnosticReplayBaseline=verifyDiagnosticReplayBaseline({order,target,root});
+  const editContract=compileEditContract({order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
     version:1,
