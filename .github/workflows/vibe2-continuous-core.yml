@@ -112,6 +112,7 @@ jobs:
             tools/vibe2-neural-phase2-readiness.mjs \
             tools/vibe2-exploration-worker.mjs \
             tools/vibe2-source-worker.mjs \
+            tools/vibe2-capability-distillation.mjs \
             tools/vibe2-performance-sanity.mjs \
             tools/vibe2-fan-in-review.mjs \
             tools/vibe2-queue-control.mjs \
@@ -1101,6 +1102,7 @@ jobs:
             qa/vibe2-neural-fanin-root-cause.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-capability-distillation.test.mjs \
             qa/vibe2-central-work-contract.test.mjs \
             qa/vibe2-exploration-worker.test.mjs \
             qa/vibe2-queue-control.test.mjs \
@@ -1151,7 +1153,8 @@ jobs:
             node "$contract_root/tools/vibe2-fan-in-review.mjs" \
               --queue="$control_root/.vibe2/queue.json" \
               --input=/tmp/vibe2-fan-in.json \
-              --output=/tmp/vibe2-package-review.json | tee /tmp/vibe2-package-review.log
+              --output=/tmp/vibe2-package-review.json \
+              --trace-ledger="$control_root/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-package-review.log
             node "$contract_root/tools/vibe2-experience-control.mjs" \
               --memory="$control_root/.vibe2/experience.json" \
               --batch-review=/tmp/vibe2-package-review.json | tee /tmp/vibe2-supervised-experience.log
@@ -1161,10 +1164,10 @@ jobs:
           fi
           echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
 
-          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json; then
+          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
           else
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json .vibe2/coding-trace-ledger.json
             git commit -m "vibe2: fan in parallel worker results [skip ci]"
             pushed=0
             for attempt in 1 2 3; do
