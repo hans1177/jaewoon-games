@@ -580,7 +580,7 @@
         "homepage": {
           "featured": true,
           "category": "development-confirmed",
-          "displayMode": "",
+          "displayMode": "WEB_PUBLISHED",
           "artbookPath": "/artbook-viewer.html?game=daechung-rpg",
           "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
@@ -609,7 +609,13 @@
           }
         }
       },
-      "catalogOrder": 4
+      "catalogOrder": 4,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "aead6af30360ee744534d59ae8ce1254d218d7f0863aa9ecf032d086e1300022",
+      "ownerWebEntryFile": "web-games/daechung-rpg/index.html",
+      "webDevelopmentResetRequired": true
     },
     {
       "id": "line-defense",
@@ -3735,7 +3741,7 @@
     "homepageInfo": 25,
     "normalizedGames": 25,
     "ownerWebAdded": 0,
-    "ownerWebUpdated": 0,
+    "ownerWebUpdated": 1,
     "ownerWebDisabled": 0
   },
   "catalogSchemaVersion": 2,
