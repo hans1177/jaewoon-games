@@ -5,18 +5,18 @@
   "authorityExpanded": false,
   "domains": {
     "CORE_LOOP": {
-      "xp": 159,
+      "xp": 164,
       "level": 4,
       "verifiedSuccesses": 15,
-      "verifiedFailureLessons": 3,
-      "lastEvidence": "capability_ctrace_7022dd1d29e03580f9fab379"
+      "verifiedFailureLessons": 4,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "STATE_MACHINE": {
-      "xp": 201,
+      "xp": 206,
       "level": 5,
       "verifiedSuccesses": 16,
-      "verifiedFailureLessons": 9,
-      "lastEvidence": "capability_ctrace_58209addc38732b36ae3b1bc"
+      "verifiedFailureLessons": 10,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "COMBAT": {
       "xp": 113,
@@ -33,11 +33,11 @@
       "lastEvidence": "pat_ypohyy"
     },
     "PROGRESSION": {
-      "xp": 153,
+      "xp": 158,
       "level": 4,
       "verifiedSuccesses": 9,
-      "verifiedFailureLessons": 9,
-      "lastEvidence": "capability_ctrace_58209addc38732b36ae3b1bc"
+      "verifiedFailureLessons": 10,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "ECONOMY": {
       "xp": 65,
@@ -54,11 +54,11 @@
       "lastEvidence": "exp_security_53422c69113706740dd73f5a"
     },
     "MOBILE_INPUT": {
-      "xp": 177,
-      "level": 4,
+      "xp": 182,
+      "level": 5,
       "verifiedSuccesses": 14,
-      "verifiedFailureLessons": 9,
-      "lastEvidence": "capability_ctrace_58209addc38732b36ae3b1bc"
+      "verifiedFailureLessons": 10,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "UI_STATE": {
       "xp": 120,
@@ -68,11 +68,11 @@
       "lastEvidence": "pat_zf15dc"
     },
     "DEBUGGING": {
-      "xp": 177,
-      "level": 4,
+      "xp": 182,
+      "level": 5,
       "verifiedSuccesses": 15,
-      "verifiedFailureLessons": 9,
-      "lastEvidence": "capability_ctrace_58209addc38732b36ae3b1bc"
+      "verifiedFailureLessons": 10,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "RECOVERY": {
       "xp": 65,
@@ -159,11 +159,11 @@
       "lastEvidence": null
     },
     "QUEST_DESIGN": {
-      "xp": 76,
+      "xp": 81,
       "level": 3,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 8,
-      "lastEvidence": "capability_ctrace_58209addc38732b36ae3b1bc"
+      "verifiedFailureLessons": 9,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "CHARACTER_ARC": {
       "xp": 0,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 129,
+      "xp": 134,
       "level": 4,
       "verifiedSuccesses": 7,
-      "verifiedFailureLessons": 9,
-      "lastEvidence": "capability_ctrace_58209addc38732b36ae3b1bc"
+      "verifiedFailureLessons": 10,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -242,7 +242,8 @@
     "capability_ctrace_d2ee6e412a4de5a362ff451b",
     "capability_ctrace_86966e8aee10bcda15d07ef1",
     "capability_ctrace_ee9ce904802d3b7cdad46e0f",
-    "capability_ctrace_58209addc38732b36ae3b1bc"
+    "capability_ctrace_58209addc38732b36ae3b1bc",
+    "capability_ctrace_67f9505a8b10e774dfd6d52f"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -361,8 +362,8 @@
       ]
     },
     "fail_3e38u6": {
-      "count": 2,
-      "lastEvidence": "capability_ctrace_7c263aebec46d449821c74a0",
+      "count": 3,
+      "lastEvidence": "capability_ctrace_67f9505a8b10e774dfd6d52f",
       "example": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
       "domains": [
         "CORE_LOOP",
@@ -1121,7 +1122,8 @@
       "coding_negative_161164n",
       "coding_negative_fbrqqb",
       "coding_negative_15kxecn",
-      "coding_negative_1mnmu6e"
+      "coding_negative_1mnmu6e",
+      "coding_negative_le45o3"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -1716,7 +1718,7 @@
         "verifiedApplications": 44,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 95,
-        "verifiedFailures": 166,
+        "verifiedFailures": 167,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -1756,13 +1758,13 @@
           },
           "PRIMARY_SYMBOL_WINDOWS": {
             "verifiedApplications": 24,
-            "verifiedFailures": 60,
+            "verifiedFailures": 61,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 48,
             "totalContextBytes": 249551,
             "lastEvidence": "coding_8o7skt",
-            "lastFailureEvidence": "coding_negative_1aq7w6m",
-            "lastUpdatedAt": "2026-09-20T04:54:53.389Z"
+            "lastFailureEvidence": "coding_negative_le45o3",
+            "lastUpdatedAt": "2026-09-20T05:25:41.608Z"
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 1,
@@ -1975,7 +1977,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 16,
+            "verifiedFailures": 17,
             "games": {
               "bug-defense": 1
             },
@@ -1984,21 +1986,21 @@
             },
             "failureGames": {
               "bug-defense": 5,
-              "seed-single-defense-strat-celestial-bastion": 10,
+              "seed-single-defense-strat-celestial-bastion": 11,
               "village-dungeons": 1
             },
             "failureTargets": {
-              "web": 16
+              "web": 17
             },
             "failureClasses": {
               "EDIT_MATCH": 1,
               "NO_OP": 6,
-              "MALFORMED_OUTPUT": 6,
+              "MALFORMED_OUTPUT": 7,
               "INCREMENTAL_QA": 3
             },
             "lastEvidence": "coding_l11e3i",
-            "lastFailureEvidence": "coding_negative_1xknwt5",
-            "lastUpdatedAt": "2026-09-20T04:36:59.334Z"
+            "lastFailureEvidence": "coding_negative_le45o3",
+            "lastUpdatedAt": "2026-09-20T05:25:41.608Z"
           },
           "web|FULL_REWRITE_SIZE|MALFORMED_OUTPUT|OTHER|TIMEOUT": {
             "verifiedApplications": 0,
@@ -2554,8 +2556,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_8o7skt",
-        "lastFailureEvidence": "coding_negative_1ezjrs3",
-        "lastUpdatedAt": "2026-09-20T04:54:53.393Z"
+        "lastFailureEvidence": "coding_negative_le45o3",
+        "lastUpdatedAt": "2026-09-20T05:25:41.608Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 152,
@@ -5203,9 +5205,9 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T05:16:28.058Z",
+    "lastBuiltAt": "2026-09-20T05:25:41.616Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
-  "updatedAt": "2026-09-20T05:16:28.058Z"
+  "updatedAt": "2026-09-20T05:25:41.616Z"
 }
