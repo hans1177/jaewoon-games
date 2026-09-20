@@ -280,9 +280,45 @@ test('cancelled exact Web base task is restored when company runtime still requi
   const restored=result.queue.tasks.find(row=>row.id===stale.id);
   assert.equal(restored.status,'queued');
   assert.equal(restored.blocker,null);
-  assert.equal(restored.lastOutcome,'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION');
-  assert.ok(restored.evidence.includes('restored-exact-stage:WEB_BASE_IMPLEMENTATION'));
+  assert.equal(restored.lastOutcome,'RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY');
+  assert.ok(restored.evidence.includes('production-authority-restored:DEVELOPMENT_CONFIRMED'));
+  assert.ok(restored.evidence.includes('event-driven-resume:central-production-authority-restored'));
   assert.ok(restored.evidence.includes('restored-from:production-authority-inactive:DESIGN_ONLY'));
+});
+
+test('reactivated DEVELOPMENT_CONFIRMED restores only central-authority cancellations and preserves retry history',()=>{
+  const root=tempRepo();
+  const gameId='authority-restore';
+  const centralCancelled={
+    id:'authority-restore-old-task',gameId,target:'unity',department:'development',type:'implementation',
+    sourceRoot:`unity-games/${gameId}`,responsibleFiles:['Assets/Scripts/GameCore.cs'],goal:'continue approved development',
+    releaseState:'development-confirmed',status:'cancelled',retries:7,maxRetries:2,
+    blocker:'production-authority-inactive:DESIGN_ONLY',lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+    evidence:['production-authority-sync:DESIGN_ONLY']
+  };
+  const superseded={
+    ...centralCancelled,id:'authority-restore-superseded',status:'cancelled',retries:1,
+    blocker:'superseded-by:VIBE_WEB_REPAIR',lastOutcome:'SUPERSEDED_BY_EXACT_WEB_REPAIR',
+    evidence:['superseded-by:VIBE_WEB_REPAIR']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Authority Restore',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:256,tasks:[centralCancelled,superseded]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:256
+  });
+  const restored=result.queue.tasks.find(row=>row.id===centralCancelled.id);
+  const untouched=result.queue.tasks.find(row=>row.id===superseded.id);
+  assert.equal(restored.status,'queued');
+  assert.equal(restored.blocker,null);
+  assert.equal(restored.retries,7);
+  assert.equal(restored.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(restored.maxRetries,null);
+  assert.equal(restored.lastOutcome,'RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY');
+  assert.ok(restored.evidence.includes('production-authority-restored:DEVELOPMENT_CONFIRMED'));
+  assert.ok(restored.evidence.includes('event-driven-resume:central-production-authority-restored'));
+  assert.equal(untouched.status,'cancelled');
+  assert.equal(untouched.blocker,'superseded-by:VIBE_WEB_REPAIR');
 });
 
 test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
