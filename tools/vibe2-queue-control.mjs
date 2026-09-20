@@ -48,7 +48,7 @@ function readParallelismControl(args) {
   try {
     return createParallelismControl(readJson(controlFileFrom(args), {}));
   } catch {
-    return createParallelismControl({ lastReason: 'INVALID_STATE_ADAPTIVE_TARGET_20' });
+    return createParallelismControl({ lastReason: 'INVALID_STATE_DEFAULT_EXTERNAL_CAPACITY' });
   }
 }
 function priority(value, ownerDirective) { if (ownerDirective) return 'owner-immediate'; return ['critical','high','normal','low'].includes(clean(value)) ? clean(value) : 'normal'; }
