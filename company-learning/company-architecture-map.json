@@ -1,5 +1,5 @@
 {
-  "version": 42,
+  "version": 43,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1090,7 +1090,7 @@
     }
   },
   "capabilityDistillationTopology": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
     "flow": [
       "OBSERVABLE_CODING_TRACE_CAPTURE",
@@ -1109,7 +1109,38 @@
     "directRawAiToProduction": false,
     "automaticModelPromotion": false,
     "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-    "authorityChange": "NONE"
+    "authorityChange": "NONE",
+    "phase1": {
+      "state": "MERGED_MAIN",
+      "sourcePr": 1883,
+      "mergedCommit": "a77b6923162df91fab7db30971cab010d823a6ff",
+      "scope": "VIBE2_WORKER_RESULTS",
+      "traceBuilder": "tools/vibe2-capability-distillation.mjs::buildObservableCodingTrace",
+      "verifiedReviewBuilder": "tools/vibe2-capability-distillation.mjs::buildVerifiedCapabilityExperienceReview",
+      "durableLedger": ".vibe2/coding-trace-ledger.json",
+      "fanInBinding": "tools/vibe2-fan-in-review.mjs",
+      "continuousBinding": ".github/workflows/vibe2-continuous-core.yml",
+      "positiveRoute": "SELECTED_FULL_FAN_IN_PASS_TO_EXISTING_EXPERIENCE_MEMORY",
+      "negativeRoute": "EVIDENCE_BACKED_CONCRETE_FAILURE_TO_EXISTING_AVOID_PATTERN",
+      "rawTraceReusable": false,
+      "rawCodeStored": false,
+      "rawModelOutputStored": false,
+      "hiddenChainOfThoughtStored": false,
+      "ambiguousFailurePromotion": false,
+      "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "authorityChange": "NONE"
+    },
+    "phase2Next": {
+      "state": "PLANNED",
+      "objective": "CAPTURE_MERGED_PR_PROVENANCE_FROM_ASSISTANT_HUMAN_OR_OTHER_AI_AUTHORS_AND_RETRIEVE_ONLY_VERIFIED_CAPABILITIES_INTO_FUTURE_WORK_ORDERS",
+      "preserve": [
+        "NO_RAW_EXTERNAL_AI_OUTPUT_PERSISTENCE",
+        "NO_SECRET_OR_SESSION_CAPTURE",
+        "NO_DIRECT_RAW_PATCH_TRAINING",
+        "FRESH_TASK_QA_REQUIRED",
+        "EXISTING_WAVE_EXECUTION_AUTHORITY_ONLY"
+      ]
+    }
   },
   "functionalIdentityPhilosophyTopology": {
     "version": 1,

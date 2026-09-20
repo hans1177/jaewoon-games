@@ -1,5 +1,5 @@
 {
-  "version": 200,
+  "version": 201,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4983,7 +4983,7 @@
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
-      "state": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_EXPANSION_REQUIRED",
+      "state": "PHASE_1_DURABLE_VIBE2_TRACE_AND_VERIFIED_EXPERIENCE_MERGED_MAIN",
       "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
       "teacherSources": [
         "VIBE_GENERATED_CODING",
@@ -5071,6 +5071,78 @@
         "automaticLearningTuningPromotionAuthority": false,
         "directMainPromotionAuthority": false,
         "authorityChange": "NONE"
+      },
+      "implementationPhase1": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1883,
+        "mergedCommit": "a77b6923162df91fab7db30971cab010d823a6ff",
+        "scope": "VIBE2_WORKER_RESULTS_ONLY_FOR_PHASE_1",
+        "components": [
+          "tools/vibe2-capability-distillation.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "qa/vibe2-capability-distillation.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          ".github/workflows/vibe2-24h-runner.yml"
+        ],
+        "durableRawTraceStore": ".vibe2/coding-trace-ledger.json",
+        "rawTracePolicy": {
+          "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "secretsOrCredentialsStored": false,
+          "unverifiedAttemptReusable": false,
+          "deterministicDeduplication": true
+        },
+        "verifiedPositivePromotion": {
+          "selectedCandidateRequired": true,
+          "fullFanInPassRequired": true,
+          "packageReviewPassRequired": true,
+          "output": "EXISTING_VIBE_EXPERIENCE_MEMORY",
+          "automaticModelPromotion": false
+        },
+        "verifiedNegativePromotion": {
+          "directObservedSourceGenerationFailureRequired": true,
+          "evidenceMarkerRequired": "source-generation-failure:<CLASS>",
+          "ambiguousOtherFailureRejected": true,
+          "output": "EXISTING_VIBE_EXPERIENCE_MEMORY_AVOID_PATTERN"
+        },
+        "existingLearningPipelineReuse": {
+          "parallelLearningPipelineCreated": false,
+          "canonicalExperiencePathReused": true,
+          "canonicalModelTrainingGatesUnchanged": true,
+          "fixedHoldoutAbAndCanaryUnchanged": true
+        },
+        "ci": {
+          "vibeQa": "PASS",
+          "centralPolicy": "PASS",
+          "companyEvolution": "PASS",
+          "integratedRegression": "PASS",
+          "vibe2ParallelismContract": "PASS",
+          "vibe2CoreQa": "PASS",
+          "securityImmuneSystem": "PASS",
+          "mainWriteGuard": "PASS",
+          "vibe3EngineContract": "PASS"
+        },
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false,
+          "directMainPromotionAuthority": false,
+          "authorityChange": "NONE"
+        },
+        "knownCoverageGap": [
+          "EXTERNAL_ASSISTANT_PR_PROVENANCE_NOT_YET_DURABLY_CAPTURED",
+          "HUMAN_PR_PROVENANCE_NOT_YET_DURABLY_CAPTURED_AS_CAPABILITY_TRACE",
+          "OTHER_AI_PR_PROVENANCE_NOT_YET_DURABLY_CAPTURED_AS_CAPABILITY_TRACE",
+          "VERIFIED_CAPABILITY_RETRIEVAL_NOT_YET_EXPLICITLY_INJECTED_AS_A_DISTINCT_WORK_ORDER_LAYER"
+        ],
+        "nextGate": "PHASE_2_MERGED_PR_PROVENANCE_CAPTURE_AND_VERIFIED_CAPABILITY_RETRIEVAL_WITHOUT_RAW_OUTPUT_STORAGE_OR_AUTHORITY_EXPANSION"
       }
     }
   },
