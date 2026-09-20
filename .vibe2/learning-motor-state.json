@@ -1053,7 +1053,8 @@
       "coding_1prxgoz",
       "coding_1djjk4r",
       "coding_kd1zxs",
-      "coding_ufalo0"
+      "coding_ufalo0",
+      "coding_1ci67uj"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -1963,7 +1964,8 @@
       "coding_negative_1ohg1y5",
       "coding_negative_7rmmox",
       "coding_negative_gl9fs2",
-      "coding_negative_vtapr9"
+      "coding_negative_vtapr9",
+      "coding_negative_1k3bpjt"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -3657,10 +3659,10 @@
         "lastUpdatedAt": "2026-09-20T17:08:13.563Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 342,
-        "firstCandidatePasses": 21,
-        "totalGenerationAttempts": 808,
-        "verifiedFailures": 264,
+        "verifiedApplications": 343,
+        "firstCandidatePasses": 22,
+        "totalGenerationAttempts": 809,
+        "verifiedFailures": 265,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 41,
           "seed-idle-growth-rpg-crystal-bloom": 4,
@@ -3672,7 +3674,7 @@
           "bug-defense": 27,
           "village-dungeons": 46,
           "survival2": 7,
-          "monster-adventure": 49,
+          "monster-adventure": 50,
           "daechung-rpg": 37,
           "island-village": 1,
           "territory-war": 1,
@@ -3683,7 +3685,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 342
+          "web": 343
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -3697,14 +3699,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 318,
-            "verifiedFailures": 136,
-            "firstCandidatePasses": 21,
-            "totalGenerationAttempts": 750,
-            "totalContextBytes": 6051054,
-            "lastEvidence": "coding_ufalo0",
-            "lastFailureEvidence": "coding_negative_7rmmox",
-            "lastUpdatedAt": "2026-09-20T17:08:46.715Z"
+            "verifiedApplications": 319,
+            "verifiedFailures": 137,
+            "firstCandidatePasses": 22,
+            "totalGenerationAttempts": 751,
+            "totalContextBytes": 6056460,
+            "lastEvidence": "coding_1ci67uj",
+            "lastFailureEvidence": "coding_negative_1k3bpjt",
+            "lastUpdatedAt": "2026-09-20T17:11:42.838Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 5,
@@ -4142,30 +4144,30 @@
             "lastUpdatedAt": "2026-09-20T02:28:49.224Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
-            "verifiedApplications": 46,
-            "firstCandidatePasses": 8,
-            "totalGenerationAttempts": 118,
-            "verifiedFailures": 11,
+            "verifiedApplications": 47,
+            "firstCandidatePasses": 9,
+            "totalGenerationAttempts": 119,
+            "verifiedFailures": 12,
             "games": {
-              "monster-adventure": 32,
+              "monster-adventure": 33,
               "ant-simulator": 14
             },
             "targets": {
-              "web": 46
+              "web": 47
             },
             "failureGames": {
               "ant-simulator": 5,
-              "monster-adventure": 6
+              "monster-adventure": 7
             },
             "failureTargets": {
-              "web": 11
+              "web": 12
             },
             "failureClasses": {
-              "MALFORMED_OUTPUT": 11
+              "MALFORMED_OUTPUT": 12
             },
-            "lastEvidence": "coding_1kl7fn4",
-            "lastFailureEvidence": "coding_negative_9nlda0",
-            "lastUpdatedAt": "2026-09-20T17:02:23.303Z"
+            "lastEvidence": "coding_1ci67uj",
+            "lastFailureEvidence": "coding_negative_1k3bpjt",
+            "lastUpdatedAt": "2026-09-20T17:11:42.838Z"
           },
           "web|OTHER": {
             "verifiedApplications": 0,
@@ -4329,9 +4331,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_ufalo0",
-        "lastFailureEvidence": "coding_negative_7rmmox",
-        "lastUpdatedAt": "2026-09-20T17:08:46.715Z"
+        "lastEvidence": "coding_1ci67uj",
+        "lastFailureEvidence": "coding_negative_1k3bpjt",
+        "lastUpdatedAt": "2026-09-20T17:11:42.838Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 37,
@@ -7139,7 +7141,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T17:11:31.341Z",
+    "lastBuiltAt": "2026-09-20T17:11:42.854Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9397,5 +9399,5 @@
       "knowledge_a3ndmv"
     ]
   },
-  "updatedAt": "2026-09-20T17:11:31.341Z"
+  "updatedAt": "2026-09-20T17:11:42.854Z"
 }
