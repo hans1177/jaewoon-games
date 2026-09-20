@@ -174,7 +174,13 @@ function startBgm(){
  if(AUDIO.timer)return;
  const normal=[220,277,330,440,330,277,247,330,294,370,440,494,440,370,330,277];
  const aggro=[110,110,147,110,165,147,196,147,110,220,147,196,165,147,110,98];
- AUDIO.timer=setInterval(()=>{
+AUDIO.timer=setInterval(()=>{if(!AUDIO.ctx||AUDIO.muted||!run)return;
+const i=AUDIO.musicStep++%normal.length,zoneShift=zone==='town'?1:zone==='cave'?.75:1+Math.max(0,Number((zone||'f1').slice(1))-1)*.025;
+	tone(normal[i]*zoneShift,.28,'triangle',.045,0,1,AUDIO.musicBus);
+	if(i%2===0)tone(normal[(i+5)%normal.length]*.5,.5,'sine',.028,0,1,AUDIO.musicBus);
+	tone(aggro[i],.18,i%2?'square':'sawtooth',.052,0,.92,AUDIO.aggroBus);
+	if(i%4===0)noise(.055,.025,420,0,AUDIO.aggroBus);,
+	clearInterval(AUDIO.timer);}
   if(!AUDIO.ctx||AUDIO.muted||!run)return;
   const i=AUDIO.musicStep++%normal.length,zoneShift=zone==='town'?1:zone==='cave'?.75:1+Math.max(0,Number((zone||'f1').slice(1))-1)*.025;
   tone(normal[i]*zoneShift,.28,'triangle',.045,0,1,AUDIO.musicBus);
