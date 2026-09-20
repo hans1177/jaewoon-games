@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const C=window.GAME_CONFIG||{};",
+      "replace": "const C=window.GAME_CONFIG||{};window.GAME_CONFIG={id:'seed-single-defense-strat-celestial-bastion',name:'천상의 보루',mode:'celestial-defense',hp:100,res:26,desc:'천상 코어를 지키기 위해 방어탑을 배치·강화하며 15개 전투 웨이브를 돌파하는 싱글 전략 디펜스.'}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
