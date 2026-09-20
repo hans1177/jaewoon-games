@@ -753,27 +753,31 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     ?allowedLine.slice(allowedLine.indexOf(':')+1).split(',').map(clean).filter(Boolean)
     :[];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
-  if(exactResponsible.length!==1)return null;
-  const anchors=exactRetryAnchorSuggestions(raw,{max:5,sourceRoot,responsibleFiles:exactResponsible});
-  const index=Math.max(0,Math.min(anchors.length-1,Number(anchorIndex)||0));
-  const find=anchors[index]||'';
-  if(!find)return null;
-  let context=find;
+  if(!exactResponsible.length)return null;
+  const candidates=[];
+  for(const relative of exactResponsible){
+    const anchors=exactRetryAnchorSuggestions(raw,{max:5,sourceRoot,responsibleFiles:[relative]});
+    for(const find of anchors)candidates.push({path:relative,find});
+  }
+  const index=Math.max(0,Math.min(candidates.length-1,Number(anchorIndex)||0));
+  const selected=candidates[index]||null;
+  if(!selected?.find)return null;
+  let context=selected.find;
   if(clean(sourceRoot)){
     try{
-      const root=path.resolve(sourceRoot),relative=posix(exactResponsible[0]),file=path.resolve(root,relative);
+      const root=path.resolve(sourceRoot),relative=posix(selected.path),file=path.resolve(root,relative);
       if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile()){
-        const source=fs.readFileSync(file,'utf8'),at=source.indexOf(find);
+        const source=fs.readFileSync(file,'utf8'),at=source.indexOf(selected.find);
         if(at>=0){
           const radius=1400;
           const before=source.slice(Math.max(0,at-radius),at);
-          const after=source.slice(at+find.length,Math.min(source.length,at+find.length+radius));
-          context=(before+find+after).trim();
+          const after=source.slice(at+selected.find.length,Math.min(source.length,at+selected.find.length+radius));
+          context=(before+selected.find+after).trim();
         }
       }
     }catch{}
   }
-  return{path:exactResponsible[0],find,context};
+  return{path:selected.path,find:selected.find,context};
 }
 export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex});
@@ -959,17 +963,17 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     : [
         zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
-        (attempt>=3||(attempt>=2&&timeoutFailure))?'Return exactly one minimal JSON object with only an edits array: {"edits":[{"path":"EXACT_ALLOWED_PATH","find":"EXACT_UNIQUE_SOURCE_TEXT","replace":"MINIMAL_REAL_REPLACEMENT"}]}. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
+        (attempt>=3||(attempt>=2&&timeoutFailure))?'Return exactly one minimal JSON object whose only top-level key is "edits", containing exactly one edit. Copy edits[0].path exactly from Allowed edit paths and edits[0].find exactly from one provided editable source anchor. Write the actual replacement source in edits[0].replace. Never emit template tokens or placeholder path/find/replace values. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
         retryAnchorInstruction,
         zeroChange?'You MUST produce at least one edits[] entry. Use one EXACT FIND ANCHOR OPTION above when available, then make replace materially different. Do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use one EXACT FIND ANCHOR OPTION above when available, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one EXACT FIND ANCHOR OPTION above when available. Copy the entire anchor value character-for-character, including whitespace and punctuation. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
         zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
-        timeoutFailure?'Start immediately with {"edits":[ and close the single edit object and array before generating anything else. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':''
+        timeoutFailure?'Start immediately with the JSON object. Use only the "edits" top-level key and exactly one edit. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=!allowFullRewrite&&(attempt>=3||(attempt>=2&&timeoutFailure));
   const fullWebFinal=attempt>=3&&allowFullRewrite;
   const finalInstruction=focusedFinal
-    ?'FINAL FOCUSED RETRY: output only {"edits":[{"path":"EXACT_ALLOWED_PATH","find":"EXACT_UNIQUE_SOURCE_TEXT","replace":"MINIMAL_REAL_REPLACEMENT"}]}. When EXACT FIND ANCHOR OPTIONS are present, use one entire anchor value verbatim as find. Keep replace minimal but behaviorally complete. No other keys or prose.'
+    ?'FINAL FOCUSED RETRY: output one JSON object with only the "edits" key and exactly one edit. Copy path exactly from Allowed edit paths. When EXACT FIND ANCHOR OPTIONS are present, use one entire anchor value verbatim as find. Put actual source code in replace; never output template tokens or placeholders. Keep replace minimal but behaviorally complete. No other keys or prose.'
     :fullWebFinal
       ?`FINAL FULL-WEB RETRY: produce one complete playable index.html replacement of at least ${fullWebTargetMin} UTF-8 bytes and no more than ${fullWebTargetMax} bytes. Include direct mobile input, substantial executable game logic, a real update/render or equivalent state-transition loop, progression, explicit win/loss/result state, restart, responsive layout, and persistent-capable state. Do not stop early. Finish with </html> and the required end marker.`
       :'';
