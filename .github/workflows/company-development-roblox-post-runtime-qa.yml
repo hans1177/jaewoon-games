@@ -55,8 +55,11 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=[];
           for(const item of q.items||[]){
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const productionClass=String(item.productionClass||'').toUpperCase();
+            const sync=item.webNativeRevisionSync?.platforms?.ROBLOX||{};
+            const webNativePropagation=productionClass==='RELEASE_CONFIRMED'&&Boolean(sync.requestedWebSourceIndexSha256)&&sync.completedWebSourceIndexSha256!==sync.requestedWebSourceIndexSha256;
+            if(productionClass!=='DEVELOPMENT_CONFIRMED'&&!webNativePropagation)continue;
+            if(!webNativePropagation&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
             const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
@@ -416,7 +419,7 @@ jobs:
           };
           const stamp=new Date().toISOString();let ready=0,blocked=0;
           for(const item of queue.items||[]){
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const productionClass=String(item.productionClass||'').toUpperCase();const sync=item.webNativeRevisionSync?.platforms?.ROBLOX||{};const webNativePropagation=productionClass==='RELEASE_CONFIRMED'&&Boolean(sync.requestedWebSourceIndexSha256)&&sync.completedWebSourceIndexSha256!==sync.requestedWebSourceIndexSha256;if(productionClass!=='DEVELOPMENT_CONFIRMED'&&!webNativePropagation)continue;if(!webNativePropagation&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(item.robloxRuntimePassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true)continue;
             const design=findLatestDesign(item.gameId);
             const rawMode=design?.content?.multiplayerMode??design?.content?.multiplayer?.mode??design?.multiplayerMode??'';
