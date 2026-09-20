@@ -1,0 +1,764 @@
+{
+  "version": 6,
+  "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+  "gameId": "daechung-rpg",
+  "target": "unity",
+  "sourceRoot": "unity-games/daechung-rpg",
+  "sourceRootBootstrap": false,
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "generation": {
+    "attempts": 3,
+    "recoveryUsed": true,
+    "partialTimeoutRecovery": true,
+    "streamedPartialEditRecovery": true,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": false,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedWebRepair": false,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "baseAttemptBudget": 3,
+    "effectiveAttemptBudget": 3,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "mode": "JSON_EDIT",
+    "maxPredict": 768,
+    "timeoutMs": 150000,
+    "contextWindow": 16384,
+    "temperature": 0.22,
+    "completionMode": "JSON_EDIT_PARTIAL",
+    "candidateVariant": "primary",
+    "attemptBudget": 3,
+    "speculativeAttemptBudgetApplied": false,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "contextFiles": 1,
+    "contextBytes": 4793,
+    "contextMode": "STANDARD_CONTEXT",
+    "focusedSymbolCount": 0,
+    "exactSourceWindows": false,
+    "fullFileContextFallback": false,
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false
+  },
+  "developmentAuthority": {
+    "owner": "VIBE2_VIBE3",
+    "provider": "LOCAL_OLLAMA",
+    "model": "qwen3:1.7b",
+    "codexRole": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+    "codexGameSourceWrite": "FORBIDDEN",
+    "paidOpenAiApiAllowed": false,
+    "directMainWrite": false
+  },
+  "compiledWorkContract": {
+    "version": 2,
+    "required": true,
+    "validAtCompile": true,
+    "policy": {
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 226,
+      "fingerprint": "81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+      "executionFingerprint": "e6d5b4965a1bf29c83fb30e7dcf6fe7393ebb0ae58855ac88e2d4b9359f0848d",
+      "status": "OWNER_DIRECT_LOCKED",
+      "policySource": "company-learning/platform-release-roadmap.json",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED"
+    },
+    "workRequest": {
+      "workKey": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+      "roadmapVersion": 226,
+      "mainSha": "2614c908bf5b859cc47aed447eff83051d712bdb",
+      "scope": [],
+      "nextGate": "VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_AUTHORITY_UNCHANGED",
+      "requiredEvidence": [
+        "변경 전 원본 일치",
+        "변경 diff 확인",
+        "보호 대상 값/키 변경 검사",
+        "문법/구조 QA",
+        "실행 회귀 QA",
+        "모바일 UI QA",
+        "Unity 컴파일/씬 참조/Android 빌드 확인",
+        "responsible-source-changed",
+        "protected-state-preserved",
+        "regression-checked",
+        "actual-result-observed",
+        "csharp-compile",
+        "scene-prefab-reference-check",
+        "animator-animationclip-check",
+        "android-build-check",
+        "runtime-check",
+        "actual-motion-clips",
+        "runtime-transition",
+        "combat-sync",
+        "retarget-if-used",
+        "performance"
+      ],
+      "authorityBoundary": {
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "neuralExecutionAuthority": false,
+        "workerCreationAuthority": false,
+        "queueMutationAuthority": false,
+        "waveReorderAuthority": false,
+        "lockPolicyMutationAuthority": false,
+        "automaticLearningTuningPromotionAuthority": false
+      },
+      "dedupeKey": "df2638c8bee6813eb925ce393931959ec97e78f226f42acdcc6f7b59444d5dd6"
+    },
+    "task": {
+      "id": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "executionRoute": "text-source-worker"
+    },
+    "writableScope": {
+      "exactResponsibleFiles": [],
+      "automaticExpansionAllowed": false,
+      "directResponsibleSystemModificationPreferred": true
+    },
+    "invariants": {
+      "protectedSemantics": [
+        "GAME_IDENTITY",
+        "SAVE_KEY_AND_SAVE_MEANING",
+        "CORE_LOOP",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "EXISTING_VALID_FEATURES"
+      ],
+      "forbiddenChanges": [
+        "WRAPPER_OR_SHADOW_PIPELINE",
+        "UNRELATED_SYSTEM_MUTATION",
+        "SAVE_RESET_WITHOUT_MIGRATION",
+        "FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH",
+        "RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT"
+      ],
+      "saveMeaningMustRemainCompatible": true,
+      "unrelatedBalanceMutationForbidden": true,
+      "existingValidFeaturesMustRemainFunctional": true
+    },
+    "failureRoute": {
+      "mode": "EXACT_FAILURE_STAGE_REPAIR",
+      "failureStage": null,
+      "lastPassedStage": null,
+      "blocker": null,
+      "lastOutcome": "FAIL",
+      "signatures": [
+        "verified-qa-required",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_SUPPORTED%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A0.05%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A15%2C%22edgeCount%22%3A13%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508521866%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508521866%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508521866%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508840162%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508840162%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508840162%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509139646%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509139646%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509139646%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509563766%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509563766%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509563766%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510034708%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510034708%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510034708%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510558044%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D"
+      ],
+      "responsibleSystem": null,
+      "responsibleFiles": [],
+      "preserveAlreadyPassedStages": true,
+      "restartFromBeginning": false,
+      "widenScopeAutomatically": false,
+      "revalidateImmediately": true
+    },
+    "passConditions": [
+      "변경 전 원본 일치",
+      "변경 diff 확인",
+      "보호 대상 값/키 변경 검사",
+      "문법/구조 QA",
+      "실행 회귀 QA",
+      "모바일 UI QA",
+      "Unity 컴파일/씬 참조/Android 빌드 확인",
+      "responsible-source-changed",
+      "protected-state-preserved",
+      "regression-checked",
+      "actual-result-observed",
+      "csharp-compile",
+      "scene-prefab-reference-check",
+      "animator-animationclip-check",
+      "android-build-check",
+      "runtime-check",
+      "actual-motion-clips",
+      "runtime-transition",
+      "combat-sync",
+      "retarget-if-used",
+      "performance"
+    ],
+    "freshness": {
+      "beforeWorkRequired": true,
+      "afterWorkRequired": true,
+      "staleMayNotStart": true,
+      "staleMayNotComplete": true,
+      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "liveMainRequired": true,
+      "liveMainRef": "origin/main",
+      "liveMainRefreshBeforeCheck": true,
+      "compare": "SHA256_LOCAL_AND_LIVE_MAIN"
+    },
+    "learning": {
+      "reusableLearningAllowed": true,
+      "traceOnlyUntilSupervisorPass": false
+    },
+    "promotion": {
+      "automaticMainPromotionAllowed": false,
+      "reason": "CENTRAL_ROADMAP_ASSISTANT_CONTRACT_DOES_NOT_GRANT_PROMOTION_AUTHORITY",
+      "supervisorPassRequired": false,
+      "supervisorApproved": true
+    },
+    "preflightChecks": [
+      "READ_EXISTING_RESPONSIBLE_SYSTEM",
+      "VERIFY_EXACT_WRITABLE_SCOPE",
+      "PRESERVE_PROTECTED_SEMANTICS",
+      "NO_WRAPPER_OR_SHADOW_PIPELINE",
+      "TRACE_FAILURE_TO_RESPONSIBLE_SYSTEM",
+      "PLAN_RUNTIME_VERIFIABLE_RESULT"
+    ],
+    "authorityExpanded": false
+  },
+  "centralPolicyFreshness": {
+    "preflight": {
+      "status": "PASS",
+      "phase": "PRE_SOURCE_GENERATION",
+      "fresh": true,
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 226,
+      "fingerprint": "81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+      "executionFingerprint": "e6d5b4965a1bf29c83fb30e7dcf6fe7393ebb0ae58855ac88e2d4b9359f0848d",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "liveMainRef": "origin/main",
+      "liveMainVersion": 226,
+      "liveMainFingerprint": "81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+      "liveMainExecutionFingerprint": "e6d5b4965a1bf29c83fb30e7dcf6fe7393ebb0ae58855ac88e2d4b9359f0848d"
+    },
+    "completion": {
+      "status": "PASS",
+      "phase": "PRE_CANDIDATE_WRITE",
+      "fresh": true,
+      "path": "company-learning/platform-release-roadmap.json",
+      "version": 226,
+      "fingerprint": "81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+      "executionFingerprint": "e6d5b4965a1bf29c83fb30e7dcf6fe7393ebb0ae58855ac88e2d4b9359f0848d",
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "liveMainRef": "origin/main",
+      "liveMainVersion": 226,
+      "liveMainFingerprint": "81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2",
+      "liveMainExecutionFingerprint": "e6d5b4965a1bf29c83fb30e7dcf6fe7393ebb0ae58855ac88e2d4b9359f0848d"
+    }
+  },
+  "baseMainSha": "bca89d9a232d8fd2ab46053958b62710750b17f9",
+  "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG의 3D 애니메이션 모션을 부드럽게 개선하고 전환 블렌딩을 최적화한다.\n\n추가 지시:\n- 안녕\n- 앙녕\n- 뭐하냐\n- 뭐해\n- 뭐해\n- 야\n- 뭐해\n- 안녕하세요\n- 안녕\n- 연결해 제미나이\n- 좋아 그냥 얘기좀 가진도 올릴수 잇어?\n- 대답안해?\n- 야\n- 젛아\n- 오늘 뭐햇어?\n- 왜\n- 추천해줘\n- 게임개발 하자고?\n- 우이 개발중인거\n- 대충 알피지\n- 게임이름이 대충 알피지야\n- 게임 개발\n- 니가 가능해?\n- 우리 게임 개발중인거 뭐야\n- 야..빨리\n- 추천\n- 모르겟어\n- UI 그리고 지금 어플 다운 가능해? 빌드 배포 성공?\n- 오늘 넌 뭐햇냐?\n- 대충 알피지 그래픽좀 신경써 애니 모션 부드럽게 드리고 3디애?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.\n\n[CENTRAL ROADMAP WORK CONTRACT]\npolicy=company-learning/platform-release-roadmap.json; version=226; sha256=81b10662408888c27d40935d0057f5ab57c8fcdf5ec8ccf685ffeccae5d3acb2; execution-sha256=e6d5b4965a1bf29c83fb30e7dcf6fe7393ebb0ae58855ac88e2d4b9359f0848d\nlive-main-ref=origin/main; refresh-before-check=YES\nwork-key=pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827; next-gate=VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_AUTHORITY_UNCHANGED; dedupe-key=df2638c8bee6813eb925ce393931959ec97e78f226f42acdcc6f7b59444d5dd6\nexact-writable-files=NONE\npreserve=GAME_IDENTITY, SAVE_KEY_AND_SAVE_MEANING, CORE_LOOP, PROGRESSION, MOBILE_INPUT, EXISTING_VALID_FEATURES\nforbidden=WRAPPER_OR_SHADOW_PIPELINE, UNRELATED_SYSTEM_MUTATION, SAVE_RESET_WITHOUT_MIGRATION, FAKE_GAMEPLAY_OR_VALIDATION_ONLY_PATCH, RESPONSIBLE_FILE_SCOPE_EXPANSION_WITHOUT_NEW_CONTRACT\nfailure-stage=TASK_RESPONSIBILITY; last-passed-stage=UNKNOWN; blocker=NONE\nfailure-evidence=verified-qa-required | repair-mode:CAUSAL_REGENERATION_GENERATION_1 | neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_SUPPORTED%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A0.05%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A15%2C%22edgeCount%22%3A13%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508521866%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508521866%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508521866%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508840162%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508840162%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508840162%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509139646%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509139646%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509139646%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509563766%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509563766%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35509563766%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510034708%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D | neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510034708%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510034708%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D | neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35510558044%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D\nRead and modify the existing responsible system directly. Do not create a wrapper, shadow pipeline, validation-only behavior, or unrelated rewrite.\nPreserve already-passed stages. Repair the exact failure stage, then revalidate it immediately.\nThis contract does not grant worker creation, queue mutation, wave reorder, lock/policy mutation, or automatic learning/promotion authority.\nThe central roadmap must stay valid, and its worker execution-policy projection fingerprint must still match before source generation and again before candidate output is written. Full document SHA remains evidence but unrelated roadmap progress metadata does not invalidate an active worker.\n\n[NEURAL DIAGNOSIS SHADOW MODE]\nresponsibility=SAVE_SYSTEM confidence=0.35\npipeline-prediction=SOURCE_GENERATION target=NEXT_OBSERVED_BLOCKING_SYSTEM\nbottleneck-score=100 advisory-only=YES\nfailure-stage=UNKNOWN_STAGE\ntop-hypothesis=save-compatibility confidence=0.90\nhard-inhibitors=PRODUCTION_AUTHORITY_INACTIVE,SECURITY_POLICY_BLOCK\nThis diagnosis is evidence guidance only. Existing task scope, central policy, locks, QA, supervision, and wave scheduling remain authoritative.\nDo not patch a validator problem by faking gameplay, and do not hide a real game defect by weakening validation.\n\n[CANDIDATE STRATEGY ROLE]\nvariant=primary\nstrategy=PRIMARY_RESPONSIBILITY_MINIMAL\nStart at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.\nThis role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING, CHANGE_SCOPE_NOT_EXPLICIT\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: 필요 없음.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.\n\n[VERIFIED EXPERIENCE MEMORY - advisory only]\n다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.\n- 경험 exp_4odofx; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-ta; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:verified-play-observation:restart | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:turn\n- 경험 exp_pg739o; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:difficulty-selection | GAME_STUDY:study-tag:turn-feedback | GAME_STUDY:study-tag:player-action | GA\n- 경험 exp_1oonbi8; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:memory-game | study-tag:board-size-selection | study-tag:; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:memory-game | GAME_STUDY:study-tag:board-size-selec\n- 경험 exp_i00mwv; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mec; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:economy | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:authorized-source-pattern:frame-loop | GAME_STUDY:study-intelligence:mechanic:economy | GAME_STUDY:study\n- 경험 supervised_bug-defense_35476177742_revise; 결과=FAIL; 문제=Vibe candidate was byte-identical to the failing main Web source and preserved a validation harness instead of implementing the approved bug-defense game.; 검증변경=Supervisor REVISE on candidate vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1; decompose the next attempt into real wave analysis, spatial placement, counterplay, live combat, rewards, terminal states, retry, and mo; 검증실패원인=NO_REAL_IMPLEMENTATION: candidate source blob equals current main; scope/session test controls remain; no pointer/touch placement, real spatial enemy loop, reachable win/loss, or persistent save/progression.; 회피=Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics. | Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain. | Do not duplicate handler functions to inflate apparent mechanic coverage. | Do not\n\n[VERIFIED CAPABILITY MEMORY - advisory only]\nThese are previously verified coding capability lessons. Use them only when applicable to the current responsibility and evidence.\nThey MUST NOT expand writable scope, bypass QA/security/runtime gates, copy raw unrelated source, or change protected gameplay/save semantics.\n- id=capability_ctrace_328d0c1d1272087207a460af; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:INVALID_PATH | CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:INVALID_PATH; verifiedFailure=SOURCE_CANDIDATE_GENERATION:INVALID_PATH; lifecycle=REPEATED_APPLICATION_VERIFIED; applications=22; independentPasses=2; confidence=0.7500; relevance=34.11\n- id=capability_ctrace_4e729cec4540b040a1e80cd6; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:EDIT_MATCH | CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:EDIT_MATCH; verifiedFailure=SOURCE_CANDIDATE_GENERATION:EDIT_MATCH; lifecycle=APPLICATION_OBSERVED; applications=12; independentPasses=1; confidence=0.5000; relevance=32.50\n- id=capability_ctrace_98ff2306686a32e38f808a33; outcome=PASS; reuse=CAPABILITY:CODING_STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL | CAPABILITY:CONTEXT_SELECTION:STANDARD_CONTEXT | CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION | CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND | CAPABILITY_DOMAIN:TOOL_ORCHESTRATION | CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING | CAPABILITY_DOMAIN:CONTEXT_SELECTION | CAPABILITY_DOMAIN:ARCHITECTURE_JUDGMENT | CAPABILITY_DOMAIN:FAILURE_RECOVERY | CAPABILITY_D; lifecycle=VERIFIED_REUSABLE; applications=1; independentPasses=0; confidence=0.5000; relevance=29.00\n- id=capability_ctrace_a2b005913e4bbc43fa7d8870; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:TIMEOUT | CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:TIMEOUT; verifiedFailure=SOURCE_CANDIDATE_GENERATION:TIMEOUT; lifecycle=APPLICATION_OBSERVED; applications=11; independentPasses=1; confidence=0.5000; relevance=28.50\n- id=capability_ctrace_a6c58e4c188aa3417059b8cb; outcome=FAIL; avoid=CAPABILITY_AVOID:SOURCE_GENERATION:EDIT_MATCH | CAPABILITY_AVOID:STRATEGY:PHASE4_FIXED_CONTEXT_CONTROLLED_AB:FAILURE:EDIT_MATCH; verifiedFailure=SOURCE_CANDIDATE_GENERATION:EDIT_MATCH; lifecycle=APPLICATION_OBSERVED; applications=13; independentPasses=1; confidence=0.5000; relevance=28.50\n\n[VIBE VERIFIED LEARNING MOTOR]\n우선순위=same-game+same-failure > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.\n- current-failure-fingerprint=unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT\n- experience=exp_pg739o; game=external-tictactoe; engine=web; relevance=28; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference|GAME_STUDY:study-tag:difficulty-selection; avoid=none\n- experience=exp_1oonbi8; game=external-memory-game; engine=web; relevance=26; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference; avoid=none\n- experience=exp_4odofx; game=external-tictactoe; engine=web; relevance=26; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:verified-play-observation:restart; avoid=none\n- experience=exp_rg6lvy; game=block-blast; engine=android; relevance=22; reuse=AUTHORIZED_SOURCE:board-grid-placement|AUTHORIZED_SOURCE:score-combo-reward|AUTHORIZED_SOURCE:input-drag-touch|AUTHORIZED_SOURCE:progression-difficulty|AUTHORIZED_SOURCE:save-state-persistence; avoid=do-not-treat-static-analysis-as-runtime-pass|do-not-bypass-current-project-qa|do-not-expand-authority-beyond-owner-authorized-scope\n- experience=supervised_bug-defense_35476177742_revise; game=bug-defense; engine=web; relevance=22; reuse=none; avoid=Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics.|Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain.|Do not duplicate handler functions to inflate apparent mechanic coverage.|Do not fake spatial placement with counters or fixed positions; use real pointer/touch coordinates and entity positions.|Do not claim a complete run without reachable playing/win/loss states and retry flow.\n- experience=exp_i00mwv; game=external-roblox-potion-shop-demo; engine=roblox; relevance=18; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:economy|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:authorized-source-pattern:frame-loop; avoid=none\n- experience=exp_security_policy_review_authorized_v1; game=n/a; engine=system; relevance=10; reuse=SECURITY_REVIEW_REQUIRED:CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW|SECURITY_PRESERVE_GATE:NO_BYPASS|SECURITY_AUTHORIZED_REVIEW:TRI_STATE_REVIEW_QUARANTINE_CLASSIFIER_WITH_DIRECT_POLICY_REVIEW_GATE; avoid=SECURITY_AVOID:POLICY_REVIEW_BYPASS\n- experience=exp_recovery_0283345dd9580a246abbf745; game=n/a; engine=system; relevance=10; reuse=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW; avoid=avoid-repeat:security-quarantine-HIGH\n- verified-code-pattern=pat_1th8gz4; system=STATE_MACHINE; relevance=48; pattern=VERIFIED_STATE_MACHINE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_r3a1fy; system=AI_INTENT; relevance=45; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1xg0er9; system=MOBILE_UI_FLOW; relevance=45; pattern=VERIFIED_MOBILE_UI_FLOW_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_vzhsq4; system=REGRESSION_REPAIR; relevance=45; pattern=VERIFIED_REGRESSION_REPAIR_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1x7z0gk; system=SAVE_PERSISTENCE; relevance=45; pattern=VERIFIED_SAVE_PERSISTENCE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_104gf8i; system=STATE_MACHINE; relevance=30; pattern=VERIFIED_STATE_MACHINE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-practice-distilled=UI_STATE; confirmations=1; evidence=code-pattern:pat_14v79w7:3aa6a50ad14f3d0620d4b894660645b92137d708|code-pattern:pat_1lx9uhh:669aa231ae5291c89ab60eb528c4d357d5671c68|code-pattern:pat_1xg0er9:a2467c071d3fd3436fadefab7a3919c6e178d5f6\n- production-confidence=UI_STATE:PC4\n- mastery=UI_STATE:LV4\n\n[LEARNING KNOWLEDGE APPLICATION TRACE]\nexactKnowledgeIds=EXPERIENCE:exp_pg739o,EXPERIENCE:exp_1oonbi8,EXPERIENCE:exp_4odofx,EXPERIENCE:exp_rg6lvy,EXPERIENCE:supervised_bug-defense_35476177742_revise,EXPERIENCE:exp_i00mwv,EXPERIENCE:exp_security_policy_review_authorized_v1,EXPERIENCE:exp_recovery_0283345dd9580a246abbf745,CODE_PATTERN:pat_1th8gz4,CODE_PATTERN:pat_r3a1fy,CODE_PATTERN:pat_1xg0er9,CODE_PATTERN:pat_vzhsq4,CODE_PATTERN:pat_1x7z0gk,CODE_PATTERN:pat_104gf8i,PRACTICE_DISTILLED:practice-distilled:9b7b3c1df9b291d1f576,VERIFIED_CAPABILITY:capability_ctrace_328d0c1d1272087207a460af,VERIFIED_CAPABILITY:capability_ctrace_4e729cec4540b040a1e80cd6,VERIFIED_CAPABILITY:capability_ctrace_98ff2306686a32e38f808a33,VERIFIED_CAPABILITY:capability_ctrace_a2b005913e4bbc43fa7d8870,VERIFIED_CAPABILITY:capability_ctrace_a6c58e4c188aa3417059b8cb\nOnly these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.\n\n[REGRESSION HOTSPOT MEMORY] risk=MEDIUM\nSYMBOL:attackNow failures=1 passes=1\nSYMBOL:enter failures=1 passes=1\nSYMBOL:initAudio failures=1 passes=1\nSYSTEM:GOAL_STATE failures=1 passes=1\nSYSTEM:WORLD failures=1 passes=1\nSYSTEM:COMBAT failures=1 passes=1\nSYSTEM:PROGRESSION failures=1 passes=1\nSYSTEM:CORE_STATE failures=1 passes=2\nHotspot memory requires focused dependent QA and a proven strategy when available. It MUST NOT expand writable scope or bypass QA.\n\n[VIBE ASSET PRODUCTION - implementation owner decision]\nVibe2/Vibe3가 게임 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 직접 선택한다.\n에셋 선택 전에 승인 설계·최신 아트북에서 게임별 아트 방향과 Style Lock을 먼저 확정한다.\n배경은 세계관·지역·서사 맥락에 맞고 몬스터는 생태·전투 역할이 읽히는 실루엣과 표현을 가져야 한다.\n액션·전투 캐릭터는 Web부터 IDLE/MOVE/ATTACK/HIT/DEATH 상태를 실제 게임 상태와 연결하고 표현 런타임을 통과한 뒤 native 플랫폼으로 이어간다.\n선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.\nWeb에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.\n이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.\nPNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.\n에셋 이유로 게임 규칙, 세이브 의미, 진행, 경제 수치를 바꾸지 않는다.\npreset=set-a-fantasy-rpg; reuseCandidateTypes=5; directAuthorableTypes=9; missingTypes=none\n- type=character; reuse=oga-adventurer-slime|github-pixel-snapped-pirate-skeleton; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=enemy; reuse=oga-animated-monsters|oga-adventurer-slime|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=boss; reuse=oga-animated-monsters|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=background; reuse=none; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=item; reuse=none; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=prop; reuse=none; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=effect; reuse=oga-basic-pixel-spells; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=ui; reuse=none; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=animation; reuse=oga-animated-monsters|oga-adventurer-slime|oga-basic-pixel-spells|oga-unity-slime-12; direct=csharp-procedural-mesh-and-low-poly-model|csharp-runtime-material-and-lighting|csharp-particle-vfx-and-trails|csharp-runtime-animation-and-secondary-motion|ugui-runtime-presentation; fallback=AUTHORING_GENERATOR_REQUEST",
+  "generatedAt": "2026-09-20T16:57:49.983Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827-primary-35523759955-1",
+  "candidateManifestPath": ".vibe2/candidates/pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827/manifest.json",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "Assets/Editor/AndroidTestBuild.cs"
+  ],
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "tests": [],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+    "packageId": null,
+    "target": "unity",
+    "sourceRoot": "unity-games/daechung-rpg",
+    "baseMainSha": "bca89d9a232d8fd2ab46053958b62710750b17f9",
+    "responsibleFiles": [],
+    "impactFiles": [
+      "Assets/Editor/AndroidTestBuild.cs"
+    ],
+    "contextFiles": [
+      "Assets/Editor/AndroidTestBuild.cs"
+    ],
+    "relatedFiles": [
+      {
+        "path": "Assets/Editor/AndroidTestBuild.cs",
+        "score": 8
+      }
+    ],
+    "testTargets": [
+      "Assets/Editor/AndroidTestBuild.cs"
+    ],
+    "protectedScopeSignals": [],
+    "diagnosticEvidence": [],
+    "existingWebAssessment": null,
+    "fileDigests": [
+      {
+        "path": "Assets/Editor/AndroidTestBuild.cs",
+        "hash": "ba5ec8ebc5e665d3",
+        "bytes": 4793
+      }
+    ],
+    "editContract": {
+      "version": 1,
+      "mode": "COMPILED_EDIT_CONTRACT",
+      "strategyHint": "ARCHITECTURE_FIRST_GREENFIELD",
+      "responsibilityConfidence": "LOW",
+      "rawResponsibilityConfidence": "LOW",
+      "responsibilityCalibration": {
+        "recommendation": "KEEP_RAW_CONFIDENCE",
+        "applied": false,
+        "extraReadOnlyExploration": false,
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "regressionHotspotRisk": {
+        "riskLevel": "MEDIUM",
+        "matched": [],
+        "focusedChecksAdded": [],
+        "writableScopeExpansionAllowed": false,
+        "authorityExpanded": false
+      },
+      "primaryTargets": [],
+      "allowedResponsibleFiles": [],
+      "allowedDependentSymbolsOrSystems": [],
+      "primarySystems": [],
+      "dependentSystems": [],
+      "directDependentSystems": [],
+      "readOnlyImpactSystems": [],
+      "ownedState": [],
+      "readState": [],
+      "preserveSemantics": [
+        "EXISTING_WORKING_BEHAVIOR",
+        "APPROVED_GAMEPLAY_VALUES",
+        "SAVE_MEANING"
+      ],
+      "failureOrRequirementCausalChain": [
+        "FAILURE_EVIDENCE",
+        "RESPONSIBILITY_NOT_RESOLVED"
+      ],
+      "requiredObservableResult": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG의 3D 애니메이션 모션을 부드럽게 개선하고 전환 블렌딩을 최적화한다.\n\n추가 지시:\n- 안녕\n- 앙녕\n- 뭐하냐\n- 뭐해\n- 뭐해\n- 야\n- 뭐해\n- 안녕하세요\n- 안녕\n- 연결해 제미나이\n- 좋아 그냥 얘기좀 가진도 올릴수 잇어?\n- 대답안해?\n- 야\n- 젛아\n- 오늘 뭐햇어?\n- 왜\n- 추천해줘\n- 게임개발 하자고?\n- 우이 개발중인거\n- 대충 알피지\n- 게임이름이 대충 알피지야\n- 게임 개발\n- 니가 가능해?\n- 우리 게임 개발중인거 뭐야\n- 야..빨리\n- 추천\n- 모르겟어\n- UI 그리고 지금 어플 다운 가능해? 빌드 배포 성공?\n- 오늘 넌 뭐햇냐?\n- 대충 알피지 그래픽좀 신경써 애니 모션 부드럽게 드리고 3디애?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "semanticDiffBudget": {
+        "allowedSystems": [],
+        "preferredPrimarySymbols": [],
+        "maxSystemCount": 1,
+        "readOnlyImpactSystems": [],
+        "impactPredictionDoesNotGrantWriteAuthority": true,
+        "unrelatedSystemMutationForbidden": true,
+        "saveKeysMustRemainCompatible": []
+      },
+      "requiredFocusedChecks": [
+        "TEST_TARGET:Assets/Editor/AndroidTestBuild.cs"
+      ],
+      "causalReplay": {
+        "version": 2,
+        "required": true,
+        "prePatchReproduced": false,
+        "nodeTestTargets": [],
+        "executable": false,
+        "mode": "PLAN_ONLY",
+        "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "diagnosticType": null,
+        "diagnosticFile": null,
+        "diagnosticLine": null,
+        "diagnosticNeedle": null,
+        "diagnosticMicroTask": null,
+        "verifiedResponsibleSystem": null,
+        "diagnosticVerifier": null,
+        "identicalOrEquivalentInputStateRequired": true,
+        "canonicalQaStillRequired": true,
+        "sourceWrite": false,
+        "authorityExpanded": false
+      },
+      "patchRecipe": {
+        "version": 1,
+        "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "failureFingerprint": "unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT",
+        "verifiedMemoryIds": [],
+        "verifiedMemoryCount": 0,
+        "reusePatterns": [],
+        "avoidPatterns": [],
+        "steps": [
+          "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+          "IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE",
+          "DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES",
+          "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
+          "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+          "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+          "VERIFY_PRESERVE_SEMANTICS",
+          "RUN_COMPILED_FOCUSED_CHECKS"
+        ],
+        "primaryTargets": [],
+        "dependentSymbolsOrSystems": [],
+        "ownedState": [],
+        "focusedChecks": [
+          "TEST_TARGET:Assets/Editor/AndroidTestBuild.cs"
+        ],
+        "protectedSemantics": [
+          "EXISTING_WORKING_BEHAVIOR",
+          "APPROVED_GAMEPLAY_VALUES",
+          "SAVE_MEANING"
+        ],
+        "verifiedMemoryOnly": true,
+        "scopeExpansionAllowed": false,
+        "qaBypassAllowed": false,
+        "authorityExpanded": false
+      },
+      "codingArchitecture": {
+        "developmentMode": "GREENFIELD",
+        "stateOwnershipSystems": [
+          "CORE_STATE",
+          "INPUT",
+          "PRESENTATION",
+          "WORLD",
+          "PLAYER",
+          "COMBAT",
+          "AI",
+          "INTERACTION",
+          "ECONOMY",
+          "PROGRESSION",
+          "PLACEMENT",
+          "GOAL_STATE"
+        ],
+        "apiNames": [
+          "transitionRunState(next,reason)",
+          "submitPlayerIntent(intent)",
+          "queryWorld(position,action)",
+          "applyPlayerDelta(delta,reason)",
+          "resolveCombatAction(action)",
+          "advanceAgentIntent(agentId,context)",
+          "resolveInteraction(targetId,action)",
+          "applyTransaction(transaction)",
+          "advanceObjective(event)",
+          "placeEntity(request)",
+          "evaluateGoalState(context)",
+          "renderFromState(snapshot)"
+        ],
+        "invariantIds": [
+          "STATE_OWNER_ONLY_WRITE",
+          "NO_DUPLICATE_CAUSAL_REWARD",
+          "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+          "GOAL_STATE_EXCLUSIVE",
+          "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+          "INPUT_TO_STATE_CAUSALITY",
+          "SAVE_SCHEMA_VERSIONED",
+          "PLAYER_VITAL_BOUNDS",
+          "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+          "PLACEMENT_OCCUPANCY_CONSISTENT",
+          "PROGRESSION_REWARD_IDEMPOTENT"
+        ],
+        "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+      },
+      "architectureSnapshot": {
+        "version": 1,
+        "nodeCount": 0,
+        "edgeCount": 0,
+        "maxFunctionBodyBytes": 0,
+        "maxCallsPerFunction": 0,
+        "maxCalledByPerFunction": 0,
+        "maxStateWritesPerFunction": 0,
+        "maxSystemsPerFunction": 0,
+        "multiWriterStateCount": 0,
+        "stateWriterLinkCount": 0,
+        "multiOwnerStorageKeyCount": 0,
+        "storageOwnerLinkCount": 0,
+        "timerFunctionCount": 0,
+        "eventBindingCount": 0,
+        "largeFunctionCount": 0,
+        "broadSystemFunctionCount": 0
+      },
+      "responsibilityGraph": {
+        "nodeCount": 0,
+        "relevantNodes": [],
+        "relevantEdges": []
+      },
+      "behaviorChains": [
+        {
+          "id": "CORE_ACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "REAL_INPUT",
+            "RESPONSIBLE_FUNCTION",
+            "OWNED_STATE_CHANGE",
+            "OBSERVABLE_GAME_RESULT"
+          ]
+        },
+        {
+          "id": "PLACEMENT_CHAIN",
+          "required": true,
+          "steps": [
+            "POSITION_SELECTION",
+            "COST_OR_VALIDATION",
+            "ENTITY_MATERIALIZED_AT_POSITION",
+            "WORLD_OR_COMBAT_EFFECT"
+          ]
+        },
+        {
+          "id": "INTERACTION_CHAIN",
+          "required": true,
+          "steps": [
+            "TARGET_SELECTION_OR_APPROACH",
+            "REAL_INPUT",
+            "TARGET_STATE_CHANGE",
+            "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "COMBAT_CHAIN",
+          "required": true,
+          "steps": [
+            "ATTACK_INTENT",
+            "HIT_OR_REJECT_RESULT",
+            "HP_OR_COMBAT_STATE_CHANGE",
+            "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+          ]
+        },
+        {
+          "id": "PROGRESSION_CHAIN",
+          "required": true,
+          "steps": [
+            "OBJECTIVE_EVENT",
+            "PROGRESS_DELTA",
+            "REWARD_OR_UNLOCK",
+            "NEXT_GAMEPLAY_OPTION_CHANGED"
+          ]
+        },
+        {
+          "id": "STRATEGY_DIVERGENCE_CHAIN",
+          "required": true,
+          "steps": [
+            "CHOICE_A_AND_CHOICE_B",
+            "SAME_OR_EQUIVALENT_START_STATE",
+            "DIFFERENT_STATE_TRANSITIONS",
+            "DIFFERENT_OBSERVED_OUTCOME"
+          ]
+        }
+      ],
+      "seniorReview": {
+        "score": 100,
+        "hardBlockers": [],
+        "issues": []
+      },
+      "failureEvidence": [
+        "FAIL",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "system-steward:failure-signature:source-candidate-generation-failed",
+        "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE",
+        "role-result:implementation:FAIL",
+        "role-result:test:FAIL",
+        "role-result:performance:FAIL",
+        "source-generation-failure:EDIT_MATCH",
+        "coding-failure-fingerprint:unity|SAVE_RESTORE|PLACEMENT|STATE_FLOW|RELEASE|ANIMATION_FEEL|CORE_LOOP|PROGRESSION|SAVE|STATE_MACHINE|UI_STATE",
+        "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_r3a1fy%22%2C%22CODE_PATTERN%3Apat_1xg0er9%22%2C%22CODE_PATTERN%3Apat_vzhsq4%22%2C%22CODE_PATTERN%3Apat_1x7z0gk%22%2C%22CODE_PATTERN%3Apat_1th8gz4%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9b7b3c1df9b291d1f576%22%5D",
+        "shared-context-sync:MISSING",
+        "failure-cause:source-candidate-generation-failed",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PHASE4_FIXED_CONTEXT_CONTROLLED_AB%22%2C%22failureFingerprint%22%3A%22unity%7CSAVE_RESTORE%7CPLACEMENT%7CSTATE_FLOW%7CRELEASE%7CANIMATION_FEEL%7CCORE_LOOP%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CUI_STATE%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35508074069%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827%7C35508074069%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D"
+      ],
+      "writableScopeExpansionAllowed": false,
+      "learningAuthorityExpanded": false
+    },
+    "reuseKey": "87347827629c15547f7a1048",
+    "generatedAt": "2026-09-20T16:50:31.704Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codingMethod": {
+    "version": 2,
+    "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+    "compiledStrategyHint": "ARCHITECTURE_FIRST_GREENFIELD",
+    "candidateVariant": "primary",
+    "generationAttemptBudget": 3,
+    "speculativeAttemptBudgetApplied": false,
+    "fullWebInitialSeedStrategy": false,
+    "fullWebInitialSeedTargetBytes": [],
+    "responsibilityConfidence": "LOW",
+    "primaryTargets": [],
+    "primarySystems": [],
+    "dependentSystems": [],
+    "ownedState": [],
+    "semanticDiffBudget": {
+      "allowedSystems": [],
+      "preferredPrimarySymbols": [],
+      "maxSystemCount": 1,
+      "readOnlyImpactSystems": [],
+      "impactPredictionDoesNotGrantWriteAuthority": true,
+      "unrelatedSystemMutationForbidden": true,
+      "saveKeysMustRemainCompatible": []
+    },
+    "semanticDiffEnforcement": {
+      "version": 1,
+      "mode": "OBSERVE_ONLY",
+      "hardGate": false,
+      "pass": true,
+      "confidence": "LOW",
+      "developmentMode": "GREENFIELD",
+      "markerCount": 0,
+      "editCount": 1,
+      "touchedSystems": [],
+      "allowedSystems": [],
+      "unexpectedSystems": [],
+      "unprovenEditPaths": [],
+      "protectedSaveKeyCount": 0,
+      "saveKeyViolations": [],
+      "violations": [],
+      "ambiguousClassificationObserved": true,
+      "writableScopeExpansionAllowed": false,
+      "authorityExpanded": false,
+      "diagnosticPostcondition": {
+        "required": false,
+        "pass": true,
+        "type": null,
+        "file": null,
+        "reason": null
+      }
+    },
+    "causalReplay": {
+      "version": 2,
+      "required": true,
+      "prePatchReproduced": false,
+      "nodeTestTargets": [],
+      "executable": false,
+      "mode": "PLAN_ONLY",
+      "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+      "diagnosticType": null,
+      "diagnosticFile": null,
+      "diagnosticLine": null,
+      "diagnosticNeedle": null,
+      "diagnosticMicroTask": null,
+      "verifiedResponsibleSystem": null,
+      "diagnosticVerifier": null,
+      "identicalOrEquivalentInputStateRequired": true,
+      "canonicalQaStillRequired": true,
+      "sourceWrite": false,
+      "authorityExpanded": false
+    },
+    "requiredFocusedChecks": [
+      "TEST_TARGET:Assets/Editor/AndroidTestBuild.cs"
+    ],
+    "failureFingerprint": "unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT",
+    "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+    "verifiedFailureLocalMemoryCount": 0,
+    "verifiedFailureLocalMemoryIds": [],
+    "contextFiles": 1,
+    "contextBytes": 4793,
+    "contextMode": "STANDARD_CONTEXT",
+    "contextPreferenceRequested": null,
+    "contextPreferenceApplied": false,
+    "focusedSymbolCount": 0,
+    "exactSourceWindows": false,
+    "fullFileContextFallback": false,
+    "fullWebExpansionStages": 0,
+    "fullWebExpansionDocumentSeedRecoveries": 0,
+    "fullWebClosedHtmlEarlyStop": false,
+    "fullWebFinalAdditiveExpansion": false,
+    "fullWebAdditiveAttemptCreditUsed": false,
+    "fullWebProgressCreditCount": 0,
+    "fullWebProgressCreditUsed": false,
+    "baseAttemptBudget": 3,
+    "effectiveAttemptBudget": 3,
+    "fullWebRetryPromptCompacted": false,
+    "fullWebRetryPromptBytes": 0,
+    "fullWebFallbackBestPartialBytes": 0,
+    "intermediateGrowthBytes": [],
+    "intermediateGrowthTotalBytes": 0,
+    "repeatedIntermediateOutputs": 0,
+    "expansionStageTargets": [],
+    "generationAttempts": 3,
+    "generationRecoveryUsed": true,
+    "partialTimeoutRecovery": true,
+    "partialMalformedRecovery": false,
+    "streamedPartialEditRecovery": true,
+    "focusedFirstEditEarlyStop": false,
+    "focusedFinalRetry": true,
+    "focusedReplaceOnly": false,
+    "focusedReplaceStringRecovery": false,
+    "focusedFirstAttemptFastPath": false,
+    "malformedFastEscalation": false,
+    "focusedReplaceAnchorRotations": 0,
+    "focusedReplaceNoOpCreditUsed": false,
+    "focusedMinimalJsonContract": true,
+    "candidateProducedFirstAttempt": false,
+    "writableScopeExpansionAllowed": false,
+    "learningAuthorityExpanded": false
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "presentationQuality": {
+    "required": false,
+    "pass": null,
+    "authorityExpanded": false
+  },
+  "fullFileRewriteAllowed": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
