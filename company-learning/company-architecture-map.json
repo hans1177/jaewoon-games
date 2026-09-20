@@ -394,7 +394,7 @@
         "unrelatedRoadmapProgressInvalidatesActiveWorker": false,
         "workerExecutionOrAuthoritySemanticChangeInvalidatesActiveWorker": true,
         "bottleneckRepair": {
-          "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+          "state": "MERGED_MAIN_PR_1984",
           "triggerRunId": 35496729551,
           "confirmedCentralPolicyStaleWorkers": 7,
           "projectionOwner": "tools/vibe2-central-work-contract.mjs::workerExecutionPolicyProjection",
@@ -402,7 +402,8 @@
             "PRE_SOURCE_GENERATION",
             "PRE_CANDIDATE_WRITE"
           ],
-          "authorityChange": "NONE"
+          "authorityChange": "NONE",
+          "sourcePr": 1984
         }
       }
     },
