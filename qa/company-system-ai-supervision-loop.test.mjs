@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
 const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
@@ -86,4 +87,36 @@ test('verification-only System AI tasks run deterministic contracts before any m
   assert.match(workflow,/if: steps\.preverify\.outcome != 'success'/);
   assert.match(workflow,/const preverified=process\.env\.PREVERIFY_OUTCOME==='success'/);
   assert.match(workflow,/model-call-skipped:deterministic-verifier-already-satisfied/);
+});
+
+
+test('security recovery without a matching supervised executor fails closed instead of staying silently queued',()=>{
+  const result=dispatchRecovery({
+    recoveryInput:{tasks:[{
+      id:'recovery-security-missing',status:'queued',sourceQueue:'security',sourceTaskId:'security-run-123',
+      recoveryOwner:'SYSTEM_AI',recoveryStrategy:'SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW',failureStage:'SECURITY_IMMUNE_SCAN'
+    }]},
+    gameQueueInput:{tasks:[]},
+    systemAiQueueInput:{tasks:[]},
+    route:'all'
+  });
+  const row=result.recovery.tasks[0];
+  assert.equal(row.status,'blocked-executor-missing');
+  assert.ok(row.dispatchEvidence.includes('security-recovery-executor-missing'));
+  assert.equal(result.dispatched.length,0);
+  assert.equal(result.systemAi.tasks.length,0);
+});
+
+test('ordinary supervised recovery without a matching task keeps existing queued behavior',()=>{
+  const result=dispatchRecovery({
+    recoveryInput:{tasks:[{
+      id:'recovery-system-missing',status:'queued',sourceQueue:'system-ai',sourceTaskId:'sys-missing',
+      recoveryOwner:'SYSTEM_AI',recoveryStrategy:'ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK',failureStage:'SYSTEM_AI_IMPLEMENTATION'
+    }]},
+    gameQueueInput:{tasks:[]},
+    systemAiQueueInput:{tasks:[]},
+    route:'all'
+  });
+  assert.equal(result.recovery.tasks[0].status,'queued');
+  assert.equal(result.dispatched.length,0);
 });
