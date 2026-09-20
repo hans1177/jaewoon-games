@@ -32,7 +32,7 @@ function causalEvidence(evidence=[]){
   };
 }
 
-export function verifyNeuralRootCause({diagnosis=null,evidence=[]}={}){
+export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId=''}={}){
   const rows=uniq(evidence);
   const causal=causalEvidence(rows);
   const responsible=explicitResponsibleSystem(rows);
@@ -58,6 +58,7 @@ export function verifyNeuralRootCause({diagnosis=null,evidence=[]}={}){
   return{
     version:1,
     mode:'PHASE1_ROOT_CAUSE_VERIFIER',
+    sampleId:clean(sampleId)||null,
     state,
     causalRepairVerified,
     independentConfirmation,
@@ -89,6 +90,7 @@ export function neuralRootCauseEvidence(result={}){
   if(clean(result.mode)!=='PHASE1_ROOT_CAUSE_VERIFIER')return[];
   const payload={
     version:1,
+    sampleId:clean(result.sampleId)||null,
     state:clean(result.state)||'UNRESOLVED',
     causalRepairVerified:result.causalRepairVerified===true,
     independentConfirmation:result.independentConfirmation===true,

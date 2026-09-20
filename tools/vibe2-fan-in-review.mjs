@@ -81,7 +81,8 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('candidate-identity:PASS');
       const rootCause=verifyNeuralRootCause({
         diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
-        evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))]
+        evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))],
+        sampleId:resultSampleId(selectedResult)||clean(task.id)
       });
       for(const marker of neuralRootCauseEvidence(rootCause))evidence.add(marker);
       const neuralEventRoute=simulateNeuralEventRoute({

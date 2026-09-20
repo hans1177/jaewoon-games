@@ -1,5 +1,5 @@
 {
-  "version": 181,
+  "version": 182,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3790,35 +3790,27 @@
     }
   },
   "changeRecord": {
-    "id": "BUG_DEFENSE_SUPERVISED_WORKER_CONTEXT_SYNC_RUNTIME_V3_2026-09-20",
+    "id": "NEURAL_SHADOW_HARDENING_DISTINCT_QUALITY_SAMPLES_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_CANDIDATE_CI_ALL_PASS_RUNTIME_VALIDATION_QUEUED_2026-09-20",
-    "reason": "SYNC ALL WORKERS TO THE LATEST SUPERVISED BUG-DEFENSE SOURCE AND RUNTIME EVIDENCE. THE CANDIDATE ADVANCED PAST 55DB74A TO 0981354. RUNTIME V1 FAILED ON MISCLASSIFIED AVATAR-MOVEMENT AND SCOPE SPATIAL INPUT, V2 REDUCED TO COMPLETE-PLAYABLE-CYCLE ONLY, AND V3 IS RUNNING AFTER RETRY-ACTION LOOP REPAIR. SUPERVISOR PASS, REUSABLE LEARNING, AND MAIN PROMOTION REMAIN BLOCKED.",
+    "previousChangeRecordId": "BUG_DEFENSE_SUPERVISED_WORKER_CONTEXT_SYNC_RUNTIME_V3_2026-09-20",
+    "reason": "HARDEN MERGED NEURAL SHADOW OBSERVATION WITHOUT GRANTING PHASE2 EXECUTION AUTHORITY. POLICY/LOCK EVENTS CALIBRATE IN SHADOW WITHOUT UNRELATED ROOT-CAUSE PROOF; ROOT-CAUSE EVIDENCE GAINS DETERMINISTIC SAMPLE IDENTITY; PHASE2 REVIEW ELIGIBILITY REQUIRES DISTINCT IDENTIFIED ROOT-CAUSE SAMPLES, CALIBRATION ACCURACY, PREDICTION COVERAGE, LOW CONTRADICTION, AND ZERO SAMPLE CONFLICTS.",
     "invariants": {
-      "sharedWorkerContextRequired": true,
-      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
-      "exactCandidateCommit": "098135434c96e6396b7f20be52763789cc6b3531",
-      "draftPr": 1743,
-      "validatorFixDraftPr": 1758,
-      "validatorFixCiCorePass": true,
-      "runtimeV1RunId": 35478451968,
-      "runtimeV1Conclusion": "failure",
-      "runtimeV2RunId": 35478752746,
-      "runtimeV2Conclusion": "failure",
-      "runtimeV2RemainingPrimaryBlocker": "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED",
-      "runtimeV3RunId": 35479492190,
-      "runtimeV3Status": "in_progress",
-      "finalSupervisorDecisionRequired": true,
-      "reusableLearningBeforeSupervisorPassForbidden": true,
-      "automaticPromotionBlocked": true,
-      "parallelGameWorkPreserved": true
+      "existingWaveSchedulerRemainsAuthoritative": true,
+      "neuralExecutionAuthorityGranted": false,
+      "workerCreationAuthorityGranted": false,
+      "queueMutationAuthorityGranted": false,
+      "waveReorderAuthorityGranted": false,
+      "lockAcquisitionAuthorityGranted": false,
+      "automaticLearningAuthorityGranted": false,
+      "automaticPromotionAuthorityGranted": false,
+      "qualityGateWeakeningForbidden": true
     },
     "next": [
-      "INSPECT_RUNTIME_V3_RUN_35479492190",
-      "REPAIR_ONLY_CAUSAL_GAME_OR_VALIDATOR_RESPONSIBILITY_ON_FAILURE",
-      "KEEP_ALL_WORKERS_ON_LATEST_ROADMAP_CONTEXT",
-      "PROMOTE_REUSABLE_LEARNING_AND_MAIN_ONLY_AFTER_VERIFIED_SUPERVISOR_PASS"
+      "RUN_FULL_NEURAL_AND_CENTRAL_POLICY_REGRESSION",
+      "COLLECT_DISTINCT_DURABLE_SHADOW_SAMPLES",
+      "MEASURE_CALIBRATION_ACCURACY_AND_ROOT_CAUSE_CONTRADICTION_RATE",
+      "KEEP_PHASE2_EXECUTION_AUTHORITY_BLOCKED_UNTIL_EXPLICIT_PRIMARY_AND_SECURITY_REVIEW"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -6322,7 +6314,11 @@
       "phase2ShadowCannotCreateWorkers": true,
       "phase2ShadowCannotReorderWave": true,
       "phase2ShadowCannotAcquireLocks": true,
-      "phase2ShadowCannotPromoteItself": true
+      "phase2ShadowCannotPromoteItself": true,
+      "phase2ReviewRequiresQualityAndVolume": true,
+      "sampleVolumeAloneCannotQualifyPhase2Review": true,
+      "duplicateRootCauseSamplesCannotInflateReadiness": true,
+      "conflictingRootCauseSampleEvidenceBlocksReview": true
     },
     "changeRecord": {
       "id": "NEURAL_DEVELOPMENT_BRAIN_TARGET_ARCHITECTURE_V1_2026-09-20",
@@ -6620,7 +6616,37 @@
         "explicitCentralPolicyPromotionRequired": true,
         "disagreementReviewRequired": true,
         "waveAuditSampleSource": "DURABLE_QUEUE_EVIDENCE",
-        "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true
+        "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true,
+        "qualityGates": {
+          "calibrationAccuracyMinimum": 0.7,
+          "rootCausePredictionCoverageMinimum": 0.8,
+          "rootCausePredictionContradictionRateMaximum": 0.3,
+          "rootCauseSampleIdentityCoverageMinimum": 0.8,
+          "zeroRootCauseSampleConflictsRequired": true,
+          "duplicateSampleIdCountsOnce": true,
+          "sampleVolumeAloneSufficient": false,
+          "disagreementRemainsVisible": true,
+          "qualityGateMayGrantExecutionAuthority": false,
+          "qualityGateMayAutoPromote": false,
+          "rationale": "PHASE2_REVIEW_REQUIRES_SUFFICIENT_DISTINCT_AUDITABLE_SAMPLES_AND_ACCEPTABLE_SHADOW_DIAGNOSTIC_QUALITY"
+        },
+        "sampleIdentity": {
+          "source": "neural-root-cause.sampleId",
+          "requiredForVerifiedReadinessSample": true,
+          "legacyUnidentifiedEvidenceMayRemainVisible": true,
+          "legacyUnidentifiedEvidenceCannotAloneSatisfyIdentityCoverage": true,
+          "conflictingSameSampleResultsBlockReview": true,
+          "duplicateSameSampleCountsOnce": true
+        },
+        "hardening": {
+          "branch": "assistant/neural-shadow-hardening-main-v1",
+          "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY",
+          "preservesWaveSchedulerAuthority": true,
+          "neuralExecutionAuthorityGranted": false,
+          "automaticPromotionAllowed": false,
+          "automaticLearningAllowed": false,
+          "automaticTuningAllowed": false
+        }
       },
       "sampleIdentity": {
         "workerAndQa": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
@@ -6632,8 +6658,10 @@
         "evidenceFields": [
           "neural-shadow-feedback.sampleId",
           "neural-event-shadow.eventId",
-          "neural-shadow-wave-audit.sampleId"
-        ]
+          "neural-shadow-wave-audit.sampleId",
+          "neural-root-cause.sampleId"
+        ],
+        "rootCause": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH"
       }
     },
     "activation": {
