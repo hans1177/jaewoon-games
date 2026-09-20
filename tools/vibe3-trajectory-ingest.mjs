@@ -35,6 +35,36 @@ function inferPortableTags(record={}){
   return unique(tags);
 }
 
+function sanitizeObservableCodingTrace(record={}){
+  const trace=record?.observableCodingTrace;
+  if(!trace||clean(trace.boundary)!=='OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY')return null;
+  const steps=(Array.isArray(trace.steps)?trace.steps:[]).map((step,index)=>({
+    index:Number(step?.index)||index+1,
+    stage:upper(step?.stage||'OBSERVATION'),
+    action:clean(step?.action).slice(0,1200),
+    target:clean(step?.target).slice(0,800)||null,
+    observableHypothesis:clean(step?.observableHypothesis).slice(0,1200)||null,
+    decision:clean(step?.decision).slice(0,1200)||null,
+    evidence:unique((Array.isArray(step?.evidence)?step.evidence:[]).map(value=>clean(value).slice(0,1200))),
+    outcome:upper(step?.outcome)||null,
+    candidateId:clean(step?.candidateId)||null,
+    failureClass:upper(step?.failureClass)||null,
+    capabilityDomain:upper(step?.capabilityDomain)||null,
+  }));
+  return {
+    version:Number(trace.version)||1,
+    boundary:'OBSERVABLE_ACTIONS_AND_EVIDENCE_ONLY',
+    goal:clean(trace.goal||record.request).slice(0,2000),
+    capabilityDomains:unique((trace.capabilityDomains||[]).map(upper)),
+    steps,
+    reusablePrinciples:unique((trace.reusablePrinciples||[]).map(value=>clean(value).slice(0,1200))),
+    traceDigest:clean(trace.traceDigest)||null,
+    hiddenReasoningPersisted:false,
+    positivePromotionAuthority:false,
+    authority:'observable-coding-trace-only',
+  };
+}
+
 export function validateVibe3Trajectory(record={}){
   const blocked=[];
   const metadata=record.metadata||{};
@@ -71,6 +101,7 @@ export function validateVibe3Trajectory(record={}){
 function sampleFromTrajectory(record,validation,sourceFile){
   const failed=(record.candidates||[]).filter(item=>item.eligible!==true).map(item=>({id:clean(item.id),blockedReasons:Array.isArray(item.blockedReasons)?item.blockedReasons:[],failure:clean(item.failure)||null}));
   const sourcePaths=unique([record.metadata?.sourcePath,...(record.metadata?.sourcePaths||[])]);
+  const observableCodingTrace=sanitizeObservableCodingTrace(record);
   const input=JSON.stringify({
     sourceGraphDigest:record.sourceGraphDigest||null,
     selectedCandidateId:record.selectedCandidateId,
@@ -78,7 +109,9 @@ function sampleFromTrajectory(record,validation,sourceFile){
     repairAttempts:Array.isArray(record.repairAttempts)?record.repairAttempts:[],
     sourcePaths,
     portableTags:[...validation.tags],
+    observableCodingTrace,
     evidenceBoundary:'OBSERVABLE_ACTIONS_AND_VERIFICATION_ONLY',
+    hiddenReasoningPersisted:false,
     platformEvidenceTransferAllowed:false,
   },null,2);
   return {
@@ -100,7 +133,7 @@ function sampleFromTrajectory(record,validation,sourceFile){
     independentQa:validation.independentQa,
     browserQa:validation.browserQa,
     quality:{codeQuality:1,noRegression:true,playImprovement:clamp01(record.metadata?.playerImpactScore??1),ruleCompliance:1,trajectoryEvidence:1},
-    provenance:{sourceKind:'vibe3-trajectory',sourceRevision:validation.sourceRevision,gameId:clean(record.metadata?.gameId)||null,candidateId:clean(record.selectedCandidateId),trajectoryId:clean(record.trajectoryId),trajectoryFile:sourceFile,portableContextMayCrossPlatforms:true,platformPassEvidenceTransferAllowed:false},
+    provenance:{sourceKind:'vibe3-trajectory',sourceRevision:validation.sourceRevision,gameId:clean(record.metadata?.gameId)||null,candidateId:clean(record.selectedCandidateId),trajectoryId:clean(record.trajectoryId),trajectoryFile:sourceFile,observableCodingTraceIncluded:Boolean(observableCodingTrace),observableCodingTraceDigest:observableCodingTrace?.traceDigest||null,hiddenReasoningPersisted:false,portableContextMayCrossPlatforms:true,platformPassEvidenceTransferAllowed:false},
     verification:{independentQa:validation.independentQa,browserQa:validation.browserQa,runtime:validation.runtime,fullRegression:'PASS',exactRevision:'PASS',protectedState:'PASS',requirements:qaRequirementsForTask(validation.taskType)},
   };
 }
@@ -121,7 +154,7 @@ export function ingestVibe3Trajectories({trajectoryDir='company-learning/vibe3-t
     if(existing?.provenance?.sourceRevision===validation.sourceRevision&&existing?.provenance?.trajectoryId===trajectoryId){result.skipped.push({file,reason:'ALREADY_CURRENT'});continue;}
     const sample=sampleFromTrajectory(record,validation,file.replaceAll('\\','/'));
     fs.writeFileSync(outFile,`${JSON.stringify(sample,null,2)}\n`);
-    const item={trajectoryId,taskType:sample.taskType,project:sample.project,sourceRevision:sample.sourceRevision,tags:sample.tags,outFile};
+    const item={trajectoryId,taskType:sample.taskType,project:sample.project,sourceRevision:sample.sourceRevision,tags:sample.tags,capabilityDomains:sanitizeObservableCodingTrace(record)?.capabilityDomains||[],observableCodingTraceIncluded:sample.provenance.observableCodingTraceIncluded,outFile};
     if(existing)result.refreshed.push(item);else result.written.push(item);
   }
   return result;
