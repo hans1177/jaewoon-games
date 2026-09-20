@@ -1129,7 +1129,12 @@
         "actions-run:35489811444",
         "reservation-id:35489811444:1",
         "coding-trace:ctrace_7022dd1d29e03580f9fab379",
-        "fan-in-review:PASS"
+        "fan-in-review:PASS",
+        "candidate-sha:dfeddd9b2d64b9c6e90a9eef2bbf73b310a56e4b",
+        "base-main:fe994dc0c2c3375ed04727c3e6f9ff4e22d12697",
+        "actions-run:35490583003",
+        "reservation-id:35490583003:1",
+        "coding-trace:ctrace_55c0dce9d9628987e4679e75"
       ],
       "reusablePatterns": [
         "CAPABILITY:CODING_STRATEGY:CAUSAL_TRACE_CROSSCHECK",
@@ -1151,8 +1156,8 @@
       "avoidPatterns": [],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
