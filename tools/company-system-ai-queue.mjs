@@ -102,6 +102,25 @@ export function assignSecurityRecovery(queueInput,recoveryInput,{recoveryId='',d
   return{queue:{...queue,tasks},recovery,task};
 }
 
+export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}={}){
+  const queue=normalizeSystemAiQueue(queueInput);
+  const taskId=clean(id);
+  if(!taskId)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TARGET_ID_REQUIRED');
+  const task=queue.tasks.find(x=>x.id===taskId);
+  if(!task)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TARGET_NOT_FOUND:'+taskId);
+  if(task.status!=='queued')throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TARGET_NOT_QUEUED:'+taskId+':'+task.status);
+  if(task.supervisorReviewRequired!==true)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_SUPERVISION_REQUIRED:'+taskId);
+  if(!(task.evidence||[]).includes('primary-ai-security-recovery-assignment:APPROVE'))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ASSIGNMENT_EVIDENCE_REQUIRED:'+taskId);
+  if(!(task.evidence||[]).some(x=>clean(x).startsWith('security-recovery:')))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_LINK_EVIDENCE_REQUIRED:'+taskId);
+  if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_DEPENDENCY_NOT_READY:'+taskId);
+  const active=queue.tasks.filter(t=>t.status==='running'&&t.id!==taskId);
+  if(active.some(other=>overlap(task,other)))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ACTIVE_FILE_CONFLICT:'+taskId);
+  const stamp=now();
+  const rid=clean(reservationId)||`system-ai-security-recovery:${Date.now()}`;
+  const tasks=queue.tasks.map(t=>t.id===taskId?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid};
+}
+
 export function reserveSystemAiBatch(queueInput,{max=16,reservationId=''}={}){
   const queue=normalizeSystemAiQueue(queueInput), active=queue.tasks.filter(t=>t.status==='running');
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
@@ -155,6 +174,11 @@ export function runSystemAiQueue(args={}){
     });
     writeJson(file,result.queue);
     writeJson(recoveryFile,result.recovery);
+    return{command,...result};
+  }
+  if(command==='reserve-security-recovery'){
+    const result=reserveSecurityRecoveryTask(queue,{id:args.id,reservationId:args.reservation});
+    writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }
   if(command==='reserve'){
