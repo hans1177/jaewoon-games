@@ -859,7 +859,49 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
   return {candidateCount:count,maxCandidates:5,reason:repeated?'repeated-verified-failure':highRisk?'high-risk':'normal',winnerRule:'VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK',gateBypass:false};
 }
 
-export function buildBenchmarkLadder(masteryInput={}){
+function phase4GeneralizationBenchmarkCases(experienceInput={},companyQueueInput={}){
+  const catalogGames=uniq((companyQueueInput?.items||[]).map(row=>clean(row?.gameId)).filter(Boolean)).sort();
+  const cases=[];
+  for(const record of experienceInput?.records||[]){
+    if(record?.verified!==true||record?.reusable!==true||clean(record?.taskType)!=='coding-capability-distillation')continue;
+    const lifecycle=record?.capabilityLifecycle||{};
+    if(lifecycle.generalizationCandidate!==true||lifecycle.strongGeneralizationVerified===true||lifecycle.retrievalEligible===false)continue;
+    const seenGames=new Set([
+      clean(record?.gameId),
+      ...(record?.capabilityApplications||[]).map(row=>clean(row?.gameId)),
+      ...(record?.capabilityBenchmarks||[]).map(row=>clean(row?.gameId))
+    ].filter(Boolean));
+    const holdoutGameId=catalogGames.find(gameId=>!seenGames.has(gameId))||null;
+    const pairId=`phase4-pair-${hash([clean(record.id),holdoutGameId||'unassigned'].join('|'))}`;
+    const unseenProblemFingerprint=holdoutGameId?`phase4-unseen-${hash([clean(record.id),holdoutGameId,'screen-v1'].join('|'))}`:null;
+    cases.push({
+      id:`phase4-generalization-${clean(record.id)}`,
+      track:'CAPABILITY_GENERALIZATION',
+      level:1,
+      state:holdoutGameId?'READY_FOR_UNSEEN_SCREEN':'WAITING_FOR_UNSEEN_GAME',
+      countsAsTrainingSample:false,
+      countsAsProductionPass:false,
+      productionPreemptible:true,
+      capabilityId:clean(record.id),
+      sourceGameId:clean(record.gameId)||null,
+      targetEngine:lower(record.engine)||'web',
+      holdoutGameId,
+      pairId,
+      unseenProblemFingerprint,
+      pairRoles:['CONTROL','CHALLENGER'],
+      pairedControlChallengerRequired:true,
+      screenOnly:true,
+      mayPromoteGeneralization:false,
+      fixedBetweenVariants:['NON_TARGET_CONTEXT','WRITABLE_SCOPE','MODEL_BUDGET','QA_CONTRACT'],
+      requiredVerification:['UNSEEN_GAME','UNSEEN_PROBLEM_FINGERPRINT','PAIRED_CONTROL_CHALLENGER','FRESH_INDEPENDENT_QA','REGRESSION','NATIVE_RUNTIME_WHEN_REQUIRED','CAPABILITY_SPECIFIC_SUPPORT','ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS'],
+      promotionRule:'SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE',
+      authority:'practice-and-measurement-only'
+    });
+  }
+  return cases;
+}
+
+export function buildBenchmarkLadder(masteryInput={},experienceInput={},companyQueueInput={}){
   const state=createMasteryState(masteryInput);
   const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
   const cases=[];
@@ -868,7 +910,8 @@ export function buildBenchmarkLadder(masteryInput={}){
     const level=Math.max(1,Math.min(10,Math.ceil(avg)));
     cases.push({id:`mastery-${lower(track)}-l${level}`,track,level,state:'READY_FOR_VERIFIED_PRACTICE',countsAsTrainingSample:false,requiredVerification:['SYNTAX','RUNTIME_WHEN_APPLICABLE','INDEPENDENT_QA','REGRESSION'],promotionRule:'ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION'});
   }
-  return {version:1,kind:'vibe2-benchmark-ladder',cases,authority:'practice-and-measurement-only'};
+  const phase4GeneralizationCases=phase4GeneralizationBenchmarkCases(experienceInput,companyQueueInput);
+  return {version:1,kind:'vibe2-benchmark-ladder',cases:[...cases,...phase4GeneralizationCases],phase4GeneralizationCases:phase4GeneralizationCases.length,authority:'practice-and-measurement-only'};
 }
 
 export function enrichQueueForCandidateTournaments(queueInput={},masteryInput={}){
@@ -912,17 +955,38 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
+  if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
-export function buildIdlePracticeQueue(masteryInput={}){
+export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
+  const phase4Drills=(benchmarkInput?.cases||[])
+    .filter(row=>row?.track==='CAPABILITY_GENERALIZATION'&&row?.state==='READY_FOR_UNSEEN_SCREEN'&&row?.screenOnly===true)
+    .flatMap(row=>['CONTROL','CHALLENGER'].map(role=>({
+      id:`${clean(row.id)}-${lower(role)}`,
+      kind:'CAPABILITY_GENERALIZATION_SCREEN',
+      priority:'low',
+      productionPreemptible:true,
+      countsAsProductionPass:false,
+      domains:['CAPABILITY_GENERALIZATION'],
+      phase4Benchmark:true,
+      phase4CapabilityId:clean(row.capabilityId),
+      phase4BenchmarkCaseId:clean(row.id),
+      phase4PairId:clean(row.pairId),
+      phase4Role:role,
+      holdoutGameId:clean(row.holdoutGameId),
+      targetEngine:lower(row.targetEngine)||'web',
+      unseenProblemFingerprint:clean(row.unseenProblemFingerprint),
+      mayPromoteGeneralization:false
+    })));
   const drills=[
+    ...phase4Drills,
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
-  return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,drills};
+  return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,phase4GeneralizationDrills:phase4Drills.length,drills};
 }
 
 function isIdlePracticeTask(task={}){
@@ -982,22 +1046,41 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const drill=(idlePracticeInput?.drills||[]).find(row=>!represented.has(idlePracticeTaskId(row)));
   if(!drill)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:'NO_NEW_PRACTICE_DRILL'};
   const id=idlePracticeTaskId(drill);
+  const phase4=drill?.phase4Benchmark===true;
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
     `domains=${(drill.domains||[]).join(',')||'GENERAL'}`,
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
+    phase4?`phase4CapabilityId=${clean(drill.phase4CapabilityId)}`:'',
+    phase4?`phase4BenchmarkCaseId=${clean(drill.phase4BenchmarkCaseId)}`:'',
+    phase4?`phase4PairId=${clean(drill.phase4PairId)}`:'',
+    phase4?`phase4Role=${upper(drill.phase4Role)}`:'',
+    phase4?`phase4HoldoutGameId=${clean(drill.holdoutGameId)}`:'',
+    phase4?`phase4UnseenProblemFingerprint=${clean(drill.unseenProblemFingerprint)}`:'',
+    phase4?'phase4ScreenOnly=YES':'',
     '소스 파일을 수정하지 않는다. '+practiceInstructionForDrill(drill),
-    '이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.'
+    '이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.',
+    phase4?'이 screen 결과 자체는 GENERALIZED_VERIFIED 증거로 사용할 수 없다. 실제 fresh QA/regression/native runtime 증거는 별도 기존 검증 경로가 필요하다.':''
   ].filter(Boolean).join('\n');
+  const phase4Evidence=phase4?[
+    'phase4-generalization-screen-only',
+    `phase4-capability-id:${clean(drill.phase4CapabilityId)}`,
+    `phase4-benchmark-case:${clean(drill.phase4BenchmarkCaseId)}`,
+    `phase4-benchmark-pair:${clean(drill.phase4PairId)}`,
+    `phase4-benchmark-role:${upper(drill.phase4Role)}`,
+    `phase4-unseen-game:${clean(drill.holdoutGameId)}`,
+    `phase4-unseen-problem-fingerprint:${clean(drill.unseenProblemFingerprint)}`,
+    'phase4-strong-generalization-evidence:NO'
+  ]:[];
   const task={
-    id,gameId:null,target:'web',department:'development',type:'research',goal,
+    id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:phase4?(lower(drill.targetEngine)||'web'):'web',department:'development',type:'research',goal,
     responsibleFiles:[],dependencies:[],priority:'low',releaseState:'other',status:'queued',
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
-    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`)],
-    completionCriteria:['PRACTICE_ANALYSIS_COMPLETED','SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO']
+    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence],
+    completionCriteria:['PRACTICE_ANALYSIS_COMPLETED','SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
   return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'IDLE_PRACTICE_ENQUEUED',task};
 }
@@ -1310,8 +1393,8 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const constitution=buildCodingConstitution(driftApplied.state);
   driftApplied.state.codingConstitution=constitution;
   driftApplied.state.updatedAt=new Date().toISOString();
-  const benchmark=buildBenchmarkLadder(driftApplied.state);
-  const idlePractice=buildIdlePracticeQueue(driftApplied.state);
+  const benchmark=buildBenchmarkLadder(driftApplied.state,experienceInput,companyQueueInput);
+  const idlePractice=buildIdlePracticeQueue(driftApplied.state,benchmark);
   const tournament=enrichQueueForCandidateTournaments(queueInput,driftApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
@@ -1362,7 +1445,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_ARCHITECTURE_DRIFT_OUTCOMES_ADDED=${result.addedArchitectureDriftOutcomes||0}`);
   console.log(`VIBE2_CODING_CONSTITUTION_RULES=${result.codingConstitutionRuleCount||0}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
+  console.log(`VIBE2_PHASE4_GENERALIZATION_BENCHMARK_CASES=${result.benchmark.phase4GeneralizationCases||0}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
+  console.log(`VIBE2_PHASE4_GENERALIZATION_PRACTICE_DRILLS=${result.idlePractice.phase4GeneralizationDrills||0}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);
   console.log(`VIBE2_IDLE_PRACTICE_TASK_ADDED=${result.idlePracticeTaskAdded?'YES':'NO'}`);
