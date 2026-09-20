@@ -197,9 +197,8 @@ function checkNodeSyntax(text, ext, file) {
   try { runNodeSyntax(text,'commonjs'); return; }
   catch { throw syntaxFailure(file,moduleError); }
 }
-function htmlScriptAttribute(attributes='', name='') {
-  const pattern=new RegExp('\\b'+name+'\\s*=\\s*(?:"([^"]*)"|\\'([^\\']*)\\'|([^\\s"\\'=<>\\x60]+))','i');
-  const match=String(attributes||'').match(pattern);
+function htmlScriptType(attributes='') {
+  const match=String(attributes||'').match(/\btype\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>\x60]+))/i);
   return clean(match?.[1]??match?.[2]??match?.[3]??'');
 }
 function checkHtmlInlineScriptSyntax(text, file) {
@@ -210,7 +209,7 @@ function checkHtmlInlineScriptSyntax(text, file) {
     const attributes=String(match[1]||'');
     const body=String(match[2]||'');
     if(/\bsrc\s*=/i.test(attributes)||!body.trim())continue;
-    const type=htmlScriptAttribute(attributes,'type').toLowerCase();
+    const type=htmlScriptType(attributes).toLowerCase();
     const executable=!type||type==='module'||/^(?:text|application)\/(?:java|ecma)script(?:\s*;|$)/i.test(type);
     if(!executable)continue;
     try{runNodeSyntax(body,type==='module'?'module':'commonjs');}
