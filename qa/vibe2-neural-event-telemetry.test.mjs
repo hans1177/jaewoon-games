@@ -72,11 +72,14 @@ test('duplicate event identity counts once and conflicting replay stays visible'
   const conflict=marker({
     eventId:'task-r|run-1:1|primary|candidate-a',
     eventType:'QA_RESULT',
-    actionKind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR'
+    actionKind:'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR',
+    fireAllowed:true
   });
   const summary=summarizeNeuralEventShadowEvidence([a,duplicate,conflict]);
   assert.equal(summary.rawEvidenceRows,3);
   assert.equal(summary.total,1);
   assert.equal(summary.duplicateEventRows,2);
   assert.equal(summary.eventConflicts,1);
+  assert.equal(summary.unauthorizedFireCount,1);
+  assert.equal(summary.safetyInvariantPass,false);
 });
