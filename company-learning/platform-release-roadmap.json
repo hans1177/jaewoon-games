@@ -1,5 +1,5 @@
 {
-  "version": 210,
+  "version": 211,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8548,6 +8548,61 @@
       "failedWeatherScopeRoutesTo": "ASSET_REPAIR_REQUIRED"
     },
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "authorityExpansion": false
+  },
+  "webValidationBottleneckAdapterContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "enabled": true,
+    "purpose": "TRANSLATE_EXISTING_REAL_GAMEPLAY_INTO_APPROVED_SCOPE_EVIDENCE_BEFORE_REPAIR_GENERATION",
+    "bottleneckEvidence": {
+      "developmentQueueGames": 14,
+      "webVibeRepairRequired": 14,
+      "webPassed": 0,
+      "nativeStarted": 0,
+      "measuredAt": "2026-09-20",
+      "primaryCluster": "APPROVED_SCOPE_AND_REAL_MECHANIC_RECOGNITION"
+    },
+    "deterministicAdapter": {
+      "first": true,
+      "sourceWrite": false,
+      "inferFromActualControlsHandlersStateAndWorldSignals": true,
+      "output": "EXACT_SCOPE_TO_REAL_MECHANIC_BINDING_PLAN",
+      "noSyntheticGameplayEvidence": true,
+      "noTestHarnessControls": true,
+      "noGateWeakening": true
+    },
+    "externalAiAdvisory": {
+      "enabled": true,
+      "providerPriority": [
+        "GEMINI",
+        "VIBE_LOCAL_OLLAMA"
+      ],
+      "cloudProviderRequiresConfiguredSecret": true,
+      "ambiguousMappingsOnly": true,
+      "maySuggestMappings": true,
+      "maySuggestMinimalRepairTargets": true,
+      "directGameSourceWrite": false,
+      "directProductionPass": false,
+      "directQueueMutation": false,
+      "rawReasoningPersistence": false,
+      "mustBeRecheckedByDeterministicAndRuntimeQa": true,
+      "cloudFailureFallsBackWithoutBlocking": true
+    },
+    "execution": {
+      "existingWaveSchedulerOnly": true,
+      "maxConcurrentGames": 20,
+      "prioritizeWebRepairBottleneck": true,
+      "firstPilotGameId": "fantasy-survival",
+      "generalizeAfterPilotQa": true
+    },
+    "successCriteria": {
+      "approvedScopeMissingFalsePositiveReduced": true,
+      "existingRealMechanicsReusedBeforeNewFeatureCreation": true,
+      "runtimeInteractionStillRequired": true,
+      "actualStateChangeStillRequired": true,
+      "platformPromotionGateUnchanged": true
+    },
     "authorityExpansion": false
   }
 }
