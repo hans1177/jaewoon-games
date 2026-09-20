@@ -9921,7 +9921,7 @@
       "label": "제4규칙",
       "enabled": true,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
-      "objective": "VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_WITHOUT_EXPANDING_AUTHORITY_OR_WEAKENING_EXISTING_SECURITY_QA_AND_RELEASE_GATES",
+      "objective": "VIBE_MAY_CONTINUOUSLY_IMPROVE_ITS_OWN_INTERNAL_SYSTEM_ARCHITECTURE_AND_CAPABILITIES_AND_MAY_EXPAND_ITS_INTERNAL_NEURAL_STRUCTURE_AT_THE_FINAL_ORDERED_STAGE_WHEN_CAUSAL_EVIDENCE_AND_ALL_EXISTING_QA_SECURITY_AND_AUTHORITY_INVARIANTS_PASS",
       "vibeIsPrimary": true,
       "externalAndAssistantAiRole": "SUPPORTING_ONLY_WITHIN_EXISTING_CENTRAL_CONTRACT",
       "evolutionCycle": [
@@ -9962,9 +9962,33 @@
         "autonomousAuthorityExpansion": false,
         "automaticPolicyCreation": false,
         "automaticGateWeakening": false,
-        "currentAuthorization": false,
-        "state": "DEFERRED_UNTIL_RULE_1_RULE_2_RULE_3_QA_AND_ATOMIC_NEURON_STABILITY",
-        "automaticActivationForbidden": true
+        "currentAuthorization": "EVIDENCE_GATED",
+        "state": "ELIGIBLE_WHEN_RUNTIME_READINESS_EVIDENCE_PASS",
+        "automaticActivationForbidden": false,
+        "activationMode": "VIBE_SELF_ACTIVATES_WHEN_VERIFIED_READINESS_EVIDENCE_PASSES",
+        "evidenceGatedSelfActivationAllowed": true,
+        "ownerApprovalRequiredAfterPrerequisites": false,
+        "ungatedAutomaticActivationForbidden": true,
+        "internalNeuralStructureExpansionAllowed": true,
+        "neuralExecutionAuthorityExpansionAllowed": false,
+        "runtimeReadinessEvidence": [
+          "RULE_1_QA_PASS",
+          "RULE_2_QA_PASS",
+          "RULE_3_QA_PASS",
+          "ATOMIC_NEURON_AND_MICRO_FANIN_QA_PASS",
+          "SHARED_CONTEXT_SYNC_QA_PASS",
+          "SECURITY_IMMUNE_QA_PASS"
+        ],
+        "adoptionStillRequires": [
+          "STRUCTURAL_CAUSE_JUSTIFIES_NEURAL_EXPANSION",
+          "AT_LEAST_TWO_ALTERNATIVES_COMPARED",
+          "SAME_FAILURE_BEFORE_FAIL_AFTER_PASS",
+          "RELATED_AND_FULL_REGRESSION_PASS",
+          "SECURITY_PASS",
+          "BEFORE_AFTER_METRIC_IMPROVED",
+          "EXECUTION_AUTHORITY_UNCHANGED",
+          "QA_SECURITY_RELEASE_GATES_UNCHANGED"
+        ]
       },
       "invariants": {
         "authorityExpansion": false,
@@ -9990,9 +10014,9 @@
       ],
       "failureBehavior": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING",
       "completionIsCheckpointNotStop": true,
-      "operationalStatus": "SELF_ARCHITECTURE_PIPELINE_IMPLEMENTED_NEURAL_EXPANSION_DEFERRED_LAST_STAGE",
-      "currentNeuralExpansionAuthorization": false,
-      "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITHOUT_NEURAL_AUTHORITY_EXPANSION"
+      "operationalStatus": "SELF_ARCHITECTURE_PIPELINE_IMPLEMENTED_NEURAL_EXPANSION_EVIDENCE_GATED",
+      "currentNeuralExpansionAuthorization": "EVIDENCE_GATED_SELF_ACTIVATION",
+      "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITH_EVIDENCE_GATED_FINAL_NEURAL_EXPANSION"
     },
     "rule1": {
       "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
