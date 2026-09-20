@@ -6,6 +6,7 @@ import {Script} from 'node:vm';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
+import {buildWebContractAdapterPlan,webContractAdapterGuidance} from './company-web-contract-adapter.mjs';
 import {buildVibeDevelopmentContext,clipPreservedSourceForModel} from './company-vibe2-gameplay-intelligence.mjs';
 
 const REAL_ARTIFACT_TYPE='REAL_PLAYABLE_GAME';
@@ -227,19 +228,23 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
   void candidateId;void sourceCommit;void model;
   const inventory=deriveApprovedScopeInventory(baseline);
   const preserved=buildPreservedSharedGame({gameId,gameName,sourcePath,inventory})||buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory});
+  const webContractAdapter=preserved?buildWebContractAdapterPlan({html:preserved.html,inventory}):null;
   const preservationBlockers=[...(preserved?.review?.blockers||[])];
   if(forceRepair)preservationBlockers.push(`RUNTIME_REWORK_REQUIRED:${clean(repairReason)||'CANONICAL_DEVELOPMENT_REWORK'}`);
   const developmentContext=buildVibeDevelopmentContext({gameId,genre:inferDevelopmentGenre({gameId,baseline}),baseline,inventory,existingHtml:preserved?.html||'',blockers:preservationBlockers});
   if(!preserved)throw new Error('VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING');
   if(forceRepair||preserved.preservationEligible!==true){
-    const reason=preservationBlockers.join('|')||'WEB_RUNTIME_OR_CONTRACT_REPAIR_REQUIRED';
-    throw new Error(`VIBE_WEB_IMPLEMENTATION_REQUIRED:${forceRepair?'WEB_REPAIR':'WEB_BASE_IMPLEMENTATION'}:${reason}`);
+    const adapterHint=webContractAdapter?webContractAdapterGuidance(webContractAdapter).replace(/\s+/g,' ').slice(0,900):'';
+    const reason=[preservationBlockers.join('|')||'WEB_RUNTIME_OR_CONTRACT_REPAIR_REQUIRED',adapterHint].filter(Boolean).join('|');
+    const error=new Error(`VIBE_WEB_IMPLEMENTATION_REQUIRED:${forceRepair?'WEB_REPAIR':'WEB_BASE_IMPLEMENTATION'}:${reason}`);
+    error.webContractAdapterPlan=webContractAdapter;
+    throw error;
   }
   const result=preserved,review=preserved.review;
-  const generation={mode:'SOURCE_PRESERVED_VALIDATION_ONLY',modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null,developmentContext,developmentOwner:'VIBE2_VIBE3',nonVibeGameSourceWrite:false};
+  const generation={mode:'SOURCE_PRESERVED_VALIDATION_ONLY',modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null,developmentContext,developmentOwner:'VIBE2_VIBE3',nonVibeGameSourceWrite:false,webContractAdapter};
   fs.mkdirSync(candidatePath,{recursive:true});
   fs.writeFileSync(path.join(candidatePath,'index.html'),result.html+'\n','utf8');
-  return{result,review,generation,approvedScopeInventory:result.approvedScopeInventory||inventory};
+  return{result,review,generation,approvedScopeInventory:result.approvedScopeInventory||inventory,webContractAdapter};
 }
 
 async function main(){
@@ -259,13 +264,14 @@ async function main(){
       vibeWebImplementationRequired:Boolean(signal),
       vibeWebRequestedStage:signal?.[1]||null,
       vibeWebImplementationReason:signal?.[2]||null,
+      webContractAdapter:error?.webContractAdapterPlan||null,
       createdAt:new Date().toISOString()
     });
     throw error;
   }
-  const {result,review,generation,approvedScopeInventory}=built;
+  const {result,review,generation,approvedScopeInventory,webContractAdapter}=built;
   const sourceRepaired=false;
-  writeJson(evidenceFile,{version:14,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,webRole:'PREPLATFORM_PLAYABLE_GAME',testHarness:false,sourcePreserved:generation.sourcePreserved,sourceRepaired,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},preplatformImplementationPolicy:WEB_PREPLATFORM_IMPLEMENTATION_POLICY,vibeDevelopmentContext:generation.developmentContext,generation,bootstrapContract:review,createdAt:new Date().toISOString()});
+  writeJson(evidenceFile,{version:14,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,webRole:'PREPLATFORM_PLAYABLE_GAME',testHarness:false,sourcePreserved:generation.sourcePreserved,sourceRepaired,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},preplatformImplementationPolicy:WEB_PREPLATFORM_IMPLEMENTATION_POLICY,vibeDevelopmentContext:generation.developmentContext,webContractAdapter,generation,bootstrapContract:review,createdAt:new Date().toISOString()});
   void LEGACY_WORKFLOW_PROBE;
   console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');
   console.log('WEB_ARTIFACT_TYPE='+REAL_ARTIFACT_TYPE);
@@ -284,6 +290,8 @@ async function main(){
   console.log('VIBE_IMPLEMENTATION_OWNER=YES');
   console.log('MODEL_INVOKED=NO');
   console.log('MODEL_USED=NO');
+  console.log('WEB_CONTRACT_ADAPTER=ENABLED');
+  console.log('WEB_CONTRACT_EXTERNAL_AI_ADVISORY=DEFERRED_TO_VERIFIED_DISTILLATION_LANE');
   console.log('FORCED_REPAIR='+(generation.forcedRepair?'YES':'NO'));
   console.log('GAMEPLAY_SKETCH_SOURCE='+(generation.developmentContext?.gameplaySketch?.source||'NONE'));
   console.log('VIBE_PATCH_TASKS='+(generation.developmentContext?.patchPlan?.tasks?.length||0));
