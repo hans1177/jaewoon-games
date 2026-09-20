@@ -366,6 +366,66 @@ test('existing queued exact Web repair refreshes its goal from latest company ru
   assert.ok(refreshed.evidence.includes('company-runtime-failure-evidence:refreshed'));
 });
 
+test('supervised exact Web repair keeps supervisor goal when runtime evidence refreshes',()=>{
+  const root=tempRepo();
+  const gameId='supervised-refresh-web-runtime';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing game</main></body></html>','utf8');
+  const exact={
+    id:`${gameId}-web-runtime-repair-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\nkeep this supervisor decomposition',
+    releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,blocker:null,
+    productionMode:'SUPERVISED_VIBE_COAUTHORING',supervisionApproved:false,
+    supervisionContract:{required:true,automaticPromotionAllowed:false},
+    evidence:['company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','supervised-web-build:required']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Supervised Refresh Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Supervised Refresh Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      vibeWebRequestedStage:'WEB_BASE_IMPLEMENTATION',
+      vibeWebImplementationReason:'REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_PLAYABLE_WEB_GAME_REQUIRED',
+      webValidationLastAttemptAt:'2026-09-20T00:01:00.000Z'
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[exact]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const refreshed=result.queue.tasks.find(row=>row.id===exact.id);
+  assert.equal(refreshed.goal,exact.goal);
+  assert.equal(refreshed.productionMode,'SUPERVISED_VIBE_COAUTHORING');
+  assert.equal(refreshed.supervisionContract.required,true);
+  assert.ok(refreshed.evidence.includes('company-runtime-failure-evidence:refreshed'));
+  assert.ok(refreshed.evidence.includes('company-runtime-failure-evidence:supervised-goal-preserved'));
+});
+
+test('major WEB_REPAIR is supervised while a narrow micro repair remains autonomous',()=>{
+  const root=tempRepo();
+  for(const gameId of ['major-repair-web','micro-repair-web']){
+    const sourceRoot=path.join(root,'web-games',gameId);
+    fs.mkdirSync(sourceRoot,{recursive:true});
+    fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing game</main></body></html>','utf8');
+  }
+  const catalog={games:[
+    {id:'major-repair-web',name:'Major',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/major-repair-web/'},
+    {id:'micro-repair-web',name:'Micro',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/micro-repair-web/'}
+  ]};
+  const developmentQueue={items:[
+    {gameId:'major-repair-web',gameName:'Major',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:'web-games/major-repair-web',sourcePath:'web-games/major-repair-web',vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_PLAYABLE_WEB_GAME_REQUIRED'},
+    {gameId:'micro-repair-web',gameName:'Micro',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:'web-games/micro-repair-web',sourcePath:'web-games/micro-repair-web',vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED'}
+  ]};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue,queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20});
+  const major=result.queue.tasks.find(row=>row.gameId==='major-repair-web'&&row.id.endsWith('-web-runtime-repair-v1'));
+  const micro=result.queue.tasks.find(row=>row.gameId==='micro-repair-web'&&row.id.endsWith('-web-runtime-repair-v1'));
+  assert.equal(major.productionMode,'SUPERVISED_VIBE_COAUTHORING');
+  assert.equal(major.supervisionContract.required,true);
+  assert.ok(major.evidence.includes('supervised-web-build:required'));
+  assert.equal(micro.productionMode,'AUTONOMOUS_VIBE');
+  assert.equal(micro.supervisionContract,null);
+});
 test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
   const root=tempRepo();
   const stale={id:'stale-dev',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',goal:'old development work',releaseState:'development-confirmed',status:'running',reservationId:'run-1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T10:00:00Z'};
