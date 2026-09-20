@@ -1,5 +1,5 @@
 {
-  "version": 28,
+  "version": 29,
   "updatedAt": "2026-09-20",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -3571,6 +3571,156 @@
       },
       "catalogOrder": 24,
       "selectedPlatform": "UNITY"
+    },
+    {
+      "id": "ant-simulator",
+      "name": "개미 시뮬레이터",
+      "description": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
+      "genre": [
+        "시뮬레이션",
+        "오픈월드",
+        "멀티플레이",
+        "생존"
+      ],
+      "image": "assets/insect-main-v3.webp",
+      "webPath": "/web-games/ant-simulator/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · Web 멀티 검증 → Roblox",
+      "homepageRecentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "시뮬레이션",
+          "오픈월드",
+          "멀티플레이",
+          "생존"
+        ],
+        "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
+        "subgenre": "",
+        "playMode": "multiplayer",
+        "playModeLabel": "실시간 멀티플레이",
+        "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+        "updatedAt": "2026-09-20T06:55:00.000Z",
+        "status": "WEB_VIBE_IMPLEMENTED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 25,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "ant-simulator",
+          "name": "개미 시뮬레이터",
+          "description": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
+          "genres": [
+            "시뮬레이션",
+            "오픈월드",
+            "멀티플레이",
+            "생존"
+          ],
+          "image": "assets/insect-main-v3.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "roblox",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Web 멀티 검증 → Roblox"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/ant-simulator/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 멀티 검증 → Roblox",
+          "recentWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "시뮬레이션",
+              "오픈월드",
+              "멀티플레이",
+              "생존"
+            ],
+            "genreLabel": "시뮬레이션 · 오픈월드 · 멀티플레이 · 생존",
+            "subgenre": "",
+            "playMode": "multiplayer",
+            "playModeLabel": "실시간 멀티플레이",
+            "latestWork": "3종 개미 종족 선택, 병정/일개미 클래스, 종족별 AI 개미 10마리와 AI 여왕, 대형 오픈월드, 곤충 5종, 거미·바퀴벌레 선공, 실시간 방 멀티 구현",
+            "updatedAt": "2026-09-20T06:55:00.000Z",
+            "status": "WEB_VIBE_IMPLEMENTED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 25,
+      "selectedPlatform": "ROBLOX"
     }
   ],
   "runtimeAuthority": "company-runtime",
