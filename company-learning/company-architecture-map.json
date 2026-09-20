@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 53,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1591,6 +1591,25 @@
     ],
     "presentationOnlyDefault": true,
     "gameplayMutationWithoutApprovedDesign": false,
+    "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "authorityExpansion": false
+  },
+  "webValidationContractAdapter": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#webValidationBottleneckAdapterContract",
+    "flow": [
+      "READ_APPROVED_SCOPE_INVENTORY",
+      "SCAN_REAL_CONTROLS_HANDLERS_STATE_AND_WORLD_SIGNALS",
+      "DETERMINISTIC_SCOPE_TO_MECHANIC_MAPPING",
+      "EXTERNAL_AI_ADVISORY_FOR_AMBIGUOUS_ONLY",
+      "VIBE_MINIMAL_SOURCE_BIND_OR_REAL_FEATURE_REPAIR",
+      "STATIC_SCOPE_QA",
+      "RUNTIME_INTERACTION_QA",
+      "STRICT_REVIEW_AND_PROMOTION_REVALIDATION"
+    ],
+    "externalAiAuthority": "ADVISORY_ONLY",
+    "externalAiGameSourceWrite": false,
+    "externalAiPassAuthority": false,
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "authorityExpansion": false
   }
