@@ -9961,7 +9961,10 @@
         ],
         "autonomousAuthorityExpansion": false,
         "automaticPolicyCreation": false,
-        "automaticGateWeakening": false
+        "automaticGateWeakening": false,
+        "currentAuthorization": false,
+        "state": "DEFERRED_UNTIL_RULE_1_RULE_2_RULE_3_QA_AND_ATOMIC_NEURON_STABILITY",
+        "automaticActivationForbidden": true
       },
       "invariants": {
         "authorityExpansion": false,
@@ -9986,7 +9989,10 @@
         "BEFORE_AFTER_EVIDENCE_IMPROVED"
       ],
       "failureBehavior": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING",
-      "completionIsCheckpointNotStop": true
+      "completionIsCheckpointNotStop": true,
+      "operationalStatus": "SELF_ARCHITECTURE_PIPELINE_IMPLEMENTED_NEURAL_EXPANSION_DEFERRED_LAST_STAGE",
+      "currentNeuralExpansionAuthorization": false,
+      "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITHOUT_NEURAL_AUTHORITY_EXPANSION"
     },
     "rule1": {
       "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
@@ -10121,6 +10127,13 @@
       "practiceAloneCountsAsProductionPass": false,
       "authorityExpansion": false,
       "gateWeakening": false
-    }
+    },
+    "implementationOrder": [
+      "RULE_1",
+      "RULE_2",
+      "RULE_3",
+      "RULE_4"
+    ],
+    "orderedImplementationRequired": true
   }
 }
