@@ -2300,8 +2300,8 @@ function updateCameraPresentation(p,dt,now,camW,camH){
  if(areaChanged){camera.area=state.area;camera.baseX=targetX;camera.baseY=targetY}
  const mobile=innerWidth<=900,followRate=mobile?15:12,follow=1-Math.exp(-Math.max(0,dt)*followRate);
  camera.baseX+=(targetX-camera.baseX)*follow;camera.baseY+=(targetY-camera.baseY)*follow;
- const attackElapsed=now-(Number(p.attackAt)||-1000000),attackImpact=attackElapsed>=0&&attackElapsed<90?1-attackElapsed/90:0;
- const hitStartedAt=(Number(p.invuln)||0)-520,hitElapsed=now-hitStartedAt,hitImpact=hitElapsed>=0&&hitElapsed<110?1-hitElapsed/110:0;
+ const attackElapsed=now-(Number(p.attackAt)||-1000000),attackImpact=attackElapsed>=0&&attackElapsed<35?1:attackElapsed>=35&&attackElapsed<90?1-(attackElapsed-35)/55:0;
+ const hitStartedAt=(Number(p.invuln)||0)-520,hitElapsed=now-hitStartedAt,hitImpact=hitElapsed>=0&&hitElapsed<40?1:hitElapsed>=40&&hitElapsed<110?1-(hitElapsed-40)/70:0;
  const strength=Math.min(1,attackImpact*.34+hitImpact*.9),shakeCap=mobile?3.2:5.2,shake=shakeCap*strength;
  const kick=attackImpact*(mobile?2.2:3.6),fx=Number(p.faceX)||0,fy=Number(p.faceY)||0;
  const shakeX=Math.sin(now*.19+1.7)*shake,shakeY=Math.sin(now*.23+.4)*shake*.72;
@@ -2816,30 +2816,35 @@ function fantasyEnemyAttackPose(e,now){
  const engaged=!!(e?.hostile||e?.enemyTarget||e?.playerTargetId);
  const anticipation=engaged&&!e?.moving&&untilAttack>0&&untilAttack<160?1-untilAttack/160:0;
  const attackElapsed=now-(Number(e?.attackAt)||-1000000);
- const impact=attackElapsed>=0&&attackElapsed<55?1-attackElapsed/55:0;
- const recovery=attackElapsed>=55&&attackElapsed<360?1-(attackElapsed-55)/305:0;
- const hurt=now<(Number(e?.hitAt)||0)?clamp(((Number(e?.hitAt)||0)-now)/110,0,1):0;
+ const hitStop=attackElapsed>=0&&attackElapsed<40?1:0;
+ const impact=attackElapsed>=0&&attackElapsed<40?1:attackElapsed>=40&&attackElapsed<80?1-(attackElapsed-40)/40:0;
+ const recoil=attackElapsed>=40&&attackElapsed<150?1-(attackElapsed-40)/110:0;
+ const recovery=attackElapsed>=80&&attackElapsed<360?1-(attackElapsed-80)/280:0;
+ const hitRemaining=(Number(e?.hitAt)||0)-now,hitElapsed=110-hitRemaining;
+ const hurt=hitRemaining>0&&hitRemaining<=110?(hitElapsed<35?1:Math.max(0,1-(hitElapsed-35)/75)):0;
  return{
-  anticipation,impact,recovery,hurt,
-  offsetX:-anticipation*5+impact*9-recovery*2-hurt*4,
+  anticipation,hitStop,impact,recoil,recovery,hurt,
+  offsetX:-anticipation*5+impact*9-recoil*5-recovery*2-hurt*4,
   offsetY:anticipation*1+hurt*2,
-  lean:-anticipation*.075-impact*.045+recovery*.025-hurt*.055,
-  scaleX:1-anticipation*.045+impact*.075+recovery*.018-hurt*.025,
-  scaleY:1+anticipation*.045-impact*.06-recovery*.01+hurt*.04
+  lean:-anticipation*.075-impact*.045+recoil*.05+recovery*.025-hurt*.055,
+  scaleX:1-anticipation*.045+impact*.075+hitStop*.015-recoil*.025+recovery*.018-hurt*.025,
+  scaleY:1+anticipation*.045-impact*.06-hitStop*.01+recoil*.02-recovery*.01+hurt*.04
  }
 }
 function fantasyPlayerAttackPose(p,now,attackActive){
  const attackElapsed=now-(Number(p?.attackAt)||-1000000);
- const impact=attackElapsed>=0&&attackElapsed<45?1-attackElapsed/45:0;
- const recovery=attackElapsed>=45&&attackElapsed<150?1-(attackElapsed-45)/105:0;
+ const hitStop=attackElapsed>=0&&attackElapsed<35?1:0;
+ const impact=attackElapsed>=0&&attackElapsed<35?1:attackElapsed>=35&&attackElapsed<65?1-(attackElapsed-35)/30:0;
+ const recoil=attackElapsed>=35&&attackElapsed<115?1-(attackElapsed-35)/80:0;
+ const recovery=attackElapsed>=65&&attackElapsed<150?1-(attackElapsed-65)/85:0;
  const anticipation=p?.weapon&&!attackActive?1:0;
  return{
-  anticipation,impact,recovery,
-  bodyLunge:-anticipation*.8+impact*7+recovery*2,
-  bodyLean:-anticipation*.035-impact*.085+recovery*.03,
-  scaleX:1-anticipation*.008+impact*.065+recovery*.012,
-  scaleY:1+anticipation*.01-impact*.05-recovery*.008,
-  weaponOffset:anticipation?-.2:impact*.42+recovery*.18
+  anticipation,hitStop,impact,recoil,recovery,
+  bodyLunge:-anticipation*.8+impact*7-recoil*3.5+recovery*1.5,
+  bodyLean:-anticipation*.035-impact*.085+recoil*.065+recovery*.025,
+  scaleX:1-anticipation*.008+impact*.065+hitStop*.012-recoil*.018+recovery*.01,
+  scaleY:1+anticipation*.01-impact*.05-hitStop*.008+recoil*.018-recovery*.006,
+  weaponOffset:anticipation?-.2:impact*.42-recoil*.18+recovery*.12
  }
 }
 function drawFantasyCreatureAssetLocal(type,r,now,moving=false,phase=-1,motion=null){
