@@ -59942,7 +59942,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미와 학습 흐름이 실제 플레이로 드러나야 하며, 버튼/보상/피격/구매/제작/레벨업/퀘스트 완료 피드백을 실제 이벤트와 연결한다. BGM/SFX/UI/환경음은 역할을 분리하고 mute/volume 및 반복음 변형을 제공한다. 모바일 핵심 조작은 44px 이상과 엄지 도달성을 지키고, 과도한 흔들림·번쩍임·진동은 조절 가능해야 하며 텍스트/상태를 색 하나만으로 구분하지 않는다. 저장이 있는 게임은 업데이트 후 기존 저장 의미를 보존하고 실패 시 전체 데이터 손실을 피한다. 초반/중반/후반 목표와 반복 플레이 이유를 만들고, 수익화가 있으면 일반 게임 UI와 구매/광고 UI를 분리하며 결제 없이는 핵심 루프가 막히지 않게 한다. 이 기준이 실패하면 기존 repair/revalidation으로 되돌린다.",
       "responsibleFiles": [
         "web-games/fantasy-survival/index.html"
@@ -59950,8 +59950,8 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 8,
+      "status": "queued",
+      "retries": 9,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": false,
@@ -60009,7 +60009,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -60534,13 +60534,17 @@
         "release-dispatch-recovery-requested:vibe2/candidate/fantasy-survival-presentation-living-motion-v1-speculative-1-35534150033-1",
         "release-dispatch-recovery-at:1789935340781",
         "release-dispatch-recovery-candidate-sha:0ef1e3e8df6f8cf50ae6e2a200a1fcc4aab8f853",
-        "release-dispatch-recovery-at:1789935823855"
+        "release-dispatch-recovery-at:1789935823855",
+        "web-qa-failure",
+        "promotion-skipped",
+        "actions-run-35535412670",
+        "retry-failure-signature:web-qa-or-promotion-failed"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35534150033:1",
-      "reservationRunId": "35534150033",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T20:01:36Z",
+      "lastOutcome": "FAIL",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
