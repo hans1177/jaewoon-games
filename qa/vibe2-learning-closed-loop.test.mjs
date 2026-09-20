@@ -72,3 +72,42 @@ test('human-readable roadmap mirror is not part of the learning closed-loop muta
   assert.equal(roadmap.learningClosedLoopContract.authorityExpansion,false);
   assert.equal(roadmap.learningClosedLoopContract.gateWeakening,false);
 });
+
+test('owner-authorized ChatGPT and external AI may author isolated candidates while Vibe remains implementation owner',()=>{
+  const roadmap=json('company-learning/platform-release-roadmap.json');
+  const architecture=json('company-learning/company-architecture-map.json');
+  const external=json('company-learning/external-ai-distillation-policy.json');
+  const authority=roadmap.developmentLifecycleMachine.developmentToolAuthority;
+  assert.ok(authority.version>=2);
+  assert.deepEqual(authority.gameDevelopmentOwner,['VIBE2','VIBE3']);
+  assert.equal(authority.chatgptAssistant.gameSourceCandidateWriteAllowed,true);
+  assert.equal(authority.chatgptAssistant.unityCandidateAuthoringAllowed,true);
+  assert.equal(authority.chatgptAssistant.robloxCandidateAuthoringAllowed,true);
+  assert.equal(authority.chatgptAssistant.isolatedCandidateBranchRequired,true);
+  assert.equal(authority.chatgptAssistant.directMainWrite,false);
+  assert.equal(authority.chatgptAssistant.productionPassAuthority,false);
+  assert.equal(authority.chatgptAssistant.releaseAuthority,false);
+  assert.equal(authority.chatgptAssistant.verifiedOutcomeMustFeedVibeLearning,true);
+  assert.deepEqual(authority.gameSourceWritePolicy.collaboratorBranchPatterns,['assistant/*','chatgpt/*','external-ai/*']);
+  assert.equal(authority.gameSourceWritePolicy.mergedPrProvenanceCollector,'tools/vibe2-merged-pr-provenance.mjs');
+  assert.equal(external.version,3);
+  assert.equal(external.ingestion.collaborativeCandidateAuthoring.allowed,true);
+  assert.equal(external.ingestion.collaborativeCandidateAuthoring.directMainWrite,false);
+  assert.equal(external.ingestion.collaborativeCandidateAuthoring.existingQaSecurityRuntimeRegressionRequired,true);
+  assert.equal(architecture.workerRoles.CHATGPT_ASSISTANT,'OWNER_AUTHORIZED_ISOLATED_CANDIDATE_GAME_AND_SYSTEM_COLLABORATOR');
+  assert.equal(architecture.externalAiCollaborationTopology.vibeRemainsGameImplementationOwner,true);
+  assert.equal(architecture.externalAiCollaborationTopology.rawExternalAiOutputAuthority,'NONE');
+  assert.ok(architecture.externalAiCollaborationTopology.learningRoute.includes('.vibe2/merged-pr-provenance-ledger.json'));
+});
+
+test('assistant candidate outcomes reuse the existing merged-PR provenance and verified Vibe learning path',()=>{
+  const provenance=read('tools/vibe2-merged-pr-provenance.mjs');
+  const workflow=read('.github/workflows/vibe2-merged-pr-provenance.yml');
+  assert.match(provenance,/\^\(assistant\|chatgpt\)/);
+  assert.match(provenance,/ASSISTANT_OR_AUTOMATION_CODING/);
+  assert.match(provenance,/mergeIsNotCapabilityVerification:true/);
+  assert.match(provenance,/rawExternalAiOutputStored:false/);
+  assert.match(workflow,/ref: vibe2-unreal-core/);
+  assert.match(workflow,/\.vibe2\/merged-pr-provenance-ledger\.json/);
+  assert.match(workflow,/VIBE2_AUTOMATIC_PROMOTION=NO/);
+});
