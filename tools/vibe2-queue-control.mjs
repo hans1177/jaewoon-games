@@ -781,19 +781,21 @@ export function runQueueCommand(args = {}) {
       effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
       taskCount
     });
-    const nextControl=adaptiveEligible
+    const merged = applyVibeFanInResults(queue, rows);
+    const acceptedResult=merged.applied.some(row=>clean(row?.outcome)!=='STALE_RESULT_SKIPPED');
+    const adaptiveUpdateApplied=adaptiveEligible&&acceptedResult;
+    const nextControl=adaptiveUpdateApplied
       ? decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks })
       : currentControl;
-    const merged = applyVibeFanInResults(queue, rows);
     queue = merged.queue;
     writeJson(file, queue);
-    if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
+    if(adaptiveUpdateApplied)writeJson(controlFileFrom(args), nextControl);
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const reservationMaxConcurrentTasks=adaptiveEligible
       ? adaptiveRequestedMax(nextControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks })
       : configuredMaxConcurrentTasks;
     result = {
-      command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry,
+      command, executionLane, adaptiveEligible, adaptiveUpdateApplied, updated:acceptedResult, telemetry,
       adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged,
       summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
     };
