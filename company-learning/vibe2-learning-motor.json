@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -93,12 +93,15 @@
   },
   "retrieval": {
     "priority": [
+      "SAME_GAME_SAME_FAILURE_VERIFIED",
+      "SAME_FAILURE_VERIFIED",
       "SAME_GAME_VERIFIED",
       "SAME_ENGINE_VERIFIED",
       "SAME_GENRE_OR_SYSTEM_VERIFIED",
-      "CROSS_GAME_VERIFIED",
-      "GENERAL_PLAYBOOK",
-      "EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY"
+      "CODE_PATTERN_VERIFIED",
+      "VERIFIED_PRACTICE_DISTILLED_ADVISORY",
+      "EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY",
+      "GENERAL_PLAYBOOK"
     ],
     "sameGameMustBeHighestWeight": true,
     "sources": [
@@ -347,7 +350,10 @@
     "distilledKnowledgeUse": "VERIFIED_ADVISORY_RETRIEVAL_ONLY",
     "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
     "minimumTraceableVerificationEvidenceItems": 2,
-    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
+    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true,
+    "actualContinuousRunnerInjectionRequired": true,
+    "exactInjectedIdsMustBeTraced": true,
+    "freshProjectQaAttributionRequired": true
   },
   "securityLearning": {
     "enabled": true,
@@ -452,5 +458,27 @@
       "HIT_SEMANTICS_UNCHANGED",
       "NETWORK_AUTHORITY_UNCHANGED"
     ]
+  },
+  "closedLoop": {
+    "enabled": true,
+    "centralContract": "company-learning/platform-release-roadmap.json#learningClosedLoopContract",
+    "externalAiDistilledRetrievalRequired": true,
+    "exactInjectedKnowledgeIdTraceRequired": true,
+    "freshQaAttributionRequired": true,
+    "productionConfidenceSeparateFromMastery": true,
+    "productionConfidenceLevels": 5,
+    "productionConfidenceProjectOutcomeOnly": true,
+    "infrastructureFailureDoesNotPenalizeKnowledge": true,
+    "strategyPromotionThresholdsUnchanged": true,
+    "commonKnowledgeLifecycle": [
+      "CANDIDATE",
+      "VERIFIED",
+      "PREFERRED",
+      "DEMOTED",
+      "RETIRED"
+    ],
+    "retiredKnowledgeRetrievalForbidden": true,
+    "rawExternalAiOutputDirectUse": false,
+    "authorityExpanded": false
   }
 }
