@@ -108,6 +108,7 @@ jobs:
             tools/vibe2-neural-event-router.mjs \
             tools/vibe2-neural-shadow-audit.mjs \
             tools/vibe2-neural-event-telemetry.mjs \
+            tools/vibe2-neural-phase2-readiness.mjs \
             tools/vibe2-exploration-worker.mjs \
             tools/vibe2-source-worker.mjs \
             tools/vibe2-performance-sanity.mjs \
@@ -1112,6 +1113,7 @@ jobs:
             qa/vibe2-neural-event-router.test.mjs \
             qa/vibe2-neural-shadow-audit.test.mjs \
             qa/vibe2-neural-event-telemetry.test.mjs \
+            qa/vibe2-neural-phase2-readiness.test.mjs \
             qa/vibe2-neural-fanin-root-cause.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
