@@ -85,10 +85,10 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
     <div class="pill"><b id="pollen">120</b><small>꽃가루</small></div>
     <div class="pill"><b id="plantHp">100</b><small>식물 HP</small></div>
     <div class="pill"><b id="waveNo">1 / 6</b><small>웨이브</small></div>
-    <div class="pill"><b id="knowledge">0</b><small>생태 경험</small></div>
+    <div class="pill"><b id="score">0</b><small>생태 경험</small></div>
   </div>
   <div class="controls">
-    <button class="primaryBtn" id="waveBtn" data-gameplay-action="wave-read-and-launch" data-scope-id="scope-coreloop-0-db6dafda13" data-mechanic-id="wave-threat-analysis">웨이브 1 시작</button>
+    <button class="primaryBtn" id="waveBtn" data-gameplay-action="wave-read-and-launch" data-scope-id="scope-coreloop-0-db6dafda13" data-mechanic-id="route-threat-analysis">웨이브 1 시작</button>
     <button class="smallBtn" id="speedBtn" data-gameplay-action="mobile-speed-control" data-touch-control="speed" data-mechanic-id="mobile-combat-speed">속도 ×1</button>
     <button class="smallBtn" id="pauseBtn" data-gameplay-action="combat-pause" data-mechanic-id="combat-pause">일시정지</button>
   </div>
@@ -158,7 +158,7 @@ var ui={
   pollen:document.getElementById('pollen'),
   plantHp:document.getElementById('plantHp'),
   waveNo:document.getElementById('waveNo'),
-  knowledge:document.getElementById('knowledge'),
+  knowledge:document.getElementById('score'),
   waveBtn:document.getElementById('waveBtn'),
   speedBtn:document.getElementById('speedBtn'),
   pauseBtn:document.getElementById('pauseBtn'),
@@ -211,7 +211,7 @@ var state={
   selectedSpecies:'ladybug',selectedTower:-1,towers:[],enemies:[],shots:[],floaters:[],
   spawnQueue:[],spawnTimer:0,killed:0,totalWave:0,paused:false,speed:1,skillCd:0,
   waveCheckpoint:null,lastTime:performance.now(),muted:false,volume:.55,lastPlacement:null,
-  placementMode:false,relocateTower:-1
+  placementMode:false,relocateTower:-1,spawnSerial:0
 };
 
 var audioCtx=null;
@@ -349,8 +349,8 @@ function spawnEnemy(k){
   var d=enemyDefs[k];
   var scale=1+state.wave*.14;
   state.enemies.push({
-    id:Math.random().toString(36).slice(2),kind:k,type:d.type,name:d.name,mark:d.mark,color:d.color,
-    x:-25,y:178+(Math.random()*26-13),hp:d.hp*scale,maxHp:d.hp*scale,
+    id:'enemy-'+state.wave+'-'+(++state.spawnSerial),kind:k,type:d.type,name:d.name,mark:d.mark,color:d.color,
+    x:-25,y:178+((state.spawnSerial*17)%27-13),hp:d.hp*scale,maxHp:d.hp*scale,
     speed:d.speed*(1+state.wave*.035),reward:d.reward,boss:!!d.boss,
     slow:0,poison:0,poisonTick:0
   });
@@ -377,7 +377,7 @@ function placeTower(slotIndex){
   var adapted=slot.h===sp.habitat;
   state.towers.push({
     slot:slotIndex,species:state.selectedSpecies,habitat:slot.h,adapted:adapted,level:1,
-    damage:sp.damage,range:sp.range,cooldown:Math.random()*.25
+    damage:sp.damage,range:sp.range,cooldown:(state.towers.length%5)*.05
   });
   state.selectedTower=state.towers.length-1;
   state.placementMode=false;
