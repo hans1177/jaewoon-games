@@ -9,8 +9,8 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const roadmap=json('company-learning/platform-release-roadmap.json');
   const architecture=json('company-learning/company-architecture-map.json');
   const motor=json('company-learning/vibe2-learning-motor.json');
-  assert.equal(roadmap.version,221);
-  assert.equal(architecture.version,63);
+  assert.equal(roadmap.version,222);
+  assert.equal(architecture.version,64);
   assert.equal(motor.version,5);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
