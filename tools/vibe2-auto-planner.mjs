@@ -165,7 +165,10 @@ function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoo
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
 function supervisedWebBuildRequired(project={},goal=''){
   if(clean(project.engine).toLowerCase()!=='web')return false;
-  return /\[(?:WEB_BASE_IMPLEMENTATION|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|WEB_STRICT_80_88_TO_89|PRESENTATION_PASS:[A-Z_]+)\]/.test(clean(goal));
+  const text=clean(goal);
+  if(/\[(?:WEB_BASE_IMPLEMENTATION|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|WEB_STRICT_80_88_TO_89|PRESENTATION_PASS:[A-Z_]+)\]/.test(text))return true;
+  return /\[WEB_REPAIR\]/.test(text)
+    &&/REAL_PLAYABLE_WEB_GAME_REQUIRED|REAL_GAME_MECHANIC_COUNT_TOO_LOW|REAL_GAME_SYSTEM_COUNT_REQUIRED|WEB_TEST_HARNESS_FORBIDDEN|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED/.test(text);
 }
 function supervisedWebBuildContract(){
   return{
@@ -527,6 +530,12 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
             :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
           const refreshedGoal=`[WEB_REPAIR] 게임: ${clean(runtimeItem?.gameName||game?.name||gameId)}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
           if(clean(item.goal)!==clean(refreshedGoal)){
+            const supervised=(item?.supervisionContract?.required===true)
+              ||clean(item?.productionMode)==='SUPERVISED_VIBE_COAUTHORING'
+              ||(item?.evidence||[]).map(clean).includes('supervised-web-build:required');
+            if(supervised){
+              return{...item,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+            }
             return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
           }
         }
