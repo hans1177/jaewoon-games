@@ -265,10 +265,7 @@ jobs:
               const variableNames=[...text.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*([A-Za-z_$][\w$]*)\b/g)].map(match=>match[1]);
               const variableBindings={};
               for(const name of [...new Set(variableNames)]){
-                const escaped=String(name).replace(/[-/\\^$*+?.()|[\]{}]/g,'\\            const historicalSaveKey="const key='jg-final:'+C.id;";
-            if(base.includes(historicalSaveKey)&&!source.includes(historicalSaveKey)){
-              throw new Error('VIBE2_WEB_SAVE_KEY_REGRESSION:'+rel);
-            }');
+                const escaped=String(name).replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&');
                 const match=new RegExp('\\b(?:const|let|var)\\s+'+escaped+'\\s*=\\s*([^;\\n]{1,420})\\s*;').exec(text);
                 if(match)variableBindings[name]=String(match[1]||'').trim();
               }
