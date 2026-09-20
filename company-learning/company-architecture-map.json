@@ -1,5 +1,5 @@
 {
-  "version": 56,
+  "version": 57,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -430,6 +430,38 @@
         "fullRegressionRequired": true,
         "writableScopeExpansionAllowed": false,
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "authorityChange": "NONE"
+      },
+      "selfAdaptiveGamePrimaryConcurrency": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "controller": ".vibe2/parallelism-control.json",
+        "algorithm": "tools/vibe2-adaptive-backpressure.mjs",
+        "reserve": "tools/vibe2-queue-control.mjs::reserve-batch",
+        "fanIn": "tools/vibe2-queue-control.mjs::fan-in",
+        "telemetry": "tools/vibe2-parallelism-telemetry.mjs",
+        "entryPaths": [
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml"
+        ],
+        "adaptiveSteps": [
+          4,
+          8,
+          16,
+          20,
+          32,
+          64,
+          128,
+          256
+        ],
+        "baselineTarget": 20,
+        "externalBoundary": 256,
+        "hardCapAt20": false,
+        "hardFloorAt20": false,
+        "pressureMayDownshiftBelow20": true,
+        "healthySaturationMayUpshiftAbove20": true,
+        "matrixFanOutUsesCurrentAdaptiveTarget": true,
+        "telemetryEffectiveMaxUsesCurrentAdaptiveTarget": true,
         "authorityChange": "NONE"
       }
     },
