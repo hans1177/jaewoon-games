@@ -135,7 +135,7 @@ export function evaluatePhase2Readiness({
     :0;
   const identifiedShadowEvents=Number(events.identifiedEventCount||0);
   const calibrationPredictionContractVersion=Number(feedback.currentPredictionContractVersion||1);
-  const identifiedCalibrationEligible=Number(feedback.currentContractIdentifiedCalibrationEligible??feedback.identifiedCalibrationEligible||0);
+  const identifiedCalibrationEligible=Number(feedback.currentContractIdentifiedCalibrationEligible??feedback.identifiedCalibrationEligible??0);
   const identifiedCalibrationAccuracy=feedback.currentContractIdentifiedObservedAccuracy??feedback.identifiedObservedAccuracy;
   const identifiedWaveAuditSamples=Number(audit.distinctSampleIds??audit.identifiedSampleCount??0);
   const gates={
