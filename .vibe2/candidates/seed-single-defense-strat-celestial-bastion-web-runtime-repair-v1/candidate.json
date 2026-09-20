@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const key='jg-final:'+C.id;",
+      "replace": "window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=[{'id':'scope-corefun-1a11fb3f22','path':'coreFun','label':'Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a d'}];"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
