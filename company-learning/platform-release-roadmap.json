@@ -5393,7 +5393,7 @@
           "NO_AUTHORITY_EXPANSION",
           "CI_AND_REAL_WORK_ORDER_RUNTIME_VERIFICATION"
         ],
-        "nextGate": "DEFINE_PHASE_4_CENTRAL_STRATEGY_BEFORE_ANY_PHASE_4_IMPLEMENTATION",
+        "nextGate": "PHASE_4_CENTRAL_STRATEGY_DEFINED",
         "sourcePr": 1909,
         "mergedCommit": "347f96cdb95cb76dc81a57ea776139076404b73b",
         "components": [
@@ -5491,115 +5491,102 @@
       },
       "implementationPhase4": {
         "state": "CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
-        "scope": "CONTROLLED_UNSEEN_GENERALIZATION_BENCHMARK_AND_CAPABILITY_CAUSAL_ATTRIBUTION",
-        "objective": "CONVERT_GENERALIZATION_CANDIDATES_TO_STRONGLY_VERIFIED_GENERAL_CAPABILITIES_ONLY_WHEN_UNSEEN_CROSS_GAME_TASKS_AND_CONTROLLED_COMPARISONS PROVIDE_CAPABILITY_SPECIFIC_EVIDENCE_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
+        "scope": "UNSEEN_PROBLEM_GENERALIZATION_BENCHMARK_AND_CAPABILITY_PORTFOLIO_GOVERNANCE",
+        "objective": "VERIFY_WHICH_GENERALIZATION_CANDIDATES_TRANSFER_TO_UNSEEN_PROBLEMS_AND_GOVERN_THE_CAPABILITY_PORTFOLIO_WITH_EVIDENCE_BACKED_GENERALIZATION_SUPERSESSION_DEPRECATION_AND_RETRIEVAL_PRECISION_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
         "prerequisites": {
           "phase1Complete": true,
           "phase2Complete": true,
           "phase3RuntimeVerified": true,
-          "phase3SourceRunId": 35491605325,
-          "capabilityApplicationEvidenceAvailable": true,
-          "repeatedApplicationVerifiedAvailable": true,
-          "generalizationCandidatesAvailable": true,
-          "strongGeneralizationVerifiedCountAtEntry": 0
+          "generalizationCandidatesObserved": 5,
+          "strongGeneralizationVerifiedObserved": 0,
+          "realApplicationEvidenceObserved": true,
+          "repeatedIndependentFreshQaObserved": true
         },
-        "problemStatement": [
-          "CO_APPLIED_CAPABILITY_SUCCESS_IS_CORRELATED_EVIDENCE_NOT_INDIVIDUAL_CAUSAL_PROOF",
-          "REPEATED_APPLICATION_VERIFICATION_ALONE_MUST_NOT_CREATE_STRONG_GENERALIZATION",
-          "GENERALIZATION_CANDIDATES_REQUIRE_UNSEEN_PROBLEM_EVIDENCE",
-          "CAPABILITY_SPECIFIC_CONTRADICTIONS_MUST_BE_DISTINGUISHED_FROM_UNRELATED_TASK_FAILURES"
-        ],
-        "benchmarkEligibility": {
-          "lifecycleStateRequired": "REPEATED_APPLICATION_VERIFIED_OR_GENERALIZATION_CANDIDATE",
-          "exactCapabilityIdRequired": true,
-          "freshApplicabilityCheckRequired": true,
-          "crossGameKeywordOverlapRequired": true,
-          "sameEngineAloneEligible": false,
-          "unresolvedCapabilitySpecificContradictionAllowed": false,
-          "projectSpecificGameplayValuesTransferAllowed": false,
-          "unseenGameRequired": true,
-          "unseenProblemFingerprintRequired": true
+        "eligibility": {
+          "sourceStateRequired": "GENERALIZATION_CANDIDATE",
+          "repeatedIndependentApplicationEvidenceRequired": true,
+          "crossGameVerifiedApplicationEvidenceRequired": true,
+          "unresolvedCapabilitySpecificContradictionAllowedForPromotion": false,
+          "projectSpecificGameplayValuesMayGeneralize": false,
+          "rawTraceMayServeAsBenchmarkAnswer": false,
+          "mergedPrMetadataAloneEligible": false
         },
-        "controlledComparison": {
-          "preferredShape": "PAIRED_CONTROL_CHALLENGER",
-          "control": "SAME_TASK_CONTEXT_WITH_TARGET_CAPABILITY_WITHHELD",
-          "challenger": "SAME_TASK_CONTEXT_WITH_TARGET_CAPABILITY_INCLUDED",
-          "sameSourceBaselineRequired": true,
-          "sameModelAndGenerationBudgetRequired": true,
-          "sameWritableScopeRequired": true,
-          "sameQaContractRequired": true,
-          "sameProtectedGameplaySemanticsRequired": true,
-          "nonTargetContextHeldConstant": true,
-          "coAppliedCapabilitiesHeldConstantAcrossPair": true,
-          "targetCapabilityOnlyGuidanceDelta": true,
-          "existingCandidateTournamentReusePreferred": true,
-          "newWorkerCreationForbidden": true,
-          "queueMutationForbidden": true,
-          "waveReorderForbidden": true
-        },
-        "strongGeneralizationGate": {
-          "minimumIndependentUnseenPasses": 2,
-          "minimumDistinctUnseenGames": 2,
-          "freshQaPassRequiredForEveryCountedChallenger": true,
-          "capabilitySpecificPositiveSupportRequired": true,
-          "zeroCapabilitySpecificContradictionsRequired": true,
-          "noRegressionAgainstControlRequired": true,
-          "ambiguousOrNeutralEvidenceKeepsCandidateState": true,
-          "controlFailureChallengerPassMayCountAsDirectSupport": true,
-          "sameOutcomeWithoutDirectSupportDoesNotProveCausality": true,
-          "outputLifecycleState": "GENERALIZED_VERIFIED",
-          "generalizedCapabilityRemainsAdvisoryOnly": true,
-          "automaticModelOrPolicyPromotion": false
-        },
-        "contradictionAndSupersession": {
-          "singleBenchmarkFailureAutomaticDeprecation": false,
-          "unrelatedTaskFailureAutomaticDeprecation": false,
-          "repeatedCapabilitySpecificContradictionCreatesReviewCandidate": true,
-          "automaticDeprecation": false,
-          "supersessionRequiresPairedHeadToHeadEvidence": true,
-          "supersessionRequiresNoRegression": true,
-          "supersessionRequiresExistingReviewGate": true
-        },
-        "scheduling": {
+        "unseenProblemBenchmark": {
+          "holdoutIdentityRequired": true,
+          "benchmarkProblemMustNotHaveCreatedOrReinforcedCandidate": true,
+          "existingBenchmarkAndPracticePathsOnly": true,
           "productionWorkPreemptsBenchmark": true,
-          "naturalUnseenProductionEvidencePreferred": true,
-          "controlledBenchmarkMayUseExistingLearningIdleOrExistingCandidateTournament": true,
-          "gamePrimaryWaveMustNotBeBlockedForBenchmark": true,
-          "newExecutionLaneCreated": false,
-          "schedulerAuthority": "EXISTING_WAVE_SCHEDULER_ONLY"
+          "syntheticPracticeMayScreenCandidate": true,
+          "syntheticPracticeMayReplaceNativeRuntime": false,
+          "freshIndependentQaRequired": true,
+          "fullRegressionRequired": true,
+          "nativeRuntimeRequiredWhenClaimTouchesNativeRuntime": true,
+          "minimumIndependentUnseenPassesForStrongGeneralization": 2,
+          "minimumDistinctGamesForStrongGeneralization": 2,
+          "crossEngineClaimRequiresNativeEvidencePerClaimedEngine": true,
+          "singleUnseenPassEstablishesStrongGeneralization": false,
+          "benchmarkFailureAutomaticallyDeprecatesLocalCapability": false,
+          "unrelatedBenchmarkFailurePenalizesCapability": false
         },
-        "storage": {
-          "canonicalCapabilityStore": "vibe2-unreal-core:.vibe2/experience.json",
-          "existingCodingTraceLedgerMayProvideProvenanceOnly": true,
-          "newParallelLearningLedgerCreated": false,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "secretsOrCredentialsStored": false,
-          "benchmarkEvidenceMustBeSanitizedAndIdentityBound": true
+        "generalizationPromotion": {
+          "targetState": "GENERALIZED_VERIFIED",
+          "evidenceMustBindExactCapabilityId": true,
+          "benchmarkCasesMustRemainIndependent": true,
+          "coAppliedBenchmarkSuccessIndividuallyProvesEachCapability": false,
+          "capabilitySpecificSupportPreferred": true,
+          "challengerOrControlledReplayPreferredForAmbiguousAttribution": true,
+          "automaticModelOrTuningPromotion": false,
+          "directTrainingPromotion": false
         },
-        "retrievalPreservation": {
-          "generalizedVerifiedStillRequiresContextualRelevance": true,
-          "crossGameKeywordOverlapRequired": true,
+        "portfolioGovernance": {
+          "preserveProvenanceOnDeprecationOrSupersession": true,
+          "deprecatedCapabilityRetrievalEligible": false,
+          "supersededCapabilityRetrievalEligible": false,
+          "supersessionRequiresEvidence": true,
+          "deprecationRequiresEvidence": true,
+          "redundantCapabilityConsolidationRequiresSemanticAndOutcomeEvidence": true,
+          "sameGameSpecificCapabilityMayOutrankGeneralizedCapability": true,
+          "generalizedCapabilityDoesNotBypassKeywordOrProblemRelevance": true,
           "sameEngineAloneEligible": false,
-          "advisoryOnly": true,
-          "writableScopeExpansionAllowed": false,
-          "qaBypassAllowed": false,
-          "protectedGameplayMutationAllowed": false
+          "genericCapabilityPartitionRemainsDistinct": true,
+          "duplicateCapabilityInjectionAllowed": false,
+          "localProjectValuesRemainLocal": true
         },
-        "metrics": [
-          "GENERALIZATION_CANDIDATE_COUNT",
-          "UNSEEN_BENCHMARK_PAIR_COUNT",
-          "INDEPENDENT_UNSEEN_PASS_COUNT",
-          "DISTINCT_UNSEEN_GAME_COUNT",
-          "CAPABILITY_SPECIFIC_SUPPORT_COUNT",
-          "CAPABILITY_SPECIFIC_CONTRADICTION_COUNT",
-          "CONTROL_CHALLENGER_DIVERGENCE_COUNT",
-          "GENERALIZED_VERIFIED_COUNT",
-          "INCONCLUSIVE_BENCHMARK_COUNT",
-          "SUPERSESSION_REVIEW_CANDIDATE_COUNT",
-          "BENCHMARK_PRODUCTION_INTERFERENCE_COUNT"
-        ],
+        "retrievalPrecision": {
+          "generalizedTransferRequiresFreshApplicabilityCheck": true,
+          "crossGameProblemOrKeywordRelevanceRequired": true,
+          "confidenceAloneMayNotExpandRetrievalScope": true,
+          "benchmarkEvidenceMayRaiseRankingButNotAuthority": true,
+          "freshTaskQaStillRequired": true
+        },
+        "evaluation": {
+          "metrics": [
+            "UNSEEN_BENCHMARK_ATTEMPT_COUNT",
+            "UNSEEN_BENCHMARK_PASS_COUNT",
+            "UNSEEN_BENCHMARK_FAILURE_COUNT",
+            "GENERALIZATION_CANDIDATE_COUNT",
+            "GENERALIZED_VERIFIED_COUNT",
+            "GENERALIZATION_FALSE_POSITIVE_COUNT",
+            "GENERALIZATION_FALSE_NEGATIVE_REVIEW_COUNT",
+            "NATIVE_RUNTIME_COVERAGE_COUNT",
+            "SUPERSESSION_COUNT",
+            "DEPRECATION_COUNT",
+            "REDUNDANT_CAPABILITY_CONSOLIDATION_COUNT",
+            "BENCHMARK_PRODUCTION_PREEMPTION_COUNT",
+            "BENCHMARK_CONTAMINATION_COUNT"
+          ],
+          "benchmarkContaminationTarget": 0,
+          "championChallengerPreferredForMaterialGeneralizationChanges": true,
+          "strongGeneralizationClaimRequiresObservedRuntimeEvidence": true
+        },
+        "storageAndPrivacy": {
+          "existingExperienceMemoryAndBenchmarkLadderOnly": true,
+          "newParallelLearningLedgerAllowed": false,
+          "rawCodeStored": false,
+          "rawExternalAiOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "secretsOrCredentialsStored": false
+        },
         "authority": {
           "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
           "workerCreationAuthority": false,
@@ -5607,21 +5594,21 @@
           "waveReorderAuthority": false,
           "lockPolicyMutationAuthority": false,
           "automaticLearningTuningPromotionAuthority": false,
-          "automaticPolicyPromotionAuthority": false,
           "directMainPromotionAuthority": false,
           "authorityChange": "NONE"
         },
         "exitCriteria": [
-          "PAIRED_CONTROL_CHALLENGER_CAN_ISOLATE_TARGET_CAPABILITY_WITHIN_EXISTING_EXECUTION_PATH",
-          "UNSEEN_GAME_AND_UNSEEN_PROBLEM_IDENTITY_ARE_BOUND_TO_BENCHMARK_EVIDENCE",
-          "GENERALIZED_VERIFIED_REQUIRES_TWO_INDEPENDENT_UNSEEN_PASSES_ACROSS_TWO_DISTINCT_GAMES",
-          "CAPABILITY_SPECIFIC_POSITIVE_SUPPORT_REQUIRED",
-          "UNRELATED_FAILURE_DOES_NOT_CAUSE_DEPRECATION",
-          "NO_NEW_EXECUTION_LANE_OR_WORKER_AUTHORITY",
+          "GENERALIZATION_CANDIDATE_TO_UNSEEN_BENCHMARK_BINDING_IMPLEMENTED_IN_EXISTING_PATHS",
+          "STRONG_GENERALIZATION_REQUIRES_MULTIPLE_INDEPENDENT_UNSEEN_PASSES",
+          "CROSS_ENGINE_GENERALIZATION_REQUIRES_NATIVE_EVIDENCE_PER_ENGINE",
+          "PORTFOLIO_SUPERSESSION_AND_DEPRECATION_RETAIN_PROVENANCE",
+          "GENERALIZED_RETRIEVAL_REMAINS_RELEVANCE_GATED",
+          "NO_BENCHMARK_CONTAMINATION_OF_PRODUCTION_PRIORITY",
           "NO_RAW_OUTPUT_PERSISTENCE",
-          "CI_AND_REAL_UNSEEN_RUNTIME_VERIFICATION"
+          "NO_AUTHORITY_EXPANSION",
+          "CI_AND_REAL_RUNTIME_BENCHMARK_VERIFICATION"
         ],
-        "nextGate": "IMPLEMENT_PHASE_4_CONTROLLED_GENERALIZATION_BENCHMARK_THEN_VERIFY_REAL_UNSEEN_RUNTIME_WITHOUT_AUTHORITY_EXPANSION"
+        "nextGate": "IMPLEMENT_PHASE_4_UNSEEN_BENCHMARK_AND_PORTFOLIO_GOVERNANCE_THEN_VERIFY_REAL_RUNTIME_WITHOUT_AUTHORITY_EXPANSION"
       }
     }
   },
