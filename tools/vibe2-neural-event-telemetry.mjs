@@ -41,12 +41,14 @@ export function summarizeNeuralEventShadowEvidence(values=[]){
   const byEventType={},byAction={},byInhibitor={};
   let hypotheticalFireCount=0;
   let unauthorizedFireCount=0;
+  for(const row of parsedRows){
+    if(row.fireAllowed===true||row.workerCreationAllowed===true||row.queueMutationAllowed===true||row.waveReorderAllowed===true)unauthorizedFireCount+=1;
+  }
   for(const row of rows){
     increment(byEventType,row.eventType);
     increment(byAction,row.actionKind);
     for(const inhibitor of Array.isArray(row.inhibitors)?row.inhibitors:[])increment(byInhibitor,inhibitor);
     if(row.wouldFireWithoutPhase2Authority===true)hypotheticalFireCount+=1;
-    if(row.fireAllowed===true||row.workerCreationAllowed===true||row.queueMutationAllowed===true||row.waveReorderAllowed===true)unauthorizedFireCount+=1;
   }
   return{
     version:2,
