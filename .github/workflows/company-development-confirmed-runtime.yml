@@ -1130,6 +1130,10 @@ jobs:
               continue;
             }
             platforms.add(platform);
+            if(retrySourceBind){
+              console.log(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=${item.gameId}:${platform}`);
+              continue;
+            }
             const focus=roadmap?.assetProductionParallelContract?.firstAdoption||{};
             const focusMode=String(focus.mode||'').toUpperCase();
             if(roadmap?.assetProductionParallelContract?.enabled===true&&String(focus.gameId||'')===String(item.gameId||'')&&focusMode.includes('CONCURRENT')){
@@ -1140,10 +1144,6 @@ jobs:
                   if(concurrentPlatform!==platform)console.log(`OWNER_FOCUS_CONCURRENT_PLATFORM_DISPATCH=${item.gameId}:${concurrentPlatform}`);
                 }
               }
-            }
-            if(retrySourceBind){
-              console.log(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=${item.gameId}:${platform}`);
-              continue;
             }
             updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,webPlatformHandoff,routingBlockers:[],routeRevision:baselineRevision,webPromotionEvidenceFresh:true,updatedAt:new Date().toISOString()});
           }
