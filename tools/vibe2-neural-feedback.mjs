@@ -110,6 +110,7 @@ export function neuralFeedbackEvidence(feedback={}){
     observedStage:clean(feedback?.observed?.stage)||null,
     observedResponsibility:clean(feedback?.observed?.responsibility)||null,
     matchState:clean(feedback.matchState)||'UNKNOWN',
+    responsibilityMatch:feedback.responsibilityMatch===true?true:feedback.responsibilityMatch===false?false:null,
     sampleEligible:feedback.sampleEligible===true,
     rootCauseVerified:false,
     learningEligible:false,
@@ -139,5 +140,37 @@ export function summarizeNeuralFeedback(rows=[]){
     observedAccuracy:eligible.length?matches/eligible.length:null,
     phase2AuthorityReady:false,
     reason:'SHADOW_TELEMETRY_ONLY_REQUIRES_POST_QA_ROOT_CAUSE_AND_MINIMUM_SAMPLE_POLICY'
+  };
+}
+
+
+export function parseNeuralFeedbackEvidence(values=[]){
+  const rows=[];
+  for(const value of Array.isArray(values)?values:[]){
+    const text=clean(value);
+    if(!text.startsWith('neural-shadow-feedback:'))continue;
+    try{
+      const payload=JSON.parse(decodeURIComponent(text.slice('neural-shadow-feedback:'.length)));
+      if(payload&&typeof payload==='object')rows.push(payload);
+    }catch{}
+  }
+  return rows;
+}
+
+export function summarizeNeuralFeedbackEvidence(values=[]){
+  const rows=parseNeuralFeedbackEvidence(values);
+  const eligible=rows.filter(row=>row.sampleEligible===true);
+  const matches=eligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
+  const mismatches=eligible.filter(row=>row.responsibilityMatch===false||clean(row.matchState)==='MISMATCH').length;
+  return{
+    version:1,
+    durableEvidenceSamples:rows.length,
+    calibrationEligible:eligible.length,
+    matches,
+    mismatches,
+    unknown:rows.length-eligible.length,
+    observedAccuracy:eligible.length?matches/eligible.length:null,
+    phase2AuthorityReady:false,
+    automaticAuthorityEscalationForbidden:true
   };
 }
