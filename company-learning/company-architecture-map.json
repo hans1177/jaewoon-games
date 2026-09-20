@@ -1,5 +1,5 @@
 {
-  "version": 51,
+  "version": 52,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1509,7 +1509,7 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
     "policyMirror": "COMPANY_FLOW.md#assetProductionParallel",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
@@ -1538,6 +1538,55 @@
       "UNITY",
       "ROBLOX"
     ],
+    "authorityExpansion": false,
+    "webNativeDirectAssetReuseForbidden": true,
+    "sharedStyleIdentityAcrossPlatforms": true,
+    "webQualityTarget": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D"
+  },
+  "platformPresentationSeparation": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.platformAssetSeparation",
+    "webRole": "PLAYABLE_REFERENCE_SURFACE",
+    "webToUnityDirectAssetReuse": false,
+    "webToRobloxDirectAssetReuse": false,
+    "unityNativePresentationRequired": true,
+    "robloxNativePresentationRequired": true,
+    "sharedStyleLockAcrossPlatforms": true,
+    "nativeRuntimeEvidencePerPlatformRequired": true,
+    "authorityExpansion": false
+  },
+  "weatherPresentationTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#weatherPresentationContract",
+    "firstAdoptionGameId": "fantasy-survival",
+    "surfaces": [
+      "WEB_COMPANION",
+      "UNITY",
+      "ROBLOX"
+    ],
+    "flow": [
+      "AUTHORITATIVE_WEATHER_STATE",
+      "PLATFORM_NATIVE_PRESENTATION_BIND",
+      "MULTIPLAYER_STATE_SYNC",
+      "MOBILE_EFFECT_DENSITY_ADAPTATION",
+      "RUNTIME_VISUAL_AUDIO_QA",
+      "GAMEPLAY_SEMANTICS_REGRESSION",
+      "ASSET_REPAIR_REQUIRED_WHEN_FAILED"
+    ],
+    "canonicalStates": [
+      "CLEAR",
+      "RAIN",
+      "FOG",
+      "SNOW",
+      "STORM"
+    ],
+    "regionalExtensions": [
+      "VOLCANIC_ASH",
+      "HEAT_HAZE"
+    ],
+    "presentationOnlyDefault": true,
+    "gameplayMutationWithoutApprovedDesign": false,
+    "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "authorityExpansion": false
   }
 }
