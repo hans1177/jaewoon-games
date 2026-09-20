@@ -13,18 +13,23 @@ const COMMON_GENERIC_PRAISE = Object.freeze([
 
 export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
   planning: Object.freeze({
-    name: '기획',
+    name: '기획·성장마케팅',
     minEvidence: 2,
     minSpecificEvidence: 2,
     buildRequired: false,
     runtimeRequired: false,
     domainKeywords: freezeList([
       'core loop','gameplay loop','play loop','core fun','story','quest','progression path','game identity',
-      '핵심 루프','플레이 루프','핵심 재미','스토리','퀘스트','진행 흐름','게임 정체성'
+      'monetization','revenue','pricing','paid item','bundle','subscription','advertising','marketing','promotion','acquisition','retention','conversion','store discovery','target player','launch timing',
+      '핵심 루프','플레이 루프','핵심 재미','스토리','퀘스트','진행 흐름','게임 정체성',
+      '수익화','매출','가격','판매 아이템','유료 아이템','번들','구독','광고','마케팅','홍보','유입','유지율','전환','스토어 노출','타깃 플레이어','출시 시기'
     ]),
     requiredChecks: freezeList([
       '핵심 재미와 핵심 루프가 수정 전후 동일한지 확인',
       '스토리/퀘스트/지역 진행이 의도와 충돌하지 않는지 확인',
+      '수익화/가격/광고/홍보 제안이 플레이어 가치·경제·밸런스·플랫폼 정책과 충돌하지 않는지 확인',
+      '적용 범위·적용 시기·측정 지표·중단 또는 롤백 조건이 근거와 함께 정의됐는지 확인',
+      '유료 광고비 등 외부 재무 집행이 owner 승인 경계를 우회하지 않는지 확인',
       '수정 범위 밖의 기획 변경을 임의로 만들지 않았는지 확인'
     ])
   }),

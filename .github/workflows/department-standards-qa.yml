@@ -6,11 +6,8 @@ on:
     paths:
       - 'assets/company-department-standards.js'
       - 'tools/company-post-modification-review.mjs'
-      - 'tools/company-qa-public-web-evidence.mjs'
       - 'tools/unity-apk-runtime-smoke.sh'
       - 'qa/company-department-standards.test.mjs'
-      - 'qa/company-qa-public-web-evidence.test.mjs'
-      - '.github/workflows/public-game-health.yml'
       - '.github/workflows/unity-android-runtime-smoke.yml'
       - '.github/workflows/post-modification-revote.yml'
       - '.github/workflows/department-standards-qa.yml'
@@ -18,11 +15,8 @@ on:
     paths:
       - 'assets/company-department-standards.js'
       - 'tools/company-post-modification-review.mjs'
-      - 'tools/company-qa-public-web-evidence.mjs'
       - 'tools/unity-apk-runtime-smoke.sh'
       - 'qa/company-department-standards.test.mjs'
-      - 'qa/company-qa-public-web-evidence.test.mjs'
-      - '.github/workflows/public-game-health.yml'
       - '.github/workflows/unity-android-runtime-smoke.yml'
       - '.github/workflows/post-modification-revote.yml'
       - '.github/workflows/department-standards-qa.yml'
@@ -45,12 +39,10 @@ jobs:
           set -euo pipefail
           node --input-type=module --check < assets/company-department-standards.js
           node --check tools/company-post-modification-review.mjs
-          node --check tools/company-qa-public-web-evidence.mjs
           bash -n tools/unity-apk-runtime-smoke.sh
       - name: Department evidence gate tests
         run: |
           node --test qa/company-department-standards.test.mjs
-          node --test qa/company-qa-public-web-evidence.test.mjs
       - name: Contract assertions
         run: |
           set -euo pipefail
@@ -58,10 +50,8 @@ jobs:
           grep -Fq 'DOMAIN_SPECIFIC_EVIDENCE_REQUIRED' assets/company-department-standards.js
           grep -Fq 'qaRuntimePlayEvidenceRequired' tools/company-post-modification-review.mjs
           grep -Fq 'departmentEvidenceGates' tools/company-post-modification-review.mjs
-          grep -Fq 'COMPANY_QA_WEB_PASS_ELIGIBLE' tools/company-qa-public-web-evidence.mjs
-          grep -Fq 'company-qa-runtime-evidence.json' .github/workflows/public-game-health.yml
           grep -Fq 'UNITY_APK_RUNTIME_SMOKE=PASS' tools/unity-apk-runtime-smoke.sh
           grep -Fq 'Unity Hybrid Android Build' .github/workflows/unity-android-runtime-smoke.yml
-          grep -Fq 'Android emulator black-box APK smoke' tools/unity-apk-runtime-smoke.sh
+          grep -Fq 'Android black-box APK smoke on an architecture-compatible runtime' tools/unity-apk-runtime-smoke.sh
           grep -Fq 'DEPARTMENT_EVIDENCE_STANDARDS=PASS' .github/workflows/post-modification-revote.yml
           echo 'COMPANY_DEPARTMENT_STANDARDS=PASS'

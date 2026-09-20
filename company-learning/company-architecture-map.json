@@ -1,5 +1,5 @@
 {
-  "version": 68,
+  "version": 69,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -65,6 +65,17 @@
       "UNITY_ROBLOX_PRESENTATION_BIND",
       "ACTUAL_GAMEPLAY_VISUAL_RUNTIME_QA",
       "ASSET_REPAIR_REVALIDATION"
+    ],
+    "planningGrowthMarketing": [
+      "EXISTING_PLANNING_ROLE",
+      "PRODUCT_AND_PLAYER_RESEARCH",
+      "MONETIZATION_AND_REVENUE_RESEARCH",
+      "MARKETING_AND_DISCOVERY_RESEARCH",
+      "APPLICATION_SCOPE_AND_TIMING_REVIEW",
+      "VIBE_ACCEPT_PARTIAL_DEFER_REJECT",
+      "IMPLEMENT_ACCEPTED_GAME_SCOPE_THROUGH_EXISTING_DEVELOPMENT_LIFECYCLE",
+      "OWNER_AUTHORIZED_PAID_SPEND_ONLY",
+      "MEASURE_OUTCOME_AND_RETURN_VERIFIED_EVIDENCE_TO_LEARNING"
     ]
   },
   "workerRoles": {
@@ -74,7 +85,8 @@
     "OLLAMA": "LOCAL_GAME_SOURCE_GENERATION_PROVIDER",
     "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY",
     "PRIMARY_AI_ORCHESTRATOR": "NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR",
-    "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS"
+    "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS",
+    "PLANNING_GROWTH_MARKETING": "EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -2100,5 +2112,25 @@
     "promotion": ".github/workflows/vibe2-system-evolution-release.yml",
     "adoptionProof": "BASE_FAIL_CANDIDATE_PASS_SAME_REGRESSION_TEST",
     "automaticPrAdoption": true
+  },
+  "departmentTopology": {
+    "planning": {
+      "canonicalRoleKey": "planning",
+      "displayName": "PLANNING_GROWTH_MONETIZATION_MARKETING",
+      "mergedResponsibilities": [
+        "GAME_AND_PRODUCT_PLANNING",
+        "TARGET_PLAYER_AND_MARKET_POSITIONING",
+        "MONETIZATION_AND_REVENUE_RESEARCH",
+        "PRICING_AND_PAID_ITEM_RESEARCH",
+        "AD_REVENUE_AND_PAID_ACQUISITION_RESEARCH",
+        "STORE_DISCOVERY_AND_PROMOTION_RESEARCH",
+        "APPLICATION_SCOPE_AND_TIMING",
+        "OUTCOME_MEASUREMENT"
+      ],
+      "centralContract": "company-learning/platform-release-roadmap.json#planningGrowthMarketingDepartment",
+      "duplicateMarketingDepartmentForbidden": true,
+      "vibeDecisionAuthority": true,
+      "autonomousPaidSpendAuthority": false
+    }
   }
 }

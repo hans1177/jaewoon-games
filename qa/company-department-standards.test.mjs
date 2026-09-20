@@ -82,6 +82,8 @@ test('domain-specific detector separates professional evidence from generic prai
   assert.equal(isDomainSpecificEvidence('graphics', 'UI readability checked at mobile resolution'), true);
   assert.equal(isDomainSpecificEvidence('balance', 'damage and reward values unchanged'), true);
   assert.equal(isDomainSpecificEvidence('planning', 'core loop and quest progression unchanged'), true);
+  assert.equal(isDomainSpecificEvidence('planning', '유료 아이템 가격과 번들 전환 효과를 검토함'), true);
+  assert.equal(isDomainSpecificEvidence('planning', '스토어 노출과 유료 광고 적용 시기를 검토함'), true);
   assert.equal(isDomainSpecificEvidence('planning', 'The code is well-structured.'), false);
 });
 
@@ -94,6 +96,23 @@ test('runtime evidence recognizes supported deterministic request fields', () =>
 
 test('department standards expose role-specific checks', () => {
   assert.ok(getDepartmentStandard('qa').requiredChecks.length >= 5);
-  assert.ok(getDepartmentStandard('planning').requiredChecks.length >= 3);
+  assert.equal(getDepartmentStandard('planning').name,'기획·성장마케팅');
+  assert.ok(getDepartmentStandard('planning').requiredChecks.length >= 6);
+  assert.ok(getDepartmentStandard('planning').requiredChecks.some(x=>x.includes('수익화')));
+  assert.ok(getDepartmentStandard('planning').requiredChecks.some(x=>x.includes('적용 범위')));
+  assert.ok(getDepartmentStandard('planning').requiredChecks.some(x=>x.includes('owner 승인')));
   assert.equal(getDepartmentStandard('qa').minSpecificEvidence, 2);
+});
+
+
+test('planning growth marketing evidence can pass without pretending external paid spend was executed',()=>{
+  const result=evaluateDepartmentEvidence({
+    role:'planning',
+    evidence:[
+      '판매 아이템 가격과 번들 구조의 플레이어 가치 및 매출 가설 검토',
+      '홍보 채널과 유료 광고 적용 시기, 측정 지표, 롤백 조건 검토'
+    ],
+    request:{}
+  });
+  assert.equal(result.passed,true);
 });

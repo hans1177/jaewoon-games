@@ -1,8 +1,8 @@
 {
-  "version": 226,
+  "version": 229,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-20",
+  "recordedAt": "2026-09-21",
   "priority": [
     "UNITY",
     "ROBLOX",
@@ -927,17 +927,27 @@
       "refillBy": "vibe2-24h-runner",
       "cycle": [
         "LOAD_RELEASED_SOURCE_AND_VERIFIED_LEARNING",
-        "IDENTIFY_ONE_CONCRETE_COMPLETENESS_OR_QUALITY_GAP",
+        "PLAYTEST_RELEASED_BUILD_AND_CAPTURE_EVIDENCE",
+        "IDENTIFY_BUG_COMPLETENESS_OR_QUALITY_GAPS",
+        "PRODUCE_NON_BINDING_REVIEW_FEEDBACK",
+        "VIBE_DECIDES_FEEDBACK_ACCEPTANCE",
+        "CLASSIFY_ACCEPTED_WORK_AS_HOTFIX_MINOR_OR_MAJOR",
+        "PREPARE_MAJOR_UPDATE_AHEAD_OR_USE_FAST_MINOR_LANE",
         "IMPLEMENT_WITHIN_CURRENT_GAME_IDENTITY",
-        "INCREMENTAL_QA",
+        "INCREMENTAL_QA_AND_DEBUG",
         "PERFORMANCE_SANITY",
         "FAN_IN_REGRESSION",
+        "FINAL_REVIEW_FOR_MAJOR_OR_FOCUSED_REVIEW_FOR_FAST_LANE",
         "PROMOTE_VERIFIED_SOURCE_CHANGE_OR_REQUEUE",
+        "INGEST_VERIFIED_RESULT_INTO_LEARNING",
         "CREATE_NEXT_FOCUS_CYCLE"
       ],
       "priorities": [
+        "release-blocking-bugs",
+        "progress-blockers",
         "gameplay-completeness",
         "content-depth",
+        "small-safe-quality-improvements",
         "roblox-native-ux",
         "mobile-readability",
         "performance",
@@ -966,7 +976,24 @@
         "packageLongWorkProtected": true,
         "packageRole": "implementation-owner",
         "priority": "critical",
-        "directMainWrite": false
+        "directMainWrite": false,
+        "feedbackAdvisoryOnly": true,
+        "feedbackDecisionAuthority": "VIBE",
+        "updateScaleDecisionAuthority": "VIBE",
+        "updateScaleInitial": "UNCLASSIFIED",
+        "allowedUpdateScales": [
+          "HOTFIX",
+          "MINOR",
+          "MAJOR"
+        ],
+        "bugEmergencyLane": true,
+        "majorUpdatePrepareAhead": true,
+        "fastRedeployEligibleScales": [
+          "HOTFIX",
+          "MINOR"
+        ],
+        "unverifiedPublicReplacementForbidden": true,
+        "verifiedResultLearningRequired": true
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
       "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_SAME_SOURCE_FOCUS_TASK_EXISTS",
@@ -1025,6 +1052,184 @@
         "min": 2,
         "max": 4,
         "onlyWhenIndependentHighValueWorkExists": true
+      },
+      "playtestReviewLoop": {
+        "version": 1,
+        "required": true,
+        "sequence": [
+          "PLAY_RELEASED_BUILD_OR_EXACT_RELEASE_CANDIDATE",
+          "CAPTURE_REPRODUCIBLE_BUGS_ERRORS_AND_PROGRESS_BLOCKERS",
+          "REVIEW_GAMEPLAY_UX_VISUAL_AUDIO_BALANCE_PERFORMANCE_AND_COMPLETENESS",
+          "PRODUCE_ADVISORY_FEEDBACK_WITH_EVIDENCE",
+          "VIBE_DECIDES_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+          "CLASSIFY_ACCEPTED_WORK_AS_HOTFIX_MINOR_OR_MAJOR",
+          "ROUTE_TO_SCALE_APPROPRIATE_UPDATE_PREPARATION",
+          "REVALIDATE_EXACT_UPDATE_ARTIFACT",
+          "REDEPLOY_ONLY_AFTER_REQUIRED_GATES",
+          "INGEST_VERIFIED_RESULT_INTO_LEARNING"
+        ],
+        "feedbackIsAdvisoryOnly": true,
+        "feedbackCannotForceImplementation": true,
+        "feedbackAcceptanceAuthority": "VIBE",
+        "requiredDecisionRecord": [
+          "decision",
+          "evidence",
+          "reason",
+          "acceptedScope"
+        ],
+        "allowedDecisions": [
+          "ACCEPT",
+          "PARTIAL_ACCEPT",
+          "DEFER",
+          "REJECT"
+        ]
+      },
+      "updateScalePolicy": {
+        "version": 1,
+        "classificationAuthority": "VIBE",
+        "classificationRequiredBeforeImplementation": true,
+        "classes": {
+          "HOTFIX": {
+            "intent": "REPRODUCIBLE_BUG_OR_SMALL_ERROR_FIX",
+            "prepareAheadRequired": false,
+            "fastRedeploy": true,
+            "requiredValidation": [
+              "REPRODUCE_OR_CONFIRM_FAILURE",
+              "FOCUSED_FIX",
+              "INCREMENTAL_QA",
+              "TARGET_PLATFORM_SMOKE",
+              "FOCUSED_REGRESSION",
+              "SECURITY_STEWARD_RESCAN_WHEN_SECURITY_RELEVANT",
+              "EXACT_ARTIFACT_RELEASE_GATE"
+            ],
+            "priority": "IMMEDIATE",
+            "interruptsOtherUpdateWork": true,
+            "redeployAsSoonAsRelevantEvidencePasses": true
+          },
+          "MINOR": {
+            "intent": "SMALL_FEATURE_ENHANCEMENT_OR_LOW_RISK_QUALITY_IMPROVEMENT",
+            "prepareAheadRequired": false,
+            "fastRedeploy": true,
+            "requiredValidation": [
+              "SCOPE_AND_SAVE_COMPATIBILITY_CHECK",
+              "INCREMENTAL_QA",
+              "TARGET_PLATFORM_SMOKE",
+              "FOCUSED_REGRESSION",
+              "PERFORMANCE_SANITY",
+              "EXACT_ARTIFACT_RELEASE_GATE"
+            ]
+          },
+          "MAJOR": {
+            "intent": "LARGE_VERSION_UPDATE_OR_MULTI_SYSTEM_CONTENT_UPDATE",
+            "prepareAheadRequired": true,
+            "publicReleaseProtectedUntilReady": true,
+            "previousPublicReleaseRemainsCanonicalUntilPromotion": true,
+            "requiredPreparation": [
+              "PREPARE_UPDATE_BEFORE_TARGET_RELEASE_WINDOW",
+              "LOCK_UPDATE_SCOPE_AND_COMPATIBILITY_CONTRACT",
+              "IMPLEMENT_ON_NON_PUBLIC_CANDIDATE",
+              "REPEATED_PLAYTEST_AND_BUG_HUNT",
+              "FIX_SMALL_ERRORS_AND_PROGRESS_BLOCKERS",
+              "SAVE_MIGRATION_OR_BACKWARD_COMPATIBILITY_PROOF_IF_NEEDED",
+              "FULL_INCREMENTAL_QA",
+              "TARGET_PLATFORM_RUNTIME",
+              "INDEPENDENT_QA",
+              "FULL_REGRESSION",
+              "PERFORMANCE_SANITY",
+              "FINAL_GAME_REVIEW",
+              "SECURITY_STEWARD_GAME_SECURITY_REVIEW",
+              "EXACT_ARTIFACT_RELEASE_GATE"
+            ],
+            "minimumStablePassRule": "NO_KNOWN_RELEASE_BLOCKING_BUGS_AND_ALL_REQUIRED_GATES_PASS"
+          }
+        },
+        "downgradeMajorValidationToFastLaneForbidden": true,
+        "updateMayBeReclassifiedByVibeWhenEvidenceChanges": true,
+        "releaseGateWeakeningForbidden": true
+      },
+      "fastRedeployPolicy": {
+        "eligibleClasses": [
+          "HOTFIX",
+          "MINOR"
+        ],
+        "speedPriority": true,
+        "skipUnrelatedFullRepositoryWork": true,
+        "requiredRelevantQaCannotBeSkipped": true,
+        "exactSourceAndArtifactBindingRequired": true,
+        "existingReleasePromotionGateStillRequired": true,
+        "hotfixPreemptsMinorAndMajor": true,
+        "bugFixesFirst": true,
+        "fastResponseCannotSkipRequiredRelevantQa": true
+      },
+      "majorUpdatePreparationPolicy": {
+        "prepareBeforePublicVersionChange": true,
+        "keepCurrentPublicVersionLiveWhilePreparing": true,
+        "debugAndErrorSweepRequired": true,
+        "repeatedValidationRequired": true,
+        "finalWholeGameReviewRequired": true,
+        "noDirectProductionPatchBeforeCandidatePass": true
+      },
+      "bugEmergencyLane": {
+        "version": 1,
+        "enabled": true,
+        "priority": "HIGHEST_POST_RELEASE_ENGINEERING_PRIORITY",
+        "interruptsMinorAndMajorPreparation": true,
+        "qualifyingFailures": [
+          "CRASH_OR_START_FAILURE",
+          "PROGRESS_BLOCKER",
+          "SAVE_LOAD_CORRUPTION_OR_FAILURE",
+          "INPUT_OR_CONTROL_UNUSABLE",
+          "MULTIPLAYER_SYNC_BREAK",
+          "REPRODUCIBLE_GAMEPLAY_BREAK",
+          "SEVERE_PERFORMANCE_REGRESSION",
+          "RELEASE_BLOCKING_PLATFORM_ERROR"
+        ],
+        "response": [
+          "CAPTURE_MINIMUM_REPRODUCTION",
+          "TRACE_TO_RESPONSIBLE_STATE_OR_FUNCTION",
+          "FOCUSED_FIX_ONLY",
+          "INCREMENTAL_QA",
+          "TARGET_PLATFORM_SMOKE",
+          "FOCUSED_REGRESSION",
+          "EXACT_ARTIFACT_RELEASE_GATE",
+          "FAST_REDEPLOY"
+        ],
+        "unrelatedMajorUpdateMayNotDelayHotfix": true,
+        "activeMajorCandidateRemainsIsolated": true,
+        "noQaBypass": true,
+        "noDirectUnverifiedProductionPatch": true,
+        "fastResponseMeaning": "MINIMIZE_UNRELATED_WORK_NOT_REQUIRED_EVIDENCE"
+      },
+      "securityStewardIntegration": {
+        "version": 1,
+        "required": true,
+        "steward": "VIBE_SECURITY_STEWARD",
+        "policy": "company-learning/security-immune-system.json",
+        "reuseExistingSecuritySystem": true,
+        "platformAntiCheatDuplicated": false,
+        "robloxExistingGates": [
+          "COMPANY_SECURITY_IMMUNE_SOURCE_SCAN",
+          "SERVER_REMOTE_BOUNDARY_REQUIRED",
+          "SERVER_REMOTE_INPUT_VALIDATION_REQUIRED",
+          "SERVER_REMOTE_RATE_LIMIT_REQUIRED",
+          "ROBLOX_SERVER_CLIENT_BOUNDARY_PASS",
+          "ROBLOX_INDEPENDENT_QA_PASS",
+          "ROBLOX_REGRESSION_PASS"
+        ],
+        "reviewScope": [
+          "SERVER_AUTHORITY",
+          "REMOTE_INPUT_VALIDATION",
+          "RATE_LIMIT",
+          "SAVE_INTEGRITY",
+          "ECONOMY_AND_REWARD_INTEGRITY",
+          "DAMAGE_AND_COOLDOWN_AUTHORITY",
+          "MULTIPLAYER_SYNC_ABUSE",
+          "BACKDOOR_OR_UNTRUSTED_MODULE"
+        ],
+        "confirmedSecurityBugRoute": "HOTFIX",
+        "securityHotfixPreemptsOtherUpdateWork": true,
+        "securityRescanBeforeRedeploy": true,
+        "verifiedSecurityResultReturnsToSecurityLearning": true
       }
     },
     "executionBindings": {
@@ -3619,6 +3824,57 @@
       "quarantineTerminatesAffectedExternalExecution": true,
       "quarantineBlocksCandidatePublication": true,
       "verifiedDefensiveLearningOnly": true
+    },
+    "postReleaseUpdatePolicy": {
+      "version": 1,
+      "appliesTo": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "currentExecutionAvailability": {
+        "ROBLOX": "ACTIVE",
+        "UNITY": "POLICY_READY_PLATFORM_POST_RELEASE_EXECUTOR_PENDING",
+        "FORTNITE_UEFN": "OWNER_HOLD"
+      },
+      "feedbackAuthority": "VIBE",
+      "feedbackNonBinding": true,
+      "updateClasses": [
+        "HOTFIX",
+        "MINOR",
+        "MAJOR"
+      ],
+      "majorPrepareAhead": true,
+      "minorAndHotfixFastRedeploy": true,
+      "allRedeploysRequireRelevantPlatformEvidence": true,
+      "publicVersionNeverReplacedByUnverifiedCandidate": true,
+      "verifiedOutcomeReturnsToVibeLearning": true,
+      "bugEmergencyLaneRequired": true,
+      "hotfixMayPreemptPreparedMajorUpdate": true,
+      "majorCandidateMustRemainIsolatedDuringHotfix": true,
+      "canonicalFlow": [
+        "RELEASE_CONFIRMED",
+        "POST_RELEASE_PLAYTEST_AND_REVIEW",
+        "VIBE_FEEDBACK_DECISION",
+        "UPDATE_SCALE_CLASSIFICATION",
+        "HOTFIX_FAST_LANE_OR_MINOR_FAST_LANE_OR_MAJOR_PREPARATION_LANE",
+        "RELEVANT_QA_AND_DEBUG",
+        "SECURITY_STEWARD_GAME_SECURITY_REVIEW",
+        "EXACT_ARTIFACT_FINAL_GATE",
+        "REDEPLOY",
+        "POST_REDEPLOY_PLAYTEST",
+        "VERIFIED_RESULT_LEARNING_INGEST",
+        "NEXT_UPDATE_CYCLE"
+      ],
+      "bugPriorityRule": "QUALIFYING_BUG_OR_ERROR_PREEMPTS_MINOR_AND_MAJOR_UPDATE_PREPARATION_UNTIL_HOTFIX_RESOLVED_OR_VIBE_DEFERRED",
+      "securityStewardRequired": true,
+      "securityPolicy": "company-learning/security-immune-system.json",
+      "securityFindingRouting": {
+        "confirmedExploitOrSecurityBug": "HOTFIX",
+        "confirmedBackdoorOrCredentialExposure": "SECURITY_QUARANTINE",
+        "ordinaryGameReviewFeedback": "VIBE_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+        "securityReleaseBlockersCannotBeBypassedByOrdinaryFeedbackDecision": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -4119,7 +4375,16 @@
         "autonomousTreasuryTransferAuthority": false,
         "autonomousContractOrSpendingCommitmentAuthority": false,
         "ownerControlledFinancialActionsRequired": true
-      }
+      },
+      "planningGrowthMarketingBinding": "company-learning/platform-release-roadmap.json#planningGrowthMarketingDepartment",
+      "revenueResearchOwnedBy": "planning",
+      "marketingResearchOwnedBy": "planning",
+      "vibeChoosesApplicationScopeAndTiming": true,
+      "paidExternalSpendRemainsOwnerControlled": true,
+      "userGrowthBeforeRevenueOptimization": true,
+      "monetizationReadinessRequiresPlayerAndRetentionEvidence": true,
+      "paidAcquisitionScalingRequiresMeasuredFunnel": true,
+      "trendResearchRequiredForMarketTiming": true
     }
   },
   "longTermVibeVision": {
@@ -10160,5 +10425,573 @@
       "RULE_4"
     ],
     "orderedImplementationRequired": true
+  },
+  "planningGrowthMarketingDepartment": {
+    "version": 1,
+    "canonicalRoleKey": "planning",
+    "displayName": "PLANNING_GROWTH_MONETIZATION_MARKETING",
+    "koreanName": "기획·성장마케팅",
+    "mergeMode": "EXTEND_EXISTING_PLANNING_DEPARTMENT_NO_PARALLEL_DUPLICATE_DEPARTMENT",
+    "purpose": "CONNECT_GAME_DESIGN_PRODUCT_STRATEGY_MONETIZATION_REVENUE_RESEARCH_AND_MARKETING_IN_ONE_EVIDENCE_DRIVEN_PLANNING FUNCTION",
+    "authority": {
+      "researchAndProposalAllowed": true,
+      "vibeDecidesAcceptPartialDeferReject": true,
+      "implementationRequiresAcceptedScope": true,
+      "paidExternalSpendRequiresOwnerAuthorizedFinancialAction": true,
+      "autonomousFinancialTransactionAuthority": false,
+      "autonomousAdSpendAuthority": false,
+      "gameBalanceOrCoreIdentityMayNotBeSilentlyChanged": true
+    },
+    "researchDomains": {
+      "productAndGamePlanning": [
+        "TARGET_PLAYER_AND_USE_CASE",
+        "CORE_FUN_AND_RETENTION_LOOP",
+        "CONTENT_AND_PROGRESS_STRUCTURE",
+        "ONBOARDING_AND_RETURN_MOTIVATION",
+        "UPDATE_CADENCE_AND_VERSION_STRATEGY"
+      ],
+      "monetizationAndRevenue": [
+        "PAID_ITEMS_AND_COSMETICS",
+        "CONSUMABLE_OR_REPEAT_PURCHASES",
+        "PERMANENT_UPGRADES_OR_ACCESS_PRODUCTS",
+        "SUBSCRIPTION_OR_MEMBERSHIP_WHEN_PLATFORM_SUPPORTED",
+        "IN_GAME_AD_REVENUE_WHEN_PLATFORM_SUPPORTED",
+        "PRICING_AND_BUNDLE_STRUCTURE",
+        "FREE_TO_PAID_CONVERSION_PATH",
+        "REVENUE_PER_PAYER_AND_REVENUE_PER_ACTIVE_USER",
+        "ECONOMY_SINK_SOURCE_AND_INFLATION_RISK",
+        "PURCHASE_VALUE_CLARITY_AND_PLAYER_TRUST"
+      ],
+      "marketingAndGrowth": [
+        "STORE_PAGE_AND_DISCOVERY_POSITIONING",
+        "TITLE_ICON_THUMBNAIL_TRAILER_AND_SCREENSHOT_MESSAGE",
+        "ORGANIC_DISCOVERY_AND_COMMUNITY_PROMOTION",
+        "CREATOR_INFLUENCER_AND_CROSS_PROMOTION_OPTIONS",
+        "PAID_USER_ACQUISITION_RESEARCH",
+        "PLATFORM_ADVERTISING_OPTIONS",
+        "EVENT_UPDATE_AND_REENGAGEMENT_CAMPAIGNS",
+        "LAUNCH_TIMING_AND_UPDATE_TIMING",
+        "AUDIENCE_SEGMENT_AND_CHANNEL_FIT",
+        "ACQUISITION_RETENTION_CONVERSION_AND_RETURN_METRICS"
+      ]
+    },
+    "evidenceInputs": [
+      "CURRENT_GAMEPLAY_AND_DESIGN_BASELINE",
+      "RELEASE_AND_UPDATE_HISTORY",
+      "AVAILABLE_PLATFORM_ANALYTICS",
+      "PLAYER_BEHAVIOR_AND_FUNNEL_METRICS_WHEN_AVAILABLE",
+      "STORE_DISCOVERY_AND_CAMPAIGN_RESULTS_WHEN_AVAILABLE",
+      "REVENUE_AND_PURCHASE_METRICS_WHEN_AVAILABLE",
+      "QA_SECURITY_BALANCE_AND_PLATFORM_POLICY_EVIDENCE",
+      "PUBLIC_MARKET_AND_PLATFORM_RESEARCH"
+    ],
+    "lifecycle": {
+      "preRelease": [
+        "RESEARCH_TARGET_PLAYER_AND_MARKET_POSITION",
+        "REVIEW_MONETIZATION_FIT_WITH_CORE_GAME",
+        "PROPOSE_PAID_ITEM_AD_AND_PRICING OPTIONS",
+        "PLAN_LAUNCH_DISCOVERY_AND_PROMOTION",
+        "VIBE_DECIDES_SCOPE_AND_TIMING",
+        "IMPLEMENT_ACCEPTED_GAME_CHANGES",
+        "QA_BALANCE_SECURITY_AND_PLATFORM_POLICY_REVIEW",
+        "PREPARE_CAMPAIGN_ASSETS_AND_MEASUREMENT"
+      ],
+      "launch": [
+        "VERIFY_STORE_AND_DISCOVERY_PRESENTATION",
+        "VERIFY_MONETIZATION_CONFIGURATION_AND_PURCHASE_FLOW",
+        "ESTABLISH_BASELINE_METRICS",
+        "EXECUTE_ONLY_OWNER_AUTHORIZED_PAID_SPEND",
+        "CAPTURE_LAUNCH_RESULTS"
+      ],
+      "postRelease": [
+        "REVIEW_REVENUE_RETENTION_CONVERSION_AND_DISCOVERY",
+        "IDENTIFY_PRODUCT_MONETIZATION_OR_MARKETING_OPPORTUNITIES",
+        "PRODUCE_NON_BINDING_EVIDENCE_BASED_PROPOSALS",
+        "VIBE_DECIDES_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+        "VIBE_DECIDES_APPLICATION_SCOPE_AND_TIMING",
+        "ROUTE_ACCEPTED_GAME_CHANGES_TO_HOTFIX_MINOR_OR_MAJOR_UPDATE_FLOW",
+        "ROUTE_OWNER_AUTHORIZED_CAMPAIGN_ACTIONS_TO_APPROPRIATE_CHANNEL",
+        "MEASURE_OUTCOME_AND_REASSESS"
+      ]
+    },
+    "applicationDecisionContract": {
+      "requiredForEveryProposal": [
+        "PROBLEM_OR_OPPORTUNITY",
+        "TARGET_PLAYER_SEGMENT",
+        "EXPECTED_PLAYER_VALUE",
+        "EXPECTED_REVENUE_OR_GROWTH_EFFECT",
+        "GAMEPLAY_AND_BALANCE_IMPACT",
+        "IMPLEMENTATION_SCOPE",
+        "BEST_APPLICATION_TIMING",
+        "MEASUREMENT_PLAN",
+        "ROLLBACK_OR_STOP_CONDITION"
+      ],
+      "allowedDecisions": [
+        "ACCEPT",
+        "PARTIAL_ACCEPT",
+        "DEFER",
+        "REJECT"
+      ],
+      "decisionAuthority": "VIBE",
+      "automaticAcceptanceForbidden": true
+    },
+    "timingPolicy": {
+      "immediate": [
+        "BROKEN_PURCHASE_FLOW",
+        "WRONG_PRICE_OR_PRODUCT_CONFIGURATION",
+        "REVENUE_BLOCKING_BUG",
+        "MISLEADING_OR_BROKEN_STORE_PRESENTATION"
+      ],
+      "nearTerm": [
+        "LOW_RISK_PRICING_OR_BUNDLE_EXPERIMENT",
+        "SMALL_DISCOVERY_OR_STORE_PRESENTATION_IMPROVEMENT",
+        "SMALL_REENGAGEMENT_OR_PROMOTION_TEST"
+      ],
+      "majorUpdate": [
+        "NEW_MONETIZATION_SYSTEM",
+        "LARGE_ECONOMY_REDESIGN",
+        "NEW_SUBSCRIPTION_OR_MEMBERSHIP_MODEL",
+        "LARGE_PAID_CONTENT_OR_ACCESS_STRUCTURE",
+        "MAJOR_LAUNCH_OR_RELAUNCH_CAMPAIGN"
+      ],
+      "majorGameChangeUsesPostReleaseMajorPreparationLane": true,
+      "revenueBlockingBugUsesHotfixLane": true
+    },
+    "safeguards": {
+      "monetizationMustNotBypassGameplayQa": true,
+      "economyAndBalanceReviewRequiredWhenGameplayValueChanges": true,
+      "securityReviewRequiredForPurchaseRewardOrCurrencyAuthority": true,
+      "platformPolicyComplianceRequired": true,
+      "deceptiveOrHiddenPurchaseMechanicsForbidden": true,
+      "unverifiedRevenueClaimsForbidden": true,
+      "missingAnalyticsMustBeMarkedUnverified": true,
+      "paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction": true
+    },
+    "learningLoop": {
+      "everyAppliedExperimentCreatesEvidence": true,
+      "compareExpectedVsObserved": true,
+      "successfulPatternRequiresRepeatedVerifiedEvidenceBeforePreference": true,
+      "failedOrHarmfulPatternRecordedAsAvoidEvidence": true,
+      "verifiedOutcomeReturnsToExistingVibeLearning": true,
+      "newShadowTrainerForbidden": true
+    },
+    "strategyPriority": [
+      "1_MARKET_AND_TREND_RESEARCH",
+      "2_PLAYER_ACQUISITION",
+      "3_ONBOARDING_AND_ACTIVATION",
+      "4_RETENTION_AND_RETURN_BEHAVIOR",
+      "5_COMMUNITY_AND_DISCOVERY_COMPOUNDING",
+      "6_MONETIZATION_READINESS",
+      "7_MONETIZATION_EXPERIMENT",
+      "8_REVENUE_OPTIMIZATION_WITH_PLAYER_TRUST"
+    ],
+    "userBaseBeforeMonetizationPolicy": {
+      "version": 1,
+      "principle": "MONETIZATION_FOLLOWS_PROVEN_PLAYER_VALUE_AND_USER_BASE_NOT_THE_REVERSE",
+      "noMeaningfulUserBaseDefault": "DEFER_NONESSENTIAL_MONETIZATION",
+      "paidItemWithoutDemandEvidenceMayNotBeTreatedAsPriority": true,
+      "monetizationDesignMayBePreparedAhead": true,
+      "monetizationActivationRequiresEvidence": true,
+      "evidenceSignals": [
+        "ACTIVE_PLAYER_BASE",
+        "NEW_PLAYER_ACQUISITION_TREND",
+        "ONBOARDING_COMPLETION",
+        "RETURNING_PLAYER_SHARE",
+        "RETENTION_OR_REPEAT_SESSION_SIGNAL",
+        "SESSION_DEPTH_OR_CORE_LOOP_COMPLETION",
+        "PLAYER_DEMAND_OR_PURCHASE_INTENT_WHEN_AVAILABLE",
+        "ECONOMY_AND_REWARD_STABILITY",
+        "PLATFORM_POLICY_AND_PURCHASE_FLOW_READINESS"
+      ],
+      "noFixedVanityThreshold": true,
+      "thresholdSelectionAuthority": "VIBE_BASED_ON_GAME_SCALE_PLATFORM_AND_EVIDENCE",
+      "vanityInstallCountAloneInsufficient": true,
+      "revenueOptimizationCannotHideRetentionFailure": true
+    },
+    "trendResearch": {
+      "version": 1,
+      "required": true,
+      "cadence": [
+        "PRE_DESIGN_WHEN_MARKET_POSITIONING_MATTERS",
+        "PRE_LAUNCH",
+        "POST_LAUNCH_PERIODIC",
+        "BEFORE_MAJOR_UPDATE_OR_RELAUNCH"
+      ],
+      "researchTopics": [
+        "PLATFORM_DISCOVERY_TRENDS",
+        "RISING_AND_DECLINING_GENRES",
+        "PLAYER_SESSION_AND_SOCIAL_PATTERNS",
+        "CONTENT_UPDATE_PATTERNS",
+        "THUMBNAIL_ICON_TITLE_AND_STORE_PRESENTATION_TRENDS",
+        "CREATOR_AND_COMMUNITY_DISCOVERY_CHANNELS",
+        "SHORT_FORM_VIDEO_AND_STREAMING_DISCOVERY_PATTERNS",
+        "FREE_TO_PLAY_MONETIZATION_PATTERNS",
+        "PLAYER_SENTIMENT_AND_MONETIZATION_BACKLASH_SIGNALS",
+        "SEASONAL_EVENT_AND_RELEASE_TIMING",
+        "COMPETING_GAME_POSITIONING",
+        "PLATFORM_POLICY_OR_DISCOVERY_RULE_CHANGES"
+      ],
+      "sourcePolicy": {
+        "currentPublicResearchRequired": true,
+        "platformOfficialSourcesPreferred": true,
+        "publicChartsAndDiscoverySurfacesAllowed": true,
+        "publicCommunityAndCreatorSignalsAllowed": true,
+        "competitorPublicObservationAllowed": true,
+        "privateOrUnauthorizedDataForbidden": true,
+        "staleTrendMayNotBePresentedAsCurrent": true,
+        "everyTrendClaimNeedsDateAndSourceContext": true
+      },
+      "outputs": [
+        "TREND_SUMMARY",
+        "OPPORTUNITY_AND_RISK_MAP",
+        "TARGET_PLAYER_SEGMENTS",
+        "DIFFERENTIATION_OPTIONS",
+        "ACQUISITION_CHANNEL_HYPOTHESES",
+        "TIMING_RECOMMENDATION",
+        "WHAT_NOT_TO_COPY"
+      ],
+      "copyTrendBlindlyForbidden": true,
+      "gameIdentityMustRemainDistinct": true
+    },
+    "playerAcquisitionResearch": {
+      "version": 1,
+      "primaryQuestion": "HOW_DO_WE_GET_THE_FIRST_AND_NEXT_COHORTS_OF_REAL_PLAYERS",
+      "channelPortfolio": [
+        "PLATFORM_ORGANIC_DISCOVERY",
+        "STORE_SEARCH_AND_RECOMMENDATION_SURFACES",
+        "ICON_THUMBNAIL_TITLE_DESCRIPTION_OPTIMIZATION",
+        "SHORT_FORM_VIDEO",
+        "CREATOR_OR_INFLUENCER_OUTREACH",
+        "COMMUNITY_POSTS_AND_DEVLOGS",
+        "DISCORD_OR_COMMUNITY_BUILDING_WHEN_APPROPRIATE",
+        "CROSS_PROMOTION_BETWEEN_OWN_GAMES",
+        "EVENT_AND_UPDATE_MOMENTS",
+        "REFERRAL_OR_SOCIAL_INVITE_LOOPS_WHEN_GAME_FIT_EXISTS",
+        "PAID_USER_ACQUISITION_ONLY_AFTER_CREATIVE_AND_FUNNEL_EVIDENCE"
+      ],
+      "acquisitionFunnel": [
+        "IMPRESSION",
+        "CLICK_OR_GAME_PAGE_OPEN",
+        "INSTALL_OR_PLAY_START",
+        "FIRST_MINUTES_ACTIVATION",
+        "CORE_LOOP_COMPLETION",
+        "RETURN",
+        "SOCIAL_ORGANIC_SHARE",
+        "MONETIZATION_WHEN_READY"
+      ],
+      "optimizeOrder": [
+        "DISCOVERY",
+        "CLICK_THROUGH",
+        "FIRST_SESSION_ACTIVATION",
+        "RETENTION",
+        "SHARING_OR_RETURN",
+        "MONETIZATION"
+      ],
+      "paidAcquisitionGate": {
+        "organicOrSmallScaleCreativeEvidencePreferredFirst": true,
+        "brokenOnboardingOrRetentionBlocksScalingSpend": true,
+        "costPerAcquiredPlayerMustBeMeasuredWhenSpendExists": true,
+        "downstreamRetentionMustBeMeasured": true,
+        "paidSpendWithoutMeasurementPlanForbidden": true,
+        "ownerAuthorizedFinancialActionRequired": true
+      }
+    },
+    "growthExperimentFramework": {
+      "version": 1,
+      "everyExperimentRequires": [
+        "HYPOTHESIS",
+        "TARGET_SEGMENT",
+        "CHANNEL_OR_SURFACE",
+        "BASELINE",
+        "EXPECTED_CHANGE",
+        "PRIMARY_METRIC",
+        "GUARDRAIL_METRICS",
+        "STOP_CONDITION",
+        "REVIEW_DATE"
+      ],
+      "metricFamilies": [
+        "DISCOVERY_IMPRESSIONS",
+        "CLICK_THROUGH_OR_PAGE_OPEN_RATE",
+        "PLAY_START_OR_INSTALL_RATE",
+        "ACTIVATION_RATE",
+        "RETURNING_PLAYER_RATE",
+        "RETENTION",
+        "SESSION_DEPTH",
+        "CORE_LOOP_COMPLETION",
+        "SOCIAL_INVITES_OR_SHARES",
+        "CONVERSION_RATE_WHEN_MONETIZATION_ACTIVE",
+        "REVENUE_PER_ACTIVE_PLAYER_WHEN_MEANINGFUL",
+        "PAYER_RETENTION_AND_REFUND_OR_COMPLAINT_SIGNALS"
+      ],
+      "oneMetricOptimizationMayNotSacrificePlayerTrust": true,
+      "negativeRetentionOrTrustSignalCanStopRevenueExperiment": true
+    },
+    "monetizationReadinessDecision": {
+      "defaultWhenEvidenceMissing": "DEFER",
+      "possibleDecisions": [
+        "PREPARE_ONLY",
+        "PILOT",
+        "ACTIVATE_LIMITED",
+        "EXPAND",
+        "HOLD",
+        "ROLLBACK"
+      ],
+      "decisionAuthority": "VIBE",
+      "requiredReview": [
+        "PLAYER_BASE_EVIDENCE",
+        "RETENTION_EVIDENCE",
+        "PLAYER_VALUE_AND_FAIRNESS",
+        "ECONOMY_BALANCE",
+        "SECURITY_AND_PURCHASE_AUTHORITY",
+        "PLATFORM_POLICY",
+        "MEASUREMENT_AND_ROLLBACK"
+      ]
+    },
+    "researchQuestions": [
+      "왜 이 게임을 처음 클릭해야 하는가?",
+      "첫 5분 안에 어떤 가치가 보여야 다시 돌아오는가?",
+      "유저가 친구에게 공유하거나 다시 접속할 이유는 무엇인가?",
+      "현재 플랫폼에서 이 장르가 뜨거나 식는 신호는 무엇인가?",
+      "우리 게임이 유사 게임과 다르게 기억될 한 가지는 무엇인가?",
+      "유료 아이템이 실제 플레이어 가치에 맞는가, 아니면 유저가 충분히 생길 때까지 보류해야 하는가?",
+      "유료 광고를 쓰기 전에 무료/유기적 채널에서 어떤 크리에이티브와 메시지가 반응하는가?",
+      "유저 획득 비용이 생기면 유지율과 장기 가치가 이를 감당하는가?",
+      "매출을 올리려다 리텐션·신뢰·게임 재미를 해치고 있지 않은가?"
+    ],
+    "departmentToVibeDecisionBoundary": {
+      "version": 1,
+      "departmentAuthority": "RESEARCH_ADVISORY_EVIDENCE_ONLY",
+      "departmentMay": [
+        "COLLECT_PUBLIC_AND_INTERNAL_ALLOWED_DATA",
+        "ANALYZE_USER_ACQUISITION_RETENTION_MONETIZATION_AND_TRENDS",
+        "FORM_HYPOTHESES",
+        "PROPOSE_OPTIONS",
+        "ESTIMATE_BENEFIT_COST_RISK_AND_TIMING",
+        "PROVIDE_SUPPORTING_AND_CONTRADICTING_EVIDENCE",
+        "RECOMMEND_MEASUREMENT_AND_STOP_CONDITIONS"
+      ],
+      "departmentMayNot": [
+        "FORCE_IMPLEMENTATION",
+        "AUTO_ACCEPT_OWN_RECOMMENDATION",
+        "CHANGE_GAME_BALANCE_OR_MONETIZATION_DIRECTLY_WITHOUT_VIBE_ACCEPTED_SCOPE",
+        "DECIDE_FINAL_APPLICATION_TIMING",
+        "COMMIT_PAID_SPEND",
+        "TREAT_WEAK_OR_MISSING_DATA_AS_FACT"
+      ],
+      "requiredHandoffToVibe": [
+        "RESEARCH_QUESTION",
+        "DATA_SOURCES_AND_DATES",
+        "OBSERVED_FACTS",
+        "INFERENCES_SEPARATED_FROM_FACTS",
+        "UNCERTAINTIES_AND_MISSING_DATA",
+        "OPTIONS",
+        "EXPECTED_PLAYER_GROWTH_OR_REVENUE_EFFECT",
+        "RISKS_AND_NEGATIVE_SIGNALS",
+        "SUGGESTED_SCOPE",
+        "SUGGESTED_TIMING",
+        "MEASUREMENT_PLAN",
+        "STOP_OR_ROLLBACK_CONDITION"
+      ],
+      "vibeAuthority": [
+        "ACCEPT",
+        "PARTIAL_ACCEPT",
+        "DEFER",
+        "REJECT",
+        "REQUEST_MORE_RESEARCH",
+        "RUN_LIMITED_EXPERIMENT",
+        "CHOOSE_APPLICATION_SCOPE",
+        "CHOOSE_APPLICATION_TIMING",
+        "CHOOSE_PRIORITY",
+        "RECLASSIFY_HOTFIX_MINOR_OR_MAJOR"
+      ],
+      "vibeDecisionUsesEvidenceNotDepartmentAuthority": true,
+      "weakEvidenceDefault": "REQUEST_MORE_RESEARCH_OR_DEFER",
+      "departmentRecommendationNeverEqualsExecutionOrder": true
+    },
+    "dataResearchDiscipline": {
+      "version": 1,
+      "factsInferenceHypothesisMustBeSeparated": true,
+      "sourceDateRequiredForCurrentTrendClaims": true,
+      "currentPlatformDataPreferred": true,
+      "gameSpecificObservedDataPreferredOverGenericBenchmarks": true,
+      "benchmarkPopulationAndContextRequired": true,
+      "sampleSizeAndSelectionBiasMustBeConsidered": true,
+      "noUsersMeansNoPlayerBehaviorClaim": true,
+      "noPurchasesMeansNoConversionOrRevenueOptimizationClaim": true,
+      "noRetentionDataMeansRetentionMustRemainUnverified": true,
+      "missingDataCanGenerateResearchTask": true,
+      "contradictoryEvidenceMustBeShownToVibe": true,
+      "cherryPickingPositiveEvidenceForbidden": true
+    },
+    "postReleaseCommercializationEngine": {
+      "version": 1,
+      "objective": "GROW_REAL_PLAYERS_THEN_COMPOUND_RETENTION_COMMUNITY_AND_REVENUE_WITH_EVIDENCE",
+      "executionOrder": [
+        "DISCOVERY_AND_POSITIONING",
+        "FIRST_SESSION_ACTIVATION",
+        "RETENTION_AND_RETURN",
+        "SOCIAL_AND_COMMUNITY_COMPOUNDING",
+        "MONETIZATION_READINESS",
+        "LIMITED_MONETIZATION_EXPERIMENT",
+        "REVENUE_OPTIMIZATION",
+        "REINVESTMENT_IN_GAME_AND_ACQUISITION"
+      ],
+      "phases": {
+        "ZERO_TO_FIRST_COHORT": {
+          "objective": "GET_REAL_TARGET_PLAYERS_INTO_THE_GAME",
+          "focus": [
+            "STORE_POSITIONING",
+            "ICON_THUMBNAIL_TITLE_DESCRIPTION_CREATIVE",
+            "PLATFORM_ORGANIC_DISCOVERY",
+            "SEARCH_DISCOVERY",
+            "SHORT_FORM_VIDEO_AND_CREATOR_OUTREACH",
+            "OWN_PORTFOLIO_CROSS_PROMOTION",
+            "SMALL_OWNER_AUTHORIZED_PAID_UA_TEST_ONLY_IF_MEASURABLE"
+          ],
+          "monetizationPriority": "LOW_PREPARE_ONLY"
+        },
+        "FIRST_COHORT_TO_RETURNING_PLAYERS": {
+          "objective": "PROVE_THE_GAME_CREATES_RETURN_BEHAVIOR",
+          "focus": [
+            "FIRST_FIVE_MINUTE_ACTIVATION",
+            "CORE_LOOP_COMPLETION",
+            "SESSION_DEPTH",
+            "RETURNING_PLAYER_BEHAVIOR",
+            "CONTENT_GAPS_AND_PROGRESS_BLOCKERS",
+            "SOCIAL_AND_FRIEND_PLAY_MOTIVATION",
+            "UPDATE_AND_EVENT_RETURN_REASONS"
+          ],
+          "monetizationPriority": "DEFER_OR_SMALL_PILOT_ONLY_WITH_DEMAND_EVIDENCE"
+        },
+        "RETAINED_AUDIENCE_TO_REVENUE": {
+          "objective": "MONETIZE_PROVEN_PLAYER_VALUE_WITHOUT_DAMAGING_TRUST_OR_RETENTION",
+          "focus": [
+            "PURCHASE_INTENT_AND_PLAYER_DEMAND",
+            "COSMETIC_CONVENIENCE_ACCESS_OR_CONTENT_VALUE_FIT",
+            "PRICE_AND_BUNDLE_EXPERIMENTS",
+            "SUBSCRIPTION_MEMBERSHIP_WHEN_PLATFORM_AND_GAME_FIT",
+            "AD_REVENUE_WHEN_PLATFORM_AND_PLAYER_EXPERIENCE_FIT",
+            "PAYER_AND_NONPAYER_RETENTION",
+            "REFUND_COMPLAINT_AND_TRUST_SIGNALS"
+          ],
+          "monetizationPriority": "EVIDENCE_GATED"
+        },
+        "SCALE_AND_REINVEST": {
+          "objective": "SCALE_ONLY_WHAT_HAS_PROVEN_DOWNSTREAM_VALUE",
+          "focus": [
+            "CHANNEL_COHORT_QUALITY",
+            "ACQUISITION_COST_WHEN_PAID",
+            "DOWNSTREAM_RETENTION_BY_SOURCE",
+            "REVENUE_PER_ACTIVE_PLAYER_WHEN_MEANINGFUL",
+            "CONTENT_AND_SERVER_CAPACITY",
+            "UPDATE_CADENCE",
+            "REINVESTMENT_ALLOCATION"
+          ],
+          "paidAcquisitionScalingRequiresRetentionProof": true
+        }
+      },
+      "creativeLab": {
+        "required": true,
+        "surfaces": [
+          "ICON",
+          "THUMBNAIL",
+          "TITLE",
+          "SHORT_DESCRIPTION",
+          "TRAILER_OR_SHORT_VIDEO",
+          "STORE_SCREENSHOTS"
+        ],
+        "method": [
+          "ONE_MAJOR_VARIABLE_PER_EXPERIMENT",
+          "COMPARE_CLICK_THROUGH_AND_PLAY_START",
+          "CHECK_DOWNSTREAM_ACTIVATION_AND_RETENTION",
+          "DO_NOT_KEEP_CLICKBAIT_THAT_HURTS_PLAYER_TRUST_OR_RETENTION"
+        ],
+        "winnerSelectionAuthority": "VIBE"
+      },
+      "firstFiveMinuteLab": {
+        "required": true,
+        "questions": [
+          "DOES_THE_PLAYER_UNDERSTAND_WHAT_TO_DO",
+          "HOW_FAST_DOES_THE_PLAYER_REACH_CORE_FUN",
+          "IS_THE_FIRST_REWARD_MEANINGFUL",
+          "IS_THERE_A_CLEAR_NEXT_GOAL",
+          "WHERE_DO_PLAYERS_QUIT_OR_GET_STUCK",
+          "IS_RETURN_MOTIVATION_VISIBLE_BEFORE_EXIT"
+        ],
+        "outputs": [
+          "ACTIVATION_BLOCKERS",
+          "CORE_FUN_TIME_TO_VALUE",
+          "EARLY_EXIT_POINTS",
+          "RETURN_HOOK_QUALITY"
+        ]
+      },
+      "retentionEngine": {
+        "hypotheses": [
+          "MEANINGFUL_SHORT_TERM_GOALS",
+          "VISIBLE_MEDIUM_TERM_PROGRESSION",
+          "SOCIAL_OR_COOPERATIVE_REASON_TO_RETURN",
+          "ROTATING_OR_PERIODIC_CONTENT_WHEN_GAME_FIT",
+          "UPDATE_EVENT_OR_CHALLENGE_RETURN_MOMENTS",
+          "PLAYER_COLLECTION_CUSTOMIZATION_OR_MASTERY_GOALS"
+        ],
+        "noDarkPatternRequirement": true,
+        "retainedPlayerValueMustRemainPrimary": true
+      },
+      "trendRadar": {
+        "continuous": true,
+        "compare": [
+          "PLATFORM_HOME_AND_SEARCH_DISCOVERY",
+          "RISING_GAME_GENRES_AND_SUBGENRES",
+          "NEW_PLAYER_EXPECTATIONS",
+          "CREATOR_VIDEO_AND_STREAM_CONTENT",
+          "SEASONAL_EVENT_PATTERNS",
+          "POPULAR_THUMBNAIL_AND_STORE_PRESENTATION_PATTERNS",
+          "MONETIZATION_PATTERN_CHANGES",
+          "PLATFORM_DISCOVERY_ADS_AND_POLICY_CHANGES"
+        ],
+        "output": [
+          "WHAT_IS_GROWING",
+          "WHY_IT_MAY_BE_GROWING",
+          "WHAT_IS_SATURATED",
+          "WHAT_PLAYERS_APPEAR_TO_BE_REJECTING",
+          "TRANSFERABLE_MECHANIC_OR_PRESENTATION_PATTERN",
+          "DO_NOT_COPY_LIST",
+          "TIMING_WINDOW"
+        ],
+        "directTrendCopyForbidden": true
+      },
+      "channelCohortAnalysis": {
+        "requiredWhenDataAvailable": true,
+        "channels": [
+          "ORGANIC_HOME",
+          "SEARCH",
+          "SPONSORED_OR_PAID",
+          "SOCIAL_VIDEO",
+          "CREATOR_OR_INFLUENCER",
+          "FRIEND_OR_SOCIAL",
+          "CROSS_PROMOTION",
+          "RETURNING_DIRECT"
+        ],
+        "compare": [
+          "PLAY_START_RATE",
+          "FIRST_SESSION_ACTIVATION",
+          "SESSION_DEPTH",
+          "RETURN_RATE",
+          "RETENTION",
+          "SOCIAL_ACTIONS",
+          "CONVERSION_WHEN_ACTIVE"
+        ],
+        "cheapTrafficWithPoorRetentionNotGrowth": true
+      },
+      "commercialExperimentRules": {
+        "smallExperimentFirst": true,
+        "scaleOnlyAfterMeasuredDownstreamValue": true,
+        "stopLossRequiredForPaidCampaign": true,
+        "stopWhenTrustRetentionOrCoreFunDegrades": true,
+        "keepControlOrBaselineWhenPractical": true,
+        "exactChangeAndDateTrackingRequired": true,
+        "vibeCanStopOrReverseAnyExperiment": true
+      }
+    }
   }
 }
