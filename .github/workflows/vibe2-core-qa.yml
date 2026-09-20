@@ -18,6 +18,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
@@ -54,6 +55,7 @@ on:
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe2-native-asset-production.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-exploration-worker.test.mjs'
@@ -96,6 +98,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
@@ -167,6 +170,7 @@ jobs:
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-asset-production-plan.mjs
           node --check tools/vibe2-central-work-contract.mjs
           node --check tools/vibe2-neural-diagnosis.mjs
           node --check tools/vibe2-neural-feedback.mjs
@@ -207,6 +211,7 @@ jobs:
           node --check qa/vibe2-web-experience-ingest.test.mjs
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
+          node --check qa/vibe2-native-asset-production.test.mjs
           node --check qa/vibe2-neural-diagnosis.test.mjs
           node --check qa/vibe2-neural-feedback.test.mjs
           node --check qa/vibe2-neural-critic.test.mjs
@@ -238,6 +243,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe2-native-asset-production.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
           node --test qa/vibe2-neural-critic.test.mjs

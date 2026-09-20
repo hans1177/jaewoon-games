@@ -183,6 +183,63 @@ function presentationQualityGuidance(contract = {}) {
   ].join('\n');
 }
 
+function buildWeatherPresentationContract(task = {}, target = '') {
+  const evidence=new Set((task?.evidence||[]).map(clean));
+  const required=evidence.has('weather-presentation:v1')||/\[WEATHER_PRESENTATION\]/i.test(clean(task?.goal));
+  if(!required)return freeze({required:false,version:1,authorityExpanded:false});
+  return freeze({
+    required:true,
+    version:1,
+    policyRef:'company-learning/platform-release-roadmap.json#weatherPresentationContract',
+    target:clean(target).toLowerCase()||null,
+    states:freezeList(['CLEAR','RAIN','FOG','SNOW','STORM']),
+    regionalExtensions:freezeList(['VOLCANIC_ASH','HEAT_HAZE']),
+    presentationOnly:true,
+    preserve:freezeList(['ATTACK','HEALTH','MOVEMENT_SPEED','DROP_RATE','ECONOMY','PROGRESSION','SAVE_MEANING','NETWORK_AUTHORITY']),
+    multiplayer:freeze({
+      authoritativeState:true,
+      clientsShareSemanticState:true,
+      joinInProgressReceivesCurrentState:true,
+      localDensityMayVaryOnlyForPerformance:true
+    }),
+    runtimeChecks:freezeList([
+      'weather-state-transitions',
+      'rain-fog-snow-storm-visuals',
+      'storm-lightning',
+      'ambient-weather-audio-when-present',
+      'multiplayer-weather-sync',
+      'join-in-progress-weather-sync',
+      'mobile-effect-density-adaptation',
+      'critical-input-and-hazard-readability',
+      'gameplay-semantics-unchanged'
+    ]),
+    sourceMarker:'WEATHER_PRESENTATION_VERSION=1',
+    webAssetDirectNativeReuseForbidden:true,
+    authorityExpanded:false
+  });
+}
+function weatherPresentationGuidance(contract = {}) {
+  if(contract?.required!==true)return'';
+  const native=contract.target==='unity'
+    ?'Unity 네이티브 Particle System/Fog/Lighting/Material/Audio를 사용한다.'
+    :contract.target==='roblox'
+      ?'Roblox 네이티브 ParticleEmitter/Atmosphere/Lighting/ColorCorrection/Sound를 사용한다.'
+      :'기존 Web Canvas/DOM/CSS/WebAudio 렌더 책임 시스템을 직접 사용한다.';
+  return [
+    '[WEATHER PRESENTATION CONTRACT]',
+    `states=${(contract.states||[]).join(',')}`,
+    `regional=${(contract.regionalExtensions||[]).join(',')}`,
+    `preserve=${(contract.preserve||[]).join(',')}`,
+    native,
+    '날씨는 표현 전용이다. 공격력·체력·이동속도·드랍률·경제·진행·저장 의미를 바꾸지 않는다.',
+    '멀티는 authoritative weather state 하나를 공유하고 join-in-progress도 현재 날씨를 받아야 한다.',
+    '저사양에서는 파티클/후처리 밀도만 줄이고 날씨 의미는 바꾸지 않는다.',
+    'Web 렌더 자산을 Unity/Roblox에 그대로 복사하지 않는다.',
+    '완료 소스에는 WEATHER_PRESENTATION_VERSION=1 또는 언어 등가 마커가 있어야 한다.',
+    '정적 문구만 추가하는 것은 완료가 아니며 실제 runtime visual/audio evidence가 필요하다.'
+  ].join('\n');
+}
+
 function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants = 1) {
   const files = freezeList(responsibleFiles || []);
   return freeze({
@@ -297,6 +354,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const assetGuidance = assetProductionGuidance(assetProduction);
   const presentationQuality = buildPresentationQualityContract(task,plan.target);
   const presentationGuidance = presentationQualityGuidance(presentationQuality);
+  const weatherPresentation = buildWeatherPresentationContract(task,plan.target);
+  const weatherGuidance = weatherPresentationGuidance(weatherPresentation);
   const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
@@ -366,7 +425,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
@@ -379,6 +438,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'asset-production-plan-contract',
     'asset-runtime-visual-qa-required',
     ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
+    ...(weatherPresentation.required?['weather-presentation-static-check','weather-presentation-runtime-check','weather-multiplayer-sync-check','weather-gameplay-semantics-preservation']:[]),
     ...(supervisionContract?['supervised-web-build-contract','supervised-promotion-approval-required']:[]),
     'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
@@ -429,6 +489,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     unifiedLearning,
     assetProduction,
     presentationQuality,
+    weatherPresentation,
     candidateTournament:tournament,
     candidateStrategyRole:candidateStrategy,
     codingStrategyPreference,

@@ -34,7 +34,8 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=32,RESOURCE_RESPAWN_MS=300000;
+const WEATHER_PRESENTATION_VERSION=1;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=33,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -210,7 +211,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
 let noticeTimer=0,autosave=0,lastWorldTap={target:null,at:0};
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 function pointInPoly(x,y,poly=CANYON_POLY){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y,hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(hit)inside=!inside}return inside}
@@ -227,6 +228,91 @@ function randomVolcanoPoint(zone='volcano'){
  let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
 function regionAt(x,y){if(pointInCrystalRegion(x,y))return'crystal';if(pointInWorldTree(x,y))return'worldtree';if(pointInPoly(x,y,CANYON_POLY))return'canyon';if(pointInVolcano(x,y))return'volcano';return'forest'}
+
+const WEATHER_STATES=['CLEAR','RAIN','FOG','SNOW','STORM'];
+const weatherAudio={source:null,gain:null,filter:null,kind:null,thunderAt:0};
+function validWeatherKind(kind){return WEATHER_STATES.includes(String(kind||'').toUpperCase())?String(kind).toUpperCase():'CLEAR'}
+function weatherParticleBudget(){
+ const mem=Number(navigator.deviceMemory||4),cores=Number(navigator.hardwareConcurrency||4),pixels=innerWidth*innerHeight;
+ if(mem<=2||cores<=2||pixels>1800000)return .45;
+ if(mem<=4||cores<=4||pixels>1100000)return .7;
+ return 1
+}
+function nextWeatherKind(){
+ const roll=Math.random(),current=validWeatherKind(state.weather?.kind);
+ const candidate=roll<.34?'CLEAR':roll<.58?'RAIN':roll<.76?'FOG':roll<.88?'STORM':'SNOW';
+ if(candidate===current&&Math.random()<.65)return candidate==='CLEAR'?'RAIN':'CLEAR';
+ return candidate
+}
+function setWeather(kind,{fromNetwork=false,changedAt=Date.now(),nextAt=0,seed=null}={}){
+ const resolved=validWeatherKind(kind),w=state.weather||(state.weather={});
+ w.kind=resolved;w.changedAt=Number(changedAt)||Date.now();w.nextAt=Number(nextAt)||Date.now()+rand(90000,160000);w.seed=Number.isFinite(Number(seed))?Number(seed):Math.floor(Math.random()*1000000);w.lightningAt=resolved==='STORM'?Date.now()+rand(3500,9000):0;
+ if(!fromNetwork){state.dirty=true;if(multiplayer.connected&&multiIsHost())multiplayer.worldAt=0}
+}
+function weatherTick(realNow){
+ if(state.area!=='surface'){updateWeatherAudio('CLEAR');return}
+ if(!multiplayer.connected||multiIsHost()){
+  if(!state.weather?.nextAt||realNow>=state.weather.nextAt)setWeather(nextWeatherKind())
+ }
+ if(state.weather?.kind==='STORM'&&(!state.weather.lightningAt||realNow>=state.weather.lightningAt)){
+  state.weather.lightningAt=realNow+rand(5000,12000);playWeatherThunder()
+ }
+ updateWeatherAudio(validWeatherKind(state.weather?.kind))
+}
+function ensureWeatherAudio(){
+ if(!music.ctx||!music.noise)return false;
+ if(weatherAudio.source)return true;
+ const source=music.ctx.createBufferSource(),filter=music.ctx.createBiquadFilter(),gain=music.ctx.createGain();
+ source.buffer=music.noise;source.loop=true;filter.type='bandpass';filter.frequency.value=1000;filter.Q.value=.45;gain.gain.value=.0001;
+ source.connect(filter);filter.connect(gain);gain.connect(music.ctx.destination);source.start();
+ weatherAudio.source=source;weatherAudio.filter=filter;weatherAudio.gain=gain;return true
+}
+function updateWeatherAudio(kind){
+ if(!music.started||!music.ctx||!ensureWeatherAudio())return;
+ const now=music.ctx.currentTime,resolved=validWeatherKind(kind),target=resolved==='RAIN'?.018:resolved==='STORM'?.026:resolved==='FOG'?.006:resolved==='SNOW'?.004:.001;
+ weatherAudio.filter.frequency.setTargetAtTime(resolved==='STORM'?720:resolved==='RAIN'?1450:resolved==='FOG'?420:900,now,.35);
+ weatherAudio.gain.gain.setTargetAtTime(target,now,.4);weatherAudio.kind=resolved
+}
+function playWeatherThunder(){
+ if(!music.started||!music.ctx||state.area!=='surface'||validWeatherKind(state.weather?.kind)!=='STORM')return;
+ const now=music.ctx.currentTime;
+ if(now<(weatherAudio.thunderAt||0))return;
+ weatherAudio.thunderAt=now+2.5;
+ const osc=music.ctx.createOscillator(),gain=music.ctx.createGain(),filter=music.ctx.createBiquadFilter();
+ osc.type='sawtooth';osc.frequency.setValueAtTime(72,now);osc.frequency.exponentialRampToValueAtTime(34,now+.75);
+ filter.type='lowpass';filter.frequency.value=240;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.035,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+1.05);
+ osc.connect(filter);filter.connect(gain);gain.connect(music.ctx.destination);osc.start(now);osc.stop(now+1.1)
+}
+function drawWeatherOverlay(now){
+ if(state.area!=='surface')return;
+ const kind=validWeatherKind(state.weather?.kind),budget=weatherParticleBudget(),w=innerWidth,h=innerHeight,t=now*.001,seed=Number(state.weather?.seed)||1;
+ ctx.save();
+ if(kind==='RAIN'||kind==='STORM'){
+  ctx.fillStyle=kind==='STORM'?'rgba(17,28,38,.22)':'rgba(25,47,55,.12)';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle=kind==='STORM'?'rgba(176,215,235,.52)':'rgba(174,221,235,.42)';ctx.lineWidth=1.2;
+  const count=Math.floor((kind==='STORM'?115:78)*budget);
+  for(let i=0;i<count;i++){const x=((i*97+seed*13+t*360)% (w+160))-80,y=((i*173+seed*7+t*780)%(h+120))-60;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-8,y+22);ctx.stroke()}
+ }else if(kind==='SNOW'){
+  ctx.fillStyle='rgba(215,230,242,.12)';ctx.fillRect(0,0,w,h);
+  const count=Math.floor(64*budget);ctx.fillStyle='rgba(245,250,255,.82)';
+  for(let i=0;i<count;i++){const x=((i*131+seed*17+t*24*(1+i%3))%(w+80))-40,y=((i*89+seed*11+t*42*(1+(i%4)*.15))%(h+80))-40,r=1.4+(i%4)*.55;ctx.beginPath();ctx.arc(x+Math.sin(t+i)*10,y,r,0,Math.PI*2);ctx.fill()}
+ }else if(kind==='FOG'){
+  ctx.fillStyle='rgba(196,213,207,.16)';ctx.fillRect(0,0,w,h);
+  const bands=Math.max(4,Math.floor(7*budget));
+  for(let i=0;i<bands;i++){const x=((i*260+seed+t*18)%(w+500))-250,y=h*(.16+.11*i);const g=ctx.createRadialGradient(x,y,20,x,y,240);g.addColorStop(0,'rgba(224,235,231,.15)');g.addColorStop(1,'rgba(224,235,231,0)');ctx.fillStyle=g;ctx.fillRect(x-260,y-110,520,220)}
+ }else{
+  ctx.fillStyle='rgba(176,218,184,.025)';ctx.fillRect(0,0,w,h)
+ }
+ const region=regionAt(state.player.x,state.player.y);
+ if(region==='volcano'){
+  const ashCount=Math.floor(30*budget);ctx.fillStyle='rgba(77,64,58,.35)';
+  for(let i=0;i<ashCount;i++){const x=((i*151+seed*3+t*18)%(w+40))-20,y=((i*71+seed+t*16)%(h+40))-20;ctx.beginPath();ctx.arc(x,y,1+(i%3)*.5,0,Math.PI*2);ctx.fill()}
+  const heat=ctx.createLinearGradient(0,h*.45,0,h);heat.addColorStop(0,'rgba(255,126,54,0)');heat.addColorStop(1,'rgba(255,126,54,.045)');ctx.fillStyle=heat;ctx.fillRect(0,h*.4,w,h*.6)
+ }
+ if(kind==='STORM'&&state.weather?.lightningAt&&state.weather.lightningAt-Date.now()>-110&&state.weather.lightningAt-Date.now()<80){ctx.fillStyle='rgba(235,246,255,.42)';ctx.fillRect(0,0,w,h)}
+ ctx.fillStyle='rgba(5,11,9,.58)';roundRect(w-116,14,102,25,9);ctx.fill();ctx.fillStyle='#eaf6ef';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(kind==='CLEAR'?'맑음':kind==='RAIN'?'비':kind==='FOG'?'안개':kind==='SNOW'?'눈':'폭풍',w-65,31);
+ ctx.restore()
+}
 
 const MUSIC_TRACK_SECONDS=180;
 const MUSIC_THEMES={
@@ -880,6 +966,7 @@ function serializeWorld(){
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null})),
   structures:sharedStructureSnapshot(),
+  weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},
   bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,crystalSealReleased:state.crystalSealReleased
  }
 }
@@ -900,6 +987,7 @@ function applyWorldSnapshot(w){
   state.incubator=sharedStructurePos(w.structures.incubator);
   state.flags=Array.isArray(w.structures.flags)?w.structures.flags.map(sharedStructurePos).filter(Boolean):[]
  }
+ if(w.weather&&typeof w.weather==='object')setWeather(w.weather.kind,{fromNetwork:true,changedAt:w.weather.changedAt,nextAt:w.weather.nextAt,seed:w.weather.seed});
  state.bossSummoned=!!w.bossSummoned;state.bossDefeated=!!w.bossDefeated;state.crystalSealReleased=!!w.crystalSealReleased
 }
 function grantRemoteKillReward(payload){
@@ -1611,6 +1699,7 @@ function update(dt,now){
     }
     state.enemies=state.enemies.filter(e=>e.hp>0);
   }
+  weatherTick(Date.now());
   multiTick(now);
   musicTick();
   finishSmeltIfReady();
@@ -1772,7 +1861,7 @@ function drawRemotePlayers(cx,cy){
   if(r.pet&&!r.pet.mounted){ctx.fillStyle='#5d5278';ctx.beginPath();ctx.arc(r.pet.x-cx,r.pet.y-cy,14,0,Math.PI*2);ctx.fill()}if(r.weapon){ctx.strokeStyle='#bcdcff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+(r.faceX||1)*25,y+4+(r.faceY||0)*25);ctx.stroke()}ctx.restore()
  }
 }
-function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawQuestDarkness()}
+function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness()}
 function resize(){const d=Math.min(2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;update(dt,now);draw();requestAnimationFrame(loop)}
 function resetGameSave(){
  try{localStorage.removeItem(SAVE_KEY)}catch{}
@@ -1781,7 +1870,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,records:state.records,story:state.story,questCaveInit:state.questCaveInit}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -1805,6 +1894,7 @@ function loadGame(){
   for(const [id,count] of Object.entries(p.inventory||{}))if(Number(count)>0)rememberItem(id);
   for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
   if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}
+  if(s.weather&&typeof s.weather==='object')setWeather(s.weather.kind,{fromNetwork:true,changedAt:s.weather.changedAt,nextAt:s.weather.nextAt,seed:s.weather.seed});
   state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano,crystal:!!s.discovered?.crystal};
   if(s.explored&&typeof s.explored==='object'){
    state.explored={};

@@ -418,8 +418,37 @@ function presentationWorkerGuidance(order = {}) {
     '기존 게임 로직을 재설계하지 말고 현재 렌더/애니메이션/오디오/카메라 책임 함수 안에서 직접 수정한다.',
     '표현 계층은 save key, 진행도, 데미지, 쿨다운, 이동 속도, 보상, 드랍률, authoritative hit timing을 임의 변경하지 않는다.',
     '새 wrapper/override/shadow pipeline으로 덮지 말고 기존 책임 시스템을 직접 정리한다.',
+    'ASSET_ADAPTATION에서 Unity는 C# 기반 저폴리 조립 모델·재질·조명·VFX·모션/UI를, Roblox는 Luau 기반 조립 모델·Material/Color·Particle/Beam/Trail·모션/UI를 실제 게임 화면에 구현할 수 있다.',
+    '단일 primitive, 이름만 바꾼 기본 Part/GameObject, 검증용 임시 도형은 최종 그래픽 완료로 인정하지 않는다. 여러 의미 있는 파트와 Style Lock을 사용해 게임 정체성이 보이는 결과를 만든다.',
+    'FBX/PNG/WebP/OGG 등 실제 binary authoring이 필요한 경우 가짜 바이트나 텍스트 파일을 만들지 말고 검증된 기존 에셋 재사용 또는 AUTHORING_GENERATOR_REQUEST 경로를 사용한다.',
     'Web 오디오는 첫 사용자 입력 이후 활성화하고 mute/volume과 resume 중복재생 방지를 유지한다.',
     '모션·VFX·카메라는 모바일 터치와 위험 가독성을 방해하지 않는다.'
+  ].join('\n');
+}
+
+function weatherWorkerGuidance(order = {}) {
+  const contract=order?.weatherPresentation||{};
+  if(contract?.required!==true)return'';
+  const target=clean(order?.target).toLowerCase();
+  const native=target==='unity'
+    ?'Unity 네이티브 Particle System, RenderSettings/Fog, Light/Material, AudioSource 계층을 기존 책임 시스템 안에서 사용한다.'
+    :target==='roblox'
+      ?'Roblox 네이티브 ParticleEmitter, Atmosphere, Lighting/ColorCorrection, Sound 계층을 기존 책임 시스템 안에서 사용한다.'
+      :'기존 Web Canvas/DOM/CSS/WebAudio 렌더 책임 시스템을 직접 사용한다.';
+  return [
+    '[WEATHER PRESENTATION IMPLEMENTATION]',
+    `states=${(contract.states||[]).map(clean).filter(Boolean).join(',')}`,
+    `regional=${(contract.regionalExtensions||[]).map(clean).filter(Boolean).join(',')}`,
+    `preserve=${(contract.preserve||[]).map(clean).filter(Boolean).join(',')}`,
+    native,
+    '날씨는 표현 전용이다. 공격력, 체력, 이동속도, 드랍률, 경제, 진행, 저장 의미를 수정하지 않는다.',
+    '멀티 게임이면 하나의 authoritative semantic weather state를 공유하고 join-in-progress도 현재 상태를 받게 한다.',
+    '저사양에서는 파티클/후처리 밀도만 줄이고 CLEAR/RAIN/FOG/SNOW/STORM 의미 자체는 바꾸지 않는다.',
+    '화산 지역은 VOLCANIC_ASH/HEAT_HAZE를 지역 표현으로 추가할 수 있지만 게임 판정은 바꾸지 않는다.',
+    'Web 렌더 파일을 Unity/Roblox 자산으로 복사하지 않는다. 각 네이티브 엔진 표현을 별도로 구현한다.',
+    '문서/주석/상수만 추가하는 no-op 구현은 금지한다. 실제 렌더·대기·오디오·동기화 코드가 있어야 한다.',
+    '완료 소스에는 WEATHER_PRESENTATION_VERSION=1 또는 WeatherPresentationVersion = 1 등 언어 등가 마커를 둔다.',
+    '정적 QA 뒤에도 실제 런타임 시각/오디오, 멀티 동기화, 모바일 성능 검증이 필요하다.'
   ].join('\n');
 }
 
@@ -431,6 +460,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 `Department: ${order.department||'development'}`,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+weatherWorkerGuidance(order),
 `Allowed edit paths: ${allowed}`,
 context.exactSourceWindows?'CONTEXT MODE: exact responsibility windows. Each FILE window contains exact source text but separate windows are not contiguous. Any edits[].find MUST be copied wholly from one exact window; never span two windows or invent omitted text.':'',
 allowFullRewrite?(sourceRootBootstrap?'OWNER AUTHORIZATION: create the first complete playable Web baseline at the exact responsible index.html path. This is an approved missing-source bootstrap. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.':'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, and no external network dependency.'):'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',

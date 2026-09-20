@@ -29,9 +29,48 @@ const BINARY_AUTHORING_KINDS=freeze([
   'engine-native-binary-asset'
 ]);
 
-function matchedForType(selector={},type=''){
+const UNITY_DIRECT_AUTHORING=freeze([
+  'csharp-procedural-mesh-and-low-poly-model',
+  'csharp-runtime-material-and-lighting',
+  'csharp-particle-vfx-and-trails',
+  'csharp-runtime-animation-and-secondary-motion',
+  'ugui-runtime-presentation'
+]);
+
+const ROBLOX_DIRECT_AUTHORING=freeze([
+  'luau-composed-low-poly-model',
+  'luau-material-color-and-lighting',
+  'luau-particle-beam-trail-vfx',
+  'luau-runtime-animation-and-secondary-motion',
+  'luau-ui-presentation'
+]);
+
+function assetTargetCompatible(asset={},target=''){
+  const resolvedTarget=clean(target).toLowerCase();
+  const assetPath=clean(asset.path).replaceAll('\\\\','/');
+  const platforms=(Array.isArray(asset.platforms)?asset.platforms:[]).map(value=>clean(value).toLowerCase()).filter(Boolean);
+  if(resolvedTarget==='web'){
+    if(assetPath.startsWith('unity-games/')||assetPath.startsWith('roblox-games/'))return false;
+    return !platforms.length||platforms.includes('web');
+  }
+  if(resolvedTarget==='unity'){
+    if(assetPath.startsWith('web-games/')||assetPath.startsWith('roblox-games/'))return false;
+    if(platforms.length)return platforms.includes('unity');
+    return !assetPath||assetPath.startsWith('unity-games/');
+  }
+  if(resolvedTarget==='roblox'){
+    if(assetPath.startsWith('web-games/')||assetPath.startsWith('unity-games/'))return false;
+    if(platforms.length)return platforms.includes('roblox');
+    return !assetPath||assetPath.startsWith('roblox-games/');
+  }
+  return false;
+}
+
+function matchedForType(selector={},type='',manifest={},target=''){
+  const byId=new Map((Array.isArray(manifest?.assets)?manifest.assets:[]).map(asset=>[clean(asset?.id),asset]));
   return freezeList((selector.matched||[])
     .filter(row=>clean(row.type)===clean(type))
+    .filter(row=>assetTargetCompatible(byId.get(clean(row.id))||row,target))
     .map(row=>freeze({
       id:clean(row.id),
       path:clean(row.path)||null,
@@ -39,22 +78,34 @@ function matchedForType(selector={},type=''){
       source:clean(row.source)||null,
       downloaded:row.downloaded!==false,
       animated:row.animated===true,
-      motionMode:clean(row.motionMode)||null
+      motionMode:clean(row.motionMode)||null,
+      targetCompatible:true
     })));
 }
 
 function directAuthoringFor(target='',type=''){
-  if(clean(target).toLowerCase()!=='web') return freezeList([]);
+  const resolvedTarget=clean(target).toLowerCase();
   const actor=/character|player|enemy|boss|npc|animation/i.test(clean(type));
   const audio=/audio|sound|music|bgm|sfx/i.test(clean(type));
-  if(audio) return freezeList(['web-audio-sfx']);
-  if(actor) return freezeList(['svg-final-art','canvas-art-and-effects','motion-engine-animation']);
-  return WEB_DIRECT_AUTHORING;
+  if(resolvedTarget==='web'){
+    if(audio) return freezeList(['web-audio-sfx']);
+    if(actor) return freezeList(['svg-final-art','canvas-art-and-effects','motion-engine-animation']);
+    return WEB_DIRECT_AUTHORING;
+  }
+  if(resolvedTarget==='unity'){
+    if(audio) return freezeList([]);
+    return UNITY_DIRECT_AUTHORING;
+  }
+  if(resolvedTarget==='roblox'){
+    if(audio) return freezeList([]);
+    return ROBLOX_DIRECT_AUTHORING;
+  }
+  return freezeList([]);
 }
 
-function decisionFor(selector={},target='',binding={}){
+function decisionFor(selector={},target='',binding={},manifest={}){
   const type=clean(binding.type);
-  const reuseCandidates=matchedForType(selector,type);
+  const reuseCandidates=matchedForType(selector,type,manifest,target);
   const directAuthoring=directAuthoringFor(target,type);
   const decisionOrder=unique([
     reuseCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
@@ -95,7 +146,7 @@ export function buildVibeAssetProductionPlan({
     presetCatalog:presetInput,
     rebuild:/FULL_WEB_GAME_REBUILD/i.test(request)
   });
-  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding)));
+  const decisions=freezeList((selector.binding||[]).map(binding=>decisionFor(selector,resolvedTarget,binding,manifestInput)));
   const directCount=decisions.filter(row=>row.directAuthoring.length>0).length;
   const reuseCount=decisions.filter(row=>row.reuseCandidates.length>0).length;
   return freeze({
@@ -112,9 +163,11 @@ export function buildVibeAssetProductionPlan({
     decisions,
     capabilities:freeze({
       webDirectAuthoring:WEB_DIRECT_AUTHORING,
+      unityDirectAuthoring:UNITY_DIRECT_AUTHORING,
+      robloxDirectAuthoring:ROBLOX_DIRECT_AUTHORING,
       binaryAuthoringKinds:BINARY_AUTHORING_KINDS,
       canChooseReuse:true,
-      canChooseDirectAuthoring:resolvedTarget==='web',
+      canChooseDirectAuthoring:['web','unity','roblox'].includes(resolvedTarget),
       canRequestGenerator:true
     }),
     summary:freeze({
@@ -126,12 +179,16 @@ export function buildVibeAssetProductionPlan({
     policy:freeze({
       qualityAndGameIdentityFirst:true,
       existingAssetIsCandidateNotMandatory:true,
+      crossPlatformWebAssetDirectReuseForbidden:true,
+      nativeReuseRequiresTargetCompatibility:true,
       licenseAndCommercialUseGateRequired:true,
       animationEvidenceRequiredForActors:true,
       mobilePerformanceRequired:true,
       noEmojiPlaceholder:true,
       noGeometricPlaceholder:true,
       directAuthoredSvgCanvasMustBeFinalQualityNotPlaceholder:true,
+      nativeProceduralAuthoringMustBeFinalQualityNotPrimitivePlaceholder:true,
+      composedLowPolyRequiresMultipleMeaningfulPartsAndStyleLock:true,
       binaryAssetsDirectTextEditForbidden:true,
       gameplaySaveProgressionEconomyMutationForbiddenForAssetReasons:true,
       sourceAndTransformProvenanceRequiredForReuse:true,

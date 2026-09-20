@@ -201,12 +201,16 @@ function presentationContract(data = {}) {
   const contract=data?.presentationQuality;
   return contract&&contract.required===true?contract:null;
 }
+function weatherPresentationContract(data = {}) {
+  const contract=data?.weatherPresentation;
+  return contract&&contract.required===true?contract:null;
+}
 function presentationSourceText(root, changed = []) {
   const rows=[];
   for(const relative of changed){
     const file=assertInside(root,relative);
     if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
-    if(!/\.(?:html?|js|mjs|cjs|css|svg|cs|gd|cpp|cc|cxx|h|hpp)$/i.test(relative))continue;
+    if(!/\.(?:html?|js|mjs|cjs|css|svg|cs|lua|luau|gd|cpp|cc|cxx|h|hpp)$/i.test(relative))continue;
     rows.push(fs.readFileSync(file,'utf8'));
   }
   return rows.join('\n\n');
@@ -247,10 +251,10 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('CAMERA_OWNER',/(?:camera|viewport|viewOffset|screenShake|cameraShake)/i.test(text));
     require('SMOOTH_CAMERA_RESPONSE',/(?:shake|zoom|lerp|ease|damp|offset|scale|follow)/i.test(text));
   }else if(pass==='POLISH_MOBILE'){
-    require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick)/i.test(text));
-    require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Update\s*\(|_process\s*\()/i.test(text));
-    require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|ttl|duration)/i.test(text));
-    require('PRESENTATION_CONTRACT_MARKER',/data-presentation-quality-version=["']1["']/i.test(text));
+    require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick|UserInputService|ContextActionService|TouchEnabled|Input\.touch|Touchscreen|InputSystem)/i.test(text));
+    require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Heartbeat|Update\s*\(|_process\s*\()/i.test(text));
+    require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|Destroy\s*\(|Debris|ttl|duration)/i.test(text));
+    require('PRESENTATION_CONTRACT_MARKER',/(?:data-presentation-quality-version=["']1["']|PresentationQualityVersion\s*=\s*1|PRESENTATION_QUALITY_VERSION\s*=\s*1)/i.test(text));
   }
   if(issues.length)throw new Error(`PRESENTATION_STATIC_QA_FAILED:${pass}:${issues.join('|')}`);
   return{
@@ -260,6 +264,42 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     runtimeStillRequired:true,
     runtimeChecks:Array.isArray(contract.runtimeChecks)?contract.runtimeChecks.map(clean).filter(Boolean):[],
     gameplaySemanticsPreservationRequired:true,
+    authorityExpanded:false
+  };
+}
+
+function runWeatherPresentationStaticQa({root,data={},changed=[]}={}){
+  const contract=weatherPresentationContract(data);
+  if(!contract)return{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false};
+  const text=presentationSourceText(root,changed);
+  if(!text.trim())throw new Error('WEATHER_PRESENTATION_QA_SOURCE_REQUIRED');
+  const target=clean(contract.target||data?.target).toLowerCase();
+  const checks=[],issues=[];
+  const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
+  require('WEATHER_VERSION_MARKER',/(?:WEATHER_PRESENTATION_VERSION\s*=\s*1|WeatherPresentationVersion\s*=\s*1)/i.test(text));
+  for(const state of ['CLEAR','RAIN','FOG','SNOW','STORM'])require('WEATHER_STATE_'+state,new RegExp('\\b'+state+'\\b','i').test(text));
+  require('WEATHER_STATE_OWNER',/(?:weatherState|weather\.kind|weatherKind|currentWeather|WeatherState|WeatherKind|authoritativeWeather|weather\s*=)/i.test(text));
+  require('WEATHER_TRANSITION_OR_UPDATE',/(?:setWeather|weatherTick|UpdateWeather|ApplyWeather|SetWeather|nextWeather|transition|changedAt|nextAt)/i.test(text));
+  require('WEATHER_PERFORMANCE_BUDGET',/(?:particle.*(?:budget|cap|max|density)|effect.*density|deviceMemory|hardwareConcurrency|lowEnd|qualityLevel|performance|MaxParticles|Emission|RateOverTime)/i.test(text));
+  require('WEATHER_PRESENTATION_ONLY_SIGNAL',/(?:presentation|visual|particle|fog|atmosphere|lighting|colorcorrection|weather)/i.test(text));
+  if(target==='web'){
+    require('WEB_WEATHER_RENDER',/(?:canvas|getContext\(|fillRect|Particle|CSS|classList|AudioContext|WebAudio|drawWeather|weatherOverlay)/i.test(text));
+    require('WEB_MULTIPLAYER_WEATHER_BIND',/(?:serializeWorld|world-state|worldState|applyWorldSnapshot|broadcast)[\s\S]{0,1800}weather|weather[\s\S]{0,1800}(?:serializeWorld|world-state|worldState|applyWorldSnapshot|broadcast)/i.test(text));
+  }else if(target==='unity'){
+    require('UNITY_NATIVE_WEATHER',/(?:ParticleSystem|RenderSettings|fog|Light|Material|AudioSource|Volume|VisualEffect)/i.test(text));
+    require('WEB_ASSET_COPY_ABSENT',!/(?:web-games\/|\.svg\b|canvas|getContext\()/i.test(text));
+  }else if(target==='roblox'){
+    require('ROBLOX_NATIVE_WEATHER',/(?:ParticleEmitter|Atmosphere|Lighting|ColorCorrection|Sound|Beam|Trail)/i.test(text));
+    require('WEB_ASSET_COPY_ABSENT',!/(?:web-games\/|\.svg\b|canvas|getContext\()/i.test(text));
+  }
+  if(issues.length)throw new Error(`WEATHER_PRESENTATION_STATIC_QA_FAILED:${issues.join('|')}`);
+  return{
+    status:'STATIC_PASS',
+    checks,
+    runtimeStillRequired:true,
+    runtimeChecks:Array.isArray(contract.runtimeChecks)?contract.runtimeChecks.map(clean).filter(Boolean):[],
+    multiplayerRuntimeEvidenceRequired:true,
+    gameplaySemanticsRegressionRequired:true,
     authorityExpanded:false
   };
 }
@@ -300,7 +340,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const replayTargets=replayPlan?.executable===true&&clean(replayPlan?.mode)==='NODE_TEST_TARGETS'?resolveReplayTargets(root,data,replayPlan):[];
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
   const presentation=presentationContract(data);
-  const payload = ['vibe2-incremental-qa-v7', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null)];
+  const weatherPresentation=weatherPresentationContract(data);
+  const payload = ['vibe2-incremental-qa-v8', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -312,7 +353,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
@@ -320,10 +361,11 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const causalReplay=runCausalReplay({root,data});
   const architectureDrift=runArchitectureDrift({root,data});
   const presentationQa=runPresentationStaticQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, presentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.version=3; cache.entries=cache.entries||{};
-    cache.version=5; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, presentationQa, savedAt:new Date().toISOString() };
+    cache.version=6; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, presentationQa, weatherPresentationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
@@ -339,6 +381,8 @@ export function incrementalQaFailureSignature(error){
     'CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED',
     'CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT',
     'PRESENTATION_STATIC_QA_FAILED',
+    'WEATHER_PRESENTATION_STATIC_QA_FAILED',
+    'WEATHER_PRESENTATION_QA_SOURCE_REQUIRED',
     'CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT',
     'CAUSAL_REPLAY_TARGET_MISSING'
   ];
@@ -375,6 +419,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_PRESENTATION_QA_STATUS=${result.presentationQa?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_PRESENTATION_QA_PASS=${result.presentationQa?.pass||'NONE'}`);
     console.log(`VIBE2_PRESENTATION_RUNTIME_REQUIRED=${result.presentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
+    console.log(`VIBE2_WEATHER_PRESENTATION_QA_STATUS=${result.weatherPresentationQa?.status||'NOT_REQUIRED'}`);
+    console.log(`VIBE2_WEATHER_PRESENTATION_RUNTIME_REQUIRED=${result.weatherPresentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
     console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');
   }catch(error){
     const signature=incrementalQaFailureSignature(error);
