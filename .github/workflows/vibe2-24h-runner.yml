@@ -217,6 +217,7 @@ jobs:
             node /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs \
               --queue=/tmp/vibe2-company-runtime-queue.json \
               --experience=.vibe2/experience.json \
+              --external-ai-distilled=.vibe2/external-ai-distilled-knowledge.json \
               --company-runtime-ref=origin/company-runtime | tee /tmp/vibe2-web-experience-ingest.log
 
             node --check /tmp/vibe2-main/tools/vibe2-code-pattern-ingest.mjs
@@ -350,7 +351,7 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
@@ -365,7 +366,453 @@ jobs:
               commit_message='vibe2: queue post-release focused development [skip ci]'
             elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
               commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
-            elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*$' /tmp/vibe2-learning-motor.log; then
+            elif grep -Eq '^VIBE2_WEB_EXTERNAL_AI_DISTILLED_ACCEPTED=[1-9][0-9]*
+            elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
+              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
+            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              commit_message='vibe2: plan next machine-state work [skip ci]'
+            else
+              commit_message='vibe2: persist policy-unbounded adaptive parallel queue state [skip ci]'
+            fi
+            git commit -m "$commit_message"
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              echo 'VIBE2_AUTOPLAN_WRITE=YES'
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+
+          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
+          exit 1
+
+      - name: Read queue continuation state
+        id: queue_state
+        shell: bash
+        run: |
+          set -euo pipefail
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
+          case "${continue_required:-NO}" in
+            YES|NO) ;;
+            *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
+          esac
+          echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const lane=t=>{
+            const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);
+            if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';
+            if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';
+            if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';
+            if(t.systemSteward===true)return'RECOVERY_FAST';
+            return'CONTROL_FAST';
+          };
+          const tasks=q.tasks||[];
+          const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
+          const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
+          const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
+          const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
+          const activeWaveMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ACTIVE_MAX||20));
+          const externalEffectiveMax=Math.max(1,Math.min(configuredMax,Number(control.currentMax||configuredMax)));
+          const effectiveMax=Math.min(activeWaveMax,externalEffectiveMax);
+          const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
+          const waveReady=activeGame===0?'YES':'NO';
+          const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            'wave_ready='+waveReady+'\n'+
+            'game_refill_ready='+gameRefillReady+'\n'+
+            'free_worker_slots='+freeWorkerSlots+'\n'+
+            'active_worker_reservations='+activeGame+'\n'+
+            'game_primary_queued='+gameQueued+'\n'+
+            'learning_idle_queued='+learningQueued+'\n');
+          console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
+          console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
+          console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
+          console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
+          console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
+          console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
+          console.log('VIBE2_24H_WAVE_READY='+waveReady);
+          NODE
+          echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+
+      - name: Recover reviewed winners stranded before release dispatch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-release-recovery'
+          git config user.email 'vibe2-release-recovery@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+
+          node --check /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs
+          node /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs \
+            --queue=.vibe2/queue.json \
+            --format=tsv > /tmp/vibe2-release-recovery-candidates.tsv
+
+          : > /tmp/vibe2-release-recovery-verified.tsv
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            [ -n "$candidate_sha" ] || continue
+            remote_sha="$(git ls-remote origin "refs/heads/$candidate_branch" | awk 'NR==1 {print $1}')"
+            if [ "$remote_sha" != "$candidate_sha" ]; then
+              echo "VIBE2_RELEASE_RECOVERY_SHA_MISMATCH=$task_id:$candidate_branch:${remote_sha:-MISSING}:$candidate_sha"
+              continue
+            fi
+            printf '%s\t%s\t%s\n' "$task_id" "$candidate_branch" "$candidate_sha" >> /tmp/vibe2-release-recovery-verified.tsv
+          done < /tmp/vibe2-release-recovery-candidates.tsv
+
+          count="$(wc -l < /tmp/vibe2-release-recovery-verified.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_RECOVERY_COUNT=${count:-0}"
+          [ "${count:-0}" -gt 0 ] || exit 0
+
+          stamp="$(date +%s%3N)"
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await \
+              --id="$task_id" \
+              --blocker=candidate-awaiting-qa-and-deployment \
+              --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
+
+          git add .vibe2/queue.json
+          git commit -m 'vibe2: mark reviewed winner release recovery [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_RECOVERY_DISPATCHED=$task_id:$candidate_branch:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+            /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-web-experience-ingest.log
+            /tmp/vibe2-code-pattern-ingest.log
+            /tmp/vibe2-learning-motor.log
+            /tmp/vibe2-system-steward.log
+            /tmp/vibe2-recovery-escalation.log
+            /tmp/vibe2-recovery-dispatch.log
+            /tmp/vibe2-recovery-learning.log
+            /tmp/vibe2-recovery-code-distillation.log
+            /tmp/vibe2-security-learning.log
+            /tmp/vibe2-recovery-learning-motor.log
+            /tmp/vibe2-post-release-focus.log
+            /tmp/vibe2-plan-summary.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: game-primary
+      lane_max: '20'
+    permissions:
+      contents: write
+      actions: write
+
+  learning_idle:
+    needs: plan
+    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: learning-idle
+      lane_max: '4'
+    permissions:
+      contents: write
+      actions: write
+
+  game_study:
+    needs: [plan, continuous, learning_idle]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
+    permissions:
+      contents: write
+      actions: write
+
+  refill:
+    needs: [plan, continuous, learning_idle, game_study]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Dispatch next cycle when work remains
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          body='{"ref":"main"}'
+          for attempt in 1 2 3; do
+            code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+              --data "$body" || true)"
+            if [ "$code" = '204' ]; then
+              echo 'VIBE2_24H_REFILL=DISPATCHED'
+              exit 0
+            fi
+            echo "VIBE2_24H_REFILL_ATTEMPT=$attempt HTTP=$code"
+            cat /tmp/vibe2-refill-body.txt || true
+            sleep $((attempt * 2))
+          done
+          echo 'VIBE2_24H_REFILL=FAILED' >&2
+          exit 1
+ /tmp/vibe2-web-experience-ingest.log; then
+              commit_message='vibe2: absorb verified external AI distilled knowledge [skip ci]'
+            elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*
+            elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
+              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
+            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              commit_message='vibe2: plan next machine-state work [skip ci]'
+            else
+              commit_message='vibe2: persist policy-unbounded adaptive parallel queue state [skip ci]'
+            fi
+            git commit -m "$commit_message"
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              echo 'VIBE2_AUTOPLAN_WRITE=YES'
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+
+          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
+          exit 1
+
+      - name: Read queue continuation state
+        id: queue_state
+        shell: bash
+        run: |
+          set -euo pipefail
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
+          case "${continue_required:-NO}" in
+            YES|NO) ;;
+            *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
+          esac
+          echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const lane=t=>{
+            const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);
+            if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';
+            if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';
+            if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';
+            if(t.systemSteward===true)return'RECOVERY_FAST';
+            return'CONTROL_FAST';
+          };
+          const tasks=q.tasks||[];
+          const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
+          const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
+          const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
+          const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+          const configuredMax=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
+          const activeWaveMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ACTIVE_MAX||20));
+          const externalEffectiveMax=Math.max(1,Math.min(configuredMax,Number(control.currentMax||configuredMax)));
+          const effectiveMax=Math.min(activeWaveMax,externalEffectiveMax);
+          const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
+          const waveReady=activeGame===0?'YES':'NO';
+          const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            'wave_ready='+waveReady+'\n'+
+            'game_refill_ready='+gameRefillReady+'\n'+
+            'free_worker_slots='+freeWorkerSlots+'\n'+
+            'active_worker_reservations='+activeGame+'\n'+
+            'game_primary_queued='+gameQueued+'\n'+
+            'learning_idle_queued='+learningQueued+'\n');
+          console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
+          console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
+          console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
+          console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
+          console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
+          console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
+          console.log('VIBE2_24H_WAVE_READY='+waveReady);
+          NODE
+          echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+
+      - name: Recover reviewed winners stranded before release dispatch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-release-recovery'
+          git config user.email 'vibe2-release-recovery@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+
+          node --check /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs
+          node /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs \
+            --queue=.vibe2/queue.json \
+            --format=tsv > /tmp/vibe2-release-recovery-candidates.tsv
+
+          : > /tmp/vibe2-release-recovery-verified.tsv
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            [ -n "$candidate_sha" ] || continue
+            remote_sha="$(git ls-remote origin "refs/heads/$candidate_branch" | awk 'NR==1 {print $1}')"
+            if [ "$remote_sha" != "$candidate_sha" ]; then
+              echo "VIBE2_RELEASE_RECOVERY_SHA_MISMATCH=$task_id:$candidate_branch:${remote_sha:-MISSING}:$candidate_sha"
+              continue
+            fi
+            printf '%s\t%s\t%s\n' "$task_id" "$candidate_branch" "$candidate_sha" >> /tmp/vibe2-release-recovery-verified.tsv
+          done < /tmp/vibe2-release-recovery-candidates.tsv
+
+          count="$(wc -l < /tmp/vibe2-release-recovery-verified.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_RECOVERY_COUNT=${count:-0}"
+          [ "${count:-0}" -gt 0 ] || exit 0
+
+          stamp="$(date +%s%3N)"
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await \
+              --id="$task_id" \
+              --blocker=candidate-awaiting-qa-and-deployment \
+              --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
+
+          git add .vibe2/queue.json
+          git commit -m 'vibe2: mark reviewed winner release recovery [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_RECOVERY_DISPATCHED=$task_id:$candidate_branch:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+            /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-web-experience-ingest.log
+            /tmp/vibe2-code-pattern-ingest.log
+            /tmp/vibe2-learning-motor.log
+            /tmp/vibe2-system-steward.log
+            /tmp/vibe2-recovery-escalation.log
+            /tmp/vibe2-recovery-dispatch.log
+            /tmp/vibe2-recovery-learning.log
+            /tmp/vibe2-recovery-code-distillation.log
+            /tmp/vibe2-security-learning.log
+            /tmp/vibe2-recovery-learning-motor.log
+            /tmp/vibe2-post-release-focus.log
+            /tmp/vibe2-plan-summary.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: game-primary
+      lane_max: '20'
+    permissions:
+      contents: write
+      actions: write
+
+  learning_idle:
+    needs: plan
+    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: learning-idle
+      lane_max: '4'
+    permissions:
+      contents: write
+      actions: write
+
+  game_study:
+    needs: [plan, continuous, learning_idle]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
+    permissions:
+      contents: write
+      actions: write
+
+  refill:
+    needs: [plan, continuous, learning_idle, game_study]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Dispatch next cycle when work remains
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          body='{"ref":"main"}'
+          for attempt in 1 2 3; do
+            code="$(curl --silent --show-error --output /tmp/vibe2-refill-body.txt --write-out '%{http_code}' \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+              --data "$body" || true)"
+            if [ "$code" = '204' ]; then
+              echo 'VIBE2_24H_REFILL=DISPATCHED'
+              exit 0
+            fi
+            echo "VIBE2_24H_REFILL_ATTEMPT=$attempt HTTP=$code"
+            cat /tmp/vibe2-refill-body.txt || true
+            sleep $((attempt * 2))
+          done
+          echo 'VIBE2_24H_REFILL=FAILED' >&2
+          exit 1
+ /tmp/vibe2-learning-motor.log; then
               commit_message='vibe2: absorb verified development mastery [skip ci]'
             elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
               commit_message='vibe2: queue release baseline implementation gap [skip ci]'
