@@ -1,5 +1,5 @@
 {
-  "version": 56,
+  "version": 57,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -430,6 +430,24 @@
         "fullRegressionRequired": true,
         "writableScopeExpansionAllowed": false,
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "authorityChange": "NONE"
+      },
+      "selfAdaptiveConcurrency": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "policy": "INTERNAL_UNBOUNDED_EXTERNAL_CAPACITY_ONLY",
+        "controller": "tools/vibe2-adaptive-backpressure.mjs",
+        "scheduler": "tools/vibe2-queue-control.mjs",
+        "launcher": ".github/workflows/vibe2-24h-runner.yml",
+        "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+        "fixedGamePrimaryCap": null,
+        "fixedOwnerMinimumWave": null,
+        "currentExternalBatchMax": 256,
+        "externalMaximumPassedToAdaptiveController": true,
+        "dynamicExpansionBeyond256WhenProviderAllows": true,
+        "telemetryControlsUpDown": true,
+        "historicalReferenceWave": 20,
+        "qaOrReleaseGateWeakening": false,
         "authorityChange": "NONE"
       }
     },
