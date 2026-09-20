@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-20T00:07:47.848Z"
+      "updatedAt": "2026-09-20T00:13:29.446Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1590,7 +1590,20 @@
         "release-dispatch-recovery-at:1789861632302",
         "release-dispatch-recovery-at:1789861802297",
         "release-dispatch-recovery-at:1789861952378",
-        "release-dispatch-recovery-at:1789862122946"
+        "release-dispatch-recovery-at:1789862122946",
+        "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35477474356-1",
+        "candidate-sha:ccf3e4dfe6e59800d005c338bc3873eae709e574",
+        "base-main:eb853f4f8e5301165958c378559eae2fa524551e",
+        "incremental-qa-hash:eb3329024dd34063a504f7e0a01cfb47cdd410630efa93f261bbad16162f4ffb",
+        "coding-focused-replace-only:YES",
+        "coding-context-bytes:27602",
+        "actions-run:35477474356",
+        "reservation-id:35477474356:1",
+        "shared-context-policy:3ebacb2730abdce1ddadccdf742b4eb4ef2cbadbdaa57134b394baa25eeefc69",
+        "workload:prep-ms:11939",
+        "workload:cycle-ms:196221",
+        "exploration-reuse:40d8bcf1390eb0f87dc99ae1",
+        "supervised-promotion:NOT_REQUIRED"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1606,7 +1619,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-20T00:07:47.848Z"
+      "updatedAt": "2026-09-20T00:13:29.446Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
@@ -2991,7 +3004,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "performance-sanity-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-19T23:57:25Z",
+      "checkpoint": "2026-09-20T00:09:00Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -3096,7 +3109,35 @@
         "recovery-route:VIBE2_VIBE3",
         "recovery-queue:recovery-edb0c96ef284dc4e51dc",
         "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
-        "recovery-exact-stage:UNKNOWN_STAGE"
+        "recovery-exact-stage:UNKNOWN_STAGE",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-primary-35477474356-1",
+        "candidate-sha:20bb5c17859c4be6d0ceb0345110694e39de7c68",
+        "base-main:eb853f4f8e5301165958c378559eae2fa524551e",
+        "actions-run:35477474356",
+        "reservation-id:35477474356:1",
+        "shared-context-policy:3ebacb2730abdce1ddadccdf742b4eb4ef2cbadbdaa57134b394baa25eeefc69",
+        "workload:prep-ms:10990",
+        "workload:cycle-ms:316845",
+        "exploration-reuse:9e06485685e39b6d792e27cc",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35477474356%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-1-35477474356-1",
+        "candidate-sha:62c52ddd8b5e70d9247ba05908433f9b8a9e61fc",
+        "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
+        "coding-generation-attempt-budget:2",
+        "coding-speculative-attempt-budget:YES",
+        "variant:speculative-1",
+        "workload:prep-ms:11478",
+        "workload:cycle-ms:277695",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35477474356%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-2-35477474356-1",
+        "candidate-sha:a7864888045e8bccdfcb4832ab7cf0aab48e90ed",
+        "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
+        "coding-failure-fingerprint:web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|SAVE|STATE_MACHINE|WEB_RUNTIME",
+        "variant:speculative-2",
+        "workload:prep-ms:5860",
+        "workload:cycle-ms:308572",
+        "exploration-reuse:27914ffc5478bfebfe4c874b",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CMOBILE_INPUT%7CSAVE_RESTORE%7CCOMBAT%7CSTATE_FLOW%7CRUNTIME%7CRELEASE%7CANIMATION_FEEL%7CASSET_ADAPTATION%7CASSET_PRODUCTION%7CCOMBAT%7CCORE_LOOP%7CLIVING_MOTION%7CMOBILE_INPUT%7CPERFORMANCE%7CPROGRESSION%7CSAVE%7CSTATE_MACHINE%7CWEB_RUNTIME%22%2C%22failureClass%22%3A%22PERFORMANCE_SANITY%22%2C%22runEvidence%22%3A%22actions-run%3A35477474356%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -3112,7 +3153,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T00:07:47.849Z"
+      "updatedAt": "2026-09-20T00:13:29.446Z"
     }
   ]
 }
