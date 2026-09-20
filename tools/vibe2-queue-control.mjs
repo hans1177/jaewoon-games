@@ -660,7 +660,11 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
 
 export function runQueueCommand(args = {}) {
   const file = queueFileFrom(args);
-  let queue = createVibeContinuousQueue(readJson(file, { tasks: [] }));
+  const rawQueue = readJson(file, { tasks: [] });
+  const rawTasks = Array.isArray(rawQueue) ? rawQueue : Array.isArray(rawQueue?.tasks) ? rawQueue.tasks : [];
+  const atomicSchemaMigrationNeeded = rawQueue?.scheduling?.atomicNeuronCompletion !== true
+    || rawTasks.some((task) => !Object.prototype.hasOwnProperty.call(task || {}, 'neuronExpectedVariants') || !Object.prototype.hasOwnProperty.call(task || {}, 'neuronResults'));
+  let queue = createVibeContinuousQueue(rawQueue);
   const command = clean(args.command).toLowerCase();
   let result;
   if (command === 'enqueue') {
@@ -681,8 +685,8 @@ export function runQueueCommand(args = {}) {
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
-    if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    if (reserved.reserved || reserved.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
@@ -691,7 +695,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
-    if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
       const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? adaptiveMaxConcurrentTasks;
@@ -721,7 +725,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
