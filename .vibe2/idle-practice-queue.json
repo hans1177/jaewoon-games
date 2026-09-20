@@ -4,6 +4,22 @@
   "productionWorkAlwaysPreemptsPractice": true,
   "drills": [
     {
+      "id": "review-fail_c9xvk3",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_c9xvk3"
+    },
+    {
       "id": "review-fail_3e38u6",
       "kind": "FORCED_RETRIEVAL_REVIEW",
       "priority": "high",
@@ -21,7 +37,7 @@
       "sourceFailure": "fail_3e38u6"
     },
     {
-      "id": "review-fail_c9xvk3",
+      "id": "review-fail_wu3qnk",
       "kind": "FORCED_RETRIEVAL_REVIEW",
       "priority": "high",
       "productionPreemptible": true,
@@ -34,7 +50,7 @@
         "QUEST_DESIGN",
         "WEB_RUNTIME"
       ],
-      "sourceFailure": "fail_c9xvk3"
+      "sourceFailure": "fail_wu3qnk"
     },
     {
       "id": "gap-asset_adaptation-l1",
@@ -217,16 +233,6 @@
       ]
     },
     {
-      "id": "gap-quest_design-l2",
-      "kind": "QUEST_CAUSALITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "QUEST_DESIGN"
-      ]
-    },
-    {
       "id": "gap-recovery-l2",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -257,13 +263,13 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l3",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-quest_design-l3",
+      "kind": "QUEST_CAUSALITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "WEB_RUNTIME"
+        "QUEST_DESIGN"
       ]
     },
     {
@@ -334,6 +340,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "UI_STATE"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l4",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
       ]
     },
     {
