@@ -57,6 +57,34 @@ test('recovery escalation normalizes steward signatures and reuses canonical exa
   assert.equal(result.queue.tasks[0].failureStage,'SOURCE_CANDIDATE_GENERATION');
 });
 
+test('dispatched recovery is reactivated only when the source fails again',()=>{
+  const existing=enqueueRecovery({tasks:[]},{
+    sourceQueue:'system-ai',sourceTaskId:'sys-impl',failureStage:'IMPLEMENTATION',
+    failureSignature:'system-ai-implementation-failed',
+    recoveryStrategy:'ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE']
+  }).queue;
+  existing.tasks[0].status='dispatched';
+
+  const failed=escalateRecoveryCandidates({
+    systemAiQueueInput:{tasks:[{id:'sys-impl',status:'failed',retries:3,blocker:'system-ai-implementation-failed'}]},
+    recoveryInput:existing
+  });
+  assert.equal(failed.added.length,0);
+  assert.deepEqual(failed.reactivated,[existing.tasks[0].id]);
+  assert.equal(failed.queue.tasks[0].status,'queued');
+  assert(failed.queue.tasks[0].evidence.includes('recovery-reactivated-after-source-refailure'));
+
+  const runningInput=JSON.parse(JSON.stringify(existing));
+  runningInput.tasks[0].status='dispatched';
+  const running=escalateRecoveryCandidates({
+    systemAiQueueInput:{tasks:[{id:'sys-impl',status:'running',retries:3,blocker:'system-ai-implementation-failed'}]},
+    recoveryInput:runningInput
+  });
+  assert.equal(running.reactivated.length,0);
+  assert.equal(running.queue.tasks[0].status,'dispatched');
+});
+
 test('recovery learning requires deterministic pass and primary AI review',()=>{
   let q=enqueueRecovery({tasks:[]},{
     sourceQueue:'system-ai',sourceTaskId:'s1',failureStage:'MODEL_OUTPUT',
