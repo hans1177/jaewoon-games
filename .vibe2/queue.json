@@ -360,7 +360,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 20,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -737,10 +737,10 @@
         "learning-motor-candidate-tournament:repeated-verified-failure"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "35522337354:1",
+      "reservationRunId": "35522337354",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-20T16:20:33Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "companyContext": {
