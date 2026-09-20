@@ -415,6 +415,11 @@ test('exact deterministic diagnostic is reproduced prepatch and becomes diagnost
   assert.equal(result.editContract.causalReplay.diagnosticFile,'index.js');
   assert.equal(result.editContract.causalReplay.verifiedResponsibleSystem,'GAME_RUNTIME');
   assert.equal(result.editContract.causalReplay.authorityExpanded,false);
+  const guidance=explorationGuidance(result);
+  assert.match(guidance,/\[CAUSAL REPLAY CONTRACT\] mode=DIAGNOSTIC_RESCAN; prepatch=REPRODUCED; executable=YES/);
+  assert.match(guidance,/CAUSAL DIAGNOSTIC TARGET=INTERVAL_CLEANUP_RISK:index\.js; verified-system=GAME_RUNTIME/);
+  assert.match(guidance,/HARD IMPLEMENTATION POSTCONDITION: the first source edit must directly address the exact diagnostic target/);
+  assert.match(guidance,/does not weaken or replace canonical QA/);
 });
 
 test('diagnostic evidence does not claim prepatch reproduction when exact issue is absent',()=>{
