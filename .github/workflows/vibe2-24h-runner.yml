@@ -507,7 +507,7 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    if: ${{ needs.plan.outputs.continue_required == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
@@ -537,7 +537,7 @@ jobs:
 
   refill:
     needs: [plan, continuous, learning_idle, game_study]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success')) }}
+    if: ${{ always() && needs.plan.result == 'success' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
