@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { dispatchRecovery } from '../tools/company-recovery-dispatch.mjs';
+import { securityRepairEvidence } from '../tools/company-recovery-queue.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
 const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
 const queue=fs.readFileSync('tools/company-system-ai-queue.mjs','utf8');
+const securityWorkflow=fs.readFileSync('.github/workflows/company-security-immune.yml','utf8');
 
 test('System AI supervision is reserve then implementation then verification then PR then fan-in',()=>{
   const reserve=workflow.indexOf('- name: Reserve disjoint supervised assignments');
@@ -90,11 +92,48 @@ test('verification-only System AI tasks run deterministic contracts before any m
 });
 
 
-test('security recovery without a matching supervised executor fails closed instead of staying silently queued',()=>{
+test('security quarantine records only safe system repair files for deterministic primary-AI handoff',()=>{
+  const evidence=securityRepairEvidence({findings:[
+    {severity:'HIGH',file:'.github/workflows/example.yml'},
+    {severity:'CRITICAL',file:'tools/security-fix.mjs'},
+    {severity:'HIGH',file:'web-games/example/index.html'},
+    {severity:'HIGH',file:'company-learning/platform-release-roadmap.json'},
+    {severity:'MEDIUM',file:'qa/low-risk.test.mjs'},
+    {severity:'HIGH',file:'qa/review-only.test.mjs',disposition:'REVIEW'}
+  ]});
+  assert.deepEqual(evidence,[
+    'security-repair-file:.github/workflows/example.yml',
+    'security-repair-file:tools/security-fix.mjs'
+  ]);
+  assert.match(securityWorkflow,/--security-report=\/tmp\/security-report\/security-report\.json/);
+});
+
+test('security recovery with safe repair evidence requests primary-AI supervised assignment without creating queue authority',()=>{
   const result=dispatchRecovery({
     recoveryInput:{tasks:[{
       id:'recovery-security-missing',status:'queued',sourceQueue:'security',sourceTaskId:'security-run-123',
-      recoveryOwner:'SYSTEM_AI',recoveryStrategy:'SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW',failureStage:'SECURITY_IMMUNE_SCAN'
+      recoveryOwner:'SYSTEM_AI',recoveryStrategy:'SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW',failureStage:'SECURITY_IMMUNE_SCAN',
+      evidence:['security-repair-file:.github/workflows/example.yml']
+    }]},
+    gameQueueInput:{tasks:[]},
+    systemAiQueueInput:{tasks:[]},
+    route:'all'
+  });
+  const row=result.recovery.tasks[0];
+  assert.equal(row.status,'blocked-primary-ai-assignment-required');
+  assert.ok(row.dispatchEvidence.includes('security-recovery-executor-missing'));
+  assert.ok(row.dispatchEvidence.includes('primary-ai-assignment-required'));
+  assert.ok(row.dispatchEvidence.includes('primary-ai-repair-file:.github/workflows/example.yml'));
+  assert.equal(result.dispatched.length,0);
+  assert.equal(result.systemAi.tasks.length,0);
+});
+
+test('security recovery without safe repair evidence remains blocked executor missing',()=>{
+  const result=dispatchRecovery({
+    recoveryInput:{tasks:[{
+      id:'recovery-security-unsafe',status:'queued',sourceQueue:'security',sourceTaskId:'security-run-456',
+      recoveryOwner:'SYSTEM_AI',recoveryStrategy:'SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW',failureStage:'SECURITY_IMMUNE_SCAN',
+      evidence:['security-repair-file:web-games/example/index.html']
     }]},
     gameQueueInput:{tasks:[]},
     systemAiQueueInput:{tasks:[]},
