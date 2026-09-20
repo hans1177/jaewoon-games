@@ -189,9 +189,9 @@ jobs:
         id: runtime_media
         if: success()
         env:
-          GH_TOKEN: \${{ github.token }}
-          BUILD_ID: \${{ steps.apk.outputs.sha256 }}
-          SOURCE_COMMIT: \${{ steps.apk.outputs.source_commit }}
+          GH_TOKEN: ${{ github.token }}
+          BUILD_ID: ${{ steps.apk.outputs.sha256 }}
+          SOURCE_COMMIT: ${{ steps.apk.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
@@ -204,6 +204,7 @@ jobs:
 
           status_file='/tmp/unity-runtime-company-status.json'
           found=0
+          match=''
           for attempt in 1 2 3; do
             git fetch --no-tags --depth=1 origin company-runtime >/dev/null 2>&1 || true
             if git show origin/company-runtime:company-status.json > "$status_file" 2>/dev/null; then
@@ -215,7 +216,7 @@ jobs:
             String(row?.sourceCommit||'')===process.env.SOURCE_COMMIT &&
             String(row?.releaseTag||'').trim()
           );
-          if(build)process.stdout.write([build.gameId,build.releaseTag].join('\t'));
+          if(build)process.stdout.write(`${build.gameId}|${build.releaseTag}`);
           NODE
               )"
               if [[ -n "$match" ]]; then found=1; break; fi
@@ -228,25 +229,15 @@ jobs:
             exit 0
           fi
 
-          IFS=
-        with:
-          name: unity-runtime-smoke-${{ steps.upstream.outputs.run_id }}
-          path: |
-            qa-artifacts/unity-runtime-smoke/
-            /tmp/jaewoon-redroid.log
-            /tmp/jaewoon-redroid-device.txt
-            /tmp/jaewoon-redroid-docker.txt
-            /tmp/jaewoon-redroid-adb-connect.txt
-            /tmp/jaewoon-redroid-inspect.json
-          if-no-files-found: warn
-          retention-days: 14\t' read -r game_id release_tag <<<"$match"
+          game_id="${match%%|*}"
+          release_tag="${match#*|}"
           [[ -n "$game_id" && -n "$release_tag" ]]
-          short="\${BUILD_ID:0:12}"
-          asset_name="\${game_id}-runtime-\${short}.png"
+          short="${BUILD_ID:0:12}"
+          asset_name="${game_id}-runtime-${short}.png"
           media_file="$RUNNER_TEMP/$asset_name"
           cp "$screenshot" "$media_file"
           gh release upload "$release_tag" "$media_file#$asset_name" --repo "$GITHUB_REPOSITORY" --clobber
-          media_url="https://github.com/\${GITHUB_REPOSITORY}/releases/download/\${release_tag}/\${asset_name}"
+          media_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${release_tag}/${asset_name}"
           {
             echo 'publish=true'
             echo "game_id=$game_id"
@@ -259,12 +250,12 @@ jobs:
       - name: Persist exact-build Unity runtime screenshot evidence
         if: steps.runtime_media.outputs.publish == 'true'
         env:
-          GH_TOKEN: \${{ github.token }}
-          MEDIA_GAME_ID: \${{ steps.runtime_media.outputs.game_id }}
-          MEDIA_URL: \${{ steps.runtime_media.outputs.url }}
-          MEDIA_RELEASE_TAG: \${{ steps.runtime_media.outputs.release_tag }}
-          BUILD_ID: \${{ steps.apk.outputs.sha256 }}
-          SOURCE_COMMIT: \${{ steps.apk.outputs.source_commit }}
+          GH_TOKEN: ${{ github.token }}
+          MEDIA_GAME_ID: ${{ steps.runtime_media.outputs.game_id }}
+          MEDIA_URL: ${{ steps.runtime_media.outputs.url }}
+          MEDIA_RELEASE_TAG: ${{ steps.runtime_media.outputs.release_tag }}
+          BUILD_ID: ${{ steps.apk.outputs.sha256 }}
+          SOURCE_COMMIT: ${{ steps.apk.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
