@@ -197,33 +197,89 @@ jobs:
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
 
-            if [ "$callback_kind" = 'fanin' ]; then
-            git fetch origin company-runtime --quiet
-            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
-            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
-              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-              --status=/tmp/vibe2-main/company-status.json \
-              --catalog=/tmp/vibe2-main/game-catalog.json \
-              --development-queue=/tmp/vibe2-company-runtime-queue.json \
+            if [ "$callback_kind" = 'neuron' ]; then
+              neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
+              test -n "$neuron_result_file"
+              expected_variants="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(Math.max(1,Math.min(5,Number(e.client_payload?.expected_variants)||1))))")"
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs neuron-complete \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --lane="$VIBE2_EXECUTION_LANE" \
+                --max="$VIBE2_LANE_MAX" \
+                --min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN" \
+                --expected-variants="$expected_variants" \
+                --input="$neuron_result_file" | tee /tmp/vibe2-neuron-complete.log
+              neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
+              case "$neuron_reason" in
+                TASK_MICRO_FANIN_COMPLETE)
+                  neuron_refill=1
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'
+                  ;;
+                TASK_ALREADY_MICRO_FANIN_COMPLETE)
+                  neuron_refill=1
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_REFILL_RETRY'
+                  ;;
+                AWAITING_VARIANTS)
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'
+                  ;;
+                DUPLICATE_VARIANT)
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=DUPLICATE_VARIANT_NOOP'
+                  ;;
+                *)
+                  echo "VIBE2_ATOMIC_NEURON_MICRO_FANIN=NOOP:${neuron_reason:-UNKNOWN}"
+                  ;;
+              esac
+
+              git add .vibe2/queue.json .vibe2/parallelism-control.json
+              if git diff --cached --quiet; then
+                state_persisted=1
+                state_write='NO'
+                break
+              fi
+              git commit -m "vibe2: persist atomic neuron result [skip ci]"
+              if git push origin HEAD:vibe2-unreal-core; then
+                state_persisted=1
+                state_write='YES'
+                break
+              fi
+              echo "VIBE2_NEURON_INGRESS_OPTIMISTIC_RETRY=$state_attempt"
+              sleep $((state_attempt * 2))
+              continue
+            fi
+
+            node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
-              --experience="$control_root/.vibe2/experience.json" \
-              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
-              --root=/tmp/vibe2-main \
-              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-fanin-refill-autoplan.log
-            node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
-              --state="$control_root/.vibe2/learning-motor-state.json" \
-              --experience="$control_root/.vibe2/experience.json" \
-              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
-              --company-queue=/tmp/vibe2-company-runtime-queue.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
-              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
-              --practice="$control_root/.vibe2/idle-practice-queue.json" \
-              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
-            echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
-            echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
-          fi
+              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-steward.log
+            echo 'VIBE2_RESERVE_STEWARD=PASS'
+
+            if [ "$callback_kind" = 'fanin' ]; then
+              git fetch origin company-runtime --quiet
+              git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+                --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+                --status=/tmp/vibe2-main/company-status.json \
+                --catalog=/tmp/vibe2-main/game-catalog.json \
+                --development-queue=/tmp/vibe2-company-runtime-queue.json \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --experience="$control_root/.vibe2/experience.json" \
+                --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+                --root=/tmp/vibe2-main \
+                --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-fanin-refill-autoplan.log
+              node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
+                --state="$control_root/.vibe2/learning-motor-state.json" \
+                --experience="$control_root/.vibe2/experience.json" \
+                --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+                --company-queue=/tmp/vibe2-company-runtime-queue.json \
+                --queue="$control_root/.vibe2/queue.json" \
+                --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+                --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+                --practice="$control_root/.vibe2/idle-practice-queue.json" \
+                --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
+              echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
+              echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
+            fi
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
