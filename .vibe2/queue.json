@@ -9118,3773 +9118,12 @@
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35501942379%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35504403471:1",
-      "reservationRunId": "35504403471",
+      "reservationId": "35506435188:1",
+      "reservationRunId": "35506435188",
       "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T10:12:36Z",
+      "reservedAt": "2026-09-20T10:57:42Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [
-        {
-          "version": 13,
-          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-          "reservationId": "35504403471:1",
-          "variant": "speculative-2",
-          "outcome": "FAIL",
-          "blocker": "source-candidate-generation-failed",
-          "candidateBranch": null,
-          "baseMainSha": "dca83b1c3a1dabcbb3567902701af36933f100e0",
-          "candidateIdentity": null,
-          "candidateFailure": {
-            "class": "DIAGNOSTIC_POSTCONDITION",
-            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:rpg.html:CLEAR_INTERVAL_LIFECYCLE_MISSING"
-          },
-          "evidence": [
-            "base-main:dca83b1c3a1dabcbb3567902701af36933f100e0",
-            "role-result:exploration:PASS",
-            "role-result:implementation:FAIL",
-            "role-result:test:FAIL",
-            "role-result:performance:FAIL",
-            "role-result:regression:WAITING_FAN_IN",
-            "role-result:review:WAITING_FAN_IN",
-            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
-            "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
-            "coding-responsibility-confidence:MEDIUM",
-            "coding-candidate-first-attempt:NO",
-            "coding-primary-target-count:3",
-            "coding-primary-targets:%5B%22attackNow%22%2C%22enter%22%2C%22initAudio%22%5D",
-            "coding-primary-systems:%5B%22CORE_STATE%22%2C%22AI%22%2C%22GOAL_STATE%22%2C%22WORLD%22%2C%22COMBAT%22%2C%22PROGRESSION%22%2C%22PRESENTATION%22%5D",
-            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22PLAYER%22%2C%22AI%22%2C%22INTERACTION%22%2C%22PLACEMENT%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
-            "coding-semantic-system-budget:10",
-            "coding-failure-fingerprint:web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
-            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
-            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1a453e3e34004eb1c376197d%22%5D",
-            "actions-run:35504403471",
-            "reservation-id:35504403471:1",
-            "variant:speculative-2",
-            "shared-context-sync:MISSING"
-          ],
-          "exploration": {
-            "version": 1,
-            "role": "exploration",
-            "sourceWrite": false,
-            "reused": false,
-            "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-            "packageId": "daechung-rpg-wp-lo8pg6",
-            "target": "web",
-            "sourceRoot": "web-games/daechung-rpg",
-            "baseMainSha": "dca83b1c3a1dabcbb3567902701af36933f100e0",
-            "responsibleFiles": [
-              "rpg.html"
-            ],
-            "impactFiles": [
-              "rpg.html",
-              "index.html",
-              "patch-core18.js",
-              "patch-v15.js",
-              "patch-v16.js",
-              "patch-v17.js",
-              "patch-v18-reaper.js",
-              "patch-v18.js"
-            ],
-            "contextFiles": [
-              "rpg.html",
-              "index.html",
-              "patch-core18.js",
-              "patch-v15.js",
-              "patch-v16.js",
-              "patch-v17.js",
-              "patch-v18-reaper.js",
-              "patch-v18.js"
-            ],
-            "relatedFiles": [
-              {
-                "path": "index.html",
-                "score": 64
-              },
-              {
-                "path": "patch-core18.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v15.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v16.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v17.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v18-reaper.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v18.js",
-                "score": 35
-              }
-            ],
-            "testTargets": [],
-            "protectedScopeSignals": [
-              "save",
-              "combat-number"
-            ],
-            "diagnosticEvidence": [
-              "diagnostic:INTERVAL_CLEANUP_RISK",
-              "repair-mode:MODEL"
-            ],
-            "existingWebAssessment": {
-              "version": 1,
-              "strategy": "MAJOR_REWORK",
-              "confidence": "MEDIUM",
-              "reasons": [
-                "REUSABLE_SOURCE_EXISTS",
-                "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
-                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
-              ],
-              "preserveExistingSource": true,
-              "fullRewriteAllowed": false,
-              "evidence": {
-                "sourceBytes": 1720,
-                "sourceSha256": "aa3eb5055b095fe367a123475f163e1b4618aee3afad7125851311ac9a378b43",
-                "validationScore": 0,
-                "approvedDesign": false,
-                "gameplaySignalCount": 2,
-                "gameplaySignals": {
-                  "input": true,
-                  "runtimeLoop": false,
-                  "mutableState": false,
-                  "gameplayOutcome": false,
-                  "progression": false,
-                  "combat": false,
-                  "spatial": false,
-                  "persistence": false,
-                  "mobile": true,
-                  "audio": false
-                },
-                "prototypeMarkerCount": 0,
-                "approvedScopeRequiredCount": 0,
-                "approvedScopeBoundCount": 0,
-                "approvedScopeSemanticCount": 0,
-                "approvedScopeCoveragePct": 100
-              },
-              "gameId": "daechung-rpg",
-              "sourceRoot": "web-games/daechung-rpg",
-              "sourcePath": "web-games/daechung-rpg/index.html",
-              "designBaselinePath": null
-            },
-            "fileDigests": [
-              {
-                "path": "rpg.html",
-                "hash": "21800a793588d78d",
-                "bytes": 49430
-              },
-              {
-                "path": "index.html",
-                "hash": "aa3eb5055b095fe3",
-                "bytes": 1720
-              },
-              {
-                "path": "patch-core18.js",
-                "hash": "7a58961a6ba23ce5",
-                "bytes": 2984
-              },
-              {
-                "path": "patch-v15.js",
-                "hash": "91ed041c21ee3dad",
-                "bytes": 42395
-              },
-              {
-                "path": "patch-v16.js",
-                "hash": "ee07c61a8db66ed6",
-                "bytes": 10067
-              },
-              {
-                "path": "patch-v17.js",
-                "hash": "180765e25b66fdde",
-                "bytes": 3124
-              },
-              {
-                "path": "patch-v18-reaper.js",
-                "hash": "e04dcc24fe996f72",
-                "bytes": 966
-              }
-            ],
-            "editContract": {
-              "version": 1,
-              "mode": "COMPILED_EDIT_CONTRACT",
-              "strategyHint": "CAUSAL_TRACE_FIRST",
-              "responsibilityConfidence": "MEDIUM",
-              "rawResponsibilityConfidence": "HIGH",
-              "responsibilityCalibration": {
-                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
-                "applied": true,
-                "extraReadOnlyExploration": true,
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "regressionHotspotRisk": {
-                "riskLevel": "MEDIUM",
-                "matched": [
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYMBOL",
-                    "name": "attackNow",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYMBOL",
-                    "name": "enter",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYMBOL",
-                    "name": "initAudio",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "CORE_STATE",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "AI",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "GOAL_STATE",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "WORLD",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "COMBAT",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  }
-                ],
-                "focusedChecksAdded": [
-                  "HOTSPOT_RECHECK:SYMBOL:attackNow",
-                  "HOTSPOT_RECHECK:SYMBOL:enter",
-                  "HOTSPOT_RECHECK:SYMBOL:initAudio",
-                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:AI",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
-                ],
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "primaryTargets": [
-                "attackNow",
-                "enter",
-                "initAudio"
-              ],
-              "allowedResponsibleFiles": [
-                "rpg.html"
-              ],
-              "allowedDependentSymbolsOrSystems": [
-                "startBgm",
-                "sfx",
-                "toggleSound",
-                "setAggro",
-                "toastMsg",
-                "spawnCave",
-                "spawnAll",
-                "spawnHiddenEnemy",
-                "hud",
-                "useAction",
-                "portals",
-                "currentAtk",
-                "kill",
-                "INTERACTION",
-                "COMBAT",
-                "ECONOMY",
-                "PROGRESSION",
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "CORE_STATE",
-                "WORLD",
-                "AI"
-              ],
-              "primarySystems": [
-                "CORE_STATE",
-                "AI",
-                "GOAL_STATE",
-                "WORLD",
-                "COMBAT",
-                "PROGRESSION",
-                "PRESENTATION"
-              ],
-              "dependentSystems": [
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "PLAYER",
-                "AI",
-                "INTERACTION",
-                "PLACEMENT",
-                "PROGRESSION",
-                "ECONOMY",
-                "COMBAT",
-                "WORLD"
-              ],
-              "directDependentSystems": [
-                "INTERACTION",
-                "COMBAT",
-                "ECONOMY",
-                "PROGRESSION",
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "CORE_STATE",
-                "WORLD",
-                "AI"
-              ],
-              "readOnlyImpactSystems": [
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "PLAYER",
-                "AI",
-                "INTERACTION",
-                "PLACEMENT",
-                "PROGRESSION",
-                "ECONOMY",
-                "COMBAT",
-                "WORLD"
-              ],
-              "ownedState": [
-                "AUDIO",
-                "AC",
-                "ac",
-                "prev",
-                "z",
-                "w",
-                "ax",
-                "m"
-              ],
-              "readState": [
-                "AUDIO",
-                "AC",
-                "ac",
-                "F",
-                "prev",
-                "n",
-                "z",
-                "WEAPONS",
-                "run",
-                "w",
-                "t",
-                "ax",
-                "m",
-                "d",
-                "r"
-              ],
-              "preserveSemantics": [
-                "EXISTING_WORKING_BEHAVIOR",
-                "APPROVED_GAMEPLAY_VALUES",
-                "SAVE_MEANING",
-                "PROTECTED_SIGNAL:save",
-                "PROTECTED_SIGNAL:combat-number"
-              ],
-              "failureOrRequirementCausalChain": [
-                "FAILURE_EVIDENCE",
-                "RESPONSIBLE_FUNCTION:attackNow",
-                "STATE_WRITE:ac",
-                "STATE_WRITE:w",
-                "STATE_WRITE:ax",
-                "STATE_WRITE:m",
-                "DOWNSTREAM:sfx",
-                "DOWNSTREAM:currentAtk",
-                "DOWNSTREAM:kill",
-                "RESPONSIBLE_FUNCTION:enter",
-                "STATE_WRITE:prev",
-                "STATE_WRITE:z",
-                "DOWNSTREAM:setAggro",
-                "DOWNSTREAM:toastMsg",
-                "DOWNSTREAM:spawnCave",
-                "RESPONSIBLE_FUNCTION:initAudio",
-                "STATE_WRITE:AUDIO",
-                "STATE_WRITE:AC",
-                "DOWNSTREAM:startBgm"
-              ],
-              "requiredObservableResult": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
-              "semanticDiffBudget": {
-                "allowedSystems": [
-                  "CORE_STATE",
-                  "AI",
-                  "GOAL_STATE",
-                  "WORLD",
-                  "COMBAT",
-                  "PROGRESSION",
-                  "PRESENTATION",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "INPUT"
-                ],
-                "preferredPrimarySymbols": [
-                  "attackNow",
-                  "enter",
-                  "initAudio"
-                ],
-                "maxSystemCount": 10,
-                "readOnlyImpactSystems": [
-                  "INPUT",
-                  "GOAL_STATE",
-                  "PRESENTATION",
-                  "PLAYER",
-                  "AI",
-                  "INTERACTION",
-                  "PLACEMENT",
-                  "PROGRESSION",
-                  "ECONOMY",
-                  "COMBAT",
-                  "WORLD"
-                ],
-                "impactPredictionDoesNotGrantWriteAuthority": true,
-                "unrelatedSystemMutationForbidden": true,
-                "saveKeysMustRemainCompatible": []
-              },
-              "requiredFocusedChecks": [
-                "OWNER_STATE_INVARIANTS",
-                "MICRO_CORE_STATE",
-                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                "MICRO_PRESENTATION",
-                "MICRO_WORLD",
-                "MICRO_COMBAT",
-                "MICRO_AI",
-                "MICRO_PROGRESSION",
-                "MICRO_GOAL_STATE",
-                "MICRO_INPUT",
-                "MICRO_INTERACTION",
-                "MICRO_ECONOMY",
-                "HOTSPOT_RECHECK:SYMBOL:attackNow",
-                "HOTSPOT_RECHECK:SYMBOL:enter",
-                "HOTSPOT_RECHECK:SYMBOL:initAudio",
-                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
-                "HOTSPOT_RECHECK:SYSTEM:AI",
-                "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
-                "HOTSPOT_RECHECK:SYSTEM:WORLD",
-                "HOTSPOT_RECHECK:SYSTEM:COMBAT",
-                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
-              ],
-              "causalReplay": {
-                "version": 2,
-                "required": true,
-                "prePatchReproduced": true,
-                "nodeTestTargets": [],
-                "executable": true,
-                "mode": "DIAGNOSTIC_RESCAN",
-                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
-                "diagnosticType": "INTERVAL_CLEANUP_RISK",
-                "diagnosticFile": "rpg.html",
-                "diagnosticLine": 177,
-                "diagnosticNeedle": "setInterval(",
-                "diagnosticMicroTask": "rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
-                "verifiedResponsibleSystem": "GAME_RUNTIME",
-                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
-                "identicalOrEquivalentInputStateRequired": true,
-                "canonicalQaStillRequired": true,
-                "sourceWrite": false,
-                "authorityExpanded": false
-              },
-              "patchRecipe": {
-                "version": 1,
-                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
-                "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
-                "verifiedMemoryIds": [],
-                "verifiedMemoryCount": 0,
-                "reusePatterns": [],
-                "avoidPatterns": [],
-                "steps": [
-                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
-                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
-                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
-                  "VERIFY_OWNED_STATE_CHANGE",
-                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
-                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
-                  "VERIFY_PRESERVE_SEMANTICS",
-                  "RUN_COMPILED_FOCUSED_CHECKS"
-                ],
-                "primaryTargets": [
-                  "attackNow",
-                  "enter",
-                  "initAudio"
-                ],
-                "dependentSymbolsOrSystems": [
-                  "startBgm",
-                  "sfx",
-                  "toggleSound",
-                  "setAggro",
-                  "toastMsg",
-                  "spawnCave",
-                  "spawnAll",
-                  "spawnHiddenEnemy",
-                  "hud",
-                  "useAction",
-                  "portals",
-                  "currentAtk",
-                  "kill",
-                  "INTERACTION",
-                  "COMBAT",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "INPUT",
-                  "GOAL_STATE",
-                  "PRESENTATION",
-                  "CORE_STATE",
-                  "WORLD",
-                  "AI"
-                ],
-                "ownedState": [
-                  "AUDIO",
-                  "AC",
-                  "ac",
-                  "prev",
-                  "z",
-                  "w",
-                  "ax",
-                  "m"
-                ],
-                "focusedChecks": [
-                  "OWNER_STATE_INVARIANTS",
-                  "MICRO_CORE_STATE",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "MICRO_PRESENTATION",
-                  "MICRO_WORLD",
-                  "MICRO_COMBAT",
-                  "MICRO_AI",
-                  "MICRO_PROGRESSION",
-                  "MICRO_GOAL_STATE",
-                  "MICRO_INPUT",
-                  "MICRO_INTERACTION",
-                  "MICRO_ECONOMY",
-                  "HOTSPOT_RECHECK:SYMBOL:attackNow",
-                  "HOTSPOT_RECHECK:SYMBOL:enter",
-                  "HOTSPOT_RECHECK:SYMBOL:initAudio",
-                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
-                  "HOTSPOT_RECHECK:SYSTEM:AI",
-                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
-                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
-                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
-                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
-                ],
-                "protectedSemantics": [
-                  "EXISTING_WORKING_BEHAVIOR",
-                  "APPROVED_GAMEPLAY_VALUES",
-                  "SAVE_MEANING",
-                  "PROTECTED_SIGNAL:save",
-                  "PROTECTED_SIGNAL:combat-number"
-                ],
-                "verifiedMemoryOnly": true,
-                "scopeExpansionAllowed": false,
-                "qaBypassAllowed": false,
-                "authorityExpanded": false
-              },
-              "codingArchitecture": {
-                "developmentMode": "PRESERVE_PATCH",
-                "stateOwnershipSystems": [
-                  "CORE_STATE",
-                  "INPUT",
-                  "PRESENTATION",
-                  "WORLD",
-                  "PLAYER",
-                  "COMBAT",
-                  "AI",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "PLACEMENT",
-                  "GOAL_STATE"
-                ],
-                "apiNames": [
-                  "transitionRunState(next,reason)",
-                  "submitPlayerIntent(intent)",
-                  "queryWorld(position,action)",
-                  "applyPlayerDelta(delta,reason)",
-                  "resolveCombatAction(action)",
-                  "advanceAgentIntent(agentId,context)",
-                  "resolveInteraction(targetId,action)",
-                  "applyTransaction(transaction)",
-                  "advanceObjective(event)",
-                  "placeEntity(request)",
-                  "evaluateGoalState(context)",
-                  "renderFromState(snapshot)"
-                ],
-                "invariantIds": [
-                  "STATE_OWNER_ONLY_WRITE",
-                  "NO_DUPLICATE_CAUSAL_REWARD",
-                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
-                  "GOAL_STATE_EXCLUSIVE",
-                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
-                  "INPUT_TO_STATE_CAUSALITY",
-                  "SAVE_SCHEMA_VERSIONED",
-                  "PLAYER_VITAL_BOUNDS",
-                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
-                  "PLACEMENT_OCCUPANCY_CONSISTENT",
-                  "PROGRESSION_REWARD_IDEMPOTENT"
-                ],
-                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
-              },
-              "architectureSnapshot": {
-                "version": 1,
-                "nodeCount": 73,
-                "edgeCount": 126,
-                "maxFunctionBodyBytes": 3620,
-                "maxCallsPerFunction": 10,
-                "maxCalledByPerFunction": 20,
-                "maxStateWritesPerFunction": 11,
-                "maxSystemsPerFunction": 8,
-                "multiWriterStateCount": 20,
-                "stateWriterLinkCount": 114,
-                "multiOwnerStorageKeyCount": 0,
-                "storageOwnerLinkCount": 0,
-                "timerFunctionCount": 5,
-                "eventBindingCount": 0,
-                "largeFunctionCount": 0,
-                "broadSystemFunctionCount": 15
-              },
-              "responsibilityGraph": {
-                "nodeCount": 73,
-                "relevantNodes": [
-                  {
-                    "name": "initAudio",
-                    "systems": [
-                      "CORE_STATE",
-                      "AI",
-                      "GOAL_STATE"
-                    ],
-                    "calls": [
-                      "startBgm"
-                    ],
-                    "calledBy": [
-                      "sfx",
-                      "toggleSound"
-                    ],
-                    "stateReads": [
-                      "AUDIO",
-                      "AC",
-                      "ac"
-                    ],
-                    "stateWrites": [
-                      "AUDIO",
-                      "AC",
-                      "ac"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "sfx",
-                    "systems": [
-                      "INTERACTION",
-                      "COMBAT",
-                      "ECONOMY",
-                      "PROGRESSION",
-                      "INPUT",
-                      "GOAL_STATE",
-                      "PRESENTATION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "initAudio",
-                      "tone",
-                      "noise"
-                    ],
-                    "calledBy": [
-                      "setAggro",
-                      "toggleSound",
-                      "say",
-                      "enter",
-                      "talkNow",
-                      "openWeaponShop",
-                      "equipWeapon",
-                      "buyOrEquipWeapon",
-                      "openArmorShop",
-                      "buyOrEquipArmor",
-                      "openSellShop",
-                      "sellItem",
-                      "sellEverything",
-                      "useAction",
-                      "attackNow",
-                      "kill",
-                      "fireArrow",
-                      "updateArrows",
-                      "damage",
-                      "update"
-                    ],
-                    "stateReads": [
-                      "SFX_INDEX",
-                      "AUDIO",
-                      "i",
-                      "special",
-                      "k"
-                    ],
-                    "stateWrites": [
-                      "i",
-                      "special",
-                      "k"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "startBgm",
-                    "systems": [
-                      "CORE_STATE",
-                      "WORLD"
-                    ],
-                    "calls": [
-                      "tone",
-                      "noise"
-                    ],
-                    "calledBy": [
-                      "initAudio"
-                    ],
-                    "stateReads": [
-                      "AUDIO",
-                      "i",
-                      "normal",
-                      "aggro",
-                      "run"
-                    ],
-                    "stateWrites": [
-                      "AUDIO",
-                      "i",
-                      "normal",
-                      "aggro"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "setAggro",
-                    "systems": [
-                      "INTERACTION",
-                      "COMBAT",
-                      "AI"
-                    ],
-                    "calls": [
-                      "sfx"
-                    ],
-                    "calledBy": [
-                      "enter",
-                      "damage",
-                      "update"
-                    ],
-                    "stateReads": [
-                      "AUDIO",
-                      "aggro",
-                      "now",
-                      "v"
-                    ],
-                    "stateWrites": [
-                      "AUDIO",
-                      "aggro",
-                      "now"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "toggleSound",
-                    "systems": [
-                      "INTERACTION",
-                      "AI",
-                      "INPUT",
-                      "PRESENTATION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "initAudio",
-                      "sfx"
-                    ],
-                    "calledBy": [],
-                    "stateReads": [
-                      "AUDIO"
-                    ],
-                    "stateWrites": [
-                      "AUDIO"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "currentAtk",
-                    "systems": [
-                      "COMBAT"
-                    ],
-                    "calls": [],
-                    "calledBy": [
-                      "hud",
-                      "equipWeapon",
-                      "attackNow"
-                    ],
-                    "stateReads": [
-                      "WEAPONS"
-                    ],
-                    "stateWrites": [],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "hud",
-                    "systems": [
-                      "PRESENTATION",
-                      "WORLD",
-                      "COMBAT",
-                      "ECONOMY",
-                      "PROGRESSION",
-                      "GOAL_STATE"
-                    ],
-                    "calls": [
-                      "maxHp",
-                      "currentAtk"
-                    ],
-                    "calledBy": [
-                      "reset",
-                      "enter",
-                      "talkNow",
-                      "equipWeapon",
-                      "buyOrEquipArmor",
-                      "sellItem",
-                      "sellEverything",
-                      "kill",
-                      "damage",
-                      "update"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "mh",
-                      "n"
-                    ],
-                    "stateWrites": [
-                      "mh"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "toastMsg",
-                    "systems": [
-                      "PRESENTATION"
-                    ],
-                    "calls": [],
-                    "calledBy": [
-                      "enter",
-                      "talkNow",
-                      "equipWeapon",
-                      "buyOrEquipWeapon",
-                      "buyOrEquipArmor",
-                      "sellEverything",
-                      "useAction",
-                      "kill",
-                      "portals"
-                    ],
-                    "stateReads": [
-                      "t"
-                    ],
-                    "stateWrites": [
-                      "t"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "enter",
-                    "systems": [
-                      "WORLD",
-                      "COMBAT",
-                      "AI",
-                      "PROGRESSION",
-                      "PRESENTATION"
-                    ],
-                    "calls": [
-                      "setAggro",
-                      "sfx",
-                      "toastMsg",
-                      "spawnCave",
-                      "spawnAll",
-                      "spawnHiddenEnemy",
-                      "hud"
-                    ],
-                    "calledBy": [
-                      "useAction",
-                      "portals"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "prev",
-                      "n",
-                      "z"
-                    ],
-                    "stateWrites": [
-                      "prev",
-                      "z"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "spawnAll",
-                    "systems": [],
-                    "calls": [
-                      "spawn"
-                    ],
-                    "calledBy": [
-                      "enter"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "i",
-                      "z",
-                      "m"
-                    ],
-                    "stateWrites": [
-                      "i"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "spawnCave",
-                    "systems": [
-                      "INTERACTION"
-                    ],
-                    "calls": [
-                      "spawnCaveMonster"
-                    ],
-                    "calledBy": [
-                      "enter"
-                    ],
-                    "stateReads": [
-                      "CAVE",
-                      "i"
-                    ],
-                    "stateWrites": [
-                      "i"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "spawnHiddenEnemy",
-                    "systems": [
-                      "COMBAT",
-                      "AI",
-                      "PROGRESSION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [],
-                    "calledBy": [
-                      "enter"
-                    ],
-                    "stateReads": [
-                      "TOMB",
-                      "n",
-                      "a",
-                      "z",
-                      "m",
-                      "r"
-                    ],
-                    "stateWrites": [
-                      "m"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "useAction",
-                    "systems": [
-                      "INTERACTION",
-                      "COMBAT",
-                      "PRESENTATION"
-                    ],
-                    "calls": [
-                      "getAction",
-                      "enter",
-                      "toastMsg",
-                      "sfx"
-                    ],
-                    "calledBy": [],
-                    "stateReads": [
-                      "a"
-                    ],
-                    "stateWrites": [
-                      "a"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "attackNow",
-                    "systems": [
-                      "COMBAT",
-                      "GOAL_STATE",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "sfx",
-                      "currentAtk",
-                      "kill"
-                    ],
-                    "calledBy": [],
-                    "stateReads": [
-                      "WEAPONS",
-                      "ac",
-                      "run",
-                      "w",
-                      "t",
-                      "ax",
-                      "m",
-                      "d",
-                      "r"
-                    ],
-                    "stateWrites": [
-                      "ac",
-                      "w",
-                      "ax",
-                      "m"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "kill",
-                    "systems": [
-                      "WORLD",
-                      "INTERACTION",
-                      "COMBAT",
-                      "AI",
-                      "PROGRESSION",
-                      "GOAL_STATE",
-                      "PRESENTATION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "sfx",
-                      "deathSoundFor",
-                      "toastMsg",
-                      "maxHp",
-                      "spawn",
-                      "hud"
-                    ],
-                    "calledBy": [
-                      "attackNow"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "run",
-                      "ownedWeapons",
-                      "v",
-                      "t",
-                      "item",
-                      "z",
-                      "spec",
-                      "m"
-                    ],
-                    "stateWrites": [
-                      "v",
-                      "item",
-                      "z",
-                      "spec",
-                      "m"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "portals",
-                    "systems": [
-                      "WORLD",
-                      "COMBAT"
-                    ],
-                    "calls": [
-                      "enter",
-                      "toastMsg"
-                    ],
-                    "calledBy": [
-                      "update"
-                    ],
-                    "stateReads": [
-                      "P",
-                      "a"
-                    ],
-                    "stateWrites": [],
-                    "storageKeys": [],
-                    "events": []
-                  }
-                ],
-                "relevantEdges": [
-                  {
-                    "from": "initAudio",
-                    "to": "startBgm",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sfx",
-                    "to": "initAudio",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sfx",
-                    "to": "tone",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sfx",
-                    "to": "noise",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "startBgm",
-                    "to": "tone",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "startBgm",
-                    "to": "noise",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "setAggro",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "toggleSound",
-                    "to": "initAudio",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "toggleSound",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "reset",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "hud",
-                    "to": "maxHp",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "hud",
-                    "to": "currentAtk",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "say",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "setAggro",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "spawnCave",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "spawnAll",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "spawnHiddenEnemy",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "spawnAll",
-                    "to": "spawn",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "spawnCave",
-                    "to": "spawnCaveMonster",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "talkNow",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "talkNow",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "talkNow",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "openWeaponShop",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "currentAtk",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipWeapon",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipWeapon",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "openArmorShop",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipArmor",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipArmor",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipArmor",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "openSellShop",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sellItem",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sellItem",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sellEverything",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  }
-                ]
-              },
-              "behaviorChains": [
-                {
-                  "id": "CORE_ACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "REAL_INPUT",
-                    "RESPONSIBLE_FUNCTION",
-                    "OWNED_STATE_CHANGE",
-                    "OBSERVABLE_GAME_RESULT"
-                  ]
-                },
-                {
-                  "id": "PLACEMENT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "POSITION_SELECTION",
-                    "COST_OR_VALIDATION",
-                    "ENTITY_MATERIALIZED_AT_POSITION",
-                    "WORLD_OR_COMBAT_EFFECT"
-                  ]
-                },
-                {
-                  "id": "INTERACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "TARGET_SELECTION_OR_APPROACH",
-                    "REAL_INPUT",
-                    "TARGET_STATE_CHANGE",
-                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "COMBAT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "ATTACK_INTENT",
-                    "HIT_OR_REJECT_RESULT",
-                    "HP_OR_COMBAT_STATE_CHANGE",
-                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "PROGRESSION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "OBJECTIVE_EVENT",
-                    "PROGRESS_DELTA",
-                    "REWARD_OR_UNLOCK",
-                    "NEXT_GAMEPLAY_OPTION_CHANGED"
-                  ]
-                },
-                {
-                  "id": "STRATEGY_DIVERGENCE_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "CHOICE_A_AND_CHOICE_B",
-                    "SAME_OR_EQUIVALENT_START_STATE",
-                    "DIFFERENT_STATE_TRANSITIONS",
-                    "DIFFERENT_OBSERVED_OUTCOME"
-                  ]
-                }
-              ],
-              "seniorReview": {
-                "score": 65,
-                "hardBlockers": [],
-                "issues": [
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "ac:initAudio,tone,noise,attackNow,update"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "i:noise,sfx,startBgm,spawnAll,spawnCave,updateArrows,update,drawDecor"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "b:nearest,renderWeaponShop,renderArmorShop,renderSellShop,renderBag"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "a:buyOrEquipArmor,updateActionButton,useAction,fireArrow,updateArrows,update,palm,tropical"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "t:tone,noise,toastMsg,sellEverything,update,drawHuman,drawMonsterSprite"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "m:spawnHiddenEnemy,attackNow,kill,update,drawMonsterSprite,drawMonster,moveJoy"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "k:sfx,talkNow,palm,banana,tropical,renderBag"
-                  }
-                ]
-              },
-              "failureEvidence": [
-                "diagnostic:INTERVAL_CLEANUP_RISK",
-                "repair-mode:MODEL",
-                "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-                "role-result:exploration:FAIL",
-                "role-result:implementation:FAIL",
-                "role-result:test:FAIL",
-                "role-result:performance:FAIL",
-                "failure-cause:source-candidate-generation-failed",
-                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
-                "system-steward:failure-signature:source-candidate-generation-failed",
-                "repair-mode:CAUSAL_REGENERATION_GENERATION_2",
-                "shared-context-sync:MISSING",
-                "recovery-queue:recovery-web-source-candidate-generation-portfolio-v1",
-                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
-                "recovery-exact-stage:SOURCE_CANDIDATE_GENERATION",
-                "recovery-queue:recovery-b9a81ece6a251027e30e"
-              ],
-              "writableScopeExpansionAllowed": false,
-              "learningAuthorityExpanded": false
-            },
-            "reuseKey": "5c5014100f71df6d729adc51",
-            "generatedAt": "2026-09-20T10:14:11.403Z"
-          },
-          "codingMethod": {
-            "version": 2,
-            "strategy": "CAUSAL_TRACE_CROSSCHECK",
-            "candidateVariant": "speculative-2",
-            "responsibilityConfidence": "MEDIUM",
-            "primaryTargets": [
-              "attackNow",
-              "enter",
-              "initAudio"
-            ],
-            "primarySystems": [
-              "CORE_STATE",
-              "AI",
-              "GOAL_STATE",
-              "WORLD",
-              "COMBAT",
-              "PROGRESSION",
-              "PRESENTATION"
-            ],
-            "dependentSystems": [
-              "INPUT",
-              "GOAL_STATE",
-              "PRESENTATION",
-              "PLAYER",
-              "AI",
-              "INTERACTION",
-              "PLACEMENT",
-              "PROGRESSION",
-              "ECONOMY",
-              "COMBAT",
-              "WORLD"
-            ],
-            "ownedState": [
-              "AUDIO",
-              "AC",
-              "ac",
-              "prev",
-              "z",
-              "w",
-              "ax",
-              "m"
-            ],
-            "semanticDiffBudget": {
-              "allowedSystems": [
-                "CORE_STATE",
-                "AI",
-                "GOAL_STATE",
-                "WORLD",
-                "COMBAT",
-                "PROGRESSION",
-                "PRESENTATION",
-                "INTERACTION",
-                "ECONOMY",
-                "INPUT"
-              ],
-              "preferredPrimarySymbols": [
-                "attackNow",
-                "enter",
-                "initAudio"
-              ],
-              "maxSystemCount": 10,
-              "readOnlyImpactSystems": [
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "PLAYER",
-                "AI",
-                "INTERACTION",
-                "PLACEMENT",
-                "PROGRESSION",
-                "ECONOMY",
-                "COMBAT",
-                "WORLD"
-              ],
-              "impactPredictionDoesNotGrantWriteAuthority": true,
-              "unrelatedSystemMutationForbidden": true,
-              "saveKeysMustRemainCompatible": []
-            },
-            "semanticDiffEnforcement": null,
-            "causalReplay": {
-              "version": 2,
-              "required": true,
-              "prePatchReproduced": true,
-              "nodeTestTargets": [],
-              "executable": true,
-              "mode": "DIAGNOSTIC_RESCAN",
-              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
-              "diagnosticType": "INTERVAL_CLEANUP_RISK",
-              "diagnosticFile": "rpg.html",
-              "diagnosticLine": 177,
-              "diagnosticNeedle": "setInterval(",
-              "diagnosticMicroTask": "rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
-              "verifiedResponsibleSystem": "GAME_RUNTIME",
-              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
-              "identicalOrEquivalentInputStateRequired": true,
-              "canonicalQaStillRequired": true,
-              "sourceWrite": false,
-              "authorityExpanded": false
-            },
-            "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
-            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-            "verifiedFailureLocalMemoryCount": 0,
-            "verifiedFailureLocalMemoryIds": [],
-            "generationAttempts": 0,
-            "candidateProducedFirstAttempt": false,
-            "writableScopeExpansionAllowed": false,
-            "learningAuthorityExpanded": false,
-            "implementationPass": false,
-            "incrementalQaPass": false,
-            "performanceSanityPass": false,
-            "firstCandidatePass": false,
-            "fullRegressionVerified": false,
-            "reviewVerified": false,
-            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
-            "causalReplayExecuted": false,
-            "architectureDrift": {
-              "status": "NOT_AVAILABLE",
-              "riskLevel": "LOW",
-              "score": 0,
-              "signals": [],
-              "hardReject": false,
-              "focusedReviewRequired": false
-            },
-            "telemetrySource": "WORK_ORDER_FALLBACK"
-          },
-          "presentationQuality": null,
-          "roleResults": {
-            "exploration": "PASS",
-            "implementation": "FAIL",
-            "test": "FAIL",
-            "performance": "FAIL",
-            "regression": "WAITING_FAN_IN",
-            "review": "WAITING_FAN_IN"
-          },
-          "practiceDistillation": null,
-          "neuralDiagnosis": {
-            "version": 1,
-            "mode": "PHASE1_SHADOW_ADVISORY",
-            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
-            "facts": [
-              {
-                "id": "fact-1",
-                "value": "central-policy:company-learning/platform-release-roadmap.json",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-2",
-                "value": "release-state:development-confirmed",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-3",
-                "value": "source-root:web-games/daechung-rpg",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-4",
-                "value": "recovery-exact-stage:SOURCE_CANDIDATE_GENERATION",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-5",
-                "value": "recovery-exact-stage:production-authority-inactive:DESIGN_ONLY",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-6",
-                "value": "recovery-exact-stage:UNKNOWN_STAGE",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              }
-            ],
-            "hypotheses": [
-              {
-                "id": "current-deterministic-diagnostic-interval-cleanup-risk",
-                "system": "GAME_RUNTIME",
-                "confidence": 0.99,
-                "reason": "현재 task의 결정론적 diagnostic INTERVAL_CLEANUP_RISK(rpg.html)가 GAME_RUNTIME 책임 가설을 직접 지지함",
-                "diagnosticType": "INTERVAL_CLEANUP_RISK",
-                "diagnosticFile": "rpg.html",
-                "verified": false,
-                "advisoryOnly": true
-              },
-              {
-                "id": "save-compatibility",
-                "system": "SAVE_SYSTEM",
-                "confidence": 0.9,
-                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
-              },
-              {
-                "id": "audio-runtime-binding",
-                "system": "GAME_AUDIO",
-                "confidence": 0.86,
-                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
-              },
-              {
-                "id": "source-generation-path",
-                "system": "SOURCE_GENERATION",
-                "confidence": 0.86,
-                "reason": "모델 출력 형식·anchor·generation 경로 문제 가능성"
-              },
-              {
-                "id": "pipeline-or-runner",
-                "system": "INFRA",
-                "confidence": 0.82,
-                "reason": "게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성"
-              }
-            ],
-            "causalEdges": [
-              {
-                "from": "current-deterministic-diagnostic-interval-cleanup-risk",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.99,
-                "verified": false,
-                "rank": 1
-              },
-              {
-                "from": "save-compatibility",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.9,
-                "verified": false,
-                "rank": 2
-              },
-              {
-                "from": "audio-runtime-binding",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.86,
-                "verified": false,
-                "rank": 3
-              },
-              {
-                "from": "source-generation-path",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.86,
-                "verified": false,
-                "rank": 4
-              }
-            ],
-            "responsibility": {
-              "system": "GAME_RUNTIME",
-              "confidence": 0.99,
-              "alternatives": [
-                {
-                  "system": "SAVE_SYSTEM",
-                  "confidence": 0.2031602708803612
-                },
-                {
-                  "system": "GAME_AUDIO",
-                  "confidence": 0.19413092550790068
-                },
-                {
-                  "system": "SOURCE_GENERATION",
-                  "confidence": 0.19413092550790068
-                }
-              ],
-              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
-              "verified": false
-            },
-            "bottleneck": {
-              "score": 100,
-              "components": {
-                "downstreamDepth": 6,
-                "recurrence": 2,
-                "sharedScope": 2,
-                "priority": 1,
-                "evidenceConfidence": 0.99
-              },
-              "advisoryOnly": true,
-              "mayReorderWave": false
-            },
-            "inhibitors": [
-              "PRODUCTION_AUTHORITY_INACTIVE"
-            ],
-            "actionRecommendation": {
-              "mode": "EXACT_FAILURE_STAGE_REPAIR",
-              "failureStage": "SOURCE_CANDIDATE_GENERATION",
-              "responsibleSystem": "GAME_RUNTIME",
-              "preserveAlreadyPassedStages": true,
-              "restartFromBeginning": false,
-              "automaticScopeExpansion": false,
-              "blocked": true,
-              "blocker": "PRODUCTION_AUTHORITY_INACTIVE"
-            },
-            "learning": {
-              "eligible": false,
-              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
-            },
-            "waveControl": {
-              "currentWaveSchedulerRemainsAuthoritative": true,
-              "mayReorderWave": false,
-              "mayCreateWorker": false
-            }
-          },
-          "capabilityApplication": {
-            "version": 1,
-            "layer": "verifiedCapabilityMemory",
-            "injected": true,
-            "exactInjectedCapabilityIds": [
-              "capability_ctrace_1a453e3e34004eb1c376197d"
-            ],
-            "coAppliedCapabilityIds": [
-              "capability_ctrace_1a453e3e34004eb1c376197d"
-            ],
-            "workKey": null,
-            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
-            "onlyActuallyInjectedCapabilitiesEligible": true,
-            "freshTaskQaRequired": true,
-            "rawCodeStored": false,
-            "rawModelOutputStored": false,
-            "hiddenChainOfThoughtStored": false,
-            "authorityExpanded": false
-          },
-          "phase4BenchmarkVerification": null,
-          "durationMs": 98124,
-          "knowledgeApplication": {
-            "version": 1,
-            "exactInjectedKnowledgeIds": [
-              "EXPERIENCE:exp_1oonbi8",
-              "EXPERIENCE:exp_4odofx",
-              "EXPERIENCE:exp_pg739o",
-              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
-              "EXPERIENCE:exp_rg6lvy",
-              "EXPERIENCE:exp_i00mwv",
-              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
-              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
-              "CODE_PATTERN:pat_130jf9c",
-              "CODE_PATTERN:pat_1avbmmv",
-              "CODE_PATTERN:pat_1vgfuno",
-              "CODE_PATTERN:pat_3f780w",
-              "CODE_PATTERN:pat_9pwgix",
-              "CODE_PATTERN:pat_m3ipio",
-              "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d"
-            ],
-            "freshIndependentQaRequired": true,
-            "infrastructureFailurePenalizesKnowledge": false,
-            "authorityExpanded": false
-          },
-          "metrics": {
-            "requestedMax": 20,
-            "effectiveMax": 20,
-            "reservationId": "35504403471:1",
-            "reservedAt": "2026-09-20T10:12:36Z",
-            "workerStartedAt": 1789899205592,
-            "workerFinishedAt": 1789899303716,
-            "checkoutMs": 2976,
-            "modelPrepMs": 8789,
-            "candidateMs": 51640,
-            "qaMs": 0,
-            "workerTotalMs": 98124,
-            "changedFileCount": 0,
-            "addedLineCount": 0,
-            "deletedLineCount": 0,
-            "ollamaCacheHit": true,
-            "ollamaRuntimeSource": "CACHE"
-          }
-        },
-        {
-          "version": 13,
-          "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-          "reservationId": "35504403471:1",
-          "variant": "speculative-1",
-          "outcome": "FAIL",
-          "blocker": "source-candidate-generation-failed",
-          "candidateBranch": null,
-          "baseMainSha": "dca83b1c3a1dabcbb3567902701af36933f100e0",
-          "candidateIdentity": null,
-          "candidateFailure": {
-            "class": "DIAGNOSTIC_POSTCONDITION",
-            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:rpg.html:CLEAR_INTERVAL_LIFECYCLE_MISSING"
-          },
-          "evidence": [
-            "base-main:dca83b1c3a1dabcbb3567902701af36933f100e0",
-            "role-result:exploration:PASS",
-            "role-result:implementation:FAIL",
-            "role-result:test:FAIL",
-            "role-result:performance:FAIL",
-            "role-result:regression:WAITING_FAN_IN",
-            "role-result:review:WAITING_FAN_IN",
-            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
-            "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
-            "coding-responsibility-confidence:MEDIUM",
-            "coding-candidate-first-attempt:NO",
-            "coding-primary-target-count:3",
-            "coding-primary-targets:%5B%22attackNow%22%2C%22enter%22%2C%22initAudio%22%5D",
-            "coding-primary-systems:%5B%22CORE_STATE%22%2C%22AI%22%2C%22GOAL_STATE%22%2C%22WORLD%22%2C%22COMBAT%22%2C%22PROGRESSION%22%2C%22PRESENTATION%22%5D",
-            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22PLAYER%22%2C%22AI%22%2C%22INTERACTION%22%2C%22PLACEMENT%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
-            "coding-semantic-system-budget:10",
-            "coding-failure-fingerprint:web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
-            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
-            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1a453e3e34004eb1c376197d%22%5D",
-            "actions-run:35504403471",
-            "reservation-id:35504403471:1",
-            "variant:speculative-1",
-            "shared-context-sync:MISSING"
-          ],
-          "exploration": {
-            "version": 1,
-            "role": "exploration",
-            "sourceWrite": false,
-            "reused": false,
-            "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-            "packageId": "daechung-rpg-wp-lo8pg6",
-            "target": "web",
-            "sourceRoot": "web-games/daechung-rpg",
-            "baseMainSha": "dca83b1c3a1dabcbb3567902701af36933f100e0",
-            "responsibleFiles": [
-              "rpg.html"
-            ],
-            "impactFiles": [
-              "rpg.html",
-              "index.html",
-              "patch-core18.js",
-              "patch-v15.js",
-              "patch-v16.js",
-              "patch-v17.js",
-              "patch-v18-reaper.js",
-              "patch-v18.js"
-            ],
-            "contextFiles": [
-              "rpg.html",
-              "index.html",
-              "patch-core18.js",
-              "patch-v15.js",
-              "patch-v16.js",
-              "patch-v17.js",
-              "patch-v18-reaper.js",
-              "patch-v18.js"
-            ],
-            "relatedFiles": [
-              {
-                "path": "index.html",
-                "score": 64
-              },
-              {
-                "path": "patch-core18.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v15.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v16.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v17.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v18-reaper.js",
-                "score": 35
-              },
-              {
-                "path": "patch-v18.js",
-                "score": 35
-              }
-            ],
-            "testTargets": [],
-            "protectedScopeSignals": [
-              "save",
-              "combat-number"
-            ],
-            "diagnosticEvidence": [
-              "diagnostic:INTERVAL_CLEANUP_RISK",
-              "repair-mode:MODEL"
-            ],
-            "existingWebAssessment": {
-              "version": 1,
-              "strategy": "MAJOR_REWORK",
-              "confidence": "MEDIUM",
-              "reasons": [
-                "REUSABLE_SOURCE_EXISTS",
-                "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
-                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
-              ],
-              "preserveExistingSource": true,
-              "fullRewriteAllowed": false,
-              "evidence": {
-                "sourceBytes": 1720,
-                "sourceSha256": "aa3eb5055b095fe367a123475f163e1b4618aee3afad7125851311ac9a378b43",
-                "validationScore": 0,
-                "approvedDesign": false,
-                "gameplaySignalCount": 2,
-                "gameplaySignals": {
-                  "input": true,
-                  "runtimeLoop": false,
-                  "mutableState": false,
-                  "gameplayOutcome": false,
-                  "progression": false,
-                  "combat": false,
-                  "spatial": false,
-                  "persistence": false,
-                  "mobile": true,
-                  "audio": false
-                },
-                "prototypeMarkerCount": 0,
-                "approvedScopeRequiredCount": 0,
-                "approvedScopeBoundCount": 0,
-                "approvedScopeSemanticCount": 0,
-                "approvedScopeCoveragePct": 100
-              },
-              "gameId": "daechung-rpg",
-              "sourceRoot": "web-games/daechung-rpg",
-              "sourcePath": "web-games/daechung-rpg/index.html",
-              "designBaselinePath": null
-            },
-            "fileDigests": [
-              {
-                "path": "rpg.html",
-                "hash": "21800a793588d78d",
-                "bytes": 49430
-              },
-              {
-                "path": "index.html",
-                "hash": "aa3eb5055b095fe3",
-                "bytes": 1720
-              },
-              {
-                "path": "patch-core18.js",
-                "hash": "7a58961a6ba23ce5",
-                "bytes": 2984
-              },
-              {
-                "path": "patch-v15.js",
-                "hash": "91ed041c21ee3dad",
-                "bytes": 42395
-              },
-              {
-                "path": "patch-v16.js",
-                "hash": "ee07c61a8db66ed6",
-                "bytes": 10067
-              },
-              {
-                "path": "patch-v17.js",
-                "hash": "180765e25b66fdde",
-                "bytes": 3124
-              },
-              {
-                "path": "patch-v18-reaper.js",
-                "hash": "e04dcc24fe996f72",
-                "bytes": 966
-              }
-            ],
-            "editContract": {
-              "version": 1,
-              "mode": "COMPILED_EDIT_CONTRACT",
-              "strategyHint": "CAUSAL_TRACE_FIRST",
-              "responsibilityConfidence": "MEDIUM",
-              "rawResponsibilityConfidence": "HIGH",
-              "responsibilityCalibration": {
-                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
-                "applied": true,
-                "extraReadOnlyExploration": true,
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "regressionHotspotRisk": {
-                "riskLevel": "MEDIUM",
-                "matched": [
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYMBOL",
-                    "name": "attackNow",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYMBOL",
-                    "name": "enter",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYMBOL",
-                    "name": "initAudio",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "CORE_STATE",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "AI",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "GOAL_STATE",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "WORLD",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  },
-                  {
-                    "gameId": "daechung-rpg",
-                    "target": "web",
-                    "kind": "SYSTEM",
-                    "name": "COMBAT",
-                    "verifiedRegressionFailures": 1,
-                    "verifiedPasses": 1,
-                    "lastFailureEvidence": "coding_hotspot_1fvgjvz",
-                    "lastPassEvidence": "coding_hotspot_raspnq",
-                    "lastUpdatedAt": "2026-09-19T17:20:54.708Z",
-                    "risk": {
-                      "score": 2,
-                      "level": "MEDIUM"
-                    }
-                  }
-                ],
-                "focusedChecksAdded": [
-                  "HOTSPOT_RECHECK:SYMBOL:attackNow",
-                  "HOTSPOT_RECHECK:SYMBOL:enter",
-                  "HOTSPOT_RECHECK:SYMBOL:initAudio",
-                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:AI",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
-                ],
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "primaryTargets": [
-                "attackNow",
-                "enter",
-                "initAudio"
-              ],
-              "allowedResponsibleFiles": [
-                "rpg.html"
-              ],
-              "allowedDependentSymbolsOrSystems": [
-                "startBgm",
-                "sfx",
-                "toggleSound",
-                "setAggro",
-                "toastMsg",
-                "spawnCave",
-                "spawnAll",
-                "spawnHiddenEnemy",
-                "hud",
-                "useAction",
-                "portals",
-                "currentAtk",
-                "kill",
-                "INTERACTION",
-                "COMBAT",
-                "ECONOMY",
-                "PROGRESSION",
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "CORE_STATE",
-                "WORLD",
-                "AI"
-              ],
-              "primarySystems": [
-                "CORE_STATE",
-                "AI",
-                "GOAL_STATE",
-                "WORLD",
-                "COMBAT",
-                "PROGRESSION",
-                "PRESENTATION"
-              ],
-              "dependentSystems": [
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "PLAYER",
-                "AI",
-                "INTERACTION",
-                "PLACEMENT",
-                "PROGRESSION",
-                "ECONOMY",
-                "COMBAT",
-                "WORLD"
-              ],
-              "directDependentSystems": [
-                "INTERACTION",
-                "COMBAT",
-                "ECONOMY",
-                "PROGRESSION",
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "CORE_STATE",
-                "WORLD",
-                "AI"
-              ],
-              "readOnlyImpactSystems": [
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "PLAYER",
-                "AI",
-                "INTERACTION",
-                "PLACEMENT",
-                "PROGRESSION",
-                "ECONOMY",
-                "COMBAT",
-                "WORLD"
-              ],
-              "ownedState": [
-                "AUDIO",
-                "AC",
-                "ac",
-                "prev",
-                "z",
-                "w",
-                "ax",
-                "m"
-              ],
-              "readState": [
-                "AUDIO",
-                "AC",
-                "ac",
-                "F",
-                "prev",
-                "n",
-                "z",
-                "WEAPONS",
-                "run",
-                "w",
-                "t",
-                "ax",
-                "m",
-                "d",
-                "r"
-              ],
-              "preserveSemantics": [
-                "EXISTING_WORKING_BEHAVIOR",
-                "APPROVED_GAMEPLAY_VALUES",
-                "SAVE_MEANING",
-                "PROTECTED_SIGNAL:save",
-                "PROTECTED_SIGNAL:combat-number"
-              ],
-              "failureOrRequirementCausalChain": [
-                "FAILURE_EVIDENCE",
-                "RESPONSIBLE_FUNCTION:attackNow",
-                "STATE_WRITE:ac",
-                "STATE_WRITE:w",
-                "STATE_WRITE:ax",
-                "STATE_WRITE:m",
-                "DOWNSTREAM:sfx",
-                "DOWNSTREAM:currentAtk",
-                "DOWNSTREAM:kill",
-                "RESPONSIBLE_FUNCTION:enter",
-                "STATE_WRITE:prev",
-                "STATE_WRITE:z",
-                "DOWNSTREAM:setAggro",
-                "DOWNSTREAM:toastMsg",
-                "DOWNSTREAM:spawnCave",
-                "RESPONSIBLE_FUNCTION:initAudio",
-                "STATE_WRITE:AUDIO",
-                "STATE_WRITE:AC",
-                "DOWNSTREAM:startBgm"
-              ],
-              "requiredObservableResult": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
-              "semanticDiffBudget": {
-                "allowedSystems": [
-                  "CORE_STATE",
-                  "AI",
-                  "GOAL_STATE",
-                  "WORLD",
-                  "COMBAT",
-                  "PROGRESSION",
-                  "PRESENTATION",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "INPUT"
-                ],
-                "preferredPrimarySymbols": [
-                  "attackNow",
-                  "enter",
-                  "initAudio"
-                ],
-                "maxSystemCount": 10,
-                "readOnlyImpactSystems": [
-                  "INPUT",
-                  "GOAL_STATE",
-                  "PRESENTATION",
-                  "PLAYER",
-                  "AI",
-                  "INTERACTION",
-                  "PLACEMENT",
-                  "PROGRESSION",
-                  "ECONOMY",
-                  "COMBAT",
-                  "WORLD"
-                ],
-                "impactPredictionDoesNotGrantWriteAuthority": true,
-                "unrelatedSystemMutationForbidden": true,
-                "saveKeysMustRemainCompatible": []
-              },
-              "requiredFocusedChecks": [
-                "OWNER_STATE_INVARIANTS",
-                "MICRO_CORE_STATE",
-                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                "MICRO_PRESENTATION",
-                "MICRO_WORLD",
-                "MICRO_COMBAT",
-                "MICRO_AI",
-                "MICRO_PROGRESSION",
-                "MICRO_GOAL_STATE",
-                "MICRO_INPUT",
-                "MICRO_INTERACTION",
-                "MICRO_ECONOMY",
-                "HOTSPOT_RECHECK:SYMBOL:attackNow",
-                "HOTSPOT_RECHECK:SYMBOL:enter",
-                "HOTSPOT_RECHECK:SYMBOL:initAudio",
-                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
-                "HOTSPOT_RECHECK:SYSTEM:AI",
-                "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
-                "HOTSPOT_RECHECK:SYSTEM:WORLD",
-                "HOTSPOT_RECHECK:SYSTEM:COMBAT",
-                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
-              ],
-              "causalReplay": {
-                "version": 2,
-                "required": true,
-                "prePatchReproduced": true,
-                "nodeTestTargets": [],
-                "executable": true,
-                "mode": "DIAGNOSTIC_RESCAN",
-                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
-                "diagnosticType": "INTERVAL_CLEANUP_RISK",
-                "diagnosticFile": "rpg.html",
-                "diagnosticLine": 177,
-                "diagnosticNeedle": "setInterval(",
-                "diagnosticMicroTask": "rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
-                "verifiedResponsibleSystem": "GAME_RUNTIME",
-                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
-                "identicalOrEquivalentInputStateRequired": true,
-                "canonicalQaStillRequired": true,
-                "sourceWrite": false,
-                "authorityExpanded": false
-              },
-              "patchRecipe": {
-                "version": 1,
-                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
-                "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
-                "verifiedMemoryIds": [],
-                "verifiedMemoryCount": 0,
-                "reusePatterns": [],
-                "avoidPatterns": [],
-                "steps": [
-                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
-                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
-                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
-                  "VERIFY_OWNED_STATE_CHANGE",
-                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
-                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
-                  "VERIFY_PRESERVE_SEMANTICS",
-                  "RUN_COMPILED_FOCUSED_CHECKS"
-                ],
-                "primaryTargets": [
-                  "attackNow",
-                  "enter",
-                  "initAudio"
-                ],
-                "dependentSymbolsOrSystems": [
-                  "startBgm",
-                  "sfx",
-                  "toggleSound",
-                  "setAggro",
-                  "toastMsg",
-                  "spawnCave",
-                  "spawnAll",
-                  "spawnHiddenEnemy",
-                  "hud",
-                  "useAction",
-                  "portals",
-                  "currentAtk",
-                  "kill",
-                  "INTERACTION",
-                  "COMBAT",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "INPUT",
-                  "GOAL_STATE",
-                  "PRESENTATION",
-                  "CORE_STATE",
-                  "WORLD",
-                  "AI"
-                ],
-                "ownedState": [
-                  "AUDIO",
-                  "AC",
-                  "ac",
-                  "prev",
-                  "z",
-                  "w",
-                  "ax",
-                  "m"
-                ],
-                "focusedChecks": [
-                  "OWNER_STATE_INVARIANTS",
-                  "MICRO_CORE_STATE",
-                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
-                  "MICRO_PRESENTATION",
-                  "MICRO_WORLD",
-                  "MICRO_COMBAT",
-                  "MICRO_AI",
-                  "MICRO_PROGRESSION",
-                  "MICRO_GOAL_STATE",
-                  "MICRO_INPUT",
-                  "MICRO_INTERACTION",
-                  "MICRO_ECONOMY",
-                  "HOTSPOT_RECHECK:SYMBOL:attackNow",
-                  "HOTSPOT_RECHECK:SYMBOL:enter",
-                  "HOTSPOT_RECHECK:SYMBOL:initAudio",
-                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
-                  "HOTSPOT_RECHECK:SYSTEM:AI",
-                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
-                  "HOTSPOT_RECHECK:SYSTEM:WORLD",
-                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
-                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
-                ],
-                "protectedSemantics": [
-                  "EXISTING_WORKING_BEHAVIOR",
-                  "APPROVED_GAMEPLAY_VALUES",
-                  "SAVE_MEANING",
-                  "PROTECTED_SIGNAL:save",
-                  "PROTECTED_SIGNAL:combat-number"
-                ],
-                "verifiedMemoryOnly": true,
-                "scopeExpansionAllowed": false,
-                "qaBypassAllowed": false,
-                "authorityExpanded": false
-              },
-              "codingArchitecture": {
-                "developmentMode": "PRESERVE_PATCH",
-                "stateOwnershipSystems": [
-                  "CORE_STATE",
-                  "INPUT",
-                  "PRESENTATION",
-                  "WORLD",
-                  "PLAYER",
-                  "COMBAT",
-                  "AI",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "PLACEMENT",
-                  "GOAL_STATE"
-                ],
-                "apiNames": [
-                  "transitionRunState(next,reason)",
-                  "submitPlayerIntent(intent)",
-                  "queryWorld(position,action)",
-                  "applyPlayerDelta(delta,reason)",
-                  "resolveCombatAction(action)",
-                  "advanceAgentIntent(agentId,context)",
-                  "resolveInteraction(targetId,action)",
-                  "applyTransaction(transaction)",
-                  "advanceObjective(event)",
-                  "placeEntity(request)",
-                  "evaluateGoalState(context)",
-                  "renderFromState(snapshot)"
-                ],
-                "invariantIds": [
-                  "STATE_OWNER_ONLY_WRITE",
-                  "NO_DUPLICATE_CAUSAL_REWARD",
-                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
-                  "GOAL_STATE_EXCLUSIVE",
-                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
-                  "INPUT_TO_STATE_CAUSALITY",
-                  "SAVE_SCHEMA_VERSIONED",
-                  "PLAYER_VITAL_BOUNDS",
-                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
-                  "PLACEMENT_OCCUPANCY_CONSISTENT",
-                  "PROGRESSION_REWARD_IDEMPOTENT"
-                ],
-                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
-              },
-              "architectureSnapshot": {
-                "version": 1,
-                "nodeCount": 73,
-                "edgeCount": 126,
-                "maxFunctionBodyBytes": 3620,
-                "maxCallsPerFunction": 10,
-                "maxCalledByPerFunction": 20,
-                "maxStateWritesPerFunction": 11,
-                "maxSystemsPerFunction": 8,
-                "multiWriterStateCount": 20,
-                "stateWriterLinkCount": 114,
-                "multiOwnerStorageKeyCount": 0,
-                "storageOwnerLinkCount": 0,
-                "timerFunctionCount": 5,
-                "eventBindingCount": 0,
-                "largeFunctionCount": 0,
-                "broadSystemFunctionCount": 15
-              },
-              "responsibilityGraph": {
-                "nodeCount": 73,
-                "relevantNodes": [
-                  {
-                    "name": "initAudio",
-                    "systems": [
-                      "CORE_STATE",
-                      "AI",
-                      "GOAL_STATE"
-                    ],
-                    "calls": [
-                      "startBgm"
-                    ],
-                    "calledBy": [
-                      "sfx",
-                      "toggleSound"
-                    ],
-                    "stateReads": [
-                      "AUDIO",
-                      "AC",
-                      "ac"
-                    ],
-                    "stateWrites": [
-                      "AUDIO",
-                      "AC",
-                      "ac"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "sfx",
-                    "systems": [
-                      "INTERACTION",
-                      "COMBAT",
-                      "ECONOMY",
-                      "PROGRESSION",
-                      "INPUT",
-                      "GOAL_STATE",
-                      "PRESENTATION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "initAudio",
-                      "tone",
-                      "noise"
-                    ],
-                    "calledBy": [
-                      "setAggro",
-                      "toggleSound",
-                      "say",
-                      "enter",
-                      "talkNow",
-                      "openWeaponShop",
-                      "equipWeapon",
-                      "buyOrEquipWeapon",
-                      "openArmorShop",
-                      "buyOrEquipArmor",
-                      "openSellShop",
-                      "sellItem",
-                      "sellEverything",
-                      "useAction",
-                      "attackNow",
-                      "kill",
-                      "fireArrow",
-                      "updateArrows",
-                      "damage",
-                      "update"
-                    ],
-                    "stateReads": [
-                      "SFX_INDEX",
-                      "AUDIO",
-                      "i",
-                      "special",
-                      "k"
-                    ],
-                    "stateWrites": [
-                      "i",
-                      "special",
-                      "k"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "startBgm",
-                    "systems": [
-                      "CORE_STATE",
-                      "WORLD"
-                    ],
-                    "calls": [
-                      "tone",
-                      "noise"
-                    ],
-                    "calledBy": [
-                      "initAudio"
-                    ],
-                    "stateReads": [
-                      "AUDIO",
-                      "i",
-                      "normal",
-                      "aggro",
-                      "run"
-                    ],
-                    "stateWrites": [
-                      "AUDIO",
-                      "i",
-                      "normal",
-                      "aggro"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "setAggro",
-                    "systems": [
-                      "INTERACTION",
-                      "COMBAT",
-                      "AI"
-                    ],
-                    "calls": [
-                      "sfx"
-                    ],
-                    "calledBy": [
-                      "enter",
-                      "damage",
-                      "update"
-                    ],
-                    "stateReads": [
-                      "AUDIO",
-                      "aggro",
-                      "now",
-                      "v"
-                    ],
-                    "stateWrites": [
-                      "AUDIO",
-                      "aggro",
-                      "now"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "toggleSound",
-                    "systems": [
-                      "INTERACTION",
-                      "AI",
-                      "INPUT",
-                      "PRESENTATION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "initAudio",
-                      "sfx"
-                    ],
-                    "calledBy": [],
-                    "stateReads": [
-                      "AUDIO"
-                    ],
-                    "stateWrites": [
-                      "AUDIO"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "currentAtk",
-                    "systems": [
-                      "COMBAT"
-                    ],
-                    "calls": [],
-                    "calledBy": [
-                      "hud",
-                      "equipWeapon",
-                      "attackNow"
-                    ],
-                    "stateReads": [
-                      "WEAPONS"
-                    ],
-                    "stateWrites": [],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "hud",
-                    "systems": [
-                      "PRESENTATION",
-                      "WORLD",
-                      "COMBAT",
-                      "ECONOMY",
-                      "PROGRESSION",
-                      "GOAL_STATE"
-                    ],
-                    "calls": [
-                      "maxHp",
-                      "currentAtk"
-                    ],
-                    "calledBy": [
-                      "reset",
-                      "enter",
-                      "talkNow",
-                      "equipWeapon",
-                      "buyOrEquipArmor",
-                      "sellItem",
-                      "sellEverything",
-                      "kill",
-                      "damage",
-                      "update"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "mh",
-                      "n"
-                    ],
-                    "stateWrites": [
-                      "mh"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "toastMsg",
-                    "systems": [
-                      "PRESENTATION"
-                    ],
-                    "calls": [],
-                    "calledBy": [
-                      "enter",
-                      "talkNow",
-                      "equipWeapon",
-                      "buyOrEquipWeapon",
-                      "buyOrEquipArmor",
-                      "sellEverything",
-                      "useAction",
-                      "kill",
-                      "portals"
-                    ],
-                    "stateReads": [
-                      "t"
-                    ],
-                    "stateWrites": [
-                      "t"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "enter",
-                    "systems": [
-                      "WORLD",
-                      "COMBAT",
-                      "AI",
-                      "PROGRESSION",
-                      "PRESENTATION"
-                    ],
-                    "calls": [
-                      "setAggro",
-                      "sfx",
-                      "toastMsg",
-                      "spawnCave",
-                      "spawnAll",
-                      "spawnHiddenEnemy",
-                      "hud"
-                    ],
-                    "calledBy": [
-                      "useAction",
-                      "portals"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "prev",
-                      "n",
-                      "z"
-                    ],
-                    "stateWrites": [
-                      "prev",
-                      "z"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "spawnAll",
-                    "systems": [],
-                    "calls": [
-                      "spawn"
-                    ],
-                    "calledBy": [
-                      "enter"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "i",
-                      "z",
-                      "m"
-                    ],
-                    "stateWrites": [
-                      "i"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "spawnCave",
-                    "systems": [
-                      "INTERACTION"
-                    ],
-                    "calls": [
-                      "spawnCaveMonster"
-                    ],
-                    "calledBy": [
-                      "enter"
-                    ],
-                    "stateReads": [
-                      "CAVE",
-                      "i"
-                    ],
-                    "stateWrites": [
-                      "i"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "spawnHiddenEnemy",
-                    "systems": [
-                      "COMBAT",
-                      "AI",
-                      "PROGRESSION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [],
-                    "calledBy": [
-                      "enter"
-                    ],
-                    "stateReads": [
-                      "TOMB",
-                      "n",
-                      "a",
-                      "z",
-                      "m",
-                      "r"
-                    ],
-                    "stateWrites": [
-                      "m"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "useAction",
-                    "systems": [
-                      "INTERACTION",
-                      "COMBAT",
-                      "PRESENTATION"
-                    ],
-                    "calls": [
-                      "getAction",
-                      "enter",
-                      "toastMsg",
-                      "sfx"
-                    ],
-                    "calledBy": [],
-                    "stateReads": [
-                      "a"
-                    ],
-                    "stateWrites": [
-                      "a"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "attackNow",
-                    "systems": [
-                      "COMBAT",
-                      "GOAL_STATE",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "sfx",
-                      "currentAtk",
-                      "kill"
-                    ],
-                    "calledBy": [],
-                    "stateReads": [
-                      "WEAPONS",
-                      "ac",
-                      "run",
-                      "w",
-                      "t",
-                      "ax",
-                      "m",
-                      "d",
-                      "r"
-                    ],
-                    "stateWrites": [
-                      "ac",
-                      "w",
-                      "ax",
-                      "m"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "kill",
-                    "systems": [
-                      "WORLD",
-                      "INTERACTION",
-                      "COMBAT",
-                      "AI",
-                      "PROGRESSION",
-                      "GOAL_STATE",
-                      "PRESENTATION",
-                      "CORE_STATE"
-                    ],
-                    "calls": [
-                      "sfx",
-                      "deathSoundFor",
-                      "toastMsg",
-                      "maxHp",
-                      "spawn",
-                      "hud"
-                    ],
-                    "calledBy": [
-                      "attackNow"
-                    ],
-                    "stateReads": [
-                      "F",
-                      "run",
-                      "ownedWeapons",
-                      "v",
-                      "t",
-                      "item",
-                      "z",
-                      "spec",
-                      "m"
-                    ],
-                    "stateWrites": [
-                      "v",
-                      "item",
-                      "z",
-                      "spec",
-                      "m"
-                    ],
-                    "storageKeys": [],
-                    "events": []
-                  },
-                  {
-                    "name": "portals",
-                    "systems": [
-                      "WORLD",
-                      "COMBAT"
-                    ],
-                    "calls": [
-                      "enter",
-                      "toastMsg"
-                    ],
-                    "calledBy": [
-                      "update"
-                    ],
-                    "stateReads": [
-                      "P",
-                      "a"
-                    ],
-                    "stateWrites": [],
-                    "storageKeys": [],
-                    "events": []
-                  }
-                ],
-                "relevantEdges": [
-                  {
-                    "from": "initAudio",
-                    "to": "startBgm",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sfx",
-                    "to": "initAudio",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sfx",
-                    "to": "tone",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sfx",
-                    "to": "noise",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "startBgm",
-                    "to": "tone",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "startBgm",
-                    "to": "noise",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "setAggro",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "toggleSound",
-                    "to": "initAudio",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "toggleSound",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "reset",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "hud",
-                    "to": "maxHp",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "hud",
-                    "to": "currentAtk",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "say",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "setAggro",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "spawnCave",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "spawnAll",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "spawnHiddenEnemy",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "enter",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "spawnAll",
-                    "to": "spawn",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "spawnCave",
-                    "to": "spawnCaveMonster",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "talkNow",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "talkNow",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "talkNow",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "openWeaponShop",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "currentAtk",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "equipWeapon",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipWeapon",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipWeapon",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "openArmorShop",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipArmor",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipArmor",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "buyOrEquipArmor",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "openSellShop",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sellItem",
-                    "to": "sfx",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sellItem",
-                    "to": "hud",
-                    "type": "CALL"
-                  },
-                  {
-                    "from": "sellEverything",
-                    "to": "toastMsg",
-                    "type": "CALL"
-                  }
-                ]
-              },
-              "behaviorChains": [
-                {
-                  "id": "CORE_ACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "REAL_INPUT",
-                    "RESPONSIBLE_FUNCTION",
-                    "OWNED_STATE_CHANGE",
-                    "OBSERVABLE_GAME_RESULT"
-                  ]
-                },
-                {
-                  "id": "PLACEMENT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "POSITION_SELECTION",
-                    "COST_OR_VALIDATION",
-                    "ENTITY_MATERIALIZED_AT_POSITION",
-                    "WORLD_OR_COMBAT_EFFECT"
-                  ]
-                },
-                {
-                  "id": "INTERACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "TARGET_SELECTION_OR_APPROACH",
-                    "REAL_INPUT",
-                    "TARGET_STATE_CHANGE",
-                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "COMBAT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "ATTACK_INTENT",
-                    "HIT_OR_REJECT_RESULT",
-                    "HP_OR_COMBAT_STATE_CHANGE",
-                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "PROGRESSION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "OBJECTIVE_EVENT",
-                    "PROGRESS_DELTA",
-                    "REWARD_OR_UNLOCK",
-                    "NEXT_GAMEPLAY_OPTION_CHANGED"
-                  ]
-                },
-                {
-                  "id": "STRATEGY_DIVERGENCE_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "CHOICE_A_AND_CHOICE_B",
-                    "SAME_OR_EQUIVALENT_START_STATE",
-                    "DIFFERENT_STATE_TRANSITIONS",
-                    "DIFFERENT_OBSERVED_OUTCOME"
-                  ]
-                }
-              ],
-              "seniorReview": {
-                "score": 65,
-                "hardBlockers": [],
-                "issues": [
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "ac:initAudio,tone,noise,attackNow,update"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "i:noise,sfx,startBgm,spawnAll,spawnCave,updateArrows,update,drawDecor"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "b:nearest,renderWeaponShop,renderArmorShop,renderSellShop,renderBag"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "a:buyOrEquipArmor,updateActionButton,useAction,fireArrow,updateArrows,update,palm,tropical"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "t:tone,noise,toastMsg,sellEverything,update,drawHuman,drawMonsterSprite"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "m:spawnHiddenEnemy,attackNow,kill,update,drawMonsterSprite,drawMonster,moveJoy"
-                  },
-                  {
-                    "code": "STATE_HAS_TOO_MANY_WRITERS",
-                    "severity": "WARN",
-                    "detail": "k:sfx,talkNow,palm,banana,tropical,renderBag"
-                  }
-                ]
-              },
-              "failureEvidence": [
-                "diagnostic:INTERVAL_CLEANUP_RISK",
-                "repair-mode:MODEL",
-                "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-                "role-result:exploration:FAIL",
-                "role-result:implementation:FAIL",
-                "role-result:test:FAIL",
-                "role-result:performance:FAIL",
-                "failure-cause:source-candidate-generation-failed",
-                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
-                "system-steward:failure-signature:source-candidate-generation-failed",
-                "repair-mode:CAUSAL_REGENERATION_GENERATION_2",
-                "shared-context-sync:MISSING",
-                "recovery-queue:recovery-web-source-candidate-generation-portfolio-v1",
-                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
-                "recovery-exact-stage:SOURCE_CANDIDATE_GENERATION",
-                "recovery-queue:recovery-b9a81ece6a251027e30e"
-              ],
-              "writableScopeExpansionAllowed": false,
-              "learningAuthorityExpanded": false
-            },
-            "reuseKey": "5c5014100f71df6d729adc51",
-            "generatedAt": "2026-09-20T10:14:01.207Z"
-          },
-          "codingMethod": {
-            "version": 2,
-            "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
-            "candidateVariant": "speculative-1",
-            "responsibilityConfidence": "MEDIUM",
-            "primaryTargets": [
-              "attackNow",
-              "enter",
-              "initAudio"
-            ],
-            "primarySystems": [
-              "CORE_STATE",
-              "AI",
-              "GOAL_STATE",
-              "WORLD",
-              "COMBAT",
-              "PROGRESSION",
-              "PRESENTATION"
-            ],
-            "dependentSystems": [
-              "INPUT",
-              "GOAL_STATE",
-              "PRESENTATION",
-              "PLAYER",
-              "AI",
-              "INTERACTION",
-              "PLACEMENT",
-              "PROGRESSION",
-              "ECONOMY",
-              "COMBAT",
-              "WORLD"
-            ],
-            "ownedState": [
-              "AUDIO",
-              "AC",
-              "ac",
-              "prev",
-              "z",
-              "w",
-              "ax",
-              "m"
-            ],
-            "semanticDiffBudget": {
-              "allowedSystems": [
-                "CORE_STATE",
-                "AI",
-                "GOAL_STATE",
-                "WORLD",
-                "COMBAT",
-                "PROGRESSION",
-                "PRESENTATION",
-                "INTERACTION",
-                "ECONOMY",
-                "INPUT"
-              ],
-              "preferredPrimarySymbols": [
-                "attackNow",
-                "enter",
-                "initAudio"
-              ],
-              "maxSystemCount": 10,
-              "readOnlyImpactSystems": [
-                "INPUT",
-                "GOAL_STATE",
-                "PRESENTATION",
-                "PLAYER",
-                "AI",
-                "INTERACTION",
-                "PLACEMENT",
-                "PROGRESSION",
-                "ECONOMY",
-                "COMBAT",
-                "WORLD"
-              ],
-              "impactPredictionDoesNotGrantWriteAuthority": true,
-              "unrelatedSystemMutationForbidden": true,
-              "saveKeysMustRemainCompatible": []
-            },
-            "semanticDiffEnforcement": null,
-            "causalReplay": {
-              "version": 2,
-              "required": true,
-              "prePatchReproduced": true,
-              "nodeTestTargets": [],
-              "executable": true,
-              "mode": "DIAGNOSTIC_RESCAN",
-              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
-              "diagnosticType": "INTERVAL_CLEANUP_RISK",
-              "diagnosticFile": "rpg.html",
-              "diagnosticLine": 177,
-              "diagnosticNeedle": "setInterval(",
-              "diagnosticMicroTask": "rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.",
-              "verifiedResponsibleSystem": "GAME_RUNTIME",
-              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
-              "identicalOrEquivalentInputStateRequired": true,
-              "canonicalQaStillRequired": true,
-              "sourceWrite": false,
-              "authorityExpanded": false
-            },
-            "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
-            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-            "verifiedFailureLocalMemoryCount": 0,
-            "verifiedFailureLocalMemoryIds": [],
-            "generationAttempts": 0,
-            "candidateProducedFirstAttempt": false,
-            "writableScopeExpansionAllowed": false,
-            "learningAuthorityExpanded": false,
-            "implementationPass": false,
-            "incrementalQaPass": false,
-            "performanceSanityPass": false,
-            "firstCandidatePass": false,
-            "fullRegressionVerified": false,
-            "reviewVerified": false,
-            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
-            "causalReplayExecuted": false,
-            "architectureDrift": {
-              "status": "NOT_AVAILABLE",
-              "riskLevel": "LOW",
-              "score": 0,
-              "signals": [],
-              "hardReject": false,
-              "focusedReviewRequired": false
-            },
-            "telemetrySource": "WORK_ORDER_FALLBACK"
-          },
-          "presentationQuality": null,
-          "roleResults": {
-            "exploration": "PASS",
-            "implementation": "FAIL",
-            "test": "FAIL",
-            "performance": "FAIL",
-            "regression": "WAITING_FAN_IN",
-            "review": "WAITING_FAN_IN"
-          },
-          "practiceDistillation": null,
-          "neuralDiagnosis": {
-            "version": 1,
-            "mode": "PHASE1_SHADOW_ADVISORY",
-            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
-            "facts": [
-              {
-                "id": "fact-1",
-                "value": "central-policy:company-learning/platform-release-roadmap.json",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-2",
-                "value": "release-state:development-confirmed",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-3",
-                "value": "source-root:web-games/daechung-rpg",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-4",
-                "value": "recovery-exact-stage:SOURCE_CANDIDATE_GENERATION",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-5",
-                "value": "recovery-exact-stage:production-authority-inactive:DESIGN_ONLY",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-6",
-                "value": "recovery-exact-stage:UNKNOWN_STAGE",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              }
-            ],
-            "hypotheses": [
-              {
-                "id": "current-deterministic-diagnostic-interval-cleanup-risk",
-                "system": "GAME_RUNTIME",
-                "confidence": 0.99,
-                "reason": "현재 task의 결정론적 diagnostic INTERVAL_CLEANUP_RISK(rpg.html)가 GAME_RUNTIME 책임 가설을 직접 지지함",
-                "diagnosticType": "INTERVAL_CLEANUP_RISK",
-                "diagnosticFile": "rpg.html",
-                "verified": false,
-                "advisoryOnly": true
-              },
-              {
-                "id": "save-compatibility",
-                "system": "SAVE_SYSTEM",
-                "confidence": 0.9,
-                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
-              },
-              {
-                "id": "audio-runtime-binding",
-                "system": "GAME_AUDIO",
-                "confidence": 0.86,
-                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
-              },
-              {
-                "id": "source-generation-path",
-                "system": "SOURCE_GENERATION",
-                "confidence": 0.86,
-                "reason": "모델 출력 형식·anchor·generation 경로 문제 가능성"
-              },
-              {
-                "id": "pipeline-or-runner",
-                "system": "INFRA",
-                "confidence": 0.82,
-                "reason": "게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성"
-              }
-            ],
-            "causalEdges": [
-              {
-                "from": "current-deterministic-diagnostic-interval-cleanup-risk",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.99,
-                "verified": false,
-                "rank": 1
-              },
-              {
-                "from": "save-compatibility",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.9,
-                "verified": false,
-                "rank": 2
-              },
-              {
-                "from": "audio-runtime-binding",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.86,
-                "verified": false,
-                "rank": 3
-              },
-              {
-                "from": "source-generation-path",
-                "to": "SOURCE_CANDIDATE_GENERATION",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.86,
-                "verified": false,
-                "rank": 4
-              }
-            ],
-            "responsibility": {
-              "system": "GAME_RUNTIME",
-              "confidence": 0.99,
-              "alternatives": [
-                {
-                  "system": "SAVE_SYSTEM",
-                  "confidence": 0.2031602708803612
-                },
-                {
-                  "system": "GAME_AUDIO",
-                  "confidence": 0.19413092550790068
-                },
-                {
-                  "system": "SOURCE_GENERATION",
-                  "confidence": 0.19413092550790068
-                }
-              ],
-              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
-              "verified": false
-            },
-            "bottleneck": {
-              "score": 100,
-              "components": {
-                "downstreamDepth": 6,
-                "recurrence": 2,
-                "sharedScope": 2,
-                "priority": 1,
-                "evidenceConfidence": 0.99
-              },
-              "advisoryOnly": true,
-              "mayReorderWave": false
-            },
-            "inhibitors": [
-              "PRODUCTION_AUTHORITY_INACTIVE"
-            ],
-            "actionRecommendation": {
-              "mode": "EXACT_FAILURE_STAGE_REPAIR",
-              "failureStage": "SOURCE_CANDIDATE_GENERATION",
-              "responsibleSystem": "GAME_RUNTIME",
-              "preserveAlreadyPassedStages": true,
-              "restartFromBeginning": false,
-              "automaticScopeExpansion": false,
-              "blocked": true,
-              "blocker": "PRODUCTION_AUTHORITY_INACTIVE"
-            },
-            "learning": {
-              "eligible": false,
-              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
-            },
-            "waveControl": {
-              "currentWaveSchedulerRemainsAuthoritative": true,
-              "mayReorderWave": false,
-              "mayCreateWorker": false
-            }
-          },
-          "capabilityApplication": {
-            "version": 1,
-            "layer": "verifiedCapabilityMemory",
-            "injected": true,
-            "exactInjectedCapabilityIds": [
-              "capability_ctrace_1a453e3e34004eb1c376197d"
-            ],
-            "coAppliedCapabilityIds": [
-              "capability_ctrace_1a453e3e34004eb1c376197d"
-            ],
-            "workKey": null,
-            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
-            "onlyActuallyInjectedCapabilitiesEligible": true,
-            "freshTaskQaRequired": true,
-            "rawCodeStored": false,
-            "rawModelOutputStored": false,
-            "hiddenChainOfThoughtStored": false,
-            "authorityExpanded": false
-          },
-          "phase4BenchmarkVerification": null,
-          "durationMs": 150813,
-          "knowledgeApplication": {
-            "version": 1,
-            "exactInjectedKnowledgeIds": [
-              "EXPERIENCE:exp_1oonbi8",
-              "EXPERIENCE:exp_4odofx",
-              "EXPERIENCE:exp_pg739o",
-              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
-              "EXPERIENCE:exp_rg6lvy",
-              "EXPERIENCE:exp_i00mwv",
-              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
-              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
-              "CODE_PATTERN:pat_130jf9c",
-              "CODE_PATTERN:pat_1avbmmv",
-              "CODE_PATTERN:pat_1vgfuno",
-              "CODE_PATTERN:pat_3f780w",
-              "CODE_PATTERN:pat_9pwgix",
-              "CODE_PATTERN:pat_m3ipio",
-              "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d"
-            ],
-            "freshIndependentQaRequired": true,
-            "infrastructureFailurePenalizesKnowledge": false,
-            "authorityExpanded": false
-          },
-          "metrics": {
-            "requestedMax": 20,
-            "effectiveMax": 20,
-            "reservationId": "35504403471:1",
-            "reservedAt": "2026-09-20T10:12:36Z",
-            "workerStartedAt": 1789899205676,
-            "workerFinishedAt": 1789899356489,
-            "checkoutMs": 3758,
-            "modelPrepMs": 3413,
-            "candidateMs": 114737,
-            "qaMs": 0,
-            "workerTotalMs": 150813,
-            "changedFileCount": 0,
-            "addedLineCount": 0,
-            "deletedLineCount": 0,
-            "ollamaCacheHit": true,
-            "ollamaRuntimeSource": "CACHE"
-          }
-        }
-      ],
+      "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/daechung-rpg",
       "speculativeEligible": true,
@@ -18568,7 +14807,1311 @@
       "reservationRunAttempt": 1,
       "reservedAt": "2026-09-20T10:53:49Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [],
+      "neuronResults": [
+        {
+          "version": 13,
+          "taskId": "bug-defense-web-runtime-repair-v1",
+          "reservationId": "35506312392:1",
+          "variant": "speculative-2",
+          "outcome": "FAIL",
+          "blocker": "source-candidate-generation-failed",
+          "candidateBranch": null,
+          "baseMainSha": "1de6030d791dc19840c51d5b171fca35817bb68d",
+          "candidateIdentity": null,
+          "candidateFailure": {
+            "class": "DIAGNOSTIC_POSTCONDITION",
+            "message": "DIAGNOSTIC_POSTCONDITION_MISSING:TOUCH_ACTION_UNSPECIFIED:index.html:TOUCH_ACTION_POLICY_MISSING"
+          },
+          "evidence": [
+            "base-main:1de6030d791dc19840c51d5b171fca35817bb68d",
+            "role-result:exploration:PASS",
+            "role-result:implementation:FAIL",
+            "role-result:test:FAIL",
+            "role-result:performance:FAIL",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "source-generation-failure:DIAGNOSTIC_POSTCONDITION",
+            "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:2",
+            "coding-primary-targets:%5B%22ensureAudio%22%2C%22advance%22%5D",
+            "coding-primary-systems:%5B%22AI%22%2C%22GOAL_STATE%22%2C%22CORE_STATE%22%2C%22INTERACTION%22%2C%22COMBAT%22%2C%22ECONOMY%22%2C%22PROGRESSION%22%2C%22PRESENTATION%22%5D",
+            "coding-dependent-systems:%5B%22INPUT%22%2C%22GOAL_STATE%22%2C%22PRESENTATION%22%2C%22AI%22%2C%22PROGRESSION%22%2C%22ECONOMY%22%2C%22COMBAT%22%2C%22WORLD%22%5D",
+            "coding-semantic-system-budget:9",
+            "coding-failure-fingerprint:web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+            "learning-knowledge-ids:%5B%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22CODE_PATTERN%3Apat_130jf9c%22%2C%22CODE_PATTERN%3Apat_1avbmmv%22%2C%22CODE_PATTERN%3Apat_1vgfuno%22%2C%22CODE_PATTERN%3Apat_3f780w%22%2C%22CODE_PATTERN%3Apat_9pwgix%22%2C%22CODE_PATTERN%3Apat_m3ipio%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A73a2ceb29bb96077cecf%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_1a453e3e34004eb1c376197d%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_74d39d52bb47e6444412ec04%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_f3072d255ad4f857aea1fc34%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_0ce73fa4ec23024bd474ad30%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7022dd1d29e03580f9fab379%22%5D",
+            "actions-run:35506312392",
+            "reservation-id:35506312392:1",
+            "variant:speculative-2",
+            "shared-context-sync:MISSING"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": false,
+            "taskId": "bug-defense-web-runtime-repair-v1",
+            "packageId": "bug-defense-wp-1u9lhoa",
+            "target": "web",
+            "sourceRoot": "web-games/bug-defense",
+            "baseMainSha": "1de6030d791dc19840c51d5b171fca35817bb68d",
+            "responsibleFiles": [
+              "index.html"
+            ],
+            "impactFiles": [
+              "index.html"
+            ],
+            "contextFiles": [
+              "index.html"
+            ],
+            "relatedFiles": [],
+            "testTargets": [],
+            "protectedScopeSignals": [
+              "save",
+              "combat-number"
+            ],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": {
+              "version": 1,
+              "strategy": "PARTIAL_REPAIR",
+              "confidence": "HIGH",
+              "reasons": [
+                "WORKING_GAMEPLAY_REUSABLE",
+                "PROTOTYPE_MARKER_PRESENT_BUT_NOT_DECISIVE"
+              ],
+              "preserveExistingSource": true,
+              "fullRewriteAllowed": false,
+              "evidence": {
+                "sourceBytes": 12954,
+                "sourceSha256": "98393ad40883915aae55d3a76094fbc28a755313ae3c743c1921f42fb15c1aeb",
+                "validationScore": 0,
+                "approvedDesign": true,
+                "gameplaySignalCount": 6,
+                "gameplaySignals": {
+                  "input": true,
+                  "runtimeLoop": false,
+                  "mutableState": true,
+                  "gameplayOutcome": false,
+                  "progression": true,
+                  "combat": true,
+                  "spatial": false,
+                  "persistence": false,
+                  "mobile": true,
+                  "audio": true
+                },
+                "prototypeMarkerCount": 4,
+                "approvedScopeRequiredCount": 5,
+                "approvedScopeBoundCount": 0,
+                "approvedScopeSemanticCount": 5,
+                "approvedScopeCoveragePct": 100
+              },
+              "gameId": "bug-defense",
+              "sourceRoot": "web-games/bug-defense",
+              "sourcePath": "web-games/bug-defense/index.html",
+              "designBaselinePath": "design/bug-defense/2026-09-13/design-revised.json"
+            },
+            "fileDigests": [
+              {
+                "path": "index.html",
+                "hash": "98393ad40883915a",
+                "bytes": 12954
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "COMPILED_EDIT_CONTRACT",
+              "strategyHint": "CAUSAL_TRACE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "rawResponsibilityConfidence": "HIGH",
+              "responsibilityCalibration": {
+                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
+                "applied": true,
+                "extraReadOnlyExploration": true,
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "regressionHotspotRisk": {
+                "riskLevel": "LOW",
+                "matched": [
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "ensureAudio",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYMBOL",
+                    "name": "advance",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "AI",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "GOAL_STATE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "CORE_STATE",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "INTERACTION",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "COMBAT",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  },
+                  {
+                    "gameId": "bug-defense",
+                    "target": "web",
+                    "kind": "SYSTEM",
+                    "name": "ECONOMY",
+                    "verifiedRegressionFailures": 0,
+                    "verifiedPasses": 2,
+                    "lastFailureEvidence": null,
+                    "lastPassEvidence": "coding_hotspot_kwzya7",
+                    "lastUpdatedAt": "2026-09-19T12:35:07.092Z",
+                    "risk": {
+                      "score": 0,
+                      "level": "LOW"
+                    }
+                  }
+                ],
+                "focusedChecksAdded": [
+                  "HOTSPOT_RECHECK:SYMBOL:ensureAudio",
+                  "HOTSPOT_RECHECK:SYMBOL:advance",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:INTERACTION",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "HOTSPOT_RECHECK:SYSTEM:ECONOMY",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED"
+                ],
+                "writableScopeExpansionAllowed": false,
+                "authorityExpanded": false
+              },
+              "primaryTargets": [
+                "ensureAudio",
+                "advance"
+              ],
+              "allowedResponsibleFiles": [
+                "index.html"
+              ],
+              "allowedDependentSymbolsOrSystems": [
+                "scopeHandler1",
+                "scopeHandler4",
+                "scopeHandler2",
+                "scopeHandler3",
+                "scopeHandler5",
+                "AI",
+                "PROGRESSION",
+                "INPUT",
+                "CORE_STATE",
+                "ECONOMY"
+              ],
+              "primarySystems": [
+                "AI",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "COMBAT",
+                "ECONOMY",
+                "PROGRESSION",
+                "PRESENTATION"
+              ],
+              "dependentSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "directDependentSystems": [
+                "AI",
+                "PROGRESSION",
+                "INPUT",
+                "CORE_STATE",
+                "ECONOMY"
+              ],
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "ownedState": [
+                "state",
+                "audioCtx",
+                "AC",
+                "s"
+              ],
+              "readState": [
+                "cfg",
+                "state",
+                "audioCtx",
+                "AC",
+                "s"
+              ],
+              "preserveSemantics": [
+                "EXISTING_WORKING_BEHAVIOR",
+                "APPROVED_GAMEPLAY_VALUES",
+                "SAVE_MEANING",
+                "PROTECTED_SIGNAL:save",
+                "PROTECTED_SIGNAL:combat-number"
+              ],
+              "failureOrRequirementCausalChain": [
+                "FAILURE_EVIDENCE",
+                "RESPONSIBLE_FUNCTION:ensureAudio",
+                "STATE_WRITE:state",
+                "STATE_WRITE:audioCtx",
+                "STATE_WRITE:AC",
+                "RESPONSIBLE_FUNCTION:advance",
+                "STATE_WRITE:s"
+              ],
+              "requiredObservableResult": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치 미리보기/취소, 충분한 터치 영역을 제공한다.\n- 중복 handler와 test harness를 제거한다.\n\n실제 gameplay scope 결속:\nscope-corefun-f556b6611b\nscope-coreloop-0-db6dafda13\nscope-coreloop-1-d43c3d2506\nscope-coreloop-2-42423ea982\nscope-coreloop-3-683fae91c6\nscope-mobileux-62b476fd93\n\n후보 생성/QA는 자동 진행하지만 verified supervisor PASS 전에는 main/release 승격 금지. 다른 게임 작업은 계속 병렬 진행한다.",
+              "semanticDiffBudget": {
+                "allowedSystems": [
+                  "AI",
+                  "GOAL_STATE",
+                  "CORE_STATE",
+                  "INTERACTION",
+                  "COMBAT",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PRESENTATION",
+                  "INPUT"
+                ],
+                "preferredPrimarySymbols": [
+                  "ensureAudio",
+                  "advance"
+                ],
+                "maxSystemCount": 9,
+                "readOnlyImpactSystems": [
+                  "INPUT",
+                  "GOAL_STATE",
+                  "PRESENTATION",
+                  "AI",
+                  "PROGRESSION",
+                  "ECONOMY",
+                  "COMBAT",
+                  "WORLD"
+                ],
+                "impactPredictionDoesNotGrantWriteAuthority": true,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "OWNER_STATE_INVARIANTS",
+                "MICRO_CORE_STATE",
+                "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                "MICRO_PRESENTATION",
+                "MICRO_COMBAT",
+                "MICRO_AI",
+                "MICRO_INTERACTION",
+                "MICRO_ECONOMY",
+                "MICRO_PROGRESSION",
+                "MICRO_GOAL_STATE",
+                "MICRO_INPUT",
+                "HOTSPOT_RECHECK:SYMBOL:ensureAudio",
+                "HOTSPOT_RECHECK:SYMBOL:advance",
+                "HOTSPOT_RECHECK:SYSTEM:AI",
+                "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                "HOTSPOT_RECHECK:SYSTEM:INTERACTION",
+                "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                "HOTSPOT_RECHECK:SYSTEM:ECONOMY",
+                "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+              ],
+              "causalReplay": {
+                "version": 2,
+                "required": true,
+                "prePatchReproduced": true,
+                "nodeTestTargets": [],
+                "executable": true,
+                "mode": "DIAGNOSTIC_RESCAN",
+                "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+                "diagnosticType": "TOUCH_ACTION_UNSPECIFIED",
+                "diagnosticFile": "index.html",
+                "diagnosticLine": null,
+                "diagnosticNeedle": "touch-action",
+                "diagnosticMicroTask": "index.html에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.",
+                "verifiedResponsibleSystem": "GAME_INPUT",
+                "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
+                "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
+                  "PATCH_PRIMARY_RESPONSIBILITY_FIRST",
+                  "PATCH_DIRECT_DEPENDENTS_ONLY_WHEN_CAUSALLY_REQUIRED",
+                  "VERIFY_OWNED_STATE_CHANGE",
+                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
+                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
+                  "VERIFY_PRESERVE_SEMANTICS",
+                  "RUN_COMPILED_FOCUSED_CHECKS"
+                ],
+                "primaryTargets": [
+                  "ensureAudio",
+                  "advance"
+                ],
+                "dependentSymbolsOrSystems": [
+                  "scopeHandler1",
+                  "scopeHandler4",
+                  "scopeHandler2",
+                  "scopeHandler3",
+                  "scopeHandler5",
+                  "AI",
+                  "PROGRESSION",
+                  "INPUT",
+                  "CORE_STATE",
+                  "ECONOMY"
+                ],
+                "ownedState": [
+                  "state",
+                  "audioCtx",
+                  "AC",
+                  "s"
+                ],
+                "focusedChecks": [
+                  "OWNER_STATE_INVARIANTS",
+                  "MICRO_CORE_STATE",
+                  "DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED",
+                  "MICRO_PRESENTATION",
+                  "MICRO_COMBAT",
+                  "MICRO_AI",
+                  "MICRO_INTERACTION",
+                  "MICRO_ECONOMY",
+                  "MICRO_PROGRESSION",
+                  "MICRO_GOAL_STATE",
+                  "MICRO_INPUT",
+                  "HOTSPOT_RECHECK:SYMBOL:ensureAudio",
+                  "HOTSPOT_RECHECK:SYMBOL:advance",
+                  "HOTSPOT_RECHECK:SYSTEM:AI",
+                  "HOTSPOT_RECHECK:SYSTEM:GOAL_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:CORE_STATE",
+                  "HOTSPOT_RECHECK:SYSTEM:INTERACTION",
+                  "HOTSPOT_RECHECK:SYSTEM:COMBAT",
+                  "HOTSPOT_RECHECK:SYSTEM:ECONOMY",
+                  "CAUSAL_REPLAY_POSTPATCH_REQUIRED"
+                ],
+                "protectedSemantics": [
+                  "EXISTING_WORKING_BEHAVIOR",
+                  "APPROVED_GAMEPLAY_VALUES",
+                  "SAVE_MEANING",
+                  "PROTECTED_SIGNAL:save",
+                  "PROTECTED_SIGNAL:combat-number"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "CORE_STATE",
+                  "INPUT",
+                  "PRESENTATION",
+                  "WORLD",
+                  "PLAYER",
+                  "COMBAT",
+                  "AI",
+                  "INTERACTION",
+                  "ECONOMY",
+                  "PROGRESSION",
+                  "PLACEMENT",
+                  "GOAL_STATE"
+                ],
+                "apiNames": [
+                  "transitionRunState(next,reason)",
+                  "submitPlayerIntent(intent)",
+                  "queryWorld(position,action)",
+                  "applyPlayerDelta(delta,reason)",
+                  "resolveCombatAction(action)",
+                  "advanceAgentIntent(agentId,context)",
+                  "resolveInteraction(targetId,action)",
+                  "applyTransaction(transaction)",
+                  "advanceObjective(event)",
+                  "placeEntity(request)",
+                  "evaluateGoalState(context)",
+                  "renderFromState(snapshot)"
+                ],
+                "invariantIds": [
+                  "STATE_OWNER_ONLY_WRITE",
+                  "NO_DUPLICATE_CAUSAL_REWARD",
+                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
+                  "GOAL_STATE_EXCLUSIVE",
+                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
+                  "INPUT_TO_STATE_CAUSALITY",
+                  "SAVE_SCHEMA_VERSIONED",
+                  "PLAYER_VITAL_BOUNDS",
+                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
+                  "PLACEMENT_OCCUPANCY_CONSISTENT",
+                  "PROGRESSION_REWARD_IDEMPOTENT"
+                ],
+                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 7,
+                "edgeCount": 10,
+                "maxFunctionBodyBytes": 1051,
+                "maxCallsPerFunction": 2,
+                "maxCalledByPerFunction": 5,
+                "maxStateWritesPerFunction": 3,
+                "maxSystemsPerFunction": 7,
+                "multiWriterStateCount": 2,
+                "stateWriterLinkCount": 15,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 0,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 3
+              },
+              "responsibilityGraph": {
+                "nodeCount": 7,
+                "relevantNodes": [
+                  {
+                    "name": "ensureAudio",
+                    "systems": [
+                      "AI",
+                      "GOAL_STATE",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "scopeHandler1",
+                      "scopeHandler4",
+                      "scopeHandler2",
+                      "scopeHandler3",
+                      "scopeHandler5"
+                    ],
+                    "stateReads": [
+                      "cfg",
+                      "state",
+                      "audioCtx",
+                      "AC"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "audioCtx",
+                      "AC"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "advance",
+                    "systems": [
+                      "INTERACTION",
+                      "COMBAT",
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "PRESENTATION",
+                      "CORE_STATE"
+                    ],
+                    "calls": [],
+                    "calledBy": [
+                      "scopeHandler1",
+                      "scopeHandler4",
+                      "scopeHandler2",
+                      "scopeHandler3",
+                      "scopeHandler5"
+                    ],
+                    "stateReads": [
+                      "cfg",
+                      "state",
+                      "audioCtx",
+                      "s"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "s"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler1",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler4",
+                    "systems": [
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler2",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler3",
+                    "systems": [
+                      "AI",
+                      "ECONOMY",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  },
+                  {
+                    "name": "scopeHandler5",
+                    "systems": [
+                      "AI",
+                      "PROGRESSION",
+                      "INPUT",
+                      "CORE_STATE"
+                    ],
+                    "calls": [
+                      "ensureAudio",
+                      "advance"
+                    ],
+                    "calledBy": [],
+                    "stateReads": [
+                      "state",
+                      "button"
+                    ],
+                    "stateWrites": [
+                      "state",
+                      "button"
+                    ],
+                    "storageKeys": [],
+                    "events": []
+                  }
+                ],
+                "relevantEdges": [
+                  {
+                    "from": "scopeHandler1",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler1",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler4",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler4",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler2",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler2",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler3",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler3",
+                    "to": "advance",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler5",
+                    "to": "ensureAudio",
+                    "type": "CALL"
+                  },
+                  {
+                    "from": "scopeHandler5",
+                    "to": "advance",
+                    "type": "CALL"
+                  }
+                ]
+              },
+              "behaviorChains": [
+                {
+                  "id": "CORE_ACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "REAL_INPUT",
+                    "RESPONSIBLE_FUNCTION",
+                    "OWNED_STATE_CHANGE",
+                    "OBSERVABLE_GAME_RESULT"
+                  ]
+                },
+                {
+                  "id": "PLACEMENT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "POSITION_SELECTION",
+                    "COST_OR_VALIDATION",
+                    "ENTITY_MATERIALIZED_AT_POSITION",
+                    "WORLD_OR_COMBAT_EFFECT"
+                  ]
+                },
+                {
+                  "id": "INTERACTION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "TARGET_SELECTION_OR_APPROACH",
+                    "REAL_INPUT",
+                    "TARGET_STATE_CHANGE",
+                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "COMBAT_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "ATTACK_INTENT",
+                    "HIT_OR_REJECT_RESULT",
+                    "HP_OR_COMBAT_STATE_CHANGE",
+                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
+                  ]
+                },
+                {
+                  "id": "PROGRESSION_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "OBJECTIVE_EVENT",
+                    "PROGRESS_DELTA",
+                    "REWARD_OR_UNLOCK",
+                    "NEXT_GAMEPLAY_OPTION_CHANGED"
+                  ]
+                },
+                {
+                  "id": "STRATEGY_DIVERGENCE_CHAIN",
+                  "required": true,
+                  "steps": [
+                    "CHOICE_A_AND_CHOICE_B",
+                    "SAME_OR_EQUIVALENT_START_STATE",
+                    "DIFFERENT_STATE_TRANSITIONS",
+                    "DIFFERENT_OBSERVED_OUTCOME"
+                  ]
+                }
+              ],
+              "seniorReview": {
+                "score": 90,
+                "hardBlockers": [],
+                "issues": [
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "state:ensureAudio,advance,scopeHandler1,scopeHandler4,scopeHandler2,scopeHandler3,scopeHandler5"
+                  },
+                  {
+                    "code": "STATE_HAS_TOO_MANY_WRITERS",
+                    "severity": "WARN",
+                    "detail": "button:scopeHandler1,scopeHandler4,scopeHandler2,scopeHandler3,scopeHandler5"
+                  }
+                ]
+              },
+              "failureEvidence": [
+                "FAIL",
+                "web-stage:WEB_REPAIR",
+                "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "recovery-exact-stage:WEB_REPAIR",
+                "role-result:exploration:FAIL",
+                "role-result:implementation:FAIL",
+                "role-result:test:FAIL",
+                "role-result:performance:FAIL",
+                "shared-context-sync:MISSING",
+                "failure-cause:source-candidate-generation-failed",
+                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+                "system-steward:failure-signature:source-candidate-generation-failed",
+                "recovery-queue:recovery-b604759a4b7b6772ff03",
+                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+                "recovery-exact-stage:UNKNOWN_STAGE",
+                "recovery-queue:recovery-7f578ec759bfde044675"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "120ff83c0178eeb3f58adbea",
+            "generatedAt": "2026-09-20T10:55:11.975Z"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "CAUSAL_TRACE_CROSSCHECK",
+            "candidateVariant": "speculative-2",
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "ensureAudio",
+              "advance"
+            ],
+            "primarySystems": [
+              "AI",
+              "GOAL_STATE",
+              "CORE_STATE",
+              "INTERACTION",
+              "COMBAT",
+              "ECONOMY",
+              "PROGRESSION",
+              "PRESENTATION"
+            ],
+            "dependentSystems": [
+              "INPUT",
+              "GOAL_STATE",
+              "PRESENTATION",
+              "AI",
+              "PROGRESSION",
+              "ECONOMY",
+              "COMBAT",
+              "WORLD"
+            ],
+            "ownedState": [
+              "state",
+              "audioCtx",
+              "AC",
+              "s"
+            ],
+            "semanticDiffBudget": {
+              "allowedSystems": [
+                "AI",
+                "GOAL_STATE",
+                "CORE_STATE",
+                "INTERACTION",
+                "COMBAT",
+                "ECONOMY",
+                "PROGRESSION",
+                "PRESENTATION",
+                "INPUT"
+              ],
+              "preferredPrimarySymbols": [
+                "ensureAudio",
+                "advance"
+              ],
+              "maxSystemCount": 9,
+              "readOnlyImpactSystems": [
+                "INPUT",
+                "GOAL_STATE",
+                "PRESENTATION",
+                "AI",
+                "PROGRESSION",
+                "ECONOMY",
+                "COMBAT",
+                "WORLD"
+              ],
+              "impactPredictionDoesNotGrantWriteAuthority": true,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": null,
+            "causalReplay": {
+              "version": 2,
+              "required": true,
+              "prePatchReproduced": true,
+              "nodeTestTargets": [],
+              "executable": true,
+              "mode": "DIAGNOSTIC_RESCAN",
+              "status": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+              "diagnosticType": "TOUCH_ACTION_UNSPECIFIED",
+              "diagnosticFile": "index.html",
+              "diagnosticLine": null,
+              "diagnosticNeedle": "touch-action",
+              "diagnosticMicroTask": "index.html에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.",
+              "verifiedResponsibleSystem": "GAME_INPUT",
+              "diagnosticVerifier": "AUTONOMOUS_DIAGNOSTICS_EXACT_TYPE_FILE_RESCAN",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "generationAttempts": 0,
+            "candidateProducedFirstAttempt": false,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": false,
+            "incrementalQaPass": false,
+            "performanceSanityPass": false,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "NOT_AVAILABLE",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "WORK_ORDER_FALLBACK"
+          },
+          "presentationQuality": null,
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "FAIL",
+            "test": "FAIL",
+            "performance": "FAIL",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "neuralDiagnosis": {
+            "version": 2,
+            "mode": "PHASE1_SHADOW_ADVISORY",
+            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
+            "facts": [
+              {
+                "id": "fact-1",
+                "value": "central-policy:company-learning/platform-release-roadmap.json",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-2",
+                "value": "release-state:development-confirmed",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-3",
+                "value": "source-root:web-games/bug-defense",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-4",
+                "value": "web-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-5",
+                "value": "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-6",
+                "value": "recovery-exact-stage:WEB_REPAIR",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-7",
+                "value": "recovery-exact-stage:UNKNOWN_STAGE",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-8",
+                "value": "supervised-web-build:required",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              },
+              {
+                "id": "fact-9",
+                "value": "automatic-promotion:blocked-until-supervised-approval",
+                "source": "TASK_OR_RUNTIME_EVIDENCE",
+                "verified": true
+              }
+            ],
+            "hypotheses": [
+              {
+                "id": "current-deterministic-diagnostic-touch-action-unspecified",
+                "system": "GAME_INPUT",
+                "confidence": 0.99,
+                "reason": "현재 task의 결정론적 diagnostic TOUCH_ACTION_UNSPECIFIED(index.html)가 GAME_INPUT 책임 가설을 직접 지지함",
+                "diagnosticType": "TOUCH_ACTION_UNSPECIFIED",
+                "diagnosticFile": "index.html",
+                "verified": false,
+                "advisoryOnly": true
+              },
+              {
+                "id": "runtime-input-binding",
+                "system": "GAME_INPUT",
+                "confidence": 0.9,
+                "reason": "입력이 실제 상태 변화 또는 배치 책임 함수에 연결되지 않았을 가능성"
+              },
+              {
+                "id": "save-compatibility",
+                "system": "SAVE_SYSTEM",
+                "confidence": 0.9,
+                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
+              },
+              {
+                "id": "audio-runtime-binding",
+                "system": "GAME_AUDIO",
+                "confidence": 0.86,
+                "reason": "오디오 UI와 실제 오디오 상태 연결 누락 가능성"
+              },
+              {
+                "id": "source-generation-path",
+                "system": "SOURCE_GENERATION",
+                "confidence": 0.86,
+                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
+              },
+              {
+                "id": "pipeline-or-runner",
+                "system": "INFRA",
+                "confidence": 0.82,
+                "reason": "게임 코드가 아닌 실행 인프라 또는 CI 경로 문제 가능성"
+              }
+            ],
+            "causalEdges": [
+              {
+                "from": "current-deterministic-diagnostic-touch-action-unspecified",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.99,
+                "verified": false,
+                "rank": 1
+              },
+              {
+                "from": "runtime-input-binding",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 2
+              },
+              {
+                "from": "save-compatibility",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.9,
+                "verified": false,
+                "rank": 3
+              },
+              {
+                "from": "audio-runtime-binding",
+                "to": "WEB_REPAIR",
+                "relation": "POSSIBLE_CAUSE_OF",
+                "confidence": 0.86,
+                "verified": false,
+                "rank": 4
+              }
+            ],
+            "responsibility": {
+              "system": "GAME_INPUT",
+              "confidence": 0.99,
+              "alternatives": [
+                {
+                  "system": "SAVE_SYSTEM",
+                  "confidence": 0.16885553470919326
+                },
+                {
+                  "system": "GAME_AUDIO",
+                  "confidence": 0.16135084427767354
+                },
+                {
+                  "system": "SOURCE_GENERATION",
+                  "confidence": 0.16135084427767354
+                }
+              ],
+              "basis": "CURRENT_DETERMINISTIC_DIAGNOSTIC_HYPOTHESIS",
+              "verified": false
+            },
+            "pipelinePrediction": {
+              "nextBlockingSystem": "SOURCE_GENERATION",
+              "confidence": 0.98,
+              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
+              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+              "advisoryOnly": true
+            },
+            "bottleneck": {
+              "score": 100,
+              "components": {
+                "downstreamDepth": 6,
+                "recurrence": 2,
+                "sharedScope": 2,
+                "priority": 1,
+                "evidenceConfidence": 0.99
+              },
+              "advisoryOnly": true,
+              "mayReorderWave": false
+            },
+            "inhibitors": [
+              "SUPERVISOR_PASS_REQUIRED_BUT_MISSING",
+              "SECURITY_POLICY_BLOCK"
+            ],
+            "actionRecommendation": {
+              "mode": "EXACT_FAILURE_STAGE_REPAIR",
+              "failureStage": "WEB_REPAIR",
+              "responsibleSystem": "GAME_INPUT",
+              "preserveAlreadyPassedStages": true,
+              "restartFromBeginning": false,
+              "automaticScopeExpansion": false,
+              "blocked": true,
+              "blocker": "SUPERVISOR_PASS_REQUIRED_BUT_MISSING"
+            },
+            "learning": {
+              "eligible": false,
+              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
+            },
+            "waveControl": {
+              "currentWaveSchedulerRemainsAuthoritative": true,
+              "mayReorderWave": false,
+              "mayCreateWorker": false
+            }
+          },
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": true,
+            "exactInjectedCapabilityIds": [
+              "capability_ctrace_1a453e3e34004eb1c376197d",
+              "capability_ctrace_74d39d52bb47e6444412ec04",
+              "capability_ctrace_f3072d255ad4f857aea1fc34",
+              "capability_ctrace_0ce73fa4ec23024bd474ad30",
+              "capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "coAppliedCapabilityIds": [
+              "capability_ctrace_1a453e3e34004eb1c376197d",
+              "capability_ctrace_74d39d52bb47e6444412ec04",
+              "capability_ctrace_f3072d255ad4f857aea1fc34",
+              "capability_ctrace_0ce73fa4ec23024bd474ad30",
+              "capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 95619,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [
+              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
+              "EXPERIENCE:exp_1oonbi8",
+              "EXPERIENCE:exp_pg739o",
+              "EXPERIENCE:exp_4odofx",
+              "EXPERIENCE:exp_rg6lvy",
+              "EXPERIENCE:exp_i00mwv",
+              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
+              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
+              "CODE_PATTERN:pat_130jf9c",
+              "CODE_PATTERN:pat_1avbmmv",
+              "CODE_PATTERN:pat_1vgfuno",
+              "CODE_PATTERN:pat_3f780w",
+              "CODE_PATTERN:pat_9pwgix",
+              "CODE_PATTERN:pat_m3ipio",
+              "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf",
+              "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d",
+              "VERIFIED_CAPABILITY:capability_ctrace_74d39d52bb47e6444412ec04",
+              "VERIFIED_CAPABILITY:capability_ctrace_f3072d255ad4f857aea1fc34",
+              "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30",
+              "VERIFIED_CAPABILITY:capability_ctrace_7022dd1d29e03580f9fab379"
+            ],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "metrics": {
+            "requestedMax": 20,
+            "effectiveMax": 20,
+            "reservationId": "35506312392:1",
+            "reservedAt": "2026-09-20T10:53:49Z",
+            "workerStartedAt": 1789901679285,
+            "workerFinishedAt": 1789901774904,
+            "checkoutMs": 3808,
+            "modelPrepMs": 3760,
+            "candidateMs": 62525,
+            "qaMs": 0,
+            "workerTotalMs": 95619,
+            "changedFileCount": 0,
+            "addedLineCount": 0,
+            "deletedLineCount": 0,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
+        }
+      ],
       "companyContext": null,
       "sourceRoot": "web-games/bug-defense",
       "speculativeEligible": true,
