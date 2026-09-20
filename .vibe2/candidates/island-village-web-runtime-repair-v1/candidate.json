@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "                    if (e.id === enemy.dataset.id) {",
+      "replace": "gameState.game.enemies = gameState.game.enemies.map(e => ({ ...e, health: e.health - damage }));"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
