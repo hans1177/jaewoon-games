@@ -94,6 +94,29 @@ const developmentHomepageScore=row=>{
   return{score:null,label:stale?'재검증 필요':'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
 };
 const homepageLatestWork=(game,queue)=>clean(queue?.homepageRecentWork||game?.homepageRecentWork||queue?.currentStep||queue?.resumeStage||queue?.canonicalState)||'개발 작업 정보 없음';
+const runtimeGameplayMediaFromQueue=(queue,platform)=>{
+  const media=queue?.runtimeGameplayMedia;
+  if(!media||media.verified!==true||normalizeSelectedPlatform(media.platform)!==platform)return null;
+  const url=clean(media.url),type=clean(media.captureType).toUpperCase(),sourceRevision=clean(media.sourceRevision),artifact=clean(media.artifactIdentityOrBuildId||media.artifactIdentity||media.buildId);
+  if(!url||(!/^https:\/\//i.test(url)&&!/^\/assets\/runtime-screenshots\//i.test(url)))return null;
+  const expectedRevision=platform==='ROBLOX'?clean(queue?.robloxSourceCommit):platform==='UNITY'?clean(queue?.unitySourceCommit):clean(queue?.uefnSourceCommit);
+  const expectedArtifact=platform==='ROBLOX'?clean(queue?.robloxBuildArtifactIdentity):platform==='UNITY'?clean(queue?.unityBuildArtifactIdentity):clean(queue?.uefnBuildArtifactIdentity);
+  if(expectedRevision&&sourceRevision!==expectedRevision)return null;
+  if(expectedArtifact&&artifact!==expectedArtifact)return null;
+  if(platform==='ROBLOX'&&!['ROBLOX_PUBLIC_CLIENT_CAPTURE','ROBLOX_STUDIO_RUNTIME_CAPTURE'].includes(type))return null;
+  if(platform==='UNITY'&&type!=='UNITY_ANDROID_RUNTIME')return null;
+  return {
+    platform,
+    captureType:type,
+    url,
+    verified:true,
+    capturedAt:media.capturedAt||null,
+    sourceRevision:sourceRevision||expectedRevision||null,
+    artifactIdentityOrBuildId:artifact||expectedArtifact||null,
+    workflowRunId:media.workflowRunId||null,
+    evidence:media.evidence||null
+  };
+};
 
 export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={}}={}){
   if(!catalog||!Array.isArray(catalog.games))return catalog;
@@ -112,6 +135,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
     const robloxSubgenre=clean(seed?.ROBLOX_SUBGENRE_LABEL_KO||seed?.ROBLOX_SUBGENRE||queue?.ROBLOX_SUBGENRE_LABEL_KO||queue?.ROBLOX_SUBGENRE);
     const genreLabel=platform==='ROBLOX'&&robloxGenre?[robloxGenre,robloxSubgenre].filter(Boolean).join(' · '):(baseGenres.join(' · ')||'장르 미평가');
     const playMode=clean(seed?.MULTIPLAYER_DESIGN_MODE||seed?.INITIAL_PLAY_MODE||queue?.ROBLOX_PLAY_MODE||queue?.playMode).toUpperCase();
+    const runtimeGameplayMedia=runtimeGameplayMediaFromQueue(queue,platform);
     game.homepageInfo={
       authority:'company-runtime',
       platform,
@@ -129,7 +153,8 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       latestWork:homepageLatestWork(game,queue),
       updatedAt:queue?.updatedAt||queue?.webValidationLastAttemptAt||seed?.ROBLOX_GENRE_REVIEWED_AT||seed?.updatedAt||catalog.updatedAt||null,
       status:clean(queue?.canonicalState||queue?.status||seed?.status||game?.lifecycleState)||'ACTIVE',
-      productionClass:clean(game?.productionClass||'DESIGN_ONLY').toUpperCase()
+      productionClass:clean(game?.productionClass||'DESIGN_ONLY').toUpperCase(),
+      ...(runtimeGameplayMedia?{runtimeGameplayMedia}:{})
     };
   }
   catalog.runtimeCounts={...(catalog.runtimeCounts||{}),canonicalGames:catalog.games.length,homepageInfo:catalog.games.filter(game=>game.homepageInfo?.authority==='company-runtime').length};
