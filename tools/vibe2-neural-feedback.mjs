@@ -4,12 +4,15 @@
 const clean=value=>String(value??'').trim();
 const clamp=(value,min=0,max=1)=>Math.max(min,Math.min(max,Number(value)||0));
 
-function observedPipelineState({outcome='',blocker='',candidateFailure=null,roleResults={}}={}){
+function observedPipelineState({outcome='',blocker='',candidateFailure=null,roleResults={},evidence=[]}={}){
   const normalizedOutcome=clean(outcome).toUpperCase();
   const failureClass=clean(candidateFailure?.class).toUpperCase();
   const implementation=clean(roleResults?.implementation).toUpperCase();
   const test=clean(roleResults?.test).toUpperCase();
   const performance=clean(roleResults?.performance).toUpperCase();
+  const evidenceRows=(Array.isArray(evidence)?evidence:[]).map(clean).filter(Boolean);
+  const qaFailureMarker=evidenceRows.find(value=>value.startsWith('incremental-qa-failure-signature:'));
+  const qaFailureSignature=qaFailureMarker?clean(qaFailureMarker.slice('incremental-qa-failure-signature:'.length)):null;
 
   if(candidateFailure||implementation==='FAIL'){
     return{
@@ -24,7 +27,8 @@ function observedPipelineState({outcome='',blocker='',candidateFailure=null,role
       stage:'INCREMENTAL_QA',
       responsibility:null,
       deterministicallyObserved:true,
-      evidenceClass:'QA_STAGE_FAILURE_ROOT_CAUSE_UNVERIFIED'
+      evidenceClass:'QA_STAGE_FAILURE_ROOT_CAUSE_UNVERIFIED',
+      failureSignature:qaFailureSignature
     };
   }
   if(performance==='FAIL'||/performance-sanity-failed/i.test(clean(blocker))){
@@ -56,7 +60,8 @@ export function evaluateNeuralDiagnosisFeedback({
   outcome='',
   blocker='',
   candidateFailure=null,
-  roleResults={}
+  roleResults={},
+  evidence=[]
 }={}){
   if(!diagnosis||clean(diagnosis.mode)!=='PHASE1_SHADOW_ADVISORY'){
     return{
@@ -72,7 +77,7 @@ export function evaluateNeuralDiagnosisFeedback({
 
   const predictedResponsibility=clean(diagnosis?.responsibility?.system)||null;
   const predictedConfidence=clamp(diagnosis?.responsibility?.confidence);
-  const observed=observedPipelineState({outcome,blocker,candidateFailure,roleResults});
+  const observed=observedPipelineState({outcome,blocker,candidateFailure,roleResults,evidence});
   const responsibilityMatch=observed.responsibility
     ? predictedResponsibility===observed.responsibility
     : null;
