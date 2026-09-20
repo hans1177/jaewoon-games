@@ -1,8 +1,8 @@
 {
-  "version": 2,
+  "version": 3,
   "kind": "vibe2-external-ai-distillation-policy",
   "authority": "MACHINE_EXECUTION_CONTRACT",
-  "purpose": "Use external AI only as a knowledge source. Raw external model output never becomes game source, production evidence, Mastery credit, or canonical training data directly.",
+  "purpose": "Allow owner-authorized external AI/ChatGPT to contribute isolated candidate work while keeping raw model output untrusted; only independently verified outcomes may enter Vibe reusable learning.",
   "ingestion": {
     "rawExternalAiOutputDirectDevelopment": false,
     "rawExternalAiOutputPersistentRetrieval": false,
@@ -21,7 +21,24 @@
       "independent-qa",
       "source-backed-review",
       "multi-source-consistency"
-    ]
+    ],
+    "collaborativeCandidateAuthoring": {
+      "ownerAuthorizationRequired": true,
+      "allowed": true,
+      "gameSourceCandidateAllowed": true,
+      "unityCandidateAllowed": true,
+      "robloxCandidateAllowed": true,
+      "branchPatterns": [
+        "assistant/*",
+        "chatgpt/*",
+        "external-ai/*"
+      ],
+      "isolatedBranchRequired": true,
+      "pullRequestRequired": true,
+      "directMainWrite": false,
+      "rawModelOutputIsProductionEvidence": false,
+      "existingQaSecurityRuntimeRegressionRequired": true
+    }
   },
   "promotion": {
     "outputKind": "vibe2-external-ai-distilled-knowledge",
@@ -45,7 +62,9 @@
     ],
     "freshProjectOutcomeAttributionRequired": true,
     "infrastructureFailureMayPenalizeKnowledge": false,
-    "retiredKnowledgeRetrievalForbidden": true
+    "retiredKnowledgeRetrievalForbidden": true,
+    "verifiedCollaboratorCandidateMayBecomeCanonicalOnlyThroughExistingMergeGates": true,
+    "mergedCandidateDoesNotAutoGrantKnowledgeReuse": true
   },
   "retrieval": {
     "distilledKnowledgePath": ".vibe2/external-ai-distilled-knowledge.json",
@@ -66,6 +85,11 @@
     "verifiedProjectOutcomeRequiredForProductionConfidence": true,
     "singleSuccessDoesNotProveGeneralization": true,
     "holdoutEvidenceRequiredForStrongGeneralization": true,
-    "authorityExpanded": false
+    "authorityExpanded": false,
+    "mergedPrProvenanceCollector": "tools/vibe2-merged-pr-provenance.mjs",
+    "mergedPrProvenanceLedger": ".vibe2/merged-pr-provenance-ledger.json",
+    "assistantBranchTeacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+    "verifiedCollaboratorOutcomeFeedsExistingExperienceAndDistillation": true,
+    "rawAssistantOutputStorageForbidden": true
   }
 }
