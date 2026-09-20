@@ -426,6 +426,32 @@ function presentationWorkerGuidance(order = {}) {
   ].join('\n');
 }
 
+function weatherWorkerGuidance(order = {}) {
+  const contract=order?.weatherPresentation||{};
+  if(contract?.required!==true)return'';
+  const target=clean(order?.target).toLowerCase();
+  const native=target==='unity'
+    ?'Unity 네이티브 Particle System, RenderSettings/Fog, Light/Material, AudioSource 계층을 기존 책임 시스템 안에서 사용한다.'
+    :target==='roblox'
+      ?'Roblox 네이티브 ParticleEmitter, Atmosphere, Lighting/ColorCorrection, Sound 계층을 기존 책임 시스템 안에서 사용한다.'
+      :'기존 Web Canvas/DOM/CSS/WebAudio 렌더 책임 시스템을 직접 사용한다.';
+  return [
+    '[WEATHER PRESENTATION IMPLEMENTATION]',
+    `states=${(contract.states||[]).map(clean).filter(Boolean).join(',')}`,
+    `regional=${(contract.regionalExtensions||[]).map(clean).filter(Boolean).join(',')}`,
+    `preserve=${(contract.preserve||[]).map(clean).filter(Boolean).join(',')}`,
+    native,
+    '날씨는 표현 전용이다. 공격력, 체력, 이동속도, 드랍률, 경제, 진행, 저장 의미를 수정하지 않는다.',
+    '멀티 게임이면 하나의 authoritative semantic weather state를 공유하고 join-in-progress도 현재 상태를 받게 한다.',
+    '저사양에서는 파티클/후처리 밀도만 줄이고 CLEAR/RAIN/FOG/SNOW/STORM 의미 자체는 바꾸지 않는다.',
+    '화산 지역은 VOLCANIC_ASH/HEAT_HAZE를 지역 표현으로 추가할 수 있지만 게임 판정은 바꾸지 않는다.',
+    'Web 렌더 파일을 Unity/Roblox 자산으로 복사하지 않는다. 각 네이티브 엔진 표현을 별도로 구현한다.',
+    '문서/주석/상수만 추가하는 no-op 구현은 금지한다. 실제 렌더·대기·오디오·동기화 코드가 있어야 한다.',
+    '완료 소스에는 WEATHER_PRESENTATION_VERSION=1 또는 WeatherPresentationVersion = 1 등 언어 등가 마커를 둔다.',
+    '정적 QA 뒤에도 실제 런타임 시각/오디오, 멀티 동기화, 모바일 성능 검증이 필요하다.'
+  ].join('\n');
+}
+
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\\d+:(\\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
 function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
@@ -434,6 +460,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 `Department: ${order.department||'development'}`,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+weatherWorkerGuidance(order),
 `Allowed edit paths: ${allowed}`,
 context.exactSourceWindows?'CONTEXT MODE: exact responsibility windows. Each FILE window contains exact source text but separate windows are not contiguous. Any edits[].find MUST be copied wholly from one exact window; never span two windows or invent omitted text.':'',
 allowFullRewrite?(sourceRootBootstrap?'OWNER AUTHORIZATION: create the first complete playable Web baseline at the exact responsible index.html path. This is an approved missing-source bootstrap. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.':'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, and no external network dependency.'):'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
