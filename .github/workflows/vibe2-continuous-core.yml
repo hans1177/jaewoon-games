@@ -50,7 +50,7 @@ env:
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
-  VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || 'game-primary' }}
+  VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
   VIBE2_LANE_MAX: ${{ inputs.lane_max || '256' }}
 
 jobs:
@@ -113,6 +113,7 @@ jobs:
           for file in \
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
+            tools/vibe2-learning-motor.mjs \
             tools/vibe2-continuous-runner.mjs \
             tools/vibe2-asset-production-plan.mjs \
             tools/vibe2-central-work-contract.mjs \
@@ -234,6 +235,17 @@ jobs:
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-fanin-refill-autoplan.log
+            node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
+              --state="$control_root/.vibe2/learning-motor-state.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+              --company-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+              --practice="$control_root/.vibe2/idle-practice-queue.json" \
+              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
+            echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
             if [ "$callback_kind" = 'fanin' ]; then
               echo 'VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'
             else
@@ -279,13 +291,21 @@ jobs:
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
-            if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
+            state_paths=(
+              .vibe2/queue.json
+              .vibe2/parallelism-control.json
+              .vibe2/learning-motor-state.json
+              .vibe2/benchmark-ladder.json
+              .vibe2/idle-practice-queue.json
+              .vibe2/web-roblox-handoffs.json
+            )
+            if git diff --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
               break
             fi
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json
+            git add "${state_paths[@]}"
             git commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
             if git push origin HEAD:vibe2-unreal-core; then
               state_persisted=1
@@ -527,9 +547,9 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
-      - name: Run source-free learning practice
+      - name: Run isolated learning practice
         id: practice
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'analysis-only'
+        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
         continue-on-error: true
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -547,10 +567,16 @@ jobs:
           if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
             ollama pull "$VIBE2_LOCAL_MODEL"
           fi
+          practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
+          artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
           node tools/vibe2-learning-practice-worker.mjs \
             --order=/tmp/vibe2-work-order.json \
-            --output=/tmp/vibe2-learning-practice-result.json
+            --output=/tmp/vibe2-learning-practice-result.json \
+            --artifact-dir="$artifact_dir"
           test -f /tmp/vibe2-learning-practice-result.json
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            test -s "$artifact_dir/index.html"
+          fi
           node tools/vibe2-practice-distillation.mjs \
             --result=/tmp/vibe2-learning-practice-result.json \
             --order=/tmp/vibe2-work-order.json \
@@ -561,7 +587,23 @@ jobs:
           test -f /tmp/vibe2-practice-distillation.json
           echo 'VIBE2_ANALYSIS_WORKER=PRACTICE_ONLY'
           echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
-          echo 'VIBE2_PRACTICE_RAW_CANDIDATE_PERSISTED=NO'
+          echo 'VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO'
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=YES'
+          else
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=NO'
+          fi
+
+      - name: Upload ephemeral Web practice artifact
+        if: always() && steps.order.outputs.route == 'learning-web-artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}
+          path: |
+            /tmp/vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}/index.html
+            /tmp/vibe2-learning-practice-result.json
+          if-no-files-found: warn
+          retention-days: 1
 
       - name: Build task-local exploration handoff
         id: local_exploration
@@ -883,9 +925,9 @@ jobs:
             else if(!testOk){outcome='FAIL';blocker='incremental-qa-failed';}
             else{outcome='FAIL';blocker='performance-sanity-failed';}
           }else if(process.env.ORDER_RUN==='true' && route==='engine-editor') blocker='engine-editor-worker-not-connected';
-          else if(process.env.ORDER_RUN==='true' && route==='analysis-only'){
-            if(process.env.PRACTICE_OUTCOME==='success'){outcome='PASS';blocker='learning-practice-complete';}
-            else{outcome='FAIL';blocker='learning-practice-worker-failed';}
+          else if(process.env.ORDER_RUN==='true' && ['analysis-only','learning-web-artifact'].includes(route)){
+            if(process.env.PRACTICE_OUTCOME==='success'){outcome='PASS';blocker=route==='learning-web-artifact'?'learning-web-artifact-practice-complete':'learning-practice-complete';}
+            else{outcome='FAIL';blocker=route==='learning-web-artifact'?'learning-web-artifact-practice-failed':'learning-practice-worker-failed';}
           }
 
           let manifest={};
@@ -1026,7 +1068,17 @@ jobs:
                 'shared-context-sync:PASS'
               ];
             })():['shared-context-sync:MISSING']),
-            ...(route==='analysis-only'?['learning-practice-only','production-pass:NO','source-write:NO']:[ ])
+            ...(['analysis-only','learning-web-artifact'].includes(route)?['learning-practice-only','production-pass:NO','source-write:NO']:[ ]),
+            ...(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')?(()=>{
+              const p=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
+              return[
+                'learning-web-artifact-practice',
+                `practice-artifact-score:${Number(p?.artifact?.score||0)}`,
+                `practice-artifact-improved:${p?.artifact?.improved===true?'YES':'NO'}`,
+                `practice-artifact-sha256:${clean(p?.artifact?.sha256)}`,
+                `practice-next-signal:${clean(p?.nextPracticeSignal)||'RETRY_CAUSAL_VARIATION'}`
+              ];
+            })():[])
           ].filter(Boolean);
           const workerStartedAt=Number(fs.readFileSync(process.env.WORKER_STARTED_AT_FILE,'utf8'))||Date.now();
           const workerFinishedAt=Date.now();
@@ -1039,7 +1091,7 @@ jobs:
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };
           let practiceDistillation=null;
-          if(route==='analysis-only'&&fs.existsSync('/tmp/vibe2-practice-distillation.json')){
+          if(['analysis-only','learning-web-artifact'].includes(route)&&fs.existsSync('/tmp/vibe2-practice-distillation.json')){
             const distilled=JSON.parse(fs.readFileSync('/tmp/vibe2-practice-distillation.json','utf8'));
             practiceDistillation={
               version:Number(distilled.version||1),
@@ -1049,6 +1101,19 @@ jobs:
               rawCandidateStored:false,
               authorityExpanded:false
             };
+          }
+          let practiceArtifact=null;
+          if(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')){
+            const practice=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
+            if(practice?.artifact){
+              practiceArtifact={
+                kind:clean(practice.artifact.kind),ephemeral:true,repositorySourceWrite:false,productionPromotionAllowed:false,
+                sha256:clean(practice.artifact.sha256),score:Number(practice.artifact.score||0),
+                previousScore:practice.artifact.previousScore===null?null:Number(practice.artifact.previousScore||0),
+                improved:practice.artifact.improved===true,nextPracticeSignal:clean(practice.nextPracticeSignal)||null,
+                validation:practice.artifact.validation||null
+              };
+            }
           }
           const candidateBranch=clean(process.env.CANDIDATE_BRANCH)||null;
           const baseMainSha=clean(process.env.BASE_SHA)||null;
@@ -1103,7 +1168,7 @@ jobs:
             infrastructureFailurePenalizesKnowledge:false,
             authorityExpanded:false
           }:null;
-          const result={version:13,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,metrics};
+          const result={version:13,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
@@ -1310,6 +1375,8 @@ jobs:
             echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
           fi
 
+          git fetch origin company-runtime --quiet
+          git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
           pushed=0
           state_write='NO'
           for attempt in 1 2 3 4 5; do
@@ -1343,7 +1410,20 @@ jobs:
             fi
             echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json
+            node "$contract_root/tools/vibe2-learning-motor.mjs" \
+              --state="$control_root/.vibe2/learning-motor-state.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+              --company-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --roadmap="$contract_root/company-learning/platform-release-roadmap.json" \
+              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+              --practice="$control_root/.vibe2/idle-practice-queue.json" \
+              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-fanin.log
+            echo "VIBE2_SELF_SIGNAL_AFTER_FANIN=PASS:$VIBE2_EXECUTION_LANE"
+
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json \
+              .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
             test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
             if git diff --cached --quiet; then
               pushed=1
@@ -1379,7 +1459,7 @@ jobs:
             --max="$VIBE2_LANE_MAX" \
             --min="$lane_min" | tee /tmp/vibe2-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${continue_required:-NO}" = 'YES' ]; then
+          if [ "${continue_required:-NO}" = 'YES' ]; then
             echo 'refill=1' >> "$GITHUB_OUTPUT"
           else
             echo 'refill=0' >> "$GITHUB_OUTPUT"
@@ -1472,7 +1552,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||''}}))")"
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
           curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \

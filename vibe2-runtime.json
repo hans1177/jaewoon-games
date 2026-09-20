@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 16,
+      "runtime": 17,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -323,7 +323,12 @@
         "sourceWriteAllowed": false,
         "productionReleaseAllowed": false,
         "fullGameRegressionAtFanIn": false,
-        "practiceDistillationAllowed": true
+        "practiceDistillationAllowed": true,
+        "maxActiveWorkersMeaning": "CURRENT_EXECUTION_WINDOW_ONLY_NOT_TOTAL_LEARNING_LIMIT",
+        "queuedWorkItemLimit": null,
+        "practiceGenerationAlwaysOn": true,
+        "productionPresenceDoesNotSuppressPracticeGeneration": true,
+        "priorityMayYieldToGamePrimaryWithoutTerminatingLearning": true
       },
       "RELEASE_WAIT": {
         "consumesGamePrimarySlot": false,
@@ -369,7 +374,12 @@
       "noRunnableTaskBehavior": "CAUSAL_REPLAN_OR_AWAIT_EVENT_WITH_SENSORS_AND_RECOVERY_LIVE",
       "verifiedCheckpointFeedsPlanner": true,
       "signalDropForbidden": true,
-      "busyLoopForbidden": true
+      "busyLoopForbidden": true,
+      "totalWorkItemLimit": null,
+      "totalLearningItemLimit": null,
+      "priorityOnlyChangesSchedulingOrder": true,
+      "lowPrioritySignalsRemainLive": true,
+      "executionWindowDoesNotLimitTotalWorkUniverse": true
     }
   },
   "adaptiveBackpressure": {
@@ -978,14 +988,18 @@
       "maxMinWorkUnitsPerPackage": 6,
       "neverReduceSafetyOrQa": true
     },
-    "capacityPolicy": "UNBOUNDED_BY_POLICY_FILL_EXTERNAL_PROVIDER_CAPACITY_IN_IMMEDIATE_WAVES"
+    "capacityPolicy": "UNBOUNDED_BY_POLICY_FILL_EXTERNAL_PROVIDER_CAPACITY_IN_IMMEDIATE_WAVES",
+    "totalPackageLimit": null,
+    "maxPackagesPerCycleMeaning": "PER_CYCLE_EXECUTION_WINDOW_ONLY_NOT_TOTAL_PACKAGE_LIMIT",
+    "totalTaskLimit": null,
+    "verifiedPackageCheckpointGeneratesNextCausalWork": true
   },
   "learningMotor": {
     "enabled": true,
     "tool": "tools/vibe2-learning-motor.mjs",
     "positiveMasteryEvidence": "VERIFIED_ONLY",
     "legacyLevelReplacement": false,
-    "productionPreemptsPractice": true,
+    "productionPreemptsPractice": false,
     "sameGameHighestRetrievalWeight": true,
     "webPracticeFeedsCrossPlatformMastery": true,
     "robloxNativeDomainsRequireRobloxEvidence": true,
@@ -1024,7 +1038,15 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
-    }
+    },
+    "productionDefaultPriorityHigherThanPractice": true,
+    "practiceSignalGenerationAlwaysOn": true,
+    "practiceGenerationLimit": null,
+    "relearningGenerationLimit": null,
+    "domainMasteryLevelLimit": null,
+    "verifiedMasteryGrowthUnbounded": true,
+    "externalKnowledgeCandidateLimit": null,
+    "contextWindowMayBeBoundedWithoutCappingCollection": true
   },
   "projectLifecycle": {
     "authority": "MACHINE_EXECUTION_CONTRACT",

@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 68,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -257,7 +257,7 @@
     }
   },
   "neuralWorkGraphTopology": {
-    "version": 3,
+    "version": 4,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
     "currentState": "ALWAYS_RUNNING_ATOMIC_SIGNAL_MESH_WITH_VIBE_SYNCED_WORKERS",
@@ -422,7 +422,9 @@
       "verifiedCheckpointRule": "PASS CREATES VERIFIED_CHECKPOINT AND NEXT CAUSAL INPUT",
       "inhibitionRule": "INHIBIT ONLY UNSAFE ACTION; KEEP EVENT SENSOR DIAGNOSIS RECOVERY MEMORY AND REPLAN LIVE",
       "workerSyncRule": "EVERY EXECUTION WORKER MUST MATCH LIVE VIBE RESERVATION IDENTITY AND PINNED MAIN CONTRACT BEFORE WORK",
-      "durableReplayRule": "EVERY SIGNAL IS RESOLVED BY EXECUTION VERIFIED_CHECKPOINT REQUEUE RECOVERY INHIBITION OR AWAITED_EVENT; SILENT DROP FORBIDDEN"
+      "durableReplayRule": "EVERY SIGNAL IS RESOLVED BY EXECUTION VERIFIED_CHECKPOINT REQUEUE RECOVERY INHIBITION OR AWAITED_EVENT; SILENT DROP FORBIDDEN",
+      "priorityRule": "PRIORITY CHANGES FIRE ORDER AND CAPACITY SHARE ONLY; IT NEVER DELETES OR TERMINATES A LIVE SIGNAL",
+      "externalKnowledgeRule": "COLLECTION CANDIDATES ARE UNBOUNDED; RETRIEVAL CONTEXT MAY BE BOUNDED PER DECISION; VERIFIED DISTILLATION REMAINS REQUIRED"
     },
     "auditability": {
       "everyActionLinksToEvidence": true,
@@ -1340,6 +1342,29 @@
           "interpretation": "LIVE_MAIN_POLICY_REF_WAS_EXERCISED_IN_PRODUCTION_AFTER_PR_1877; WORKERS_PROCEEDED_TO_CANDIDATE_OUTPUT_WITHOUT_STALE_MISMATCH; FAN_IN_PASSED"
         }
       }
+    },
+    "unboundedWorkUniverse": {
+      "totalSignalWorkItemLimit": null,
+      "totalPracticeGenerationLimit": null,
+      "totalRelearningGenerationLimit": null,
+      "totalHypothesisGenerationLimit": null,
+      "totalExternalKnowledgeCandidateLimit": null,
+      "priorityIsSchedulingWeightOnly": true,
+      "lowPrioritySignalsRemainPersisted": true,
+      "executionConcurrencyIsFinitePhysicalWindowNotWorkUniverseLimit": true,
+      "verifiedCheckpointEmitsNextSignal": true,
+      "everyDomainMayCreateNewCausalWork": true,
+      "signalDomainsMayCrossRouteWhenCausallyRelevant": true
+    },
+    "capabilityGrowthTopology": {
+      "masteryLevelCeiling": null,
+      "baseLegacyLevelsPreserved": true,
+      "benchmarkDifficultyGenerationCeiling": null,
+      "practiceGenerationCeiling": null,
+      "positiveGrowthRequiresVerifiedEvidence": true,
+      "strongerThanHumanReferenceRequiresMatchedBenchmarkEvidence": true,
+      "selfModelUpdatesFromEvidenceOnly": true,
+      "authorityExpansion": false
     }
   },
   "roadmapAssistantOrchestration": {
@@ -2036,5 +2061,17 @@
     "productionPassAuthority": "CANONICAL_QA_AND_REVIEW_ONLY",
     "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
     "authorityExpansion": false
+  },
+  "ownerRule2Topology": {
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule2",
+    "externalAiActivityIngress": "ALL_OBSERVABLE_EXTERNAL_AI_WORKER_AND_CANDIDATE_ACTIONS",
+    "securityMonitor": "tools/company-security-steward.mjs",
+    "incidentStore": "vibe2-unreal-core:.vibe2/security-incidents.json",
+    "hostileDisposition": "QUARANTINE_TERMINATE_AFFECTED_EXECUTION_BLOCK_PUBLICATION",
+    "learningCandidateRule": "EVERY_ACTION_CANDIDATE_ONLY_VERIFIED_DISTILLED_RESULT_REUSABLE",
+    "defensiveLearning": "tools/company-security-learning.mjs -> existing Vibe learning motor",
+    "rawHostilePayloadRetention": false,
+    "externalProviderAttack": false,
+    "authorityChange": "NONE"
   }
 }

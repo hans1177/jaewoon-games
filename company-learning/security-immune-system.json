@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -33,8 +33,9 @@
   "responseLifecycle": [
     "DETECT",
     "CLASSIFY",
-    "QUARANTINE_AFFECTED_CHANGE_ONLY",
-    "PRESERVE_EVIDENCE",
+    "QUARANTINE_OR_REVIEW",
+    "TERMINATE_AFFECTED_UNTRUSTED_EXECUTION_IF_QUARANTINED",
+    "PRESERVE_SANITIZED_IMMUTABLE_EVIDENCE",
     "ROUTE_TO_SECURITY_RECOVERY",
     "VERIFY_REMEDIATION",
     "PRIMARY_AI_DIRECT_REVIEW_FOR_SECURITY_INCIDENT",
@@ -156,5 +157,20 @@
     "simulatedIdentityOrAgentMustNotBeRepresentedAsVerifiedHumanConsciousness": true,
     "unverifiedMindUploadOrConsciousnessTransferClaimsForbidden": true,
     "securityRecoveryAndAuditRemainMandatoryAcrossAllLongTermStages": true
+  },
+  "ownerRule2": {
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "centralContract": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule2",
+    "automaticBindingForAllExternalAiWorkers": true,
+    "monitoredScope": "OBSERVABLE_REPOSITORY_CI_WORKER_CANDIDATE_AND_REVIEW_ACTIVITY",
+    "everyExternalAiActionBecomesLearningCandidate": true,
+    "codingIncluded": true,
+    "quarantineOnHostileOrUnauthorizedHighRiskChange": true,
+    "quarantineAction": "TERMINATE_AFFECTED_EXECUTION_BLOCK_PUBLICATION_PRESERVE_SANITIZED_EVIDENCE",
+    "defensiveAbsorption": "VERIFIED_SANITIZED_SECURITY_PATTERN_TO_EXISTING_SECURITY_LEARNING_AND_VIBE_LEARNING_MOTOR",
+    "rawExternalOutputStored": false,
+    "rawHostilePayloadStored": false,
+    "externalProviderAttackForbidden": true,
+    "authorityExpansion": false
   }
 }

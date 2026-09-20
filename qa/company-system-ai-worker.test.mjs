@@ -96,3 +96,20 @@ test('system AI workflow persists sanitized security quarantine before PR superv
   assert.doesNotMatch(workflow,/while IFS=\s*$/m);
   assert.match(workflow,/while read -r task_id verdict highest report_file; do/);
 });
+
+
+test('system AI immutable result binds owner rule 2 and terminates quarantined external execution',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  assert.match(workflow,/RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION/);
+  assert.match(workflow,/TERMINATED_QUARANTINED/);
+  assert.match(workflow,/candidatePublicationAllowed:security\.verdict==='PASS'/);
+  assert.match(workflow,/learningCandidate:true/);
+  assert.match(workflow,/verifiedDefensiveAbsorptionOnly:true/);
+  assert.equal(security.ownerRule2?.automaticBindingForAllExternalAiWorkers,true);
+  assert.equal(security.ownerRule2?.quarantineOnHostileOrUnauthorizedHighRiskChange,true);
+  assert.equal(security.ownerRule2?.externalProviderAttackForbidden,true);
+  assert.equal(architecture.ownerRule2Topology?.hostileDisposition,'QUARANTINE_TERMINATE_AFFECTED_EXECUTION_BLOCK_PUBLICATION');
+  assert.equal(architecture.ownerRule2Topology?.authorityChange,'NONE');
+});

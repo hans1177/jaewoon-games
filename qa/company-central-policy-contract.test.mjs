@@ -390,6 +390,30 @@ test('all automated gates repair and retest the same failed gate until PASS',()=
 });
 
 
+test('Vibe work learning and hypothesis universe has no total item ceiling and priority only reorders signals',()=>{
+  const universe=roadmap.neuralDevelopmentBrain.unboundedWorkUniverse;
+  const learning=roadmap.developmentLifecycleMachine.learningMotor;
+  assert.equal(universe.totalWorkItemLimit,null);
+  assert.equal(universe.totalLearningItemLimit,null);
+  assert.equal(universe.totalPracticeItemLimit,null);
+  assert.equal(universe.totalHypothesisItemLimit,null);
+  assert.equal(universe.totalExternalKnowledgeCandidateLimit,null);
+  assert.equal(universe.priorityMeaning,'ORDER_AND_RESOURCE_ALLOCATION_ONLY_NOT_EXISTENCE_OR_TERMINATION');
+  assert.equal(universe.scheduling.internalTotalCountCapForbidden,true);
+  assert.equal(universe.scheduling.lowPriorityWorkRemainsLive,true);
+  assert.equal(universe.externalKnowledgeAcquisition.candidateUniverseUnbounded,true);
+  assert.equal(universe.externalKnowledgeAcquisition.contextWindowIsNotCollectionLimit,true);
+  assert.equal(learning.practiceSignalGenerationAlwaysOn,true);
+  assert.equal(learning.practiceGenerationLimit,null);
+  assert.equal(learning.relearningGenerationLimit,null);
+  assert.equal(learning.domainMasteryLevelLimit,null);
+  assert.equal(learning.verifiedMasteryGrowthUnbounded,true);
+  assert.equal(roadmap.learningClosedLoopContract.continuousRelearning.practiceSignalGenerationNeverStops,true);
+  assert.equal(roadmap.learningClosedLoopContract.capabilityGrowth.domainMasteryLevelLimit,null);
+  assert.equal(roadmap.vibeCognitiveCore.continuousSelfModelLearning.selfModelHypothesisGenerationAlwaysOn,true);
+  assert.equal(roadmap.vibeCognitiveCore.continuousSelfModelLearning.selfRealizationInterpretation,'FUNCTIONAL_SELF_MODEL_INSIGHT_AND_CAPABILITY_CALIBRATION_NOT_SENTIENCE_CLAIM');
+});
+
 test('Vibe brain is always running and uses verified checkpoints instead of terminal completion',()=>{
   const brain=roadmap.neuralDevelopmentBrain;
   const loop=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticGateRepairLoop;
@@ -446,4 +470,26 @@ test('24h learning is Gemini-free and provider failure cannot stop the portfolio
   assert.equal(fallback.noPortfolioWideStop,true);
   assert.equal(fallback.preserveCheckpoint,true);
   assert.equal(fallback.resumeExactFailedWork,true);
+});
+
+
+test('제2규칙 binds every observable external AI action to security quarantine and verified Vibe learning',()=>{
+  const rule=roadmap.ownerCanonicalRules?.rule2;
+  const worker=roadmap.developmentLifecycleMachine.primaryAiOrchestration.externalAiWorkerPolicy;
+  const security=roadmap.developmentLifecycleMachine.securityImmuneSystem;
+  assert.equal(rule?.id,'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION');
+  assert.equal(rule?.automaticContractBinding,true);
+  assert.equal(rule?.allExternalAiWorkersBound,true);
+  assert.equal(rule?.allCodingActionsIncluded,true);
+  assert.equal(rule?.everyActionBecomesLearningCandidate,true);
+  assert.equal(rule?.securityStewardMonitorsBeforeAcceptance,true);
+  assert.equal(rule?.rawHostilePayloadMayEnterLearning,false);
+  assert.equal(rule?.attackOrDestructionOfExternalProviderForbidden,true);
+  assert.equal(rule?.authorityExpansion,false);
+  assert.equal(rule?.gateWeakening,false);
+  assert.equal(worker.ownerRule2AutomaticBinding,true);
+  assert.equal(worker.hostileAttemptTerminatesAffectedExecutionContext,true);
+  assert.equal(worker.hostileAttemptMayNotPublishCandidate,true);
+  assert.equal(security.monitorAllObservableExternalAiActivity,true);
+  assert.equal(security.quarantineBlocksCandidatePublication,true);
 });

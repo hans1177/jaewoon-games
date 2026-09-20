@@ -96,6 +96,10 @@ function buildReusableHandoffGuidance(contexts = []) {
 }
 export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {} } = {}) {
   const normalizedTarget = clean(target).toLowerCase();
+  const evidence=(task?.evidence||[]).map(clean);
+  if(normalizedTarget==='web'&&evidence.includes('learning-web-artifact-practice')){
+    return freeze({route:'learning-web-artifact',requiresEditor:false,reason:'isolated-web-practice-artifact',repositorySourceWrite:false,artifactWrite:true});
+  }
   if (!taskRequiresWrite(task)) return freeze({ route: 'analysis-only', requiresEditor: false, reason: 'non-write-task' });
   const binary = responsibleFilesRequireEditor(task);
   const requested = requestMentionsEditorOnlyCapability(normalizedTarget, task.goal);
@@ -534,7 +538,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   return freeze({
     ...base, run:true, reason:'WORK_READY', selectedTask:task, taskId:task.id, gameId:task.gameId,
     target:plan.target, shard:task.shard, sourceRootLock:task.sourceRoot || adapter.source.root,
-    workMode:route.route==='analysis-only'?'analysis-only':route.route==='engine-editor'?'engine-editor-task':'source-change-candidate',
+    workMode:route.route==='analysis-only'?'analysis-only':route.route==='learning-web-artifact'?'learning-web-artifact':route.route==='engine-editor'?'engine-editor-task':'source-change-candidate',
     executionRoute:route.route, route, goal:executionGoal, originalGoal:task.goal, department:task.department, priority:task.priority, releaseState, maxWorkMinutes,
     source:freeze({
       root:adapter.source.root, writable:adapter.mayWriteSource, maintenanceOnly:adapter.source.maintenanceOnly === true,
@@ -589,6 +593,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
       paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
+      isolatedPracticeArtifactAllowed:route.route==='learning-web-artifact',
+      practiceArtifactRepositorySourceWrite:false,
+      practiceArtifactProductionPromotion:false,
       vibeOwnsAssetProductionDecision:true,
       webDirectAssetAuthoringAllowed:plan.target==='web',
       companyAssetReuseCandidateOnly:true,

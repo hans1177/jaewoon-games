@@ -63,6 +63,7 @@ const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REM
 const XP_SUCCESS=12;
 const XP_FAILURE=5;
 const LEVEL_THRESHOLDS=[0,30,70,120,180,250,340,450,580,730];
+const POST_LEGACY_LEVEL_XP_STEP=200;
 
 function inferDomains(text='',engine=''){
   const source=String(text);
@@ -75,9 +76,13 @@ function inferDomains(text='',engine=''){
 }
 
 function masteryLevel(xp=0){
+  const value=Math.max(0,Number(xp)||0);
   let level=1;
-  for(let i=0;i<LEVEL_THRESHOLDS.length;i++) if(Number(xp)>=LEVEL_THRESHOLDS[i]) level=i+1;
-  return Math.min(10,level);
+  for(let i=0;i<LEVEL_THRESHOLDS.length;i++) if(value>=LEVEL_THRESHOLDS[i]) level=i+1;
+  const legacyCeiling=LEVEL_THRESHOLDS.length;
+  const legacyCeilingXp=LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length-1];
+  if(value<legacyCeilingXp)return level;
+  return legacyCeiling+Math.floor((value-legacyCeilingXp)/POST_LEGACY_LEVEL_XP_STEP);
 }
 
 
@@ -1031,8 +1036,9 @@ export function buildBenchmarkLadder(masteryInput={},experienceInput={},companyQ
   const cases=[];
   for(const [track,domains] of Object.entries(mapping)){
     const avg=domains.reduce((n,d)=>n+(state.domains[d]?.level||1),0)/domains.length;
-    const level=Math.max(1,Math.min(10,Math.ceil(avg)));
-    cases.push({id:`mastery-${lower(track)}-l${level}`,track,level,state:'READY_FOR_VERIFIED_PRACTICE',countsAsTrainingSample:false,requiredVerification:['SYNTAX','RUNTIME_WHEN_APPLICABLE','INDEPENDENT_QA','REGRESSION'],promotionRule:'ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION'});
+    const level=Math.max(1,Math.ceil(avg));
+    const difficultyGeneration=Math.max(1,level-9);
+    cases.push({id:`mastery-${lower(track)}-l${level}-g${difficultyGeneration}`,track,level,difficultyGeneration,state:'READY_FOR_VERIFIED_PRACTICE',countsAsTrainingSample:false,requiredVerification:['SYNTAX','RUNTIME_WHEN_APPLICABLE','INDEPENDENT_QA','REGRESSION'],promotionRule:'ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION'});
   }
   const phase4GeneralizationCases=phase4GeneralizationBenchmarkCases(experienceInput,companyQueueInput);
   return {version:1,kind:'vibe2-benchmark-ladder',cases:[...cases,...phase4GeneralizationCases],phase4GeneralizationCases:phase4GeneralizationCases.length,authority:'practice-and-measurement-only'};
@@ -1110,17 +1116,47 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
-  return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,phase4GeneralizationDrills:phase4Drills.length,drills};
+  return {version:2,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,phase4GeneralizationDrills:phase4Drills.length,drills};
 }
 
 function isIdlePracticeTask(task={}){
   return (task?.evidence||[]).some(x=>clean(x)==='learning-practice-only')||/^LEARNING-PRACTICE-/.test(clean(task?.id));
 }
-function idlePracticeTaskId(drill={}){
-  return `LEARNING-PRACTICE-${clean(drill.id).replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,80)}`;
+function idlePracticeBaseId(drill={}){
+  return `LEARNING-PRACTICE-${clean(drill.id).replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,72)}`;
+}
+function practiceTaskGeneration(taskId='',baseId=''){
+  const id=clean(taskId),prefix=`${baseId}-g`;
+  if(id===baseId)return 1;
+  if(!id.startsWith(prefix))return 0;
+  const value=Number(id.slice(prefix.length));
+  return Number.isInteger(value)&&value>0?value:0;
+}
+function practiceArtifactScore(task={}){
+  const marker=(task?.evidence||[]).map(clean).filter(x=>x.startsWith('practice-artifact-score:')).at(-1);
+  return marker?Math.max(0,Number(marker.slice('practice-artifact-score:'.length))||0):null;
+}
+function nextPracticeGeneration(tasks=[],drill={}){
+  const baseId=idlePracticeBaseId(drill);
+  const rows=(tasks||[]).filter(isIdlePracticeTask).map(task=>({task,generation:practiceTaskGeneration(task?.id,baseId)})).filter(row=>row.generation>0).sort((a,b)=>a.generation-b.generation);
+  if(!rows.length)return {baseId,generation:1,previousScore:null};
+  const latest=rows[rows.length-1],status=lower(latest.task?.status);
+  if(['queued','running','blocked'].includes(status))return null;
+  const verifiedScores=rows
+    .filter(row=>{
+      const evidence=(row.task?.evidence||[]).map(clean);
+      return ['verified','done'].includes(lower(row.task?.status))||evidence.includes('practice-artifact-improved:YES');
+    })
+    .map(row=>practiceArtifactScore(row.task))
+    .filter(score=>score!==null);
+  const previousScore=verifiedScores.length?Math.max(...verifiedScores):null;
+  return {baseId,generation:latest.generation+1,previousScore};
+}
+function idlePracticeTaskId(drill={},generation=1){
+  return `${idlePracticeBaseId(drill)}-g${Math.max(1,Number(generation)||1)}`;
 }
 function practiceStatusRank(status=''){
-  return ({running:6,queued:5,done:4,failed:3,blocked:2,cancelled:1})[lower(status)]||0;
+  return ({running:7,queued:6,blocked:5,verified:4,done:4,failed:3,cancelled:1})[lower(status)]||0;
 }
 export function dedupeIdlePracticeTasks(tasksInput=[]){
   const tasks=Array.isArray(tasksInput)?tasksInput:[];
@@ -1162,19 +1198,22 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const deduped=dedupeIdlePracticeTasks(inputTasks);
   const tasks=deduped.tasks;
   const normalizedQueue=deduped.changed?{...queueInput,tasks}:queueInput;
-  const active=tasks.filter(task=>['queued','running'].includes(lower(task?.status)));
-  const productionActive=active.some(task=>!isIdlePracticeTask(task));
-  const existingPractice=active.find(isIdlePracticeTask);
-  if(productionActive||existingPractice)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:productionActive?'PRODUCTION_WORK_PRESENT':'PRACTICE_ALREADY_ACTIVE'};
-  const represented=new Set(tasks.filter(isIdlePracticeTask).map(task=>clean(task.id)).filter(Boolean));
-  const drill=(idlePracticeInput?.drills||[]).find(row=>!represented.has(idlePracticeTaskId(row)));
-  if(!drill)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:'NO_NEW_PRACTICE_DRILL'};
-  const id=idlePracticeTaskId(drill);
+  const candidates=(idlePracticeInput?.drills||[])
+    .map((drill,index)=>({drill,index,next:nextPracticeGeneration(tasks,drill)}))
+    .filter(row=>row.next)
+    .sort((a,b)=>a.next.generation-b.next.generation||a.index-b.index);
+  if(!candidates.length)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:'ALL_PRACTICE_GENERATIONS_ACTIVE'};
+  const {drill,next}=candidates[0];
+  const id=idlePracticeTaskId(drill,next.generation);
   const phase4=drill?.phase4Benchmark===true;
+  const artifactPractice=!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','WEB_RUNTIME'].includes(upper(domain)));
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
     `domains=${(drill.domains||[]).join(',')||'GENERAL'}`,
+    `practiceGeneration=${next.generation}`,
+    next.previousScore!==null?`previousArtifactScore=${next.previousScore}`:'',
+    artifactPractice?'practiceMode=WEB_ARTIFACT':'practiceMode=ANALYSIS',
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
     phase4?`phase4CapabilityId=${clean(drill.phase4CapabilityId)}`:'',
     phase4?`phase4BenchmarkCaseId=${clean(drill.phase4BenchmarkCaseId)}`:'',
@@ -1198,15 +1237,15 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     'phase4-strong-generalization-evidence:NO'
   ]:[];
   const task={
-    id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:phase4?(lower(drill.targetEngine)||'web'):'web',department:'development',type:'research',goal,
+    id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:phase4?(lower(drill.targetEngine)||'web'):'web',department:'learning',type:'research',goal,
     responsibleFiles:[],dependencies:[],priority:'low',releaseState:'other',status:'queued',
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
-    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence],
-    completionCriteria:['PRACTICE_ANALYSIS_COMPLETED','SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
+    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
+    completionCriteria:[artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
-  return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'IDLE_PRACTICE_ENQUEUED',task};
+  return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'PRACTICE_SIGNAL_ENQUEUED',task,practiceGeneration:next.generation,previousArtifactScore:next.previousScore,artifactPractice};
 }
 
 function get(item,...keys){for(const k of keys){const v=item?.[k];if(v!==undefined&&v!==null&&v!=='')return v;}return null;}
