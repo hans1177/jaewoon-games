@@ -151,7 +151,10 @@ test('system architecture worker filters control metadata from source context wi
       'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
       'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
       'architecture-neural-expansion-readiness:PENDING',
-      'architecture-neural-expansion-allowed:NO'
+      'architecture-neural-expansion-allowed:NO',
+      'architecture-rule5-atomization-required:YES',
+      'architecture-rule5-neuronization-required:YES',
+      'architecture-rule5-central-code-sync-required:YES'
     ],
     completionCriteria: [
       'STRUCTURAL_CAUSE_VERIFIED',
@@ -160,7 +163,10 @@ test('system architecture worker filters control metadata from source context wi
       'BEFORE_AFTER_METRIC_IMPROVED',
       'AUTHORITY_UNCHANGED',
       'GATES_UNCHANGED',
-      'NEURAL_EXECUTION_AUTHORITY_UNCHANGED'
+      'NEURAL_EXECUTION_AUTHORITY_UNCHANGED',
+      'RULE5_ATOMIC_ARCHITECTURE_DEFINED',
+      'RULE5_NEURON_MAPPING_DEFINED',
+      'RULE5_CENTRAL_ARCHITECTURE_CODE_TEST_SYNC_PASS'
     ]
   };
   const workOrder = {
@@ -176,7 +182,10 @@ test('system architecture worker filters control metadata from source context wi
       gateWeakeningAllowed: false,
       neuralExpansionPhase: 'LAST_STAGE_ONLY',
       neuralExpansionAllowed: false,
-      neuralExecutionAuthorityExpansionAllowed: false
+      neuralExecutionAuthorityExpansionAllowed: false,
+      rule5AtomicArchitectureRequired: true,
+      rule5NeuronizationRequired: true,
+      rule5CentralCodeSyncRequired: true
     }
   };
   write(path.join(cwd, responsibleFile), 'export const systemValue = 1;\n');
