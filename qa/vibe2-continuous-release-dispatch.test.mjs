@@ -65,3 +65,13 @@ test('web candidate release checks inline scripts and preserves historical save-
   assert.match(section,/VIBE2_WEB_INLINE_SCRIPT_QA=PASS/);
   assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
 });
+
+
+test('web candidate release blocks inline script syntax and historical save-key regressions',()=>{
+  const section=releaseWorkflow.slice(releaseWorkflow.indexOf('- name: Web syntax QA'),releaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR'));
+  assert.match(section,/VIBE2_WEB_INLINE_SCRIPT_QA=PASS/);
+  assert.match(section,/VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS/);
+  assert.match(section,/node --check/);
+  assert.match(section,/const historicalSaveKey="const key='jg-final:'\+C\.id;"/);
+  assert.match(section,/VIBE2_WEB_SAVE_KEY_REGRESSION/);
+});
