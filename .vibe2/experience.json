@@ -6999,110 +6999,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_1ef0af77c726ebc0b7ece1e6",
-          "taskId": "village-dungeons-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "web",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_e985c0d214b8307f1572e929",
-            "capability_ctrace_2fa9b22629238db4c1902074",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_74d39d52bb47e6444412ec04"
-          ],
-          "evidence": [
-            "candidate-sha:f887a174476eb17383bcaef8fae9ef87a9ada3a2",
-            "base-main:2a28174d168c1b13ca0a9460d8613cd103e93119",
-            "incremental-qa-hash:a8eb6e67f0a7f7275cf72f05feed58f028833b9133f50ca4be18a059a60dc8ac",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35517984173",
-            "reservation-id:35517984173:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:430f5975e56027c69f2f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_1b0346f93749938807dceb4e",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_1a453e3e34004eb1c376197d",
-            "capability_ctrace_74d39d52bb47e6444412ec04",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30"
-          ],
-          "evidence": [
-            "base-main:1576cdf989c742b02f33d5be2a8ea5d091d973a7",
-            "actions-run:35518411047",
-            "reservation-id:35518411047:1",
-            "capability-application-sample:f7c135f8e921c3e1a17c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_6ccca303df65c39aeea4b9d4",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_1a453e3e34004eb1c376197d",
-            "capability_ctrace_74d39d52bb47e6444412ec04",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30"
-          ],
-          "evidence": [
-            "base-main:1576cdf989c742b02f33d5be2a8ea5d091d973a7",
-            "actions-run:35518411047",
-            "reservation-id:35518411047:1",
-            "capability-application-sample:7d5f94dafef39498a275"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_95f61c260224be3d42144eff",
           "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
           "workKey": null,
@@ -9232,6 +9128,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0a56ccac33d225be20d9f982",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:4cea21b8dad1e4b0bbb7"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_63054cfe47bdfcb9d5e3e22d",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:aec30c655b1020095c22"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_64d69d1f93885cc5675afd8f",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:20dd056b56fece8b0238"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [
@@ -9297,11 +9292,11 @@
         "version": 2,
         "state": "GENERALIZATION_CANDIDATE",
         "applicationCount": 64,
-        "independentPassCount": 5,
-        "crossGameVerifiedApplicationCount": 5,
+        "independentPassCount": 4,
+        "crossGameVerifiedApplicationCount": 4,
         "directSupportCount": 0,
         "contradictionCount": 0,
-        "confidence": 0.8571,
+        "confidence": 0.8333,
         "generalizationCandidate": true,
         "benchmarkCount": 1,
         "unseenBenchmarkPassCount": 0,
@@ -9319,7 +9314,7 @@
         "automaticSupersession": false,
         "authorityExpanded": false
       },
-      "capabilityConfidence": 0.8571,
+      "capabilityConfidence": 0.8333,
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
@@ -20076,110 +20071,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_8a734ffed7d08fb388ee099a",
-          "taskId": "village-dungeons-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "web",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_e985c0d214b8307f1572e929",
-            "capability_ctrace_2fa9b22629238db4c1902074",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_74d39d52bb47e6444412ec04"
-          ],
-          "evidence": [
-            "candidate-sha:f887a174476eb17383bcaef8fae9ef87a9ada3a2",
-            "base-main:2a28174d168c1b13ca0a9460d8613cd103e93119",
-            "incremental-qa-hash:a8eb6e67f0a7f7275cf72f05feed58f028833b9133f50ca4be18a059a60dc8ac",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35517984173",
-            "reservation-id:35517984173:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:430f5975e56027c69f2f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_ac211400905f9f87893b5ec2",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_1a453e3e34004eb1c376197d",
-            "capability_ctrace_74d39d52bb47e6444412ec04",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30"
-          ],
-          "evidence": [
-            "base-main:1576cdf989c742b02f33d5be2a8ea5d091d973a7",
-            "actions-run:35518411047",
-            "reservation-id:35518411047:1",
-            "capability-application-sample:f7c135f8e921c3e1a17c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_c79e00c84228c5305eaac9d7",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_1a453e3e34004eb1c376197d",
-            "capability_ctrace_74d39d52bb47e6444412ec04",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30"
-          ],
-          "evidence": [
-            "base-main:1576cdf989c742b02f33d5be2a8ea5d091d973a7",
-            "actions-run:35518411047",
-            "reservation-id:35518411047:1",
-            "capability-application-sample:7d5f94dafef39498a275"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_44ee26fb8a2accacb729c287",
           "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
           "workKey": null,
@@ -22309,6 +22200,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_453f304ecc26b5404df5db30",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:4cea21b8dad1e4b0bbb7"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fa4d466c6e60ca7eadce8610",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:aec30c655b1020095c22"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ab28c9b3cf8a971363f167b1",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:20dd056b56fece8b0238"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [
@@ -22768,11 +22758,11 @@
         "version": 2,
         "state": "GENERALIZATION_CANDIDATE",
         "applicationCount": 64,
-        "independentPassCount": 5,
-        "crossGameVerifiedApplicationCount": 5,
+        "independentPassCount": 4,
+        "crossGameVerifiedApplicationCount": 4,
         "directSupportCount": 0,
         "contradictionCount": 0,
-        "confidence": 0.8571,
+        "confidence": 0.8333,
         "generalizationCandidate": true,
         "benchmarkCount": 10,
         "unseenBenchmarkPassCount": 0,
@@ -22790,7 +22780,7 @@
         "automaticSupersession": false,
         "authorityExpanded": false
       },
-      "capabilityConfidence": 0.8571,
+      "capabilityConfidence": 0.8333,
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
@@ -96142,6 +96132,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_62f0464464a37ec716bcd376",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:4cea21b8dad1e4b0bbb7"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e5f78b8f9793fb6420ff9cdf",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:aec30c655b1020095c22"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0fe5c388f23cbeed3614be5b",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:20dd056b56fece8b0238"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -96160,7 +96249,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 6,
+        "applicationCount": 9,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -96431,6 +96520,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_858b0b7d713805898c80cc29",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:4cea21b8dad1e4b0bbb7"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b0371bd670461984f56527a0",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:aec30c655b1020095c22"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d36cf98b47b4f28424a9e6e8",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:20dd056b56fece8b0238"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -96449,7 +96637,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 6,
+        "applicationCount": 9,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -96809,7 +96997,11 @@
         "base-main:9ec42c8d5719a0180dbcdbf79bce87040ebea197",
         "actions-run:35521766492",
         "reservation-id:35521766492:1",
-        "coding-trace:ctrace_cb97d519c7959378e9e06ba8"
+        "coding-trace:ctrace_cb97d519c7959378e9e06ba8",
+        "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+        "actions-run:35522246303",
+        "reservation-id:35522246303:1",
+        "coding-trace:ctrace_3f84eeae69c2ef58f2c83aa2"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -96818,8 +97010,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 3,
-      "confidence": 0.75,
+      "confirmations": 4,
+      "confidence": 0.8,
       "capabilityApplications": [
         {
           "version": 1,
@@ -96919,6 +97111,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_97cb0390925259150d6692be",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:4cea21b8dad1e4b0bbb7"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a38c0fa14820b814ac72c878",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:aec30c655b1020095c22"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_67e8d51af3522cf1f5d5f4d0",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4df55fa5262d4d2752236afe",
+            "capability_ctrace_8c7ace5633602b5ae0eecc41",
+            "capability_ctrace_f563bed9d891e1bf18f19596",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+            "capability_ctrace_7022dd1d29e03580f9fab379"
+          ],
+          "evidence": [
+            "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+            "actions-run:35522246303",
+            "reservation-id:35522246303:1",
+            "capability-application-sample:20dd056b56fece8b0238"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -96937,7 +97228,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 3,
+        "applicationCount": 6,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -98231,7 +98522,11 @@
         "actions-run:35521766492",
         "reservation-id:35521766492:1",
         "coding-trace:ctrace_ca9e8a184a353c58054c72d4",
-        "verified-coding-failure:NO_OP"
+        "verified-coding-failure:NO_OP",
+        "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+        "actions-run:35522246303",
+        "reservation-id:35522246303:1",
+        "coding-trace:ctrace_53aead3e726e71f1bb8c9413"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -98240,8 +98535,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -98314,7 +98609,11 @@
         "actions-run:35521766492",
         "reservation-id:35521766492:1",
         "coding-trace:ctrace_e0225474add0ea6185d8631c",
-        "verified-coding-failure:NO_OP"
+        "verified-coding-failure:NO_OP",
+        "base-main:9ea4c6253b44f40e1f5dcd9a75dd863b8dad9856",
+        "actions-run:35522246303",
+        "reservation-id:35522246303:1",
+        "coding-trace:ctrace_c8f25974e8bd1340f3071eff"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -98323,8 +98622,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
