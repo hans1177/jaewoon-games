@@ -58,7 +58,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const experienceReviews=[];
   const queueTasks=Array.isArray(queue.tasks)?queue.tasks:[];
   const taskById=new Map(queueTasks.map(task=>[clean(task?.id),task]));
-  const codingTraces=resultRows.map(row=>buildObservableCodingTrace({task:taskById.get(clean(row?.taskId))||{},result:row}));
+  const verifiedCodingTraceSamples=new Set();
   const tasks=queueTasks.map(task=>{
     if(!ids.has(clean(task.id)))return task;
     if(!reviewReady(task)){skipped.push({taskId:task.id,status:clean(task.status),blocker:clean(task.blocker)||null});return task;}
@@ -83,6 +83,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
+      verifiedCodingTraceSamples.add(resultSampleId(selectedResult)||clean(task.id));
       const rootCause=verifyNeuralRootCause({
         diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
         evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))],
@@ -130,6 +131,14 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
+  });
+  const codingTraces=resultRows.map(row=>{
+    const sampleId=resultSampleId(row);
+    const fanInVerified=Boolean(sampleId)&&verifiedCodingTraceSamples.has(sampleId);
+    const tracedResult=fanInVerified
+      ?{...row,roleResults:{...(row.roleResults||{}),regression:'PASS',review:'PASS'}}
+      :row;
+    return buildObservableCodingTrace({task:taskById.get(clean(row?.taskId))||{},result:tracedResult});
   });
   const experienceIds=new Set(experienceReviews.map(row=>clean(row?.id)).filter(Boolean));
   for(const row of resultRows){
