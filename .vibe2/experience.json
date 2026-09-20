@@ -1095,6 +1095,193 @@
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_7022dd1d29e03580f9fab379",
+      "fingerprint": "fp_1eb33h7",
+      "gameId": "amusement-tycoon",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo",
+      "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo",
+      "change": "strategy CAUSAL_TRACE_CROSSCHECK | variant speculative-2 | attempts 2 | context PRIMARY_SYMBOL_WINDOWS | changed-files 1",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "incremental-qa-pass",
+        "performance-sanity-pass",
+        "full-fan-in-regression-pass",
+        "package-review-pass"
+      ],
+      "build": "actions-run:35489811444",
+      "evidence": [
+        "candidate-sha:e784e12ca3b74f442dd4b93bbe8e6d75acd92b05",
+        "base-main:664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "incremental-qa-hash:e105ff07119727408a759278d7a45e5ae285f631aa9a5f2054a0a176af6cd179",
+        "causal-replay-status:PLAN_ONLY",
+        "architecture-drift-status:ANALYZED",
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "coding-trace:ctrace_7022dd1d29e03580f9fab379",
+        "fan-in-review:PASS"
+      ],
+      "reusablePatterns": [
+        "CAPABILITY:CODING_STRATEGY:CAUSAL_TRACE_CROSSCHECK",
+        "CAPABILITY:RESPONSIBILITY_LOCALIZATION:PLACEMENT+PRESENTATION+WORLD",
+        "CAPABILITY:CONTEXT_SELECTION:PRIMARY_SYMBOL_WINDOWS",
+        "CAPABILITY:FAILURE_RECOVERY:RECOVERED_GENERATION",
+        "CAPABILITY:REGRESSION_REASONING:FULL_FAN_IN_BOUND",
+        "CAPABILITY_DOMAIN:TOOL_ORCHESTRATION",
+        "CAPABILITY_DOMAIN:RESPONSIBILITY_LOCALIZATION",
+        "CAPABILITY_DOMAIN:ROOT_CAUSE_DEBUGGING",
+        "CAPABILITY_DOMAIN:CONTEXT_SELECTION",
+        "CAPABILITY_DOMAIN:ARCHITECTURE_JUDGMENT",
+        "CAPABILITY_DOMAIN:FAILURE_RECOVERY",
+        "CAPABILITY_DOMAIN:QA_DESIGN",
+        "CAPABILITY_DOMAIN:REGRESSION_REASONING",
+        "CAPABILITY_DOMAIN:RESOURCE_EFFICIENCY",
+        "CAPABILITY_DOMAIN:PROBLEM_DECOMPOSITION"
+      ],
+      "avoidPatterns": [],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_85db81b69282663e194c1627",
+      "fingerprint": "fp_1qj7unn",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
+      "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T04:38:19.079Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서",
+      "change": "strategy PRIMARY_RESPONSIBILITY_MINIMAL | variant primary | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:35489811444",
+      "evidence": [
+        "base-main:664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "source-generation-failure:TIMEOUT",
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "coding-trace:ctrace_85db81b69282663e194c1627",
+        "verified-coding-failure:TIMEOUT"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:TIMEOUT",
+        "CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:TIMEOUT"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_41147755bdb5947f1fd1278f",
+      "fingerprint": "fp_mmx6k6",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
+      "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T04:38:19.079Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant speculative-1 | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:35489811444",
+      "evidence": [
+        "base-main:664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "source-generation-failure:EDIT_MATCH",
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "coding-trace:ctrace_41147755bdb5947f1fd1278f",
+        "verified-coding-failure:EDIT_MATCH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:EDIT_MATCH",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:EDIT_MATCH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "fingerprint": "fp_ne976m",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
+      "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T04:38:19.079Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서",
+      "change": "strategy CAUSAL_TRACE_CROSSCHECK | variant speculative-2 | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:35489811444",
+      "evidence": [
+        "base-main:664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "source-generation-failure:EDIT_MATCH",
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "coding-trace:ctrace_d2ee6e412a4de5a362ff451b",
+        "verified-coding-failure:EDIT_MATCH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:EDIT_MATCH",
+        "CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:EDIT_MATCH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }

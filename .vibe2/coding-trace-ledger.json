@@ -3274,13 +3274,1340 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_02cfc51acdb654fe21f55803",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27638,
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-primary-35489811444-1",
+        "candidateSha": "707c04a9f20d85a98c0d636257c5903ad2754a08"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 304791,
+        "candidateMs": 265282,
+        "qaMs": 77
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "incremental-qa-hash:e105ff07119727408a759278d7a45e5ae285f631aa9a5f2054a0a176af6cd179"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_569d9fe5359c13fa8e3988f5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27638,
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-1-35489811444-1",
+        "candidateSha": "8aca343bbf82519393158bf0b1c6f4be32e68645"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 303898,
+        "candidateMs": 254661,
+        "qaMs": 63
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "incremental-qa-hash:e105ff07119727408a759278d7a45e5ae285f631aa9a5f2054a0a176af6cd179"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_7022dd1d29e03580f9fab379",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-corelo"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27638,
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-2-35489811444-1",
+        "candidateSha": "e784e12ca3b74f442dd4b93bbe8e6d75acd92b05"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 303166,
+        "candidateMs": 266309,
+        "qaMs": 79
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "incremental-qa-hash:e105ff07119727408a759278d7a45e5ae285f631aa9a5f2054a0a176af6cd179"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_a0809b00e8e4e016a40f93ba",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "primary",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackNow",
+          "enter",
+          "initAudio"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "AI",
+          "GOAL_STATE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27623,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35489811444-1",
+        "candidateSha": "9664b45e36956e7ad90a22659c6741729919e7a9"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 305475,
+        "candidateMs": 273116,
+        "qaMs": 93
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_0f887d34389811c71d19620e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-1",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackNow",
+          "enter",
+          "initAudio"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "AI",
+          "GOAL_STATE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27623,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35489811444-1",
+        "candidateSha": "ae1b9928dcc1e8c13643859cfc019f5f107ad1d3"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 305325,
+        "candidateMs": 273781,
+        "qaMs": 93
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_92eaf32cb0d856e1040a1cba",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-2",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackNow",
+          "enter",
+          "initAudio"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "AI",
+          "GOAL_STATE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27623,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35489811444-1",
+        "candidateSha": "9704786dbe83ad581adda0df3a43b9d5351913cd"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "incremental-qa-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_FAIL",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 314848,
+        "candidateMs": 272068,
+        "qaMs": 96
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_12b8c85607b000d4a594e800",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "BOUNDED_FILE_EXCERPT_FALLBACK",
+        "contextBytes": 25297,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-primary-35489811444-1",
+        "candidateSha": "b2c2515806f8b50f9882dfccf3dd223d6ce983aa"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "performance-sanity-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 298437,
+        "candidateMs": 266314,
+        "qaMs": 75
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "incremental-qa-hash:ba5b866f8a56f2b7a9657520af51f3f3dc59f6cc16773cb4cf369d7a5c210dae"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_fbb06b5d794cff69c039d98c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-1",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "BOUNDED_FILE_EXCERPT_FALLBACK",
+        "contextBytes": 25297,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-1-35489811444-1",
+        "candidateSha": "e053414ec50d18fbb00aa56b543a88333e40d5aa"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "performance-sanity-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 297368,
+        "candidateMs": 266088,
+        "qaMs": 74
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "incremental-qa-hash:ba5b866f8a56f2b7a9657520af51f3f3dc59f6cc16773cb4cf369d7a5c210dae"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_1139069d82d2fb30335c7583",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-2",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "BOUNDED_FILE_EXCERPT_FALLBACK",
+        "contextBytes": 25297,
+        "failureFingerprint": "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|STATE_MACHINE|UI_STATE|WEB_RUNTIME",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/fantasy-survival-presentation-asset-adaptation-v1-speculative-2-35489811444-1",
+        "candidateSha": "97f4d1526330e7783856dcb42e45b8076509f9e4"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "performance-sanity-failed",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 173728,
+        "candidateMs": 126286,
+        "qaMs": 51
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "incremental-qa-hash:ba5b866f8a56f2b7a9657520af51f3f3dc59f6cc16773cb4cf369d7a5c210dae"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_85db81b69282663e194c1627",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T04:38:19.079Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "TIMEOUT",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 441072,
+        "candidateMs": 406781,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "source-generation-failure:TIMEOUT"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_41147755bdb5947f1fd1278f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T04:38:19.079Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 "
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 286213,
+        "candidateMs": 256430,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_d2ee6e412a4de5a362ff451b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "664b8d1094efaa645154fa742536654e4d3eaf3d",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T04:38:19.079Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 "
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 287903,
+        "candidateMs": 257016,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35489811444",
+        "reservation-id:35489811444:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 3,
+    "added": 12,
     "refreshed": 0,
-    "total": 27,
-    "verified": 2,
-    "failures": 21
+    "total": 39,
+    "verified": 3,
+    "failures": 30
   }
 }
