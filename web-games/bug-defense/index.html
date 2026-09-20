@@ -137,7 +137,7 @@ canvas{display:block;width:100%;height:auto;touch-action:none;background:linear-
 <section class="panel endPanel" id="endPanel">
   <h2 id="endTitle">정원을 지켰어!</h2>
   <p id="endText"></p>
-  <button class="retryBtn" id="retryBtn" data-gameplay-action="retry-wave" data-retry="true" data-mechanic-id="wave-retry">다시 도전</button>
+  <button class="retryBtn" id="retryBtn" data-gameplay-action="retry-wave" data-retry="true" data-mechanic-id="wave-retry" disabled>다시 도전</button>
 </section>
 
 <div class="status" id="status">READY · 적의 속성을 보고 상성 곤충을 배치해.</div>
@@ -462,18 +462,18 @@ function loseGame(){
   state.phase='lost';state.paused=false;state.enemies=[];state.spawnQueue=[];
   ui.endPanel.classList.add('show');ui.endTitle.textContent='방어선이 무너졌어';
   ui.endText.textContent='생태 경험 '+state.knowledge+'은 유지돼. 현재 웨이브 시작 상태로 돌아가 배치를 바꿔볼 수 있어.';
-  ui.retryBtn.textContent='웨이브 '+(state.wave+1)+' 다시 도전';
+  ui.retryBtn.textContent='웨이브 '+(state.wave+1)+' 다시 도전';ui.retryBtn.disabled=false;
   msg('실패 · 배치를 다시 짜봐',1200);saveMeta();updateUi();
 }
 function winGame(){
   state.phase='won';state.enemies=[];state.spawnQueue=[];
   ui.endPanel.classList.add('show');ui.endTitle.textContent='정원을 지켰어!';
   ui.endText.textContent='6개 웨이브 완료 · 생태 경험 '+state.knowledge+' · 상성과 서식지 적응을 끝까지 활용했어.';
-  ui.retryBtn.textContent='처음부터 다시';
+  ui.retryBtn.textContent='처음부터 다시';ui.retryBtn.disabled=false;
   state.bestWave=waves.length;saveMeta();beep(880,.22,.055);updateUi();
 }
 function retry(){
-  ui.endPanel.classList.remove('show');
+  ui.endPanel.classList.remove('show');ui.retryBtn.disabled=true;
   if(state.phase==='lost'&&state.waveCheckpoint){
     state.pollen=state.waveCheckpoint.pollen;state.plantHp=state.waveCheckpoint.plantHp;
     state.towers=JSON.parse(JSON.stringify(state.waveCheckpoint.towers));
