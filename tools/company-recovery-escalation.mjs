@@ -19,13 +19,24 @@ function evidenceSignature(task={}){
   if(cause)return clean(cause.slice('failure-cause:'.length));
   return clean(task.blocker||task.lastOutcome);
 }
-function failureStage(task={}){
+function canonicalFailureStage(stage='',signature=''){
+  const raw=clean(stage),sig=clean(signature).replace(/^failure-signature:/i,'').toLowerCase();
+  if(sig==='source-candidate-generation-failed')return'SOURCE_CANDIDATE_GENERATION';
+  if(['system-ai-implementation-failed','repeated-system-ai-implementation-failed'].includes(sig))return'SYSTEM_AI_IMPLEMENTATION';
+  if(sig==='incremental-qa-failed')return'INCREMENTAL_QA';
+  if(sig==='performance-sanity-failed')return'PERFORMANCE_SANITY';
+  return raw&&raw.toUpperCase()!=='UNKNOWN_STAGE'?raw:'UNKNOWN_STAGE';
+}
+function failureStage(task={},signature=''){
   const ev=uniq(task.evidence);
   const recoveryExact=[...ev].reverse().find(x=>x.startsWith('recovery-exact-stage:'));
-  if(recoveryExact)return clean(recoveryExact.slice('recovery-exact-stage:'.length));
+  if(recoveryExact){
+    const value=clean(recoveryExact.slice('recovery-exact-stage:'.length));
+    if(value.toUpperCase()!=='UNKNOWN_STAGE')return canonicalFailureStage(value,signature);
+  }
   const explicit=[...ev].reverse().find(x=>x.startsWith('failure-stage:'));
-  if(explicit)return clean(explicit.slice('failure-stage:'.length));
-  return clean(task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE');
+  if(explicit)return canonicalFailureStage(clean(explicit.slice('failure-stage:'.length)),signature);
+  return canonicalFailureStage(clean(task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE'),signature);
 }
 function gameRepairRoute(task={}){
   const target=clean(task.target).toLowerCase();
@@ -64,14 +75,14 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
     const ev=uniq(task.evidence);
     const repeated=Number(task.recoveryGeneration||0)>0||ev.some(x=>x.startsWith('system-steward:retry-exhausted-regenerated:'))||clean(task.status)==='failed';
     const sig=evidenceSignature(task);
-    if(repeated&&sig)candidates.push({sourceQueue:'vibe2',task,signature:sig,stage:failureStage(task)});
+    if(repeated&&sig)candidates.push({sourceQueue:'vibe2',task,signature:sig,stage:failureStage(task,sig)});
   }
   for(const task of sysTasks){
     const status=clean(task.status).toLowerCase();
     if(['done','completed','cancelled','verified'].includes(status))continue;
     const repeated=Number(task.retries||0)>=2||status==='failed';
     const sig=clean(task.blocker||task.lastOutcome);
-    if(repeated&&sig)candidates.push({sourceQueue:'system-ai',task,signature:sig,stage:failureStage(task)});
+    if(repeated&&sig)candidates.push({sourceQueue:'system-ai',task,signature:sig,stage:failureStage(task,sig)});
   }
   const grouped=new Map();
   for(const row of candidates){
