@@ -1362,7 +1362,7 @@ function hostApplyRemoteAttack(a){
    queueDeathAnimation(e,now);
    e.hp=0;
    if(e.type.labBoss)finishStoryLabBoss(e);
-   else if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});
+   else if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+enemyRespawnDelay(e.type)});
    multiSend('kill-reward',{targetId:a.attackerId,typeId:e.type.id});
   }
  }
@@ -1454,8 +1454,8 @@ function damagePet(n,attacker=null){
 }
 function finishPetEnemyKill(e,ownerId=multiplayer.playerId){
  queueDeathAnimation(e,performance.now());e.hp=0;
- if(ownerId===multiplayer.playerId){state.player.kills++;awardLoot(e);if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});updateHud()}
- else{if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})}
+ if(ownerId===multiplayer.playerId){state.player.kills++;awardLoot(e);if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+enemyRespawnDelay(e.type)});updateHud()}
+ else{if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+enemyRespawnDelay(e.type)});multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})}
  state.pet.targetId=null;state.dirty=true
 }
 function hostApplyPetAttack(a){
@@ -1519,7 +1519,7 @@ function attack(){
      queueDeathAnimation(e,now);
      p.kills++;
      if(e.type.labBoss){finishStoryLabBoss(e)}
-     else{awardLoot(e);if(e.type.boss){rewardBoss()}else{if(!e.type.summoned&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});showNotice(e.type.name+' 처치')}}
+     else{awardLoot(e);if(e.type.boss){rewardBoss()}else{if(!e.type.summoned&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+enemyRespawnDelay(e.type)});showNotice(e.type.name+' 처치')}}
    }
  }
  if(hit)state.dirty=true;updateHud()
@@ -1812,6 +1812,7 @@ function monsterTargetForIronSpirit(e){
   }
   return best?{target:best,d:bestD}:null
 }
+function enemyRespawnDelay(type){return type&&(type.lakeZone||type.underwater||type.jungle||type.snow)?60000:12000}
 function enemyIncomingDamage(target,amount,now=performance.now()){
  return target?.type?.id==='lakecroc'&&now<(target.stunnedUntil||0)?amount*2:amount
 }
@@ -1825,7 +1826,7 @@ function damageMonster(target,amount,attacker,now){
     queueDeathAnimation(target,now);
     target.hp=0;
     target.enemyTarget=null;
-    if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+12000});
+    if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+enemyRespawnDelay(target.type)});
   }
 }
 function enemyFastAttackException(type){
