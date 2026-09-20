@@ -2323,7 +2323,8 @@
       "coding_negative_yptmui",
       "coding_negative_903nis",
       "coding_negative_1wgdfun",
-      "coding_negative_f9ni04"
+      "coding_negative_f9ni04",
+      "coding_negative_zcjbmg"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -4138,7 +4139,7 @@
         "verifiedApplications": 411,
         "firstCandidatePasses": 50,
         "totalGenerationAttempts": 941,
-        "verifiedFailures": 297,
+        "verifiedFailures": 298,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 54,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -4810,12 +4811,32 @@
             "lastEvidence": "coding_1djjk4r",
             "lastFailureEvidence": null,
             "lastUpdatedAt": "2026-09-20T17:07:00.650Z"
+          },
+          "web|INVALID_PATH|MALFORMED_OUTPUT|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 1
+            },
+            "failureTargets": {
+              "web": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_zcjbmg",
+            "lastUpdatedAt": "2026-09-20T23:42:47.224Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_k76qb5",
-        "lastFailureEvidence": "coding_negative_1wgdfun",
-        "lastUpdatedAt": "2026-09-20T23:35:24.626Z"
+        "lastFailureEvidence": "coding_negative_zcjbmg",
+        "lastUpdatedAt": "2026-09-20T23:42:47.224Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 82,
@@ -7646,7 +7667,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T23:41:30.853Z",
+    "lastBuiltAt": "2026-09-20T23:42:47.280Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10321,5 +10342,5 @@
       "knowledge_mcleta"
     ]
   },
-  "updatedAt": "2026-09-20T23:41:30.853Z"
+  "updatedAt": "2026-09-20T23:42:47.280Z"
 }
