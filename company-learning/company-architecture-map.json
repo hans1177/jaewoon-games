@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1090,7 +1090,7 @@
     }
   },
   "capabilityDistillationTopology": {
-    "version": 5,
+    "version": 6,
     "centralContract": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
     "flow": [
       "OBSERVABLE_CODING_TRACE_CAPTURE",
@@ -1155,7 +1155,7 @@
       ]
     },
     "phase2": {
-      "state": "HARDENED_AND_RUNTIME_MIGRATION_VERIFIED",
+      "state": "COMPLETE_RUNTIME_RETRIEVAL_VERIFIED",
       "sourcePr": 1899,
       "mergedCommit": "664b8d1094efaa645154fa742536654e4d3eaf3d",
       "mergedPrProvenanceFlow": [
@@ -1179,9 +1179,9 @@
       "writableScopeExpansionAllowed": false,
       "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
       "authorityChange": "NONE",
-      "nextGate": "OBSERVE_DISTINCT_VERIFIED_CAPABILITY_RETRIEVAL_IN_REAL_WORK_ORDER",
+      "nextGate": "CENTRAL_STRATEGY_DEFINE_NEXT_IMPLEMENTATION_PHASE_BEFORE_FURTHER_CAPABILITY_EXPANSION",
       "productionObservation": {
-        "state": "HARDENING_RUNTIME_MIGRATION_VERIFIED",
+        "state": "RUNTIME_RETRIEVAL_VERIFIED",
         "provenanceWorkflowRunId": 35489811313,
         "observedPullRequest": 1899,
         "legacyMigratedCount": 2,
@@ -1193,7 +1193,16 @@
         "lockPolicyMutationObserved": false,
         "automaticPromotionObserved": false,
         "authorityExpansionObserved": false,
-        "retrievalRuntimeEvidencePending": true
+        "retrievalRuntimeEvidencePending": false,
+        "realWorkOrderRunId": 35489811444,
+        "observedWorkerCount": 4,
+        "verifiedCapabilityCountPerSample": 4,
+        "capabilityApplied": true,
+        "genericCapabilityPartitionExcludedPerSample": 4,
+        "unifiedExperienceCountPerSample": 8,
+        "duplicateCapabilityInjectionObserved": false,
+        "currentExperienceRecordCount": 17,
+        "currentCapabilityExperienceRecordCount": 8
       },
       "hardeningRequired": [],
       "workerTraceLedger": "vibe2-unreal-core:.vibe2/coding-trace-ledger.json",
