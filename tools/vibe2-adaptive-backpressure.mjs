@@ -40,7 +40,7 @@ export function createParallelismControl(input = {}) {
 export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX, { minimumMax = DEFAULT_ADAPTIVE_TARGET } = {}) {
   const control = createParallelismControl(controlInput);
   const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, DEFAULT_ADAPTIVE_MAX);
-  const floor = clamp(Math.floor(num(minimumMax) || DEFAULT_ADAPTIVE_TARGET), 1, DEFAULT_ADAPTIVE_MAX);
+  const floor = clamp(Math.max(DEFAULT_ADAPTIVE_TARGET, Math.floor(num(minimumMax) || DEFAULT_ADAPTIVE_TARGET)), 1, DEFAULT_ADAPTIVE_MAX);
   return Math.max(1, Math.min(requested, Math.max(control.currentMax, floor)));
 }
 
@@ -107,7 +107,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     });
   }
 
-  const configuredFloor = clamp(Math.floor(num(minimumMax) || DEFAULT_ADAPTIVE_TARGET), 1, DEFAULT_ADAPTIVE_MAX);
+  const configuredFloor = clamp(Math.max(DEFAULT_ADAPTIVE_TARGET, Math.floor(num(minimumMax) || DEFAULT_ADAPTIVE_TARGET)), 1, DEFAULT_ADAPTIVE_MAX);
   const originalCurrent = control.currentMax;
   const current = Math.max(originalCurrent, configuredFloor);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
