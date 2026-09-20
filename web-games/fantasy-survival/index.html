@@ -245,7 +245,7 @@ const MUSIC_THEMES={
 const music={ctx:null,master:null,started:false,enabled:true,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,battleActive:false,battleTheme:null};
 function ensureMusicStarted(){
  if(!music.enabled)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
- if(!music.ctx){music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=.48;music.master.connect(music.ctx.destination);const len=Math.max(1,Math.floor(music.ctx.sampleRate*.5)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf}
+ if(!music.ctx){music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=1.44;music.master.connect(music.ctx.destination);const len=Math.max(1,Math.floor(music.ctx.sampleRate*.5)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf}
  if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});music.started=true;if(!music.nextAt){music.nextAt=music.ctx.currentTime+.03;music.trackStart=music.ctx.currentTime}
 }
 function scaleFreq(root,degree,minor=false,oct=0){const major=[0,2,4,5,7,9,11],min=[0,2,3,5,7,8,10],scale=minor?min:major;let d=degree,shift=0;while(d<0){d+=7;shift--}while(d>=7){d-=7;shift++}return root*Math.pow(2,(scale[d]+12*(shift+oct))/12)}
@@ -278,7 +278,7 @@ function scheduleBandBeat(key,t,beat,at){
  }
 }
 function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.03;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.03;music.nextAt=music.trackStart}while(music.nextAt<now+.18){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur}}
-function toggleBgm(){music.enabled=!music.enabled;const b=document.getElementById('bgmToggle');if(b)b.textContent=music.enabled?'BGM ON':'BGM OFF';if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(.48,music.ctx.currentTime)}
+function toggleBgm(){music.enabled=!music.enabled;const b=document.getElementById('bgmToggle');if(b)b.textContent=music.enabled?'BGM ON':'BGM OFF';if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(1.44,music.ctx.currentTime)}
 function markExplored(){
   const p=state.player,gx=Math.floor(p.x/MAP_CELL),gy=Math.floor(p.y/MAP_CELL);
   for(let ox=-1;ox<=1;ox++)for(let oy=-1;oy<=1;oy++){
@@ -597,7 +597,7 @@ function closeRecorderOverlay(delay=0){
 }
 function duckBgmForRecorder(on){
  if(!music.master||!music.ctx)return;
- const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.06:(music.enabled?.48:.0001),now,.08)
+ const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.06:(music.enabled?1.44:.0001),now,.08)
 }
 function recorderBlobSrc(){
  if(recorderBlobUrl)return recorderBlobUrl;
