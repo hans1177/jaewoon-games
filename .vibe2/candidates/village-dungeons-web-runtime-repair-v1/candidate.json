@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "var interactables=[];",
+      "replace": "var m=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,1.5),mat(0xdde8ef));"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
