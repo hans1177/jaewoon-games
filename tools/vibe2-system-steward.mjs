@@ -41,7 +41,7 @@ function unlimitedCausalRepairTasks(queue){
     &&safeTask(task));
 }
 
-export function runSystemStewardState({queueInput={},controlInput={},now=new Date().toISOString(),staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS}={}){
+export function runSystemStewardState({queueInput={},controlInput={},neuralExpansionReadiness={},now=new Date().toISOString(),staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS}={}){
   let queue=createVibeContinuousQueue(queueInput);
   let control=createParallelismControl(controlInput);
   const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
@@ -115,7 +115,7 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
   }
   actions.push(...machineRepairActions);
 
-  const evolution=injectSelfArchitectureEvolutionTasks(queue,control);
+  const evolution=injectSelfArchitectureEvolutionTasks(queue,{...control,neuralExpansionReadiness});
   if(evolution.changed){
     queue=evolution.queue;
     actions.push('ENQUEUE_SELF_ARCHITECTURE_EVOLUTION');
@@ -130,15 +130,25 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
     taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control};
 }
 
-export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',now=new Date().toISOString()}={}){
-  const result=runSystemStewardState({queueInput:readJson(queueFile,{tasks:[]}),controlInput:readJson(controlFile,{}),now});
+export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',neuralReadinessFile='',now=new Date().toISOString()}={}){
+  const result=runSystemStewardState({
+    queueInput:readJson(queueFile,{tasks:[]}),
+    controlInput:readJson(controlFile,{}),
+    neuralExpansionReadiness:readJson(neuralReadinessFile,{}),
+    now
+  });
   if(result.changedQueue)writeJson(queueFile,result.queue);
   if(result.changedControl)writeJson(controlFile,result.control);
   return result;
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runSystemStewardFiles({queueFile:clean(args.queue)||'.vibe2/queue.json',controlFile:clean(args.control)||'.vibe2/parallelism-control.json',now:clean(args.now)||new Date().toISOString()});
+  const args=parseArgs(),result=runSystemStewardFiles({
+    queueFile:clean(args.queue)||'.vibe2/queue.json',
+    controlFile:clean(args.control)||'.vibe2/parallelism-control.json',
+    neuralReadinessFile:clean(args['neural-readiness']),
+    now:clean(args.now)||new Date().toISOString()
+  });
   console.log('VIBE2_SYSTEM_STEWARD_ACTION='+result.action);
   console.log('VIBE2_SYSTEM_STEWARD_ACTIONS='+result.actions.join(','));
   console.log('VIBE2_SYSTEM_STEWARD_TASK='+(result.taskId||'NONE'));
@@ -147,4 +157,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('VIBE2_SYSTEM_STEWARD_CONTROL_CHANGED='+(result.changedControl?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_MAX='+result.queue.maxConcurrentTasks);
   console.log('VIBE2_SYSTEM_STEWARD_ADAPTIVE_MAX='+result.control.currentMax);
+  const neuralReady=result.queue.tasks.some(task=>(task.evidence||[]).includes('architecture-neural-expansion-readiness:PASS'));
+  console.log('VIBE2_NEURAL_EXPANSION_READINESS='+(neuralReady?'PASS':'PENDING'));
 }
