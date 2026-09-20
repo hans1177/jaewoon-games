@@ -321,6 +321,31 @@ test('reactivated DEVELOPMENT_CONFIRMED restores only central-authority cancella
   assert.equal(untouched.blocker,'superseded-by:VIBE_WEB_REPAIR');
 });
 
+test('verified Web repair checkpoint creates the next causal repair generation while runtime still requires repair',()=>{
+  const root=tempRepo();
+  const gameId='repair-generation';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing</main></body></html>','utf8');
+  const verified={
+    id:`${gameId}-web-runtime-repair-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'previous repair',releaseState:'development-confirmed',status:'verified',retries:0,
+    evidence:['company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','signal-state:VERIFIED_CHECKPOINT']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Repair Generation',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{gameId,gameName:'Repair Generation',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED'}]},
+    queue:{maxConcurrentTasks:20,tasks:[verified]},repoRoot:root,maxConcurrentTasks:20
+  });
+  assert.equal(result.planned,true);
+  const next=result.tasks.find(row=>row.id===`${gameId}-web-runtime-repair-v2`);
+  assert.ok(next);
+  assert.ok(next.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
+  assert.equal(result.queue.tasks.filter(row=>row.id.startsWith(`${gameId}-web-runtime-repair-v`)).length,2);
+});
+
 test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
   const root=tempRepo();
   const gameId='repair-web-runtime';
@@ -685,7 +710,7 @@ test('planner groups disjoint post-assessment candidates into one work package',
   const webRoot=path.join(root,'web-games/dev-web');
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Dev</title></head><body><button>Play</button></body></html>\n','utf8');
   fs.writeFileSync(path.join(webRoot,'extra.js'),'// TODO: harden secondary UI path\n','utf8');
-  const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'done',goal:'assessment complete',evidence:['existing-web-assessment-required']};
+  const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:'dev-web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},
@@ -705,19 +730,19 @@ test('completed diagnostic package is never recreated after assessment and compl
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Diag</title></head><body><button>Play</button></body></html>','utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
-  const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'done',goal:'assessment complete',evidence:['existing-web-assessment-required']};
+  const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
   const firstKeys=first.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
   assert.equal(firstKeys.length>0,true);
-  const done={...first.task,status:'done',result:'PASS'};
+  const done={...first.task,status:'verified',result:'PASS'};
   const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed,done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
     const secondKeys=second.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
     assert.equal(secondKeys.some(x=>firstKeys.includes(x)),false);
   }else{
-    assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
+    assert.equal(['CAUSAL_REPLAN_REQUIRED','AWAITING_INDEPENDENT_CAUSAL_SIGNAL'].includes(second.reason),true);
   }
 });
 
@@ -729,12 +754,12 @@ test('completed Unity package is never recreated after completion and tiny seed 
   assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
   assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
   assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
-  const done={...first.task,status:'done',result:'PASS'};
+  const done={...first.task,status:'verified',result:'PASS'};
   const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
   }else{
-    assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
+    assert.equal(['CAUSAL_REPLAN_REQUIRED','AWAITING_INDEPENDENT_CAUSAL_SIGNAL'].includes(second.reason),true);
   }
 });
 
@@ -866,7 +891,7 @@ test('presentation quality passes are queued in canonical order',()=>{
   const done=(id)=>({
     id,gameId,target:'web',department:'development',type:'implementation',sourceRoot:`web-games/${gameId}`,
     responsibleFiles:[`web-games/${gameId}/index.html`],goal:'done',releaseState:'development-confirmed',
-    status:'done',retries:0,maxRetries:2,evidence:[]
+    status:'verified',retries:0,maxRetries:2,evidence:[]
   });
   let queue={tasks:[]};
   const first=findWebPresentationQualityTask(project,root,queue);
@@ -1019,7 +1044,7 @@ test('presentation planner adds genre-specific UI animation and commercial readi
   assert.match(first.goal,/동일 HUD를 복사하지 않는다/);
   assert.match(first.goal,/첫 10분/);
 
-  const done=(task)=>({...task,status:'done'});
+  const done=(task)=>({...task,status:'verified'});
   const second=findWebPresentationQualityTask(project,root,{tasks:[done(first)]});
   assert.equal(second.id,`${gameId}-presentation-living-motion-v1`);
   const third=findWebPresentationQualityTask(project,root,{tasks:[done(first),done(second)]});
@@ -1040,7 +1065,7 @@ test('final Web presentation pass requires commercial readiness marker and keeps
   for(const suffix of expected){
     const next=findWebPresentationQualityTask(project,root,{tasks});
     assert.equal(next.id,`${gameId}-presentation-${suffix}-v1`);
-    tasks.push({...next,status:'done'});
+    tasks.push({...next,status:'verified'});
   }
   const finalPass=findWebPresentationQualityTask(project,root,{tasks});
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);

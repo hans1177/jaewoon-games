@@ -368,7 +368,7 @@ test('all automated gates repair and retest the same failed gate until PASS',()=
   assert.equal(loop.maxParallelGames,null);
   assert.equal(loop.parallelismPolicy,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_ONLY');
   assert.equal(loop.portfolioWidePassBarrier,false);
-  assert.equal(loop.retryLimit,'UNLIMITED_UNTIL_PASS_OR_EXPLICIT_STOP_CONDITION');
+  assert.equal(loop.retryLimit,'UNLIMITED_CAUSAL_REPAIR_WITH_LOCAL_INHIBITORS');
   assert.equal(loop.advanceOnFailure,false);
   assert.equal(loop.skipFailedGateAllowed,false);
   assert.equal(loop.lowerThresholdAllowed,false);
@@ -389,6 +389,26 @@ test('all automated gates repair and retest the same failed gate until PASS',()=
   assert.equal(loop.externalCapacityWait.busyLoopForbidden,true);
 });
 
+
+test('Vibe brain is always running and uses verified checkpoints instead of terminal completion',()=>{
+  const brain=roadmap.neuralDevelopmentBrain;
+  const loop=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticGateRepairLoop;
+  const shared=roadmap.developmentLifecycleMachine.sharedWorkerContext;
+  assert.equal(brain.livenessContract.runState,'ALWAYS_RUNNING');
+  assert.equal(brain.livenessContract.globalTerminalStateForbidden,true);
+  assert.equal(brain.livenessContract.signalTerminalStateForbidden,true);
+  assert.equal(brain.livenessContract.verifiedWorkMeaning,'CHECKPOINT_AND_NEXT_CAUSAL_INPUT_NOT_TERMINAL_COMPLETION');
+  assert.equal(loop.globalStopAllowed,false);
+  assert.equal(loop.passMeaning,'VERIFIED_CHECKPOINT_THEN_NEXT_CANONICAL_CAUSAL_EVENT');
+  assert.equal(loop.inhibitorMeaning,'LOCAL_ACTION_OR_ROUTE_ONLY');
+  assert.equal(shared.vibeControlSynchronization.requiredBeforeEveryWorkerStarts,true);
+  assert.equal(shared.vibeControlSynchronization.unsynchronizedWorkerMayNotStart,true);
+  assert.equal(roadmap.vibeExecutionLaneContract.signalCirculation.allDomainsAreLiveSignalParticipants,true);
+  assert.equal(roadmap.vibeExecutionLaneContract.signalCirculation.learningIsOnlyOneSignalDomain,true);
+  assert.equal(roadmap.vibeExecutionLaneContract.signalCirculation.gameDevelopmentSignalHasNoTerminalDoneState,true);
+  assert.ok(!roadmap.assistantRoadmapOrchestration.workRequestContract.claimStateValues.includes('DONE'));
+  assert.ok(roadmap.assistantRoadmapOrchestration.workRequestContract.claimStateValues.includes('VERIFIED_CHECKPOINT'));
+});
 
 test('Director supervisor consumes canonical machine policy and treats COMPANY_FLOW as legacy mirror only',()=>{
   assert.match(directorSupervisor,/company-learning\/platform-release-roadmap\.json/);

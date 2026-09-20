@@ -18,7 +18,7 @@ function normalizeEvidence(values=[]){
 const clampInt = (value, min = 0, max = Number.MAX_SAFE_INTEGER) => Math.max(min, Math.min(max, Math.floor(Number(value) || 0)));
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
 
-export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'done', 'failed', 'cancelled']);
+export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'verified', 'failed', 'cancelled']);
 export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
 export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
 export const DEFAULT_MAX_CONCURRENT_TASKS = Number.MAX_SAFE_INTEGER;
@@ -182,7 +182,8 @@ function normalizeNeuronResults(input = []) {
   }));
 }
 function normalizeTask(input = {}, index = 0) {
-  const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
+  const rawStatus=clean(input.status).toLowerCase();
+  const status = rawStatus==='done' ? 'verified' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
   const supervisionContract = normalizeSupervisionContract(input.supervisionContract) || (supervisionEvidenceRequired(input)?defaultSupervisionContract():null);
   const supervised = supervisionContract?.required===true;
@@ -295,7 +296,7 @@ export function createVibeContinuousQueue(seed = {}) {
 }
 
 function completedIds(queue) {
-  return new Set(queue.tasks.filter((task) => task.status === 'done').map((task) => task.id));
+  return new Set(queue.tasks.filter((task) => task.status === 'verified').map((task) => task.id));
 }
 function taskBlockedReasons(task, completed) {
   const reasons = [];
@@ -520,6 +521,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     blocked: freeze(blocked),
     deferredConflicts: freeze(deferredConflicts),
     continueRequired: selected.length > 0,
+    brainLive: true,
+    causalReplanRequired: selected.length===0&&freeSlots>0,
     persistentMaxConcurrentTasks: concurrency.persistentMaxConcurrentTasks,
     requestedMaxConcurrentTasks: concurrency.requestedMaxConcurrentTasks,
     effectiveMaxConcurrentTasks: effectiveMax,
@@ -534,7 +537,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     longWorkOwnerTaskId,
     workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
     shardUse: freeze({ ...shardUse }),
-    stopReason: selected.length ? null : freeSlots === 0 ? 'PARALLEL_CAPACITY_FULL' : queuedEligible ? 'ONLY_CONFLICTING_WORK_AVAILABLE' : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'QUEUE_EMPTY_OR_COMPLETE'
+    stopReason: selected.length ? null : freeSlots === 0 ? 'PARALLEL_CAPACITY_FULL' : queuedEligible ? 'ONLY_CONFLICTING_WORK_AVAILABLE' : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'AWAITING_CAUSAL_REPLAN_OR_EVENT'
   });
 }
 
@@ -548,6 +551,8 @@ export function selectNextVibeQueueTask(queueInput) {
     hasEligibleWork: Boolean(batch.selected[0]),
     blocked: batch.blocked,
     continueRequired: Boolean(batch.selected[0]),
+    brainLive: true,
+    causalReplanRequired: batch.causalReplanRequired===true,
     stopReason: batch.stopReason,
     runningCount: running.length,
     capacityRunningCount: batch.capacityRunning.length,
@@ -604,7 +609,7 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     if (task.id !== id) return task;
     found = true;
     const mergedEvidence = freezeList([...(task.evidence || []), ...(evidence || [])]);
-    if (normalizedOutcome === 'PASS') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'done', evidence: mergedEvidence, lastOutcome: 'PASS', blocker: null });
+    if (normalizedOutcome === 'PASS') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'verified', evidence: freezeList([...mergedEvidence,'signal-state:VERIFIED_CHECKPOINT','signal-continuity:NEXT_CAUSAL_INPUT']), lastOutcome: 'PASS', blocker: null });
     if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
     if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
     const nextRetries = task.retries + 1;
@@ -614,7 +619,7 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: failureEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
   });
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
-  const completedIds=new Set(nextQueue.tasks.filter(task=>task.status==='done').map(task=>task.id));
+  const completedIds=new Set(nextQueue.tasks.filter(task=>task.status==='verified').map(task=>task.id));
   const dependencyReadyTaskIds=normalizedOutcome==='PASS'
     ? freezeList(nextQueue.tasks
       .filter(task=>task.status==='queued'&&(task.dependencies||[]).includes(id)&&(task.dependencies||[]).every(dep=>completedIds.has(dep)))
@@ -650,6 +655,8 @@ export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = 
     releasedWorkerSlotTaskIds: freezeList(next.releasedWorkerSlots.map((task) => task.id)),
     nextReleaseState: next.selected[0]?.releaseState || null,
     continueRequired: next.continueRequired,
+    brainLive: true,
+    causalReplanRequired: next.causalReplanRequired===true,
     stopReason: next.stopReason,
     executionLaneCounts: freeze(Object.fromEntries(VIBE_EXECUTION_LANES.map((lane)=>[lane,queue.tasks.filter((task)=>task.executionLane===lane&&['queued','running','blocked'].includes(task.status)).length]))),
     ownerDirectiveWaiting: queue.tasks.some((task) => task.ownerDirective && ['queued', 'running', 'blocked'].includes(task.status)),
