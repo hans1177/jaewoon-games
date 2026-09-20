@@ -65,7 +65,7 @@ test('web-only assets are never reused directly by Unity or Roblox',()=>{
   assert.equal(roblox.policy.nativeReuseRequiresTargetCompatibility,true);
 });
 
-test('native presentation pass exists only for the central first-adoption game',()=>{
+test('native presentation pass is available to every confirmed project while the first adoption keeps owner priority',()=>{
   const root=tempRoot();
   try{
     const fantasyUnity=path.join(root,'unity-games','fantasy-survival','Assets','Scripts');
@@ -85,7 +85,9 @@ test('native presentation pass exists only for the central first-adoption game',
     assert.ok(fantasy);
     assert.equal(fantasy.id,'fantasy-survival-unity-presentation-asset-adaptation-v1');
     assert.equal(fantasy.priority,'owner-immediate');
-    assert.equal(other,null);
+    assert.ok(other);
+    assert.equal(other.id,'other-game-unity-presentation-asset-adaptation-v1');
+    assert.equal(other.priority,'normal');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -117,7 +119,7 @@ test('fantasy-survival development-confirmed Unity can receive P0 weather work o
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('development-confirmed Unity remains non-autonomous for non-pilot games',()=>{
+test('development-confirmed Unity non-pilot receives presentation work without inheriting pilot weather scope',()=>{
   const root=tempRoot();
   try{
     const scripts=path.join(root,'unity-games','other-game','Assets','Scripts');
@@ -128,11 +130,107 @@ test('development-confirmed Unity remains non-autonomous for non-pilot games',()
         gameId:'other-game',name:'Other',ownerDecision:'PASS',
         target:'unity',selectedPlatform:'unity-android',projectPath:'unity-games/other-game',progress:20
       }]},
-      catalog:{games:[{id:'other-game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
-      queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+      catalog:{games:[{id:'other-game',name:'Other',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+      developmentQueue:{items:[]},
+      queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
-    assert.equal(result.planned,false);
-    assert.equal(result.reason,'NO_CONFIRMED_PRODUCTION_PROJECT');
+    assert.equal(result.planned,true);
+    assert.ok(result.tasks.some(row=>row.id==='other-game-unity-presentation-asset-adaptation-v1'));
+    assert.equal(result.tasks.some(row=>row.id==='other-game-unity-weather-presentation-v1'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native asset adaptation rejects a single primitive character placeholder',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/other-game/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class PrototypeAnimatedVisuals:MonoBehaviour {
+  void Build(){
+    var actor=GameObject.CreatePrimitive(PrimitiveType.Capsule);
+    actor.GetComponent<Renderer>().material.color=Color.red;
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-native-placeholder.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'native-placeholder',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:ASSET_ADAPTATION:.*(?:NATIVE_COMPOSITE_FORM|GAME_VISUAL_IDENTITY_DOMAINS|NO_SINGLE_PRIMITIVE_PLACEHOLDER)/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native asset adaptation accepts composed character weapon environment and style identity',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/other-game/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class PrototypeAnimatedVisuals:MonoBehaviour {
+  void Build(){
+    var body=GameObject.CreatePrimitive(PrimitiveType.Capsule);
+    var head=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+    head.transform.SetParent(body.transform);
+    var weapon=new GameObject("weapon sword blade");
+    weapon.AddComponent<MeshFilter>();
+    var weaponRenderer=weapon.AddComponent<MeshRenderer>();
+    weaponRenderer.material=new Material(Shader.Find("Standard"));
+    weaponRenderer.material.color=new Color(0.3f,0.7f,0.5f);
+    var environment=GameObject.CreatePrimitive(PrimitiveType.Cube);
+    environment.name="forest ground tree biome";
+    environment.transform.localScale=new Vector3(4,1,4);
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-native-composed.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'unity',pass:'ASSET_ADAPTATION'}
+    },null,2));
+    const result=runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'native-composed',force:true
+    });
+    assert.equal(result.outcome,'PASS');
+    assert.equal(result.presentationQa.status,'STATIC_PASS');
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='NATIVE_COMPOSITE_FORM'&&row.pass));
+    assert.ok(result.presentationQa.checks.some(row=>row.name==='GAME_VISUAL_IDENTITY_DOMAINS'&&row.pass));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native living motion rejects generic movement without actor secondary motion',()=>{
+  const root=tempRoot();
+  try{
+    const relative='unity-games/other-game/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+    const file=path.join(root,...relative.split('/'));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,`using UnityEngine;
+public class PrototypeAnimatedVisuals:MonoBehaviour {
+  Transform actor;
+  float speed;
+  void Update(){
+    var idle=speed<0.1f;
+    var walk=speed>=0.1f;
+    actor.localPosition=Vector3.Lerp(actor.localPosition,Vector3.zero,Time.deltaTime);
+  }
+}
+`);
+    const manifestPath=path.join(root,'manifest-native-motion.json');
+    fs.writeFileSync(manifestPath,JSON.stringify({
+      target:'unity',
+      changedFiles:[relative],
+      presentationQuality:{required:true,target:'unity',pass:'LIVING_MOTION'}
+    },null,2));
+    assert.throws(()=>runIncrementalQa({
+      root,manifest:manifestPath,files:[relative],namespace:'native-motion',force:true
+    }),/PRESENTATION_STATIC_QA_FAILED:LIVING_MOTION:.*SECONDARY_MOTION_SIGNAL/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
