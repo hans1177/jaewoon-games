@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
-import { buildObservableCodingTrace, buildVerifiedCapabilityExperienceReview, buildCapabilityApplicationReviews, mergeCodingTraceLedger } from './vibe2-capability-distillation.mjs';
+import { buildObservableCodingTrace, buildVerifiedCapabilityExperienceReview, buildCapabilityApplicationReviews, buildCapabilityGeneralizationBenchmarkReviews, mergeCodingTraceLedger } from './vibe2-capability-distillation.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
@@ -57,6 +57,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const releaseCandidates=[];
   const experienceReviews=[];
   const capabilityApplicationReviews=[];
+  const capabilityGeneralizationBenchmarkReviews=[];
   const queueTasks=Array.isArray(queue.tasks)?queue.tasks:[];
   const taskById=new Map(queueTasks.map(task=>[clean(task?.id),task]));
   const verifiedCodingTraceSamples=new Set();
@@ -144,6 +145,20 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       capabilityApplicationReviews.push(applicationReview);
     }
   }
+  const benchmarkReviewIds=new Set();
+  for(const taskId of ids){
+    const task=taskById.get(clean(taskId))||{};
+    const taskRows=resultRows.filter(row=>clean(row?.taskId)===clean(taskId));
+    for(const benchmarkReview of buildCapabilityGeneralizationBenchmarkReviews({
+      task,
+      results:taskRows,
+      fanInRegressionPass:true
+    })){
+      if(benchmarkReviewIds.has(benchmarkReview.benchmarkId))continue;
+      benchmarkReviewIds.add(benchmarkReview.benchmarkId);
+      capabilityGeneralizationBenchmarkReviews.push(benchmarkReview);
+    }
+  }
   const codingTraces=resultRows.map(row=>{
     const sampleId=resultSampleId(row);
     const fanInVerified=Boolean(sampleId)&&verifiedCodingTraceSamples.has(sampleId);
@@ -176,7 +191,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     evidence:durableNeuralEvidence,
     shadowAudit:neuralDurableShadowAudit
   });
-  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
+  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,capabilityGeneralizationBenchmarkReviews,codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile='',traceLedgerFile=''}={}){
@@ -191,7 +206,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
     codingTraceLedger=mergeCodingTraceLedger(readJson(traceLedgerFile,{traces:[]}),result.codingTraces);
     writeJson(traceLedgerFile,codingTraceLedger);
   }
-  if(clean(outputFile))writeJson(outputFile,{version:6,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityGeneralizationBenchmarkReviews:result.capabilityGeneralizationBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
   return{...result,codingTraceLedger};
 }
 
@@ -213,6 +228,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_CODING_TRACE_LEDGER_TOTAL=${result.codingTraceLedger?.stats?.total||0}`);
   console.log(`VIBE2_CAPABILITY_EXPERIENCE_REVIEWS=${result.experienceReviews.length}`);
   console.log(`VIBE2_CAPABILITY_APPLICATION_REVIEWS=${result.capabilityApplicationReviews.length}`);
+  console.log(`VIBE2_CAPABILITY_GENERALIZATION_BENCHMARK_REVIEWS=${result.capabilityGeneralizationBenchmarkReviews.length}`);
+  console.log(`VIBE2_CAPABILITY_GENERALIZATION_SUPPORT=${result.capabilityGeneralizationBenchmarkReviews.filter(row=>row.capabilitySpecificSupport===true).length}`);
+  console.log(`VIBE2_CAPABILITY_GENERALIZATION_CONTRADICTIONS=${result.capabilityGeneralizationBenchmarkReviews.filter(row=>row.capabilitySpecificContradiction===true).length}`);
   console.log(`VIBE2_NEURAL_PHASE2_REVIEW_ELIGIBLE=${readiness.reviewEligible?'YES':'NO'}`);
   console.log(`VIBE2_NEURAL_PHASE2_REASON=${readiness.reason}`);
   console.log(`VIBE2_NEURAL_PHASE2_GATES=${JSON.stringify(readiness.gates)}`);
