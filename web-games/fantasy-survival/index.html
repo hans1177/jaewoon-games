@@ -2609,6 +2609,98 @@ function drawStructure(s,cx,cy,type){
  else if(type==='flag'){ctx.strokeStyle='#d8d1b2';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+24);ctx.lineTo(x,y-28);ctx.stroke();ctx.fillStyle='#f2c94c';ctx.beginPath();ctx.moveTo(x,y-28);ctx.lineTo(x+30,y-18);ctx.lineTo(x,y-7);ctx.closePath();ctx.fill();ctx.fillStyle='#fff3be';ctx.font='bold 9px system-ui';ctx.fillText('깃발',x,y+38)}
  else{ctx.fillStyle='#59666b';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#aebdc2';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#dce8ec';ctx.font='bold 9px system-ui';ctx.fillText('철 제작대',x,y+29)}
 }
+const FANTASY_VISUAL_STYLE_LOCK=Object.freeze({
+ version:1,
+ id:'magic-forest-preservation-2026-09-20',
+ palette:'deep-forest-crystal-volcanic',
+ outline:'#101812',
+ material:'soft-painted-organic-with-crystal-and-ember-accents',
+ actorSilhouette:'readable-top-down-fantasy-survival',
+ motion:'authoritative-state-driven'
+});
+const fantasyVisualAssetCache=new Map();
+function fantasyVisualAccent(type){
+ const id=String(type?.id||'');
+ if(type?.crystalZone||type?.crystalVariant||id.startsWith('crystal'))return'#d8cfff';
+ if(type?.flame||id.includes('fire'))return'#ffb14b';
+ if(type?.snow||id.startsWith('polar')||id.startsWith('yeti'))return'#e9f7ff';
+ if(type?.jungle)return'#9acb70';
+ if(type?.lakeZone||type?.underwater)return'#82d0d6';
+ if(type?.canyon)return'#d7bb7b';
+ if(type?.worldtree)return'#91d17d';
+ return'#bfd69b'
+}
+function fantasyCreatureVisualKind(type){
+ const id=String(type?.id||'');
+ if(['mossboar','crystalboar','crystalboarjunior'].includes(id))return'boar';
+ if(id.includes('goblin'))return'goblin';
+ if(['golem','ironspirit','crystalironspirit','crystalguardian','crystalfiregolem','firegolemneutral','firegolemaggressive','mudwalker','rootsovereign'].includes(id))return'construct';
+ if(['ironibex','crystalibex','crystalgoat','sapdeer','crystaldeer','lakebuffalo'].includes(id))return'horned';
+ if(['foresthare','polarfox'].includes(id))return'small';
+ if(['worldpheasant','lakeheron','fairy','vampirebat'].includes(id))return'winged';
+ if(['canyonlizard','lakecroc','shark','lakefish','giantleech','anaconda'].includes(id))return'reptile';
+ if(['gorilla','yetileader','yeticub','polarbear'].includes(id))return'hulking';
+ if(['giantburrower','sandwalker'].includes(id))return'armored';
+ if(['polarwolf'].includes(id))return'canine';
+ return'creature'
+}
+function fantasyVisualImage(key,svg){
+ let image=fantasyVisualAssetCache.get(key);
+ if(image)return image;
+ image=new Image();
+ image.decoding='async';
+ image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+ fantasyVisualAssetCache.set(key,image);
+ return image
+}
+function fantasyCreatureSvg(type){
+ const kind=fantasyCreatureVisualKind(type),body=type?.color||'#698164',accent=fantasyVisualAccent(type);
+ const eye=type?.mood==='aggressive'||type?.mood==='boss'?'#ffcf72':'#dff9d8';
+ const stroke=FANTASY_VISUAL_STYLE_LOCK.outline;
+ const common='stroke="'+stroke+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"';
+ let art='';
+ if(kind==='boar')art='<path d="M-45 8 Q-42-24-8-28 Q23-28 39-7 Q43 19 13 28 Q-25 30-45 8Z" fill="'+body+'" '+common+'/><path d="M-31-20 L-18-35 L-10-20 M-5-25 L7-40 L14-23" fill="none" stroke="'+accent+'" stroke-width="7"/><ellipse cx="35" cy="2" rx="20" ry="16" fill="'+body+'" '+common+'/><path d="M48 7 Q59 2 61-8 M46 12 Q56 14 60 6" fill="none" stroke="#f2e2b9" stroke-width="5"/><circle cx="39" cy="-6" r="3.5" fill="'+eye+'"/><path d="M-28 22 L-28 37 M-4 25 L-2 39 M18 21 L22 35" '+common+' fill="none"/>';
+ else if(kind==='goblin')art='<path d="M-24 18 Q-31-9-12-27 Q9-38 27-17 Q38 2 25 22 Q3 34-24 18Z" fill="'+body+'" '+common+'/><path d="M-19-17 L-42-30 L-29-4 M20-18 L42-29 L30-3" fill="'+accent+'" '+common+'/><circle cx="7" cy="-9" r="4" fill="'+eye+'"/><circle cx="20" cy="-6" r="4" fill="'+eye+'"/><path d="M-8 27 L-14 40 M13 28 L17 40 M-20 4 L-38 15 M26 5 L41 18" '+common+' fill="none"/><path d="M41 18 L52 30" stroke="#9a6a3b" stroke-width="7" stroke-linecap="round"/>';
+ else if(kind==='construct')art='<polygon points="-42,18 -48,-8 -31,-30 -8,-38 13,-30 38,-22 49,2 37,27 8,38 -25,32" fill="'+body+'" '+common+'/><polygon points="-19,-28 -5,-43 7,-28 23,-34 32,-17 12,-10 -8,-13" fill="'+accent+'" opacity=".88"/><path d="M-38 8 L-55 25 M35 8 L54 25 M-22 29 L-28 43 M21 30 L27 43" '+common+' fill="none"/><circle cx="12" cy="-4" r="5" fill="'+eye+'"/><path d="M-18 4 L25 9" stroke="'+accent+'" stroke-width="5" opacity=".8"/>';
+ else if(kind==='horned')art='<path d="M-44 11 Q-39-23-6-26 Q25-26 38-6 Q38 19 7 27 Q-29 30-44 11Z" fill="'+body+'" '+common+'/><path d="M29-9 Q40-28 54-34 Q48-14 38-2 M22-13 Q27-34 38-42 Q38-19 32-4" fill="none" stroke="'+accent+'" stroke-width="6"/><ellipse cx="35" cy="1" rx="16" ry="13" fill="'+body+'" '+common+'/><circle cx="40" cy="-5" r="3" fill="'+eye+'"/><path d="M-28 23 L-31 39 M-3 25 L-3 41 M21 22 L24 38" '+common+' fill="none"/>';
+ else if(kind==='small')art='<path d="M-36 8 Q-30-18-4-22 Q25-20 36 2 Q32 23 6 28 Q-24 29-36 8Z" fill="'+body+'" '+common+'/><path d="M17-17 L20-39 L30-21 M0-20 L-5-40 L10-24" fill="'+accent+'" '+common+'/><path d="M-34 5 Q-50-8-56 5 Q-48 20-35 14" fill="'+accent+'" '+common+'/><circle cx="27" cy="-4" r="3.5" fill="'+eye+'"/><path d="M-18 24 L-21 37 M12 25 L17 37" '+common+' fill="none"/>';
+ else if(kind==='winged')art='<ellipse cx="0" cy="3" rx="17" ry="27" fill="'+body+'" '+common+'/><path d="M-8-4 Q-34-34-54-12 Q-43 16-13 16 M8-4 Q34-34 54-12 Q43 16 13 16" fill="'+accent+'" opacity=".78" '+common+'/><circle cx="4" cy="-17" r="11" fill="'+body+'" '+common+'/><circle cx="9" cy="-20" r="3" fill="'+eye+'"/><path d="M15-15 L28-10 L16-5Z" fill="#e6c875" '+common+'/>';
+ else if(kind==='reptile')art='<path d="M-53 11 Q-34-26-3-16 Q25-29 47-5 Q35 18 7 20 Q-20 35-53 11Z" fill="'+body+'" '+common+'/><path d="M-45 9 Q-27-4-11 8 Q4 20 22 7" fill="none" stroke="'+accent+'" stroke-width="6"/><path d="M37-9 L55-16 L49-1 L59 10 L39 12" fill="'+body+'" '+common+'/><circle cx="43" cy="-6" r="3.5" fill="'+eye+'"/><path d="M-10 21 L-20 34 M13 18 L21 32" '+common+' fill="none"/>';
+ else if(kind==='hulking')art='<path d="M-36 28 Q-49 3-34-27 Q-17-43 0-28 Q18-44 37-25 Q50 3 35 29 Q5 42-36 28Z" fill="'+body+'" '+common+'/><circle cx="8" cy="-23" r="17" fill="'+body+'" '+common+'/><path d="M-35-8 L-57 17 M36-8 L58 17 M-19 31 L-23 45 M20 31 L25 45" '+common+' fill="none" stroke-width="11"/><path d="M-24-5 Q0 10 25-4" stroke="'+accent+'" stroke-width="8" fill="none" opacity=".8"/><circle cx="14" cy="-27" r="3.5" fill="'+eye+'"/>';
+ else if(kind==='armored')art='<ellipse cx="-4" cy="3" rx="38" ry="25" fill="'+body+'" '+common+'/><path d="M-35-12 Q-19-30-4-18 Q12-31 30-13" fill="none" stroke="'+accent+'" stroke-width="8"/><ellipse cx="35" cy="0" rx="16" ry="14" fill="'+body+'" '+common+'/><circle cx="40" cy="-5" r="3" fill="'+eye+'"/><path d="M-28 19 L-46 34 M-12 24 L-22 42 M10 23 L20 42 M27 17 L45 32" '+common+' fill="none"/>';
+ else if(kind==='canine')art='<path d="M-43 8 Q-38-20-10-24 Q22-25 37-5 Q40 18 8 26 Q-25 28-43 8Z" fill="'+body+'" '+common+'/><path d="M18-19 L23-39 L34-18 M2-23 L4-42 L15-23" fill="'+accent+'" '+common+'/><path d="M-42 4 Q-56-15-61-5 Q-58 11-42 14" fill="'+body+'" '+common+'/><ellipse cx="38" cy="1" rx="17" ry="13" fill="'+body+'" '+common+'/><circle cx="43" cy="-5" r="3.2" fill="'+eye+'"/><path d="M-26 23 L-29 39 M-3 25 L-1 40 M20 21 L25 37" '+common+' fill="none"/>';
+ else art='<path d="M-40 18 Q-45-10-21-29 Q8-40 34-19 Q49 2 34 25 Q3 40-40 18Z" fill="'+body+'" '+common+'/><path d="M-21-23 L-7-37 L4-24 M12-25 L25-35 L30-18" fill="'+accent+'" '+common+'/><circle cx="26" cy="-7" r="4" fill="'+eye+'"/><path d="M-24 26 L-29 41 M6 31 L8 44 M28 22 L35 35" '+common+' fill="none"/>';
+ return'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="96" viewBox="-64 -48 128 96"><g>'+art+'</g></svg>'
+}
+function fantasyCreatureVisualAsset(type){
+ const key='creature:'+String(type?.id||'unknown');
+ return fantasyVisualImage(key,fantasyCreatureSvg(type))
+}
+function fantasyPlayerVisualAsset(){
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="80" height="88" viewBox="-40 -44 80 88"><g stroke="#101812" stroke-width="4" stroke-linejoin="round"><ellipse cx="0" cy="8" rx="24" ry="30" fill="#355f63"/><path d="M-24 9 Q0 30 24 9 L18 35 Q0 44-18 35Z" fill="#253d48"/><circle cx="0" cy="-18" r="16" fill="#d8b99c"/><path d="M-19-17 Q0-42 20-17 L13-6 Q0-17-13-6Z" fill="#274c3e"/><path d="M-22 1 L-34 22 M22 1 L34 22" fill="none" stroke="#d8b99c" stroke-width="7" stroke-linecap="round"/><path d="M-10 34 L-13 43 M10 34 L13 43" fill="none" stroke="#1b2630" stroke-width="8" stroke-linecap="round"/><path d="M-7 7 L0 0 L8 7 L0 14Z" fill="#9fd6b1" stroke="#173326" stroke-width="2"/></g></svg>';
+ return fantasyVisualImage('player:forest-mage',svg)
+}
+function drawFantasyCreatureVectorFallback(type,r){
+ const accent=fantasyVisualAccent(type),body=type?.color||'#698164';
+ ctx.fillStyle=body;ctx.strokeStyle=FANTASY_VISUAL_STYLE_LOCK.outline;ctx.lineWidth=4;
+ ctx.beginPath();ctx.moveTo(-r*1.35,0);ctx.quadraticCurveTo(-r*.7,-r,0,-r*.85);ctx.quadraticCurveTo(r*1.25,-r*.55,r*1.45,0);ctx.quadraticCurveTo(r*.7,r,0,r*.85);ctx.quadraticCurveTo(-r*.8,r,-r*1.35,0);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(-r*.35,-r*.72);ctx.lineTo(0,-r*1.18);ctx.lineTo(r*.35,-r*.72);ctx.closePath();ctx.fill()
+}
+function drawFantasyCreatureAssetLocal(type,r,now,moving=false,phase=-1){
+ const image=fantasyCreatureVisualAsset(type),size=Math.max(48,r*3.35),height=size*.75;
+ const bob=Math.sin(now*.009+(String(type?.id||'').length*.7))*(moving?2.8:1.2);
+ const lunge=phase>=0?Math.sin(Math.PI*phase)*Math.min(18,r*.65):0;
+ ctx.translate(lunge,bob);
+ if(image.complete&&image.naturalWidth>0)ctx.drawImage(image,-size*.5,-height*.5,size,height);
+ else drawFantasyCreatureVectorFallback(type,r)
+}
+function drawThemedCreatureAsset(e,x,y,now){
+ const phase=enemyAttackPhase(e,now,420);
+ ctx.save();ctx.translate(x,y);
+ ctx.fillStyle='rgba(0,0,0,.23)';ctx.beginPath();ctx.ellipse(0,e.type.r*.75,e.type.r*1.3,e.type.r*.42,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(creatureAngle(e));drawFantasyCreatureAssetLocal(e.type,e.type.r,now,!!e.moving,phase);ctx.restore()
+}
+
 function enemyAttackPhase(e,now,duration=360){
  const elapsed=now-(e.attackAt||0);return elapsed>=0&&elapsed<duration?elapsed/duration:-1
 }
@@ -2709,7 +2801,9 @@ function drawDeathEffects(cx,cy,now){
   }else if(fx.typeId==='worldtreebear'||fx.typeId==='crystalbear'){
    ctx.rotate(t*.45);ctx.translate(0,14*t);ctx.scale(1,Math.max(.42,1-t*.58));drawBearBodyLocal({type:creatures[fx.typeId],x:fx.x,y:fx.y,moving:false},now,-1)
   }else{
-   ctx.fillStyle=creatures[fx.typeId]?.color||'#777';ctx.beginPath();ctx.ellipse(0,10*t,Math.max(5,25*(1-t*.25)),Math.max(3,18*(1-t*.7)),0,0,Math.PI*2);ctx.fill()
+   const type=creatures[fx.typeId];
+   if(type){ctx.rotate(t*.48);ctx.translate(0,13*t);ctx.scale(1-t*.18,Math.max(.2,1-t*.78));drawFantasyCreatureAssetLocal(type,type.r,now,false,-1)}
+   else{ctx.fillStyle='#777';ctx.beginPath();ctx.ellipse(0,10*t,20,Math.max(3,15*(1-t*.7)),0,0,Math.PI*2);ctx.fill()}
   }
   ctx.restore()
  }
@@ -2723,7 +2817,7 @@ function drawCreature(e,cx,cy){
  else if(e.type.id==='worldtreebear'||e.type.id==='crystalbear')drawBearModel(e,x,y,now);
  else if(e.type.id==='shadowwolf'||e.type.id==='firewolf'||e.type.id==='shadowwolfleader')drawWolfModel(e,x,y,now);
  else{
-  ctx.fillStyle=e.type.color;ctx.strokeStyle='#18221a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  drawThemedCreatureAsset(e,x,y,now);
   if(e.type.id==='fairy'){ctx.strokeStyle='#fffbd0';ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}
   if(e.type.id==='ironspirit'){ctx.strokeStyle='#d9e6eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,e.type.r-6,0,Math.PI*2);ctx.stroke()}
   if(e.type.id.includes('firegolem')){ctx.fillStyle='#ff6f35';ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fill()}
@@ -2747,7 +2841,26 @@ function drawProjectiles(cx,cy){
   ctx.restore()
  }
 }
-function drawPlayer(cx,cy,now){const p=state.player,x=p.x-cx,y=p.y-cy;ctx.save();if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;ctx.fillStyle='#e0c4a4';ctx.beginPath();ctx.arc(x,y-11,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4d7398';roundRect(x-11,y-2,22,25,6);ctx.fill();ctx.fillStyle='#302c36';ctx.fillRect(x-9,y+21,6,12);ctx.fillRect(x+3,y+21,6,12);if(p.torchEquipped&&p.torch&&p.torchDurability>0){ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill()}if(p.weapon){ctx.strokeStyle=p.weapon.startsWith('gold-')?'#f3cf52':p.weapon.startsWith('iron-')?'#d8e3e8':p.weapon==='stone-sword'?'#c9d0d2':'#b78652';ctx.lineWidth=p.weapon==='iron-axe'?7:5;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+p.faceX*27,y+4+p.faceY*27);ctx.stroke()}if(now<(p.weakenedUntil||0))ctx.globalAlpha=Math.min(ctx.globalAlpha,.72);if(now<(p.stunnedUntil||0)){ctx.strokeStyle='#f4e76e';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-28,18,0,Math.PI*2);ctx.stroke()}if(p.armor){ctx.strokeStyle='#d5cf9b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y+8,14,0,Math.PI);ctx.stroke()}if(now<p.attackFx){ctx.strokeStyle='#f7e699';ctx.lineWidth=4;ctx.beginPath();const a=Math.atan2(p.faceY,p.faceX);ctx.arc(x,y,currentRange()*.72,a-.55,a+.55);ctx.stroke()}ctx.restore()}
+function drawPlayer(cx,cy,now){
+ const p=state.player,x=p.x-cx,y=p.y-cy,moveInput=(state.stick&&Math.hypot(state.stick.x||0,state.stick.y||0)>.12)||['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].some(k=>state.keys.has(k));
+ const bob=Math.sin(now*.012)*(moveInput?2.4:.8),attackActive=now<p.attackFx,angle=Math.atan2(p.faceY||0,p.faceX||1);
+ ctx.save();
+ if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;
+ ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y+23,22,8,0,0,Math.PI*2);ctx.fill();
+ ctx.translate(x+(attackActive?Math.cos(angle)*4:0),y+bob+(attackActive?Math.sin(angle)*4:0));ctx.rotate(angle);
+ const playerImage=fantasyPlayerVisualAsset();
+ if(playerImage.complete&&playerImage.naturalWidth>0)ctx.drawImage(playerImage,-30,-33,60,66);
+ else{ctx.fillStyle='#355f63';ctx.strokeStyle=FANTASY_VISUAL_STYLE_LOCK.outline;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-18,22);ctx.lineTo(-22,-7);ctx.lineTo(0,-29);ctx.lineTo(22,-7);ctx.lineTo(18,22);ctx.closePath();ctx.fill();ctx.stroke()}
+ ctx.restore();
+ ctx.save();if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;
+ if(p.torchEquipped&&p.torch&&p.torchDurability>0){ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,200,84,.28)';ctx.beginPath();ctx.arc(x-19,y-22,13+Math.sin(now*.02)*2,0,Math.PI*2);ctx.fill()}
+ if(p.weapon){ctx.strokeStyle=p.weapon.startsWith('gold-')?'#f3cf52':p.weapon.startsWith('iron-')?'#d8e3e8':p.weapon==='stone-sword'?'#c9d0d2':'#b78652';ctx.lineWidth=p.weapon==='iron-axe'?7:5;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+p.faceX*27,y+4+p.faceY*27);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x+9,y+2);ctx.lineTo(x+8+p.faceX*25,y+3+p.faceY*25);ctx.stroke()}
+ if(now<(p.weakenedUntil||0))ctx.globalAlpha=Math.min(ctx.globalAlpha,.72);
+ if(now<(p.stunnedUntil||0)){ctx.strokeStyle='#f4e76e';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-28,18,0,Math.PI*2);ctx.stroke()}
+ if(p.armor){ctx.strokeStyle='#d5cf9b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y+8,14,0,Math.PI);ctx.stroke()}
+ if(attackActive){ctx.strokeStyle='#f7e699';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,currentRange()*.72,angle-.55,angle+.55);ctx.stroke()}
+ ctx.restore()
+}
 function drawShadowEgg(cx,cy){
  if(state.shadowEggTaken||state.area!=='surface')return;
  const spots=multiplayer.connected?[SHADOW_WOLF_EGG,SHADOW_WOLF_EGG_2]:[SHADOW_WOLF_EGG];
