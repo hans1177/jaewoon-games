@@ -213,6 +213,7 @@ const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sove
 
 const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},bookCategory:'neutral',dirty:false};
 let noticeTimer=0,autosave=0,lastWorldTap={target:null,at:0};
+const deathFx=[];
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 function pointInPoly(x,y,poly=CANYON_POLY){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y,hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(hit)inside=!inside}return inside}
 function pointInWorldTree(x,y){return pointInPoly(x,y,WORLD_TREE_POLY)}
@@ -379,8 +380,8 @@ function discoverRegion(){
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11550,14320);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
 function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else if(kind==='essence'){const p=randomCrystalPoint(140);x=p.x;y=p.y}else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y))}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
-function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.crystalZone){const p=randomCrystalPoint(120);x=p.x;y=p.y}else if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11560,14320);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,attackTurn:'player',netId:'e'+(++enemySeq)}}
-function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,attackTurn:'player',netId:'e'+(++enemySeq)}}
+function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.crystalZone){const p=randomCrystalPoint(120);x=p.x;y=p.y}else if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11560,14320);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
+function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
 function initWorld(){
   state.trees=Array.from({length:420},(_,i)=>makeNode('tree',i));
   state.rocks=Array.from({length:340},(_,i)=>makeNode('rock',i));
@@ -961,9 +962,32 @@ function applyEnemyEffectTarget(e,p,kind,duration=0){
  else if(kind==='weaken')p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration)
 }
 
+function deathFxDuration(typeId){
+ if(typeId==='firesnake'||typeId==='crystalfiresnake')return 1050;
+ if(typeId==='shadowwolf'||typeId==='firewolf'||typeId==='shadowwolfleader')return 900;
+ if(typeId==='worldtreebear'||typeId==='crystalbear')return 850;
+ return 520
+}
+function pushDeathFx(typeId,x,y,faceX=1,faceY=0,area=state.area,startedAt=performance.now()){
+ const type=creatures[typeId];if(!type)return;
+ const duration=deathFxDuration(typeId);
+ deathFx.push({typeId,x,y,faceX:Number(faceX)||1,faceY:Number(faceY)||0,area,startedAt,endAt:startedAt+duration,duration});
+ if(deathFx.length>32)deathFx.splice(0,deathFx.length-32)
+}
+function queueRemoteDeath(payload){
+ if(!payload||!creatures[payload.typeId])return;
+ pushDeathFx(payload.typeId,Number(payload.x)||0,Number(payload.y)||0,Number(payload.faceX)||1,Number(payload.faceY)||0,payload.area||'surface',performance.now())
+}
+function queueDeathAnimation(e,now=performance.now()){
+ if(!e||e.deathQueued)return;
+ e.deathQueued=true;
+ pushDeathFx(e.type.id,e.x,e.y,e.faceX||1,e.faceY||0,e.area||state.area,now);
+ if(multiplayer.connected&&multiIsHost()&&e.area!=='storylab1'&&e.area!=='storylab2')multiSend('enemy-death',{typeId:e.type.id,x:e.x,y:e.y,faceX:e.faceX||1,faceY:e.faceY||0,area:e.area||'surface'})
+}
+
 function serializeWorld(){
  return{
-  enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null})),
+  enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null})),
   structures:sharedStructureSnapshot(),
   weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},
@@ -972,10 +996,11 @@ function serializeWorld(){
 }
 function applyWorldSnapshot(w){
  if(!w||multiIsHost()||state.area==='storylab1'||state.area==='storylab2')return;
- const list=Array.isArray(w.enemies)?w.enemies:[];
+ const list=Array.isArray(w.enemies)?w.enemies:[],previous=new Map(state.enemies.map(e=>[e.netId,e])),now=performance.now();
  state.enemies=list.map(n=>{
   const type=creatures[n.typeId];if(!type)return null;
-  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt:0,hitAt:0,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,netId:n.id}
+  const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0);
+  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt:old?.hitAt||0,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];
  if(w.structures&&typeof w.structures==='object'){
@@ -1009,6 +1034,7 @@ function hostApplyRemoteAttack(a){
   e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')e.hostile=true;
   if(a.bind&&Math.random()<a.bind)e.stunnedUntil=now+2000;
   if(e.hp<=0){
+   queueDeathAnimation(e,now);
    e.hp=0;
    if(e.type.labBoss)finishStoryLabBoss(e);
    else if(e.type.boss){rewardBoss()}else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});
@@ -1036,6 +1062,7 @@ async function connectMultiplayer(rawRoom){
   .on('presence',{event:'sync'},syncMultiPresence)
   .on('broadcast',{event:'player-state'},({payload})=>remotePlayerState(payload))
   .on('broadcast',{event:'world-state'},({payload})=>applyWorldSnapshot(payload))
+  .on('broadcast',{event:'enemy-death'},({payload})=>queueRemoteDeath(payload))
   .on('broadcast',{event:'structure-place'},({payload})=>hostApplyStructurePlace(payload))
   .on('broadcast',{event:'enemy-hit'},({payload})=>applyRemoteEnemyHit(payload))
   .on('broadcast',{event:'enemy-effect'},({payload})=>applyRemoteEnemyEffect(payload))
@@ -1100,7 +1127,7 @@ function damagePet(n,attacker=null){
  if(!petAlive())return false;state.pet.hp=Math.max(0,state.pet.hp-n);if(attacker)engagePet(attacker);if(state.pet.hp<=0)killPet();state.dirty=true;return true
 }
 function finishPetEnemyKill(e,ownerId=multiplayer.playerId){
- e.hp=0;
+ queueDeathAnimation(e,performance.now());e.hp=0;
  if(ownerId===multiplayer.playerId){state.player.kills++;awardLoot(e);if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});updateHud()}
  else{if(e.type.boss)rewardBoss();else if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:performance.now()+12000});multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})}
  state.pet.targetId=null;state.dirty=true
@@ -1163,6 +1190,7 @@ function attack(){
    e.hp-=dmg;e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral')e.hostile=true;
    if(w?.bindChance&&Math.random()<w.bindChance){e.stunnedUntil=now+2000;showNotice(e.type.name+' 속박 · 2초')}
    if(e.hp<=0){
+     queueDeathAnimation(e,now);
      p.kills++;
      if(e.type.labBoss){finishStoryLabBoss(e)}
      else{awardLoot(e);if(e.type.boss){rewardBoss()}else{if(!e.type.summoned&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+12000});showNotice(e.type.name+' 처치')}}
@@ -1339,7 +1367,7 @@ function touchStoryCrystal(){
 }
 function finishStoryLabBoss(e){
  if(state.story.labBossDefeated)return;
- e.hp=0;state.story.labBossDefeated=true;state.story.stage='lab-loot';unlockBestiary('crystalfiregolem');state.dirty=true;setBossBanner('');showNotice('수정 화염골렘 격파 · 뒤쪽 셔터가 열렸다');updateHud();saveGame(false)
+ queueDeathAnimation(e,performance.now());e.hp=0;state.story.labBossDefeated=true;state.story.stage='lab-loot';unlockBestiary('crystalfiregolem');state.dirty=true;setBossBanner('');showNotice('수정 화염골렘 격파 · 뒤쪽 셔터가 열렸다');updateHud();saveGame(false)
 }
 function updateStoryLabBoss(e,p,now){
  const s=e.labBossState||(e.labBossState={mode:'idle',nextBurrowCheck:now+3000,nextRoarAt:now+3000,emergeAt:0,strikeAt:0});
@@ -1432,6 +1460,7 @@ function damageMonster(target,amount,attacker,now){
   target.hitAt=now+110;
   if(attacker&&attacker!==target)target.enemyTarget=attacker;
   if(target.hp<=0){
+    queueDeathAnimation(target,now);
     target.hp=0;
     target.enemyTarget=null;
     if(!target.type.summoned&&!target.type.sealSpawn&&!target.noRespawn)state.respawns.push({typeId:target.type.id,packId:target.packId,at:now+12000});
@@ -1681,6 +1710,7 @@ function update(dt,now){
         }
       }
       const enemyW=e.area==='storylab1'?STORY_LAB_1.w:e.area==='storylab2'?STORY_LAB_2.w:e.area==='questcave'?QUEST_CAVE.w:WORLD.w,enemyH=e.area==='storylab1'?STORY_LAB_1.h:e.area==='storylab2'?STORY_LAB_2.h:e.area==='questcave'?QUEST_CAVE.h:WORLD.h;
+      const visualSpeed=Math.hypot(vx,vy);e.moving=visualSpeed>.5;if(visualSpeed>.5){e.faceX=vx/visualSpeed;e.faceY=vy/visualSpeed}
       e.x=clamp(e.x+vx*dt,35,enemyW-35);
       e.y=clamp(e.y+vy*dt,35,enemyH-35)
     }
@@ -1828,7 +1858,102 @@ function drawStructure(s,cx,cy,type){
  else if(type==='flag'){ctx.strokeStyle='#d8d1b2';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y+24);ctx.lineTo(x,y-28);ctx.stroke();ctx.fillStyle='#f2c94c';ctx.beginPath();ctx.moveTo(x,y-28);ctx.lineTo(x+30,y-18);ctx.lineTo(x,y-7);ctx.closePath();ctx.fill();ctx.fillStyle='#fff3be';ctx.font='bold 9px system-ui';ctx.fillText('깃발',x,y+38)}
  else{ctx.fillStyle='#59666b';ctx.fillRect(x-27,y-13,54,26);ctx.fillStyle='#aebdc2';ctx.fillRect(x-30,y-17,60,8);ctx.fillStyle='#dce8ec';ctx.font='bold 9px system-ui';ctx.fillText('철 제작대',x,y+29)}
 }
-function drawCreature(e,cx,cy){const x=e.x-cx,y=e.y-cy;if(x<-55||y<-55||x>innerWidth+55||y>innerHeight+55)return;if(e.type.labBoss&&performance.now()<(e.submergedUntil||0)){ctx.fillStyle='#ff5a30';ctx.beginPath();ctx.ellipse(x,y,52,18,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c5a2ff';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#f7e7ff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('용암 잠수',x,y+34);return}if(e.type.burrower&&!e.emerged){ctx.fillStyle='#6f5134';ctx.beginPath();ctx.ellipse(x,y+10,34,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a67b4b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-25,y+6);ctx.lineTo(x+23,y+13);ctx.stroke();return}ctx.save();if(performance.now()<e.hitAt)ctx.globalAlpha=.5;ctx.fillStyle=e.type.color;ctx.strokeStyle='#18221a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r,0,Math.PI*2);ctx.fill();ctx.stroke();if(e.type.id==='fairy'){ctx.strokeStyle='#fffbd0';ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='ironspirit'){ctx.strokeStyle='#d9e6eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,e.type.r-6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='worldtreebear'){ctx.fillStyle='#8b6747';ctx.beginPath();ctx.arc(x-19,y-22,9,0,Math.PI*2);ctx.arc(x+19,y-22,9,0,Math.PI*2);ctx.fill()}if(e.type.id==='firewolf'||e.type.id==='firesnake'){ctx.strokeStyle='#ff9b45';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+5,0,Math.PI*2);ctx.stroke()}if(e.type.id.includes('firegolem')){ctx.fillStyle='#ff6f35';ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fill()}if(e.type.labBoss){ctx.strokeStyle='#c8a7ff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+9,0,Math.PI*2);ctx.stroke();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;ctx.fillStyle='#b08be5';ctx.beginPath();ctx.moveTo(x+Math.cos(a)*(e.type.r+4),y+Math.sin(a)*(e.type.r+4));ctx.lineTo(x+Math.cos(a-.18)*(e.type.r+25),y+Math.sin(a-.18)*(e.type.r+25));ctx.lineTo(x+Math.cos(a+.18)*(e.type.r+25),y+Math.sin(a+.18)*(e.type.r+25));ctx.closePath();ctx.fill()}if(performance.now()<(e.roarUntil||0)){ctx.strokeStyle='#f6d4ff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+28,0,Math.PI*2);ctx.stroke()}}if(e.type.id==='sandwalker'){ctx.strokeStyle='#d8b06a';ctx.lineWidth=4;for(let a=0;a<6;a++){const ang=a*Math.PI/3;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*20,y+Math.sin(ang)*20);ctx.lineTo(x+Math.cos(ang)*42,y+Math.sin(ang)*42);ctx.stroke()}}if(e.type.guardian){ctx.strokeStyle='#efe8ff';ctx.lineWidth=5;ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,rr=i%2?e.type.r+12:e.type.r+20,px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py)}ctx.closePath();ctx.stroke();if(performance.now()<(e.rageUntil||0)){ctx.strokeStyle='#ff6f8f';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+15,0,Math.PI*2);ctx.stroke()}}if(e.type.crystalVariant){ctx.strokeStyle='#cfbfff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}if(e.type.id==='crystalboar'||e.type.id==='crystalboarjunior'){ctx.strokeStyle='#d6c9ff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-12,y-e.type.r+3);ctx.lineTo(x,y-e.type.r-14);ctx.lineTo(x+12,y-e.type.r+3);ctx.stroke()}if(e.type.boss){const s=e.bossState;if(s?.mode?.startsWith('telegraph')){ctx.globalAlpha=.22;ctx.fillStyle=s.mode==='telegraph-triple'?'#ff466f':'#9cffb0';for(let i=1;i<=3;i++){ctx.beginPath();ctx.arc(x-i*18,y+i*7,e.type.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;ctx.strokeStyle=s.mode==='telegraph-triple'?'#ff6689':'#a8ffc0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+16,0,Math.PI*2);ctx.stroke()}}ctx.restore();if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-21,y-e.type.r-13,42,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-21,y-e.type.r-13,42*Math.max(0,e.hp/e.maxHp),4)}ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':e.type.name,x,y+e.type.r+14)}
+function enemyAttackPhase(e,now,duration=360){
+ const elapsed=now-(e.attackAt||0);return elapsed>=0&&elapsed<duration?elapsed/duration:-1
+}
+function creatureAngle(e){return Math.atan2(e.faceY||0,e.faceX||1)}
+function drawWolfBodyLocal(e,now,phase=-1){
+ const fire=e.type.id==='firewolf',leader=e.type.id==='shadowwolfleader',crystal=e.type.id==='crystalbear';
+ const lunge=phase>=0?Math.sin(Math.PI*phase)*10:0,open=phase>=0?Math.sin(Math.PI*phase):0,step=e.moving?Math.sin(now*.018+(e.x+e.y)*.02)*4:0;
+ ctx.fillStyle=fire?'#b63d27':leader?'#2c3045':crystal?'#6752a6':'#3f4d60';ctx.strokeStyle=fire?'#ff9a4c':crystal?'#cbbcff':'#788da8';ctx.lineWidth=3;
+ ctx.beginPath();ctx.ellipse(-5,0,30,18,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.strokeStyle=fire?'#dd5c30':crystal?'#7560bd':'#354151';ctx.lineWidth=8;ctx.lineCap='round';
+ ctx.beginPath();ctx.moveTo(-28,-2);ctx.quadraticCurveTo(-48,-12-step,-55,-25+step);ctx.stroke();
+ for(const [lx,ly,sgn] of [[-15,-12,1],[10,-12,-1],[-13,12,-1],[12,12,1]]){ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx-4,ly+sgn*step+Math.sign(ly)*16);ctx.stroke()}
+ ctx.save();ctx.translate(24+lunge,0);
+ ctx.fillStyle=fire?'#cf4b2b':leader?'#343850':crystal?'#7661bb':'#4a596d';ctx.beginPath();ctx.ellipse(0,0,19,15,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle=fire?'#ffb05d':crystal?'#dfd5ff':'#8196ae';ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.moveTo(-9,-10);ctx.lineTo(-4,-27);ctx.lineTo(2,-11);ctx.moveTo(6,-10);ctx.lineTo(12,-27);ctx.lineTo(15,-8);ctx.fill();
+ ctx.fillStyle=fire?'#ffe46e':crystal?'#fff4ff':'#b8e6ff';ctx.beginPath();ctx.arc(5,-5,2.7,0,Math.PI*2);ctx.arc(5,5,2.7,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#20171a';ctx.beginPath();ctx.moveTo(17,-6-open*5);ctx.lineTo(29,0);ctx.lineTo(17,6+open*5);ctx.closePath();ctx.fill();
+ if(open>.1){ctx.fillStyle='#ef6b75';ctx.beginPath();ctx.moveTo(17,-2);ctx.lineTo(28,0);ctx.lineTo(17,2);ctx.closePath();ctx.fill();ctx.fillStyle='#fff2d2';ctx.beginPath();ctx.moveTo(19,-5);ctx.lineTo(24,-2);ctx.lineTo(20,-1);ctx.moveTo(19,5);ctx.lineTo(24,2);ctx.lineTo(20,1);ctx.fill()}
+ ctx.restore();
+ if(fire){ctx.globalAlpha=.28;ctx.strokeStyle='#ff7a37';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(-3,0,35,23,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
+}
+function drawWolfModel(e,x,y,now){
+ const phase=enemyAttackPhase(e,now,380);ctx.save();ctx.translate(x,y);ctx.rotate(creatureAngle(e));drawWolfBodyLocal(e,now,phase);ctx.restore()
+}
+function drawBearBodyLocal(e,now,phase=-1){
+ const crystal=e.type.id==='crystalbear',step=e.moving?Math.sin(now*.015+(e.x+e.y)*.015)*5:0,lunge=phase>=0?Math.sin(Math.PI*phase)*12:0,open=phase>=0?Math.sin(Math.PI*phase):0;
+ ctx.fillStyle=crystal?'#6f5ab1':'#5f402b';ctx.strokeStyle=crystal?'#d2c7ff':'#281b14';ctx.lineWidth=3;
+ ctx.beginPath();ctx.ellipse(-4,0,38,25,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle=crystal?'#594991':'#49311f';
+ for(const [lx,ly,sgn] of [[-20,-17,1],[16,-17,-1],[-20,17,-1],[16,17,1]]){ctx.save();ctx.translate(lx,ly);ctx.rotate((sgn*step)*.025);ctx.fillRect(-7,-3,22,9);ctx.fillStyle=crystal?'#cfc3ff':'#c8ad84';for(let i=0;i<3;i++)ctx.fillRect(13+i*3,-3+i*3,5,2);ctx.restore()}
+ ctx.save();ctx.translate(30+lunge,0);ctx.fillStyle=crystal?'#7c68bf':'#704d33';ctx.beginPath();ctx.ellipse(0,0,22,19,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.beginPath();ctx.arc(-9,-15,7,0,Math.PI*2);ctx.arc(8,-15,7,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=crystal?'#b9a8ee':'#9b7350';ctx.beginPath();ctx.ellipse(14,0,14,10,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#19110d';ctx.beginPath();ctx.arc(9,-7,2.5,0,Math.PI*2);ctx.arc(9,7,2.5,0,Math.PI*2);ctx.fill();
+ if(open>.1){ctx.fillStyle='#2a1112';ctx.beginPath();ctx.moveTo(18,-7-open*5);ctx.lineTo(33,0);ctx.lineTo(18,7+open*5);ctx.closePath();ctx.fill();ctx.fillStyle='#fff4dd';ctx.beginPath();ctx.moveTo(21,-7);ctx.lineTo(26,-2);ctx.lineTo(22,-1);ctx.moveTo(21,7);ctx.lineTo(26,2);ctx.lineTo(22,1);ctx.fill()}
+ ctx.restore();
+ ctx.strokeStyle=crystal?'#a993f0':'#365f35';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-18,-19);ctx.quadraticCurveTo(-5,-32,10,-20);ctx.stroke()
+}
+function drawBearModel(e,x,y,now){
+ const phase=enemyAttackPhase(e,now,420);ctx.save();ctx.translate(x,y);ctx.rotate(creatureAngle(e));drawBearBodyLocal(e,now,phase);ctx.restore()
+}
+function drawFireSnakeModel(e,x,y,now){
+ const phase=enemyAttackPhase(e,now,430),crystal=e.type.id==='crystalfiresnake',open=phase>=0?Math.sin(Math.PI*phase):0,lunge=phase>=0?Math.sin(Math.PI*phase)*16:0;
+ ctx.save();ctx.translate(x,y);ctx.rotate(creatureAngle(e));
+ const wiggle=Math.sin(now*.009+(e.x+e.y)*.01)*4;
+ ctx.lineCap='round';ctx.strokeStyle=crystal?'#624497':'#8f2f21';ctx.lineWidth=24;ctx.beginPath();ctx.moveTo(-55,wiggle);ctx.bezierCurveTo(-36,-22-wiggle,-18,21+wiggle,4,0);ctx.stroke();
+ ctx.strokeStyle=crystal?'#b48ae4':'#ed642e';ctx.lineWidth=16;ctx.beginPath();ctx.moveTo(-55,wiggle);ctx.bezierCurveTo(-36,-22-wiggle,-18,21+wiggle,6,0);ctx.stroke();
+ ctx.strokeStyle=crystal?'#e2d1ff':'#ffb04a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-48,wiggle-1);ctx.bezierCurveTo(-30,-14,-16,13,3,0);ctx.stroke();
+ ctx.save();ctx.translate(21+lunge,0);ctx.fillStyle=crystal?'#9a66cb':'#df572a';ctx.strokeStyle=crystal?'#e8dcff':'#ffab4d';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,0,19,14,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle='#fff07c';ctx.beginPath();ctx.arc(5,-6,2.4,0,Math.PI*2);ctx.arc(5,6,2.4,0,Math.PI*2);ctx.fill();
+ if(open>.05){ctx.fillStyle='#311014';ctx.beginPath();ctx.moveTo(12,-8-open*8);ctx.lineTo(34,0);ctx.lineTo(12,8+open*8);ctx.closePath();ctx.fill();ctx.fillStyle='#ff7f73';ctx.beginPath();ctx.moveTo(15,-2);ctx.lineTo(31,0);ctx.lineTo(15,2);ctx.closePath();ctx.fill();ctx.fillStyle='#fff7df';ctx.beginPath();ctx.moveTo(15,-10-open*5);ctx.lineTo(21,-4);ctx.lineTo(17,-3);ctx.moveTo(15,10+open*5);ctx.lineTo(21,4);ctx.lineTo(17,3);ctx.fill()}else{ctx.fillStyle='#2a1110';ctx.beginPath();ctx.moveTo(14,-3);ctx.lineTo(27,0);ctx.lineTo(14,3);ctx.closePath();ctx.fill()}
+ ctx.restore();ctx.restore()
+}
+function drawDeathEffects(cx,cy,now){
+ for(let i=deathFx.length-1;i>=0;i--){
+  const fx=deathFx[i];if(now>=fx.endAt){deathFx.splice(i,1);continue}if(fx.area!==state.area)continue;
+  const x=fx.x-cx,y=fx.y-cy,t=clamp((now-fx.startedAt)/fx.duration,0,1),angle=Math.atan2(fx.faceY,fx.faceX);
+  if(x<-110||y<-110||x>innerWidth+110||y>innerHeight+110)continue;
+  ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.globalAlpha=t>.72?1-(t-.72)/.28:1;
+  if(fx.typeId==='firesnake'||fx.typeId==='crystalfiresnake'){
+   const crystal=fx.typeId==='crystalfiresnake',amp=(1-t)*13;ctx.lineCap='round';
+   for(let n=0;n<9;n++){const px=-48+n*10,py=Math.sin(now*.045+n*1.35)*amp*(1-n/12);ctx.fillStyle=crystal?'#9d70d0':'#e6652f';ctx.beginPath();ctx.arc(px,py,10-n*.35,0,Math.PI*2);ctx.fill();if(n===8){ctx.fillStyle='#ffb24e';ctx.beginPath();ctx.moveTo(px+8,py);ctx.lineTo(px+24,py-5*(1-t));ctx.lineTo(px+24,py+5*(1-t));ctx.closePath();ctx.fill()}}
+  }else if(fx.typeId==='shadowwolf'||fx.typeId==='firewolf'||fx.typeId==='shadowwolfleader'){
+   ctx.rotate(t*.72);ctx.translate(0,12*t);ctx.scale(1,Math.max(.34,1-t*.68));drawWolfBodyLocal({type:creatures[fx.typeId],x:fx.x,y:fx.y,moving:false},now,-1)
+  }else if(fx.typeId==='worldtreebear'||fx.typeId==='crystalbear'){
+   ctx.rotate(t*.45);ctx.translate(0,14*t);ctx.scale(1,Math.max(.42,1-t*.58));drawBearBodyLocal({type:creatures[fx.typeId],x:fx.x,y:fx.y,moving:false},now,-1)
+  }else{
+   ctx.fillStyle=creatures[fx.typeId]?.color||'#777';ctx.beginPath();ctx.ellipse(0,10*t,Math.max(5,25*(1-t*.25)),Math.max(3,18*(1-t*.7)),0,0,Math.PI*2);ctx.fill()
+  }
+  ctx.restore()
+ }
+}
+function drawCreature(e,cx,cy){
+ const x=e.x-cx,y=e.y-cy,now=performance.now();if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;
+ if(e.type.labBoss&&now<(e.submergedUntil||0)){ctx.fillStyle='#ff5a30';ctx.beginPath();ctx.ellipse(x,y,52,18,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c5a2ff';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='#f7e7ff';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('용암 잠수',x,y+34);return}
+ if(e.type.burrower&&!e.emerged){ctx.fillStyle='#6f5134';ctx.beginPath();ctx.ellipse(x,y+10,34,13,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a67b4b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x-25,y+6);ctx.lineTo(x+23,y+13);ctx.stroke();return}
+ ctx.save();if(now<e.hitAt)ctx.globalAlpha=.5;
+ if(e.type.id==='firesnake'||e.type.id==='crystalfiresnake')drawFireSnakeModel(e,x,y,now);
+ else if(e.type.id==='worldtreebear'||e.type.id==='crystalbear')drawBearModel(e,x,y,now);
+ else if(e.type.id==='shadowwolf'||e.type.id==='firewolf'||e.type.id==='shadowwolfleader')drawWolfModel(e,x,y,now);
+ else{
+  ctx.fillStyle=e.type.color;ctx.strokeStyle='#18221a';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r,0,Math.PI*2);ctx.fill();ctx.stroke();
+  if(e.type.id==='fairy'){ctx.strokeStyle='#fffbd0';ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}
+  if(e.type.id==='ironspirit'){ctx.strokeStyle='#d9e6eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,e.type.r-6,0,Math.PI*2);ctx.stroke()}
+  if(e.type.id.includes('firegolem')){ctx.fillStyle='#ff6f35';ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fill()}
+  if(e.type.labBoss){ctx.strokeStyle='#c8a7ff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+9,0,Math.PI*2);ctx.stroke();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;ctx.fillStyle='#b08be5';ctx.beginPath();ctx.moveTo(x+Math.cos(a)*(e.type.r+4),y+Math.sin(a)*(e.type.r+4));ctx.lineTo(x+Math.cos(a-.18)*(e.type.r+25),y+Math.sin(a-.18)*(e.type.r+25));ctx.lineTo(x+Math.cos(a+.18)*(e.type.r+25),y+Math.sin(a+.18)*(e.type.r+25));ctx.closePath();ctx.fill()}if(now<(e.roarUntil||0)){ctx.strokeStyle='#f6d4ff';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+28,0,Math.PI*2);ctx.stroke()}}
+  if(e.type.id==='sandwalker'){ctx.strokeStyle='#d8b06a';ctx.lineWidth=4;for(let a=0;a<6;a++){const ang=a*Math.PI/3;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*20,y+Math.sin(ang)*20);ctx.lineTo(x+Math.cos(ang)*42,y+Math.sin(ang)*42);ctx.stroke()}}
+  if(e.type.guardian){ctx.strokeStyle='#efe8ff';ctx.lineWidth=5;ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,rr=i%2?e.type.r+12:e.type.r+20,px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py)}ctx.closePath();ctx.stroke();if(now<(e.rageUntil||0)){ctx.strokeStyle='#ff6f8f';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+15,0,Math.PI*2);ctx.stroke()}}
+  if(e.type.crystalVariant){ctx.strokeStyle='#cfbfff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,e.type.r+6,0,Math.PI*2);ctx.stroke()}
+  if(e.type.id==='crystalboar'||e.type.id==='crystalboarjunior'){ctx.strokeStyle='#d6c9ff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-12,y-e.type.r+3);ctx.lineTo(x,y-e.type.r-14);ctx.lineTo(x+12,y-e.type.r+3);ctx.stroke()}
+  if(e.type.boss){const bs=e.bossState;if(bs?.mode?.startsWith('telegraph')){ctx.globalAlpha=.22;ctx.fillStyle=bs.mode==='telegraph-triple'?'#ff466f':'#9cffb0';for(let i=1;i<=3;i++){ctx.beginPath();ctx.arc(x-i*18,y+i*7,e.type.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;ctx.strokeStyle=bs.mode==='telegraph-triple'?'#ff6689':'#a8ffc0';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,e.type.r+16,0,Math.PI*2);ctx.stroke()}}
+ }
+ ctx.restore();
+ if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
+ ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':e.type.name,x,y+e.type.r+18)
+}
 function drawProjectiles(cx,cy){
  for(const q of state.projectiles){if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
 }
@@ -1861,7 +1986,7 @@ function drawRemotePlayers(cx,cy){
   if(r.pet&&!r.pet.mounted){ctx.fillStyle='#5d5278';ctx.beginPath();ctx.arc(r.pet.x-cx,r.pet.y-cy,14,0,Math.PI*2);ctx.fill()}if(r.weapon){ctx.strokeStyle='#bcdcff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+(r.faceX||1)*25,y+4+(r.faceY||0)*25);ctx.stroke()}ctx.restore()
  }
 }
-function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness()}
+function draw(){const cx=state.camera.x,cy=state.camera.y,now=performance.now();if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);else{drawBackground(cx,cy,innerWidth,innerHeight);for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');drawShadowEgg(cx,cy)}for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);drawDeathEffects(cx,cy,now);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawQuestDarkness()}
 function resize(){const d=Math.min(2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;update(dt,now);draw();requestAnimationFrame(loop)}
 function resetGameSave(){
  try{localStorage.removeItem(SAVE_KEY)}catch{}
