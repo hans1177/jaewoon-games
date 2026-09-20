@@ -182,6 +182,34 @@ test('speculative diagnostic postcondition gets one bounded focused correction c
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/diagnostic-credit/files/rpg.html'),'utf8'),/clearInterval/);
 });
 
+test('speculative DOM null diagnostic postcondition gets one bounded focused correction credit', async()=>{
+  const cwd=tempRoot();
+  const bad1=path.join(cwd,'dom-null-bad-1.json');
+  const bad2=path.join(cwd,'dom-null-bad-2.json');
+  const good=path.join(cwd,'dom-null-good.json');
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'dom-null-diagnostic-credit'});
+  workOrder.goal='[DIAGNOSTIC_BUNDLE] repair DOM null event bind';
+  workOrder.candidateStrategyRole={variant:'speculative-1',strategy:'DIAGNOSTIC_CAUSAL_REPAIR'};
+  workOrder.selectedTask={
+    id:'dom-null-diagnostic-credit',gameId:'demo',target:'web',department:'development',type:'implementation',
+    blocker:'runtime-failure',lastOutcome:'FAIL',
+    evidence:['diagnostic:DOM_NULL_EVENT_BIND','diagnostic-key:DOM_NULL_EVENT_BIND:index.html']
+  };
+  const unsafe="document.getElementById('play').addEventListener('click',startGame);";
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button><script>'+unsafe+'function startGame(){}</script>');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(bad1,JSON.stringify({replace:unsafe}));
+  write(bad2,JSON.stringify({replace:"document.getElementById('play').addEventListener('click',()=>startGame());"}));
+  write(good,JSON.stringify({replace:"document.getElementById('play')?.addEventListener('click',startGame);"}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.baseAttemptBudget,2);
+  assert.equal(result.generation.effectiveAttemptBudget,3);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.diagnosticPostcondition.pass,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/dom-null-diagnostic-credit/files/index.html'),'utf8'),/\?\.addEventListener/);
+});
+
 test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),3);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'primary'}),4);
