@@ -52,7 +52,7 @@ function updateGameState() {
         }
 
 function checkGameOver() {
-            if (gameState.player.health <= 0) {
+            if (gameState.player.health <= 0) { gameState.gameOver = true; alert("Game Over! Your health is 0."); }
                 gameState.gameOver = true;
                 alert("Game Over! Your health is 0.");
             }
