@@ -6,7 +6,7 @@ import {Script} from 'node:vm';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
-import {buildWebContractAdapterPlan,webContractAdapterGuidance} from './company-web-contract-adapter.mjs';
+import {applyWebContractAdapterBindings,buildWebContractAdapterPlan,webContractAdapterGuidance} from './company-web-contract-adapter.mjs';
 import {buildVibeDevelopmentContext,clipPreservedSourceForModel} from './company-vibe2-gameplay-intelligence.mjs';
 
 const REAL_ARTIFACT_TYPE='REAL_PLAYABLE_GAME';
@@ -32,10 +32,10 @@ const clip=(value,max=18000)=>{const text=typeof value==='string'?value:JSON.str
 
 function scripts(text){return [...String(text??'').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];}
 function mechanics(text){return [...new Set([...String(text??'').matchAll(/data-mechanic-id=["']([^"']+)["']/gi)].map(x=>clean(x[1])).filter(Boolean))];}
-function scriptBlockers(text){
+function scriptBlockers(text,{allowScriptSrc=false}={}){
   const out=[];let i=0;
   for(const m of scripts(text)){
-    if(/\bsrc\s*=/i.test(m[1]||'')){out.push('SCRIPT_SRC_FORBIDDEN');continue;}
+    if(/\bsrc\s*=/i.test(m[1]||'')){if(!allowScriptSrc)out.push('SCRIPT_SRC_FORBIDDEN');continue;}
     try{new Script(String(m[2]||''),{filename:`bootstrap-inline-${++i}.js`});
     }catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
   }
@@ -56,10 +56,13 @@ function bindInitialCycleContract(text,approvedScopeCount){
   if(!/data-playable-cycle-contract=["']ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE["']/i.test(out))attrs.push(`data-playable-cycle-contract="${INITIAL_PLAYABLE_MINIMUM}"`);
   if(/data-approved-scope-count=["'][^"']*["']/i.test(out))out=out.replace(/data-approved-scope-count=["'][^"']*["']/i,`data-approved-scope-count="${approvedScopeCount}"`);
   else attrs.push(`data-approved-scope-count="${approvedScopeCount}"`);
-  if(attrs.length)out=out.replace(/<main\b/i,`<main ${attrs.join(' ')}`);
+  if(attrs.length){
+    if(/<main\b/i.test(out))out=out.replace(/<main\b/i,`<main ${attrs.join(' ')}`);
+    else out=out.replace(/<body\b/i,`<body ${attrs.join(' ')}`);
+  }
   return out;
 }
-function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=false,canvasRequired=false}={}){
+function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=false,canvasRequired=false,preservedSource=false}={}){
   const blockers=[],bytes=Buffer.byteLength(text,'utf8'),scriptBytes=scripts(text).reduce((n,m)=>n+Buffer.byteLength(String(m[2]||''),'utf8'),0),ids=mechanics(text);
   if(scopeInventory.length){
     if(bytes<MIN_REAL_GAME_BYTES)blockers.push(`REAL_GAME_FOOTPRINT_TOO_SMALL:${bytes}:${MIN_REAL_GAME_BYTES}`);
@@ -70,7 +73,7 @@ function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=f
     if(/data-session-minutes=["']30["']|data-session-proof-mode=["']PROGRESSION_MILESTONES["']|data-session-stage=|Stage\s*0-5|0\s*[–-]\s*5\s*분/i.test(text))blockers.push('INITIAL_30_MINUTE_PROXY_FORBIDDEN');
     if(/<button\b[^>]*data-session-stage=/i.test(text))blockers.push('SESSION_DIRECT_STAGE_CONTROL_FORBIDDEN');
     if(!/data-run-result=["']running["']/i.test(text))blockers.push('RUN_RESULT_STATE_REQUIRED');
-    if(!/(victory|목표 달성|달성!|선승)/i.test(text))blockers.push('WIN_CONDITION_REQUIRED');
+    if(!preservedSource&&!/(victory|목표 달성|달성!|선승)/i.test(text))blockers.push('WIN_CONDITION_REQUIRED');
     if(!/(defeat|shutdown|가동 중단|쓰러졌다|파괴됐다|패배)/i.test(text))blockers.push('LOSS_CONDITION_REQUIRED');
     if(/FULL APPROVED WEB COMPANION|승인 분량 전체 구현|scope-control-|test harness|validation panel|검증 패널/i.test(text))blockers.push('WEB_TEST_HARNESS_FORBIDDEN');
     blockers.push(...staticApprovedScopeCoverage(text,scopeInventory).blockers);
@@ -83,8 +86,8 @@ function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=f
   if(!/data-audio-control=["']mute["']/.test(text))blockers.push('MUSIC_MUTE_CONTROL_REQUIRED');
   if(!/data-audio-control=["']volume["']/.test(text))blockers.push('MUSIC_VOLUME_CONTROL_REQUIRED');
   if(!allowPersistentStorage&&/\b(?:localStorage|sessionStorage)\b/.test(text))blockers.push('PERSISTENT_STORAGE_FORBIDDEN_ON_BOOTSTRAP');
-  if(/\b(?:fetch|XMLHttpRequest|WebSocket)\s*\(/.test(text))blockers.push('NETWORK_API_FORBIDDEN');
-  blockers.push(...scriptBlockers(text));
+  if(!preservedSource&&/\b(?:fetch|XMLHttpRequest|WebSocket)\s*\(/.test(text))blockers.push('NETWORK_API_FORBIDDEN');
+  blockers.push(...scriptBlockers(text,{allowScriptSrc:preservedSource}));
   return {blockers:[...new Set(blockers)],bytes,scriptBytes,mechanicCount:ids.length,mechanicIds:ids};
 }
 export function validateBootstrapHtml(html,{scopeInventory=[]}={}){
@@ -92,7 +95,7 @@ export function validateBootstrapHtml(html,{scopeInventory=[]}={}){
   return{pass:r.blockers.length===0,...r,approvedScopeRequiredCount:scopeInventory.length,artifactType:scopeInventory.length?REAL_ARTIFACT_TYPE:null,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM};
 }
 export function validatePreservedSourceHtml(html,{scopeInventory=[]}={}){
-  const text=String(html??''),r=commonContractBlockers(text,{scopeInventory,allowPersistentStorage:true,canvasRequired:false});
+  const text=String(html??''),r=commonContractBlockers(text,{scopeInventory,allowPersistentStorage:true,canvasRequired:false,preservedSource:true});
   return{pass:r.blockers.length===0,...r,approvedScopeRequiredCount:scopeInventory.length,artifactType:REAL_ARTIFACT_TYPE,preservedSource:true,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM};
 }
 
@@ -139,7 +142,16 @@ function bindScopeIds(html,inventory){
   return out;
 }
 function preparePreservedStandaloneHtml(html,inventory){
-  return bindInitialCycleContract(bindScopeIds(html,inventory),inventory.length);
+  let out=bindInitialCycleContract(bindScopeIds(html,inventory),inventory.length);
+  const adapted=applyWebContractAdapterBindings({html:out,inventory});out=adapted.html;
+  const attrs=[];
+  if(!/data-web-artifact-type=["']REAL_PLAYABLE_GAME["']/i.test(out))attrs.push(`data-web-artifact-type="${REAL_ARTIFACT_TYPE}"`);
+  if(!/data-run-result=["'][^"']+["']/i.test(out))attrs.push('data-run-result="running"');
+  if(attrs.length){
+    if(/<main\b/i.test(out))out=out.replace(/<main\b/i,`<main ${attrs.join(' ')}`);
+    else out=out.replace(/<body\b/i,`<body ${attrs.join(' ')}`);
+  }
+  return out;
 }
 function preservedResult({gameId,gameName,html,inventory,notes=[]}){
   const review=validatePreservedSourceHtml(html,{scopeInventory:inventory});
