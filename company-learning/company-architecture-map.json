@@ -1,5 +1,5 @@
 {
-  "version": 51,
+  "version": 52,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1097,7 +1097,7 @@
     }
   },
   "capabilityDistillationTopology": {
-    "version": 9,
+    "version": 10,
     "centralContract": "company-learning/platform-release-roadmap.json::vibeCodingMethodSelfImprovement.fullCodingAbsorptionAndCapabilityDistillation",
     "flow": [
       "OBSERVABLE_CODING_TRACE_CAPTURE",
@@ -1110,8 +1110,13 @@
       "FRESH_TASK_REVALIDATION",
       "APPLICATION_OUTCOME_EVIDENCE_BINDING",
       "REPEATED_EVIDENCE_CONFIDENCE_LIFECYCLE",
-      "GENERALIZATION_BENCHMARK_GATE",
-      "OPTIONAL_CANONICAL_TRAINING_ONLY_THROUGH_EXISTING_GATES"
+      "GENERALIZATION_CANDIDATE_GATE",
+      "UNSEEN_CONTROL_CHALLENGER_BENCHMARK",
+      "CAPABILITY_SPECIFIC_CAUSAL_SUPPORT_REVIEW",
+      "GENERALIZED_VERIFIED_OR_INCONCLUSIVE",
+      "OPTIONAL_CANONICAL_TRAINING_ONLY_THROUGH_EXISTING_GATES",
+      "UNSEEN_PROBLEM_GENERALIZATION_BENCHMARK",
+      "CAPABILITY_PORTFOLIO_GOVERNANCE"
     ],
     "rawTraceAuthority": "PROVENANCE_ONLY_UNTIL_VERIFIED",
     "hiddenChainOfThoughtRequired": false,
@@ -1386,10 +1391,94 @@
       }
     },
     "phase4Next": {
-      "state": "CENTRAL_STRATEGY_DEFINITION_REQUIRED",
-      "implementationAllowed": false,
+      "state": "CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
+      "implementationAllowed": true,
       "authorityExpansionAllowed": false,
-      "prerequisite": "PHASE_4_SCOPE_GOALS_BOUNDARIES_AND_EVIDENCE_GATES_MUST_BE_DEFINED_IN_CENTRAL_STRATEGY_FIRST"
+      "objective": "VERIFY_GENERALIZATION_CANDIDATES_ON_UNSEEN_PROBLEMS_AND_GOVERN_GENERALIZED_DEPRECATED_AND_SUPERSEDED_CAPABILITIES_WITHOUT_NEW_EXECUTION_AUTHORITY",
+      "eligibility": [
+        "GENERALIZATION_CANDIDATE_ONLY",
+        "REPEATED_INDEPENDENT_APPLICATION_EVIDENCE",
+        "CROSS_GAME_VERIFIED_APPLICATION_EVIDENCE",
+        "NO_UNRESOLVED_CAPABILITY_SPECIFIC_CONTRADICTION"
+      ],
+      "benchmarkFlow": [
+        "SELECT_GENERALIZATION_CANDIDATE",
+        "BUILD_HOLDOUT_UNSEEN_GAME_AND_PROBLEM_FINGERPRINT_CASE",
+        "FREEZE_NON_TARGET_CONTEXT_WRITABLE_SCOPE_MODEL_BUDGET_AND_QA_CONTRACT",
+        "RUN_PAIRED_CONTROL_WITHOUT_TARGET_CAPABILITY",
+        "RUN_PAIRED_CHALLENGER_WITH_TARGET_CAPABILITY",
+        "RUN_EXISTING_PRACTICE_OR_SANDBOX_SCREEN",
+        "RUN_FRESH_INDEPENDENT_QA_AND_REGRESSION",
+        "RUN_NATIVE_RUNTIME_WHEN_CLAIM_REQUIRES_IT",
+        "BIND_EXACT_CAPABILITY_ID_TO_CAPABILITY_SPECIFIC_BENCHMARK_OUTCOME",
+        "REPEAT_ON_INDEPENDENT_UNSEEN_CASE",
+        "PROMOTE_TO_GENERALIZED_VERIFIED_ONLY_WITH_POSITIVE_SUPPORT_AND_ZERO_CONTRADICTIONS"
+      ],
+      "strongGeneralizationGate": {
+        "minimumIndependentUnseenPasses": 2,
+        "minimumDistinctGames": 2,
+        "crossEngineClaimRequiresNativeEvidencePerClaimedEngine": true,
+        "singlePassSufficient": false,
+        "syntheticPracticeReplacesNativeRuntime": false,
+        "unseenGameRequired": true,
+        "unseenProblemFingerprintRequired": true,
+        "pairedControlChallengerRequired": true,
+        "capabilitySpecificPositiveSupportRequired": true,
+        "zeroCapabilitySpecificContradictionsRequired": true,
+        "nonTargetContextFixed": true,
+        "writableScopeFixed": true,
+        "modelBudgetFixed": true,
+        "qaContractFixed": true,
+        "ambiguousOrNeutralEvidenceRemainsGeneralizationCandidate": true
+      },
+      "portfolioGovernance": [
+        "PRESERVE_PROVENANCE_ON_DEPRECATION",
+        "PRESERVE_PROVENANCE_ON_SUPERSESSION",
+        "REMOVE_DEPRECATED_OR_SUPERSEDED_CAPABILITIES_FROM_RETRIEVAL",
+        "CONSOLIDATE_REDUNDANT_CAPABILITIES_ONLY_WITH_SEMANTIC_AND_OUTCOME_EVIDENCE",
+        "SAME_GAME_SPECIFIC_CAPABILITY_MAY_OUTRANK_GENERALIZED_CAPABILITY",
+        "GENERALIZED_RETRIEVAL_STAYS_PROBLEM_RELEVANCE_GATED",
+        "PROJECT_LOCAL_VALUES_REMAIN_LOCAL"
+      ],
+      "preserve": [
+        "EXISTING_BENCHMARK_LADDER_AND_PRACTICE_PATHS_ONLY",
+        "PRODUCTION_WORK_PREEMPTS_BENCHMARK",
+        "NO_RAW_EXTERNAL_AI_OUTPUT_PERSISTENCE",
+        "NO_HIDDEN_CHAIN_OF_THOUGHT_PERSISTENCE",
+        "NO_SECRET_OR_SESSION_CAPTURE",
+        "NO_DIRECT_RAW_PATCH_TRAINING",
+        "NO_GENERIC_CAPABILITY_DUPLICATE_INJECTION",
+        "SAME_ENGINE_ALONE_NOT_RETRIEVAL_ELIGIBLE",
+        "EXISTING_WAVE_EXECUTION_AUTHORITY_ONLY"
+      ],
+      "metrics": [
+        "UNSEEN_BENCHMARK_ATTEMPT_COUNT",
+        "UNSEEN_BENCHMARK_PASS_COUNT",
+        "UNSEEN_BENCHMARK_FAILURE_COUNT",
+        "GENERALIZED_VERIFIED_COUNT",
+        "GENERALIZATION_FALSE_POSITIVE_COUNT",
+        "NATIVE_RUNTIME_COVERAGE_COUNT",
+        "SUPERSESSION_COUNT",
+        "DEPRECATION_COUNT",
+        "REDUNDANT_CAPABILITY_CONSOLIDATION_COUNT",
+        "BENCHMARK_CONTAMINATION_COUNT"
+      ],
+      "authority": {
+        "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "workerCreation": false,
+        "queueMutation": false,
+        "waveReorder": false,
+        "lockOrPolicyMutation": false,
+        "automaticLearningTuningPromotion": false,
+        "directMainPromotion": false,
+        "authorityChange": "NONE"
+      },
+      "nextGate": "IMPLEMENT_PHASE_4_UNSEEN_BENCHMARK_AND_PORTFOLIO_GOVERNANCE_THEN_VERIFY_REAL_RUNTIME_WITHOUT_AUTHORITY_EXPANSION",
+      "baseCentralVersions": {
+        "roadmap": 210,
+        "architecture": 52,
+        "capabilityTopology": 10
+      }
     }
   },
   "functionalIdentityPhilosophyTopology": {
