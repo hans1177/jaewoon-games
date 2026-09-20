@@ -2054,3 +2054,92 @@ learning:
   duplicateDistillationTriggerForbidden: true
   shadowDatasetOrTrainerForbidden: true
 ```
+
+assetProductionParallel:
+  version: 1
+  authority: OWNER_DIRECTIVE_2026-09-20
+  enabled: true
+  purpose: MAKE_REAL_GAME_ASSET_PRODUCTION_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_INSTEAD_OF_GRAPHICS_REVIEW_ONLY
+  scope: ACTIVE_DEVELOPMENT_CONFIRMED_AND_RELEASE_CONFIRMED_GAMES
+  firstAdoption:
+    gameId: fantasy-survival
+    name: 마력숲 생존기
+    developmentPriority: P0_OWNER_FOCUSED_GAME
+    targetPlatforms:
+      - UNITY
+      - ROBLOX
+    mode: UNITY_ROBLOX_CONCURRENT
+  inputs:
+    required:
+      - CURRENT_VALIDATED_WEB_COMPANION
+      - APPROVED_DESIGN_BASELINE
+      - GAME_STYLE_LOCK
+    deriveVisibleAssetInventory: true
+    deriveAssetSpecFromActualGameplayNeeds: true
+    speculativeAssetWorkOutsideApprovedGameplayScopeForbidden: true
+  productionLanes:
+    - ART_DIRECTION
+    - THREE_D_ASSET
+    - MATERIAL_TEXTURE
+    - ANIMATION
+    - VFX
+    - UI_ART
+    - AUDIO
+  workflow:
+    - DERIVE_VISIBLE_ASSET_INVENTORY_AND_ASSET_SPEC
+    - CLASSIFY_A_B_C_VISUAL_PRIORITY
+    - RUN_GAMEPLAY_CODE_AND_ASSET_PRODUCTION_IN_PARALLEL
+    - BIND_REAL_ASSETS_TO_UNITY_AND_ROBLOX_PRESENTATION_LAYERS
+    - RUN_VISUAL_RUNTIME_QA_ON_ACTUAL_GAMEPLAY
+    - ASSET_REPAIR_REQUIRED_FOR_FAILED_ASSET_SCOPE
+    - REVALIDATE_PLATFORM_PRESENTATION_AND_REGRESSION
+  visualPriority:
+    A_GAMEPLAY_CRITICAL:
+      - PLAYER_CHARACTER
+      - PRIMARY_ENEMIES
+      - CORE_WEAPONS_TOOLS
+      - CORE_RESOURCES
+      - CRAFTING_STRUCTURES
+      - PRIMARY_TERRAIN
+      - COMBAT_HIT_VFX
+    B_WORLD_IDENTITY:
+      - REGION_ENVIRONMENT
+      - LANDMARKS
+      - FOLIAGE
+      - LIGHTING
+      - ATMOSPHERE
+      - AMBIENT_PARTICLES
+    C_POLISH:
+      - SECONDARY_ANIMATION
+      - RARE_ITEM_VISUALS
+      - DECORATION
+      - UI_POLISH
+      - ADVANCED_AUDIO_POLISH
+  graphicsPass:
+    reviewOrTextSpecAloneCannotPass: true
+    realAssetRequired: true
+    inGameBindingRequired: true
+    actualRuntimeVisualEvidenceRequired: true
+    requiredAssetMissingBlocksPass: true
+    placeholderVisualCannotPass: true
+    platformRuntimeEvidenceIndependent: true
+    unityRobloxSharedStyleLockRequired: true
+  parallelism:
+    gameplayCodeAndAssetProductionConcurrent: true
+    responsibleFilesMustBeExplicitAndDisjoint: true
+    sameResponsibleFileParallelForbidden: true
+    executionAuthority: EXISTING_WAVE_SCHEDULER_ONLY
+    newWorkerAuthorityCreated: false
+    queueMutationAuthorityCreated: false
+    waveReorderAuthorityCreated: false
+  failureHandling:
+    correctableState: ASSET_REPAIR_REQUIRED
+    isolateFailedAssetScopeWhenSafe: true
+    unrelatedCodeWorkMayContinueWhenDependencySafe: true
+    repairRequiresRebindAndVisualRuntimeQa: true
+    waitingStateForCorrectableAssetFailureForbidden: true
+  preservation:
+    assetOnlyWorkMustNotChangeGameplayBalanceSaveProgressionOrHitSemantics: true
+    reuseExistingAssetLicenseAndProvenancePolicy: true
+    qualitySecurityEvidenceAndSaveCompatibilityGatesUnchanged: true
+
