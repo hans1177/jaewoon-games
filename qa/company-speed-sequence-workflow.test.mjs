@@ -187,3 +187,15 @@ test('Web validator emits the canonical schema15 evidence version',()=>{
   assert.match(validator,/^const VALIDATION_SCHEMA_VERSION=15;$/m);
   assert.doesNotMatch(validator,/^const VALIDATION_SCHEMA_VERSION=14;$/m);
 });
+
+test('owner-focused concurrent native dispatch happens only after canonical source-bind resume guard',()=>{
+  assert.match(router,/OWNER_FOCUS_CONCURRENT_PLATFORM_DISPATCH=/);
+  const addPlatform=router.indexOf('platforms.add(platform);');
+  const retry=router.indexOf('if(retrySourceBind){',addPlatform);
+  const concurrent=router.indexOf("const focus=roadmap?.assetProductionParallelContract?.firstAdoption||{};",retry);
+  assert.ok(addPlatform>=0&&retry>addPlatform&&concurrent>retry,'concurrent dispatch must not bypass source-bind resume');
+  assert.match(router,/focusMode\.includes\('CONCURRENT'\)/);
+  assert.match(router,/normalizeSelectedPlatform\(requested\)/);
+  assert.match(router,/adapterForPlatform\(concurrentPlatform\)\?\.existingExecutionPath/);
+});
+
