@@ -29,20 +29,23 @@ function normalize(row={}){
 export function normalizeRecoveryQueue(input={}){
   return{version:1,kind:'company-recovery-queue',policy:'REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING',tasks:(input.tasks||[]).map(normalize)};
 }
-export function enqueueRecovery(queueInput,row={}){
+export function enqueueRecovery(queueInput,row={},options={}){
   const queue=normalizeRecoveryQueue(queueInput),item=normalize(row);
+  const reactivateDispatched=options?.reactivateDispatched===true;
   if(!item.sourceQueue||!item.failureStage||!item.failureSignature||!item.recoveryStrategy||!item.verificationPlan.length)throw new Error('RECOVERY_REQUIRED_FIELDS_MISSING');
   const existing=queue.tasks.find(x=>x.id===item.id||(x.sourceQueue===item.sourceQueue&&x.sourceTaskId===item.sourceTaskId&&x.failureStage===item.failureStage&&x.failureSignature===item.failureSignature));
   if(existing){
+    const reactivated=reactivateDispatched&&existing.status==='dispatched';
     const tasks=queue.tasks.map(x=>x.id!==existing.id?x:{...x,
+      status:reactivated?'queued':x.status,
       priority:item.priority||x.priority,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
-      evidence:uniq([...(x.evidence||[]),...(item.evidence||[])]),blastRadius:item.blastRadius||x.blastRadius,
+      evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
       checkpoint:item.checkpoint||x.checkpoint,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
       verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
     });
-    return{queue:{...queue,tasks},added:false,id:existing.id};
+    return{queue:{...queue,tasks},added:false,reactivated,id:existing.id};
   }
-  return{queue:{...queue,tasks:[...queue.tasks,item]},added:true,id:item.id};
+  return{queue:{...queue,tasks:[...queue.tasks,item]},added:true,reactivated:false,id:item.id};
 }
 export function reserveRecovery(queueInput,{max=8}={}){
   const queue=normalizeRecoveryQueue(queueInput),limit=Math.max(1,Math.floor(Number(max)||8));
