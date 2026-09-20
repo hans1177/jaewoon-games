@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "            <div id=\"save-state\"></div>",
+      "replace": "            <div id=\"save-state\"></div>\n            <div id=\"save-state\"></div>\n            <div id=\"save-state\"></div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
