@@ -9,6 +9,11 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-architecture-map.json'
       - 'tools/company-records-governance.mjs'
+      - 'tools/runtime-gameplay-media-record.mjs'
+      - 'qa/runtime-gameplay-media-record.test.mjs'
+      - 'tools/homepage-runtime-media-sync.mjs'
+      - 'qa/homepage-runtime-media.test.mjs'
+      - 'homepage-runtime-media.json'
       - 'qa/company-records-governance.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - '.github/workflows/company-records-governance.yml'
@@ -20,6 +25,11 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/company-architecture-map.json'
       - 'tools/company-records-governance.mjs'
+      - 'tools/runtime-gameplay-media-record.mjs'
+      - 'qa/runtime-gameplay-media-record.test.mjs'
+      - 'tools/homepage-runtime-media-sync.mjs'
+      - 'qa/homepage-runtime-media.test.mjs'
+      - 'homepage-runtime-media.json'
       - 'qa/company-records-governance.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - '.github/workflows/company-records-governance.yml'
@@ -57,6 +67,8 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/company-records-governance.test.mjs
+          node --test qa/runtime-gameplay-media-record.test.mjs
+          node --test qa/homepage-runtime-media.test.mjs
           node --test qa/company-central-policy-contract.test.mjs
 
       - name: Scan all governed records and runtime media
