@@ -1027,8 +1027,8 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
-  assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.maxPredict,768);
+  assert.equal(result.generation.timeoutMs,150000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
