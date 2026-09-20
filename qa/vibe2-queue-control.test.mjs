@@ -938,3 +938,70 @@ test('atomic neuron completion is idempotent for duplicate variant callbacks',()
   assert.equal(duplicate.reason,'DUPLICATE_VARIANT');
   assert.equal(duplicate.resultCount,1);
 });
+
+test('cohort fan-in clears atomic transition state only for accepted reservation results',()=>{
+  const reservation={id:'transition:1',runId:'transition',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
+  const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'transition-task',gameId:'transition',target:'web',department:'development',type:'implementation',goal:'transition',status:'queued',sourceRoot:'web-games/transition',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true}
+  ]}),{maxConcurrentTasks:3,lane:'game-primary',reservation});
+  let queue=createVibeContinuousQueue({
+    maxConcurrentTasks:reserved.queue.maxConcurrentTasks,
+    tasks:reserved.queue.tasks.map(task=>task.id==='transition-task'?{
+      ...task,
+      neuronExpectedVariants:3,
+      neuronResults:[{taskId:'transition-task',variant:'primary',reservationId:'transition:1',outcome:'PASS'}]
+    }:task)
+  });
+  const rows=[
+    {taskId:'transition-task',variant:'primary',reservationId:'transition:1',outcome:'PASS',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}},
+    {taskId:'transition-task',variant:'speculative-1',reservationId:'transition:1',outcome:'FAIL',blocker:'candidate-failed',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}},
+    {taskId:'transition-task',variant:'speculative-2',reservationId:'transition:1',outcome:'FAIL',blocker:'candidate-failed',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}}
+  ];
+  const merged=applyVibeFanInResults(queue,rows);
+  const task=merged.queue.tasks.find(item=>item.id==='transition-task');
+  assert.equal(task.neuronExpectedVariants,0);
+  assert.deepEqual(task.neuronResults,[]);
+  assert.match(task.blocker,/candidate-awaiting-qa-and-deployment/);
+
+  const staleQueue=createVibeContinuousQueue({
+    maxConcurrentTasks:20,
+    tasks:[{...task,status:'running',blocker:null,reservationId:'transition:2',reservationRunId:'transition2',reservedAt:'2026-09-20T10:05:00Z',neuronExpectedVariants:2,neuronResults:[{taskId:'transition-task',variant:'primary',reservationId:'transition:2',outcome:'PASS'}]}]
+  });
+  const stale=applyVibeFanInResults(staleQueue,[{taskId:'transition-task',variant:'primary',reservationId:'transition:1',outcome:'PASS'}]);
+  const preserved=stale.queue.tasks.find(item=>item.id==='transition-task');
+  assert.equal(stale.applied[0].outcome,'STALE_RESULT_SKIPPED');
+  assert.equal(preserved.neuronExpectedVariants,2);
+  assert.equal(preserved.neuronResults.length,1);
+});
+
+test('reserve-batch heals downgraded atomic queue schema even when no work is reservable',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-atomic-schema-heal-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const downgraded={
+    version:5,
+    mode:'hierarchical-dag-sharded-work-stealing-queue',
+    maxConcurrentTasks:256,
+    scheduling:{dynamicBackpressure:true},
+    tasks:[{
+      id:'already-done',
+      gameId:'done',
+      target:'web',
+      department:'development',
+      type:'implementation',
+      goal:'done',
+      status:'done',
+      sourceRoot:'web-games/done',
+      responsibleFiles:['index.html']
+    }]
+  };
+  fs.writeFileSync(queueFile,JSON.stringify(downgraded,null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
+  const result=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'20',min:'20'});
+  assert.equal(result.reserved,false);
+  assert.equal(result.schemaMigrated,true);
+  const healed=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+  assert.equal(healed.scheduling.atomicNeuronCompletion,true);
+  assert.equal(healed.tasks[0].neuronExpectedVariants,0);
+  assert.deepEqual(healed.tasks[0].neuronResults,[]);
+});
