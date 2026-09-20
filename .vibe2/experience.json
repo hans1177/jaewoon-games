@@ -889,6 +889,90 @@
       "createdAt": "2026-09-20T01:49:56.519Z",
       "lastVerifiedAt": "2026-09-20T01:49:56.519Z",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_a0534f92f8ff6021da614742",
+      "fingerprint": "fp_fnqssa",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
+      "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T04:20:11.844Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는",
+      "change": "strategy PRIMARY_RESPONSIBILITY_MINIMAL | variant primary | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:35488992488",
+      "evidence": [
+        "base-main:99e3c6992a88067056a09004f7c048f144b8e036",
+        "source-generation-failure:MALFORMED_OUTPUT",
+        "actions-run:35488992488",
+        "reservation-id:35488992488:1",
+        "coding-trace:ctrace_a0534f92f8ff6021da614742",
+        "verified-coding-failure:MALFORMED_OUTPUT"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT",
+        "CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:MALFORMED_OUTPUT"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_7c263aebec46d449821c74a0",
+      "fingerprint": "fp_1pv3sox",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
+      "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T04:20:11.844Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는",
+      "change": "strategy CAUSAL_TRACE_CROSSCHECK | variant speculative-2 | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:35488992488",
+      "evidence": [
+        "base-main:99e3c6992a88067056a09004f7c048f144b8e036",
+        "source-generation-failure:MALFORMED_OUTPUT",
+        "actions-run:35488992488",
+        "reservation-id:35488992488:1",
+        "coding-trace:ctrace_7c263aebec46d449821c74a0",
+        "verified-coding-failure:MALFORMED_OUTPUT"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:MALFORMED_OUTPUT",
+        "CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:MALFORMED_OUTPUT"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }
