@@ -291,11 +291,13 @@ test('repeated verified failure escalates tournament and idle drill without bypa
 
 test('benchmark ladder includes narrative tracks and never counts directly as training sample',()=>{
   const ladder=buildBenchmarkLadder({});
-  assert.equal(ladder.cases.length,18);
+  assert.equal(ladder.cases.length,20);
   assert.ok(ladder.cases.some(x=>x.track==='STORYTELLING'));
   assert.ok(ladder.cases.some(x=>x.track==='QUEST_DESIGN'));
   assert.ok(ladder.cases.some(x=>x.track==='CHARACTER_ARC'));
   assert.ok(ladder.cases.some(x=>x.track==='DIALOGUE'));
+  assert.ok(ladder.cases.some(x=>x.track==='UNITY_NATIVE'));
+  assert.ok(ladder.cases.some(x=>x.track==='FORTNITE_UEFN_NATIVE'));
   assert.ok(ladder.cases.every(x=>x.countsAsTrainingSample===false));
 });
 
@@ -876,3 +878,44 @@ test('verified-only strategy memory opens candidate tournament to gather preferr
   assert.equal(policy.gateBypass,false);
 });
 
+
+
+test('verified Unity and Fortnite UEFN outcomes enter the same canonical mastery network',()=>{
+  const input={records:[
+    {
+      id:'unity-verified-1',gameId:'unity-game',engine:'unity',verified:true,reusable:true,outcome:'PASS',
+      goal:'Unity runtime Rigidbody Collider Netcode authoritative multiplayer',reusablePatterns:['unity-safe-runtime']
+    },
+    {
+      id:'uefn-verified-1',gameId:'uefn-game',engine:'fortnite_uefn',verified:true,reusable:true,outcome:'PASS',
+      goal:'UEFN Verse device authoritative multiplayer replication',reusablePatterns:['uefn-safe-runtime']
+    }
+  ]};
+  const result=applyVerifiedExperienceToMastery({},input);
+  assert.ok(result.state.domains.UNITY_RUNTIME.xp>0);
+  assert.ok(result.state.domains.UNITY_PHYSICS.xp>0);
+  assert.ok(result.state.domains.UNITY_NETCODE.xp>0);
+  assert.ok(result.state.domains.UEFN_RUNTIME.xp>0);
+  assert.ok(result.state.domains.UEFN_VERSE.xp>0);
+  assert.ok(result.state.domains.UEFN_REPLICATION.xp>0);
+});
+
+test('Unity and Fortnite UEFN native gaps generate practice signals without claiming native production pass',()=>{
+  const mastery=createMasteryState({
+    domains:{
+      UNITY_RUNTIME:{xp:0},UNITY_PHYSICS:{xp:0},UNITY_NETCODE:{xp:0},
+      UEFN_RUNTIME:{xp:0},UEFN_VERSE:{xp:0},UEFN_REPLICATION:{xp:0},
+      CORE_LOOP:{xp:200},STATE_MACHINE:{xp:200},COMBAT:{xp:200},AI:{xp:200},
+      PROGRESSION:{xp:200},ECONOMY:{xp:200},SAVE:{xp:200},MOBILE_INPUT:{xp:200},
+      UI_STATE:{xp:200},DEBUGGING:{xp:200},RECOVERY:{xp:200},SECURITY:{xp:200},
+      PERFORMANCE:{xp:200},WEB_RUNTIME:{xp:200},ROBLOX_STUDIO:{xp:200}
+    }
+  });
+  const benchmark=buildBenchmarkLadder(mastery);
+  assert.ok(benchmark.cases.some(row=>row.track==='UNITY_NATIVE'));
+  assert.ok(benchmark.cases.some(row=>row.track==='FORTNITE_UEFN_NATIVE'));
+  const practice=buildIdlePracticeQueue(mastery,benchmark);
+  assert.ok(practice.drills.some(row=>row.kind==='UNITY_NATIVE_DRILL'));
+  assert.ok(practice.drills.some(row=>row.kind==='FORTNITE_UEFN_NATIVE_DRILL'));
+  assert.ok(practice.drills.every(row=>row.countsAsProductionPass===false));
+});
