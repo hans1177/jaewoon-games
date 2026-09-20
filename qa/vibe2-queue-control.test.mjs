@@ -938,3 +938,38 @@ test('atomic neuron completion is idempotent for duplicate variant callbacks',()
   assert.equal(duplicate.reason,'DUPLICATE_VARIANT');
   assert.equal(duplicate.resultCount,1);
 });
+
+test('cohort fan-in clears atomic transition state only for accepted reservation results',()=>{
+  const reservation={id:'transition:1',runId:'transition',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
+  const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'transition-task',gameId:'transition',target:'web',department:'development',type:'implementation',goal:'transition',status:'queued',sourceRoot:'web-games/transition',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true}
+  ]}),{maxConcurrentTasks:3,lane:'game-primary',reservation});
+  let queue=createVibeContinuousQueue({
+    maxConcurrentTasks:reserved.queue.maxConcurrentTasks,
+    tasks:reserved.queue.tasks.map(task=>task.id==='transition-task'?{
+      ...task,
+      neuronExpectedVariants:3,
+      neuronResults:[{taskId:'transition-task',variant:'primary',reservationId:'transition:1',outcome:'PASS'}]
+    }:task)
+  });
+  const rows=[
+    {taskId:'transition-task',variant:'primary',reservationId:'transition:1',outcome:'PASS',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}},
+    {taskId:'transition-task',variant:'speculative-1',reservationId:'transition:1',outcome:'FAIL',blocker:'candidate-failed',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}},
+    {taskId:'transition-task',variant:'speculative-2',reservationId:'transition:1',outcome:'FAIL',blocker:'candidate-failed',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}}
+  ];
+  const merged=applyVibeFanInResults(queue,rows);
+  const task=merged.queue.tasks.find(item=>item.id==='transition-task');
+  assert.equal(task.neuronExpectedVariants,0);
+  assert.deepEqual(task.neuronResults,[]);
+  assert.match(task.blocker,/candidate-awaiting-qa-and-deployment/);
+
+  const staleQueue=createVibeContinuousQueue({
+    maxConcurrentTasks:20,
+    tasks:[{...task,status:'running',blocker:null,reservationId:'transition:2',reservationRunId:'transition2',reservedAt:'2026-09-20T10:05:00Z',neuronExpectedVariants:2,neuronResults:[{taskId:'transition-task',variant:'primary',reservationId:'transition:2',outcome:'PASS'}]}]
+  });
+  const stale=applyVibeFanInResults(staleQueue,[{taskId:'transition-task',variant:'primary',reservationId:'transition:1',outcome:'PASS'}]);
+  const preserved=stale.queue.tasks.find(item=>item.id==='transition-task');
+  assert.equal(stale.applied[0].outcome,'STALE_RESULT_SKIPPED');
+  assert.equal(preserved.neuronExpectedVariants,2);
+  assert.equal(preserved.neuronResults.length,1);
+});
