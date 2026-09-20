@@ -206,7 +206,23 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
 function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
-function taskDone(queue,id){return queue.tasks.some(item=>item.id===id&&clean(item.status).toLowerCase()==='done');}
+function taskVerified(queue,id){return queue.tasks.some(item=>item.id===id&&clean(item.status).toLowerCase()==='verified');}
+function nextCausalGenerationId(queue,basePrefix){
+  const prefix=`${basePrefix}-v`;
+  const rows=(queue.tasks||[]).map(item=>{
+    const id=clean(item.id);
+    if(!id.startsWith(prefix))return null;
+    const versionText=id.slice(prefix.length);
+    if(!/^\d+$/.test(versionText))return null;
+    return{item,version:Number(versionText)};
+  }).filter(Boolean).sort((a,b)=>a.version-b.version);
+  if(!rows.length)return `${basePrefix}-v1`;
+  const latest=rows[rows.length-1];
+  const status=clean(latest.item.status).toLowerCase();
+  if(['queued','running','blocked','failed'].includes(status))return null;
+  if(status==='verified')return `${basePrefix}-v${latest.version+1}`;
+  return null;
+}
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
 function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
@@ -372,13 +388,13 @@ function findWebAssessmentTask(project,repoRoot,queue){
   if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
   if(missing){
-    const id=`${project.gameId}-web-base-implementation-v1`;if(hasTask(queue,id))return null;
+    const id=nextCausalGenerationId(queue,`${project.gameId}-web-base-implementation`);if(!id)return null;
     const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING']);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
   if(queueState==='WEB_VIBE_REPAIR_REQUIRED'||queueStep==='VIBE_WEB_REPAIR'){
-    const id=`${project.gameId}-web-runtime-repair-v1`;if(hasTask(queue,id))return null;
+    const id=nextCausalGenerationId(queue,`${project.gameId}-web-runtime-repair`);if(!id)return null;
     const runtimeFailureEvidence=compactRuntimeFailureEvidence({
       requestedStage:project.queueVibeWebRequestedStage,
       implementationReason:project.queueVibeWebImplementationReason,
@@ -488,11 +504,11 @@ export function findPresentationQualityTask(project,repoRoot,queue){
     const prefix=project.engine==='web'?project.gameId:`${project.gameId}-${project.engine}`;
     const id=`${prefix}-presentation-${stage.key}-v1`;
     if(hasTask(queue,id)){
-      if(!taskDone(queue,id))return null;
+      if(!taskVerified(queue,id))return null;
       previousId=id;
       continue;
     }
-    if(previousId&&!taskDone(queue,previousId))return null;
+    if(previousId&&!taskVerified(queue,previousId))return null;
     const out=task(id,project,stage.goal,[relative],project.gameId==='fantasy-survival'?'owner-immediate':'normal','medium',[
       'asset-production-parallel:v1',
       'presentation-quality-pipeline:v1',
@@ -826,7 +842,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     quantityTargetMet,
     met:quantityTargetMet
   };
-  if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK':'NO_SAFE_AUTONOMOUS_TASK',queue,tasks:[],packages:[],planningBacklog,projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'AWAITING_INDEPENDENT_CAUSAL_SIGNAL':'CAUSAL_REPLAN_REQUIRED',brainLive:true,causalReplanRequired:true,queue,tasks:[],packages:[],planningBacklog,projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
   return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,planningBacklog:{...planningBacklog,after:developmentPlanningPool(queue).length,remainingToTarget:Math.max(0,backlogTarget-developmentPlanningPool(queue).length)},task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_80_88_TO_89_THEN_SINGLE_BLOCKER_THEN_REWORK_THEN_REBUILD_THEN_NEW_DEVELOPMENT',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
 }
 

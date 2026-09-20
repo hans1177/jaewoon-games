@@ -93,8 +93,9 @@ test('repository uses no Vibe2 human documents and legacy Vibe2 docs are removed
 
 test('repository handoff is generated entirely from machine state', () => {
   const snapshot = generateVibe2Handoff();
+  const repositoryRuntime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
-  assert.equal(snapshot.generatedFrom.runtimeVersion, 14);
+  assert.equal(snapshot.generatedFrom.runtimeVersion, repositoryRuntime.version);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 3);
   assert.equal(snapshot.generatedFrom.experienceVersion, 3);
