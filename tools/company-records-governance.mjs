@@ -133,7 +133,7 @@ export function scanCompanyRecords(){
     }catch{}
   }
   const mediaRoot=path.join(ROOT,'assets/runtime-evidence'),mediaFiles=[];
-  const walkMedia=dir=>{if(!fs.existsSync(dir))return;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walkMedia(p);else if(entry.isFile()&&!entry.name.startsWith('.'))mediaFiles.push(repoRel(p));}};
+  const walkMedia=dir=>{if(!fs.existsSync(dir))return;for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name),r=repoRel(p);if(entry.isDirectory())walkMedia(p);else if(entry.isFile()&&!entry.name.startsWith('.')&&r!=='assets/runtime-evidence/index.json')mediaFiles.push(r);}};
   walkMedia(mediaRoot);
   for(const media of mediaFiles)if(!mediaRefs.has(media))errors.push(`ORPHAN_RUNTIME_MEDIA:${media}`);
   for(const ref of mediaRefs)if(!existsRel(ref))errors.push(`RUNTIME_MEDIA_MANIFEST_MISSING_FILE:${ref}`);
