@@ -57,9 +57,14 @@ test('self architecture evolution keeps neural expansion pending until readiness
 test('Vibe self-authorizes internal neural expansion when final-stage readiness evidence is verified',()=>{
   const result=injectSelfArchitectureEvolutionTasks({tasks:[failure('a'),failure('b'),failure('c')]},{
     neuralExpansionReadiness:{
-      source:'RULE4_TEST_VERIFIED_QA',
+      source:'DIRECT_TARGETED_QA',pass:true,
       rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
-      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true
+      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true,
+      internalNeuralStructureExpansionAllowedWhenPass:true,
+      neuralExecutionAuthorityExpansionAllowed:false,
+      queueMutationAuthorityExpanded:false,
+      workerCreationAuthorityExpanded:false,
+      gateWeakeningAllowed:false
     }
   });
   assert.equal(result.neuralExpansionReadiness.pass,true);
