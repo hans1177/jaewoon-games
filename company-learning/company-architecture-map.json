@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_SHADOW_ROUTER_AND_WAVE_AUDIT_CONNECTED",
+    "currentState": "PHASE2_MULTI_EVENT_SHADOW_ROUTER_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -356,7 +356,14 @@
       "auditAuthority": "OBSERVE_COMPARE_ONLY",
       "winnerSelectionAuthority": "NONE",
       "automaticTuningAuthority": "NONE",
-      "automaticLearningAuthority": "NONE"
+      "automaticLearningAuthority": "NONE",
+      "eventBindings": {
+        "fanInReview": "CI_RESULT",
+        "workerResult": "WORKER_RESULT",
+        "qaResult": "QA_RESULT"
+      },
+      "workerEventBinding": "tools/vibe2-queue-control.mjs",
+      "eventBindingAuthority": "OBSERVE_ONLY_NO_QUEUE_MUTATION"
     }
   }
 }
