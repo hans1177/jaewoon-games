@@ -1,20 +1,11 @@
 {
   "version": 3,
-  "currentMax": 256,
+  "currentMax": 20,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "HOLD",
-  "lastReason": "LOW_LOAD",
-  "lastRunId": "35502179209",
-  "lastUpdatedAt": "2026-09-20T09:33:23.768Z",
-  "lastTelemetry": {
-    "runId": "35502179209",
-    "workerCount": 12,
-    "effectiveMax": 256,
-    "actualPeakConcurrency": 12,
-    "effectivePeakUtilizationPct": 4.69,
-    "failureRatePct": 16.67,
-    "pressureLevel": "MEDIUM",
-    "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-  }
+  "lastDecision": "RESET",
+  "lastReason": "OWNER_PRESSURE_FLOOR_20_SELF_ADAPTIVE_BASELINE",
+  "lastRunId": null,
+  "lastUpdatedAt": null,
+  "lastTelemetry": null
 }
