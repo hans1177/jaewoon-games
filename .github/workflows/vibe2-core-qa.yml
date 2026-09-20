@@ -20,6 +20,7 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
+      - 'tools/vibe2-neural-critic.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
@@ -85,6 +86,7 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
+      - 'tools/vibe2-neural-critic.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
@@ -146,6 +148,7 @@ jobs:
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-neural-diagnosis.mjs
           node --check tools/vibe2-neural-feedback.mjs
+          node --check tools/vibe2-neural-critic.mjs
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
@@ -177,6 +180,7 @@ jobs:
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-neural-diagnosis.test.mjs
           node --check qa/vibe2-neural-feedback.test.mjs
+          node --check qa/vibe2-neural-critic.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -198,6 +202,7 @@ jobs:
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
+          node --test qa/vibe2-neural-critic.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
