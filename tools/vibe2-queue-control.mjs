@@ -278,7 +278,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
   const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane });
-  const tasks = started.tasks || [];
+  let tasks = started.tasks || [];
   const workerBudget = Math.max(
     tasks.length,
     Math.floor(Number(started.selection?.effectiveMaxConcurrentTasks ?? maxConcurrentTasks ?? queue.maxConcurrentTasks) || tasks.length || 1)
@@ -305,10 +305,20 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
       spareWorkerSlots -= 1;
     }
   }
+  const selectedIds = new Set(tasks.map((task) => task.id));
+  const annotatedQueue = createVibeContinuousQueue({
+    maxConcurrentTasks: started.queue.maxConcurrentTasks,
+    tasks: started.queue.tasks.map((task) => selectedIds.has(task.id) ? {
+      ...task,
+      neuronExpectedVariants: speculativeVariants.get(task.id) || 1,
+      neuronResults: []
+    } : task)
+  });
+  tasks = annotatedQueue.tasks.filter((task) => selectedIds.has(task.id));
   return {
     reserved: started.started,
     tasks,
-    queue: started.queue,
+    queue: annotatedQueue,
     selection: started.selection,
     recovered: recovered.recovered,
     matrix: tasks.map((task) => ({
@@ -599,6 +609,48 @@ export function applyVibeFanInResults(queueInput, results = []) {
   return { queue, applied, summary: summarizeVibeContinuousQueue(queue), neuralCalibration, neuralEventTelemetry };
 }
 
+export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVariants = 1 } = {}) {
+  let queue = createVibeContinuousQueue(queueInput);
+  const taskId = clean(rowInput?.taskId);
+  const variant = clean(rowInput?.variant) || 'primary';
+  const expected = Math.max(1, Math.min(5, Math.floor(Number(expectedVariants) || 1)));
+  const task = queue.tasks.find((item) => item.id === taskId);
+  if (!task) return { updated:false, ready:false, slotReleased:false, stale:true, reason:'TASK_NOT_FOUND', taskId, variant, expectedVariants:expected, resultCount:0, queue };
+  const rowReservationId = resultReservationId(rowInput);
+  if (rowReservationId && clean(task.reservationId) !== rowReservationId) {
+    return { updated:false, ready:false, slotReleased:false, stale:true, reason:'RESERVATION_MISMATCH', taskId, variant, expectedVariants:expected, resultCount:(task.neuronResults || []).length, queue };
+  }
+  if (task.status !== 'running') {
+    return { updated:false, ready:false, slotReleased:false, stale:true, reason:`TASK_${clean(task.status).toUpperCase()}_NOT_RUNNING`, taskId, variant, expectedVariants:expected, resultCount:(task.neuronResults || []).length, queue };
+  }
+  const currentResults = Array.isArray(task.neuronResults) ? task.neuronResults : [];
+  const duplicate = currentResults.some((row) => (clean(row?.variant) || 'primary') === variant && resultReservationId(row) === rowReservationId);
+  if (duplicate) {
+    return { updated:false, ready:currentResults.length >= Math.max(expected, Number(task.neuronExpectedVariants || 0)), slotReleased:false, stale:false, reason:'DUPLICATE_VARIANT', taskId, variant, expectedVariants:Math.max(expected, Number(task.neuronExpectedVariants || 0)), resultCount:currentResults.length, queue };
+  }
+  const joinedExpected = Math.max(expected, Number(task.neuronExpectedVariants || 0));
+  const nextResults = [...currentResults, rowInput];
+  queue = createVibeContinuousQueue({
+    maxConcurrentTasks: queue.maxConcurrentTasks,
+    tasks: queue.tasks.map((item) => item.id === taskId ? { ...item, neuronExpectedVariants:joinedExpected, neuronResults:nextResults } : item)
+  });
+  if (nextResults.length < joinedExpected) {
+    return { updated:true, ready:false, slotReleased:false, stale:false, reason:'AWAITING_VARIANTS', taskId, variant, expectedVariants:joinedExpected, resultCount:nextResults.length, queue };
+  }
+  const merged = applyVibeFanInResults(queue, nextResults);
+  queue = createVibeContinuousQueue({
+    maxConcurrentTasks: merged.queue.maxConcurrentTasks,
+    tasks: merged.queue.tasks.map((item) => item.id === taskId ? { ...item, neuronExpectedVariants:0, neuronResults:[] } : item)
+  });
+  const finalTask = queue.tasks.find((item) => item.id === taskId);
+  const slotReleased = !finalTask || finalTask.status !== 'running' || isWorkerCapacityReleasedBlocker(finalTask.blocker);
+  return {
+    updated:true, ready:true, slotReleased, stale:false, reason:'TASK_MICRO_FANIN_COMPLETE',
+    taskId, variant, expectedVariants:joinedExpected, resultCount:nextResults.length,
+    applied:merged.applied, neuralCalibration:merged.neuralCalibration, neuralEventTelemetry:merged.neuralEventTelemetry, queue
+  };
+}
+
 export function runQueueCommand(args = {}) {
   const file = queueFileFrom(args);
   let queue = createVibeContinuousQueue(readJson(file, { tasks: [] }));
@@ -672,6 +724,16 @@ export function runQueueCommand(args = {}) {
     queue = markVibeTaskAwaiting(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), queue, summary: summarizeVibeContinuousQueue(queue) };
+  } else if (command === 'neuron-complete') {
+    const input = clean(args.input);
+    if (!input) throw new Error('--input result json required');
+    const payload = readJson(input, {});
+    const row = Array.isArray(payload) ? payload[0] : (payload?.result && typeof payload.result === 'object' ? payload.result : payload);
+    const executionLane = clean(args.lane) || 'game-primary';
+    const neuron = recordVibeNeuronResult(queue, row, { expectedVariants: optionalMaxConcurrent(args['expected-variants']) ?? 1 });
+    queue = neuron.queue;
+    if (neuron.updated) writeJson(file, queue);
+    result = { command, executionLane, ...neuron, summary:summarizeVibeContinuousQueue(queue) };
   } else if (command === 'fan-in-regression-fail') {
     const input = clean(args.input);
     if (!input) throw new Error('--input result json required');
@@ -727,6 +789,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if(result.executionLane)console.log(`VIBE2_EXECUTION_LANE=${result.executionLane}`);
   if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
   if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
+  if(result.command==='neuron-complete'){
+    console.log(`VIBE2_NEURON_RESULT=${result.reason || 'UNKNOWN'}`);
+    console.log(`VIBE2_NEURON_TASK_READY=${result.ready===true?'YES':'NO'}`);
+    console.log(`VIBE2_NEURON_SLOT_RELEASED=${result.slotReleased===true?'YES':'NO'}`);
+    console.log(`VIBE2_NEURON_VARIANTS=${result.resultCount || 0}/${result.expectedVariants || 1}`);
+  }
   console.log(`VIBE2_QUEUE_RECOVERED=${result.recovered ?? 0}`);
   console.log(`VIBE2_QUEUE_NEXT=${result.summary?.nextTaskId || 'NONE'}`);
   console.log(`VIBE2_QUEUE_NEXT_BATCH=${(result.summary?.nextTaskIds || []).join(',') || 'NONE'}`);
