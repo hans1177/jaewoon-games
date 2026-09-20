@@ -550,6 +550,22 @@ test('planning department is the canonical combined planning growth monetization
   assert.equal(p.timingPolicy.revenueBlockingBugUsesHotfixLane,true);
   assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,true);
   assert.equal(p.learningLoop.verifiedOutcomeReturnsToExistingVibeLearning,true);
+  assert.equal(p.userBaseBeforeMonetizationPolicy.noMeaningfulUserBaseDefault,'DEFER_NONESSENTIAL_MONETIZATION');
+  assert.equal(p.userBaseBeforeMonetizationPolicy.monetizationActivationRequiresEvidence,true);
+  assert.equal(p.userBaseBeforeMonetizationPolicy.vanityInstallCountAloneInsufficient,true);
+  assert.equal(p.trendResearch.required,true);
+  assert.ok(p.trendResearch.researchTopics.includes('RISING_AND_DECLINING_GENRES'));
+  assert.equal(p.trendResearch.sourcePolicy.staleTrendMayNotBePresentedAsCurrent,true);
+  assert.ok(p.playerAcquisitionResearch.channelPortfolio.includes('SHORT_FORM_VIDEO'));
+  assert.ok(p.playerAcquisitionResearch.channelPortfolio.includes('CREATOR_OR_INFLUENCER_OUTREACH'));
+  assert.equal(p.playerAcquisitionResearch.paidAcquisitionGate.brokenOnboardingOrRetentionBlocksScalingSpend,true);
+  assert.equal(p.monetizationReadinessDecision.defaultWhenEvidenceMissing,'DEFER');
+  assert.deepEqual(p.strategyPriority.slice(0,4),[
+    '1_MARKET_AND_TREND_RESEARCH',
+    '2_PLAYER_ACQUISITION',
+    '3_ONBOARDING_AND_ACTIVATION',
+    '4_RETENTION_AND_RETURN_BEHAVIOR'
+  ]);
   assert.equal(roadmap.longHorizonVision.economicSustainability.revenueResearchOwnedBy,'planning');
   assert.equal(roadmap.longHorizonVision.economicSustainability.marketingResearchOwnedBy,'planning');
 });
