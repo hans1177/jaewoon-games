@@ -6995,7 +6995,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:28:49.708Z",
-      "updatedAt": "2026-09-20T06:38:10.584Z"
+      "updatedAt": "2026-09-20T06:38:29.548Z"
     },
     {
       "id": "recovery-0714f07f6ea25ccb4da5",
@@ -8224,11 +8224,11 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T06:38:10.579Z"
+      "updatedAt": "2026-09-20T06:38:29.544Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "high",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
@@ -8236,7 +8236,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "incremental-qa-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T06:30:06Z",
+      "checkpoint": "2026-09-20T06:38:22Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -9417,7 +9417,9 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-2%22%2C%22strategy%22%3A%22CAUSAL_TRACE_CROSSCHECK%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22INCREMENTAL_QA%22%2C%22runEvidence%22%3A%22actions-run%3A35494373473%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "neural-shadow-feedback:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35494373473%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35494373473-1%22%2C%22predictedResponsibility%22%3A%22GAME_RUNTIME%22%2C%22predictedConfidence%22%3A0.99%2C%22observedStage%22%3A%22INCREMENTAL_QA%22%2C%22observedResponsibility%22%3Anull%2C%22matchState%22%3A%22UNKNOWN%22%2C%22responsibilityMatch%22%3Anull%2C%22sampleEligible%22%3Afalse%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35494373473%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35494373473-1%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_RUNTIME%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
-        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35494373473%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35494373473-1%7CQA_RESULT%22%2C%22eventType%22%3A%22QA_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D"
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35494373473%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35494373473-1%7CQA_RESULT%22%2C%22eventType%22%3A%22QA_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "system-steward:retry-exhausted-regenerated:generation-18",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_18"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -9433,7 +9435,11 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T06:38:10.580Z"
+      "updatedAt": "2026-09-20T06:38:29.588Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-09-20T06:38:29.588Z"
+      ]
     },
     {
       "id": "recovery-3ca7e1812e127f215428",
@@ -10361,7 +10367,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-20T06:38:10.582Z"
+      "updatedAt": "2026-09-20T06:38:29.546Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -10373,7 +10379,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T06:30:06Z",
+      "checkpoint": "2026-09-20T06:38:22Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -11196,7 +11202,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T05:08:20.885Z",
-      "updatedAt": "2026-09-20T06:38:10.586Z"
+      "updatedAt": "2026-09-20T06:38:29.549Z"
     }
   ]
 }
