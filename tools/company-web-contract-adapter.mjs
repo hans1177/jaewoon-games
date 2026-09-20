@@ -216,7 +216,7 @@ export function buildWebContractAdapterPlan({html='',inventory=[]}={}){
 }
 function escapeRegExp(value=''){return String(value).replace(/[.*+?^$()|[\]\\{}]/g,'\\$&');}
 function bindTagAttribute(tag,name,value){
-  const attr=new RegExp('\\s'+escapeRegExp(name)+'=(?:"[^"]*"|\\'[^\\']*\\')','i'),safe=String(value??'').replaceAll('"','&quot;');
+  const attr=new RegExp('\\s'+escapeRegExp(name)+'=(?:"[^"]*"|\\\'[^\\\']*\\\')','i'),safe=String(value??'').replaceAll('"','&quot;');
   if(attr.test(tag))return tag.replace(attr,' '+name+'="'+safe+'"');
   return tag.replace(/^<([a-z0-9-]+)/i,'<$1 '+name+'="'+safe+'"');
 }
