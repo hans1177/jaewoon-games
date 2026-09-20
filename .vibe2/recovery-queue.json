@@ -3428,7 +3428,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T23:59:04.531Z",
-      "updatedAt": "2026-09-20T02:43:47.743Z"
+      "updatedAt": "2026-09-20T02:44:33.100Z"
     },
     {
       "id": "recovery-30d0f7d9f4575fe5f49d",
@@ -5643,7 +5643,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:15:42.089Z",
-      "updatedAt": "2026-09-20T02:43:47.741Z"
+      "updatedAt": "2026-09-20T02:44:33.097Z"
     },
     {
       "id": "recovery-45105d34a22a09aa9f42",
@@ -6286,7 +6286,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:28:49.708Z",
-      "updatedAt": "2026-09-20T02:43:47.742Z"
+      "updatedAt": "2026-09-20T02:44:33.098Z"
     },
     {
       "id": "recovery-0714f07f6ea25ccb4da5",
@@ -6919,7 +6919,11 @@
         "neural-event-shadow:%7B%22version%22%3A1%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22amusement-tycoon-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-0714f07f6ea25ccb4da5",
+        "actions-run-35484708765",
+        "system-steward:retry-exhausted-regenerated:generation-10",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_10"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -6935,11 +6939,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T02:43:47.792Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-20T02:43:47.792Z"
-      ]
+      "updatedAt": "2026-09-20T02:44:33.094Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -7697,7 +7697,8 @@
         "repair-mode:CAUSAL_REGENERATION_GENERATION_14",
         "system-steward:failure-signature:incremental-qa-failed",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-97334f4e13a46797faa3"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -7713,11 +7714,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T02:43:47.792Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-20T02:43:47.792Z"
-      ]
+      "updatedAt": "2026-09-20T02:44:33.096Z"
     }
   ]
 }

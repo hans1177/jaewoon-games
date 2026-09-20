@@ -10760,15 +10760,15 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREATES_INTERVAL|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:27:04.000Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:5|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-a853810159|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREATES_INTERVAL|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:43:27.944Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/amusement-tycoon/index.html"
       ],
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -10778,7 +10778,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "web-qa-or-promotion-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -11393,9 +11393,11 @@
         "neural-event-shadow:%7B%22version%22%3A1%2C%22eventId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22amusement-tycoon-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22amusement-tycoon-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Famusement-tycoon-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
         "recovery-queue:recovery-0714f07f6ea25ccb4da5",
-        "actions-run-35484708765"
+        "actions-run-35484708765",
+        "system-steward:retry-exhausted-regenerated:generation-10",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_10"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -11417,7 +11419,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 9,
+      "recoveryGeneration": 10,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -15220,7 +15222,7 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T02:28:46.726Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 천상의 보루\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-coreloop-0-79673b79fd|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-161adce601|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-3f1cbb0d73\nlast-validation-at=2026-09-20T02:43:41.655Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/seed-single-defense-strat-celestial-bastion/index.html"
       ],
@@ -16833,15 +16835,15 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-14e5fec9e4|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-21cda65cb7|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-a3fe13f59a|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:25:45.075Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_COUNT_MISMATCH:-1:7|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-029d85a01a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-14e5fec9e4|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-21cda65cb7|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-a3fe13f59a|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|SCRIPT_SRC_FORBIDDEN|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:43:27.069Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/village-dungeons/index.html"
       ],
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -16851,7 +16853,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "web-qa-or-promotion-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -17436,9 +17438,11 @@
         "neural-event-shadow:%7B%22version%22%3A1%2C%22eventId%22%3A%22village-dungeons-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fvillage-dungeons-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22village-dungeons-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22village-dungeons-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fvillage-dungeons-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
         "recovery-queue:recovery-0714f07f6ea25ccb4da5",
-        "actions-run-35484710725"
+        "actions-run-35484710725",
+        "system-steward:retry-exhausted-regenerated:generation-12",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_12"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -17460,7 +17464,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 11,
+      "recoveryGeneration": 12,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -21270,15 +21274,15 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 몬스터 어드벤처\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-3d162bbbec|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-c6398c898e|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-5bae1b38a2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-79f736cab9|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-f8e0f864a6|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|MOBILE_VIEWPORT_REQUIRED|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:28:44.698Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 몬스터 어드벤처\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|RUN_RESULT_STATE_REQUIRED|WIN_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-3d162bbbec|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-c6398c898e|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-5bae1b38a2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-79f736cab9|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-f8e0f864a6|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|MOBILE_VIEWPORT_REQUIRED|REAL_PLAYABLE_WEB_GAME_REQUIRED|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID\nlast-validation-at=2026-09-20T02:43:35.781Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.\n- 실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/monster-adventure/index.html"
       ],
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -21288,7 +21292,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "web-qa-or-promotion-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -21639,9 +21643,11 @@
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22monster-adventure-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22monster-adventure-web-runtime-repair-v1%7C35484397996%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fmonster-adventure-web-runtime-repair-v1-speculative-2-35484397996-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
         "recovery-queue:recovery-0714f07f6ea25ccb4da5",
         "recovery-exact-stage:UNKNOWN_STAGE",
-        "actions-run-35484711820"
+        "actions-run-35484711820",
+        "system-steward:retry-exhausted-regenerated:generation-4",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_4"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -21663,7 +21669,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 3,
+      "recoveryGeneration": 4,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
