@@ -72,6 +72,7 @@ test('insufficient verified root causes blocks even review eligibility',()=>{
 test('poor calibration accuracy blocks Phase2 review even when sample counts are sufficient',()=>{
   const evidence=evidenceSet().filter(value=>!value.startsWith('neural-shadow-feedback:'));
   for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    sampleId:`poor-task-${i}|poor-reservation-${i}|primary|poor-candidate-${i}`,
     predictedResponsibility:'GAME_RUNTIME',
     observedResponsibility:i<10?'GAME_RUNTIME':'VALIDATOR',
     matchState:i<10?'MATCH':'MISMATCH',
@@ -282,7 +283,7 @@ test('conflicting readiness sample identities block explicit review across feedb
   const evidence=evidenceSet();
   evidence.push(
     enc('neural-shadow-feedback:',{
-      sampleId:'feedback-conflict',
+      sampleId:'feedback-conflict-task|feedback-conflict-reservation|primary|feedback-conflict-candidate',
       predictedResponsibility:'GAME_RUNTIME',
       observedResponsibility:'GAME_RUNTIME',
       matchState:'MATCH',
@@ -290,7 +291,7 @@ test('conflicting readiness sample identities block explicit review across feedb
       sampleEligible:true
     }),
     enc('neural-shadow-feedback:',{
-      sampleId:'feedback-conflict',
+      sampleId:'feedback-conflict-task|feedback-conflict-reservation|primary|feedback-conflict-candidate',
       predictedResponsibility:'VALIDATOR',
       observedResponsibility:'GAME_RUNTIME',
       matchState:'MISMATCH',
@@ -298,7 +299,7 @@ test('conflicting readiness sample identities block explicit review across feedb
       sampleEligible:true
     }),
     enc('neural-event-shadow:',{
-      eventId:'event-conflict',
+      eventId:'event-conflict-task|event-conflict-reservation|primary|event-conflict-candidate',
       eventType:'WORKER_RESULT',
       actionKind:'REQUEST_EVIDENCE',
       wouldFireWithoutPhase2Authority:false,
@@ -306,7 +307,7 @@ test('conflicting readiness sample identities block explicit review across feedb
       fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
     }),
     enc('neural-event-shadow:',{
-      eventId:'event-conflict',
+      eventId:'event-conflict-task|event-conflict-reservation|primary|event-conflict-candidate',
       eventType:'QA_RESULT',
       actionKind:'REQUEST_EVIDENCE',
       wouldFireWithoutPhase2Authority:false,
