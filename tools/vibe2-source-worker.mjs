@@ -1179,7 +1179,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
   if(!sourceRootExists&&!bootstrap)throw new Error(`source root 없음: ${sourceRootRelative}`);
-  const exploration=exploreVibe2WorkOrder({cwd,order});
+  const explorationOrder=order?.phase4BenchmarkVerification?.active===true?{...order,goal:clean(order.originalGoal)||clean(order.goal)}:order;
+  const exploration=exploreVibe2WorkOrder({cwd,order:explorationOrder});
   const allowFullRewrite=fullWebRewriteAllowed(order,target,exploration);
   const focusedWebRepair=isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite);
   const preferredContextMode=clean(order?.codingStrategyPreference?.preferredContextMode).toUpperCase();

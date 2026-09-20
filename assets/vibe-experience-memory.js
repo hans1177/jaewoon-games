@@ -147,6 +147,7 @@ function capabilityLifecycleFor(taskType = '', applications = [], benchmarks = [
     && Boolean(row.unseenProblemFingerprint)
     && row.independent === true
     && row.pairedControlChallenger === true
+    && row.controlFreshQaPass === true
     && row.challengerFreshQaPass === true
     && row.freshIndependentQaPass === true
     && row.fullRegressionPass === true

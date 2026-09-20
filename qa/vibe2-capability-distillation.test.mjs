@@ -7,6 +7,8 @@ import {
   buildVerifiedCapabilityExperienceReview,
   buildCapabilityApplicationReviews,
   buildCapabilityBenchmarkReviews,
+  buildPassiveCapabilityBenchmarkContract,
+  buildPairedCapabilityBenchmarkReviews,
   applyCapabilityApplicationReviews,
   applyCapabilityBenchmarkReviews,
   applyCapabilityPortfolioDecisions,
@@ -384,7 +386,7 @@ test('continuous runner injects verified capability memory once and partitions i
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   assert.match(workflow,/capabilityApplicationIds/);
   assert.match(workflow,/exactInjectedCapabilityIds/);
-  assert.match(workflow,/capabilityApplication,durationMs/);
+  assert.match(workflow,/capabilityApplication,phase4BenchmarkVerification,durationMs/);
   const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(fanIn,/buildCapabilityApplicationReviews/);
   assert.match(fanIn,/capabilityApplicationReviews/);
@@ -432,7 +434,7 @@ test('phase 4 requires two independent unseen paired benchmarks before strong ge
   const baseBenchmark={
     version:1,capabilityId:'cap-phase4-generalize',
     engine:'web',unseenGame:true,independent:true,pairedControlChallenger:true,
-    controlFreshQaPass:false,challengerFreshQaPass:true,freshIndependentQaPass:true,
+    controlFreshQaPass:true,challengerFreshQaPass:true,freshIndependentQaPass:true,
     fullRegressionPass:true,nativeRuntimeRequired:false,nativeRuntimePass:false,
     nonTargetContextFixed:true,writableScopeFixed:true,modelBudgetFixed:true,qaContractFixed:true,
     capabilitySpecificPositiveSupport:true,capabilitySpecificContradiction:false,
@@ -478,7 +480,7 @@ test('phase 4 neutral or contradictory benchmark evidence cannot establish stron
   }]};
   const common={
     version:1,capabilityId:'cap-phase4-guard',engine:'web',unseenGame:true,independent:true,
-    pairedControlChallenger:true,controlFreshQaPass:false,challengerFreshQaPass:true,
+    pairedControlChallenger:true,controlFreshQaPass:true,challengerFreshQaPass:true,
     freshIndependentQaPass:true,fullRegressionPass:true,nativeRuntimeRequired:false,
     nonTargetContextFixed:true,writableScopeFixed:true,modelBudgetFixed:true,qaContractFixed:true,
     evidence:['benchmark-control:verified','benchmark-challenger:verified']
@@ -687,4 +689,143 @@ test('phase 4 native benchmark remains non-qualifying until native runtime pass 
   assert.equal(verified.nativeRuntimeRequired,true);
   assert.equal(verified.nativeRuntimePass,true);
   assert.notEqual(verified.benchmarkId,pending.benchmarkId);
+});
+
+
+test('phase 4 passive runtime overlay uses only existing tournament variants and an unseen relevant capability',()=>{
+  const capability={
+    id:'cap-passive-ab',
+    gameId:'source-game',
+    engine:'web',
+    departments:['development','qa'],
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore ordering',
+    change:'verified save restoration strategy',
+    outcome:'PASS',
+    evidence:['actions-run:600','fan-in-review:PASS'],
+    reusablePatterns:['CAPABILITY:SAVE_RESTORE'],
+    verified:true,
+    capabilityApplications:[
+      {applicationId:'pab-a',taskId:'a',workKey:'game-a:web:save',gameId:'game-a',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:'pab-b',taskId:'b',workKey:'game-b:web:save',gameId:'game-b',engine:'web',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  };
+  const experienceInput={records:[capability]};
+  const task={
+    id:'holdout-save-repair',gameId:'holdout-game',target:'web',type:'implementation',
+    goal:'repair save restore ordering without changing progression',
+    responsibleFiles:['web-games/holdout-game/index.html'],
+    completionCriteria:['save restore works']
+  };
+  const normal=retrieveVerifiedCapabilities({experienceInput,task});
+  assert.equal(normal.records.some(row=>row.id==='cap-passive-ab'),true);
+
+  const control=buildPassiveCapabilityBenchmarkContract({
+    experienceInput,task,retrieval:normal,variant:'primary',candidateCount:3,executionRoute:'text-source-worker'
+  });
+  const challenger=buildPassiveCapabilityBenchmarkContract({
+    experienceInput,task,retrieval:normal,variant:'speculative-1',candidateCount:3,executionRoute:'text-source-worker'
+  });
+  const other=buildPassiveCapabilityBenchmarkContract({
+    experienceInput,task,retrieval:normal,variant:'speculative-2',candidateCount:3,executionRoute:'text-source-worker'
+  });
+  assert.equal(control.active,true);
+  assert.equal(control.role,'CONTROL');
+  assert.equal(challenger.active,true);
+  assert.equal(challenger.role,'CHALLENGER');
+  assert.equal(control.capabilityId,'cap-passive-ab');
+  assert.equal(control.pairId,challenger.pairId);
+  assert.equal(control.caseId,challenger.caseId);
+  assert.equal(control.fixedContextFingerprint,challenger.fixedContextFingerprint);
+  assert.equal(control.workerCreationRequired,false);
+  assert.equal(control.queueMutationRequired,false);
+  assert.equal(other.active,false);
+
+  const evidenceBase=[
+    'phase4-benchmark-verification',
+    'phase4-capability-id:'+control.capabilityId,
+    'phase4-benchmark-case:'+control.caseId,
+    'phase4-benchmark-pair:'+control.pairId,
+    'phase4-unseen-game:'+control.gameId,
+    'phase4-unseen-problem-fingerprint:'+control.unseenProblemFingerprint
+  ];
+  const controlRetrieval=retrieveVerifiedCapabilities({
+    experienceInput,task:{...task,evidence:[...evidenceBase,'phase4-benchmark-role:CONTROL']}
+  });
+  const challengerRetrieval=retrieveVerifiedCapabilities({
+    experienceInput,task:{...task,evidence:[...evidenceBase,'phase4-benchmark-role:CHALLENGER']}
+  });
+  assert.equal(controlRetrieval.count,0);
+  assert.equal(controlRetrieval.phase4BenchmarkVerification,true);
+  assert.equal(challengerRetrieval.count,1);
+  assert.equal(challengerRetrieval.records[0].id,'cap-passive-ab');
+  assert.equal(challengerRetrieval.phase4BenchmarkVerification,true);
+});
+
+test('phase 4 paired runtime review attributes support only when exact challenger wins after both fresh QA passes',()=>{
+  const baseContract={
+    version:1,active:true,capabilityId:'cap-runtime-pair',caseId:'case-runtime-1',pairId:'pair-runtime-1',
+    gameId:'holdout-runtime',engine:'web',unseenGame:true,unseenProblemFingerprint:'fp-runtime-1',
+    fixedContextFingerprint:'ctx-runtime-1',nonTargetContextFixed:true,writableScopeFixed:true,
+    modelBudgetFixed:true,qaContractFixed:true,nativeRuntimeRequired:false,naturalProductionOverlay:true
+  };
+  const control={
+    ...passResult,taskId:'runtime-pair-task',reservationId:'runtime-reservation',variant:'primary',
+    candidateBranch:'vibe2/candidate/runtime-pair-control',
+    candidateIdentity:{...passResult.candidateIdentity,taskId:'runtime-pair-task',gameId:'holdout-runtime'},
+    capabilityApplication:{version:1,injected:false,exactInjectedCapabilityIds:[]},
+    phase4BenchmarkVerification:{...baseContract,role:'CONTROL'}
+  };
+  const challenger={
+    ...passResult,taskId:'runtime-pair-task',reservationId:'runtime-reservation',variant:'speculative-1',
+    candidateBranch:'vibe2/candidate/runtime-pair-challenger',
+    candidateIdentity:{...passResult.candidateIdentity,taskId:'runtime-pair-task',gameId:'holdout-runtime'},
+    capabilityApplication:{version:1,injected:true,exactInjectedCapabilityIds:['cap-runtime-pair']},
+    phase4BenchmarkVerification:{...baseContract,role:'CHALLENGER'}
+  };
+  const task={id:'runtime-pair-task',gameId:'holdout-runtime',target:'web'};
+  const reviews=buildPairedCapabilityBenchmarkReviews({
+    task,results:[control,challenger],selectedResult:challenger,fullRegressionPass:true
+  });
+  assert.equal(reviews.length,1);
+  const review=reviews[0];
+  assert.equal(review.pairedControlChallenger,true);
+  assert.equal(review.controlFreshQaPass,true);
+  assert.equal(review.challengerFreshQaPass,true);
+  assert.equal(review.freshIndependentQaPass,true);
+  assert.equal(review.fullRegressionPass,true);
+  assert.equal(review.capabilitySpecificPositiveSupport,true);
+  assert.equal(review.capabilitySpecificContradiction,false);
+  assert.equal(review.nativeRuntimePass,true);
+  assert.ok(review.evidence.includes('capability-support:cap-runtime-pair'));
+
+  const controlWon=buildPairedCapabilityBenchmarkReviews({
+    task,results:[control,challenger],selectedResult:control,fullRegressionPass:true
+  })[0];
+  assert.equal(controlWon.capabilitySpecificPositiveSupport,false);
+  assert.equal(controlWon.freshIndependentQaPass,false);
+});
+
+test('phase 4 strong generalization does not count a benchmark whose control lacks fresh QA',()=>{
+  const memory={records:[{
+    id:'cap-control-qa-gate',gameId:'source',engine:'web',taskType:'coding-capability-distillation',
+    problem:'save restore',goal:'save restore',change:'verified save',outcome:'PASS',
+    evidence:['actions-run:620','fan-in-review:PASS'],reusablePatterns:['CAPABILITY:SAVE_RESTORE'],verified:true,
+    capabilityApplications:[
+      {applicationId:'cq-a',taskId:'a',workKey:'a:web:save',gameId:'a',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true},
+      {applicationId:'cq-b',taskId:'b',workKey:'b:web:save',gameId:'b',outcome:'FRESH_QA_PASS',selected:true,finalReviewPass:true,freshTaskQaPass:true,independent:true}
+    ]
+  }]};
+  const result=applyCapabilityBenchmarkReviews(memory,[{
+    capabilityId:'cap-control-qa-gate',benchmarkId:'cq-bench',caseId:'cq-case',pairId:'cq-pair',
+    gameId:'holdout',engine:'web',unseenGame:true,unseenProblemFingerprint:'cq-fp',independent:true,
+    pairedControlChallenger:true,controlFreshQaPass:false,challengerFreshQaPass:true,freshIndependentQaPass:true,
+    fullRegressionPass:true,nativeRuntimeRequired:false,nativeRuntimePass:true,
+    nonTargetContextFixed:true,writableScopeFixed:true,modelBudgetFixed:true,qaContractFixed:true,
+    capabilitySpecificPositiveSupport:true,capabilitySpecificContradiction:false,evidence:['pair:verified']
+  }]);
+  const record=result.memory.records.find(row=>row.id==='cap-control-qa-gate');
+  assert.equal(record.capabilityLifecycle.unseenBenchmarkPassCount,0);
+  assert.equal(record.capabilityLifecycle.strongGeneralizationVerified,false);
 });

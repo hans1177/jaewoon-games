@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildSupervisedWebExperienceReview } from './vibe2-experience-control.mjs';
-import { buildObservableCodingTrace, buildVerifiedCapabilityExperienceReview, buildCapabilityApplicationReviews, buildCapabilityBenchmarkReviews, mergeCodingTraceLedger } from './vibe2-capability-distillation.mjs';
+import { buildObservableCodingTrace, buildVerifiedCapabilityExperienceReview, buildCapabilityApplicationReviews, buildCapabilityBenchmarkReviews, buildPairedCapabilityBenchmarkReviews, mergeCodingTraceLedger } from './vibe2-capability-distillation.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
@@ -61,6 +61,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const queueTasks=Array.isArray(queue.tasks)?queue.tasks:[];
   const taskById=new Map(queueTasks.map(task=>[clean(task?.id),task]));
   const verifiedCodingTraceSamples=new Set();
+  const selectedResultByTaskId=new Map();
   const tasks=queueTasks.map(task=>{
     if(!ids.has(clean(task.id)))return task;
     if(!reviewReady(task)){skipped.push({taskId:task.id,status:clean(task.status),blocker:clean(task.blocker)||null});return task;}
@@ -86,6 +87,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
       verifiedCodingTraceSamples.add(resultSampleId(selectedResult)||clean(task.id));
+      if(selectedResult)selectedResultByTaskId.set(clean(task.id),selectedResult);
       const rootCause=verifyNeuralRootCause({
         diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
         evidence:[...evidence,...((selectedResult?.evidence||[]).map(clean).filter(Boolean))],
@@ -146,6 +148,22 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       capabilityApplicationReviews.push(applicationReview);
     }
     for(const benchmarkReview of buildCapabilityBenchmarkReviews({task,result:row,finalReviewPass:finalVerified,selected:finalVerified})){
+      if(capabilityBenchmarkReviewIds.has(benchmarkReview.benchmarkId))continue;
+      capabilityBenchmarkReviewIds.add(benchmarkReview.benchmarkId);
+      capabilityBenchmarkReviews.push(benchmarkReview);
+    }
+  }
+  for(const taskId of ids){
+    const task=taskById.get(clean(taskId))||{};
+    const pairRows=resultRows.filter(row=>clean(row?.taskId)===clean(taskId)&&row?.phase4BenchmarkVerification?.active===true);
+    if(pairRows.length<2)continue;
+    const selectedResult=selectedResultByTaskId.get(clean(taskId))||null;
+    for(const benchmarkReview of buildPairedCapabilityBenchmarkReviews({
+      task,
+      results:pairRows,
+      selectedResult,
+      fullRegressionPass:Boolean(selectedResult)
+    })){
       if(capabilityBenchmarkReviewIds.has(benchmarkReview.benchmarkId))continue;
       capabilityBenchmarkReviewIds.add(benchmarkReview.benchmarkId);
       capabilityBenchmarkReviews.push(benchmarkReview);
