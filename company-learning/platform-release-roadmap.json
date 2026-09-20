@@ -1,5 +1,5 @@
 {
-  "version": 197,
+  "version": 198,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -7356,6 +7356,45 @@
       "neuralExecutionAuthority": false,
       "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6",
       "nextGate": "OPERATE_FROM_CENTRAL_ROADMAP_ACTIONABLE_NEXT_GATE_WITH_DURABLE_GITHUB_HANDOFF"
+    },
+    "vibeExecutionBinding": {
+      "version": 1,
+      "state": "MERGED_MAIN",
+      "sourcePr": 1870,
+      "mergedCommit": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+      "workContractVersion": 2,
+      "compiler": "tools/vibe2-central-work-contract.mjs",
+      "runnerBinding": "tools/vibe2-continuous-runner.mjs",
+      "sourceWorkerBinding": "tools/vibe2-source-worker.mjs",
+      "qa": "qa/vibe2-central-work-contract.test.mjs",
+      "workflowBindings": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-core-qa.yml"
+      ],
+      "compiledFields": [
+        "workKey",
+        "roadmapVersion",
+        "mainSha",
+        "scope",
+        "nextGate",
+        "requiredEvidence",
+        "authorityBoundary",
+        "dedupeKey"
+      ],
+      "freshnessChecks": [
+        "PRE_SOURCE_GENERATION",
+        "PRE_CANDIDATE_WRITE"
+      ],
+      "staleAction": "FAIL_CLOSED",
+      "authorityChange": "NONE",
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": false,
+      "workerCreationAuthority": false,
+      "queueMutationAuthority": false,
+      "waveReorderAuthority": false,
+      "lockPolicyMutationAuthority": false,
+      "automaticLearningTuningPromotionAuthority": false,
+      "nextGate": "VERIFY_POSTMERGE_VIBE2_24H_WORK_ORDER_EMITS_COMPILED_CONTRACT_ON_LATEST_MAIN"
     }
   }
 }
