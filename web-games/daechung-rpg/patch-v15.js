@@ -23,6 +23,137 @@ const heal=document.createElement('button');heal.className='btn';heal.textConten
 const route=document.createElement('div');route.className='overlay';route.innerHTML='<div class="panel"><h2>강길 선택</h2><p>강을 따라 어디로 갈까?</p><button id="toAmazon" class="main">아마존으로</button><button id="toCliff" class="main">절벽으로</button><button id="routeClose" class="main dark">취소</button></div>';document.body.appendChild(route);
 route.querySelector('#routeClose').onclick=()=>route.style.display='none';route.querySelector('#toAmazon').onclick=()=>{route.style.display='none';enter('amazon')};route.querySelector('#toCliff').onclick=()=>{route.style.display='none';enter('cliff')};
 if(!npcs.some(n=>n.k==='potion'))npcs.push({x:1180,y:1010,n:'물약상인',k:'potion'});
+
+// ==============================
+// 실시간 멀티플레이 · 방 코드 1~10
+// ==============================
+const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
+const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
+const multiplayer={
+ client:null,channel:null,room:'',connected:false,
+ playerId:sessionStorage.getItem('daechung-rpg-multi-id')||('r'+Math.random().toString(36).slice(2,10)),
+ joinedAt:Date.now(),remote:new Map(),presenceIds:new Set(),sendAt:0
+};
+sessionStorage.setItem('daechung-rpg-multi-id',multiplayer.playerId);
+
+const multiBtn=document.createElement('button');
+multiBtn.textContent='멀티';
+multiBtn.style.cssText='position:fixed;right:84px;top:18px;z-index:16;height:46px;min-width:68px;padding:0 12px;border:2px solid #ffffff99;border-radius:14px;background:#345d8fe8;color:#fff;font-weight:900;box-shadow:0 5px 15px #0008';
+document.body.appendChild(multiBtn);
+
+const multiPanel=document.createElement('div');
+multiPanel.style.cssText='position:fixed;right:12px;top:72px;z-index:30;width:min(92vw,320px);display:none;background:#171c26f5;border:2px solid #7fbef3;border-radius:14px;padding:12px;box-shadow:0 12px 30px #000a;color:#fff';
+multiPanel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b>멀티플레이</b><button id="rpgMultiClose" style="width:34px;height:30px;border:0;border-radius:8px;background:#ffffff18;color:#fff">×</button></div><div id="rpgMultiStatus" style="font-size:12px;color:#b9d9ff;margin:8px 0">오프라인</div><input id="rpgMultiRoom" type="number" min="1" max="10" inputmode="numeric" placeholder="방 번호 1~10" style="width:100%;height:42px;border:1px solid #ffffff33;border-radius:10px;background:#0d1420;color:#fff;padding:0 10px;font-weight:900"><div style="display:flex;gap:8px;margin-top:8px"><button id="rpgMultiCreate" class="main" style="margin:0;font-size:14px">방 만들기</button><button id="rpgMultiJoin" class="main" style="margin:0;font-size:14px">방 참가</button></div><button id="rpgMultiLeave" class="main dark" style="font-size:14px">방 나가기</button><div style="font-size:11px;opacity:.75;margin-top:7px">방 코드는 1~10 중 숫자 하나</div>';
+document.body.appendChild(multiPanel);
+const multiStatus=multiPanel.querySelector('#rpgMultiStatus'),multiRoom=multiPanel.querySelector('#rpgMultiRoom');
+
+let supabaseLoadPromise=null;
+function ensureSupabase(){
+ if(window.supabase?.createClient)return Promise.resolve(true);
+ if(supabaseLoadPromise)return supabaseLoadPromise;
+ supabaseLoadPromise=new Promise(resolve=>{
+  const sc=document.createElement('script');
+  sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.1';
+  sc.onload=()=>resolve(!!window.supabase?.createClient);
+  sc.onerror=()=>resolve(false);
+  document.head.appendChild(sc);
+ });
+ return supabaseLoadPromise;
+}
+function validMultiRoom(v){
+ const room=String(v||'').trim(),n=Number(room);
+ return /^([1-9]|10)$/.test(room)&&Number.isInteger(n)&&n>=1&&n<=10?room:'';
+}
+function updateMultiStatus(extra=''){
+ const count=Math.max(1,multiplayer.presenceIds.size||1);
+ multiStatus.textContent=multiplayer.connected?'방 '+multiplayer.room+' · '+count+'명'+(extra?' · '+extra:''):'오프라인';
+ multiBtn.textContent=multiplayer.connected?'멀티 '+multiplayer.room:'멀티';
+}
+function syncMultiPresence(){
+ if(!multiplayer.channel)return;
+ const rows=Object.values(multiplayer.channel.presenceState()||{}).flat().filter(Boolean);
+ const ids=new Set(rows.map(x=>x.id).filter(Boolean));ids.add(multiplayer.playerId);
+ multiplayer.presenceIds=ids;
+ for(const id of [...multiplayer.remote.keys()])if(!ids.has(id))multiplayer.remote.delete(id);
+ updateMultiStatus();
+}
+function multiSend(event,payload){
+ if(!multiplayer.connected||!multiplayer.channel)return;
+ multiplayer.channel.send({type:'broadcast',event,payload}).catch(()=>{});
+}
+function remotePlayerState(payload){
+ if(!payload||payload.id===multiplayer.playerId)return;
+ const old=multiplayer.remote.get(payload.id);
+ const r=old||{x:Number(payload.x)||0,y:Number(payload.y)||0};
+ r.tx=Number(payload.x)||0;r.ty=Number(payload.y)||0;
+ r.zone=String(payload.zone||'town');r.dir=Number(payload.dir)||1;r.lv=Number(payload.lv)||1;
+ r.job=String(payload.job||'미전직');r.weapon=String(payload.weapon||'맨손');
+ r.hp=Math.max(0,Number(payload.hp)||0);r.maxHp=Math.max(1,Number(payload.maxHp)||100);
+ r.animState=String(payload.animState||'idle');r.animFrame=Number(payload.animFrame)||0;
+ r.seenAt=performance.now();multiplayer.remote.set(payload.id,r);
+}
+async function leaveMultiplayer(){
+ if(multiplayer.channel){try{await multiplayer.channel.untrack()}catch{}try{await multiplayer.channel.unsubscribe()}catch{}}
+ multiplayer.channel=null;multiplayer.client=null;multiplayer.connected=false;multiplayer.room='';
+ multiplayer.remote.clear();multiplayer.presenceIds.clear();updateMultiStatus();
+}
+async function connectMultiplayer(rawRoom){
+ const room=validMultiRoom(rawRoom);
+ if(!room){toastMsg('방 번호는 1~10 중 하나만 입력해');return}
+ const ready=await ensureSupabase();
+ if(!ready){toastMsg('멀티 서버 모듈 로딩 실패');return}
+ await leaveMultiplayer();
+ multiplayer.room=room;multiplayer.joinedAt=Date.now();
+ multiplayer.client=window.supabase.createClient(MULTI_SUPABASE_URL,MULTI_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+ multiplayer.channel=multiplayer.client.channel('daechung-rpg:'+room,{config:{broadcast:{self:false,ack:false},presence:{key:multiplayer.playerId}}});
+ multiplayer.channel
+  .on('presence',{event:'sync'},syncMultiPresence)
+  .on('broadcast',{event:'player-state'},({payload})=>remotePlayerState(payload))
+  .subscribe(async status=>{
+    if(status==='SUBSCRIBED'){
+      multiplayer.connected=true;multiRoom.value=room;
+      await multiplayer.channel.track({id:multiplayer.playerId,joinedAt:multiplayer.joinedAt});
+      syncMultiPresence();updateMultiStatus('연결됨');toastMsg('멀티 방 '+room+' 참가');
+    }else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){
+      updateMultiStatus('연결 오류');toastMsg('멀티 연결 오류');
+    }
+  });
+}
+function createMultiplayerRoom(){
+ const room=String(1+Math.floor(Math.random()*10));multiRoom.value=room;connectMultiplayer(room);
+}
+function updateMultiplayer(dt){
+ const now=performance.now();
+ if(multiplayer.connected&&now>=multiplayer.sendAt){
+  multiplayer.sendAt=now+120;
+  multiSend('player-state',{
+   id:multiplayer.playerId,x:p.x,y:p.y,zone,dir:p.dir,lv:p.lv,job:p.job||'미전직',
+   weapon:p.weapon||'맨손',hp:p.hp,maxHp:maxHp(),animState:p.animState,animFrame:p.animFrame
+  });
+ }
+ for(const [id,r] of multiplayer.remote){
+  if(now-(r.seenAt||0)>5000){multiplayer.remote.delete(id);continue}
+  const k=Math.min(1,dt*12);r.x+=(r.tx-r.x)*k;r.y+=(r.ty-r.y)*k;
+ }
+}
+function drawRemotePlayers(){
+ const now=performance.now();
+ for(const r of multiplayer.remote.values()){
+  if(r.zone!==zone||now-(r.seenAt||0)>2200)continue;
+  drawHuman(r.x,r.y,'player',r.animFrame||0,r.animState||'idle',r.dir<0);
+  ctx.fillStyle='#10202c';ctx.fillRect(r.x-25,r.y-76,50,5);
+  ctx.fillStyle='#4fc3ff';ctx.fillRect(r.x-25,r.y-76,50*Math.max(0,Math.min(1,r.hp/r.maxHp)),5);
+  ctx.textAlign='center';ctx.font='900 11px sans-serif';ctx.fillStyle='#8fe9ff';
+  ctx.fillText('멀티 · Lv.'+r.lv+' '+r.job,r.x,r.y-83);
+  ctx.font='10px sans-serif';ctx.fillStyle='#ffe49a';ctx.fillText(r.weapon,r.x,r.y-68);ctx.textAlign='left';
+ }
+}
+multiBtn.onpointerdown=e=>{e.preventDefault();multiPanel.style.display=multiPanel.style.display==='block'?'none':'block'};
+multiPanel.querySelector('#rpgMultiClose').onclick=()=>multiPanel.style.display='none';
+multiPanel.querySelector('#rpgMultiCreate').onclick=()=>createMultiplayerRoom();
+multiPanel.querySelector('#rpgMultiJoin').onclick=()=>connectMultiplayer(multiRoom.value);
+multiPanel.querySelector('#rpgMultiLeave').onclick=()=>leaveMultiplayer();
+
 const TRAINERS={warrior:{zone:'town',x:610,y:530,name:'전사 전직관',job:'전사'},archer:{zone:'f8',x:1360,y:600,name:'궁수 전직관',job:'궁수'},mage:{zone:'f5',x:1630,y:170,name:'마법사 전직관',job:'마법사'}};
 const hp0=maxHp;maxHp=function(){const v=hp0();return p.job==='궁수'?Math.max(1,Math.floor(v*.7)):v};const atk0=currentAtk;currentAtk=function(){const v=atk0();return p.job==='궁수'?v*1.5:v};
 function nearTrainer(){let b=null,bd=82;for(const t of Object.values(TRAINERS)){if(t.zone!==zone)continue;const d=Math.hypot(p.x-t.x,p.y-t.y);if(d<bd){bd=d;b=t}}return b}
@@ -186,7 +317,7 @@ function drawAiUser(b){
  ctx.font='10px sans-serif';ctx.fillStyle='#ffe49a';ctx.fillText('Lv.'+b.lv+' · '+b.weapon,b.x,b.y-52);ctx.textAlign='left';
 }
 const kill0=kill;kill=function(m){const alive=!m.dead,oldDrops=drops.length,kz=zone,kt=m.type,killer=m.aiKiller||'player',rx=m.xp||0,rg=m.g||0,oldQ=q;if(killer!=='player'){m.xp=0;m.g=0;q=9999}kill0(m);if(killer!=='player'){m.xp=rx;m.g=rg;q=oldQ;const bot=aiUsers.find(x=>x.id===killer);if(bot)aiGain(bot,rx,rg)}m.lastKillerId=killer;m.aiKiller=null;if(!alive||!m.dead)return;partyRegisterKill(m,killer,rx,rg);if(kt==='croc'){if(drops.length>oldDrops)drops.splice(oldDrops);drops.push({x:m.x,y:m.y,item:'악어 비늘',t:20})}if(kt==='golem'){if(drops.length>oldDrops)drops.splice(oldDrops);drops.push({x:m.x,y:m.y,item:'골렘 이끼',t:20})}if(kt==='reaper'){if(drops.length>oldDrops)drops.splice(oldDrops);reaperDefeated=true;reaperRef=null;unlockAfterReaper();setTimeout(()=>{if(zone==='f9')say('사신','꽤 실력이 좋군. 다음에는 봐주는 건 없다.')},320);setTimeout(()=>toastMsg('사신이 어둠 속으로 사라졌다'),1550)}if(killer==='player'){if(q===5&&kz==='f2'){rewardNext(6,'다음: 아무 무기나 구매');return}if(q===9&&kt==='ogre'){questKill10=0;rewardNext(10,'다음: 몬스터 10마리 처치');return}if(q===10){questKill10++;if(questKill10>=10){rewardNext(11,'다음: 갑옷 구매');autoQuestCheck()}else hud()}}else hud()};
-const update0=update;update=function(dt){p.skillCd=Math.max(0,(p.skillCd||0)-dt);if(zone==='amazon')for(const m of mons)if(m.type==='golem'&&m.dormant&&!m.dead&&Math.hypot(p.x-m.x,p.y-m.y)<210){m.dormant=false;m.spd=46;toastMsg('썩은 골렘이 깨어났다!')}update0(dt);updateAiUsers(dt);if(summonCountdown>0){summonCountdown-=dt;if(summonCountdown<=0){summonCountdown=0;spawnReaper()}}for(const m of mons)if(!m.dead&&['slimeKing','giantCaveSlime','ogre','giantOrc','reaper'].includes(m.type))bossPattern(m,dt);updateHazards(dt);let changed=true,g=0;while(changed&&g++<3)changed=autoQuestCheck();if(q===12){if(zone==='f7'){const moved=Math.hypot(p.x-lastJungleX,p.y-lastJungleY)>1.2;if(moved)jungleWalk+=dt;lastJungleX=p.x;lastJungleY=p.y;if(jungleWalk>=15){jungleWalk=15;rewardNext(13,'메인 퀘스트 완료!')}else hud()}else{lastJungleX=p.x;lastJungleY=p.y}}skill.style.display=(p.job==='전사'||p.job==='마법사')?'block':'none';skill.textContent=skillLabel();heal.style.display=(inv['회복 물약']||0)>0?'block':'none';updatePartyHud()};
+const update0=update;update=function(dt){p.skillCd=Math.max(0,(p.skillCd||0)-dt);if(zone==='amazon')for(const m of mons)if(m.type==='golem'&&m.dormant&&!m.dead&&Math.hypot(p.x-m.x,p.y-m.y)<210){m.dormant=false;m.spd=46;toastMsg('썩은 골렘이 깨어났다!')}update0(dt);updateAiUsers(dt);updateMultiplayer(dt);if(summonCountdown>0){summonCountdown-=dt;if(summonCountdown<=0){summonCountdown=0;spawnReaper()}}for(const m of mons)if(!m.dead&&['slimeKing','giantCaveSlime','ogre','giantOrc','reaper'].includes(m.type))bossPattern(m,dt);updateHazards(dt);let changed=true,g=0;while(changed&&g++<3)changed=autoQuestCheck();if(q===12){if(zone==='f7'){const moved=Math.hypot(p.x-lastJungleX,p.y-lastJungleY)>1.2;if(moved)jungleWalk+=dt;lastJungleX=p.x;lastJungleY=p.y;if(jungleWalk>=15){jungleWalk=15;rewardNext(13,'메인 퀘스트 완료!')}else hud()}else{lastJungleX=p.x;lastJungleY=p.y}}skill.style.display=(p.job==='전사'||p.job==='마법사')?'block':'none';skill.textContent=skillLabel();heal.style.display=(inv['회복 물약']||0)>0?'block':'none';updatePartyHud()};
 MPALETTE.giantOrc=['#52703b','#91a85a','#26351f'];MPALETTE.croc=['#315d3c','#597f45','#162e21'];MPALETTE.golem=['#55584f','#7c806e','#2d302b'];MPALETTE.reaper=['#09080d','#2b1638','#d8d3c9'];
 function riverDraw(){ctx.fillStyle='#315f78';ctx.fillRect(70,520,1660,160);ctx.fillStyle='#5d899a';for(let x=100;x<1700;x+=110){ctx.beginPath();ctx.ellipse(x,550+(x%3)*30,45,8,0,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#765b3c';ctx.fillRect(840,505,120,190);ctx.fillStyle='#d2b37b';ctx.fillRect(850,515,100,170);ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('강길 입구',900,495);ctx.textAlign='left'}
 function cliffDraw(){ctx.fillStyle='#5d5545';for(let i=0;i<28;i++){const x=260+((i*173)%1450),y=130+((i*229)%1050);rock(x,y,.8+(i%3)*.2)}ctx.fillStyle='#3a3228';ctx.fillRect(1760,90,170,1220);ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.fillText('아마존으로 이어지는 절벽길',1550,540)}
@@ -201,7 +332,7 @@ function reaperSprite(m){const att=m.animState==='attack'?Math.sin((m.animFrame|
 const sprite0=drawMonsterSprite;drawMonsterSprite=function(m){if(m.type==='croc'){crocSprite(m);return}if(m.type==='golem'){golemSprite(m);return}if(m.type==='reaper'){reaperSprite(m);return}sprite0(m)};
 const portal0=portal;portal=function(px,py,a,b,back=false){if(a==='9번 포탈'){ctx.save();ctx.translate(px,py);ctx.fillStyle='#24252b';ctx.fillRect(-72,-80,25,125);ctx.fillRect(47,-80,25,125);ctx.beginPath();ctx.arc(0,-72,60,Math.PI,0);ctx.fill();ctx.fillStyle='#050308';ctx.beginPath();ctx.arc(0,-67,45,Math.PI,0);ctx.lineTo(45,35);ctx.lineTo(-45,35);ctx.closePath();ctx.fill();ctx.strokeStyle='#8b3dcc';ctx.lineWidth=5;ctx.shadowColor='#a244ff';ctx.shadowBlur=18;ctx.beginPath();ctx.arc(0,-67,43,Math.PI,0);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#c8c2b5';ctx.beginPath();ctx.arc(0,-92,11,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('9번 공동묘지',0,58);ctx.fillStyle='#e7c1ff';ctx.font='bold 12px sans-serif';ctx.fillText('Lv.16~20',0,74);ctx.restore();ctx.textAlign='left';return}portal0(px,py,a,b,back)};
 function drawTrainer(t){drawHuman(t.x,t.y,'smith',Math.floor(performance.now()/45)%34,'idle',false);ctx.fillStyle='#17120e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText(t.name,t.x,t.y-62);ctx.fillStyle='#ffe26e';ctx.font='bold 10px sans-serif';ctx.fillText('Lv.5 전직',t.x,t.y-48);ctx.textAlign='left'}
-const draw0=draw;draw=function(){draw0();ctx.save();ctx.translate(-cam.x,-cam.y);for(const b of aiUsers)if(b.zone===zone)drawAiUser(b);for(const t of Object.values(TRAINERS))if(t.zone===zone)drawTrainer(t);for(const h of hazards){ctx.globalAlpha=.35+.2*Math.sin(performance.now()/80);ctx.strokeStyle=h.kind==='reaper'||h.kind==='soul'?'#c05cff':h.kind==='acid'?'#7cd85b':'#ff6b52';ctx.lineWidth=6;ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}ctx.restore();if(zone==='f9'&&summonCountdown>0){ctx.fillStyle='#0008';ctx.fillRect(0,0,W,H);ctx.fillStyle='#d9b3ff';ctx.font='900 42px sans-serif';ctx.textAlign='center';ctx.fillText(Math.ceil(summonCountdown),W/2,H/2);ctx.font='900 15px sans-serif';ctx.fillText('무언가가 다가온다...',W/2,H/2+32);ctx.textAlign='left'}};
+const draw0=draw;draw=function(){draw0();ctx.save();ctx.translate(-cam.x,-cam.y);for(const b of aiUsers)if(b.zone===zone)drawAiUser(b);drawRemotePlayers();for(const t of Object.values(TRAINERS))if(t.zone===zone)drawTrainer(t);for(const h of hazards){ctx.globalAlpha=.35+.2*Math.sin(performance.now()/80);ctx.strokeStyle=h.kind==='reaper'||h.kind==='soul'?'#c05cff':h.kind==='acid'?'#7cd85b':'#ff6b52';ctx.lineWidth=6;ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=.12;ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}ctx.restore();if(zone==='f9'&&summonCountdown>0){ctx.fillStyle='#0008';ctx.fillRect(0,0,W,H);ctx.fillStyle='#d9b3ff';ctx.font='900 42px sans-serif';ctx.textAlign='center';ctx.fillText(Math.ceil(summonCountdown),W/2,H/2);ctx.font='900 15px sans-serif';ctx.fillText('무언가가 다가온다...',W/2,H/2+32);ctx.textAlign='left'}};
 const weapon0=weaponDraw;weaponDraw=function(){if(!['강철 대검','강철 쌍검','빙결 대검','저주 쌍검','사신의 낫'].includes(p.weapon)){weapon0();return}const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.weapon==='사신의 낫'){ctx.strokeStyle='#3b3140';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(5,10);ctx.lineTo(58,-42);ctx.stroke();ctx.fillStyle='#d5dbe5';ctx.beginPath();ctx.moveTo(54,-44);ctx.quadraticCurveTo(90,-58,105,-30);ctx.quadraticCurveTo(80,-40,61,-20);ctx.closePath();ctx.fill()}else{const icy=p.weapon==='빙결 대검',dual=p.weapon.includes('쌍검');ctx.fillStyle=icy?'#bceeff':p.weapon==='저주 쌍검'?'#c47cff':'#d9dde2';ctx.fillRect(8,-4,48,8);ctx.fillRect(48,-9,13,18);ctx.fillStyle='#6d4e2e';ctx.fillRect(2,-6,9,13);if(dual){ctx.rotate(-.42);ctx.fillStyle=p.weapon==='저주 쌍검'?'#c47cff':'#d9dde2';ctx.fillRect(5,8,44,7)}}ctx.restore()};
 const reset0=reset;reset=function(){reset0();p.job='미전직';p.skillCd=0;postReaper=false;graveOffered=false;reaperDefeated=false;reaperRef=null;summonCountdown=0;questKill10=0;jungleWalk=0;lastJungleX=p.x;lastJungleY=p.y;P.splice(0,P.length,...P.filter(a=>a[0]!=='f10'&&a[0]!=='f11'));for(const n of ['빙결 대검','저주 쌍검','사신의 낫'])WEAPONS[n].hidden=true;delete ARMORS['빙결 갑옷'];delete ARMORS['사신 망토'];partyState.active=false;partyState.kills=0;partyState.poolXp=0;partyState.poolGold=0;partyState.contrib={player:0};aiUsers.forEach((b,i)=>{b.lv=1+Math.floor(i/2);b.x=930+(i%5)*90;b.y=720+Math.floor(i/5)*95;b.zone='town';b.inParty=false;b.weapon='맨손';b.g=90+i*35;b.xp=0;b.nxp=b.lv*100;b.atkCd=0;b.healCd=0;b.thinkCd=4+i*.8;b.trip=0});partyResult.style.display='none';hud();updatePartyHud()};
 if(!p.job)p.job='미전직';p.skillCd=p.skillCd||0;hud();toastMsg('대충 RPG 대형 업데이트 적용');
