@@ -23,7 +23,21 @@ function increment(map,key){
 }
 
 export function summarizeNeuralEventShadowEvidence(values=[]){
-  const rows=parseNeuralEventShadowEvidence(values);
+  const parsedRows=parseNeuralEventShadowEvidence(values);
+  const byEventId=new Map();
+  const legacyRows=[];
+  let duplicateEventRows=0,eventConflicts=0;
+  for(const row of parsedRows){
+    const eventId=clean(row.eventId);
+    if(!eventId){legacyRows.push(row);continue;}
+    if(byEventId.has(eventId)){
+      duplicateEventRows+=1;
+      if(JSON.stringify(byEventId.get(eventId))!==JSON.stringify(row))eventConflicts+=1;
+      continue;
+    }
+    byEventId.set(eventId,row);
+  }
+  const rows=[...byEventId.values(),...legacyRows];
   const byEventType={},byAction={},byInhibitor={};
   let hypotheticalFireCount=0;
   let unauthorizedFireCount=0;
@@ -35,9 +49,14 @@ export function summarizeNeuralEventShadowEvidence(values=[]){
     if(row.fireAllowed===true||row.workerCreationAllowed===true||row.queueMutationAllowed===true||row.waveReorderAllowed===true)unauthorizedFireCount+=1;
   }
   return{
-    version:1,
+    version:2,
     mode:'PHASE2_SHADOW_EVENT_TELEMETRY',
+    rawEvidenceRows:parsedRows.length,
     total:rows.length,
+    distinctEventIds:byEventId.size,
+    legacyUnidentifiedRows:legacyRows.length,
+    duplicateEventRows,
+    eventConflicts,
     hypotheticalFireCount,
     hypotheticalFireRate:rows.length?hypotheticalFireCount/rows.length:null,
     unauthorizedFireCount,
