@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 15,
+      "runtime": 16,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -360,6 +360,16 @@
       ],
       "internalPolicyCap": null,
       "externalProviderBoundary": 256
+    },
+    "signalLiveness": {
+      "runState": "ALWAYS_RUNNING",
+      "globalTerminalStateForbidden": true,
+      "queuePassState": "VERIFIED_CHECKPOINT",
+      "legacyDoneInputMigration": "DONE_TO_VERIFIED",
+      "noRunnableTaskBehavior": "CAUSAL_REPLAN_OR_AWAIT_EVENT_WITH_SENSORS_AND_RECOVERY_LIVE",
+      "verifiedCheckpointFeedsPlanner": true,
+      "signalDropForbidden": true,
+      "busyLoopForbidden": true
     }
   },
   "adaptiveBackpressure": {
