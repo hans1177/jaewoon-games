@@ -1065,8 +1065,9 @@ jobs:
             if(!evidencePath||!webSourcePath||!baselinePath)return{pass:false,blockers:['WEB_PROMOTION_EVIDENCE_PATH_MISSING']};
             try{
               const evidence=JSON.parse(showText(evidencePath));
-              return evaluateWebValidationEvidence(evidence,{minimumScore:WEB_PLATFORM_PROMOTION_MINIMUM,requirePromotionRevalidation:true,currentSourceSha256:sha256Text(showText(`${webSourcePath}/index.html`)),currentBaselineSha256:sha256Text(showText(baselinePath))});
-            }catch(error){return{pass:false,blockers:[`WEB_PROMOTION_EVIDENCE_READ_FAILED:${String(error?.message||error).replace(/\s+/g,' ').slice(0,120)}`]};}
+              const gate=evaluateWebValidationEvidence(evidence,{minimumScore:WEB_PLATFORM_PROMOTION_MINIMUM,requirePromotionRevalidation:true,currentSourceSha256:sha256Text(showText(`${webSourcePath}/index.html`)),currentBaselineSha256:sha256Text(showText(baselinePath))});
+              return {...gate,presentationContract:evidence?.webPlatformPresentationHandoff||null};
+            }catch(error){return{pass:false,blockers:[`WEB_PROMOTION_EVIDENCE_READ_FAILED:${String(error?.message||error).replace(/\s+/g,' ').slice(0,120)}`],presentationContract:null};}
           };
           const updates=[];
           const platforms=new Set();
@@ -1076,9 +1077,11 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
             const evidenceGate=promotionEvidence(item);
-            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true;
+            const presentationReady=evidenceGate.presentationContract?.ready===true;
+            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true&&presentationReady;
             if(!formalPass||!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true)){
               if(item.formalImplementationPassed===true&&!evidenceGate.pass){promotionRejected++;console.log(`WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(evidenceGate.blockers||[]).join('|')}`);}
+              if(item.formalImplementationPassed===true&&evidenceGate.pass===true&&!presentationReady){promotionRejected++;console.log(`WEB_PRESENTATION_HANDOFF_REJECTED=${item.gameId}:WEB_HANDOFF_PRESENTATION_READY_REQUIRED`);}
               continue;
             }
             const status=String(item.status||'').toUpperCase();
@@ -1117,7 +1120,8 @@ jobs:
               strictScore:Number(item.webStrictScore??item.strictImplementationScore),
               promotionRevalidationPassed:item.webPromotionRevalidationPassed===true,
               validationPassedAt:item.webValidationPassedAt||null,
-              carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context'],
+              carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context','presentation-contract'],
+              presentationContract:evidenceGate.presentationContract,
               nativeRuntimePassTransferred:false,
               authority:'MACHINE_EXECUTION_CONTRACT'
             };
