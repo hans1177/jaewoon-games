@@ -7,7 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory, addVibeExperience } from '../assets/vibe-experience-memory.js';
 import { validateDesignAwareExperience } from './vibe2-design-intelligence.mjs';
-import { applyCapabilityApplicationReviews, applyCapabilityBenchmarkReviews } from './vibe2-capability-distillation.mjs';
+import { applyCapabilityApplicationReviews, applyCapabilityBenchmarkReviews, applyCapabilityBenchmarkNativeCompletions } from './vibe2-capability-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
@@ -316,6 +316,7 @@ export function runExperiencePromotionBatch({
   const rows=Array.isArray(payload)?payload:(Array.isArray(payload?.experienceReviews)?payload.experienceReviews:[]);
   const capabilityApplicationRows=Array.isArray(payload?.capabilityApplicationReviews)?payload.capabilityApplicationReviews:[];
   const capabilityBenchmarkRows=Array.isArray(payload?.capabilityBenchmarkReviews)?payload.capabilityBenchmarkReviews:[];
+  const capabilityBenchmarkNativeCompletionRows=Array.isArray(payload?.capabilityBenchmarkNativeCompletions)?payload.capabilityBenchmarkNativeCompletions:[];
   let memory=readJson(memoryFile,{records:[]});
   const results=[];
   for(const review of rows){
@@ -328,7 +329,9 @@ export function runExperiencePromotionBatch({
   if(capabilityApplications.applied>0)memory=capabilityApplications.memory;
   const capabilityBenchmarks=applyCapabilityBenchmarkReviews(memory,capabilityBenchmarkRows);
   if(capabilityBenchmarks.applied>0)memory=capabilityBenchmarks.memory;
-  const changed=promotedCount>0||capabilityApplications.applied>0||capabilityBenchmarks.applied>0;
+  const capabilityBenchmarkNativeCompletions=applyCapabilityBenchmarkNativeCompletions(memory,capabilityBenchmarkNativeCompletionRows);
+  if(capabilityBenchmarkNativeCompletions.applied>0)memory=capabilityBenchmarkNativeCompletions.memory;
+  const changed=promotedCount>0||capabilityApplications.applied>0||capabilityBenchmarks.applied>0||capabilityBenchmarkNativeCompletions.applied>0;
   if(changed){
     try{writeMemory(memoryFile,memory);}catch(error){
       return Object.freeze({
@@ -337,6 +340,10 @@ export function runExperiencePromotionBatch({
         capabilityApplicationDuplicates:capabilityApplications.duplicates,capabilityApplicationMissing:capabilityApplications.missing,
         capabilityBenchmarkTotal:capabilityBenchmarkRows.length,capabilityBenchmarkApplied:0,
         capabilityBenchmarkDuplicates:capabilityBenchmarks.duplicates,capabilityBenchmarkMissing:capabilityBenchmarks.missing,
+        capabilityBenchmarkNativeCompletionTotal:capabilityBenchmarkNativeCompletionRows.length,capabilityBenchmarkNativeCompletionApplied:0,
+        capabilityBenchmarkNativeCompletionDuplicates:capabilityBenchmarkNativeCompletions.duplicates,
+        capabilityBenchmarkNativeCompletionMissing:capabilityBenchmarkNativeCompletions.missing,
+        capabilityBenchmarkNativeCompletionRejected:capabilityBenchmarkNativeCompletions.rejected,
         reason:'experience-storage-failed',storageError:clean(error?.message||error),memory
       });
     }
@@ -355,6 +362,11 @@ export function runExperiencePromotionBatch({
     capabilityBenchmarkApplied:capabilityBenchmarks.applied,
     capabilityBenchmarkDuplicates:capabilityBenchmarks.duplicates,
     capabilityBenchmarkMissing:capabilityBenchmarks.missing,
+    capabilityBenchmarkNativeCompletionTotal:capabilityBenchmarkNativeCompletionRows.length,
+    capabilityBenchmarkNativeCompletionApplied:capabilityBenchmarkNativeCompletions.applied,
+    capabilityBenchmarkNativeCompletionDuplicates:capabilityBenchmarkNativeCompletions.duplicates,
+    capabilityBenchmarkNativeCompletionMissing:capabilityBenchmarkNativeCompletions.missing,
+    capabilityBenchmarkNativeCompletionRejected:capabilityBenchmarkNativeCompletions.rejected,
     reason:changed?'verified-reviewed-experience-batch-updated':'no-reviewed-experience-promoted',
     authority:'unchanged',
     memory
@@ -413,6 +425,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_CAPABILITY_BENCHMARK_APPLIED=${result.capabilityBenchmarkApplied||0}`);
     console.log(`VIBE2_CAPABILITY_BENCHMARK_DUPLICATES=${result.capabilityBenchmarkDuplicates||0}`);
     console.log(`VIBE2_CAPABILITY_BENCHMARK_MISSING=${result.capabilityBenchmarkMissing||0}`);
+    console.log(`VIBE2_CAPABILITY_BENCHMARK_NATIVE_COMPLETION_TOTAL=${result.capabilityBenchmarkNativeCompletionTotal||0}`);
+    console.log(`VIBE2_CAPABILITY_BENCHMARK_NATIVE_COMPLETION_APPLIED=${result.capabilityBenchmarkNativeCompletionApplied||0}`);
+    console.log(`VIBE2_CAPABILITY_BENCHMARK_NATIVE_COMPLETION_DUPLICATES=${result.capabilityBenchmarkNativeCompletionDuplicates||0}`);
+    console.log(`VIBE2_CAPABILITY_BENCHMARK_NATIVE_COMPLETION_MISSING=${result.capabilityBenchmarkNativeCompletionMissing||0}`);
+    console.log(`VIBE2_CAPABILITY_BENCHMARK_NATIVE_COMPLETION_REJECTED=${result.capabilityBenchmarkNativeCompletionRejected||0}`);
   }
   if (result.review) {
     console.log(`VIBE2_EXPERIENCE_REVOTE_DECISION=${result.review.revoteDecision}`);
