@@ -1,5 +1,5 @@
 {
-  "version": 198,
+  "version": 199,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6952,10 +6952,10 @@
       "latestProductionRuntimeObservation": {
         "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
         "dedupeKey": "neural-production-shadow-runtime-observation",
-        "observedAt": "2026-09-20T03:52:00Z",
-        "documentSyncBaseMainHead": "6bfccbfa279b86143d0ba4038845e658bb6be877",
+        "observedAt": "2026-09-20T04:01:45Z",
+        "documentSyncBaseMainHead": "43c4bcf9d3764422e4c3d5781b45d25c867d7a99",
         "queueBranch": "vibe2-unreal-core",
-        "queueBlobSha": "edf890524c3060011180e1cc76f68e4760692a52",
+        "queueBlobSha": "d6f9615b950341c52f6cb1093d09aa4f009bc428",
         "currentQueueSnapshot": {
           "totalTasks": 105,
           "statusCounts": {
@@ -7015,12 +7015,12 @@
           "unauthorizedAuthorityBitFireCount": 0
         },
         "durableQueueEvidenceSnapshot": {
-          "shadowEventRows": 322,
+          "shadowEventRows": 397,
           "rawVersion1EventRows": 239,
-          "eventIdentityVersion2Rows": 83,
+          "eventIdentityVersion2Rows": 158,
           "legacyV1SampleOnlyEventIdCollisionKeys": 47,
           "normalizedEventIdentityDuplicateKeys": 0,
-          "waveAuditRows": 61,
+          "waveAuditRows": 73,
           "waveAuditDuplicateSampleKeys": 0,
           "exactPerTaskEvidenceDuplicateRows": 0,
           "unauthorizedAuthorityBitFireCount": 0,
@@ -7035,7 +7035,7 @@
           "neuralLockOrPolicyMutationAuthority": false,
           "neuralAutomaticLearningTuningPromotion": false
         },
-        "nextGate": "VERIFY_POST_1877_PRODUCTION_LIVE_MAIN_FRESHNESS_EVIDENCE_AND_KEEP_DUPLICATE_AND_UNAUTHORIZED_FIRE_ZERO",
+        "nextGate": "IMPLEMENT_VIBE_COGNITIVE_CORE_OBSERVABLE_METACOGNITION_WITHOUT_AUTHORITY_EXPANSION",
         "latestCompletedTelemetryBeforeRepair": {
           "runId": 35485904220,
           "workerCount": 12,
@@ -7233,7 +7233,38 @@
             "lockPolicyMutationAuthority": false,
             "automaticLearningTuningPromotionAuthority": false
           },
-          "postMergeVerification": "NEXT_PRODUCTION_WAVE_REQUIRED"
+          "postMergeVerification": "VERIFIED_PRODUCTION_WAVE_35487645485",
+          "productionVerification": {
+            "state": "VERIFIED_PRODUCTION",
+            "runId": 35487645485,
+            "executionContractSha": "ad9631dcbad083519a253cc2c81613f61315b869",
+            "contractIncludesRepairPr": 1877,
+            "fanInPassed": true,
+            "workerCount": 6,
+            "liveMainRef": "origin/main",
+            "liveMainRefObservedWorkerCount": 6,
+            "candidateBranchesCreatedAfterLiveFreshnessCheck": 6,
+            "workerResults": {
+              "PASS": 6
+            },
+            "centralPolicyStaleObserved": false,
+            "telemetry": {
+              "primaryBottleneck": "NONE",
+              "secondaryBottlenecks": [],
+              "pass": true
+            },
+            "shadowSafety": {
+              "runShadowEventRows": 8,
+              "runShadowEventTypes": {
+                "WORKER_RESULT": 6,
+                "CI_RESULT": 2
+              },
+              "normalizedEventIdentityDuplicateKeys": 0,
+              "waveAuditRows": 2,
+              "unauthorizedAuthorityBitFireCount": 0
+            },
+            "interpretation": "LIVE_MAIN_POLICY_REF_WAS_EXERCISED_IN_PRODUCTION_AFTER_PR_1877; WORKERS_PROCEEDED_TO_CANDIDATE_OUTPUT_WITHOUT_STALE_MISMATCH; FAN_IN_PASSED"
+          }
         }
       },
       "mixedWorkerBottleneckClassification": {
