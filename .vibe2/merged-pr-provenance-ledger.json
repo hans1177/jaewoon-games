@@ -1712,11 +1712,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_38cf95c14ae5df589b232a10",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-1926",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d92d9447b4d6d6b212dfe5e921deaaf76ef1942d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 1926,
+        "baseBranch": "main",
+        "headBranch": "assistant/native-asset-weather-runtime-v2",
+        "baseSha": "d92d9447b4d6d6b212dfe5e921deaaf76ef1942d",
+        "headSha": "6e1a06d91d65ba41bb319cc86ef37951d7009a1f",
+        "mergeCommitSha": "ac94d6d824930521256be7a8499191fe00c5b11f",
+        "mergedAt": "2026-09-20T05:55:28Z",
+        "authorLogin": "hans1177",
+        "titleHash": "79c28c32fcd653e26d92eeb6d53b4088cf91c4284864ada38804cc30b47f5299",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/native-asset-weather-runtime-v2",
+        "candidateSha": "6e1a06d91d65ba41bb319cc86ef37951d7009a1f"
+      },
+      "changeStats": {
+        "changedFileCount": 22,
+        "codingRelevantFileCount": 22,
+        "addedLineCount": 1240,
+        "deletedLineCount": 90,
+        "changedFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "assets/vibe-experience-memory.js",
+          "game-catalog.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/company-speed-sequence-workflow.test.mjs",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "qa/vibe2-capability-distillation.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/company-recovery-dispatch.mjs",
+          "tools/company-selected-platform-router.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-capability-distillation.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-incremental-qa.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "assets/vibe-experience-memory.js",
+          "game-catalog.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-selected-platform-router.test.mjs",
+          "qa/company-speed-sequence-workflow.test.mjs",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "qa/vibe2-capability-distillation.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/company-recovery-dispatch.mjs",
+          "tools/company-selected-platform-router.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-capability-distillation.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-incremental-qa.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:1926",
+        "merge-commit:ac94d6d824930521256be7a8499191fe00c5b11f",
+        "base-main:d92d9447b4d6d6b212dfe5e921deaaf76ef1942d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 14
+    "total": 15
   }
 }
