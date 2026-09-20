@@ -5211,7 +5211,18 @@
           "mainWriteGuard": "PASS"
         },
         "productionObservation": {
-          "state": "PENDING_POST_MERGE_RUNTIME_OBSERVATION",
+          "state": "OBSERVED_WITH_HARDENING_REQUIRED",
+          "provenanceWorkflowRunId": 35489360372,
+          "provenanceWorkflowConclusion": "PASS",
+          "observedPullRequest": 1891,
+          "observedTraceSource": "MERGED_PULL_REQUEST_PROVENANCE",
+          "observedTraceMergeOnly": true,
+          "observedQueueMutation": false,
+          "observedExperienceMutation": false,
+          "observedAuthorityExpansion": false,
+          "observedCapabilityExperienceRecords": 2,
+          "observedCapabilityExperienceKind": "VERIFIED_FAILURE_AVOID_PATTERNS",
+          "retrievalRuntimeEvidencePending": true,
           "verifiedRuntimeClaim": false
         },
         "authority": {
@@ -5224,7 +5235,12 @@
           "directMainPromotionAuthority": false,
           "authorityChange": "NONE"
         },
-        "nextGate": "PHASE_2_POST_MERGE_RUNTIME_OBSERVATION_AND_RETRIEVAL_QUALITY_VALIDATION"
+        "nextGate": "PHASE_2_HARDEN_PROVENANCE_RAW_TEXT_RETENTION_AND_DEDUPED_CAPABILITY_RETRIEVAL_THEN_REOBSERVE",
+        "knownHardeningGap": [
+          "MERGED_PR_TITLE_TEXT_CURRENTLY_COPIED_INTO_TRACE_GOAL_REMOVE_RAW_EXTERNAL_TEXT",
+          "MERGED_PR_PROVENANCE_CURRENTLY_SHARES_CODING_TRACE_LEDGER_SEPARATE_RETENTION_DOMAIN",
+          "DISTINCT_CAPABILITY_LAYER_CAN_DUPLICATE_CAPABILITY_RECORDS_IN_GENERIC_LEARNING_GUIDANCE_PARTITION_CONTEXTS"
+        ]
       }
     }
   },
