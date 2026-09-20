@@ -4,10 +4,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { isSafeSecurityRepairFile } from './company-recovery-queue.mjs';
 
 const clean=v=>String(v??'').trim();
 const unique=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const now=()=>new Date().toISOString();
+export const PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION='PRIMARY_AI_SECURITY_RECOVERY_ASSIGN=APPROVE';
+function securityRecoveryRepairFiles(rec={}){
+  return unique([...(rec.evidence||[]),...(rec.dispatchEvidence||[])]
+    .map(clean)
+    .filter(x=>x.startsWith('security-repair-file:')||x.startsWith('primary-ai-repair-file:'))
+    .map(x=>clean(x.slice(x.indexOf(':')+1)))
+    .filter(isSafeSecurityRepairFile));
+}
 
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
@@ -36,6 +45,63 @@ function dependencyReady(task,queue){
   const byId=new Map(queue.tasks.map(x=>[x.id,x]));
   return (task.dependencies||[]).every(id=>byId.get(id)?.status==='done');
 }
+export function assignSecurityRecovery(queueInput,recoveryInput,{recoveryId='',decision=''}={}){
+  const queue=normalizeSystemAiQueue(queueInput);
+  const recovery={...recoveryInput,tasks:(recoveryInput.tasks||[]).map(x=>({...x}))};
+  if(clean(decision)!==PRIMARY_AI_SECURITY_RECOVERY_ASSIGN_DECISION)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_EXPLICIT_APPROVAL_REQUIRED');
+  const id=clean(recoveryId);
+  if(!id)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ID_REQUIRED');
+  const rec=recovery.tasks.find(x=>clean(x.id)===id);
+  if(!rec)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_NOT_FOUND:'+id);
+  if(clean(rec.status)!=='blocked-primary-ai-assignment-required')throw new Error('SYSTEM_AI_SECURITY_RECOVERY_NOT_ASSIGNABLE:'+id+':'+clean(rec.status));
+  if(clean(rec.sourceQueue).toLowerCase()!=='security'||clean(rec.recoveryOwner).toUpperCase()!=='SYSTEM_AI')throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ROUTE_INVALID:'+id);
+  const responsibleFiles=securityRecoveryRepairFiles(rec);
+  if(!responsibleFiles.length)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_SAFE_SCOPE_REQUIRED:'+id);
+  const taskId=clean(rec.sourceTaskId);
+  if(!taskId)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_SOURCE_TASK_REQUIRED:'+id);
+  if(queue.tasks.some(x=>clean(x.id)===taskId))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TASK_EXISTS:'+taskId);
+  const stamp=now();
+  const task=normalizeTask({
+    id:taskId,
+    status:'queued',
+    priority:'critical',
+    goal:'Repair quarantined security findings only within the Primary-AI-approved responsible files while preserving all existing authority and review boundaries.',
+    responsibleFiles,
+    contextFiles:unique([...responsibleFiles,'tools/company-security-steward.mjs','tools/company-security-incident.mjs']),
+    acceptanceCriteria:[
+      'Remove or remediate the quarantined security finding without weakening security, QA, review, or main-write gates',
+      'Modify only the Primary-AI-approved responsible files',
+      'Security verification must return PASS before candidate PR publication',
+      'Primary-AI supervisor review remains required before acceptance'
+    ],
+    verificationCommands:['node --test qa/company-security-steward.test.mjs'],
+    dependencies:[],
+    retries:0,
+    maxRetries:2,
+    evidence:unique([
+      ...(rec.evidence||[]),
+      'security-recovery:'+id,
+      'primary-ai-security-recovery-assignment:APPROVE',
+      'recovery-source-task:'+taskId
+    ]),
+    supervisorReviewRequired:true,
+    createdAt:stamp,
+    updatedAt:stamp
+  });
+  const tasks=[...queue.tasks,task];
+  recovery.tasks=recovery.tasks.map(x=>clean(x.id)!==id?x:{
+    ...x,
+    status:'queued',
+    evidence:unique([
+      ...(x.evidence||[]),
+      'primary-ai-security-recovery-assignment:APPROVE',
+      'system-ai-assignment:'+taskId
+    ]),
+    updatedAt:stamp
+  });
+  return{queue:{...queue,tasks},recovery,task};
+}
+
 export function reserveSystemAiBatch(queueInput,{max=16,reservationId=''}={}){
   const queue=normalizeSystemAiQueue(queueInput), active=queue.tasks.filter(t=>t.status==='running');
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
@@ -80,6 +146,17 @@ export function acceptSystemAiTask(queueInput,{id,evidence=[]}={}){
 export function runSystemAiQueue(args={}){
   const file=clean(args.queue)||'.vibe2/system-ai-queue.json',command=clean(args.command).toLowerCase();
   let queue=normalizeSystemAiQueue(readJson(file,{tasks:[]}));
+  if(command==='assign-security-recovery'){
+    const recoveryFile=clean(args.recovery);
+    if(!recoveryFile)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_FILE_REQUIRED');
+    const result=assignSecurityRecovery(queue,readJson(recoveryFile,{tasks:[]}),{
+      recoveryId:args['recovery-id'],
+      decision:args.decision
+    });
+    writeJson(file,result.queue);
+    writeJson(recoveryFile,result.recovery);
+    return{command,...result};
+  }
   if(command==='reserve'){
     const result=reserveSystemAiBatch(queue,{max:Number(args.max||16),reservationId:args.reservation});
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
