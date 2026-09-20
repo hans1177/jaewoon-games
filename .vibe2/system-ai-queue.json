@@ -6,7 +6,7 @@
   "tasks": [
     {
       "id": "sys-web-bootstrap-signal-routing-v1",
-      "status": "running",
+      "status": "done",
       "priority": "critical",
       "goal": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Add a focused contract test that proves SOURCE_MISSING and WEB_REPAIR signals are routed to Vibe work and ordinary unexpected bootstrap failures still fail normally.",
       "responsibleFiles": [
@@ -47,11 +47,11 @@
       "dependencies": [],
       "retries": 2,
       "maxRetries": 2,
-      "reservationId": "system-ai:35479816000:1",
-      "reservedAt": "2026-09-20T00:50:39.423Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "FAIL",
+      "lastOutcome": "DETERMINISTIC_CURRENT_MAIN_SATISFIED",
       "blocker": null,
       "evidence": [
         "primary-ai-priority:portfolio-wide-common-web-blocker",
@@ -88,11 +88,15 @@
         "actions-run:35479394982",
         "current-main-verification:failure",
         "verification-command-rebound:qa/company-development-web-runtime.test.mjs",
-        "existing-contract-b2-covers-expected-vibe-signal-routing"
+        "existing-contract-b2-covers-expected-vibe-signal-routing",
+        "actions-run:35479816000",
+        "current-main-verification:success",
+        "no-candidate-required:current-main-already-satisfies-task",
+        "deterministic-current-main-satisfied"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-20T00:51:07.427Z"
+      "updatedAt": "2026-09-20T00:56:22.125Z"
     },
     {
       "id": "sys-vibe-planner-web-repair-routing-v1",
@@ -411,7 +415,7 @@
     },
     {
       "id": "sys-verify-vibe-planner-repair-fixtures-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "high",
       "goal": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
       "responsibleFiles": [
@@ -435,25 +439,32 @@
       "dependencies": [
         "sys-vibe-planner-web-repair-routing-v1"
       ],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35479816000:1",
-      "reservedAt": "2026-09-20T00:50:39.423Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "actions-run:35479816000",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:50:39.423Z"
+      "updatedAt": "2026-09-20T00:56:22.125Z"
     },
     {
       "id": "sys-verify-source-bootstrap-safety-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "high",
       "goal": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
       "responsibleFiles": [
@@ -477,21 +488,28 @@
       "dependencies": [
         "sys-vibe-web-source-bootstrap-boundary-v1"
       ],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35479816000:1",
-      "reservedAt": "2026-09-20T00:50:39.423Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "actions-run:35479816000",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:50:39.423Z"
+      "updatedAt": "2026-09-20T00:56:22.125Z"
     },
     {
       "id": "sys-verify-web-handoff-e2e-second-opinion-v1",
@@ -625,7 +643,7 @@
     },
     {
       "id": "sys-verify-web-platform-handoff-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
       "responsibleFiles": [
@@ -649,21 +667,28 @@
       "dependencies": [
         "sys-web-vibe-handoff-e2e-contract-v1"
       ],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35479816000:1",
-      "reservedAt": "2026-09-20T00:50:39.423Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
-        "worker-role:independent-verifier"
+        "worker-role:independent-verifier",
+        "actions-run:35479816000",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T00:50:39.423Z"
+      "updatedAt": "2026-09-20T00:56:22.125Z"
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
