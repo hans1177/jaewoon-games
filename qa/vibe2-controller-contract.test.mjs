@@ -256,18 +256,30 @@ test('workers complete the current wave before one fan-in refill dispatch',()=>{
   assert(reserveBlock.indexOf('VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
 });
 
-test('24H push and safety-net cannot overlap an active worker wave',()=>{
+test('24H safety-net refills free game slots while preserving queue-level conflict protection',()=>{
   assert(safetyNetWorkflow.includes('wave_ready: ${{ steps.queue_state.outputs.wave_ready }}'));
+  assert(safetyNetWorkflow.includes('game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}'));
+  assert(safetyNetWorkflow.includes('free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}'));
   assert(safetyNetWorkflow.includes('active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
-  assert(safetyNetWorkflow.includes('VIBE2_24H_WAVE_READY='));
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_FREE_GAME_WORKER_SLOTS='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_REFILL_READY='));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"));
   assert(safetyNetWorkflow.includes("needs.continuous.result == 'success'"));
   assert(safetyNetWorkflow.includes("needs.learning_idle.result == 'success'"));
   assert(workflow.includes('VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE='));
-  assert(workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
-  assert(workflow.includes("guard:'ACTIVE_LANE_RESERVATION_PRESENT'"));
+  assert(workflow.includes('VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'));
+  assert(!workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
+  assert(!workflow.includes("guard:'ACTIVE_LANE_RESERVATION_PRESENT'"));
+  assert(workflow.includes('vibe2-queue-control.mjs reserve-batch'));
+});
+
+test('free-slot refill keeps learning-idle and game-study gated by an actually idle game wave',()=>{
+  assert(safetyNetWorkflow.includes("const waveReady=activeGame===0?'YES':'NO'"));
+  assert(safetyNetWorkflow.includes("const gameRefillReady=freeWorkerSlots>0?'YES':'NO'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
 test('24H cycle serialization does not reuse the control-state lock',()=>{
