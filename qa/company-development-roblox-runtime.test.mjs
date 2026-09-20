@@ -372,3 +372,24 @@ test('development router carries presentation contract without changing canonica
   assert.match(workflow,/['"]presentation-contract['"]/);
   assert.match(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
+
+test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/merge_sha="\$\(gh pr view "\$pr_url".*\.mergeCommit\.oid/s);
+  assert.match(workflow,/source_revision=\$merge_sha/);
+  assert.match(workflow,/sourceRevision:\/\^\[0-9a-f\]\{40\}\$\/i/);
+  assert.match(workflow,/ownerFocusRobloxSourceCommit:result\.sourceRevision/);
+  assert.match(workflow,/ownerFocusRobloxSourceBootstrapPassedAt:stamp/);
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxBuildOrPackagePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxBuildSourceRevision===sourceRevision/);
+  assert.match(workflow,/ownerFocusRobloxAssetPipelineState:'BUILD_READY'/);
+  const secondaryPersistAt=workflow.indexOf("const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;");
+  assert.ok(secondaryPersistAt>=0,'secondary package persist branch missing');
+  const secondaryPersistEnd=workflow.indexOf('continue;',secondaryPersistAt);
+  const secondaryPersist=workflow.slice(secondaryPersistAt,secondaryPersistEnd);
+  assert.doesNotMatch(secondaryPersist,/selectedPlatform:'ROBLOX'/);
+  assert.doesNotMatch(secondaryPersist,/targetPlatform:'ROBLOX'/);
+  assert.doesNotMatch(secondaryPersist,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
+  assert.doesNotMatch(secondaryPersist,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+});

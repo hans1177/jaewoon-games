@@ -218,8 +218,11 @@ jobs:
           set -euo pipefail
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          merge_sha="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json mergeCommit --jq '.mergeCommit.oid')"
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'Roblox source merge revision missing' >&2; exit 2; }
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
-          echo "ROBLOX_SOURCE_MERGED=$GAME_ID"
+          echo "source_revision=$merge_sha" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_MERGED=$GAME_ID:$merge_sha"
 
       - name: Record isolated Roblox worker result
         if: always()
@@ -230,6 +233,7 @@ jobs:
           GENERATE_OUTCOME: ${{ steps.generate.outcome }}
           MERGE_OUTCOME: ${{ steps.merge.outcome }}
           PR_URL: ${{ steps.merge.outputs.pr_url }}
+          SOURCE_REVISION: ${{ steps.merge.outputs.source_revision }}
         shell: bash
         run: |
           set -euo pipefail
@@ -249,6 +253,7 @@ jobs:
             candidateReady,
             candidateBranch:process.env.SOURCE_BRANCH||null,
             sourcePath:process.env.TARGET_SOURCE,
+            sourceRevision:/^[0-9a-f]{40}$/i.test(String(process.env.SOURCE_REVISION||''))?String(process.env.SOURCE_REVISION):null,
             pr:process.env.PR_URL||null,
             failure,
           };
@@ -355,7 +360,9 @@ jobs:
                 Object.assign(item,{
                   robloxProjectPath:result.sourcePath,
                   ownerFocusRobloxSourcePath:result.sourcePath,
+                  ownerFocusRobloxSourceCommit:result.sourceRevision,
                   ownerFocusRobloxSourceBoundAt:stamp,
+                  ownerFocusRobloxSourceBootstrapPassedAt:stamp,
                   ownerFocusRobloxSourceBootstrapFailedAt:null,
                   ownerFocusRobloxSourceCandidateBranch:null,
                   ownerFocusRobloxSourceCandidateReadyAt:null,
@@ -522,8 +529,9 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
@@ -533,16 +541,26 @@ jobs:
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
-            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
-            const sourcePath=String(item.robloxProjectPath||item.targetSourcePath||item.sourcePath||`roblox-games/${item.gameId}`).trim();
-            const sourceRevision=String(item.robloxSourceCommit||'').trim();
-            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
-            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
+            if(secondaryOwnerFocus){
+              const lane=String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase();
+              if(!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(lane))continue;
+            }else{
+              if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+              if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
+            }
+            const sourcePath=String(secondaryOwnerFocus?item.ownerFocusRobloxSourcePath:(item.robloxProjectPath||item.targetSourcePath||item.sourcePath)||`roblox-games/${item.gameId}`).trim();
+            const sourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
+            if(!/^[0-9a-f]{40}$/i.test(sourceRevision))continue;
             if(exactBuild)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision});
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
@@ -725,9 +743,32 @@ jobs:
           }
           const stamp=new Date().toISOString();
           let passCount=0,failCount=0;
+          const expectedById=new Map(expected.map(target=>[target.gameId,target]));
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
+            const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;
+            if(secondaryOwnerFocus){
+              if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
+                Object.assign(item,{
+                  ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
+                  ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
+                  ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightPassedAt:null,ownerFocusRobloxBuildPreflightFailedAt:null,
+                  ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimePassedAt:null,ownerFocusRobloxRuntimeFailedAt:null,
+                  ownerFocusRobloxAssetPipelineState:'BUILD_READY',updatedAt:stamp,
+                });
+                passCount++;
+              }else{
+                Object.assign(item,{
+                  ownerFocusRobloxBuildOrPackagePassed:false,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
+                  ownerFocusRobloxBuildFailedAt:stamp,ownerFocusRobloxBuildPreflightPassed:false,
+                  ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxAssetPipelineState:'BUILD_REPAIR_REQUIRED',
+                  ownerFocusRobloxBuildFailure:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',updatedAt:stamp,
+                });
+                failCount++;
+              }
+              continue;
+            }
             if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
