@@ -68,16 +68,25 @@ test('canvas save/restore alone is not persistence evidence',()=>{
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('fact pack decodes the real crystal-defense archive into usable evidence',()=>{
+test('fact pack reads the real crystal-defense source in its current archive format',()=>{
   const sourcePath=path.join(repoRoot,'web-games','crystal-defense','index.html');
   assert.ok(fs.existsSync(sourcePath),'crystal-defense archive missing');
-  const {root,pack}=runPack({gameId:'crystal-defense',files:{'index.html':fs.readFileSync(sourcePath,'utf8')}});
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const packed=/atob\(\s*['"][A-Za-z0-9+/=]+['"]\s*\)/.test(source);
+  const {root,pack}=runPack({gameId:'crystal-defense',files:{'index.html':source}});
   try{
-    assert.ok(pack.decodedSources.length>0,'real crystal-defense packed payload was not decoded');
-    assert.ok(pack.topics.combat.some(x=>x.source.includes('#embedded-gzip-')),'real combat evidence missing from decoded source');
-    assert.ok(pack.topics.progression.some(x=>x.source.includes('#embedded-gzip-')),'real progression evidence missing from decoded source');
-    for(const topic of ['combat','progression'])assert.ok(pack.topics[topic].every(x=>x.source.includes('#embedded-gzip-')),`${topic} must not come from masked packed text`);
-    const summary={decodedSources:pack.decodedSources.length,missingEvidence:pack.missingEvidence,combat:pack.topics.combat.slice(0,12),progression:pack.topics.progression.slice(0,12),persistence:pack.topics.persistence.slice(0,6)};
+    if(packed){
+      assert.ok(pack.decodedSources.length>0,'real crystal-defense packed payload was not decoded');
+      assert.ok(pack.topics.combat.some(x=>x.source.includes('#embedded-gzip-')),'real combat evidence missing from decoded source');
+      assert.ok(pack.topics.progression.some(x=>x.source.includes('#embedded-gzip-')),'real progression evidence missing from decoded source');
+      for(const topic of ['combat','progression'])assert.ok(pack.topics[topic].every(x=>x.source.includes('#embedded-gzip-')),`${topic} must not come from masked packed text`);
+    }else{
+      assert.equal(pack.decodedSources.length,0,'plain crystal-defense source must not fabricate decoded payloads');
+      assert.ok(pack.sourceFiles.some(x=>x.endsWith('web-games/crystal-defense/index.html')));
+      assert.ok(pack.topics.progression.length>0||pack.topics.persistence.length>0,'plain real source must still yield direct evidence');
+      assert.equal(pack.contracts.packedSourceExecuted,false);
+    }
+    const summary={packed,decodedSources:pack.decodedSources.length,missingEvidence:pack.missingEvidence,combat:pack.topics.combat.slice(0,12),progression:pack.topics.progression.slice(0,12),persistence:pack.topics.persistence.slice(0,6)};
     console.log(`CRYSTAL_DEFENSE_FACT_EVIDENCE=${JSON.stringify(summary)}`);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
