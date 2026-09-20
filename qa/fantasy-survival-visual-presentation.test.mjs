@@ -265,3 +265,35 @@ test('boss reward audio is presentation-only and preserves existing reward owner
   assert.match(labBoss,/playRewardAudio\('boss'\)/);
   assert.match(source,/jaewoon_fantasy_survival_v1/);
 });
+
+test('polish adds presentation-only hit-stop recoil and settle without pausing gameplay authority',()=>{
+  const enemy=functionBody('fantasyEnemyAttackPose');
+  assert.match(enemy,/hitStop=attackElapsed>=0&&attackElapsed<40\?1:0/);
+  assert.match(enemy,/recoil=attackElapsed>=40&&attackElapsed<150/);
+  assert.match(enemy,/recovery=attackElapsed>=80&&attackElapsed<360/);
+  assert.match(enemy,/hitElapsed<35\?1:Math\.max\(0,1-\(hitElapsed-35\)\/75\)/);
+  assert.doesNotMatch(enemy,/e\.(?:attackAt|nextAttackAt|hitAt|hp|x|y)\s*=/);
+  const player=functionBody('fantasyPlayerAttackPose');
+  assert.match(player,/hitStop=attackElapsed>=0&&attackElapsed<35\?1:0/);
+  assert.match(player,/recoil=attackElapsed>=35&&attackElapsed<115/);
+  assert.match(player,/recovery=attackElapsed>=65&&attackElapsed<150/);
+  assert.doesNotMatch(player,/p\.(?:attackAt|attackFx|invuln|hp|x|y)\s*=/);
+});
+
+test('camera impact response holds the same short presentation window while preserving mobile readability caps',()=>{
+  const camera=functionBody('updateCameraPresentation');
+  assert.match(camera,/attackElapsed>=0&&attackElapsed<35\?1/);
+  assert.match(camera,/hitElapsed>=0&&hitElapsed<40\?1/);
+  assert.match(camera,/shakeCap=mobile\?3\.2:5\.2/);
+  assert.doesNotMatch(camera,/p\.(?:attackAt|attackFx|invuln|hp|x|y)\s*=/);
+});
+
+test('hit-stop polish keeps frame work bounded and avoids transient queues or timers',()=>{
+  for(const name of ['fantasyEnemyAttackPose','fantasyPlayerAttackPose','updateCameraPresentation']){
+    const body=functionBody(name);
+    assert.doesNotMatch(body,/push\(|splice\(|new Array|setTimeout\(|setInterval\(/);
+  }
+  assert.match(source,/playCombatAudio\('hit',audioWeight\)/);
+  assert.match(functionBody('drawEnemyCombatVfx'),/e\.hitAt/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+});
