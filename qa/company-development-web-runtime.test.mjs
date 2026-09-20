@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
-import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
+import {deriveApprovedScopeInventory,approvedScopeRequirement,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
@@ -94,6 +94,13 @@ test('scope contract requires concrete mechanic bindings and diversity',()=>{
   const verdict=staticApprovedScopeCoverage(proxy,inventory);
   assert.equal(verdict.pass,false);
   assert.ok(verdict.blockers.includes('APPROVED_SCOPE_MECHANIC_BINDING_MISSING:scope-a'));
+});
+
+test('mobile button layout is not misclassified as tower placement',()=>{
+  const mobile={id:'mobile',path:'mobileUx',label:"한 손 조작 세로형 레이아웃에서 화면 하단의 전진 버튼과 탈출 버튼을 배치한다."};
+  const tower={id:'tower',path:'coreLoop[0]',label:'위협 경로에 맞춰 타워를 배치한다.'};
+  assert.equal(approvedScopeRequirement(mobile),'STATE_CHANGE');
+  assert.equal(approvedScopeRequirement(tower),'TOWER_PLACEMENT');
 });
 
 test('tower placement scope requires a real position input and placement result',()=>{

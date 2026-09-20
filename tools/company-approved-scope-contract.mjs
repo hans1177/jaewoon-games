@@ -61,7 +61,7 @@ function interactiveScopeControl(control){
 }
 export function approvedScopeRequirement(item={}){
   const path=clean(item.path),text=`${path} ${clean(item.label)}`.toLowerCase();
-  if(!/^corefun$/i.test(path)&&/(place\s+(?:a\s+)?(?:tower|defender)|tower\s+placement|position\s+(?:a\s+)?tower|배치|설치\s*위치|타워\s*위치)/i.test(text))return'TOWER_PLACEMENT';
+  if(!/^corefun$/i.test(path)&&/(place\s+(?:a\s+)?(?:tower|defender)|tower\s+placement|position\s+(?:a\s+)?tower|(?:타워|포탑|방어\s*유닛|수비\s*유닛).{0,24}(?:배치|설치|위치)|(?:배치|설치).{0,24}(?:타워|포탑|방어\s*유닛|수비\s*유닛))/i.test(text))return'TOWER_PLACEMENT';
   if(/adapt|tactical\s+change|strategic\s+choice|different\s+choice|선택에\s*따른|전략\s*선택|전술\s*변경|대응\s*선택/i.test(text))return'STRATEGIC_CHOICE';
   if(!/^corefun$/i.test(path)&&/(interact|interaction|talk|speak|npc|object|pickup|pick\s*up|open|activate|use\s+(?:the\s+)?(?:object|item)|상호작용|대화|엔피시|npc|사물|오브젝트|줍|열기|작동|사용)/i.test(text))return'ENTITY_INTERACTION';
   if(!/^corefun$/i.test(path)&&/(map|world|area|zone|route|path|explor|move|reposition|collision|맵|월드|세계|구역|지역|경로|탐험|이동|위치|충돌)/i.test(text))return'SPATIAL_WORLD';
