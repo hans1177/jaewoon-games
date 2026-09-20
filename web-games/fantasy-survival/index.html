@@ -311,6 +311,10 @@ function pointInWorldTree(x,y){return pointInPoly(x,y,WORLD_TREE_POLY)}
 function pointInRect(x,y,r){return x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h}
 function pointInVolcano(x,y){return pointInPoly(x,y,VOLCANO_POLY)}
 function pointInCrystalRegion(x,y){return pointInRect(x,y,CRYSTAL_REGION)}
+function pointInJungle(x,y){return pointInRect(x,y,JUNGLE_REGION)}
+function pointInJungleLake(x,y){return JUNGLE_LAKES.some(l=>dist(x,y,l.x,l.y)<=l.r)}
+function randomJunglePoint(margin=120){let x,y,tries=0;do{x=rand(JUNGLE_REGION.x+margin,JUNGLE_REGION.x+JUNGLE_REGION.w-margin);y=rand(JUNGLE_REGION.y+margin,JUNGLE_REGION.y+JUNGLE_REGION.h-margin);tries++}while(pointInJungleLake(x,y)&&tries<80);return{x,y}}
+function randomPoisonStonePoint(){const p=randomJunglePoint(500);return{x:p.x,y:p.y}}
 function pointInGiantLakeSurface(x,y){return pointInRect(x,y,GIANT_LAKE_SURFACE)}
 function pointInGiantLakeWater(x,y){return pointInRect(x,y,GIANT_LAKE_WATER)}
 function randomLakeShorePoint(){return{x:rand(1200,13200),y:rand(1640,1940)}}
@@ -324,6 +328,7 @@ function randomVolcanoPoint(zone='volcano'){
  let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
 function regionAt(x,y){
+ if(pointInJungle(x,y))return'jungle';
  if(pointInCrystalRegion(x,y))return'crystal';
  if(pointInGiantLakeSurface(x,y))return'giantlake';
  if(pointInWorldTree(x,y))return'worldtree';
@@ -487,28 +492,40 @@ function discoverRegion(){
   checkAchievementProgress(true)
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11550,14320);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
-function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else if(kind==='essence'){const p=randomCrystalPoint(140);x=p.x;y=p.y}else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y))}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInGiantLakeWater(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
+function makeNode(kind,i){
+ let x,y;
+ if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}
+ else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}
+ else if(kind==='essence'){const p=randomCrystalPoint(140);x=p.x;y=p.y}
+ else if(kind==='poisonstone'){const p=randomPoisonStonePoint();x=p.x;y=p.y}
+ else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInJungle(x,y))}
+ else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y))}
+ const maxHp=kind==='poisonstone'?10:kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;
+ return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}
+}
 function spawnCreature(type,index=0,anchor=null,packId=null){
  let x,y;
  if(type.underwater){const p=randomUnderwaterPoint();x=p.x;y=p.y}
+ else if(type.jungle){const p=randomJunglePoint();x=p.x;y=p.y}
  else if(type.lakeZone){const p=randomLakeShorePoint();x=p.x;y=p.y}
  else if(type.crystalZone){const p=randomCrystalPoint(120);x=p.x;y=p.y}
  else if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}
  else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}
  else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11560,14320);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}
- else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y))&&tries<300)}
- else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}
- return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}
+ else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)||pointInJungle(x,y))&&tries<300)}
+ else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)||pointInJungle(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}
+ return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,slowedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}
 }
-function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
+function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,slowedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
 function initWorld(){
-  state.trees=Array.from({length:420},(_,i)=>makeNode('tree',i));
-  state.rocks=Array.from({length:340},(_,i)=>makeNode('rock',i));
-  state.fibers=Array.from({length:440},(_,i)=>makeNode('fiber',i));
+  state.trees=Array.from({length:840},(_,i)=>makeNode('tree',i));
+  state.rocks=Array.from({length:680},(_,i)=>makeNode('rock',i));
+  state.fibers=Array.from({length:880},(_,i)=>makeNode('fiber',i));
   state.irons=Array.from({length:19},(_,i)=>makeNode('iron',i));
   state.golds=Array.from({length:13},(_,i)=>makeNode('gold',i));
   state.essences=Array.from({length:28},(_,i)=>makeNode('essence',i));
-  state.carrots=Array.from({length:180},(_,i)=>makeNode('carrot',i));
+  state.carrots=Array.from({length:360},(_,i)=>makeNode('carrot',i));
+  state.poisonStones=Array.from({length:5},(_,i)=>makeNode('poisonstone',i));
   state.enemies=[];
   const counts={mossboar:18,goblin:18,shadowwolf:15,fairy:8};
   for(const [id,count] of Object.entries(counts))for(let i=0;i<count;i++)state.enemies.push(spawnCreature(creatures[id],i));
@@ -573,6 +590,11 @@ function initWorld(){
   {const e=spawnAt(creatures.lakecroc,10400,1880,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
   for(const p of [{x:5200,y:1700},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   for(let i=0;i<6;i++){const p={x:2200+i*2450,y:650+(i%3)*720};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
+  // 밀림 생태계
+  for(let i=0;i<8;i++)state.enemies.push(spawnCreature(creatures.giantleech,i));
+  for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.gorilla,i));
+  for(let i=0;i<6;i++)state.enemies.push(spawnCreature(creatures.mudwalker,i));
+  {const lake=JUNGLE_LAKES[Math.floor(Math.random()*JUNGLE_LAKES.length)],a=rand(0,Math.PI*2),rr=lake.r+100;state.enemies.push(spawnAt(creatures.anaconda,lake.x+Math.cos(a)*rr,lake.y+Math.sin(a)*rr,null))}
 }
 function item(id){return recipes.find(r=>r.id===id)}
 function nameOf(id,fallback='없음'){return item(id)?.name||fallback}
@@ -1045,19 +1067,19 @@ function receiveGiftItem(payload){
 function openMap(){if(!state.player.map){showNotice('제작대에서 지도를 먼저 만들어');return}state.panelMode='map';ui.sheet.classList.add('open');renderMap()}function closeSheet(){ui.sheet.classList.remove('open')}
 function gather(){
  const p=state.player;if(performance.now()<(p.stunnedUntil||0)){showNotice('기절 중');return}if(state.area!=='surface'){showNotice('지하에는 채집할 자원이 없어');return}
- let best=null,bestD=92;
- for(const n of [...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.carrots]){if(n.dead)continue;const d=dist(p.x,p.y,n.x,n.y);if(d<bestD){best=n;bestD=d}}
+ let best=null,bestD=110;
+ for(const n of [...state.trees,...state.rocks,...state.fibers,...state.irons,...state.golds,...state.essences,...state.carrots,...state.poisonStones]){if(n.dead)continue;const d=dist(p.x,p.y,n.x,n.y);if(d<bestD){best=n;bestD=d}}
  if(!best){showNotice('자원 가까이 가');return}
  const tool=item(p.tool);
  if(best.kind==='iron'&&!['stone-pick','iron-pick','gold-pick'].includes(p.tool)){showNotice('철은 곡괭이가 필요해');return}
  if(best.kind==='gold'&&p.tool!=='iron-pick'){showNotice('화산 금은 철 곡괭이로만 캘 수 있어');return}
+ if(best.kind==='poisonstone'&&p.tool!=='gold-pick'){showNotice('독점석은 금 곡괭이로만 캘 수 있어');return}
  if(best.kind==='essence'&&!(p.weapon==='iron-axe'||p.tool==='gold-axe')){showNotice('정수는 철도끼나 금도끼로만 캘 수 있어');return}
- let amount=1;
- if(tool?.target===best.kind)amount=tool.mult;
- if(best.kind==='iron')amount=1;
+ let amount=1;if(tool?.target===best.kind)amount=tool.mult;if(best.kind==='iron'||best.kind==='poisonstone')amount=1;
  best.hp--;
- if(best.kind==='tree')p.wood+=amount;else if(best.kind==='rock')p.stone+=amount;else if(best.kind==='fiber')p.fiber+=amount;else if(best.kind==='iron')p.ironOre+=amount;else if(best.kind==='gold')p.goldOre+=amount;else if(best.kind==='essence')p.essence+=1;else if(best.kind==='carrot')addInv('carrot',1);if(best.kind!=='carrot')rememberMaterial({tree:'wood',rock:'stone',fiber:'fiber',iron:'ironOre',gold:'goldOre',essence:'essence'}[best.kind]);
- if(best.hp<=0){best.dead=true;best.respawnAt=performance.now()+RESOURCE_RESPAWN_MS}
+ if(best.kind==='tree')p.wood+=amount;else if(best.kind==='rock')p.stone+=amount;else if(best.kind==='fiber')p.fiber+=amount;else if(best.kind==='iron')p.ironOre+=amount;else if(best.kind==='gold')p.goldOre+=amount;else if(best.kind==='essence')p.essence+=1;else if(best.kind==='carrot')addInv('carrot',1);else if(best.kind==='poisonstone')addMaterial('monopolyStone',1);
+ if(!['carrot','poisonstone'].includes(best.kind))rememberMaterial({tree:'wood',rock:'stone',fiber:'fiber',iron:'ironOre',gold:'goldOre',essence:'essence'}[best.kind]);
+ if(best.hp<=0){best.dead=true;best.respawnAt=performance.now()+RESOURCE_RESPAWN_MS;showNotice(best.kind==='poisonstone'?'독점석 광맥 고갈 · 독가스가 사라졌다':'자원 채집 완료')}
  state.dirty=true;updateHud();renderPanel()
 }
 function currentWeapon(){return item(state.player.weapon)}function currentDamage(){const base=(currentWeapon()?.power||0)+(item(state.player.armor)?.bonusDamage||0);return base*(performance.now()<(state.player.weakenedUntil||0)?.5:1)}function currentRange(){return currentWeapon()?.range||0}function currentCooldown(){return currentWeapon()?.cooldown||380}
@@ -2316,11 +2338,12 @@ function drawQuestDarkness(){
  ctx.restore()
 }
 function drawNode(n,cx,cy){
- const x=n.x-cx,y=n.y-cy;if(x<-40||y<-40||x>innerWidth+40||y>innerHeight+40)return;
+ const x=n.x-cx,y=n.y-cy;if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)return;
  if(n.kind==='tree'){ctx.fillStyle='#6f4f32';ctx.fillRect(x-5,y,10,28);ctx.fillStyle='#4e8f58';ctx.beginPath();ctx.arc(x,y-8,21,0,Math.PI*2);ctx.fill()}
  else if(n.kind==='rock'){ctx.fillStyle='#95a4a5';ctx.beginPath();ctx.moveTo(x-18,y+12);ctx.lineTo(x-12,y-12);ctx.lineTo(x+7,y-18);ctx.lineTo(x+20,y+8);ctx.closePath();ctx.fill()}
  else if(n.kind==='iron'){ctx.fillStyle='#59646b';ctx.beginPath();ctx.moveTo(x-18,y+13);ctx.lineTo(x-10,y-15);ctx.lineTo(x+8,y-19);ctx.lineTo(x+20,y+9);ctx.closePath();ctx.fill();ctx.fillStyle='#c1d0d8';ctx.fillRect(x-7,y-7,6,5);ctx.fillRect(x+5,y+1,7,5)}
  else if(n.kind==='gold'){ctx.fillStyle='#6f4b2d';ctx.beginPath();ctx.moveTo(x-20,y+13);ctx.lineTo(x-12,y-17);ctx.lineTo(x+9,y-20);ctx.lineTo(x+22,y+9);ctx.closePath();ctx.fill();ctx.fillStyle='#f5c84c';ctx.fillRect(x-8,y-8,8,7);ctx.fillRect(x+5,y+2,9,6)}
+ else if(n.kind==='poisonstone'){ctx.fillStyle='rgba(94,180,74,.16)';ctx.beginPath();ctx.arc(x,y,78,0,Math.PI*2);ctx.fill();ctx.fillStyle='#405d35';ctx.beginPath();ctx.moveTo(x-38,y+25);ctx.lineTo(x-27,y-28);ctx.lineTo(x+12,y-42);ctx.lineTo(x+42,y+18);ctx.closePath();ctx.fill();ctx.fillStyle='#9be35e';ctx.fillRect(x-16,y-13,13,10);ctx.fillRect(x+9,y+4,15,11);ctx.fillStyle='#d5f6bd';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText('독점석 '+n.hp+'/10',x,y+52)}
  else if(n.kind==='essence'){ctx.fillStyle='#a98cff';ctx.beginPath();ctx.moveTo(x,y-24);ctx.lineTo(x+16,y);ctx.lineTo(x,y+25);ctx.lineTo(x-16,y);ctx.closePath();ctx.fill();ctx.strokeStyle='#e5dcff';ctx.lineWidth=2;ctx.stroke()}
  else if(n.kind==='carrot'){ctx.fillStyle='#e78b31';ctx.beginPath();ctx.moveTo(x,y+15);ctx.lineTo(x-8,y-8);ctx.lineTo(x+8,y-8);ctx.closePath();ctx.fill();ctx.strokeStyle='#70a956';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x,y-8);ctx.lineTo(x-7,y-20);ctx.moveTo(x,y-8);ctx.lineTo(x+8,y-19);ctx.stroke()}
  else{ctx.strokeStyle='#76b96f';ctx.lineWidth=3;for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(x,y+13);ctx.quadraticCurveTo(x+i*6,y,x+i*7,y-13);ctx.stroke()}}
