@@ -72,6 +72,7 @@ jobs:
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
       neuron_ready: ${{ steps.batch.outputs.neuron_ready }}
+      execution_lane: ${{ steps.batch.outputs.execution_lane }}
     steps:
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
@@ -410,6 +411,7 @@ jobs:
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           fs.appendFileSync(out,`neuron_ready=${fs.existsSync('/tmp/vibe2-micro-fanin.json')?'YES':'NO'}\n`);
+          fs.appendFileSync(out,`execution_lane=${process.env.VIBE2_EXECUTION_LANE||'game-primary'}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
@@ -1329,7 +1331,7 @@ jobs:
 
   micro_finalize:
     needs: reserve
-    if: needs.reserve.outputs.neuron_ready == 'YES' && env.VIBE2_EXECUTION_LANE == 'game-primary'
+    if: needs.reserve.outputs.neuron_ready == 'YES' && needs.reserve.outputs.execution_lane == 'game-primary'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     concurrency:
