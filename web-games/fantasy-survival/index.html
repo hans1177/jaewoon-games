@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=31,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=32,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -120,6 +120,20 @@ const recipes=[
 {id:'cooked-deer-meat',name:'구운 사슴고기',where:'smelt',cost:{},desc:'밥 게이지 +50',kind:'consumable',hunger:50},
 {id:'cooked-bug-meat',name:'구운 벌레고기',where:'smelt',cost:{},desc:'밥 게이지 +65',kind:'consumable',hunger:65},
 {id:'firewolf-cooked-meat',name:'화염늑대 구운고기',where:'loot',cost:{},desc:'이미 익은 고기 · 밥 게이지 +50',kind:'consumable',hunger:50},
+{id:'forest-hare-meat',name:'숲토끼고기',where:'loot',cost:{},desc:'일반지역의 숲토끼 고기 · 요리대 재료',kind:'ingredient'},
+{id:'world-bird-meat',name:'세계수 꿩고기',where:'loot',cost:{},desc:'세계수 지역의 꿩고기 · 요리대 재료',kind:'ingredient'},
+{id:'canyon-lizard-meat',name:'협곡도마뱀고기',where:'loot',cost:{},desc:'협곡 도마뱀 고기 · 요리대 재료',kind:'ingredient'},
+{id:'crystal-goat-meat',name:'수정염소고기',where:'loot',cost:{},desc:'수정 지역의 염소 고기 · 요리대 재료',kind:'ingredient'},
+{id:'worldtree-greens',name:'세계수 잎채소',where:'loot',cost:{},desc:'세계수 꿩이 함께 떨어뜨리는 채소 · 요리대 재료',kind:'ingredient'},
+{id:'meal-hare-roast',name:'숲토끼 통구이',where:'meal',cost:{},desc:'밥 +50 · 초당 체력 8 회복 · 3초',kind:'consumable',hunger:50,foodRegen:8,foodRegenSeconds:3},
+{id:'meal-worldbird-roast',name:'세계수 꿩구이',where:'meal',cost:{},desc:'밥 +60 · 초당 체력 10 회복 · 3초',kind:'consumable',hunger:60,foodRegen:10,foodRegenSeconds:3},
+{id:'meal-canyon-roast',name:'협곡 도마뱀구이',where:'meal',cost:{},desc:'밥 +65 · 초당 체력 12 회복 · 3초',kind:'consumable',hunger:65,foodRegen:12,foodRegenSeconds:3},
+{id:'meal-crystal-roast',name:'수정염소 스테이크',where:'meal',cost:{},desc:'밥 +75 · 초당 체력 15 회복 · 4초',kind:'consumable',hunger:75,foodRegen:15,foodRegenSeconds:4},
+{id:'meal-worldtree-greens',name:'세계수 채소찜',where:'meal',cost:{},desc:'밥 +35 · 초당 체력 6 회복 · 3초',kind:'consumable',hunger:35,foodRegen:6,foodRegenSeconds:3},
+{id:'meal-hare-greens',name:'토끼고기 잎채소 스튜',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 15 회복 · 4초',kind:'consumable',hunger:70,foodRegen:15,foodRegenSeconds:4},
+{id:'meal-worldbird-greens',name:'세계수 꿩 잎쌈',where:'meal',cost:{},desc:'밥 +80 · 초당 체력 18 회복 · 4초',kind:'consumable',hunger:80,foodRegen:18,foodRegenSeconds:4},
+{id:'meal-canyon-greens',name:'협곡 고기 채소볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 20 회복 · 4초',kind:'consumable',hunger:85,foodRegen:20,foodRegenSeconds:4},
+{id:'meal-crystal-greens',name:'수정염소 채소전골',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
 {id:'meal-carrot-carrot',name:'당근 샐러드',where:'meal',cost:{},desc:'밥 +30 · 초당 체력 5 회복 · 3초',kind:'consumable',hunger:30,foodRegen:5,foodRegenSeconds:3},
 {id:'meal-carrot-deer',name:'사슴 고기 볶음',where:'meal',cost:{},desc:'밥 +70 · 초당 체력 20 회복 · 3초',kind:'consumable',hunger:70,foodRegen:20,foodRegenSeconds:3},
 {id:'meal-carrot-bug',name:'벌레고기 당근 볶음',where:'meal',cost:{},desc:'밥 +85 · 초당 체력 15 회복 · 4초',kind:'consumable',hunger:85,foodRegen:15,foodRegenSeconds:4},
@@ -131,7 +145,7 @@ const recipes=[
 {id:'meal-bug-firewolf',name:'화염 벌레구이',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 25 회복 · 5초',kind:'consumable',hunger:100,foodRegen:25,foodRegenSeconds:5},
 {id:'meal-firewolf-firewolf',name:'화염 고기 만찬',where:'meal',cost:{},desc:'밥 +100 · 초당 체력 30 회복 · 5초',kind:'consumable',hunger:100,foodRegen:30,foodRegenSeconds:5}
 ];
-const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat'];
+const FOOD_BASE_IDS=['carrot','cooked-deer-meat','cooked-bug-meat','firewolf-cooked-meat','forest-hare-meat','world-bird-meat','canyon-lizard-meat','crystal-goat-meat','worldtree-greens'];
 const COOKING_COMBOS={
  'carrot|carrot':'meal-carrot-carrot',
  'carrot|cooked-deer-meat':'meal-carrot-deer',
@@ -142,7 +156,16 @@ const COOKING_COMBOS={
  'cooked-deer-meat|firewolf-cooked-meat':'meal-deer-firewolf',
  'cooked-bug-meat|cooked-bug-meat':'meal-bug-bug',
  'cooked-bug-meat|firewolf-cooked-meat':'meal-bug-firewolf',
- 'firewolf-cooked-meat|firewolf-cooked-meat':'meal-firewolf-firewolf'
+ 'firewolf-cooked-meat|firewolf-cooked-meat':'meal-firewolf-firewolf',
+ 'forest-hare-meat|forest-hare-meat':'meal-hare-roast',
+ 'world-bird-meat|world-bird-meat':'meal-worldbird-roast',
+ 'canyon-lizard-meat|canyon-lizard-meat':'meal-canyon-roast',
+ 'crystal-goat-meat|crystal-goat-meat':'meal-crystal-roast',
+ 'worldtree-greens|worldtree-greens':'meal-worldtree-greens',
+ 'forest-hare-meat|worldtree-greens':'meal-hare-greens',
+ 'world-bird-meat|worldtree-greens':'meal-worldbird-greens',
+ 'canyon-lizard-meat|worldtree-greens':'meal-canyon-greens',
+ 'crystal-goat-meat|worldtree-greens':'meal-crystal-greens'
 };
 function foodComboKey(a,b){return[a,b].sort().join('|')}
 const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
@@ -151,7 +174,7 @@ const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor']);
 function itemTier(id){return ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe']);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:1500,dmg:50,speed:62,r:40,color:'#3a1728',detect:700,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -172,7 +195,12 @@ crystalfiresnake:{id:'crystalfiresnake',name:'수정 화염 뱀',mood:'aggressiv
 crystalibex:{id:'crystalibex',name:'수정 산양',mood:'aggressive',hp:360,dmg:36,speed:80,r:24,color:'#a58ddd',detect:520,attackCooldown:950,crystalVariant:true,sealSpawn:true},
 shadowwolfleader:{id:'shadowwolfleader',name:'그림자 늑대 우두머리',mood:'aggressive',hp:250,dmg:30,speed:96,r:25,color:'#363b52',detect:760,attackCooldown:1000,caveLeader:true},
 crystalfiregolem:{id:'crystalfiregolem',name:'수정 화염골렘',mood:'aggressive',hp:560,dmg:30,speed:54,r:38,color:'#8b4fc2',detect:1100,attackCooldown:1200,labBoss:true},
-vampirebat:{id:'vampirebat',name:'거대 흡혈 박쥐',mood:'aggressive',hp:190,dmg:35,speed:118,r:21,color:'#5c314d',detect:720,attackCooldown:1000,vampireBat:true}};
+vampirebat:{id:'vampirebat',name:'거대 흡혈 박쥐',mood:'aggressive',hp:190,dmg:35,speed:118,r:21,color:'#5c314d',detect:720,attackCooldown:1000,vampireBat:true},
+foresthare:{id:'foresthare',name:'숲토끼',mood:'harmless',hp:55,dmg:0,speed:86,r:16,color:'#b79a77',detect:0,huntable:true,foodDrop:'forest-hare-meat'},
+worldpheasant:{id:'worldpheasant',name:'세계수 꿩',mood:'harmless',hp:70,dmg:0,speed:80,r:17,color:'#6e9b62',detect:0,worldtree:true,huntable:true,foodDrop:'world-bird-meat',vegetableDrop:'worldtree-greens'},
+canyonlizard:{id:'canyonlizard',name:'협곡도마뱀',mood:'neutral',hp:105,dmg:12,speed:72,r:18,color:'#9c7b55',detect:390,attackCooldown:1100,canyon:true,foodDrop:'canyon-lizard-meat'},
+crystalgoat:{id:'crystalgoat',name:'수정염소',mood:'neutral',hp:135,dmg:16,speed:70,r:20,color:'#a58ddd',detect:420,attackCooldown:1100,crystalZone:true,foodDrop:'crystal-goat-meat'}
+};
 const DROP_MATERIAL_NAMES={
  mossTusk:'이끼멧돼지 엄니',stoneCore:'돌정령 핵',goblinCharm:'고블린 부적',wolfHide:'늑대가죽',
  ironSpiritCore:'철 정령 핵',bearClaw:'곰발톱',bearHide:'곰가죽',bearFang:'곰이빨',
@@ -182,7 +210,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},bookCategory:'neutral',dirty:false};
 let noticeTimer=0,autosave=0,lastWorldTap={target:null,at:0};
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 function pointInPoly(x,y,poly=CANYON_POLY){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y,hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(hit)inside=!inside}return inside}
@@ -202,113 +230,55 @@ function regionAt(x,y){if(pointInCrystalRegion(x,y))return'crystal';if(pointInWo
 
 const MUSIC_TRACK_SECONDS=180;
 const MUSIC_THEMES={
- forest:{bpm:112,mode:'major',root:146.83,progression:[0,5,3,4,0,2,5,4],riff:[0,2,4,5,4,2,1,2,4,6,5,4,2,1,0,-1],drive:.34,brightness:1650},
- canyon:{bpm:108,mode:'minor',root:130.81,progression:[0,3,5,4,0,6,3,4],riff:[0,2,3,5,3,2,0,-1,0,3,5,6,5,3,2,0],drive:.42,brightness:1350},
- worldtree:{bpm:104,mode:'major',root:138.59,progression:[0,4,5,3,0,2,4,5],riff:[0,2,4,6,5,4,2,0,1,3,5,7,6,5,3,2],drive:.28,brightness:1900},
- volcano:{bpm:86,mode:'minor',root:98,progression:[0,1,5,0,6,1,4,0],riff:[0,1,3,2,0,-2,-1,0,3,1,0,-2,-3,-1,0,1],drive:.58,brightness:820,ominous:true},
- crystal:{bpm:110,mode:'major',root:155.56,progression:[0,2,5,4,0,6,3,5],riff:[0,2,5,4,2,1,3,5,6,5,3,2,4,2,1,0],drive:.36,brightness:2050},
- underground:{bpm:92,mode:'minor',root:110,progression:[0,5,3,6,0,4,1,5],riff:[0,2,3,1,0,-1,-3,-1,0,3,2,0,-2,-1,1,0],drive:.40,brightness:950,ominous:true},
- questcave:{bpm:88,mode:'minor',root:103.83,progression:[0,3,1,5,0,6,4,1],riff:[0,1,3,5,3,1,0,-2,-1,2,4,3,1,0,-1,-3],drive:.38,brightness:760,ominous:true},
- battle:{bpm:148,mode:'minor',root:110,progression:[0,5,6,4,0,3,5,6],riff:[0,0,3,5,6,5,3,0,0,2,3,5,3,2,0,-2],drive:.82,brightness:1850,guitar:true},
- boss:{bpm:132,mode:'minor',root:82.41,progression:[0,1,6,5,0,3,1,6],riff:[0,3,5,6,5,3,1,0,-2,1,3,5,6,3,1,-2],drive:.9,brightness:1250,guitar:true,ominous:true}
+ forest:{bpm:82,mode:'major',root:146.83,progression:[0,4,5,3,0,2,4,5],riff:[0,2,4,2,5,4,2,1],style:'forest'},
+ canyon:{bpm:70,mode:'minor',root:110,progression:[0,3,5,1,0,6,3,4],riff:[0,2,3,1,-1,2,0,-2],style:'canyon'},
+ worldtree:{bpm:64,mode:'major',root:130.81,progression:[0,5,3,4,0,2,5,3],riff:[0,4,2,5,4,2,6,4],style:'worldtree'},
+ volcano:{bpm:76,mode:'minor',root:82.41,progression:[0,1,5,0,6,1,4,0],riff:[0,-1,2,0,-3,1,0,-2],style:'volcano'},
+ crystal:{bpm:72,mode:'major',root:174.61,progression:[0,2,5,4,0,6,3,5],riff:[0,5,2,6,4,1,5,3],style:'crystal'},
+ underground:{bpm:62,mode:'minor',root:98,progression:[0,5,3,6,0,4,1,5],riff:[0,-2,1,-1,3,0,-3,1],style:'underground'},
+ questcave:{bpm:66,mode:'minor',root:92.5,progression:[0,3,1,5,0,6,4,1],riff:[0,1,-2,3,1,-1,2,-3],style:'questcave'},
+ battle1:{bpm:138,mode:'minor',root:110,progression:[0,5,6,4,0,3,5,6],riff:[0,3,5,3,6,5,3,0],style:'battle1'},
+ battle2:{bpm:154,mode:'minor',root:123.47,progression:[0,3,6,5,0,4,6,3],riff:[0,2,5,6,3,5,1,4],style:'battle2'},
+ battle3:{bpm:122,mode:'minor',root:98,progression:[0,1,5,3,0,6,4,1],riff:[0,5,3,1,6,4,2,0],style:'battle3'},
+ boss:{bpm:118,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,3,5,1,6,3,1,-2],style:'boss'}
 };
-const music={ctx:null,master:null,started:false,enabled:true,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null};
+const music={ctx:null,master:null,started:false,enabled:true,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,battleActive:false,battleTheme:null};
 function ensureMusicStarted(){
- if(!music.enabled)return;
- const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
- if(!music.ctx){
-  music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=.48;music.master.connect(music.ctx.destination);
-  const len=Math.max(1,Math.floor(music.ctx.sampleRate*.35)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);
-  for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf
- }
- if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});
- music.started=true;if(!music.nextAt){music.nextAt=music.ctx.currentTime+.03;music.trackStart=music.ctx.currentTime}
+ if(!music.enabled)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ if(!music.ctx){music.ctx=new AC();music.master=music.ctx.createGain();music.master.gain.value=.48;music.master.connect(music.ctx.destination);const len=Math.max(1,Math.floor(music.ctx.sampleRate*.5)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf}
+ if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});music.started=true;if(!music.nextAt){music.nextAt=music.ctx.currentTime+.03;music.trackStart=music.ctx.currentTime}
 }
-function scaleFreq(root,degree,minor=false,oct=0){
- const major=[0,2,4,5,7,9,11],min=[0,2,3,5,7,8,10],scale=minor?min:major;
- let d=degree,shift=0;while(d<0){d+=7;shift--}while(d>=7){d-=7;shift++}
- return root*Math.pow(2,(scale[d]+12*(shift+oct))/12)
-}
-function guitarVoice(freq,at,dur,drive=.5,brightness=1500){
- if(!music.ctx)return;
- const o=music.ctx.createOscillator(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter(),sh=music.ctx.createWaveShaper();
- const curve=new Float32Array(256);for(let i=0;i<curve.length;i++){const x=i*2/(curve.length-1)-1;curve[i]=Math.tanh(x*(1.3+drive*3.8))}
- sh.curve=curve;sh.oversample='2x';o.type='sawtooth';o.frequency.setValueAtTime(freq,at);
- f.type='lowpass';f.frequency.setValueAtTime(brightness,at);f.Q.value=.7;
- g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(.06+drive*.025,at+.012);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
- o.connect(sh);sh.connect(f);f.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.04)
-}
-function bassVoice(freq,at,dur,gain=.05){
- if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();
- o.type='sawtooth';o.frequency.setValueAtTime(freq,at);f.type='lowpass';f.frequency.value=430;
- g.gain.setValueAtTime(.0001,at);g.gain.exponentialRampToValueAtTime(gain,at+.018);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
- o.connect(f);f.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.03)
-}
-function drumKick(at,strong=false){
- if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain();
- o.type='sine';o.frequency.setValueAtTime(strong?135:110,at);o.frequency.exponentialRampToValueAtTime(48,at+.15);
- g.gain.setValueAtTime(strong?.11:.075,at);g.gain.exponentialRampToValueAtTime(.0001,at+.18);o.connect(g);g.connect(music.master);o.start(at);o.stop(at+.2)
-}
-function drumSnare(at){
- if(!music.ctx||!music.noise)return;const s=music.ctx.createBufferSource(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();
- s.buffer=music.noise;f.type='highpass';f.frequency.value=1300;g.gain.setValueAtTime(.045,at);g.gain.exponentialRampToValueAtTime(.0001,at+.12);
- s.connect(f);f.connect(g);g.connect(music.master);s.start(at);s.stop(at+.13)
-}
-function cymbal(at,gain=.018){
- if(!music.ctx||!music.noise)return;const s=music.ctx.createBufferSource(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();
- s.buffer=music.noise;f.type='highpass';f.frequency.value=5200;g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+.06);
- s.connect(f);f.connect(g);g.connect(music.master);s.start(at);s.stop(at+.07)
-}
+function scaleFreq(root,degree,minor=false,oct=0){const major=[0,2,4,5,7,9,11],min=[0,2,3,5,7,8,10],scale=minor?min:major;let d=degree,shift=0;while(d<0){d+=7;shift--}while(d>=7){d-=7;shift++}return root*Math.pow(2,(scale[d]+12*(shift+oct))/12)}
+function smoothVoice(freq,at,dur,gain=.035,wave='sine',filterHz=1600,attack=.06){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();o.type=wave;o.frequency.setValueAtTime(freq,at);f.type='lowpass';f.frequency.value=filterHz;f.Q.value=.5;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+Math.min(attack,dur*.35));g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(f);f.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.04)}
+function padVoice(freq,at,dur,gain=.026,filterHz=1200){if(!music.ctx)return;const g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=filterHz;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+.35);g.gain.setValueAtTime(gain,Math.max(at+.36,at+dur-.45));g.gain.linearRampToValueAtTime(.0001,at+dur);f.connect(g);g.connect(music.master);for(const det of [-7,7]){const o=music.ctx.createOscillator();o.type=det<0?'sine':'triangle';o.frequency.setValueAtTime(freq,at);o.detune.value=det;o.connect(f);o.start(at);o.stop(at+dur+.05)}}
+function glassVoice(freq,at,dur=.9,gain=.022){if(!music.ctx)return;for(const [mul,g] of [[1,gain],[2.01,gain*.32],[3.98,gain*.12]])smoothVoice(freq*mul,at,dur,g,'sine',4200,.015)}
+function noiseBrush(at,dur=.16,gain=.014,center=1800){if(!music.ctx||!music.noise)return;const src=music.ctx.createBufferSource(),f=music.ctx.createBiquadFilter(),g=music.ctx.createGain();src.buffer=music.noise;f.type='bandpass';f.frequency.value=center;f.Q.value=.8;g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);src.connect(f);f.connect(g);g.connect(music.master);src.start(at);src.stop(at+dur+.02)}
+function lowDrum(at,pitch=90,gain=.065,dur=.22){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain();o.type='sine';o.frequency.setValueAtTime(pitch,at);o.frequency.exponentialRampToValueAtTime(Math.max(38,pitch*.48),at+dur*.75);g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.02)}
+function pickBattleTheme(){const r=Math.random();return r<.30?'battle1':r<.70?'battle2':'battle3'}
 function desiredMusicTheme(){
- const p=state.player;
- const boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
- if(boss)return'boss';
- const battle=state.enemies.some(e=>{
-  if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;
-  const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,e.type.detect||430));
-  return (e.hostile||e.enemyTarget||state.pet.targetId===e.netId)&&d<range
- });
- if(battle)return'battle';
- if(state.area==='storylab1'||state.area==='storylab2')return'underground';
- if(state.area==='questcave')return'questcave';
- if(state.area==='underground')return'underground';
- return regionAt(p.x,p.y)
+ const p=state.player,boss=state.enemies.some(e=>e.hp>0&&e.area===state.area&&(e.type.boss||e.type.labBoss));
+ if(boss){music.battleActive=false;music.battleTheme=null;return'boss'}
+ const battle=state.enemies.some(e=>{if(e.hp<=0||e.area!==state.area||e.type.mood==='harmless')return false;const d=dist(e.x,e.y,p.x,p.y),range=Math.max(260,Math.min(720,e.type.detect||430));return(e.hostile||e.enemyTarget||state.pet.targetId===e.netId)&&d<range});
+ if(battle){if(!music.battleActive){music.battleActive=true;music.battleTheme=pickBattleTheme()}return music.battleTheme||'battle2'}
+ music.battleActive=false;music.battleTheme=null;if(state.area==='storylab1'||state.area==='storylab2')return'underground';if(state.area==='questcave')return'questcave';if(state.area==='underground')return'underground';return regionAt(p.x,p.y)
 }
 function scheduleBandBeat(key,t,beat,at){
- const beatDur=60/t.bpm,bar=Math.floor(beat/4),beatInBar=beat%4,section=Math.floor(bar/8)%6,minor=t.mode==='minor';
- const chordDegree=t.progression[(bar+section)%t.progression.length],root=scaleFreq(t.root,chordDegree,minor,-1);
- // 3분 곡 안에서 섹션마다 리듬/리프가 달라져 짧게 반복되지 않게 구성
- drumKick(at,beatInBar===0);if(beatInBar===1||beatInBar===3)drumSnare(at);if(section>=2||key==='battle'||key==='boss')cymbal(at+(section%2?beatDur*.5:0),key==='battle'||key==='boss'?.026:.014);
- bassVoice(root,at,beatDur*.82,.038+(t.drive||.3)*.022);
- const riffIndex=(beat+section*7+bar%5)%t.riff.length,deg=t.riff[riffIndex]+chordDegree;
- const guitarOct=key==='battle'||key==='boss'?1:section===4?1:0,lead=scaleFreq(t.root,deg,minor,guitarOct);
- if(section===0){if(beatInBar===0||beatInBar===2)guitarVoice(lead,at,beatDur*1.6,t.drive*.72,t.brightness)}
- else if(section===1){guitarVoice(lead,at,beatDur*.68,t.drive*.76,t.brightness)}
- else if(section===2){guitarVoice(lead,at,beatDur*.46,t.drive*.82,t.brightness);if(beatInBar%2===0)guitarVoice(scaleFreq(t.root,deg+2,minor,guitarOct),at+.035,beatDur*.4,t.drive*.62,t.brightness*1.05)}
- else if(section===3){if(beatInBar!==2)guitarVoice(lead,at,beatDur*.72,t.drive*.9,t.brightness)}
- else if(section===4){guitarVoice(lead,at,beatDur*.54,Math.min(1,t.drive+(.08)),t.brightness*1.08);if(key==='battle'||key==='boss')guitarVoice(lead*2,at+.018,beatDur*.48,.94,t.brightness*1.1)}
- else{if(beatInBar===0||beatInBar===1||beatInBar===3)guitarVoice(lead,at,beatDur*.75,t.drive*.8,t.brightness)}
- if(t.ominous&&beatInBar===0){guitarVoice(root/2,at,beatDur*3.7,Math.min(.95,t.drive+.1),Math.max(520,t.brightness*.65))}
-}
-function musicTick(){
- if(!music.started||!music.enabled||!music.ctx)return;
- const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;
- if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.03;music.nextAt=music.trackStart}
- const now=music.ctx.currentTime,elapsed=now-music.trackStart;
- if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.03;music.nextAt=music.trackStart}
- while(music.nextAt<now+.18){
-  scheduleBandBeat(key,t,music.beatIndex,music.nextAt);
-  music.beatIndex++;music.nextAt+=beatDur
+ const beatDur=60/t.bpm,bar=Math.floor(beat/4),b=beat%4,minor=t.mode==='minor',ch=t.progression[bar%t.progression.length],root=scaleFreq(t.root,ch,minor,-1),lead=scaleFreq(t.root,ch+t.riff[beat%t.riff.length],minor,0);
+ switch(t.style){
+  case'forest':if(b===0){padVoice(root*2,at,beatDur*4,.020,1500);padVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*4,.012,1800)}if(b===0||b===2)smoothVoice(lead,at,beatDur*1.4,.026,'sine',2400,.12);if(b===1||b===3)noiseBrush(at,beatDur*.35,.006,4200);break;
+  case'canyon':lowDrum(at,b===0?92:68,b===0?.07:.035,beatDur*.55);if(b===0||b===2)smoothVoice(root,at,beatDur*1.6,.033,'triangle',850,.04);if(b===1||b===3)smoothVoice(lead,at,beatDur*.9,.024,'triangle',1350,.025);break;
+  case'worldtree':if(b===0){padVoice(root*2,at,beatDur*4,.032,1150);padVoice(scaleFreq(t.root,ch+4,minor,0),at,beatDur*4,.022,1450)}if(b===0||b===2)smoothVoice(lead,at,beatDur*1.9,.020,'sine',2100,.2);if(b===3)noiseBrush(at,beatDur*.7,.005,950);break;
+  case'volcano':lowDrum(at,b===0?78:58,b===0?.095:.05,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.032,520);if(b===2)smoothVoice(root*1.5,at,beatDur*1.7,.024,'triangle',680,.12);if(b===1||b===3)noiseBrush(at,beatDur*.42,.015,620);break;
+  case'crystal':if(b===0)padVoice(root*2,at,beatDur*4,.017,2600);if(b===0||b===2)glassVoice(lead*1.5,at,beatDur*1.8,.020);if(b===3)glassVoice(scaleFreq(t.root,ch+6,minor,1),at,beatDur*2.1,.012);break;
+  case'underground':case'questcave':if(b===0)padVoice(root,at,beatDur*4,.03,t.style==='questcave'?540:650);if(b===0||b===3)lowDrum(at,t.style==='questcave'?62:70,.048,beatDur*.8);if(b===2)smoothVoice(lead,at,beatDur*1.6,.016,'sine',900,.18);break;
+  case'battle1':lowDrum(at,b===0?115:82,b===0?.1:.065,beatDur*.45);if(b===1||b===3)noiseBrush(at,beatDur*.25,.023,2100);smoothVoice(root*2,at,beatDur*.7,.035,'triangle',1600,.018);if(b===0||b===2)smoothVoice(lead*2,at,beatDur*.65,.032,'sine',2600,.018);break;
+  case'battle2':lowDrum(at,b===0?130:95,b===0?.09:.055,beatDur*.38);noiseBrush(at+beatDur*.45,beatDur*.16,.016,3000);smoothVoice(lead*2,at,beatDur*.32,.034,'triangle',2200,.012);smoothVoice(scaleFreq(t.root,ch+3,minor,0),at+beatDur*.5,beatDur*.28,.025,'sine',2500,.01);break;
+  case'battle3':if(b===0||b===3)lowDrum(at,b===0?88:70,b===0?.12:.08,beatDur*.65);if(b===0)padVoice(root*2,at,beatDur*4,.034,900);if(b===1||b===2)smoothVoice(lead*1.5,at,beatDur*.95,.038,'triangle',1500,.035);if(b===3)noiseBrush(at,beatDur*.35,.022,1200);break;
+  case'boss':lowDrum(at,b===0?70:55,b===0?.14:.075,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.042,520);if(b===1||b===3)noiseBrush(at,beatDur*.42,.026,900);smoothVoice(lead,at,beatDur*.8,.034,'triangle',1100,.03);break;
  }
 }
-function toggleBgm(){
- music.enabled=!music.enabled;
- const b=document.getElementById('bgmToggle');if(b)b.textContent=music.enabled?'BGM ON':'BGM OFF';
- if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}
- else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}
- if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(.48,music.ctx.currentTime)
-}
-
+function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.03;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.03;music.nextAt=music.trackStart}while(music.nextAt<now+.18){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur}}
+function toggleBgm(){music.enabled=!music.enabled;const b=document.getElementById('bgmToggle');if(b)b.textContent=music.enabled?'BGM ON':'BGM OFF';if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(.48,music.ctx.currentTime)}
 function markExplored(){
   const p=state.player,gx=Math.floor(p.x/MAP_CELL),gy=Math.floor(p.y/MAP_CELL);
   for(let ox=-1;ox<=1;ox++)for(let oy=-1;oy<=1;oy++){
@@ -370,6 +340,10 @@ function initWorld(){
   for(let i=0;i<treeGolemCount;i++){const a=i*Math.PI*2/treeGolemCount,r=130+rand(0,140);state.enemies.push(spawnAt(creatures.golem,WORLD_TREE.x+Math.cos(a)*r,WORLD_TREE.y+Math.sin(a)*r,null))}
   for(let i=0;i<4;i++){const p=randomCanyonPoint();state.enemies.push(spawnAt(creatures.ironibex,p.x,p.y,null))}
   for(let i=0;i<5;i++){const p=randomWorldTreePoint();state.enemies.push(spawnAt(creatures.sapdeer,p.x,p.y,null))}
+  state.enemies.push(spawnCreature(creatures.foresthare,0));
+  {const p=randomWorldTreePoint();state.enemies.push(spawnAt(creatures.worldpheasant,p.x,p.y,null))}
+  {const p=randomCanyonPoint();state.enemies.push(spawnAt(creatures.canyonlizard,p.x,p.y,null))}
+  {const p=randomCrystalPoint(220);state.enemies.push(spawnAt(creatures.crystalgoat,p.x,p.y,null))}
   const wolfSpots=[{x:7100,y:2420},{x:8600,y:2520},{x:10100,y:2430}];
   for(const p of wolfSpots)state.enemies.push(spawnAt(creatures.firewolf,p.x,p.y));
   const burrowCount=2+Math.floor(Math.random()*3);
@@ -481,23 +455,28 @@ function ensureCookingChoices(){
  if(!owned.includes(state.cookingChoiceA))state.cookingChoiceA=owned[0]||'';
  if(!owned.includes(state.cookingChoiceB))state.cookingChoiceB=owned.find(id=>id!==state.cookingChoiceA)||owned[0]||''
 }
-function canCookPair(a,b){
- if(!a||!b||!COOKING_COMBOS[foodComboKey(a,b)])return false;
- return a===b?invCount(a)>=2:invCount(a)>=1&&invCount(b)>=1
-}
+function hasFoodPair(a,b){if(!a||!b)return false;return a===b?invCount(a)>=2:invCount(a)>=1&&invCount(b)>=1}
+function canCookPair(a,b){return!!COOKING_COMBOS[foodComboKey(a,b)]&&hasFoodPair(a,b)}
 function cookSelectedMeal(){
  if(!nearCookingStation()){showNotice('요리대 가까이 가야 해');return}
- const a=state.cookingChoiceA,b=state.cookingChoiceB,mealId=COOKING_COMBOS[foodComboKey(a,b)];
- if(!mealId||!canCookPair(a,b)){showNotice('선택한 음식이 부족해');return}
- state.player.inventory[a]--;state.player.inventory[b]--;addInv(mealId,1);showNotice(item(mealId).name+' 완성');state.dirty=true;renderCooking();saveGame(false)
+ const a=state.cookingChoiceA,b=state.cookingChoiceB;
+ if(!hasFoodPair(a,b)){showNotice('선택한 재료가 부족해');return}
+ const mealId=COOKING_COMBOS[foodComboKey(a,b)];
+ if(!mealId){showNotice('이 조합은 요리가 되지 않아 · 다른 조합을 실험해봐');return}
+ state.player.inventory[a]--;state.player.inventory[b]--;addInv(mealId,1);
+ const invented=!state.knownCookingRecipes[mealId];state.knownCookingRecipes[mealId]=true;state.dirty=true;
+ showNotice(invented?'새 레시피 발명 · '+item(mealId).name:item(mealId).name+' 완성');
+ renderCooking();saveGame(false)
 }
 function renderCooking(){
  tabState();ensureCookingChoices();
- const a=state.cookingChoiceA,b=state.cookingChoiceB,mealId=a&&b?COOKING_COMBOS[foodComboKey(a,b)]:null,meal=mealId?item(mealId):null;
- const opts=FOOD_BASE_IDS.map(id=>`<option value="${id}" ${id===a?'selected':''} ${invCount(id)<1?'disabled':''}>${item(id).name} ×${invCount(id)}</option>`).join('');
- const optsB=FOOD_BASE_IDS.map(id=>`<option value="${id}" ${id===b?'selected':''} ${invCount(id)<1?'disabled':''}>${item(id).name} ×${invCount(id)}</option>`).join('');
- const combos=Object.values(COOKING_COMBOS).map(id=>{const r=item(id);return`<div class="mat"><b style="float:none">${r.name}</b><br><span style="font-size:9px;color:#bdd0c4">${r.desc}</span></div>`}).join('');
- ui.sheetBody.innerHTML=`<div class="info"><b>요리대</b><br>가지고 있는 기본 음식 2개를 골라 합칠 수 있어. 같은 음식 2개도 가능해.</div><div class="cookPick"><select id="foodA">${opts}</select><select id="foodB">${optsB}</select></div><div class="info">${meal?'<b>'+meal.name+'</b><br>'+meal.desc:'음식 두 개를 선택해'}</div><button id="cookNow" class="cookBtn" ${meal&&canCookPair(a,b)?'':'disabled'}>요리 만들기</button><div class="invSection">가능한 조합 10가지</div><div class="invMaterials">${combos}</div>`;
+ const a=state.cookingChoiceA,b=state.cookingChoiceB,key=a&&b?foodComboKey(a,b):'',mealId=key?COOKING_COMBOS[key]:null,known=!!(mealId&&state.knownCookingRecipes[mealId]),meal=known?item(mealId):null;
+ const opts=FOOD_BASE_IDS.map(id=>'<option value="'+id+'" '+(id===a?'selected':'')+' '+(invCount(id)<1?'disabled':'')+'>'+item(id).name+' ×'+invCount(id)+'</option>').join('');
+ const optsB=FOOD_BASE_IDS.map(id=>'<option value="'+id+'" '+(id===b?'selected':'')+' '+(invCount(id)<1?'disabled':'')+'>'+item(id).name+' ×'+invCount(id)+'</option>').join('');
+ const knownIds=[...new Set(Object.values(COOKING_COMBOS))].filter(id=>state.knownCookingRecipes[id]);
+ const invented=knownIds.length?knownIds.map(id=>{const r=item(id);return '<div class="mat"><b style="float:none">'+r.name+'</b><br><span style="font-size:9px;color:#bdd0c4">'+r.desc+'</span></div>'}).join(''):'<div class="info">아직 발명한 레시피가 없어. 재료 두 개를 직접 조합해봐.</div>';
+ const preview=meal?'<b>'+meal.name+'</b><br>'+meal.desc:(a&&b?'<b>???</b><br>처음 만드는 조합은 결과가 숨겨져 있어. 직접 실험해야 레시피가 등록돼.':'재료 두 개를 선택해');
+ ui.sheetBody.innerHTML='<div class="info"><b>요리대 · 레시피 발명</b><br>처음에는 레시피가 보이지 않아. 재료 두 개를 직접 조합해 성공하면 그 레시피가 아래 목록에 영구 등록돼.</div><div class="cookPick"><select id="foodA">'+opts+'</select><select id="foodB">'+optsB+'</select></div><div class="info">'+preview+'</div><button id="cookNow" class="cookBtn" '+(hasFoodPair(a,b)?'':'disabled')+'>'+(known?'요리 만들기':'조합 실험하기')+'</button><div class="invSection">내가 발명한 레시피</div><div class="invMaterials">'+invented+'</div>';
  const sa=document.getElementById('foodA'),sb=document.getElementById('foodB'),btn=document.getElementById('cookNow');
  if(sa)sa.addEventListener('change',()=>{state.cookingChoiceA=sa.value;renderCooking()});
  if(sb)sb.addEventListener('change',()=>{state.cookingChoiceB=sb.value;renderCooking()});
@@ -562,7 +541,11 @@ const BESTIARY_INFO={
  crystalibex:{cat:'aggressive',desc:'봉인에서 풀려난 수정 지대의 수정 산양.'},
  shadowwolfleader:{cat:'aggressive',desc:'동굴의 2티어 우두머리. 1초마다 25% 확률로 적 그림자 늑대 2마리를 소환한다.'},
  crystalfiregolem:{cat:'boss',desc:'연구소 2층을 점거한 3티어 수정 화염골렘. 3초마다 용암 잠수를 시도하고 포효를 사용한다.'},
- vampirebat:{cat:'aggressive',desc:'2마리씩 무리 지어 다니는 2티어 박쥐. 2초마다 30% 확률로 흡혈 공격을 사용한다.'}
+ vampirebat:{cat:'aggressive',desc:'2마리씩 무리 지어 다니는 2티어 박쥐. 2초마다 30% 확률로 흡혈 공격을 사용한다.'},
+ foresthare:{cat:'harmless',desc:'일반 숲에 한 마리씩 나타나는 온순한 토끼. 사냥하면 숲토끼고기를 얻는다.'},
+ worldpheasant:{cat:'harmless',desc:'세계수 잎 사이를 돌아다니는 꿩. 고기와 함께 세계수 잎채소를 떨어뜨린다.'},
+ canyonlizard:{cat:'neutral',desc:'협곡의 따뜻한 바위 위를 돌아다니는 중립 도마뱀. 사냥하면 협곡도마뱀고기를 얻는다.'},
+ crystalgoat:{cat:'neutral',desc:'수정 지대의 마력을 먹고 사는 중립 염소. 사냥하면 수정염소고기를 얻는다.'}
 };
 const BOOK_LABELS={neutral:'중립',aggressive:'공격적',harmless:'무해',boss:'보스',records:'기록'};
 function unlockBestiary(id){
@@ -769,6 +752,10 @@ function gather(){
 }
 function currentWeapon(){return item(state.player.weapon)}function currentDamage(){const base=(currentWeapon()?.power||0)+(item(state.player.armor)?.bonusDamage||0);return base*(performance.now()<(state.player.weakenedUntil||0)?.5:1)}function currentRange(){return currentWeapon()?.range||0}function currentCooldown(){return currentWeapon()?.cooldown||380}
 function awardLoot(e){
+ const food=[];
+ if(e.type.foodDrop){addInv(e.type.foodDrop,1);food.push(item(e.type.foodDrop)?.name||e.type.foodDrop)}
+ if(e.type.vegetableDrop){addInv(e.type.vegetableDrop,1);food.push(item(e.type.vegetableDrop)?.name||e.type.vegetableDrop)}
+ if(food.length)showNotice('전리품 · '+food.join(' + '));
  const drops={
   mossboar:['mossTusk',1],golem:['stoneCore',1],goblin:['goblinCharm',1],shadowwolf:['wolfHide',1],
   ironspirit:['ironSpiritCore',1],rootsovereign:['sovereignCore',1],firewolf:['fireWolfFang',1],
@@ -1695,7 +1682,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,records:state.records,story:state.story,questCaveInit:state.questCaveInit}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,records:state.records,story:state.story,questCaveInit:state.questCaveInit}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -1713,6 +1700,8 @@ function loadGame(){
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>['iron','gold','deer','bug'].includes(x)):[]}}
   state.knownMaterials=s.knownMaterials&&typeof s.knownMaterials==='object'?{...s.knownMaterials}:{};
   state.knownItems=s.knownItems&&typeof s.knownItems==='object'?{...s.knownItems}:{};
+  state.knownCookingRecipes=s.knownCookingRecipes&&typeof s.knownCookingRecipes==='object'?{...s.knownCookingRecipes}:{};
+  for(const [id,count] of Object.entries(p.inventory||{})){const r=item(id);if(Number(count)>0&&r?.where==='meal')state.knownCookingRecipes[id]=true}
   for(const k of ['wood','stone','fiber','ironOre','ironIngot','goldOre','goldIngot','essence',...Object.keys(DROP_MATERIAL_NAMES)])if(materialAmount(k)>0)rememberMaterial(k);
   for(const [id,count] of Object.entries(p.inventory||{}))if(Number(count)>0)rememberItem(id);
   for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);
