@@ -56,7 +56,12 @@ test('central authority mutation requires direct review but is not attack quaran
   }),/SECURITY_RESOLUTION_VERIFICATION_REQUIRED/);
   store=resolveSecurityIncident(store,{
     id:store.incidents[0].id,rootCause:'owner-authorized policy edit',remediation:'retain direct review gate and classify review separately from attack quarantine',
-    evidence:['shared-context:PASS','policy-regression:PASS'],regressionPass:true,primaryAiReview:'PASS',verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS'
+    evidence:['shared-context:PASS','policy-regression:PASS'],regressionPass:true,primaryAiReview:'PASS',verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS',
+    policyReviewApproval:{
+      decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1894,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1894',
+      securityRunId:35490000001,securityArtifactId:10597000001,scanDetectedAt:store.incidents[0].firstDetectedAt,
+      findingCount:store.incidents[0].reviewFindingCount
+    }
   });
   assert.equal(store.incidents[0].status,'RESOLVED_VERIFIED');
   assert.equal(store.incidents[0].verificationMode,'AUTHORIZED_POLICY_REVIEW_PASS');
@@ -133,6 +138,45 @@ test('legacy pending policy review lines compact by historical scan while quaran
   assert.ok(result.store.incidents.some(row=>row.id==='resolved-1'&&row.status==='RESOLVED_VERIFIED'));
 });
 
+test('authorized policy review resolution requires explicit pass and exact scan identity',()=>{
+  const stamp='2026-09-20T05:09:12.727Z';
+  const store={version:2,incidents:[
+    {
+      id:'sec_review_roadmap',status:'REVIEW_REQUIRED',disposition:'REVIEW',rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',
+      file:'company-learning/platform-release-roadmap.json',reviewFindingCount:17,reviewEvidenceSha256:['r1'],
+      firstDetectedAt:stamp,lastDetectedAt:stamp,primaryAiReview:'PENDING',learningPromotion:'PENDING'
+    },
+    {
+      id:'sec_review_architecture',status:'REVIEW_REQUIRED',disposition:'REVIEW',rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',
+      file:'company-learning/company-architecture-map.json',reviewFindingCount:7,reviewEvidenceSha256:['a1'],
+      firstDetectedAt:'2026-09-20T05:09:12.726Z',lastDetectedAt:'2026-09-20T05:09:12.727Z',primaryAiReview:'PENDING',learningPromotion:'PENDING'
+    }
+  ]};
+  const base={
+    id:'sec_review_roadmap',rootCause:'owner-authorized central policy edit',remediation:'retain explicit direct review gate',
+    evidence:['policy-regression:PASS'],regressionPass:true,primaryAiReview:'PASS',verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS'
+  };
+  assert.throws(()=>resolveSecurityIncident(store,{...base,policyReviewApproval:{
+    decision:'PASS',prNumber:1906,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1906',
+    securityRunId:35490800197,securityArtifactId:10597904693,scanDetectedAt:stamp,findingCount:24
+  }}),/SECURITY_POLICY_REVIEW_EXPLICIT_PASS_REQUIRED/);
+  assert.throws(()=>resolveSecurityIncident(store,{...base,policyReviewApproval:{
+    decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1906,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1906',
+    securityRunId:35490800197,securityArtifactId:10597904693,scanDetectedAt:stamp,findingCount:23
+  }}),/SECURITY_POLICY_REVIEW_FINDING_COUNT_MISMATCH:24:23/);
+  const resolved=resolveSecurityIncident(store,{...base,policyReviewApproval:{
+    decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1906,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1906',
+    securityRunId:35490800197,securityArtifactId:10597904693,scanDetectedAt:stamp,findingCount:24
+  }});
+  const roadmap=resolved.incidents.find(row=>row.id==='sec_review_roadmap');
+  const architecture=resolved.incidents.find(row=>row.id==='sec_review_architecture');
+  assert.equal(roadmap.status,'RESOLVED_VERIFIED');
+  assert.equal(roadmap.policyReviewApproval.decision,'PRIMARY_AI_DIRECT_REVIEW=PASS');
+  assert.equal(roadmap.policyReviewApproval.findingCount,24);
+  assert.equal(roadmap.learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
+  assert.equal(architecture.status,'REVIEW_REQUIRED');
+});
+
 test('explicit policy-review learning hold is not auto-promoted',()=>{
   const report=scanSecurityPatch({
     patch:'diff --git a/company-learning/platform-release-roadmap.json b/company-learning/platform-release-roadmap.json\n+++ b/company-learning/platform-release-roadmap.json\n@@ -1,0 +2 @@\n+  "neuralExecutionAuthority": false\n',
@@ -146,7 +190,12 @@ test('explicit policy-review learning hold is not auto-promoted',()=>{
     evidence:['central-policy-contract:PASS','vibe-integrated-regression:PASS'],
     regressionPass:true,
     primaryAiReview:'PASS',
-    verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS'
+    verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS',
+    policyReviewApproval:{
+      decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1894,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1894',
+      securityRunId:35490000002,securityArtifactId:10597000002,scanDetectedAt:store.incidents[0].firstDetectedAt,
+      findingCount:store.incidents[0].reviewFindingCount
+    }
   });
   assert.equal(store.incidents[0].learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
   const learned=distillSecurityLearning({
