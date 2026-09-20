@@ -75,3 +75,21 @@ test('shadow versus wave audit can be persisted and accumulated without granting
   assert.equal(summary.phase2AuthorityReady,false);
   assert.equal(summary.automaticLearningAllowed,false);
 });
+
+
+test('durable audit marker preserves distinct review sample identity',()=>{
+  const one=buildNeuralShadowAudit({reviewed:[{
+    taskId:'same-task',sampleId:'same-task|run-1:1|primary|candidate-a',
+    pass:true,releaseBlocked:false,
+    neuralEventRoute:{proposedAction:{kind:'REQUEST_EVIDENCE'},wouldFireWithoutPhase2Authority:false,fireAllowed:false}
+  }]});
+  const two=buildNeuralShadowAudit({reviewed:[{
+    taskId:'same-task',sampleId:'same-task|run-2:1|primary|candidate-b',
+    pass:true,releaseBlocked:false,
+    neuralEventRoute:{proposedAction:{kind:'REQUEST_EVIDENCE'},wouldFireWithoutPhase2Authority:false,fireAllowed:false}
+  }]});
+  const markers=[...neuralShadowAuditEvidence(one),...neuralShadowAuditEvidence(two)];
+  assert.notEqual(markers[0],markers[1]);
+  const summary=summarizeDurableNeuralShadowAudit(markers);
+  assert.equal(summary.sampleCount,2);
+});
