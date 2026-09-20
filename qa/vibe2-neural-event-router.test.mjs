@@ -81,3 +81,16 @@ test('shadow event evidence records simulated intent without granting authority'
   assert.equal(payload.queueMutationAllowed,false);
   assert.equal(payload.authorityPromotionEligible,false);
 });
+
+
+test('shadow event evidence includes deterministic event identity',()=>{
+  const route=simulateNeuralEventRoute({
+    event:{id:'task-a|run-1:1|primary|candidate-a',type:'WORKER_RESULT',outcome:'FAIL'},
+    diagnosis,
+    rootCause:{state:'UNRESOLVED',rootCauseVerified:false,nextEvidenceRequired:['MORE_DETERMINISTIC_FAILURE_EVIDENCE']}
+  });
+  const marker=neuralEventRouteEvidence(route).find(x=>x.startsWith('neural-event-shadow:'));
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-event-shadow:'.length)));
+  assert.equal(payload.eventId,'task-a|run-1:1|primary|candidate-a');
+  assert.equal(payload.fireAllowed,false);
+});
