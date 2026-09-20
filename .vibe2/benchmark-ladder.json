@@ -3,9 +3,9 @@
   "kind": "vibe2-benchmark-ladder",
   "cases": [
     {
-      "id": "mastery-coding-l8",
+      "id": "mastery-coding-l9",
       "track": "CODING",
-      "level": 8,
+      "level": 9,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -17,9 +17,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-bugfix-l8",
+      "id": "mastery-bugfix-l9",
       "track": "BUGFIX",
-      "level": 8,
+      "level": 9,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -31,9 +31,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-web_gameplay-l7",
+      "id": "mastery-web_gameplay-l8",
       "track": "WEB_GAMEPLAY",
-      "level": 7,
+      "level": 8,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -59,9 +59,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-ai-l5",
+      "id": "mastery-ai-l6",
       "track": "AI",
-      "level": 5,
+      "level": 6,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -143,9 +143,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-animation_feel-l5",
+      "id": "mastery-animation_feel-l7",
       "track": "ANIMATION_FEEL",
-      "level": 5,
+      "level": 7,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -213,9 +213,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-quest_design-l7",
+      "id": "mastery-quest_design-l8",
       "track": "QUEST_DESIGN",
-      "level": 7,
+      "level": 8,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -455,6 +455,46 @@
       "authority": "practice-and-measurement-only"
     },
     {
+      "id": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_dd1edc1a11a1e7a360dfda28",
+      "sourceGameId": "village-dungeons",
+      "targetEngine": "web",
+      "holdoutGameId": "bug-defense",
+      "pairId": "phase4-pair-ryyyok",
+      "unseenProblemFingerprint": "phase4-unseen-pujrje",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
       "id": "phase4-generalization-capability_ctrace_cd82f46339f60a9d3d87c01f",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -575,6 +615,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 8,
+  "phase4GeneralizationCases": 9,
   "authority": "practice-and-measurement-only"
 }
