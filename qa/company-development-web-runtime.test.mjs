@@ -602,3 +602,39 @@ test('validated Web presentation handoff carries style, UI, motion and commercia
   assert.equal(handoff.webAssetBinaryCopyRequired,false);
   assert.match(handoff.adaptationRule,/PLATFORM_NATIVE_RENDERING_ALLOWED/);
 });
+
+
+test('fantasy survival preserved source passes bootstrap without removing multiplayer or save semantics',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'fantasy-survival-preserve-')),candidate=path.join(root,'candidate');
+  const baseline={
+    gameId:'fantasy-survival',
+    gameSeedId:'OWNER-PRESERVE-FANTASY-SURVIVAL-20260920',
+    content:{
+      coreFun:'기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.',
+      coreLoop:[
+        'Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.',
+        'Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.',
+        'Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.'
+      ],
+      mobileUx:'가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.',
+      preservationContract:{mode:'PRESERVATION_PRESENTATION_UPGRADE',gameplayRule:'NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE'}
+    }
+  };
+  try{
+    const output=await buildFirstPlayable({
+      gameId:'fantasy-survival',gameName:'마력숲 생존기',baseline,
+      sourcePath:'web-games/fantasy-survival',candidatePath:candidate,candidateId:'fantasy-preserve-test',sourceCommit:'test',model:'none'
+    });
+    assert.equal(output.review.pass,true,output.review.blockers.join('|'));
+    assert.equal(output.generation.modelInvoked,false);
+    assert.equal(output.generation.sourcePreserved,true);
+    const html=fs.readFileSync(path.join(candidate,'index.html'),'utf8');
+    assert.match(html,/jaewoon_fantasy_survival_v1/);
+    assert.match(html,/supabase/i);
+    assert.match(html,/data-web-artifact-type="REAL_PLAYABLE_GAME"/);
+    assert.match(html,/data-run-result="running"/);
+    assert.equal((html.match(/data-scope-id=/g)||[]).length,5);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
