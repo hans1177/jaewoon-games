@@ -4,17 +4,20 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'');
 const BINARY_EXTENSIONS=new Set(['.rbxl','.rbxlx','.uasset','.umap','.controller','.anim','.avatar','.fbx','.blend','.png','.jpg','.jpeg','.webp','.wav','.mp3','.ogg']);
 const MAX_CHANGED_FILES=4;
-const MAX_SINGLE_TEXT_FILE_BYTES=300000;
+const MAX_SINGLE_TEXT_FILE_GROWTH_BYTES=300000;
 
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
+function baselineRevisionReadable(root,revision){if(!clean(revision))return false;try{execFileSync('git',['cat-file','-e',`${revision}^{commit}`],{cwd:root,stdio:'ignore'});return true;}catch{return false;}}
+function baselineFileBytes(root,revision,relative){try{return execFileSync('git',['show',`${revision}:${relative}`],{cwd:root,encoding:null,maxBuffer:64*1024*1024,stdio:['ignore','pipe','ignore']}).length;}catch{return 0;}}
 
 export function verifyPerformanceSanity({root=process.cwd(),manifest={}}={}){
   const sourceRoot=posix(manifest.sourceRoot);
@@ -24,18 +27,29 @@ export function verifyPerformanceSanity({root=process.cwd(),manifest={}}={}){
   add('exploration-handoff-present',Boolean(manifest?.exploration?.reuseKey),manifest?.exploration?.reuseKey||'missing');
   add('exploration-read-only',manifest?.exploration?.sourceWrite===false,String(manifest?.exploration?.sourceWrite));
   add('bounded-changed-file-count',changed.length>0&&changed.length<=MAX_CHANGED_FILES,String(changed.length));
-  let binary=false,oversized=false,missing=false;
+  const baseMainSha=clean(manifest.baseMainSha);
+  const baselineReadable=baselineRevisionReadable(root,baseMainSha);
+  const fileGrowth=[];
+  let binary=false,growthExceeded=false,missing=false;
   for(const relative of changed){
     if(BINARY_EXTENSIONS.has(path.extname(relative).toLowerCase()))binary=true;
     const file=path.resolve(root,sourceRoot,relative);
     if(!fs.existsSync(file)||!fs.statSync(file).isFile()){missing=true;continue;}
-    if(fs.statSync(file).size>MAX_SINGLE_TEXT_FILE_BYTES)oversized=true;
+    if(!baselineReadable)continue;
+    const repoRelative=posix(path.posix.join(sourceRoot,relative));
+    const candidateBytes=fs.statSync(file).size;
+    const baseBytes=baselineFileBytes(root,baseMainSha,repoRelative);
+    const growthBytes=Math.max(0,candidateBytes-baseBytes);
+    fileGrowth.push({path:relative,baseBytes,candidateBytes,growthBytes});
+    if(growthBytes>MAX_SINGLE_TEXT_FILE_GROWTH_BYTES)growthExceeded=true;
   }
   add('no-binary-source-write',!binary,binary?'binary-change-detected':'text-only');
   add('changed-files-exist',!missing,missing?'missing-changed-file':'all-present');
-  add('single-file-size-budget',!oversized,oversized?`>${MAX_SINGLE_TEXT_FILE_BYTES}`:`<=${MAX_SINGLE_TEXT_FILE_BYTES}`);
+  add('baseline-revision-readable',baselineReadable,baselineReadable?baseMainSha:'missing-or-unreadable-base-main-sha');
+  const worstGrowth=fileGrowth.reduce((max,row)=>Math.max(max,row.growthBytes),0);
+  add('single-file-growth-budget',baselineReadable&&!growthExceeded,growthExceeded?`growth>${MAX_SINGLE_TEXT_FILE_GROWTH_BYTES};max=${worstGrowth}`:`growth<=${MAX_SINGLE_TEXT_FILE_GROWTH_BYTES};max=${worstGrowth}`);
   const pass=checks.every(row=>row.pass);
-  return{version:1,role:'performance',sourceWrite:false,pass,sourceRoot,changedFiles:changed,checks};
+  return{version:1,role:'performance',sourceWrite:false,pass,sourceRoot,changedFiles:changed,fileGrowth,checks};
 }
 
 export function runPerformanceSanity({root=process.cwd(),manifestFile='',outputFile=''}={}){
