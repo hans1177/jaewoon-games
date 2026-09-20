@@ -166,13 +166,32 @@ export function parseNeuralFeedbackEvidence(values=[]){
 }
 
 export function summarizeNeuralFeedbackEvidence(values=[]){
-  const rows=parseNeuralFeedbackEvidence(values);
+  const parsedRows=parseNeuralFeedbackEvidence(values);
+  const bySample=new Map();
+  const legacyRows=[];
+  let duplicateSampleRows=0,sampleConflicts=0;
+  for(const row of parsedRows){
+    const sampleId=clean(row.sampleId);
+    if(!sampleId){legacyRows.push(row);continue;}
+    if(bySample.has(sampleId)){
+      duplicateSampleRows+=1;
+      if(JSON.stringify(bySample.get(sampleId))!==JSON.stringify(row))sampleConflicts+=1;
+      continue;
+    }
+    bySample.set(sampleId,row);
+  }
+  const rows=[...bySample.values(),...legacyRows];
   const eligible=rows.filter(row=>row.sampleEligible===true);
   const matches=eligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
   const mismatches=eligible.filter(row=>row.responsibilityMatch===false||clean(row.matchState)==='MISMATCH').length;
   return{
-    version:1,
+    version:2,
+    rawEvidenceRows:parsedRows.length,
     durableEvidenceSamples:rows.length,
+    distinctSampleIds:bySample.size,
+    legacyUnidentifiedRows:legacyRows.length,
+    duplicateSampleRows,
+    sampleConflicts,
     calibrationEligible:eligible.length,
     matches,
     mismatches,
