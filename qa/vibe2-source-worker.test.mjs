@@ -80,10 +80,10 @@ test('unappliable edit is retried inside generation before candidate write', asy
 
 test('focused replace recovery budget is not smaller than final retry budget',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-  const finalPredict=Number(source.match(/const JSON_FINAL_RETRY_MAX_PREDICT=(\\d+);/)?.[1]||0);
-  const focusedPredict=Number(source.match(/const JSON_FOCUSED_REPLACE_MAX_PREDICT=(\\d+);/)?.[1]||0);
-  const finalTimeout=Number(source.match(/const JSON_FINAL_RETRY_TIMEOUT_MS=(\\d+);/)?.[1]||0);
-  const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\\d+);/)?.[1]||0);
+  const finalPredict=Number(source.match(/const JSON_FINAL_RETRY_MAX_PREDICT=(\d+);/)?.[1]||0);
+  const focusedPredict=Number(source.match(/const JSON_FOCUSED_REPLACE_MAX_PREDICT=(\d+);/)?.[1]||0);
+  const finalTimeout=Number(source.match(/const JSON_FINAL_RETRY_TIMEOUT_MS=(\d+);/)?.[1]||0);
+  const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\d+);/)?.[1]||0);
   assert.ok(finalPredict>0&&focusedPredict>=finalPredict);
   assert.ok(finalTimeout>0&&focusedTimeout>=finalTimeout);
 });
@@ -574,8 +574,8 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,90000);
-  assert.equal(result.generation.maxPredict,384);
+  assert.equal(result.generation.timeoutMs,150000);
+  assert.equal(result.generation.maxPredict,768);
   assert.equal(result.generation.temperature,0.26);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
