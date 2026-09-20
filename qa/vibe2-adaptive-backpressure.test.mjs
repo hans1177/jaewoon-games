@@ -114,22 +114,43 @@ test('run-local queue backpressure does not also lower the persistent adaptive w
   assert.equal(next.lastReason, 'RUN_LOCAL_BACKPRESSURE_ACTIVE');
 });
 
-test('low-load runs never reduce persistent concurrency or count as recovery', () => {
-  const pressure = decideAdaptiveBackpressure(
-    createParallelismControl({ currentMax: 64 }),
-    pressuredTelemetry({ runId: 'low-load-pressure', workerCount: 5, effectiveMax: 64 })
+test('strong pressure overrides low-load utilization and steps down one adaptive level', () => {
+  const next = decideAdaptiveBackpressure(
+    createParallelismControl({ currentMax: 256 }),
+    {
+      runId:'35499585668',
+      workerCount:21,
+      effectiveMax:256,
+      actualPeakConcurrency:19,
+      effectivePeakUtilizationPct:7.42,
+      failureRatePct:38.1,
+      pressureLevel:'HIGH',
+      bottleneck:'SOURCE_CANDIDATE_GENERATION'
+    }
   );
-  assert.equal(pressure.currentMax, 64);
-  assert.equal(pressure.lastDecision, 'HOLD');
-  assert.equal(pressure.lastReason, 'LOW_LOAD');
+  assert.equal(next.currentMax, 128);
+  assert.equal(next.lastDecision, 'DOWN');
+  assert.equal(next.lastReason, 'FAILURE_RATE');
+});
 
-  const healthyLowLoad = decideAdaptiveBackpressure(
-    createParallelismControl({ currentMax: 8 }),
-    healthyTelemetry({ runId: 'low-load-healthy', workerCount: 5, effectiveMax: 8, actualPeakConcurrency: 5 })
+test('genuine low-load without pressure holds persistent concurrency and does not count as recovery', () => {
+  const lowLoad = decideAdaptiveBackpressure(
+    createParallelismControl({ currentMax: 64 }),
+    {
+      runId:'low-load-no-pressure',
+      workerCount:5,
+      effectiveMax:64,
+      actualPeakConcurrency:5,
+      effectivePeakUtilizationPct:7.81,
+      failureRatePct:0,
+      pressureLevel:'LOW',
+      bottleneck:'NONE'
+    }
   );
-  assert.equal(healthyLowLoad.currentMax, 8);
-  assert.equal(healthyLowLoad.healthyStreak, 0);
-  assert.equal(healthyLowLoad.lastReason, 'LOW_LOAD');
+  assert.equal(lowLoad.currentMax, 64);
+  assert.equal(lowLoad.lastDecision, 'HOLD');
+  assert.equal(lowLoad.lastReason, 'LOW_LOAD');
+  assert.equal(lowLoad.healthyStreak, 0);
 });
 
 test('one healthy saturated run fast-ramps exactly one external-capacity step', () => {

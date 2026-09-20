@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -433,7 +433,7 @@
         "authorityChange": "NONE"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
-        "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
+        "state": "MERGED_MAIN_PR_1994",
         "sourcePr": 1994,
         "controller": ".vibe2/parallelism-control.json",
         "algorithm": "tools/vibe2-adaptive-backpressure.mjs",
@@ -462,7 +462,26 @@
         "healthySaturationMayUpshiftAbove20": true,
         "matrixFanOutUsesCurrentAdaptiveTarget": true,
         "telemetryEffectiveMaxUsesCurrentAdaptiveTarget": true,
-        "authorityChange": "NONE"
+        "authorityChange": "NONE",
+        "mergedCommit": "926310a8515ead25dd55bee3739df2fdf995c0bc",
+        "pressurePriority": [
+          "NO_WORKERS",
+          "RUN_LOCAL_BACKPRESSURE_ACTIVE",
+          "HIGH_OR_SEVERE_PRESSURE",
+          "LOW_LOAD",
+          "MEDIUM_PRESSURE_WHEN_SATURATED",
+          "HEALTHY_SATURATED"
+        ],
+        "pressurePriorityRepair": {
+          "state": "IMPLEMENTED_IN_PR_2002_PENDING_MERGE",
+          "sourcePr": 2002,
+          "triggerRunId": 35499585668,
+          "responsibleSystem": "tools/vibe2-adaptive-backpressure.mjs::decideAdaptiveBackpressure",
+          "regression": "qa/vibe2-adaptive-backpressure.test.mjs",
+          "expectedTransition": "256_TO_128_ON_HIGH_PRESSURE_LOW_UTILIZATION",
+          "runLocalBackpressureDoubleDownshiftForbidden": true,
+          "authorityChange": "NONE"
+        }
       }
     },
     "phase2Shadow": {

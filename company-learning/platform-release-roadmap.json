@@ -1,5 +1,5 @@
 {
-  "version": 216,
+  "version": 217,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8609,7 +8609,7 @@
         "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
-        "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
+        "state": "MERGED_MAIN_PR_1994",
         "sourcePr": 1994,
         "trigger": "OWNER_DIRECTIVE_2026-09-20_SELF_ADAPTIVE",
         "priorConflict": {
@@ -8636,7 +8636,15 @@
           "mediumPressure": "STEP_DOWN_AFTER_2_SATURATED_RUNS",
           "healthySaturated": "STEP_UP_ONE",
           "lowLoad": "HOLD",
-          "staleOrMissingState": "RESET_TO_BASELINE_20_THEN_ADAPT_FROM_FRESH_TELEMETRY"
+          "staleOrMissingState": "RESET_TO_BASELINE_20_THEN_ADAPT_FROM_FRESH_TELEMETRY",
+          "pressurePrecedence": [
+            "NO_WORKERS",
+            "RUN_LOCAL_BACKPRESSURE_ACTIVE",
+            "HIGH_OR_SEVERE_PRESSURE_STEP_DOWN",
+            "LOW_LOAD_HOLD",
+            "MEDIUM_PRESSURE_ONLY_WHEN_SATURATED",
+            "HEALTHY_SATURATED_STEP_UP"
+          ]
         },
         "unifiedEntryPaths": [
           ".github/workflows/vibe2-24h-runner.yml",
@@ -8657,7 +8665,41 @@
           "directMainAuthority": false,
           "authorityChange": "NONE"
         },
-        "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS"
+        "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS",
+        "mergedCommit": "926310a8515ead25dd55bee3739df2fdf995c0bc",
+        "pressurePriorityRepair": {
+          "state": "IMPLEMENTED_IN_PR_2002_PENDING_MERGE",
+          "sourcePr": 2002,
+          "triggerRunId": 35499585668,
+          "observed": {
+            "currentMax": 256,
+            "workerCount": 21,
+            "actualPeakConcurrency": 19,
+            "effectivePeakUtilizationPct": 7.42,
+            "failureRatePct": 38.1,
+            "pressureLevel": "HIGH",
+            "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+            "incorrectDecision": "HOLD",
+            "incorrectReason": "LOW_LOAD"
+          },
+          "rootCause": "LOW_LOAD_BRANCH_EXECUTED_BEFORE_HIGH_OR_SEVERE_PRESSURE_BRANCH",
+          "correction": {
+            "noWorkerHoldFirst": true,
+            "runLocalBackpressureProtectionPreserved": true,
+            "highOrSeverePressureOverridesLowLoad": true,
+            "highOrSevereAction": "STEP_DOWN_ONE_ADAPTIVE_LEVEL",
+            "mediumPressureStillRequiresSaturation": true,
+            "genuineLowLoadWithoutPressureStillHolds": true,
+            "maxStepChangesPerRun": 1
+          },
+          "expectedNextFromTriggerState": {
+            "from": 256,
+            "to": 128,
+            "reason": "FAILURE_RATE"
+          },
+          "authorityChange": "NONE",
+          "qaBypassAllowed": false
+        }
       }
     }
   },
