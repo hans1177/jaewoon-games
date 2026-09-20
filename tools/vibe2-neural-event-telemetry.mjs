@@ -29,7 +29,9 @@ export function summarizeNeuralEventShadowEvidence(values=[]){
   let duplicateEventRows=0,eventConflicts=0;
   for(const row of parsedRows){
     const eventId=clean(row.eventId);
-    if(!eventId){legacyRows.push(row);continue;}
+    const identityParts=eventId.split('|');
+    const canonicalIdentity=identityParts.length>=4&&identityParts.slice(0,4).every(Boolean);
+    if(!canonicalIdentity){legacyRows.push(row);continue;}
     if(byEventId.has(eventId)){
       duplicateEventRows+=1;
       if(JSON.stringify(byEventId.get(eventId))!==JSON.stringify(row))eventConflicts+=1;
