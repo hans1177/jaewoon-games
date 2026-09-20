@@ -436,6 +436,28 @@ test('supervised Web candidates learn review decisions and stay unreleased until
   assert.ok(approved.experienceReviews[0].reusablePatterns.includes('기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'));
 });
 
+test('fan-in blocks release when only durable supervised evidence survives queue normalization',()=>{
+  const branch='vibe2/candidate/supervised-evidence-only/primary';
+  const task={
+    id:'supervised-evidence-only',gameId:'supervised-evidence-only',target:'web',sourceRoot:'web-games/supervised-evidence-only',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment',supervisionApproved:false,
+    evidence:[
+      'supervised-web-build:required',branch,
+      'role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS'
+    ]
+  };
+  const valid={
+    version:9,taskId:task.id,outcome:'PASS',candidateBranch:branch,baseMainSha:'abc123',
+    candidateIdentity:{taskId:task.id,gameId:task.gameId,target:'web',sourceRoot:task.sourceRoot,baseMainSha:'abc123',manifestPath:'.vibe2/candidates/supervised-evidence-only/manifest.json'},
+    evidence:[branch]
+  };
+  const result=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[valid]});
+  assert.equal(result.pass,true);
+  assert.equal(result.releaseCandidates.length,0);
+  assert.equal(result.reviewed[0].releaseBlocked,true);
+  assert.equal(result.reviewed[0].releaseBlocker,'SUPERVISED_APPROVAL_REQUIRED');
+  assert.equal(result.queue.tasks[0].blocker,'candidate-awaiting-supervised-review');
+});
 test('fan-in workflow persists verified supervised review learning before release dispatch',()=>{
   assert.match(workflow,/vibe2-experience-control\.mjs/);
   assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
