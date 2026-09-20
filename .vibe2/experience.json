@@ -37089,6 +37089,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f6ca0753fe9c66c1233c9223",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:ad4facb09e9d9d019b6a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b46e7c9766ca691dbd952664",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:47c517948c0f9d9c0b6b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2a8d8b1301d962c63823805f",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:631aa8fdfddda3faa3e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -37107,7 +37206,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 32,
+        "applicationCount": 35,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -102293,7 +102392,11 @@
         "base-main:db00b7310d621bbfc9ff90269cdc1ac7e6a11377",
         "actions-run:35521296791",
         "reservation-id:35521296791:1",
-        "coding-trace:ctrace_9fa64e80a469ed587cd50708"
+        "coding-trace:ctrace_9fa64e80a469ed587cd50708",
+        "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+        "actions-run:35525269393",
+        "reservation-id:35525269393:1",
+        "coding-trace:ctrace_91bea3b2729341254594904e"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -102302,8 +102405,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 2,
-      "confidence": 0.6667,
+      "confirmations": 3,
+      "confidence": 0.75,
       "capabilityApplications": [
         {
           "version": 1,
@@ -102403,6 +102506,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b8570377831dd135a9d8a254",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:ad4facb09e9d9d019b6a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_617cc1e7706d1776a86ac8af",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:47c517948c0f9d9c0b6b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_869710bd5e209f4063e8b776",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:631aa8fdfddda3faa3e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -102421,7 +102623,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 3,
+        "applicationCount": 6,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -105267,7 +105469,11 @@
         "base-main:9ec42c8d5719a0180dbcdbf79bce87040ebea197",
         "actions-run:35521840879",
         "reservation-id:35521840879:1",
-        "coding-trace:ctrace_94196750cf78feda7d3dab2e"
+        "coding-trace:ctrace_94196750cf78feda7d3dab2e",
+        "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+        "actions-run:35525269393",
+        "reservation-id:35525269393:1",
+        "coding-trace:ctrace_5eee0fd34b25d4b7cfc968bd"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -105276,8 +105482,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 3,
-      "confidence": 0.75,
+      "confirmations": 4,
+      "confidence": 0.8,
       "capabilityApplications": [
         {
           "version": 1,
@@ -105377,6 +105583,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6e793f229c0c95714d66a583",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:ad4facb09e9d9d019b6a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_50fec3830ef0d70d48d8db50",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:47c517948c0f9d9c0b6b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_67d0ad2d663fddddb45a710b",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:631aa8fdfddda3faa3e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -105395,7 +105700,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 3,
+        "applicationCount": 6,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -105465,7 +105770,107 @@
       "reusable": true,
       "confirmations": 2,
       "confidence": 0.6667,
-      "capabilityApplications": [],
+      "capabilityApplications": [
+        {
+          "version": 1,
+          "applicationId": "capp_639a662b1eecc8d28b93ad08",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:ad4facb09e9d9d019b6a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_096b1787458a34b0ad6fa36e",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:47c517948c0f9d9c0b6b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0b86280bc80ee9019e8259f4",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:631aa8fdfddda3faa3e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        }
+      ],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
         "version": 1,
@@ -105482,7 +105887,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 0,
+        "applicationCount": 3,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -105545,7 +105950,11 @@
         "base-main:9ec42c8d5719a0180dbcdbf79bce87040ebea197",
         "actions-run:35521840879",
         "reservation-id:35521840879:1",
-        "coding-trace:ctrace_2e25ba6f79535aa369903b55"
+        "coding-trace:ctrace_2e25ba6f79535aa369903b55",
+        "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+        "actions-run:35525269393",
+        "reservation-id:35525269393:1",
+        "coding-trace:ctrace_daa49270be5d2560f2569d70"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -105554,9 +105963,109 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 3,
-      "confidence": 0.75,
-      "capabilityApplications": [],
+      "confirmations": 4,
+      "confidence": 0.8,
+      "capabilityApplications": [
+        {
+          "version": 1,
+          "applicationId": "capp_f75fd883991c68fd8e1bb4fa",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:ad4facb09e9d9d019b6a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a30ed6e3ff90953347d626c9",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:47c517948c0f9d9c0b6b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f922a72745e7ce4bf8085342",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_26dd127f1e8b8cade30fe0a8",
+            "capability_ctrace_812f2f50cb5292673f9203c3",
+            "capability_ctrace_f45db69cb6d78d39724618a6",
+            "capability_ctrace_2b65182e9775732951f9f505",
+            "capability_ctrace_359ae4e4a5016c4e7e03ee57"
+          ],
+          "evidence": [
+            "base-main:50081d6e8a9f93aa5c049578852407048ad88992",
+            "actions-run:35525269393",
+            "reservation-id:35525269393:1",
+            "capability-application-sample:631aa8fdfddda3faa3e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        }
+      ],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
         "version": 1,
@@ -105573,7 +106082,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 0,
+        "applicationCount": 3,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
