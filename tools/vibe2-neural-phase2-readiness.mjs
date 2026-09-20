@@ -100,7 +100,10 @@ export function evaluatePhase2Readiness({
     calibrationAccuracy:feedback.observedAccuracy!==null&&feedback.observedAccuracy>=required.calibrationAccuracy,
     verifiedRootCauseVolume:rootCause.verified>=required.verifiedRootCause,
     rootCauseSampleIdentityCoverage:rootCause.verifiedSampleIdentityCoverage>=required.rootCauseSampleIdentityCoverage,
+    zeroFeedbackSampleConflicts:Number(feedback.sampleConflicts||0)===0,
+    zeroShadowEventConflicts:Number(events.eventConflicts||0)===0,
     zeroRootCauseSampleConflicts:rootCause.sampleConflicts===0,
+    zeroShadowAuditSampleConflicts:Number(audit.sampleConflicts||0)===0,
     rootCausePredictionCoverage:predictionCoverage>=required.rootCausePredictionCoverage,
     rootCausePredictionContradictionRate:rootCause.predictionContradictionRate!==null
       &&rootCause.predictionContradictionRate<=required.maxRootCausePredictionContradictionRate,
