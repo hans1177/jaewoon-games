@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -747,6 +747,30 @@
       "actualExecutionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
       "neuralExecutionAuthority": "NONE",
       "syncedMainHead": "2b9f8a587e78d12d1484fe5db2ef38180b0989d6"
+    },
+    "vibeExecutionBinding": {
+      "version": 1,
+      "state": "MERGED_MAIN",
+      "sourcePr": 1870,
+      "mergedCommit": "4261e555c46d1695c7b027a22e68f0bbaa3b2b64",
+      "components": [
+        "tools/vibe2-central-work-contract.mjs",
+        "tools/vibe2-continuous-runner.mjs",
+        "tools/vibe2-source-worker.mjs",
+        "qa/vibe2-central-work-contract.test.mjs"
+      ],
+      "flow": [
+        "LOAD_CENTRAL_ROADMAP",
+        "COMPILE_TASK_LOCAL_WORK_CONTRACT",
+        "VERIFY_POLICY_FINGERPRINT_PRE_SOURCE_GENERATION",
+        "GENERATE_WITH_EXACT_WRITABLE_SCOPE_AND_INVARIANTS",
+        "VERIFY_POLICY_FINGERPRINT_PRE_CANDIDATE_WRITE",
+        "CONTINUE_EXISTING_QA_FANIN_AND_WAVE_EXECUTION"
+      ],
+      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "neuralExecutionAuthority": "NONE",
+      "authorityChange": "NONE",
+      "runtimeVerificationPending": "VIBE2_24H_LATEST_MAIN_COMPILED_CONTRACT_EVIDENCE"
     }
   }
 }
