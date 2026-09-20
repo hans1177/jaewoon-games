@@ -1002,7 +1002,8 @@
       "coding_1qr0btd",
       "coding_1ahi6ww",
       "coding_c8i8tj",
-      "coding_81g5sf"
+      "coding_81g5sf",
+      "coding_17z2x0l"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4199,18 +4200,18 @@
         "lastUpdatedAt": "2026-09-20T16:10:26.148Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
-        "verifiedApplications": 23,
+        "verifiedApplications": 24,
         "firstCandidatePasses": 3,
-        "totalGenerationAttempts": 43,
+        "totalGenerationAttempts": 45,
         "verifiedFailures": 24,
         "games": {
           "seed-puzzle-chromatic-cascade": 18,
           "fantasy-survival": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 3,
-          "seed-casual-realm-weaver": 1
+          "seed-casual-realm-weaver": 2
         },
         "targets": {
-          "web": 23
+          "web": 24
         },
         "contextModes": {
           "PRIMARY_SYMBOL_WINDOWS": {
@@ -4224,14 +4225,14 @@
             "lastUpdatedAt": "2026-09-20T16:06:21.062Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "verifiedFailures": 1,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 4,
-            "totalContextBytes": 25912,
-            "lastEvidence": "coding_w53hy6",
+            "totalGenerationAttempts": 6,
+            "totalContextBytes": 26527,
+            "lastEvidence": "coding_17z2x0l",
             "lastFailureEvidence": "coding_negative_1dze3rf",
-            "lastUpdatedAt": "2026-09-20T15:37:45.069Z"
+            "lastUpdatedAt": "2026-09-20T16:14:45.254Z"
           }
         },
         "failureFingerprints": {
@@ -4422,15 +4423,15 @@
             "lastUpdatedAt": "2026-09-20T15:48:24.781Z"
           },
           "web|NO_OP": {
-            "verifiedApplications": 1,
+            "verifiedApplications": 2,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 2,
+            "totalGenerationAttempts": 4,
             "verifiedFailures": 6,
             "games": {
-              "seed-casual-realm-weaver": 1
+              "seed-casual-realm-weaver": 2
             },
             "targets": {
-              "web": 1
+              "web": 2
             },
             "failureGames": {
               "seed-story-complete-rpg-chronicles-of-eldoria": 6
@@ -4441,9 +4442,9 @@
             "failureClasses": {
               "NO_OP": 6
             },
-            "lastEvidence": "coding_w53hy6",
+            "lastEvidence": "coding_17z2x0l",
             "lastFailureEvidence": "coding_negative_106dn15",
-            "lastUpdatedAt": "2026-09-20T15:37:45.071Z"
+            "lastUpdatedAt": "2026-09-20T16:14:45.254Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
             "verifiedApplications": 0,
@@ -4467,9 +4468,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1qr0btd",
+        "lastEvidence": "coding_17z2x0l",
         "lastFailureEvidence": "coding_negative_62rknb",
-        "lastUpdatedAt": "2026-09-20T16:06:21.062Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.254Z"
       }
     }
   },
@@ -7003,7 +7004,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T16:14:37.592Z",
+    "lastBuiltAt": "2026-09-20T16:14:45.279Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -7011,7 +7012,7 @@
     "version": 1,
     "domains": {
       "CORE_LOOP": {
-        "verifiedApplications": 56,
+        "verifiedApplications": 57,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7023,18 +7024,18 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.231Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "STATE_MACHINE": {
-        "verifiedApplications": 58,
+        "verifiedApplications": 59,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7047,18 +7048,18 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "COMBAT": {
-        "verifiedApplications": 49,
+        "verifiedApplications": 50,
         "verifiedFailures": 0,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 10,
@@ -7069,15 +7070,15 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "AI": {
         "verifiedApplications": 19,
@@ -7094,7 +7095,7 @@
         "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
       },
       "PROGRESSION": {
-        "verifiedApplications": 46,
+        "verifiedApplications": 47,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7105,15 +7106,15 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "ECONOMY": {
         "verifiedApplications": 0,
@@ -7169,7 +7170,7 @@
         "lastUpdatedAt": "2026-09-20T15:46:21.344Z"
       },
       "DEBUGGING": {
-        "verifiedApplications": 65,
+        "verifiedApplications": 66,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7183,15 +7184,15 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "RECOVERY": {
         "verifiedApplications": 0,
@@ -7318,7 +7319,7 @@
         "lastUpdatedAt": null
       },
       "QUEST_DESIGN": {
-        "verifiedApplications": 48,
+        "verifiedApplications": 49,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7330,15 +7331,15 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "CHARACTER_ARC": {
         "verifiedApplications": 0,
@@ -7359,7 +7360,7 @@
         "lastUpdatedAt": null
       },
       "WEB_RUNTIME": {
-        "verifiedApplications": 72,
+        "verifiedApplications": 73,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7373,15 +7374,15 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_51ijba",
-        "lastUpdatedAt": "2026-09-20T16:04:06.232Z"
+        "lastEvidence": "knowledge_1c9a9dd",
+        "lastUpdatedAt": "2026-09-20T16:14:45.276Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 0,
@@ -7438,7 +7439,7 @@
     "entries": {
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7452,23 +7453,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7482,23 +7483,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7512,23 +7513,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7542,23 +7543,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7572,23 +7573,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7602,23 +7603,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 74,
+        "verifiedApplications": 75,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 10,
@@ -7632,23 +7633,23 @@
           "fantasy-survival": 3,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 72,
+          "web": 73,
           "unity": 2
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "EXPERIENCE:exp_security_28453669955c43a85d166c5c": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 70,
+        "verifiedApplications": 71,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7662,22 +7663,22 @@
           "fantasy-survival": 1,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 70
+          "web": 71
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 55,
+        "verifiedApplications": 56,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7688,22 +7689,22 @@
           "bug-defense": 10,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 55
+          "web": 56
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "CODE_PATTERN:pat_1avbmmv": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 55,
+        "verifiedApplications": 56,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7714,22 +7715,22 @@
           "bug-defense": 10,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 55
+          "web": 56
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "CODE_PATTERN:pat_1vgfuno": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 55,
+        "verifiedApplications": 56,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7740,22 +7741,22 @@
           "bug-defense": 10,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 55
+          "web": 56
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "CODE_PATTERN:pat_3f780w": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 55,
+        "verifiedApplications": 56,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7766,22 +7767,22 @@
           "bug-defense": 10,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 55
+          "web": 56
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "CODE_PATTERN:pat_9pwgix": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 55,
+        "verifiedApplications": 56,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7792,22 +7793,22 @@
           "bug-defense": 10,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 55
+          "web": 56
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "CODE_PATTERN:pat_m3ipio": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 55,
+        "verifiedApplications": 56,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 8,
@@ -7818,18 +7819,18 @@
           "bug-defense": 10,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 55
+          "web": 56
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf": {
         "source": "PRACTICE_DISTILLED",
@@ -7857,7 +7858,7 @@
       },
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 46,
+        "verifiedApplications": 47,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7868,18 +7869,18 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-idle-growth-rpg-crystal-bloom": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 46
+          "web": 47
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -7906,7 +7907,7 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_7022dd1d29e03580f9fab379": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 42,
+        "verifiedApplications": 43,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7918,17 +7919,17 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 42
+          "web": 43
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_a5381be270464bcf8da90edf": {
         "source": "VERIFIED_CAPABILITY",
@@ -7968,7 +7969,7 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_dd1edc1a11a1e7a360dfda28": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 36,
+        "verifiedApplications": 37,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 10,
@@ -7979,17 +7980,17 @@
           "daechung-rpg": 2,
           "line-defense": 2,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
-          "seed-casual-realm-weaver": 1,
+          "seed-casual-realm-weaver": 2,
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2
         },
         "targets": {
-          "web": 36
+          "web": 37
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_4046e195870c0ad506bb6c96": {
         "source": "VERIFIED_CAPABILITY",
@@ -8443,22 +8444,23 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_1a453e3e34004eb1c376197d": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 15,
+        "verifiedApplications": 16,
         "verifiedFailures": 0,
         "games": {
           "bug-defense": 8,
           "daechung-rpg": 3,
           "fantasy-survival": 2,
           "survival": 1,
-          "line-defense": 1
+          "line-defense": 1,
+          "seed-casual-realm-weaver": 1
         },
         "targets": {
-          "web": 15
+          "web": 16
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_74d39d52bb47e6444412ec04": {
         "source": "VERIFIED_CAPABILITY",
@@ -8529,21 +8531,22 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_31bc6402f5611fd66c298fb4": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 10,
+        "verifiedApplications": 11,
         "verifiedFailures": 0,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 6,
           "fantasy-survival": 2,
           "daechung-rpg": 1,
-          "line-defense": 1
+          "line-defense": 1,
+          "seed-casual-realm-weaver": 1
         },
         "targets": {
-          "web": 10
+          "web": 11
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_c42b48a673bc1019bd202884": {
         "source": "VERIFIED_CAPABILITY",
@@ -8607,7 +8610,7 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_107b55ca6e8e05ede28f9b9f": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 16,
+        "verifiedApplications": 17,
         "verifiedFailures": 0,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 5,
@@ -8617,16 +8620,17 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 2,
           "village-dungeons": 1,
-          "line-defense": 1
+          "line-defense": 1,
+          "seed-casual-realm-weaver": 1
         },
         "targets": {
-          "web": 15,
+          "web": 16,
           "unity": 1
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_51ijba",
+        "lastEvidence": "knowledge_1c9a9dd",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-20T16:04:06.230Z"
+        "lastUpdatedAt": "2026-09-20T16:14:45.275Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_7636b423561193400bbaf0e6": {
         "source": "VERIFIED_CAPABILITY",
@@ -9087,8 +9091,9 @@
       "knowledge_npi711",
       "knowledge_1781ez8",
       "knowledge_1knmw9j",
-      "knowledge_51ijba"
+      "knowledge_51ijba",
+      "knowledge_1c9a9dd"
     ]
   },
-  "updatedAt": "2026-09-20T16:14:37.592Z"
+  "updatedAt": "2026-09-20T16:14:45.279Z"
 }
