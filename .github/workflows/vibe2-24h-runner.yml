@@ -14,12 +14,14 @@ on:
       - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
       - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe2-native-asset-production.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-capability-distillation.test.mjs'
       - 'qa/vibe2-incremental-qa.test.mjs'
@@ -156,6 +158,7 @@ jobs:
               node --check tools/vibe2-learning-motor.mjs
               node --check tools/vibe2-auto-planner.mjs
               node --check tools/vibe2-continuous-runner.mjs
+              node --check tools/vibe2-asset-production-plan.mjs
               node --check tools/vibe2-source-worker.mjs
               node --check tools/vibe2-capability-distillation.mjs
               node --check tools/vibe2-incremental-qa.mjs
@@ -164,6 +167,7 @@ jobs:
               node --check tools/vibe2-design-intelligence.mjs
               node --test qa/vibe2-learning-motor.test.mjs
               node --test qa/vibe2-auto-planner.test.mjs
+              node --test qa/vibe2-native-asset-production.test.mjs
               node --test qa/vibe2-source-worker.test.mjs
               node --test qa/vibe2-capability-distillation.test.mjs
               node --test qa/vibe2-incremental-qa.test.mjs
