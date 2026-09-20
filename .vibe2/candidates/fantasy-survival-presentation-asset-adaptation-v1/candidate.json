@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "     if(version<13){wx+=3000;wy+=2000}",
+      "replace": "if(version<30){for(const r of recipes)if(state.knownItems[r.id])for(const [k,v] of Object.entries(r.cost||{}))if(Number(v)>0)rememberMaterial(k)}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
