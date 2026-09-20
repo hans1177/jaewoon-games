@@ -1,5 +1,5 @@
 {
-  "version": 55,
+  "version": 56,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -405,6 +405,32 @@
           "authorityChange": "NONE",
           "sourcePr": 1984
         }
+      },
+      "diagnosticFirstSourceGeneration": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "triggerRunId": 35497006959,
+        "upstream": "tools/vibe2-exploration-worker.mjs::verifyDiagnosticReplayBaseline",
+        "preservedDiagnosticIdentity": [
+          "type",
+          "file",
+          "line",
+          "needle",
+          "microTask",
+          "verifiedResponsibleSystem"
+        ],
+        "generatorAnchor": "tools/vibe2-source-worker.mjs::diagnosticFocusedReplaceOnlySpec",
+        "generatorPrompt": "tools/vibe2-source-worker.mjs::buildDiagnosticFocusedReplaceOnlyPrompt",
+        "preQaPostcondition": "tools/vibe2-source-worker.mjs::evaluateDiagnosticPostcondition",
+        "downstreamCanonicalQa": "tools/vibe2-incremental-qa.mjs::runCausalReplay",
+        "route": "REPRODUCED_DIAGNOSTIC_TO_EXACT_FIRST_SOURCE_EDIT",
+        "missingPostcondition": "RETRY_GENERATION",
+        "qaBypassAllowed": false,
+        "canonicalQaRequired": true,
+        "fullRegressionRequired": true,
+        "writableScopeExpansionAllowed": false,
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "authorityChange": "NONE"
       }
     },
     "phase2Shadow": {
