@@ -383,7 +383,7 @@ function findPath(startKey,endKey){
       if(kk===endKey){
         var out=[kk],x=cur;
         while(x){out.push(x);x=prev[x];}
-        return out.reverse();
+buildingConnected(b){return adjacentCells(b.gx,b.gz).some(function(p){return !!connectedPathKeys()[key(p[0],p[1])]);})
       }
       q.push(kk);
     }
