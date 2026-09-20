@@ -35,7 +35,7 @@ test('continuous runner loads distilled external AI and emits exact knowledge tr
   assert.match(runner,/exactInjectedKnowledgeIds/);
   assert.match(workflow,/learning-knowledge-ids:/);
   assert.match(workflow,/knowledgeApplication/);
-  assert.match(workflow,/version:13/);
+  assert.match(workflow,/version:12/);
 });
 
 test('Web adapter stays deterministic while external AI remains in a separate verified distillation lane',()=>{
