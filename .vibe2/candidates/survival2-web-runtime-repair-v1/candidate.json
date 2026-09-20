@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "            if (gameState.player.health <= 0) {",
+      "replace": "            if (gameState.player.health <= 0) {\n                gameState.gameOver = true;\n                alert(\"Game Over! Your health is 0.\");\n            }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
