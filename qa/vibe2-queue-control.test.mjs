@@ -1051,3 +1051,33 @@ test('continuous core workflow distinguishes pending neuron results from complet
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
   assert.doesNotMatch(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS/);
 });
+
+
+test('PASS exposes newly satisfied dependency nodes for immediate event-driven DAG refill',()=>{
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
+    {id:'root-a',gameId:'a',target:'web',department:'development',type:'implementation',goal:'root a',status:'running',sourceRoot:'web-games/a',responsibleFiles:['index.html'],reservationId:'dep-run:1',reservationRunId:'dep-run',reservedAt:'2026-09-20T10:00:00Z'},
+    {id:'root-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'root b',status:'done',sourceRoot:'web-games/b',responsibleFiles:['index.html']},
+    {id:'child-ready',gameId:'c',target:'web',department:'development',type:'implementation',goal:'child',status:'queued',sourceRoot:'web-games/c',responsibleFiles:['index.html'],dependencies:['root-a','root-b']},
+    {id:'child-wait',gameId:'d',target:'web',department:'development',type:'implementation',goal:'child wait',status:'queued',sourceRoot:'web-games/d',responsibleFiles:['index.html'],dependencies:['root-a','missing-root']}
+  ]});
+  const settled=settleVibeTask(queue,{taskId:'root-a',outcome:'PASS',evidence:['qa-pass','release-pass'],retryable:false});
+  assert.equal(settled.outcome,'PASS');
+  assert.equal(settled.dependencyEventRequired,true);
+  assert.deepEqual(settled.dependencyReadyTaskIds,['child-ready']);
+  assert.ok(settled.next.selected.some(task=>task.id==='child-ready'));
+  assert.ok(!settled.dependencyReadyTaskIds.includes('child-wait'));
+});
+
+test('candidate result workflows use direct repository-dispatch refill instead of 24h-runner polling',()=>{
+  for(const file of [
+    '.github/workflows/vibe2-candidate-release.yml',
+    '.github/workflows/vibe2-unity-release-result.yml',
+    '.github/workflows/vibe2-unity-candidate-result.yml',
+    '.github/workflows/vibe2-roblox-candidate-result.yml'
+  ]){
+    const workflow=fs.readFileSync(file,'utf8');
+    assert.match(workflow,/vibe2-fanin-refill/);
+    assert.match(workflow,/repos\/\$\{GITHUB_REPOSITORY\}\/dispatches/);
+    assert.doesNotMatch(workflow,/gh workflow run vibe2-24h-runner\.yml/);
+  }
+});
