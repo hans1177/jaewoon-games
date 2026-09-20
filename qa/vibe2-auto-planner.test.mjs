@@ -348,6 +348,12 @@ test('existing queued exact Web repair refreshes its goal from latest company ru
     goal:'old generic repair goal',releaseState:'development-confirmed',status:'queued',retries:1,maxRetries:2,blocker:null,
     evidence:['company-runtime-state:WEB_VIBE_REPAIR_REQUIRED']
   };
+  const diagnostic={
+    id:`${gameId}-diagnostic-bundle-dom-index-html`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'stale diagnostic',
+    releaseState:'development-confirmed',status:'cancelled',retries:0,maxRetries:2,blocker:'superseded-by:VIBE_WEB_REPAIR',
+    evidence:['diagnostic:DOM_NULL_EVENT_BIND','diagnostic-key:DOM_NULL_EVENT_BIND:index.html']
+  };
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:gameId,name:'Refresh Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
@@ -360,7 +366,7 @@ test('existing queued exact Web repair refreshes its goal from latest company ru
       routingBlockers:['vibe-web-implementation-required:WEB_REPAIR:REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5'],
       webValidationLastAttemptAt:'2026-09-19T07:50:00.000Z'
     }]},
-    queue:{maxConcurrentTasks:20,tasks:[exact]},repoRoot:root,maxConcurrentTasks:20
+    queue:{maxConcurrentTasks:20,tasks:[exact,diagnostic]},repoRoot:root,maxConcurrentTasks:20
   });
   const refreshed=result.queue.tasks.find(row=>row.id===exact.id);
   assert.ok(refreshed);
@@ -372,6 +378,10 @@ test('existing queued exact Web repair refreshes its goal from latest company ru
   assert.match(refreshed.goal,/누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현/);
   assert.match(refreshed.goal,/last-validation-at=2026-09-19T07:50:00.000Z/);
   assert.ok(refreshed.evidence.includes('company-runtime-failure-evidence:refreshed'));
+  assert.ok(refreshed.evidence.includes('diagnostic:DOM_NULL_EVENT_BIND'));
+  assert.ok(refreshed.evidence.includes('diagnostic-key:DOM_NULL_EVENT_BIND:index.html'));
+  assert.ok(refreshed.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
+  assert.ok(refreshed.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
 });
 
 test('supervised exact Web repair keeps supervisor goal when runtime evidence refreshes',()=>{

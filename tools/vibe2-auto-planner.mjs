@@ -534,6 +534,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
           return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION',`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
         }
         if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
+          const diagnosticEvidence=inheritedDiagnosticEvidence(gameId,indexPath,queue);
           const game=catalogGames.get(gameId)||{};
           const runtimeFailureEvidence=compactRuntimeFailureEvidence({
             requestedStage:runtimeItem?.vibeWebRequestedStage,
@@ -553,10 +554,11 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
               ||clean(item?.productionMode)==='SUPERVISED_VIBE_COAUTHORING'
               ||(item?.evidence||[]).map(clean).includes('supervised-web-build:required');
             if(supervised){
-              return{...item,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+              return{...item,evidence:[...new Set([...(item.evidence||[]),...diagnosticEvidence,'company-runtime-failure-evidence:refreshed','company-runtime-failure-evidence:supervised-goal-preserved','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
             }
-            return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+            return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),...diagnosticEvidence,'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
           }
+          if(diagnosticEvidence.length)return{...item,evidence:[...new Set([...(item.evidence||[]),...diagnosticEvidence,'company-runtime-diagnostic-bridge:refreshed'])]};
         }
         return item;
       }
