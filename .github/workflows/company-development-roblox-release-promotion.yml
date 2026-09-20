@@ -85,9 +85,11 @@ jobs:
             process.exit(0);
           }
           const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
+          const productionClass=String(item.productionClass||'').toUpperCase();
+          const sync=item.webNativeRevisionSync?.platforms?.ROBLOX||{};
+          const webNativePropagation=productionClass==='RELEASE_CONFIRMED'&&Boolean(sync.requestedWebSourceIndexSha256)&&sync.completedWebSourceIndexSha256!==sync.requestedWebSourceIndexSha256;
           const canonical=
-            String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
-            &&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX'
+            ((productionClass==='DEVELOPMENT_CONFIRMED'&&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX')||webNativePropagation)
             &&item.robloxFinalReviewPassed===true
             &&item.robloxFailureStage==='RELEASE_PROMOTION'
             &&item.robloxFailureSignature==='ROBLOX_RELEASE_PROMOTION_PENDING'
@@ -374,9 +376,16 @@ jobs:
             versionNumber:version,
             workflowRunId:releaseRunId,
             publishedAt:stamp,
+            webSourceIndexSha256:String(item.webNativeRevisionSync?.platforms?.ROBLOX?.requestedWebSourceIndexSha256||item.webSourceIndexSha256||item.webPlatformHandoff?.sourceIndexSha256||'')||null,
             authority:'roblox-open-cloud-final-review-release-promotion',
           };
           item.robloxReleaseClaim=true;
+          const propagationSync=item.webNativeRevisionSync?.platforms?.ROBLOX;
+          if(propagationSync?.requestedWebSourceIndexSha256){
+            item.webNativeRevisionSync=item.webNativeRevisionSync||{version:1,platforms:{}};
+            item.webNativeRevisionSync.platforms=item.webNativeRevisionSync.platforms||{};
+            item.webNativeRevisionSync.platforms.ROBLOX={...propagationSync,state:'COMPLETE',currentStep:'POST_RELEASE_FOCUSED_DEVELOPMENT',canonicalState:'POST_RELEASE_FOCUSED_DEVELOPMENT',completedWebSourceIndexSha256:propagationSync.requestedWebSourceIndexSha256,completedNativeSourceRevision:process.env.SOURCE_REVISION,completedArtifactIdentity:process.env.ARTIFACT_IDENTITY,completedAt:stamp,updatedAt:stamp};
+          }
           item.robloxReleasePublishedAt=stamp;
           item.robloxReleaseVersionNumber=version;
           item.postReleaseFocusedDevelopment={
