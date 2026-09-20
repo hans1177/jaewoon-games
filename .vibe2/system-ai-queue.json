@@ -6,7 +6,7 @@
   "tasks": [
     {
       "id": "sys-web-bootstrap-signal-routing-v1",
-      "status": "failed",
+      "status": "running",
       "priority": "critical",
       "goal": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Add a focused contract test that proves SOURCE_MISSING and WEB_REPAIR signals are routed to Vibe work and ordinary unexpected bootstrap failures still fail normally.",
       "responsibleFiles": [
@@ -45,14 +45,14 @@
         "node --test qa/company-development-confirmed-runtime-contract.test.mjs"
       ],
       "dependencies": [],
-      "retries": 3,
+      "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35478923812:1",
+      "reservedAt": "2026-09-20T00:30:10.871Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-priority:portfolio-wide-common-web-blocker",
         "company-runtime:19-of-19-web-gameplay-music",
@@ -87,11 +87,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T06:35:25.280Z"
+      "updatedAt": "2026-09-20T00:30:10.871Z"
     },
     {
       "id": "sys-vibe-planner-web-repair-routing-v1",
-      "status": "failed",
+      "status": "running",
       "priority": "critical",
       "goal": "Make the Vibe autonomous planner consume company-runtime Web repair/bootstrap states explicitly. When a DEVELOPMENT_CONFIRMED game is WEB_VIBE_REPAIR_REQUIRED or has a missing Web source root that central policy allows to bootstrap, enqueue one deduplicated actionable Vibe task with the correct responsible index.html, source-root-bootstrap-required evidence when applicable, and exact-stage resume semantics. Do not weaken source-root candidate-branch restrictions, QA gates, or direct-main-write prohibitions. Extend existing planner tests for both missing-source and repair-required inputs plus duplicate suppression.",
       "responsibleFiles": [
@@ -129,14 +129,14 @@
         "node --test qa/vibe2-auto-planner.test.mjs"
       ],
       "dependencies": [],
-      "retries": 3,
+      "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35478923812:1",
+      "reservedAt": "2026-09-20T00:30:10.871Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-priority:planner-handoff",
         "company-runtime:19-web-repair-required",
@@ -172,11 +172,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T06:35:25.280Z"
+      "updatedAt": "2026-09-20T00:30:10.871Z"
     },
     {
       "id": "sys-vibe-web-source-bootstrap-boundary-v1",
-      "status": "failed",
+      "status": "running",
       "priority": "critical",
       "goal": "Audit and harden the Vibe source worker Web source-root bootstrap path so an explicitly authorized WEB_BASE_IMPLEMENTATION task can create only the assigned web-games/<gameId>/index.html on an isolated candidate branch, while ordinary missing roots remain forbidden. Preserve Vibe2/Vibe3 game implementation ownership, direct-main-write=false, Codex game-source-write forbidden, and all existing file/path safety checks. Add or refine tests for authorized bootstrap, unauthorized bootstrap rejection, and repair of an existing Web index.",
       "responsibleFiles": [
@@ -213,14 +213,14 @@
         "node --test qa/vibe2-source-worker.test.mjs"
       ],
       "dependencies": [],
-      "retries": 3,
+      "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35478923812:1",
+      "reservedAt": "2026-09-20T00:30:10.871Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-priority:web-source-worker-boundary",
         "primary-ai-review:REWORK",
@@ -254,11 +254,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T06:35:25.280Z"
+      "updatedAt": "2026-09-20T00:30:10.871Z"
     },
     {
       "id": "sys-web-vibe-handoff-e2e-contract-v1",
-      "status": "failed",
+      "status": "running",
       "priority": "critical",
       "goal": "Create an independent end-to-end machine contract test for the portfolio Web repair handoff. The test must inspect the current central policy, bootstrap implementation, confirmed-development workflow, Vibe planner, continuous runner, and source worker as text/code contracts and assert: preserve-only bootstrap emits actionable Vibe signals; workflow does not turn those expected signals into a generic terminal web-gameplay-music dead end; planner consumes WEB_VIBE_REPAIR_REQUIRED/missing-source state; authorized bootstrap remains candidate-only; strict runtime/QA/regression gates stay present. This is an independent verifier: do not modify production implementation files.",
       "responsibleFiles": [
@@ -305,14 +305,14 @@
         "node --test qa/company-web-vibe-handoff-e2e.test.mjs"
       ],
       "dependencies": [],
-      "retries": 3,
+      "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35478923812:1",
+      "reservedAt": "2026-09-20T00:30:10.871Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-independent-verifier:common-web-handoff",
         "primary-ai-review:REWORK",
@@ -346,7 +346,7 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T06:35:25.280Z"
+      "updatedAt": "2026-09-20T00:30:10.871Z"
     },
     {
       "id": "sys-verify-web-bootstrap-signal-v1",
@@ -647,7 +647,7 @@
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
-      "status": "failed",
+      "status": "running",
       "priority": "critical",
       "goal": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
       "responsibleFiles": [
@@ -670,14 +670,14 @@
         "node --test qa/company-system-ai-supervision-loop.test.mjs"
       ],
       "dependencies": [],
-      "retries": 3,
+      "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35478923812:1",
+      "reservedAt": "2026-09-20T00:30:10.871Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -700,11 +700,13 @@
         "actions-run:35425932081",
         "actions-run:35426306171",
         "recovery-queue:recovery-453ef0814800056c05b6",
-        "actions-run:35426574813"
+        "actions-run:35426574813",
+        "recovery-queue:recovery-system-ai-core-implementation-v1",
+        "recovery-exact-stage:SYSTEM_AI_IMPLEMENTATION"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-19T06:35:25.280Z"
+      "updatedAt": "2026-09-20T00:30:10.871Z"
     }
   ]
 }
