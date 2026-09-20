@@ -8609,7 +8609,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-20T11:02:23.534Z"
+      "updatedAt": "2026-09-20T11:03:18.052Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -8621,7 +8621,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "incremental-qa-failed",
       "blastRadius": "single-task",
-      "checkpoint": "2026-09-20T10:57:42Z",
+      "checkpoint": "2026-09-20T11:02:56Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -10295,7 +10295,11 @@
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35506435188%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35506435188-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR%22%2C%22actionReason%22%3A%22VERIFIED_ROOT_CAUSE_AVAILABLE%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-event-shadow-action:PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35506435188%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35506435188-1%7CCI_RESULT%22%2C%22eventId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35506435188%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35506435188-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A8%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A6%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%22%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35506435188%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35506435188-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR%22%2C%22proposedReason%22%3A%22VERIFIED_ROOT_CAUSE_AVAILABLE%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22ROOT_CAUSE_VERIFIED%22%7D"
+        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%22%2C%22sampleId%22%3A%22daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html%7C35506435188%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35506435188-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR%22%2C%22proposedReason%22%3A%22VERIFIED_ROOT_CAUSE_AVAILABLE%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22ROOT_CAUSE_VERIFIED%22%7D",
+        "release-dispatch-recovery-requested:vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-primary-35506435188-1",
+        "release-dispatch-recovery-at:1789902148723",
+        "release-dispatch-recovery-candidate-sha:517cdc4575431d493c35e4cb5538c56b6e22f152",
+        "actions-run-35506694445"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -10311,7 +10315,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.739Z",
-      "updatedAt": "2026-09-20T11:02:23.536Z"
+      "updatedAt": "2026-09-20T11:03:18.054Z"
     },
     {
       "id": "recovery-3ca7e1812e127f215428",
@@ -11717,7 +11721,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-20T11:02:23.538Z"
+      "updatedAt": "2026-09-20T11:03:18.056Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -13343,7 +13347,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T05:08:20.885Z",
-      "updatedAt": "2026-09-20T11:02:23.541Z"
+      "updatedAt": "2026-09-20T11:03:18.058Z"
     },
     {
       "id": "recovery-b6f54ab5f0fa70464656",
@@ -13679,7 +13683,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T07:24:23.306Z",
-      "updatedAt": "2026-09-20T11:02:23.543Z"
+      "updatedAt": "2026-09-20T11:03:18.060Z"
     }
   ]
 }
