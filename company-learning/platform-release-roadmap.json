@@ -1,5 +1,5 @@
 {
-  "version": 217,
+  "version": 218,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -7780,9 +7780,9 @@
       "phase2NeuralExecutionAuthority": false,
       "externalProviderAndPlanningBound": 256,
       "refillFormula": "MAX(0, CURRENT_ADAPTIVE_GAME_PRIMARY_TARGET - ACTIVE_GAME_WORKERS)",
-      "observedExample": "TARGET_20_ACTIVE_8=>REFILL_12; TARGET_64_ACTIVE_40=>REFILL_24",
+      "observedExample": "TARGET_256_ACTIVE_19=>REFILL_237; TARGET_64_ACTIVE_40=>REFILL_24",
       "adaptiveBackpressureMayLowerBelow20": true,
-      "rationale": "GAME_PRIMARY should continuously choose its own safe concurrency from verified runtime pressure instead of treating 20 as a hard cap.",
+      "rationale": "GAME_PRIMARY has no fixed internal concurrency cap. It starts from available external capacity and may downshift only from verified runtime pressure; 20 is only an intermediate adaptive step.",
       "gamePrimaryAdaptiveSteps": [
         4,
         8,
@@ -7793,9 +7793,13 @@
         128,
         256
       ],
-      "gamePrimaryBaselineTarget": 20,
+      "gamePrimaryBaselineTarget": 256,
       "gamePrimaryAdaptiveMinimum": 4,
       "gamePrimaryExternalBoundary": 256,
+      "gamePrimaryFixedInternalCap": null,
+      "telemetryDenominator": "ACTUAL_WAVE_EFFECTIVE_RESERVATION_CAP",
+      "ownerUnlimitedConcurrencyDirective": "2026-09-20",
+      "authorityChange": "NONE",
       "adaptiveBackpressureMayRaiseGamePrimaryAbove20": true
     },
     "liveShadowObservation": {
