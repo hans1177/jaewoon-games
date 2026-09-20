@@ -164,6 +164,16 @@ function buildPresentationQualityContract(task = {}, target = '') {
     staticChecks:freezeList(checks[pass]||[]),
     runtimeChecks:freezeList(runtimeChecks[pass]||[]),
     target:clean(target).toLowerCase()||null,
+    atomicNeuron:freeze({
+      mode:'PER_TASK_MICRO_FANIN',
+      completionEvent:'vibe2-neuron-complete',
+      speculativeCandidates:true,
+      maxVariants:3,
+      isolatedCandidateBranchesRequired:true,
+      globalBarrierForbidden:true,
+      sourceAndFileLocksPreserved:true,
+      qaReleaseGatesPreserved:true
+    }),
     wrapperOrShadowPipelineForbidden:true,
     directResponsibleSystemModificationPreferred:true,
     authorityExpanded:false
@@ -177,6 +187,8 @@ function presentationQualityGuidance(contract = {}) {
     `preserve=${(contract.preserve||[]).join(',')}`,
     `static-checks=${(contract.staticChecks||[]).join(',')}`,
     `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
+    `atomic-neuron=${contract.atomicNeuron?.mode||'NONE'}; max-variants=${contract.atomicNeuron?.maxVariants||1}; task-micro-fanin=required`,
+    '후보는 격리 브랜치에서 생성하고 같은 task 안에서 micro-fan-in으로 하나만 선택한다. 전역 wave 완료를 기다리지 않는다.',
     '기존 책임 시스템을 직접 수정하고 wrapper/shadow 표현 파이프라인을 만들지 않는다.',
     '표현 품질 수정은 게임 밸런스·저장·진행·판정·네트워크 권한을 바꾸지 않는다.',
     '정적 QA 통과만으로 완료가 아니며 실제 runtime/mobile 검증이 최종 근거다.'

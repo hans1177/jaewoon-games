@@ -6699,7 +6699,7 @@
     }
   },
   "presentationPipelineImplementation": {
-    "version": 3,
+    "version": 4,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "status": "CODE_WIRED_CI_VERIFIED_CANONICAL_RUNTIME_QA_ACTIVE",
     "canonicalPassOrder": [
@@ -6729,7 +6729,10 @@
       "staticQaCannotClaimProductionCompletion": true,
       "verifiedProjectOutcomeRequiredForPositiveMastery": true,
       "existingResponsibleSystemDirectModificationPreferred": true,
-      "wrapperShadowPresentationPipelineForbidden": true
+      "wrapperShadowPresentationPipelineForbidden": true,
+      "graphicsAtomicNeuronExecutionRequired": true,
+      "graphicsTaskMicroFanInRequired": true,
+      "graphicsGlobalWaveBarrierForbidden": true
     },
     "verificationTests": [
       "qa/vibe2-auto-planner.test.mjs",
@@ -8995,7 +8998,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -9078,7 +9081,15 @@
       "gameplayCodeAndAssetProductionConcurrent": true,
       "responsibleFilesMustBeExplicitAndDisjoint": true,
       "sameResponsibleFileParallelForbidden": true,
-      "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+      "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
+      "graphicsAtomicNeuronMode": "PER_TASK_MICRO_FANIN",
+      "completionEvent": "vibe2-neuron-complete",
+      "speculativeVariantsJoinScope": "PER_GRAPHICS_TASK",
+      "isolatedCandidateBranchesRequired": true,
+      "globalWaveBarrierForbidden": true,
+      "sourceAndFileConflictProtectionStillRequired": true,
+      "qaSecurityReleaseGatesPreserved": true,
+      "phase2NeuralExecutionAuthorityCreated": false,
       "newWorkerAuthorityCreated": false,
       "queueMutationAuthorityCreated": false,
       "waveReorderAuthorityCreated": false
