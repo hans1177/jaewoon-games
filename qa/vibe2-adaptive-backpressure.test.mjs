@@ -14,9 +14,9 @@ import {
 } from '../tools/vibe2-adaptive-backpressure.mjs';
 import { runQueueCommand } from '../tools/vibe2-queue-control.mjs';
 
-test('adaptive baseline starts at 20 without making 20 a floor or ceiling',()=>{
-  assert.equal(DEFAULT_ADAPTIVE_TARGET,20);
-  assert.equal(createParallelismControl({}).currentMax,20);
+test('adaptive default starts at the external boundary without creating a fixed internal cap',()=>{
+  assert.equal(DEFAULT_ADAPTIVE_TARGET,256);
+  assert.equal(createParallelismControl({}).currentMax,256);
 });
 
 const healthyTelemetry = (overrides = {}) => ({
@@ -144,7 +144,7 @@ test('one healthy saturated run fast-ramps exactly one external-capacity step', 
 });
 
 
-test('owner-requested 20 wave is a canonical adaptive step', () => {
+test('20 remains an ordinary intermediate adaptive step', () => {
   const control = createParallelismControl({ currentMax: 20 });
   assert.equal(control.currentMax, 20);
   const down = decideAdaptiveBackpressure(control, pressuredTelemetry({ runId:'pressure-20', workerCount:20, effectiveMax:20 }));
@@ -190,18 +190,18 @@ test('adaptive requested max never exceeds persistent control, explicit request,
   assert.equal(adaptiveRequestedMax(createParallelismControl({ currentMax: 256 }), 999), 256);
 });
 
-test('missing or corrupt persistent state safely falls back to adaptive baseline 20', () => {
+test('missing or corrupt persistent state safely falls back to the external boundary', () => {
   const files = tempFiles();
   try {
     fs.writeFileSync(files.queue, JSON.stringify({ maxConcurrentTasks: 256, tasks: [] }), 'utf8');
     const missing = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '256', output: files.output });
-    assert.equal(missing.adaptiveControl.currentMax, 20);
-    assert.equal(missing.adaptiveControl.lastReason, 'DEFAULT_ADAPTIVE_TARGET_20');
+    assert.equal(missing.adaptiveControl.currentMax, 256);
+    assert.equal(missing.adaptiveControl.lastReason, 'DEFAULT_ADAPTIVE_TARGET_256');
 
     fs.writeFileSync(files.control, '{broken-json', 'utf8');
     const corrupt = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '64', output: files.output });
-    assert.equal(corrupt.adaptiveControl.currentMax, 20);
-    assert.equal(corrupt.adaptiveControl.lastReason, 'INVALID_STATE_ADAPTIVE_TARGET_20');
+    assert.equal(corrupt.adaptiveControl.currentMax, 256);
+    assert.equal(corrupt.adaptiveControl.lastReason, 'INVALID_STATE_DEFAULT_EXTERNAL_CAPACITY');
   } finally {
     fs.rmSync(files.dir, { recursive: true, force: true });
   }
@@ -254,12 +254,12 @@ test('stale persistent pressure resets to baseline then adapts one step from fre
     healthyTelemetry({ runId:'stale-recovery', workerCount:256, effectiveMax:256, actualPeakConcurrency:256 }),
     { now:'2026-09-19T12:00:00Z' }
   );
-  assert.equal(next.currentMax,32);
-  assert.equal(next.lastReason,'HEALTHY_FAST_RAMP');
+  assert.equal(next.currentMax,256);
+  assert.equal(next.lastReason,'AT_MAX_HEALTHY');
 });
 
 
-test('game-primary can adapt below or above baseline 20 within 4..256', () => {
+test('game-primary may pass through 20 in either direction within external capacity', () => {
   const baseline=createParallelismControl({currentMax:20});
   const down=decideAdaptiveBackpressure(
     baseline,
