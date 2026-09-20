@@ -7797,6 +7797,10 @@
           "rationale": "PHASE2_REVIEW_REQUIRES_SUFFICIENT_DISTINCT_AUDITABLE_SAMPLES_AND_ACCEPTABLE_SHADOW_DIAGNOSTIC_QUALITY",
           "readinessEvidenceDeduplicatedByIdentity": true,
           "conflictingFeedbackEventOrAuditSampleEvidenceBlocksReview": true,
+          "rootCauseConflictScope": "SAME_SAMPLE_AND_SAME_VERIFICATION_CHECKPOINT_ONLY",
+          "crossCheckpointRootCauseLifecycleProgressionCountsAsConflict": false,
+          "calibrationQualityUsesNewestPredictionContractCohort": true,
+          "historicalCalibrationRemainsVisibleAsLifetimeTelemetry": true,
           "identifiedVolumeRequiredForReview": true,
           "legacyUnidentifiedEvidenceCannotSatisfyVolumeThresholds": true,
           "rootCausePredictionQualityUsesIdentifiedSamplesOnly": true,
@@ -7808,7 +7812,9 @@
           "requiredForVerifiedReadinessSample": true,
           "legacyUnidentifiedEvidenceMayRemainVisible": true,
           "legacyUnidentifiedEvidenceCannotAloneSatisfyIdentityCoverage": true,
-          "conflictingSameSampleResultsBlockReview": true,
+          "conflictingSameSampleSameCheckpointResultsBlockReview": true,
+          "crossCheckpointLifecycleProgressionMayAdvanceCanonicalSampleState": true,
+          "rootCauseObservationCheckpointField": "verificationStage",
           "duplicateSameSampleCountsOnce": true,
           "readinessEvidence": {
             "calibrationFeedback": "sampleId",
@@ -7853,6 +7859,42 @@
           "sourcePr": 1825,
           "mergedCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d"
         },
+        "rootCauseAndCalibrationQualityHardening": {
+          "state": "MERGED_MAIN_CI_VERIFIED_PRODUCTION_REVALIDATION_PENDING",
+          "sourcePr": 2054,
+          "mergedCommit": "b28abcdaf3c42bd0d529938e7dc6b7418c3b8244",
+          "rootCauseEvidenceVersion": 2,
+          "rootCauseVerificationStages": [
+            "WORKER_RESULT",
+            "FAN_IN_REVIEW"
+          ],
+          "legacyCheckpointInference": "independentConfirmation=true => FAN_IN_REVIEW; otherwise WORKER_RESULT",
+          "sameCheckpointContradictionStillBlocksReview": true,
+          "crossCheckpointProgressionIsConflict": false,
+          "canonicalSampleStateUsesHighestVerifiedCheckpoint": true,
+          "diagnosticSnapshotBeforeFix": {
+            "runtimeControlBranch": "vibe2-unreal-core",
+            "rootCauseRawConflictSamples": 177,
+            "sameCheckpointConflictSamples": 0,
+            "crossCheckpointLifecycleProgressions": 177,
+            "calibrationEligible": 296,
+            "calibrationMatches": 0,
+            "calibrationMismatches": 296,
+            "observedBlockingSystemForEligibleSamples": "SOURCE_GENERATION"
+          },
+          "calibrationPredictionContractVersion": 2,
+          "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
+          "causalResponsibilitySeparatedFromPipelinePrediction": true,
+          "sourceGenerationPredictionRequiresDurableFailureMarker": true,
+          "ordinaryNoOpPolicyTextIsNotFailureEvidence": true,
+          "lifetimeTelemetryPreserved": true,
+          "currentQualityGateUsesNewestPredictionContractCohort": true,
+          "phase2ExecutionAuthority": "NONE",
+          "automaticPromotionAllowed": false,
+          "automaticLearningAllowed": false,
+          "automaticTuningAllowed": false,
+          "productionVerificationRequired": true
+        },
         "eventIdentityHardening": {
           "state": "MERGED_MAIN",
           "branch": "assistant/neural-event-identity-v2",
@@ -7882,6 +7924,8 @@
           "neural-root-cause.sampleId"
         ],
         "rootCause": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH",
+        "rootCauseObservationCheckpoint": "verificationStage",
+        "rootCauseCheckpointProgression": "WORKER_RESULT_TO_FAN_IN_REVIEW_IS_LIFECYCLE_NOT_CONFLICT",
         "shadowEvent": "TASK_ID|RESERVATION_ID|VARIANT|CANDIDATE_BRANCH|EVENT_TYPE",
         "shadowEventVersion": 2,
         "legacyShadowEventCompatibility": "V1_SAMPLE_ONLY_EVENT_ID_NORMALIZED_WITH_EVENT_TYPE_FOR_READINESS"
