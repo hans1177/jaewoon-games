@@ -10,9 +10,11 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'tools/company-records-governance.mjs'
       - 'tools/company-runtime-media-homepage-index.mjs'
+      - 'tools/company-runtime-media-record.mjs'
       - 'runtime-media-index.json'
       - 'assets/homepage-enhancements.js'
       - 'qa/homepage-runtime-media-index.test.mjs'
+      - 'qa/company-runtime-media-record.test.mjs'
       - 'qa/company-records-governance.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - '.github/workflows/company-records-governance.yml'
@@ -25,9 +27,11 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'tools/company-records-governance.mjs'
       - 'tools/company-runtime-media-homepage-index.mjs'
+      - 'tools/company-runtime-media-record.mjs'
       - 'runtime-media-index.json'
       - 'assets/homepage-enhancements.js'
       - 'qa/homepage-runtime-media-index.test.mjs'
+      - 'qa/company-runtime-media-record.test.mjs'
       - 'qa/company-records-governance.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - '.github/workflows/company-records-governance.yml'
@@ -60,6 +64,7 @@ jobs:
           set -euo pipefail
           node --check tools/company-records-governance.mjs
           node --check tools/company-runtime-media-homepage-index.mjs
+          node --check tools/company-runtime-media-record.mjs
           node -e "JSON.parse(require('fs').readFileSync('company-records/record-contract.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('runtime-media-index.json','utf8'))"
 
@@ -68,6 +73,7 @@ jobs:
           set -euo pipefail
           node --test qa/company-records-governance.test.mjs
           node --test qa/homepage-runtime-media-index.test.mjs
+          node --test qa/company-runtime-media-record.test.mjs
           node --test qa/company-central-policy-contract.test.mjs
 
       - name: Scan all governed records and runtime media
