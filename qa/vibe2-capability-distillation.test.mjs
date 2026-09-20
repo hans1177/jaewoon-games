@@ -6,6 +6,7 @@ import {
   buildObservableCodingTrace,
   buildVerifiedCapabilityExperienceReview,
   buildCapabilityApplicationReviews,
+  buildCapabilityBenchmarkReviews,
   applyCapabilityApplicationReviews,
   applyCapabilityBenchmarkReviews,
   applyCapabilityPortfolioDecisions,
@@ -588,4 +589,102 @@ test('phase 4 practice control gets zero capabilities and challenger gets only e
   assert.equal(challenger.phase4ExactCapabilityIsolation,true);
   assert.match(verifiedCapabilityGuidance(challenger),/cap-target/);
   assert.doesNotMatch(verifiedCapabilityGuidance(challenger),/cap-other/);
+});
+
+
+test('phase 4 screen-only practice never emits benchmark review evidence',()=>{
+  const screenTask={
+    id:'phase4-screen-task',gameId:'holdout-web',target:'web',
+    evidence:[
+      'learning-practice-only','phase4-generalization-screen-only',
+      'phase4-capability-id:cap-target','phase4-benchmark-case:case-screen',
+      'phase4-benchmark-pair:pair-screen','phase4-unseen-game:holdout-web',
+      'phase4-unseen-problem-fingerprint:fp-screen'
+    ]
+  };
+  const result={
+    ...passResult,taskId:screenTask.id,reservationId:'screen-reservation',
+    capabilityApplication:{version:1,injected:true,exactInjectedCapabilityIds:['cap-target']}
+  };
+  assert.deepEqual(buildCapabilityBenchmarkReviews({task:screenTask,result,finalReviewPass:true,selected:true}),[]);
+});
+
+test('phase 4 verified web benchmark binds paired screens fresh qa regression and exact capability support',()=>{
+  const verificationTask={
+    id:'phase4-verify-web',gameId:'holdout-web',target:'web',
+    evidence:[
+      'phase4-benchmark-verification',
+      'phase4-capability-id:cap-target',
+      'phase4-benchmark-case:case-web-1',
+      'phase4-benchmark-pair:pair-web-1',
+      'phase4-unseen-game:holdout-web',
+      'phase4-unseen-problem-fingerprint:fp-web-1',
+      'phase4-control-screen:PASS',
+      'phase4-challenger-screen:PASS',
+      'phase4-control-fresh-qa:PASS',
+      'phase4-non-target-context-fixed:YES',
+      'phase4-writable-scope-fixed:YES',
+      'phase4-model-budget-fixed:YES',
+      'phase4-qa-contract-fixed:YES'
+    ]
+  };
+  const result={
+    ...passResult,
+    taskId:verificationTask.id,
+    reservationId:'verify-web-reservation',
+    capabilityApplication:{version:1,injected:true,exactInjectedCapabilityIds:['cap-target']},
+    evidence:[...passResult.evidence,'capability-support:cap-target']
+  };
+  const reviews=buildCapabilityBenchmarkReviews({task:verificationTask,result,finalReviewPass:true,selected:true});
+  assert.equal(reviews.length,1);
+  const review=reviews[0];
+  assert.equal(review.capabilityId,'cap-target');
+  assert.equal(review.caseId,'case-web-1');
+  assert.equal(review.pairId,'pair-web-1');
+  assert.equal(review.unseenGame,true);
+  assert.equal(review.pairedControlChallenger,true);
+  assert.equal(review.controlFreshQaPass,true);
+  assert.equal(review.challengerFreshQaPass,true);
+  assert.equal(review.freshIndependentQaPass,true);
+  assert.equal(review.fullRegressionPass,true);
+  assert.equal(review.nativeRuntimeRequired,false);
+  assert.equal(review.nativeRuntimePass,true);
+  assert.equal(review.capabilitySpecificPositiveSupport,true);
+  assert.equal(review.capabilitySpecificContradiction,false);
+  assert.equal(review.authorityExpanded,false);
+});
+
+test('phase 4 native benchmark remains non-qualifying until native runtime pass is bound',()=>{
+  const verificationTask={
+    id:'phase4-verify-native',gameId:'holdout-roblox',target:'roblox',
+    evidence:[
+      'phase4-benchmark-verification',
+      'phase4-capability-id:cap-target',
+      'phase4-benchmark-case:case-native-1',
+      'phase4-benchmark-pair:pair-native-1',
+      'phase4-unseen-game:holdout-roblox',
+      'phase4-unseen-problem-fingerprint:fp-native-1',
+      'phase4-control-screen:PASS','phase4-challenger-screen:PASS','phase4-control-fresh-qa:PASS',
+      'phase4-non-target-context-fixed:YES','phase4-writable-scope-fixed:YES',
+      'phase4-model-budget-fixed:YES','phase4-qa-contract-fixed:YES'
+    ]
+  };
+  const baseResult={
+    ...passResult,taskId:verificationTask.id,reservationId:'verify-native-reservation',
+    candidateIdentity:{...passResult.candidateIdentity,target:'roblox'},
+    capabilityApplication:{version:1,injected:true,exactInjectedCapabilityIds:['cap-target']},
+    evidence:[...passResult.evidence,'capability-support:cap-target']
+  };
+  const pending=buildCapabilityBenchmarkReviews({task:verificationTask,result:baseResult,finalReviewPass:true,selected:true})[0];
+  assert.equal(pending.nativeRuntimeRequired,true);
+  assert.equal(pending.nativeRuntimePass,false);
+
+  const verified=buildCapabilityBenchmarkReviews({
+    task:verificationTask,
+    result:{...baseResult,evidence:[...baseResult.evidence,'phase4-native-runtime:PASS']},
+    finalReviewPass:true,selected:true
+  })[0];
+  assert.equal(verified.nativeRuntimeRequired,true);
+  assert.equal(verified.nativeRuntimePass,true);
+  assert.notEqual(verified.benchmarkId,pending.benchmarkId);
 });

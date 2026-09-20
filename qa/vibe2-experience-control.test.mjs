@@ -309,3 +309,61 @@ test('verified experience is injected into the next similar worker goal as advis
   assert.match(order.goal, /검증 없이 공격 판정 타이밍을 추측하지 않기/);
   assert.equal(order.workerPolicy.protectedGameplayMutationAutomatic, false);
 });
+
+
+test('batch promotion persists phase 4 capability benchmark reviews through existing experience memory',()=>{
+  const writes=[];
+  const capability=successfulReview({
+    id:'capability-phase4-evidence',
+    gameId:'source-web',
+    engine:'web',
+    taskType:'coding-capability-distillation',
+    problem:'save restore ordering',
+    goal:'repair save restore ordering',
+    change:'verified save restoration sequence',
+    reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE']
+  });
+  const benchmark={
+    version:1,
+    capabilityId:'capability-phase4-evidence',
+    benchmarkId:'cbench_evidence_1',
+    caseId:'case-evidence-1',
+    pairId:'pair-evidence-1',
+    gameId:'holdout-web',
+    engine:'web',
+    unseenGame:true,
+    unseenProblemFingerprint:'fp-evidence-1',
+    independent:true,
+    pairedControlChallenger:true,
+    controlFreshQaPass:true,
+    challengerFreshQaPass:true,
+    freshIndependentQaPass:true,
+    fullRegressionPass:true,
+    nativeRuntimeRequired:false,
+    nativeRuntimePass:true,
+    nonTargetContextFixed:true,
+    writableScopeFixed:true,
+    modelBudgetFixed:true,
+    qaContractFixed:true,
+    capabilitySpecificPositiveSupport:true,
+    capabilitySpecificContradiction:false,
+    evidence:['phase4-control-screen:PASS','fan-in-review:PASS'],
+    rawCodeStored:false,
+    rawModelOutputStored:false,
+    hiddenChainOfThoughtStored:false,
+    authorityExpanded:false
+  };
+  const payload={experienceReviews:[capability],capabilityBenchmarkReviews:[benchmark,{...benchmark}]};
+  const result=runExperiencePromotionBatch({reviews:payload,memoryFile:'',writeMemory:(_file,value)=>writes.push(value)});
+  assert.equal(result.promotedCount,1);
+  assert.equal(result.capabilityBenchmarkTotal,2);
+  assert.equal(result.capabilityBenchmarkApplied,1);
+  assert.equal(result.capabilityBenchmarkDuplicates,1);
+  assert.equal(result.capabilityBenchmarkMissing,0);
+  assert.equal(result.persisted,true);
+  assert.equal(writes.length,1);
+  const stored=writes[0].records.find(record=>record.id==='capability-phase4-evidence');
+  assert.equal(stored.capabilityBenchmarks.length,1);
+  assert.equal(stored.capabilityBenchmarks[0].caseId,'case-evidence-1');
+  assert.equal(stored.capabilityBenchmarks[0].freshIndependentQaPass,true);
+});
