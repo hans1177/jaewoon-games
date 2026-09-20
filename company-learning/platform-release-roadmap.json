@@ -1,5 +1,5 @@
 {
-  "version": 229,
+  "version": 230,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -10992,6 +10992,187 @@
         "exactChangeAndDateTrackingRequired": true,
         "vibeCanStopOrReverseAnyExperiment": true
       }
+    }
+  },
+  "recordsGovernance": {
+    "version": 1,
+    "status": "CANONICAL_MACHINE_RECORDS_GOVERNANCE",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json#recordsGovernance",
+    "machineContract": "company-records/record-contract.json",
+    "validator": "tools/company-records-governance.mjs",
+    "appliesTo": [
+      "PLANNING_AND_MARKETING_RESEARCH",
+      "GRAPHICS_AND_ASSET_EVIDENCE",
+      "DEVELOPMENT_EVIDENCE",
+      "QA_AND_REGRESSION",
+      "SECURITY",
+      "RELEASE_AND_POST_RELEASE",
+      "HOMEPAGE_PUBLICATION",
+      "RUNTIME_MEDIA",
+      "LEARNING_AND_EVOLUTION"
+    ],
+    "principles": {
+      "singleFormatFamily": true,
+      "consistentNaming": true,
+      "deterministicFolders": true,
+      "provenanceRequired": true,
+      "evidenceAndOpinionSeparated": true,
+      "currentAndHistoricalSeparated": true,
+      "exactSourceAndArtifactBindingWhenApplicable": true,
+      "noMassRenameOfLegacyFiles": true,
+      "migrateLegacyOnTouch": true,
+      "duplicateShadowRecordSystemsForbidden": true,
+      "canonicalReleaseSecurityAndLearningEvidenceAutoDeleteForbidden": true
+    },
+    "canonicalRoot": "company-records",
+    "directoryModel": {
+      "record": "company-records/<domain>/<yyyy>/<yyyy-mm-dd>/<scope-id>/<record-type>--<record-id>.json",
+      "runtimeMedia": "assets/runtime-evidence/<platform>/<game-id>/<yyyy-mm-dd>/<artifact-id>/<capture-id>.<ext>",
+      "runtimeMediaManifest": "company-records/runtime-media/<yyyy>/<yyyy-mm-dd>/<game-id>/<platform>-runtime-media--<record-id>.json",
+      "scopeIdFallbackForPortfolio": "portfolio",
+      "allowedDomains": [
+        "planning",
+        "marketing",
+        "graphics",
+        "development",
+        "qa",
+        "security",
+        "release",
+        "homepage",
+        "runtime-media",
+        "learning",
+        "operations"
+      ]
+    },
+    "naming": {
+      "folders": "lowercase-kebab-case-except-yyyy-and-yyyy-mm-dd",
+      "recordFiles": "lowercase-kebab-case--stable-record-id.json",
+      "mediaFiles": "lowercase-kebab-case.<ext>",
+      "spacesForbidden": true,
+      "ambiguousLatestFinalNewCopyNamesForbidden": true,
+      "timestampsInsideMetadataNotFilenameUnlessRecordIdNeedsUniqueness": true,
+      "stableGameIdRequired": true
+    },
+    "requiredRecordShape": [
+      "schemaVersion",
+      "recordId",
+      "recordType",
+      "domain",
+      "scope",
+      "timestamps",
+      "provenance",
+      "status",
+      "retentionClass",
+      "data",
+      "evidenceRefs",
+      "relatedFiles",
+      "supersedes",
+      "tags"
+    ],
+    "metadataRules": {
+      "scopeFields": [
+        "type",
+        "id",
+        "gameId",
+        "platform"
+      ],
+      "timestampFields": [
+        "createdAt",
+        "observedAt"
+      ],
+      "provenanceFields": [
+        "producer",
+        "authority",
+        "sourceRevision",
+        "artifactIdentity",
+        "sourceRefs"
+      ],
+      "factsInferenceHypothesisSeparationRequiredForResearch": true,
+      "observedAtRequiredForTrendOrRuntimeClaims": true,
+      "sourceRevisionRequiredWhenRecordBindsCodeOrBuild": true,
+      "artifactIdentityRequiredWhenRecordBindsBuiltOrPublishedArtifact": true,
+      "sha256RequiredForBinaryMediaInManifest": true
+    },
+    "statuses": [
+      "DRAFT",
+      "VERIFIED",
+      "REJECTED",
+      "SUPERSEDED",
+      "ARCHIVED"
+    ],
+    "retentionClasses": {
+      "CANONICAL": "KEEP_UNTIL_EXPLICIT_OWNER_OR_POLICY_SUPERSESSION",
+      "RELEASE_EVIDENCE": "KEEP",
+      "SECURITY_EVIDENCE": "KEEP_REDACTED_NO_RAW_SECRET_OR_HOSTILE_PAYLOAD",
+      "LEARNING_EVIDENCE": "KEEP_WHILE_REFERENCED_BY_VERIFIED_LEARNING",
+      "RUNTIME_MEDIA": "KEEP_VERIFIED_REPRESENTATIVE_AND_RELEASE_BOUND_MEDIA",
+      "TRANSIENT_QA": "ROTATABLE_AFTER_VERIFIED_RESULT_IS_BOUND",
+      "WORKING_DRAFT": "ARCHIVE_OR_SUPERSEDE_AFTER_DECISION"
+    },
+    "cadence": {
+      "onWrite": [
+        "VALIDATE_SCHEMA",
+        "VALIDATE_PATH_AND_NAMING",
+        "VALIDATE_REQUIRED_PROVENANCE",
+        "VALIDATE_EVIDENCE_REFERENCES",
+        "VALIDATE_MEDIA_HASH_WHEN_PRESENT"
+      ],
+      "onPullRequest": [
+        "VALIDATE_CHANGED_GOVERNED_RECORDS",
+        "BLOCK_NEW_NONCONFORMING_RECORDS",
+        "ALLOW_UNTOUCHED_LEGACY_RECORDS"
+      ],
+      "daily": [
+        "DUPLICATE_RECORD_ID_SCAN",
+        "BROKEN_REFERENCE_SCAN",
+        "ORPHAN_RUNTIME_MEDIA_SCAN",
+        "STALE_DRAFT_REPORT"
+      ],
+      "weekly": [
+        "SUPERSEDED_AND_ARCHIVE_REVIEW",
+        "RETENTION_SUMMARY",
+        "FORMAT_DRIFT_REPORT"
+      ],
+      "monthly": [
+        "CANONICAL_INDEX_INTEGRITY_REVIEW",
+        "LEGACY_MIGRATION_PROGRESS_REPORT"
+      ],
+      "maintenanceRole": "WATCHDOG_AND_HYGIENE_NOT_PRIMARY_WORKFLOW"
+    },
+    "migration": {
+      "legacyRecordsGrandfathered": true,
+      "massMigrationForbiddenWithoutCompatibilityPlan": true,
+      "migrateWhenRecordIsMateriallyUpdated": true,
+      "preserveOldPathWhenReferencedUntilReferencesAreRepointed": true,
+      "noSilentDelete": true,
+      "migrationMustKeepTraceableSupersedesReference": true
+    },
+    "runtimeMedia": {
+      "actualRuntimeOnly": true,
+      "generatedMarketingMockCannotBeLabeledGameplayScreenshot": true,
+      "homepageRepresentativeRequiresVerifiedManifest": true,
+      "requiredBindings": [
+        "gameId",
+        "platform",
+        "captureAt",
+        "sourceRevision",
+        "artifactIdentity",
+        "sha256",
+        "runtimeVerification"
+      ],
+      "unityCaptureSource": "ACTUAL_ANDROID_OR_TARGET_RUNTIME",
+      "robloxCaptureSource": "APPROVED_ACTUAL_STUDIO_OR_RUNTIME_SESSION",
+      "robloxUnattendedStudioCaptureForbidden": true,
+      "mediaWithoutRuntimeBindingMayRemainArtworkButNotGameplayEvidence": true
+    },
+    "departmentUse": {
+      "planning": "RESEARCH_AND_DECISION_EVIDENCE",
+      "graphics": "ASSET_STYLE_MOTION_AND_RUNTIME_VISUAL_EVIDENCE",
+      "development": "SOURCE_BUILD_AND_IMPLEMENTATION_EVIDENCE",
+      "qa": "RUNTIME_INDEPENDENT_QA_AND_REGRESSION_EVIDENCE",
+      "security": "SECURITY_FINDING_REMEDIATION_AND_RESCAN_EVIDENCE",
+      "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
+      "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
     }
   }
 }

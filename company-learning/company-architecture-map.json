@@ -1,5 +1,5 @@
 {
-  "version": 69,
+  "version": 70,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -76,6 +76,16 @@
       "IMPLEMENT_ACCEPTED_GAME_SCOPE_THROUGH_EXISTING_DEVELOPMENT_LIFECYCLE",
       "OWNER_AUTHORIZED_PAID_SPEND_ONLY",
       "MEASURE_OUTCOME_AND_RETURN_VERIFIED_EVIDENCE_TO_LEARNING"
+    ],
+    "recordsGovernance": [
+      "AUTHOR_OR_WORKER_EMITS_STANDARD_RECORD",
+      "PATH_AND_SCHEMA_VALIDATION",
+      "PROVENANCE_AND_EXACT_ARTIFACT_BINDING_WHEN_APPLICABLE",
+      "REFERENCE_AND_MEDIA_HASH_VALIDATION",
+      "DEPARTMENT_OR_QA_CONSUMPTION",
+      "VIBE_OR_RELEASE_DECISION",
+      "VERIFIED_RECORD_RETENTION_OR_SUPERSESSION",
+      "SCHEDULED_HYGIENE_SCAN"
     ]
   },
   "workerRoles": {
@@ -86,7 +96,8 @@
     "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY",
     "PRIMARY_AI_ORCHESTRATOR": "NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR",
     "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS",
-    "PLANNING_GROWTH_MARKETING": "EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING"
+    "PLANNING_GROWTH_MARKETING": "EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING",
+    "RECORDS_GOVERNANCE": "SHARED_MACHINE_RECORD_SCHEMA_PATH_PROVENANCE_RETENTION_AND_INTEGRITY_VALIDATION"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -2132,5 +2143,14 @@
       "vibeDecisionAuthority": true,
       "autonomousPaidSpendAuthority": false
     }
+  },
+  "recordsGovernance": {
+    "canonicalPolicy": "company-learning/platform-release-roadmap.json#recordsGovernance",
+    "machineContract": "company-records/record-contract.json",
+    "validator": "tools/company-records-governance.mjs",
+    "newRecordsRoot": "company-records",
+    "runtimeMediaRoot": "assets/runtime-evidence",
+    "legacyMigration": "MIGRATE_ON_TOUCH",
+    "directPolicyCreationOutsideCentralRoadmap": false
   }
 }

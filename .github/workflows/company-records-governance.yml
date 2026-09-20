@@ -1,0 +1,73 @@
+name: Company Records Governance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'company-records/**'
+      - 'assets/runtime-evidence/**'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'tools/company-records-governance.mjs'
+      - 'qa/company-records-governance.test.mjs'
+      - 'qa/company-central-policy-contract.test.mjs'
+      - '.github/workflows/company-records-governance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'company-records/**'
+      - 'assets/runtime-evidence/**'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'tools/company-records-governance.mjs'
+      - 'qa/company-records-governance.test.mjs'
+      - 'qa/company-central-policy-contract.test.mjs'
+      - '.github/workflows/company-records-governance.yml'
+  schedule:
+    - cron: '10 21 * * *'
+    - cron: '25 21 * * 0'
+    - cron: '40 21 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: company-records-governance-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  records-governance:
+    name: Records Schema and File Hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout governed revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate record tooling syntax
+        run: |
+          set -euo pipefail
+          node --check tools/company-records-governance.mjs
+          node -e "JSON.parse(require('fs').readFileSync('company-records/record-contract.json','utf8'))"
+
+      - name: Run record contract tests
+        run: |
+          set -euo pipefail
+          node --test qa/company-records-governance.test.mjs
+          node --test qa/company-central-policy-contract.test.mjs
+
+      - name: Scan all governed records and runtime media
+        run: |
+          set -euo pipefail
+          node tools/company-records-governance.mjs --scan
+
+      - name: Scheduled records hygiene summary
+        if: github.event_name == 'schedule'
+        run: |
+          set -euo pipefail
+          echo "COMPANY_RECORDS_SCHEDULE=${{ github.event.schedule }}"
+          node tools/company-records-governance.mjs --summary
+          echo 'COMPANY_RECORDS_SCHEDULED_HYGIENE=PASS'

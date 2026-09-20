@@ -608,3 +608,34 @@ test('architecture reuses planning instead of creating a duplicate marketing dep
   assert.ok(architecture.executionTopology.planningGrowthMarketing.includes('APPLICATION_SCOPE_AND_TIMING_REVIEW'));
   assert.equal(architecture.workerRoles.PLANNING_GROWTH_MARKETING,'EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING');
 });
+
+
+test('company records use one canonical format, path, retention and runtime-media provenance contract',()=>{
+  const r=roadmap.recordsGovernance;
+  assert.equal(r.status,'CANONICAL_MACHINE_RECORDS_GOVERNANCE');
+  assert.equal(r.machineContract,'company-records/record-contract.json');
+  assert.equal(r.validator,'tools/company-records-governance.mjs');
+  assert.equal(r.canonicalRoot,'company-records');
+  assert.equal(r.principles.singleFormatFamily,true);
+  assert.equal(r.principles.migrateLegacyOnTouch,true);
+  assert.equal(r.principles.noMassRenameOfLegacyFiles,true);
+  assert.equal(r.principles.duplicateShadowRecordSystemsForbidden,true);
+  assert.equal(r.directoryModel.record,'company-records/<domain>/<yyyy>/<yyyy-mm-dd>/<scope-id>/<record-type>--<record-id>.json');
+  assert.equal(r.directoryModel.runtimeMedia,'assets/runtime-evidence/<platform>/<game-id>/<yyyy-mm-dd>/<artifact-id>/<capture-id>.<ext>');
+  assert.ok(r.requiredRecordShape.includes('provenance'));
+  assert.ok(r.requiredRecordShape.includes('retentionClass'));
+  assert.equal(r.metadataRules.sha256RequiredForBinaryMediaInManifest,true);
+  assert.ok(r.cadence.onWrite.includes('VALIDATE_MEDIA_HASH_WHEN_PRESENT'));
+  assert.ok(r.cadence.daily.includes('ORPHAN_RUNTIME_MEDIA_SCAN'));
+  assert.ok(r.cadence.weekly.includes('FORMAT_DRIFT_REPORT'));
+  assert.equal(r.migration.legacyRecordsGrandfathered,true);
+  assert.equal(r.migration.noSilentDelete,true);
+  assert.equal(r.runtimeMedia.actualRuntimeOnly,true);
+  assert.equal(r.runtimeMedia.homepageRepresentativeRequiresVerifiedManifest,true);
+  assert.equal(r.runtimeMedia.robloxUnattendedStudioCaptureForbidden,true);
+  assert.equal(r.runtimeMedia.mediaWithoutRuntimeBindingMayRemainArtworkButNotGameplayEvidence,true);
+  assert.equal(r.departmentUse.vibe,'CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY');
+  assert.equal(architecture.recordsGovernance.machineContract,'company-records/record-contract.json');
+  assert.equal(architecture.recordsGovernance.legacyMigration,'MIGRATE_ON_TOUCH');
+  assert.ok(architecture.executionTopology.recordsGovernance.includes('SCHEDULED_HYGIENE_SCAN'));
+});
