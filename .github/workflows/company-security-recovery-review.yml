@@ -43,7 +43,7 @@ jobs:
           set -euo pipefail
           node --check tools/company-system-ai-queue.mjs
           node --check tools/company-recovery-queue.mjs
-          node --test qa/company-system-ai-supervision-loop.test.mjs
+          node --test qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs
 
       - name: Persist explicit Primary-AI security recovery review atomically
         env:
