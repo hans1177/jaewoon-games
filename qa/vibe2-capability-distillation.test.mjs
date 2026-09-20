@@ -198,7 +198,7 @@ test('explicit capability retrieval selects only verified reusable capability ex
     {
       id:'cap_unrelated',
       gameId:'other-game',
-      engine:'unity',
+      engine:'web',
       taskType:'coding-capability-distillation',
       problem:'camera cinematic framing',
       goal:'improve boss camera',
@@ -206,6 +206,20 @@ test('explicit capability retrieval selects only verified reusable capability ex
       outcome:'PASS',
       evidence:['actions-run:202'],
       reusablePatterns:['CAPABILITY_DOMAIN:CAMERA_LANGUAGE'],
+      verified:true
+    },
+    {
+      id:'cap_cross_game_relevant',
+      gameId:'other-save-game',
+      engine:'web',
+      departments:['development'],
+      taskType:'coding-capability-distillation',
+      problem:'save restore ordering bug',
+      goal:'repair save restore flow',
+      change:'cross game verified save restoration sequencing',
+      outcome:'PASS',
+      evidence:['actions-run:203','fan-in-review:PASS'],
+      reusablePatterns:['CAPABILITY:CROSS_GAME_SAVE_RESTORE'],
       verified:true
     },
     {
@@ -227,11 +241,14 @@ test('explicit capability retrieval selects only verified reusable capability ex
     task:{gameId:'bug-defense',target:'web',department:'development',goal:'repair save restore flow',responsibleFiles:['web-games/bug-defense/index.html']}
   });
   assert.equal(retrieval.kind,'verified-coding-capability-retrieval');
-  assert.equal(retrieval.count,1);
+  assert.equal(retrieval.count,2);
+  assert.deepEqual(retrieval.records.map(row=>row.id).sort(),['cap_cross_game_relevant','cap_verified']);
   assert.equal(retrieval.records[0].id,'cap_verified');
   assert.equal(retrieval.verifiedOnly,true);
   assert.equal(retrieval.rawTraceUsed,false);
   assert.equal(retrieval.rawCodeUsed,false);
+  assert.equal(retrieval.crossGameKeywordOverlapRequired,true);
+  assert.equal(retrieval.sameEngineAloneEligible,false);
   assert.equal(retrieval.writableScopeExpansionAllowed,false);
   assert.equal(retrieval.qaBypassAllowed,false);
   assert.equal(retrieval.authorityExpanded,false);
@@ -242,6 +259,7 @@ test('explicit capability retrieval selects only verified reusable capability ex
   assert.doesNotMatch(guidance,/GENERAL_ONLY/);
   assert.doesNotMatch(guidance,/SHOULD_NOT_APPEAR/);
   assert.doesNotMatch(guidance,/CAMERA_LANGUAGE/);
+  assert.match(guidance,/CROSS_GAME_SAVE_RESTORE/);
   assert.match(guidance,/MUST NOT expand writable scope/);
 });
 
