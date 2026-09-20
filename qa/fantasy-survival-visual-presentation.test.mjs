@@ -202,3 +202,30 @@ test('camera update replaces hard snap while keeping world tap coordinates align
   assert.match(worldTap,/e\.clientX\+state\.camera\.x/);
   assert.match(worldTap,/e\.clientY\+state\.camera\.y/);
 });
+
+test('mobile polish keeps primary touch controls at least 44px and respects safe areas',()=>{
+  assert.match(source,/\.save,\.bestiary,\.multiBtn,\.home\{[^}]*min-width:44px;min-height:44px/);
+  assert.match(source,/\.multiHead button\{width:44px;height:44px/);
+  assert.match(source,/\.multiRow button\{[^}]*min-height:44px/);
+  assert.match(source,/\.bookTabs button\{[^}]*min-height:44px/);
+  assert.match(source,/\.tab,\.close\{[^}]*min-height:44px/);
+  assert.match(source,/\.map\{display:none;width:78px;height:44px/);
+  assert.match(source,/@media\(max-width:430px\)[\s\S]*?\.map\{width:68px;height:44px/);
+  assert.match(source,/\.sheet\{left:max\(7px,env\(safe-area-inset-left\)\);right:max\(7px,env\(safe-area-inset-right\)\);top:auto;bottom:max\(7px,env\(safe-area-inset-bottom\)\)/);
+});
+
+test('mobile panels remain scrollable and joystick input recovers from lost pointer capture',()=>{
+  assert.match(source,/\.smelt\{left:max\(7px,env\(safe-area-inset-left\)\)[^}]*max-height:68dvh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y/);
+  assert.match(source,/\.multiPanel\{top:max\(72px,calc\(env\(safe-area-inset-top\) \+ 54px\)\);max-height:70dvh;overflow-y:auto/);
+  assert.match(source,/stick\.addEventListener\('lostpointercapture',endStick\)/);
+  assert.match(source,/function endStick\(e\)\{if\(sp!==e\.pointerId\)return;sp=null;state\.stick\.x=state\.stick\.y=0/);
+});
+
+test('mobile canvas rendering degrades pixel density without changing gameplay resolution semantics',()=>{
+  const resize=functionBody('resize');
+  assert.match(resize,/innerWidth<=900\|\|innerHeight<=600/);
+  assert.match(resize,/Math\.min\(mobileCanvas\?1\.5:2,devicePixelRatio\|\|1\)/);
+  assert.match(resize,/canvas\.style\.width=innerWidth\+'px'/);
+  assert.match(resize,/canvas\.style\.height=innerHeight\+'px'/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+});
