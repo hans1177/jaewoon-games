@@ -30219,7 +30219,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[WEB_REPAIR] 게임: 색채의 연쇄\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED:scope-coreloop-0-eed82538ec|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-1-191bcc8970|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-mobileux-62f2f81cf4|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-a31b9ae367 -> #a0 | mechanic=action-primary | family=MULTIPLAYER | confidence=HIGH | evidence=existing-scope-binding,shared:corefun,existing-mechanic,gameplay-action - scope-coreloop-0-eed82538ec -> #a1 | mechanic=action-secondary | family=MOVEMENT | confidence=HIGH | evidence=existing-scope-binding,shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-1-191bcc8970 -> #a2 | mechanic=action-tertiary | family=INTERACTION | confidence=HIGH | evidence=existing-scope-binding,shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-2-dfaecf820e -> #a3 | mechanic=action-support | family=PROGRESSION | confidence=HIGH | evidence=existing-scope-binding,shared:coreloop,existing-mechanic,gameplay-action - scope-mobile\nlast-validation-at=2026-09-20T16:17:10.196Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.\n- 실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/seed-puzzle-chromatic-cascade/index.html"
@@ -30227,8 +30227,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 11,
+      "status": "queued",
+      "retries": 12,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": true,
@@ -30239,7 +30239,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -32060,13 +32060,14 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%7C35522452810%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fseed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35522452810-1%22%2C%22verificationStage%22%3A%22FAN_IN_REVIEW%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Atrue%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%7C35522452810%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fseed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35522452810-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%7C35522452810%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fseed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35522452810-1%7CCI_RESULT%22%2C%22eventId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%7C35522452810%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fseed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35522452810-1%7CCI_RESULT%22%2C%22eventType%22%3A%22CI_RESULT%22%2C%22nodeCount%22%3A22%2C%22edgeCount%22%3A20%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%7C35522452810%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fseed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35522452810-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D"
+        "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%22%2C%22sampleId%22%3A%22seed-puzzle-chromatic-cascade-web-runtime-repair-v1%7C35522452810%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fseed-puzzle-chromatic-cascade-web-runtime-repair-v1-speculative-1-35522452810-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_RELEASE_ELIGIBLE%22%2C%22proposedAction%22%3A%22REQUEST_EVIDENCE%22%2C%22proposedReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22WAVE_PROCEEDS_NEURAL_HOLDS%22%2C%22rootCauseState%22%3A%22UNRESOLVED%22%7D",
+        "actions-run-35523140845"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": "35522452810:1",
-      "reservationRunId": "35522452810",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-20T16:22:02Z",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "neuronExpectedVariants": 0,
       "neuronResults": [],
       "companyContext": null,
