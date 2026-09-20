@@ -191,6 +191,16 @@ test('runtime smoke launches the exact APK activity and fails fast on missing or
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_METRIC/);
 });
 
+test('Unity runtime smoke captures a short actual-runtime gameplay motion clip around input',()=>{
+  assert.match(runtimeSmokeSource,/screenrecord --time-limit 8/);
+  assert.match(runtimeSmokeSource,/gameplay-motion\.mp4/);
+  assert.match(runtimeSmokeSource,/motion_capture_present/);
+  assert.match(runtimeSmokeSource,/gameplayMotionCapturePresent/);
+  const start=runtimeSmokeSource.indexOf('screenrecord --time-limit 8');
+  const input=runtimeSmokeSource.indexOf('adb shell input tap "$center_x" "$primary_y"');
+  assert.ok(start>=0&&input>start,'motion capture must start before gameplay input');
+});
+
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{
   assert.match(regressionSource,/Download exact upstream build artifact/);
   assert.match(regressionSource,/actual.*expected/s);
