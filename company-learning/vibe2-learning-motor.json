@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -161,6 +161,33 @@
       "sameCycleMasteryAndRetrievalRefresh": true,
       "candidatePassAloneIsInsufficient": true,
       "gateWeakening": false
+    },
+    "supervisedAssistantCoauthoring": {
+      "enabled": true,
+      "traceStore": "company-learning/assistant-vibe-coauthoring-log.json",
+      "centralPolicy": "company-learning/platform-release-roadmap.json#supervisedWebGameProduction.learningLoop.assistantActionTrace",
+      "purpose": "Capture assistant-led Web coauthoring actions as provenance and promote only independently verified outcomes through the existing experience-control path.",
+      "traceRequiredFor": [
+        "SOURCE_REVIEW",
+        "DESIGN_TO_SOURCE_GAP_ANALYSIS",
+        "SOURCE_CHANGE",
+        "PIPELINE_BOTTLENECK_REPAIR",
+        "QA_OR_REGRESSION_RESULT",
+        "SUPERVISOR_PASS_REVISE_DROP",
+        "RELEASE_OR_PROMOTION_DECISION"
+      ],
+      "rawTraceAuthority": "PROVENANCE_ONLY",
+      "rawTraceMayEnterRetrieval": false,
+      "rawTraceMayIncreaseMastery": false,
+      "rawTraceMayCreateTrainingSample": false,
+      "positiveLearningRequiresVerifiedPass": true,
+      "negativeLearningRequiresVerifiedFailureCause": true,
+      "promotionTool": "tools/vibe2-experience-control.mjs",
+      "promotionStore": ".vibe2/experience.json",
+      "canonicalTrainingPipeline": "company-learning/canonical-learning-pipeline.json",
+      "separateLearningPipelineForbidden": true,
+      "candidateGenerationAloneReusable": false,
+      "authorityExpanded": false
     }
   },
   "benchmarkLadder": {
