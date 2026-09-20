@@ -1762,7 +1762,7 @@ function updateCrocodileSpecial(e,targetP,now,playerD){
   if(s.kind==='retreat'){
    if(now>=s.until){
     const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
-    e.crocState={kind:'charge',until:now+4000,dirX:dx/d,dirY:dy/d};
+    e.crocState={kind:'charge',startedAt:now,homingUntil:now+1500,until:now+4000,dirX:dx/d,dirY:dy/d};
     return{vx:0,vy:0,active:true}
    }
    return{vx:(e.x-targetP.x)/(playerD||1)*e.type.speed*.9,vy:(e.y-targetP.y)/(playerD||1)*e.type.speed*.9,active:true}
@@ -1780,6 +1780,10 @@ function updateCrocodileSpecial(e,targetP,now,playerD){
     applyEnemyEffectTarget(e,targetP,'grab',3000);
     showNotice('악어에게 붙잡혔다 · 3초 끌림');
     return{vx:0,vy:0,active:true}
+   }
+   if(now<s.homingUntil){
+    const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
+    s.dirX=dx/d;s.dirY=dy/d
    }
    const chargeSpeed=(Number(targetP.speed)||state.player.speed||185)*3;
    return{vx:(s.dirX||e.faceX||1)*chargeSpeed,vy:(s.dirY||e.faceY||0)*chargeSpeed,active:true}
