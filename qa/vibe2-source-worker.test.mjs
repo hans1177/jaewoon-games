@@ -245,93 +245,74 @@ test('system architecture worker filters control metadata from source context wi
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/SYS-ARCH-context-boundary-v1/files', responsibleFile), 'utf8'), /systemValue = 2/);
 });
 
-test('system architecture candidate gets one bounded retry after atomic-pair edit mismatch', async () => {
+test('system architecture completes the missing causal test with pair-focused recovery', async () => {
   const cwd=tempRoot();
   const sourceOnly=path.join(cwd,'source-only.json');
-  const editMismatchPaired=path.join(cwd,'edit-mismatch-paired.json');
-  const paired=path.join(cwd,'paired.json');
+  const testCompletion=path.join(cwd,'test-completion.json');
   const sourceFile='tools/demo-system.mjs';
   const testFile='qa/demo-system.test.mjs';
   const selectedTask={
-    id:'SYS-ARCH-causal-pair-v1',
-    gameId:'__vibe_system__',
-    target:'system',
-    department:'system-architecture',
-    type:'implementation',
-    executionLane:'RECOVERY_FAST',
-    sourceRoot:'.',
-    responsibleFiles:[sourceFile,testFile],
-    priority:'high',
-    releaseState:'other',
-    status:'running',
-    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',
-    maxRetries:null,
-    systemSteward:true,
-    goal:'repair structural bottleneck with direct causal proof',
-    evidence:[
-      'vibe-self-architecture-evolution',
-      'architecture-authority-expansion:NO',
-      'architecture-gate-weakening:NO',
-      'architecture-system-construction-allowed',
-      'architecture-neural-expansion-phase:LAST_STAGE_ONLY',
-      'architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION',
-      'architecture-neural-expansion-readiness:PENDING',
-      'architecture-neural-expansion-allowed:NO'
-    ],
-    completionCriteria:[
-      'STRUCTURAL_CAUSE_VERIFIED',
-      'RELATED_REGRESSION_PASS',
-      'SECURITY_PASS',
-      'BEFORE_AFTER_METRIC_IMPROVED',
-      'AUTHORITY_UNCHANGED',
-      'GATES_UNCHANGED',
-      'NEURAL_EXECUTION_AUTHORITY_UNCHANGED'
-    ]
+    id:'SYS-ARCH-causal-pair-v1',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
+    executionLane:'RECOVERY_FAST',sourceRoot:'.',responsibleFiles:[sourceFile,testFile],priority:'high',releaseState:'other',status:'running',
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,systemSteward:true,goal:'repair structural bottleneck with direct causal proof',
+    evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed','architecture-neural-expansion-phase:LAST_STAGE_ONLY','architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION','architecture-neural-expansion-readiness:PENDING','architecture-neural-expansion-allowed:NO'],
+    completionCriteria:['STRUCTURAL_CAUSE_VERIFIED','RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED','AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED']
   };
   const workOrder={
     ...order({target:'system',root:'.',responsibleFiles:[sourceFile,testFile],taskId:selectedTask.id}),
-    gameId:'__vibe_system__',
-    department:'system-architecture',
-    goal:'[VIBE_SELF_ARCHITECTURE_EVOLUTION] repair with same-failure regression proof',
-    selectedTask,
-    candidateStrategyRole:{variant:'speculative-1',strategy:'CAUSAL_PAIR_REPAIR'},
-    workerPolicy:{
-      directMainWrite:false,
-      systemArchitectureEvolution:true,
-      authorityExpansionAllowed:false,
-      gateWeakeningAllowed:false,
-      neuralExpansionPhase:'LAST_STAGE_ONLY',
-      neuralExpansionAllowed:false,
-      neuralExecutionAuthorityExpansionAllowed:false
-    }
+    gameId:'__vibe_system__',department:'system-architecture',goal:'[VIBE_SELF_ARCHITECTURE_EVOLUTION] repair with same-failure regression proof',
+    selectedTask,candidateStrategyRole:{variant:'speculative-1',strategy:'CAUSAL_PAIR_REPAIR'},
+    workerPolicy:{directMainWrite:false,systemArchitectureEvolution:true,authorityExpansionAllowed:false,gateWeakeningAllowed:false,neuralExpansionPhase:'LAST_STAGE_ONLY',neuralExpansionAllowed:false,neuralExecutionAuthorityExpansionAllowed:false}
   };
   write(path.join(cwd,sourceFile),'export const systemValue = 1;\n');
   write(path.join(cwd,testFile),"import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport {systemValue} from '../tools/demo-system.mjs';\ntest('system value',()=>assert.equal(systemValue,1));\n");
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
-  write(sourceOnly,JSON.stringify({
-    edits:[{path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'}]
-  }));
-  write(editMismatchPaired,JSON.stringify({
-    edits:[
-      {path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'},
-      {path:testFile,find:'assert.equal(systemValue,9)',replace:'assert.equal(systemValue,2)'}
-    ]
-  }));
-  write(paired,JSON.stringify({
-    edits:[
-      {path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'},
-      {path:testFile,find:'assert.equal(systemValue,1)',replace:'assert.equal(systemValue,2)'}
-    ]
-  }));
-  const result=await runVibe2SourceWorker({cwd,responseFiles:[sourceOnly,editMismatchPaired,paired]});
-  assert.equal(result.generation.attempts,3);
+  write(sourceOnly,JSON.stringify({edits:[{path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'}]}));
+  write(testCompletion,JSON.stringify({replace:"test('system value',()=>assert.equal(systemValue,2));"}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[sourceOnly,testCompletion]});
+  assert.equal(result.generation.attempts,2);
   assert.equal(result.generation.baseAttemptBudget,2);
-  assert.equal(result.generation.effectiveAttemptBudget,3);
-  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.effectiveAttemptBudget,2);
+  assert.equal(result.generation.systemAtomicPairCompletion,true);
   assert.deepEqual(result.changedFiles.sort(),[sourceFile,testFile].sort());
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',selectedTask.id,'files',sourceFile),'utf8'),/systemValue = 2/);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',selectedTask.id,'files',testFile),'utf8'),/systemValue,2/);
 });
+
+test('system architecture still gets one bounded retry when pair-focused completion is unavailable after edit mismatch', async () => {
+  const cwd=tempRoot();
+  const bad1=path.join(cwd,'bad1.json');
+  const bad2=path.join(cwd,'bad2.json');
+  const paired=path.join(cwd,'paired.json');
+  const sourceFile='tools/demo-system.mjs';
+  const testFile='qa/demo-system.test.mjs';
+  const selectedTask={
+    id:'SYS-ARCH-edit-match-credit-v1',gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
+    executionLane:'RECOVERY_FAST',sourceRoot:'.',responsibleFiles:[sourceFile,testFile],priority:'high',releaseState:'other',status:'running',
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,systemSteward:true,goal:'repair structural bottleneck with direct causal proof',
+    evidence:['vibe-self-architecture-evolution','architecture-authority-expansion:NO','architecture-gate-weakening:NO','architecture-system-construction-allowed'],
+    completionCriteria:['STRUCTURAL_CAUSE_VERIFIED','RELATED_REGRESSION_PASS','SECURITY_PASS','BEFORE_AFTER_METRIC_IMPROVED','AUTHORITY_UNCHANGED','GATES_UNCHANGED','NEURAL_EXECUTION_AUTHORITY_UNCHANGED']
+  };
+  const workOrder={
+    ...order({target:'system',root:'.',responsibleFiles:[sourceFile,testFile],taskId:selectedTask.id}),
+    gameId:'__vibe_system__',department:'system-architecture',goal:'[VIBE_SELF_ARCHITECTURE_EVOLUTION] repair edit-match failure with same-failure regression proof',
+    selectedTask,candidateStrategyRole:{variant:'speculative-1',strategy:'CAUSAL_PAIR_REPAIR'},
+    workerPolicy:{directMainWrite:false,systemArchitectureEvolution:true,authorityExpansionAllowed:false,gateWeakeningAllowed:false,neuralExpansionPhase:'LAST_STAGE_ONLY',neuralExpansionAllowed:false,neuralExecutionAuthorityExpansionAllowed:false}
+  };
+  write(path.join(cwd,sourceFile),'export const systemValue = 1;\n');
+  write(path.join(cwd,testFile),"import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport {systemValue} from '../tools/demo-system.mjs';\ntest('system value',()=>assert.equal(systemValue,1));\n");
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const badCandidate={edits:[{path:sourceFile,find:'systemValue = 9',replace:'systemValue = 2'},{path:testFile,find:'assert.equal(systemValue,9)',replace:'assert.equal(systemValue,2)'}]};
+  write(bad1,JSON.stringify(badCandidate));
+  write(bad2,JSON.stringify(badCandidate));
+  write(paired,JSON.stringify({edits:[{path:sourceFile,find:'systemValue = 1',replace:'systemValue = 2'},{path:testFile,find:'assert.equal(systemValue,1)',replace:'assert.equal(systemValue,2)'}]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,paired]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.baseAttemptBudget,2);
+  assert.equal(result.generation.effectiveAttemptBudget,3);
+  assert.deepEqual(result.changedFiles.sort(),[sourceFile,testFile].sort());
+});
+
 
 test('unappliable edit is retried inside generation before candidate write', async () => {
   const cwd = tempRoot();
