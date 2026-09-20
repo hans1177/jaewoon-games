@@ -332,6 +332,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_INCREMENTAL_QA_FILES=${result.changedFiles.join(',')}`);
     console.log(`VIBE2_CAUSAL_REPLAY_STATUS=${result.causalReplay?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
+    console.log(`VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=${result.causalReplay?.prePatchReproduced===true?'YES':'NO'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
     console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);
