@@ -172,6 +172,18 @@ test('authorized policy review resolution requires explicit pass and exact scan 
   assert.equal(legacyRoadmap.status,'RESOLVED_VERIFIED');
   assert.equal(legacyRoadmap.policyReviewApproval.decision,'PRIMARY_AI_SECURITY_REVIEW: PASS');
   assert.equal(legacyRoadmap.policyReviewApproval.canonicalDecision,'PRIMARY_AI_DIRECT_REVIEW=PASS');
+  for(const badSourceUrl of [
+    'https://github.com/hans1177/jaewoon-games/pull/19060',
+    'https://github.com/hans1177/jaewoon-games/pull/1906/files',
+    'https://github.com/hans1177/jaewoon-games/pull/1906?review=pass',
+    'https://github.com/hans1177/jaewoon-games/pull/1906#issuecomment-123',
+    'https://github.com/hans1177/jaewoon-games/pull/1906#pullrequestreview-notnumeric'
+  ]){
+    assert.throws(()=>resolveSecurityIncident(store,{...base,policyReviewApproval:{
+      decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1906,sourceUrl:badSourceUrl,
+      securityRunId:35490800197,securityArtifactId:10597904693,scanDetectedAt:stamp,findingCount:24
+    }}),/SECURITY_POLICY_REVIEW_SOURCE_MISMATCH/);
+  }
   assert.throws(()=>resolveSecurityIncident(store,{...base,policyReviewApproval:{
     decision:'PRIMARY_AI_DIRECT_REVIEW=PASS',prNumber:1906,sourceUrl:'https://github.com/hans1177/jaewoon-games/pull/1906',
     securityRunId:35490800197,securityArtifactId:10597904693,scanDetectedAt:stamp,findingCount:23
