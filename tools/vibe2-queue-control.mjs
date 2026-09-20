@@ -424,7 +424,7 @@ function neuralWorkerFeedback(row = {}) {
 }
 function neuralWorkerEvidence(row = {}) {
   const feedback=neuralWorkerFeedback(row);
-  const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback});
+  const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:Array.isArray(row?.evidence)?row.evidence:[]});
   return [...neuralFeedbackEvidence(feedback),...neuralCriticEvidence(critic)];
 }
 function reusableWorkerEvidence(row = {}) {
