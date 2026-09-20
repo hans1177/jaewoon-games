@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
-import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence,baselineFeatureRequirements} from '../tools/company-development-web-gameplay-validation.mjs';
+import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence,baselineFeatureRequirements,initialCycleGoalReached} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -35,6 +35,12 @@ test('company Web bootstrap cannot generate or repair game source with Gemini',(
   assert.match(source,/failureSignature/);
   assert.match(source,/vibeWebRequestedStage/);
   assert.match(source,/vibeWebImplementationReason/);
+});
+
+test('initial gameplay cycle accepts real wave progression without requiring full-game terminal',()=>{
+  assert.equal(initialCycleGoalReached({before:{values:{wave:1}},after:{values:{wave:2}},terminalReached:false}),true);
+  assert.equal(initialCycleGoalReached({before:{values:{wave:2}},after:{values:{wave:2}},terminalReached:false}),false);
+  assert.equal(initialCycleGoalReached({before:{values:{}},after:{values:{}},terminalReached:true}),true);
 });
 
 test('bug-defense runtime is treated as tower defense without fake avatar movement requirements',()=>{
