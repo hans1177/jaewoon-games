@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -11173,6 +11173,81 @@
       "security": "SECURITY_FINDING_REMEDIATION_AND_RESCAN_EVIDENCE",
       "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
       "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
+    }
+  },
+  "runtimeGameplayMediaPublication": {
+    "version": 1,
+    "purpose": "PUBLISH_ONLY_VERIFIED_REAL_RUNTIME_GAMEPLAY_MEDIA_BOUND_TO_THE_EXACT_BUILD",
+    "appliesTo": [
+      "UNITY",
+      "ROBLOX",
+      "FORTNITE_UEFN"
+    ],
+    "homepage": {
+      "realRuntimeCapturePreferredOverConceptArtAfterVerifiedGraphicsUpdate": true,
+      "conceptArtMayRemainFallbackWhenNoVerifiedRuntimeCaptureExists": true,
+      "runtimeCaptureMustNotBeLabeledAsReleaseUnlessReleaseEvidenceMatches": true,
+      "exactBuildBindingRequired": true,
+      "sourceRevisionBindingRequired": true,
+      "syntheticOrGeneratedImageForbiddenAsRuntimeEvidence": true,
+      "staleCaptureForbiddenAfterNewerGraphicsOrPresentationSourceRevision": true
+    },
+    "unity": {
+      "captureSource": "ANDROID_RUNTIME_SMOKE_ADB_SCREENCAP",
+      "existingCaptureFile": "qa-artifacts/unity-runtime-smoke/screenshot.png",
+      "automaticCaptureAllowed": true,
+      "automaticPublicationAllowedAfterRuntimePassAndExactBuildBinding": true,
+      "publicationTarget": "EXISTING_GITHUB_RELEASE_ASSET_AND_COMPANY_RUNTIME_STATUS",
+      "requiredBindings": [
+        "GAME_ID",
+        "APK_SHA256",
+        "SOURCE_COMMIT",
+        "RUNTIME_SMOKE_PASS",
+        "SCREENSHOT_NONEMPTY",
+        "RELEASE_TAG"
+      ]
+    },
+    "roblox": {
+      "publicReleaseCaptureSource": "ROBLOX_CAPTURE_SERVICE_OR_HUMAN_CAPTURED_PUBLIC_CLIENT_SESSION",
+      "developmentCaptureSource": "HUMAN_APPROVED_STUDIO_RUNTIME_SESSION",
+      "dedicatedTestAccountAllowed": true,
+      "unattendedAccountLoginAutomationForbidden": true,
+      "credentialOrSessionCookieStorageForbidden": true,
+      "disruptiveBotMovementForbidden": true,
+      "automatedClientJoinWithoutSupportedRobloxMechanismForbidden": true,
+      "captureServiceSupported": true,
+      "captureApi": "CaptureService:TakeScreenshotCaptureAsync",
+      "uploadApi": "CaptureService:UploadCaptureAsync_OR_StartUploadCaptureAsync",
+      "humanPermissionMayBeRequired": true,
+      "studioUnattendedAutomationForbidden": true,
+      "publicReleaseHomepageRequiresPublicClientCapture": true,
+      "studioCaptureCannotMasqueradeAsPublicReleaseCapture": true
+    },
+    "refreshPolicy": {
+      "triggerAfterVerifiedGraphicsOrPresentationUpdate": true,
+      "unity": "AUTO_CAPTURE_ON_NEXT_VERIFIED_RUNTIME_SMOKE",
+      "roblox": "REQUEST_ONE_HUMAN_APPROVED_CAPTURE_SESSION_AFTER_VERIFIED_GRAPHICS_UPDATE",
+      "homepageReplaceOnlyWhenNewCaptureVerified": true,
+      "previousVerifiedCaptureMayRemainUntilReplacementIfStillSameReleaseBuild": true
+    },
+    "evidenceRecord": {
+      "required": [
+        "gameId",
+        "platform",
+        "captureType",
+        "url",
+        "verified",
+        "capturedAt",
+        "sourceRevision",
+        "artifactIdentityOrBuildId",
+        "workflowRunIdOrHumanSessionEvidence"
+      ],
+      "allowedCaptureTypes": [
+        "UNITY_ANDROID_RUNTIME",
+        "ROBLOX_PUBLIC_CLIENT_CAPTURE",
+        "ROBLOX_STUDIO_RUNTIME_CAPTURE",
+        "FORTNITE_RUNTIME_CAPTURE"
+      ]
     }
   }
 }
