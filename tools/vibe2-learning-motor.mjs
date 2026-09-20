@@ -62,7 +62,7 @@ const DOMAIN_PATTERNS=freeze({
   UNITY_PHYSICS:/unity.*physics|rigidbody|collider|character.?controller|fixedupdate/i,
   UNITY_NETCODE:/unity.*netcode|netcode.?for.?gameobjects|networkobject|networkbehaviour|clientrpc|serverrpc/i,
   UEFN_RUNTIME:/uefn|fortnite.?uefn|unreal.?editor.?for.?fortnite|creative.?device/i,
-  UEFN_VERSE:/\bverse\b|verse.?code|verse.?device|fortnite\.com\//i,
+  UEFN_VERSE:/uefn.*verse|fortnite.*verse|verse.*(?:uefn|fortnite|device)|fortnite\.com\//i,
   UEFN_REPLICATION:/uefn.*(?:replication|authority|multiplayer.?sync)|fortnite.*(?:replication|authority|multiplayer.?sync)|verse.*(?:replication|authority|multiplayer)|replicated.?state.*(?:uefn|fortnite)/i
 });
 
@@ -1128,6 +1128,9 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
   if(kind==='UNITY_NATIVE_DRILL')return'Unity 네이티브 런타임, 물리, 입력, 씬 수명주기, 필요 시 Netcode 경계를 분석한다. Unity runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
   if(kind==='FORTNITE_UEFN_NATIVE_DRILL')return'Fortnite UEFN의 Verse, device lifecycle, authoritative multiplayer state와 replication 경계를 분석한다. Verse/UEFN 실제 runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.';
+  if(kind==='HYPOTHESIS_FALSIFICATION_DRILL')return'현재 가장 약한 검증 도메인에 대해 개선 가설 하나와 반증 조건 하나를 명시하고, 가설을 지지하는 증거보다 먼저 실패시킬 수 있는 테스트를 설계한다. 반증되면 실패 원인을 다음 학습 신호로 보존한다.';
+  if(kind==='PREVIOUS_RESULT_COMPARISON_DRILL')return'동일 도메인의 이전 검증 결과와 현재 접근을 비교해 개선/퇴보/불확실을 분리하고, 차이를 설명할 수 있는 최소 인과 가설과 다음 검증을 만든다.';
+  if(kind==='RELEARNING_REPLAY_DRILL')return'반복된 검증 실패를 그대로 암기하지 말고 원인 fingerprint를 재현한 뒤 다른 해결 전략으로 다시 풀고 이전 실패와 결과를 비교한다.';
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
@@ -1154,12 +1157,39 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
       unseenProblemFingerprint:clean(row.unseenProblemFingerprint),
       mayPromoteGeneralization:false
     })));
+  const weakest=gaps[0]||null;
+  const hypothesisDrills=weakest?[{
+    id:`hypothesis-${lower(weakest[0])}`,
+    kind:'HYPOTHESIS_FALSIFICATION_DRILL',
+    priority:'low',productionPreemptible:true,countsAsProductionPass:false,
+    domains:[weakest[0]]
+  },{
+    id:`compare-${lower(weakest[0])}`,
+    kind:'PREVIOUS_RESULT_COMPARISON_DRILL',
+    priority:'low',productionPreemptible:true,countsAsProductionPass:false,
+    domains:[weakest[0]]
+  }]:[];
+  const relearningDrills=repeated.slice(0,3).map(([sig,row])=>({
+    id:`relearn-${sig}`,
+    kind:'RELEARNING_REPLAY_DRILL',
+    priority:'high',productionPreemptible:true,countsAsProductionPass:false,
+    domains:row.domains,sourceFailure:sig
+  }));
   const drills=[
     ...phase4Drills,
+    ...hypothesisDrills,
+    ...relearningDrills,
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
-  return {version:2,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,phase4GeneralizationDrills:phase4Drills.length,drills};
+  return {
+    version:3,kind:'vibe2-idle-practice-queue',
+    productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,
+    practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,relearningGenerationLimit:null,
+    hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
+    previousResultComparisonRequired:true,
+    phase4GeneralizationDrills:phase4Drills.length,drills
+  };
 }
 
 function isIdlePracticeTask(task={}){
