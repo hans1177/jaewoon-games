@@ -441,15 +441,16 @@ function neuralWorkerEventType(row={}) {
   if(clean(roles.test).toUpperCase()==='FAIL'||evidence.some(value=>value.startsWith('incremental-qa-failure-signature:')))return'QA_RESULT';
   return'WORKER_RESULT';
 }
-function neuralWorkerEvidence(row = {}) {
+export function buildNeuralWorkerTransaction(row = {}) {
   const rowEvidence=Array.isArray(row?.evidence)?row.evidence:[];
+  const sampleId=neuralWorkerSampleId(row);
   const feedback=neuralWorkerFeedback(row);
   const critic=critiqueNeuralShadow({diagnosis:row?.neuralDiagnosis||null,feedback,evidence:rowEvidence});
-  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence,sampleId:neuralWorkerSampleId(row)});
+  const rootCause=verifyNeuralRootCause({diagnosis:row?.neuralDiagnosis||null,evidence:rowEvidence,sampleId});
   const eventType=neuralWorkerEventType(row);
   const eventRoute=simulateNeuralEventRoute({
     event:{
-      id:[neuralWorkerSampleId(row),eventType].filter(Boolean).join('|')||null,
+      id:[sampleId,eventType].filter(Boolean).join('|')||null,
       type:eventType,
       taskId:clean(row?.taskId)||null,
       outcome:clean(row?.outcome).toUpperCase()||null,
@@ -463,12 +464,32 @@ function neuralWorkerEvidence(row = {}) {
     lockConflict:false,
     securityBlocked:rowEvidence.map(clean).includes('SECURITY_POLICY_BLOCK')
   });
-  return[
+  const evidence=[
     ...neuralFeedbackEvidence(feedback),
     ...neuralCriticEvidence(critic),
     ...neuralRootCauseEvidence(rootCause),
     ...neuralEventRouteEvidence(eventRoute)
   ];
+  const atomicSummary={
+    version:1,
+    sampleId,
+    feedback:clean(feedback?.matchState)||'UNKNOWN',
+    critic:clean(critic?.verdict)||'UNRESOLVED',
+    rootCause:clean(rootCause?.state)||'UNRESOLVED',
+    route:clean(eventRoute?.proposedAction?.kind)||'OBSERVE'
+  };
+  return Object.freeze({
+    version:1,
+    sampleId,
+    feedback,
+    critic,
+    rootCause,
+    eventRoute,
+    evidence:Object.freeze([...new Set([
+      `neural-atomic-transaction:${encodeURIComponent(JSON.stringify(atomicSummary))}`,
+      ...evidence
+    ])])
+  });
 }
 function reusableWorkerEvidence(row = {}) {
   const evidence=[];
@@ -514,14 +535,15 @@ export function applyVibeFanInResults(queueInput, results = []) {
     }
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
-    const neuralVariantFeedback=variants.map(neuralWorkerFeedback);
-    const neuralVariantEvidence=variants.flatMap(neuralWorkerEvidence);
+    const neuralTransactions=new Map(variants.map(row=>[row,buildNeuralWorkerTransaction(row)]));
+    const neuralVariantFeedback=variants.map(row=>neuralTransactions.get(row).feedback);
+    const neuralVariantEvidence=variants.flatMap(row=>neuralTransactions.get(row).evidence);
     const allEvidence = [...new Set(variants.flatMap((row) => [
       ...(Array.isArray(row.evidence) ? row.evidence : []),
       ...workloadEvidence(row),
       ...reusableWorkerEvidence(row),
       ...codingStrategyFailureEvidence(row),
-      ...neuralWorkerEvidence(row)
+      ...neuralTransactions.get(row).evidence
     ]).map(clean).filter(Boolean))];
     if (passes.length) {
       const practiceWinner=passes.find(row=>{
