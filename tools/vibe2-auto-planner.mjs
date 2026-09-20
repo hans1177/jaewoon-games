@@ -81,18 +81,44 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
       return item;
     }
     const currentReleaseState=stateFromCatalog(game);
-    if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
-      const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
+    const currentAuthority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
+    const currentStatus=clean(item.status).toLowerCase();
+    const currentBlocker=clean(item.blocker);
+    const itemEvidence=(item.evidence||[]).map(clean);
+    const centralAuthorityCancellation=currentStatus==='cancelled'
+      &&/^production-authority-inactive:/.test(currentBlocker)
+      &&(clean(item.lastOutcome)==='CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY'||itemEvidence.some(value=>value.startsWith('production-authority-sync:')));
+    if(['release-confirmed','development-confirmed'].includes(currentReleaseState)&&centralAuthorityCancellation){
+      return{
+        ...item,
+        releaseState:currentReleaseState,
+        status:'queued',
+        blocker:null,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        lastOutcome:'RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+        evidence:[...new Set([
+          ...(item.evidence||[]),
+          `production-authority-restored:${currentAuthority}`,
+          `release-state:${currentReleaseState}`,
+          `restored-from:${currentBlocker}`,
+          'event-driven-resume:central-production-authority-restored'
+        ])]
+      };
+    }
+    if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(currentStatus)){
       return{
         ...item,
         status:'cancelled',
-        blocker:`production-authority-inactive:${authority}`,
+        blocker:`production-authority-inactive:${currentAuthority}`,
         reservationId:null,
         reservationRunId:null,
         reservationRunAttempt:0,
         reservedAt:null,
         lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
-        evidence:[...new Set([...(item.evidence||[]),`production-authority-sync:${authority}`])]
+        evidence:[...new Set([...(item.evidence||[]),`production-authority-sync:${currentAuthority}`])]
       };
     }
     return item;
