@@ -471,7 +471,8 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:9'));
+  assert(resultStep.includes('version:10'));
+  assert(resultStep.includes('neuralDiagnosis'));
 });
 
 test('worker immutable result preserves causal replay status without treating plan-only as executed',()=>{
