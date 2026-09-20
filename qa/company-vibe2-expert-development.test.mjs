@@ -61,6 +61,16 @@ function frame(){ setInterval(()=>{},1000); requestAnimationFrame(frame); }
   assert.ok(review.hardBlockers.includes('SENIOR_REVIEW_REPEATED_LOOP_CREATES_INTERVAL'));
 });
 
+test('senior review allows the same handler on different real controls',()=>{
+  const valid=`<script>
+function openMap(){}
+ui.mapBtn.addEventListener('click',openMap);
+ui.mapTab.addEventListener('click',openMap);
+</script>`;
+  const review=reviewSeniorSourceQuality(valid);
+  assert.equal(review.hardBlockers.includes('SENIOR_REVIEW_DUPLICATE_EVENT_HANDLER_REGISTRATION'),false);
+});
+
 test('approved scope static contract carries senior review hard blockers into the existing build gate',()=>{
   const html=`<!doctype html><main data-approved-scope-count="1"><button data-scope-id="scope-a" data-mechanic-id="action-a">go</button><script>
 function onTap(){}
