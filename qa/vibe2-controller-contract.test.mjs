@@ -355,9 +355,12 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch-fallback');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
-  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"));
-  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'));
-  assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
+  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"));
+  assert.equal(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ] || [ \"$callback_kind\" = 'neuron' ]; then"),false);
+  assert.equal(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'),false);
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'));
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'));
+  assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
 });
 
 test('24H safety-net refills free game slots while preserving queue-level conflict protection',()=>{
