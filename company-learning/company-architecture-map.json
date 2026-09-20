@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -322,7 +322,15 @@
       "criticPersistence": "tools/vibe2-queue-control.mjs",
       "criticAuthority": "EVALUATION_ONLY",
       "confidenceMutationAuthority": "NONE",
-      "actionFiringAuthority": "NONE"
+      "actionFiringAuthority": "NONE",
+      "causalEvidenceTransport": {
+        "producer": "tools/vibe2-incremental-qa.mjs",
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "consumer": "tools/vibe2-neural-critic.mjs",
+        "prePatchReproductionRequired": true,
+        "executedReplayPassRequired": true,
+        "rootCauseAuthority": "NONE"
+      }
     }
   }
 }
