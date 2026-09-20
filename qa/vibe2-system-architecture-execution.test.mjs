@@ -100,3 +100,11 @@ test('system candidate workflow closes the inline module heredoc at the YAML she
   assert.ok(openerIndent>shellBoundaryIndent);
   assert.equal(terminatorIndent,shellBoundaryIndent);
 });
+
+
+test('continuous reserve refreshes system architecture readiness from direct targeted QA',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflow,/tools\/vibe2-neural-expansion-readiness\.mjs \\\n\s+--root=\/tmp\/vibe2-main \\\n\s+--output=\/tmp\/vibe2-neural-expansion-readiness\.json/);
+  const stewardCalls=workflow.match(/tools\/vibe2-system-steward\.mjs[\s\S]{0,260}?--neural-readiness=\/tmp\/vibe2-neural-expansion-readiness\.json/g)||[];
+  assert.ok(stewardCalls.length>=2);
+});
