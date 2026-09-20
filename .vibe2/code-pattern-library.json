@@ -1280,6 +1280,30 @@
       "authority": "AUTHORIZED_EXTERNAL_GENERALIZED_PATTERN"
     },
     {
+      "id": "pat_security_28453669955c43a85d166c5c",
+      "gameId": null,
+      "engine": "system",
+      "taskType": "security",
+      "system": "WORKFLOW_INTEGRITY",
+      "problem": "DIRECT_MAIN_PUSH_ADDED",
+      "pattern": "VERIFIED_SECURITY_WORKFLOW_INTEGRITY_DETECT_QUARANTINE_REMEDIATE_RESCAN",
+      "tags": [
+        "security",
+        "immune-system",
+        "verified",
+        "WORKFLOW_INTEGRITY"
+      ],
+      "verified": true,
+      "sourceRevision": "sha256:b2ebaf040b8a0df63c136476490af1fad49e889caea82e85f6d207417b4e6828",
+      "evidencePath": "vibe2-unreal-core:.vibe2/security-incidents.json",
+      "rawCodeStored": false,
+      "independentQa": "PASS",
+      "browserQa": "NOT_APPLICABLE",
+      "retrievalEligible": true,
+      "masteryEligible": true,
+      "authority": "VERIFIED_SECURITY_IMMUNE_PATTERN"
+    },
+    {
       "id": "pat_security_53422c69113706740dd73f5a",
       "gameId": null,
       "engine": "system",
@@ -1344,30 +1368,6 @@
       ],
       "verified": true,
       "sourceRevision": "sha256:bc1efdea1e2c75fa176d54c0f378f7709d70bc4031207c9c2ab33d6513e4d382",
-      "evidencePath": "vibe2-unreal-core:.vibe2/security-incidents.json",
-      "rawCodeStored": false,
-      "independentQa": "PASS",
-      "browserQa": "NOT_APPLICABLE",
-      "retrievalEligible": true,
-      "masteryEligible": true,
-      "authority": "VERIFIED_SECURITY_IMMUNE_PATTERN"
-    },
-    {
-      "id": "pat_security_28453669955c43a85d166c5c",
-      "gameId": null,
-      "engine": "system",
-      "taskType": "security",
-      "system": "WORKFLOW_INTEGRITY",
-      "problem": "DIRECT_MAIN_PUSH_ADDED",
-      "pattern": "VERIFIED_SECURITY_WORKFLOW_INTEGRITY_DETECT_QUARANTINE_REMEDIATE_RESCAN",
-      "tags": [
-        "security",
-        "immune-system",
-        "verified",
-        "WORKFLOW_INTEGRITY"
-      ],
-      "verified": true,
-      "sourceRevision": "sha256:b2ebaf040b8a0df63c136476490af1fad49e889caea82e85f6d207417b4e6828",
       "evidencePath": "vibe2-unreal-core:.vibe2/security-incidents.json",
       "rawCodeStored": false,
       "independentQa": "PASS",

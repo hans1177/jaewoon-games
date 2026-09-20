@@ -230,16 +230,6 @@
       ]
     },
     {
-      "id": "gap-animation_feel-l3",
-      "kind": "ANIMATION_FEEL_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ANIMATION_FEEL"
-      ]
-    },
-    {
       "id": "gap-security-l3",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -250,13 +240,13 @@
       ]
     },
     {
-      "id": "gap-ai-l4",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-animation_feel-l4",
+      "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "AI"
+        "ANIMATION_FEEL"
       ]
     },
     {
@@ -270,26 +260,6 @@
       ]
     },
     {
-      "id": "gap-quest_design-l4",
-      "kind": "QUEST_CAUSALITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "QUEST_DESIGN"
-      ]
-    },
-    {
-      "id": "gap-save-l4",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "SAVE"
-      ]
-    },
-    {
       "id": "gap-ui_state-l4",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -297,6 +267,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "UI_STATE"
+      ]
+    },
+    {
+      "id": "gap-ai-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "AI"
       ]
     },
     {
@@ -310,23 +290,13 @@
       ]
     },
     {
-      "id": "gap-core_loop-l5",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-quest_design-l5",
+      "kind": "QUEST_CAUSALITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "CORE_LOOP"
-      ]
-    },
-    {
-      "id": "gap-mobile_input-l5",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "MOBILE_INPUT"
+        "QUEST_DESIGN"
       ]
     },
     {
@@ -340,23 +310,33 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l5",
+      "id": "gap-save-l5",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "WEB_RUNTIME"
+        "SAVE"
       ]
     },
     {
-      "id": "gap-debugging-l6",
+      "id": "gap-core_loop-l6",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "DEBUGGING"
+        "CORE_LOOP"
+      ]
+    },
+    {
+      "id": "gap-mobile_input-l6",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT"
       ]
     },
     {
@@ -370,7 +350,27 @@
       ]
     },
     {
-      "id": "gap-state_machine-l6",
+      "id": "gap-web_runtime-l6",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-debugging-l7",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "DEBUGGING"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l7",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
