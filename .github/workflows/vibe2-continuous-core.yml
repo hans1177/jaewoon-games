@@ -196,46 +196,24 @@ jobs:
           echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          lane_min='1'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_OWNER_MINIMUM_WAVE"; fi
           if [ "${active_worker_reservations:-0}" -gt 0 ]; then
-            export VIBE2_GUARD_RESERVED_AT="$reserved_at"
-            node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
-          const lane=String(process.env.VIBE2_EXECUTION_LANE||'game-primary');
-          const requested=Math.max(1,Number(process.env.VIBE2_LANE_MAX||256));
-          const effective=lane==='game-primary'?Math.max(1,Number(control.currentMax||20)):requested;
-          const out={
-            version:1,
-            createdAt:process.env.VIBE2_GUARD_RESERVED_AT||new Date().toISOString(),
-            matrix:[],
-            scheduler:{
-              lane,
-              requestedMaxConcurrentTasks:requested,
-              effectiveMaxConcurrentTasks:effective,
-              reservedTaskCount:0,
-              workerCount:0,
-              guard:'ACTIVE_LANE_RESERVATION_PRESENT'
-            }
-          };
-          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(out,null,2)+'\n');
-          NODE
-            : > /tmp/vibe2-reserve.log
-            echo 'VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'
+            echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
           else
-            lane_min='1'
-            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_OWNER_MINIMUM_WAVE"; fi
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --lane="$VIBE2_EXECUTION_LANE" \
-              --max="$VIBE2_LANE_MAX" \
-              --min="$lane_min" \
-              --reservation-id="$reservation_id" \
-              --reservation-run="$GITHUB_RUN_ID" \
-              --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
-              --reserved-at="$reserved_at" \
-              --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+            echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
           fi
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
+            --min="$lane_min" \
+            --reservation-id="$reservation_id" \
+            --reservation-run="$GITHUB_RUN_ID" \
+            --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
+            --reserved-at="$reserved_at" \
+            --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
