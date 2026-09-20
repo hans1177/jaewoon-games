@@ -1,5 +1,5 @@
 {
-  "version": 206,
+  "version": 207,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4983,7 +4983,7 @@
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
-      "state": "PHASE_3_CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
+      "state": "PHASE_3_IMPLEMENTATION_MERGED_RUNTIME_FEEDBACK_PENDING",
       "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
       "teacherSources": [
         "VIBE_GENERATED_CODING",
@@ -5292,7 +5292,7 @@
         }
       },
       "implementationPhase3": {
-        "state": "CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
+        "state": "MERGED_MAIN_RUNTIME_FEEDBACK_PENDING",
         "scope": "VERIFIED_CAPABILITY_APPLICATION_OUTCOME_ATTRIBUTION_CONFIDENCE_LIFECYCLE_AND_GENERALIZATION_GATES",
         "objective": "MEASURE_WHETHER_RETRIEVED_VERIFIED_CAPABILITIES_SURVIVE_FRESH_TASK_QA_AND_USE_REPEATED_INDEPENDENT_EVIDENCE_TO_RETAIN_DECAY_DEPRECATE_SUPERSEDE_OR_GENERALIZE_CAPABILITIES_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
         "prerequisites": {
@@ -5393,7 +5393,68 @@
           "NO_AUTHORITY_EXPANSION",
           "CI_AND_REAL_WORK_ORDER_RUNTIME_VERIFICATION"
         ],
-        "nextGate": "IMPLEMENT_PHASE_3_APPLICATION_EVIDENCE_AND_LIFECYCLE_THEN_VERIFY_REAL_WORK_ORDER_FEEDBACK_WITHOUT_AUTHORITY_EXPANSION"
+        "nextGate": "OBSERVE_PHASE_3_CAPABILITY_APPLICATION_EVIDENCE_IN_REAL_WORK_ORDER_THEN_VERIFY_LIFECYCLE_WITHOUT_AUTHORITY_EXPANSION",
+        "sourcePr": 1909,
+        "mergedCommit": "347f96cdb95cb76dc81a57ea776139076404b73b",
+        "components": [
+          ".github/workflows/vibe2-continuous-core.yml",
+          "assets/vibe-experience-memory.js",
+          "tools/vibe2-capability-distillation.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-experience-control.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "qa/vibe2-capability-distillation.test.mjs",
+          "qa/vibe2-experience-control.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs"
+        ],
+        "runtimeBinding": {
+          "workOrderContract": "tools/vibe2-continuous-runner.mjs::capabilityApplicationContract",
+          "exactInjectedCapabilityIds": true,
+          "workerResultSchemaVersion": 11,
+          "fanInReviewSchemaVersion": 6,
+          "fanInBinding": "tools/vibe2-fan-in-review.mjs::buildCapabilityApplicationReviews",
+          "persistence": "EXISTING_VIBE_EXPERIENCE_MEMORY_ONLY",
+          "newParallelLedgerCreated": false,
+          "applicationDeduplicationKey": "APPLICATION_ID",
+          "repeatedIndependentFreshQaRequiredForConfidenceGrowth": true,
+          "taskFailureAlonePenalizesCapability": false,
+          "singlePassAutomaticPromotion": false,
+          "singleFailureAutomaticDeprecation": false,
+          "strongGeneralizationRequiresUnseenProblemBenchmark": true
+        },
+        "ci": {
+          "vibe2CoreQa": {
+            "state": "PASS",
+            "runId": 35491306568
+          },
+          "integratedRegression": {
+            "state": "PASS",
+            "runId": 35491306567
+          },
+          "vibe3EngineContract": {
+            "state": "PASS",
+            "runId": 35491306584
+          },
+          "companySecurityImmuneSystem": {
+            "state": "PASS",
+            "runId": 35491306583,
+            "findings": 0
+          },
+          "mainWriteGuard": {
+            "state": "PASS",
+            "runId": 35491306582
+          }
+        },
+        "productionObservation": {
+          "state": "RUNTIME_FEEDBACK_PENDING",
+          "checkedAfterMerge": true,
+          "checkedRef": "vibe2-unreal-core",
+          "experienceRecordCount": 20,
+          "capabilityApplicationRecordCount": 0,
+          "runtimeApplicationEvidenceObserved": false,
+          "runtimeLifecycleEvidenceObserved": false,
+          "completionClaimAllowed": false
+        }
       }
     }
   },
