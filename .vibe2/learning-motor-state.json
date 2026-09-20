@@ -12,11 +12,11 @@
       "lastEvidence": "capability_ctrace_b8d48cb4bef5453d919f5f04"
     },
     "STATE_MACHINE": {
-      "xp": 1415,
+      "xp": 1430,
       "level": 13,
       "verifiedSuccesses": 92,
-      "verifiedFailureLessons": 71,
-      "lastEvidence": "capability_ctrace_b8d48cb4bef5453d919f5f04"
+      "verifiedFailureLessons": 74,
+      "lastEvidence": "capability_ctrace_e60a588f9dc0cd58c0279163"
     },
     "COMBAT": {
       "xp": 1096,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_98ff2306686a32e38f808a33"
     },
     "DEBUGGING": {
-      "xp": 1403,
+      "xp": 1418,
       "level": 13,
       "verifiedSuccesses": 93,
-      "verifiedFailureLessons": 71,
-      "lastEvidence": "capability_ctrace_b8d48cb4bef5453d919f5f04"
+      "verifiedFailureLessons": 74,
+      "lastEvidence": "capability_ctrace_e60a588f9dc0cd58c0279163"
     },
     "RECOVERY": {
       "xp": 983,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1285,
+      "xp": 1300,
       "level": 12,
       "verifiedSuccesses": 80,
-      "verifiedFailureLessons": 65,
-      "lastEvidence": "capability_ctrace_b8d48cb4bef5453d919f5f04"
+      "verifiedFailureLessons": 68,
+      "lastEvidence": "capability_ctrace_e60a588f9dc0cd58c0279163"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -421,7 +421,10 @@
     "capability_ctrace_1dfe930796311dc591080e30",
     "capability_ctrace_f6a808674ae83d2b21d44423",
     "capability_ctrace_f49ceda6ae548d42d4988242",
-    "capability_ctrace_b8d48cb4bef5453d919f5f04"
+    "capability_ctrace_b8d48cb4bef5453d919f5f04",
+    "capability_ctrace_e8dd063afbf6c4c36162f925",
+    "capability_ctrace_9224163c1096adfda9d9e23c",
+    "capability_ctrace_e60a588f9dc0cd58c0279163"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -559,8 +562,8 @@
       ]
     },
     "fail_wu3qnk": {
-      "count": 12,
-      "lastEvidence": "capability_ctrace_1dfe930796311dc591080e30",
+      "count": 15,
+      "lastEvidence": "capability_ctrace_e60a588f9dc0cd58c0279163",
       "example": "SOURCE_CANDIDATE_GENERATION:TIMEOUT",
       "domains": [
         "STATE_MACHINE",
@@ -7554,7 +7557,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T22:33:54.021Z",
+    "lastBuiltAt": "2026-09-20T22:35:01.381Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10111,5 +10114,5 @@
       "knowledge_1j0mdld"
     ]
   },
-  "updatedAt": "2026-09-20T22:33:54.021Z"
+  "updatedAt": "2026-09-20T22:35:01.381Z"
 }
