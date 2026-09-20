@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE1_SHADOW_DIAGNOSIS_AND_CALIBRATION_CODE_CONNECTED",
+    "currentState": "PHASE1_SHADOW_DIAGNOSIS_CALIBRATION_CRITIC_CONNECTED",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -317,7 +317,12 @@
       "qaFailureSignatureProducer": "tools/vibe2-incremental-qa.mjs",
       "qaFailureSignatureTransport": ".github/workflows/vibe2-continuous-core.yml",
       "qaFailureSignatureConsumer": "tools/vibe2-neural-feedback.mjs",
-      "qaSignatureAuthority": "EVIDENCE_ONLY_NO_ROOT_CAUSE_AUTHORITY"
+      "qaSignatureAuthority": "EVIDENCE_ONLY_NO_ROOT_CAUSE_AUTHORITY",
+      "critic": "tools/vibe2-neural-critic.mjs",
+      "criticPersistence": "tools/vibe2-queue-control.mjs",
+      "criticAuthority": "EVALUATION_ONLY",
+      "confidenceMutationAuthority": "NONE",
+      "actionFiringAuthority": "NONE"
     }
   }
 }
