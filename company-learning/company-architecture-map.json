@@ -433,8 +433,8 @@
         "authorityChange": "NONE"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
-        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
-        "sourcePr": null,
+        "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
+        "sourcePr": 1994,
         "controller": ".vibe2/parallelism-control.json",
         "algorithm": "tools/vibe2-adaptive-backpressure.mjs",
         "reserve": "tools/vibe2-queue-control.mjs::reserve-batch",
