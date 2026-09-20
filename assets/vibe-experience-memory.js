@@ -411,6 +411,75 @@ export function recordVibeCapabilityBenchmark(memory, benchmark = {}) {
   return freeze({ updated: true, duplicate: false, reason: 'capability-benchmark-recorded', memory: nextMemory, record });
 }
 
+
+export function recordVibeCapabilityBenchmarkNativeCompletion(memory, completion = {}) {
+  const current = createVibeExperienceMemory(memory);
+  const capabilityId = clean(completion?.capabilityId);
+  const caseId = clean(completion?.caseId);
+  const pairId = clean(completion?.pairId);
+  const gameId = clean(completion?.gameId);
+  const unseenProblemFingerprint = clean(completion?.unseenProblemFingerprint);
+  const engine = clean(completion?.engine).toLowerCase();
+  const evidence = freezeList(completion?.evidence || []);
+  if (!capabilityId || !caseId || !pairId || !gameId || !unseenProblemFingerprint) {
+    return freeze({ updated: false, duplicate: false, reason: 'native-completion-identity-required', memory: current, record: null });
+  }
+  if (completion?.nativeRuntimeVerified !== true || evidence.length < 2) {
+    return freeze({ updated: false, duplicate: false, reason: 'verified-native-runtime-evidence-required', memory: current, record: null });
+  }
+  const target = current.records.find((item) => item.id === capabilityId && item.taskType === 'coding-capability-distillation');
+  if (!target) {
+    return freeze({ updated: false, duplicate: false, reason: 'capability-not-found', memory: current, record: null });
+  }
+  const rows = target.capabilityBenchmarks || [];
+  const at = rows.findIndex((row) =>
+    clean(row?.caseId) === caseId
+    && clean(row?.pairId) === pairId
+    && clean(row?.gameId) === gameId
+    && clean(row?.unseenProblemFingerprint) === unseenProblemFingerprint
+    && (!engine || clean(row?.engine).toLowerCase() === engine)
+  );
+  if (at < 0) {
+    return freeze({ updated: false, duplicate: false, reason: 'native-completion-benchmark-not-found', memory: current, record: target });
+  }
+  const row = rows[at];
+  const preNativeQualifying = row.unseenGame === true
+    && row.independent === true
+    && row.pairedControlChallenger === true
+    && row.controlFreshQaPass === true
+    && row.challengerFreshQaPass === true
+    && row.freshIndependentQaPass === true
+    && row.fullRegressionPass === true
+    && row.nativeRuntimeRequired === true
+    && row.nonTargetContextFixed === true
+    && row.writableScopeFixed === true
+    && row.modelBudgetFixed === true
+    && row.qaContractFixed === true
+    && row.capabilitySpecificPositiveSupport === true
+    && row.capabilitySpecificContradiction === false;
+  if (!preNativeQualifying) {
+    return freeze({ updated: false, duplicate: false, reason: 'native-completion-preconditions-not-met', memory: current, record: target });
+  }
+  if (row.nativeRuntimePass === true) {
+    return freeze({ updated: false, duplicate: true, reason: 'native-completion-already-recorded', memory: current, record: target });
+  }
+  const completed = {
+    ...row,
+    nativeRuntimePass: true,
+    evidence: freezeList([...(row.evidence || []), ...evidence]),
+    observedAt: clean(completion?.observedAt) || clean(row.observedAt) || null,
+    rawCodeStored: false,
+    rawModelOutputStored: false,
+    hiddenChainOfThoughtStored: false,
+    authorityExpanded: false
+  };
+  const capabilityBenchmarks = rows.map((item, index) => index === at ? completed : item);
+  const nextRecord = createVibeExperienceRecord({ ...target, capabilityBenchmarks });
+  const nextMemory = createVibeExperienceMemory(current.records.map((item) => item.id === target.id ? nextRecord : item));
+  const record = nextMemory.records.find((item) => item.id === target.id) || nextRecord;
+  return freeze({ updated: true, duplicate: false, reason: 'capability-benchmark-native-runtime-completed', memory: nextMemory, record });
+}
+
 export function recordVibeCapabilityPortfolioDecision(memory, decision = {}) {
   const current = createVibeExperienceMemory(memory);
   const capabilityId = clean(decision?.capabilityId);
