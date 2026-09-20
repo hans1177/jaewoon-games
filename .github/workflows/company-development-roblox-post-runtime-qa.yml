@@ -52,18 +52,28 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const rows=[];
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
-            const revision=String(item.robloxSourceCommit||'').trim();
-            const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
-            const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
-            const runtime=item.robloxRuntimePassed===true&&item.robloxServerClientBoundaryPassed===true;
-            const pending=item.robloxMobileControlUiPassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true;
+            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exact=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+            const runtime=secondaryOwnerFocus
+              ?item.ownerFocusRobloxRuntimePassed===true&&item.ownerFocusRobloxServerClientBoundaryPassed===true
+              :item.robloxRuntimePassed===true&&item.robloxServerClientBoundaryPassed===true;
+            const pending=secondaryOwnerFocus
+              ?item.ownerFocusRobloxMobileControlUiPassed!==true||item.ownerFocusRobloxIndependentQaPassed!==true||item.ownerFocusRobloxRegressionPassed!==true
+              :item.robloxMobileControlUiPassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true;
             if(!exact||!runtime||!pending)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact});
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact,secondaryOwnerFocus});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
@@ -229,6 +239,7 @@ jobs:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           ARTIFACT_RUN: ${{ steps.package.outputs.artifact_run }}
           PACKAGE_OUTCOME: ${{ steps.package.outcome }}
           STUDIO_OUTCOME: ${{ steps.studio.outcome }}
@@ -249,7 +260,7 @@ jobs:
           $runId = 0
           if ($env:ARTIFACT_RUN -match '^\d+$') { $runId = [int64]$env:ARTIFACT_RUN }
           $evidence = [ordered]@{
-            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; checkedAt=(Get-Date).ToUniversalTime().ToString('o');
+            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; secondaryOwnerFocus=($env:SECONDARY_OWNER_FOCUS -eq 'true'); checkedAt=(Get-Date).ToUniversalTime().ToString('o');
             sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=$runId; exactRevision=$true;
             actualStudioRuntime=$true; phoneDeviceSimulationPassed=$independentPass; mobileTouchInteractionPassed=$independentPass;
             mobileControlUiPassed=$independentPass; independentQaPassed=$independentPass; regressionPassed=$regressionPass;
@@ -339,9 +350,26 @@ jobs:
           for(const target of expected){
             const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
             const r=byId.get(target.gameId);
-            const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity&&r?.exactRevision===true;
+            const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            const sourceRevision=secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit;
+            const artifactIdentity=secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity;
+            const exact=r?.sourceRevision===sourceRevision&&r?.artifactIdentity===artifactIdentity&&r?.exactRevision===true&&Boolean(r?.secondaryOwnerFocus)===secondaryOwnerFocus;
             const independent=exact&&r?.mobileControlUiPassed===true&&r?.independentQaPassed===true;
             const regression=independent&&r?.regressionPassed===true;
+            if(secondaryOwnerFocus){
+              item.ownerFocusRobloxPostRuntimeQaEvidence=r||null;
+              item.ownerFocusRobloxMobileControlUiPassed=independent;
+              item.ownerFocusRobloxIndependentQaPassed=independent;
+              item.ownerFocusRobloxRegressionPassed=regression;
+              item.ownerFocusRobloxExactRevisionPassed=exact;
+              item.ownerFocusRobloxIndependentQaPassedAt=independent?stamp:null;
+              item.ownerFocusRobloxRegressionPassedAt=regression?stamp:null;
+              item.ownerFocusRobloxAssetPipelineState=regression?'QA_READY':independent?'REGRESSION_REPAIR_REQUIRED':'INDEPENDENT_QA_REPAIR_REQUIRED';
+              item.ownerFocusRobloxPostRuntimeFailure=regression?null:independent?'ROBLOX_REGRESSION_FAILED':(r?.failure||'ROBLOX_INDEPENDENT_QA_FAILED');
+              item.updatedAt=stamp;
+              if(regression)pass++;else fail++;
+              continue;
+            }
             item.robloxPostRuntimeQaEvidence=r||null;
             item.robloxMobileControlUiPassed=independent;
             item.robloxIndependentQaPassed=independent;
