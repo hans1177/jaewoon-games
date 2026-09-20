@@ -6682,14 +6682,7 @@
           "state": "CANDIDATE_BRANCH",
           "branch": "assistant/neural-shadow-readiness-consolidated-v1",
           "authority": "REVIEW_ELIGIBILITY_ONLY_NO_EXECUTION_AUTHORITY",
-          "executionAuthorityChange": "NONE",
-          "dedupe": [
-            "CALIBRATION_SAMPLE_ID",
-            "SHADOW_EVENT_ID",
-            "ROOT_CAUSE_SAMPLE_ID",
-            "WAVE_AUDIT_SAMPLE_ID"
-          ],
-          "conflictRule": "ANY_SAME_IDENTITY_CONTRADICTION_BLOCKS_REVIEW"
+          "executionAuthorityChange": "NONE"
         }
       },
       "sampleIdentity": {
