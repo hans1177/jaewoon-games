@@ -221,12 +221,52 @@ jobs:
         continue-on-error: true
         env:
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r -d '' file; do
             case "$file" in *.js|*.mjs|*.cjs) node --check "$file" ;; esac
           done < <(find "$SOURCE_ROOT" -type f -print0)
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+
+          const root=String(process.env.SOURCE_ROOT||'').trim();
+          const baseSha=String(process.env.BASE_SHA||'').trim();
+          const htmlFiles=[];
+          const walk=dir=>{
+            for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+              const full=path.join(dir,entry.name);
+              if(entry.isDirectory())walk(full);
+              else if(entry.isFile()&&entry.name.toLowerCase().endsWith('.html'))htmlFiles.push(full);
+            }
+          };
+          walk(root);
+          for(const file of htmlFiles){
+            const source=fs.readFileSync(file,'utf8');
+            const rel=file.replaceAll('\\','/');
+            const scripts=[...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+              .filter(match=>!\bsrc\s*=\s*/i.test(match[1]||''));
+            for(let i=0;i<scripts.length;i++){
+              const tmp=path.join(os.tmpdir(),`vibe2-inline-${process.pid}-${i}.mjs`);
+              fs.writeFileSync(tmp,scripts[i][2]||'','utf8');
+              execFileSync(process.execPath,['--check',tmp],{stdio:'inherit'});
+              fs.rmSync(tmp,{force:true});
+            }
+            let base='';
+            try{base=execFileSync('git',['show',`${baseSha}:${rel}`],{encoding:'utf8',maxBuffer:4*1024*1024});}catch{}
+            const historicalSaveKey="const key='jg-final:'+C.id;";
+            if(base.includes(historicalSaveKey)&&!source.includes(historicalSaveKey)){
+              throw new Error('VIBE2_WEB_SAVE_KEY_REGRESSION:'+rel);
+            }
+          }
+          NODE
+          echo 'VIBE2_WEB_INLINE_SCRIPT_QA=PASS'
+          echo 'VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS'
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
       - name: Promote approved web source root through reviewed PR
