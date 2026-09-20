@@ -70,6 +70,7 @@ test('insufficient verified root causes blocks even review eligibility',()=>{
 test('poor calibration accuracy blocks Phase2 review even when sample counts are sufficient',()=>{
   const evidence=evidenceSet().filter(value=>!value.startsWith('neural-shadow-feedback:'));
   for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    sampleId:`poor-feedback-${i}`,
     predictedResponsibility:'GAME_RUNTIME',
     observedResponsibility:i<10?'GAME_RUNTIME':'VALIDATOR',
     matchState:i<10?'MATCH':'MISMATCH',
