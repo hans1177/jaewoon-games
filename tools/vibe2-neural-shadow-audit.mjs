@@ -56,3 +56,54 @@ export function buildNeuralShadowAudit({reviewed=[]}={}){
     reason:'OBSERVATIONAL_COMPARISON_ONLY_REQUIRES_VERIFIED_OUTCOME_QUALITY_AND_EXPLICIT_CENTRAL_POLICY_PROMOTION'
   };
 }
+
+
+export function neuralShadowAuditEvidence(audit={}){
+  if(clean(audit.mode)!=='PHASE2_SHADOW_VS_WAVE_AUDIT')return[];
+  return (Array.isArray(audit.rows)?audit.rows:[]).map(row=>{
+    const payload={
+      version:1,
+      taskId:clean(row.taskId)||null,
+      actualWaveOutcome:clean(row.actualWaveOutcome)||null,
+      proposedAction:clean(row.proposedAction)||null,
+      proposedReason:clean(row.proposedReason)||null,
+      wouldFireWithoutPhase2Authority:row.wouldFireWithoutPhase2Authority===true,
+      phase2FireAllowed:row.phase2FireAllowed===true,
+      comparisonClass:clean(row.comparisonClass)||null,
+      rootCauseState:clean(row.rootCauseState)||null
+    };
+    return `neural-shadow-wave-audit:${encodeURIComponent(JSON.stringify(payload))}`;
+  });
+}
+
+export function parseNeuralShadowAuditEvidence(values=[]){
+  const rows=[];
+  for(const raw of Array.isArray(values)?values:[]){
+    const value=clean(raw);
+    if(!value.startsWith('neural-shadow-wave-audit:'))continue;
+    try{
+      const payload=JSON.parse(decodeURIComponent(value.slice('neural-shadow-wave-audit:'.length)));
+      if(payload&&typeof payload==='object')rows.push(payload);
+    }catch{}
+  }
+  return rows;
+}
+
+export function summarizeDurableNeuralShadowAudit(values=[]){
+  const rows=parseNeuralShadowAuditEvidence(values);
+  const counts={};
+  for(const row of rows){
+    const key=clean(row.comparisonClass)||'UNKNOWN';
+    counts[key]=(counts[key]||0)+1;
+  }
+  return{
+    version:1,
+    mode:'PHASE2_DURABLE_SHADOW_VS_WAVE_AUDIT',
+    sampleCount:rows.length,
+    counts,
+    phase2AuthorityReady:false,
+    automaticLearningAllowed:false,
+    automaticTuningAllowed:false,
+    interpretationAuthority:'NONE'
+  };
+}
