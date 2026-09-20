@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, deterministicDiagnosticFocusedReplace, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -58,6 +58,25 @@ test('reproduced interval diagnostic is anchored before incremental QA',()=>{
   assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:repaired}]},exploration}).pass,true);
 });
 
+test('singleton interval diagnostic uses deterministic pagehide cleanup before model fallback',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source=['<!doctype html><html><body><script>','const AUDIO={timer:null};','function start(){',' if(AUDIO.timer)return;',' AUDIO.timer=setInterval(()=>tick(),285);','}','function tick(){}','</script></body></html>'].join('\n');
+  write(path.join(sourceRoot,'rpg.html'),source);
+  const exploration={editContract:{causalReplay:{
+    required:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType:'INTERVAL_CLEANUP_RISK',diagnosticFile:'rpg.html',
+    diagnosticLine:5,diagnosticNeedle:'setInterval(',diagnosticMicroTask:'반복 타이머의 실제 clearInterval 해제 경로를 추가한다.'
+  }}};
+  const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles:['rpg.html']});
+  const deterministic=deterministicDiagnosticFocusedReplace(spec);
+  assert.ok(deterministic);
+  assert.equal(deterministic.timer,'AUDIO.timer');
+  assert.equal(deterministic.reason,'INTERVAL_SINGLETON_PAGEHIDE_CLEANUP');
+  assert.match(deterministic.replace,/pagehide/);
+  assert.match(deterministic.replace,/clearInterval\(AUDIO\.timer\)/);
+  assert.match(deterministic.replace,/AUDIO\.timer=null/);
+  assert.equal(evaluateDiagnosticPostcondition({candidate:{edits:[{path:'rpg.html',find:spec.find,replace:deterministic.replace}]},exploration}).pass,true);
+});
 test('reproduced touch-action diagnostic is anchored to interactive CSS before incremental QA',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'web-games/demo');
