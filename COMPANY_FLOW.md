@@ -1353,8 +1353,10 @@ aiOrganization:
     - development
     - qa
     - balance
-  departmentMultimodelStartsAt: DEVELOPMENT_CONFIRMED
-  fiveDistinctLeadModelIdsRequiredPerCycle: true
+  departmentMultimodelStartsAt: DISABLED
+  fiveDistinctLeadModelIdsRequiredPerCycle: false
+  developmentReviewRuntimeMode: PRIMARY_SINGLE_CANDIDATE_WITH_EXISTING_QA_GATES
+  speculativeCandidateFanoutDefault: 1
   designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT
   designOnlyModelsPerDepartment: 1
   minDistinctModelsPerDepartment: 1
