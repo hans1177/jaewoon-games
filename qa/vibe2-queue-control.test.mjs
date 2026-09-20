@@ -398,6 +398,36 @@ test('game-primary reserve lane excludes recovery control and learning tasks fro
   assert.deepEqual(new Set(reserved.selection.laneDeferred.map(task=>task.id)),new Set(['control-fast','learning-idle']));
 });
 
+test('recovery-fast lane runs up to five independent system repairs and preserves file locks',()=>{
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const start=runner.indexOf('\n  recovery_fast:');
+  const end=runner.indexOf('\n  continuous:',start);
+  assert.ok(start>=0&&end>start);
+  const recoveryBlock=runner.slice(start,end);
+  assert.match(recoveryBlock,/execution_lane: recovery-fast/);
+  assert.match(recoveryBlock,/lane_max: '5'/);
+
+  const tasks=[
+    ['sys-a','tools/a.mjs'],
+    ['sys-b','tools/b.mjs'],
+    ['sys-c','tools/c.mjs'],
+    ['sys-d','tools/d.mjs'],
+    ['sys-e','tools/e.mjs'],
+    ['sys-a-conflict','tools/a.mjs']
+  ].map(([id,file])=>({
+    id,gameId:'__vibe_system__',target:'system',department:'system-architecture',type:'implementation',
+    goal:'repair '+id,status:'queued',priority:'critical',systemSteward:true,sourceRoot:'.',responsibleFiles:[file]
+  }));
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks});
+  const bounded=selectVibeQueueBatch(queue,{maxConcurrentTasks:5,lane:'recovery-fast'});
+  assert.equal(bounded.selected.length,5);
+  assert.ok(bounded.selected.every(task=>task.executionLane==='RECOVERY_FAST'));
+
+  const lockProof=selectVibeQueueBatch(queue,{maxConcurrentTasks:6,lane:'recovery-fast'});
+  assert.equal(lockProof.selected.length,5);
+  assert.ok(lockProof.deferredConflicts.some(row=>row.task.id==='sys-a-conflict'&&row.reason==='responsible-file-conflict'));
+});
+
 test('running nondevelopment lane work does not consume game-primary worker capacity',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
     {id:'control-running',gameId:'system-control',target:'web',department:'system-supervision',type:'research',goal:'control',status:'running',priority:'critical'},
