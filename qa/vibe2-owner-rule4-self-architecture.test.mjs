@@ -18,9 +18,9 @@ const failure=id=>({
   retryPolicy:'UNLIMITED_CAUSAL_REPAIR'
 });
 
-test('owner rules are canonically ordered one through five while rule4 remains the last mutating neural stage',()=>{
+test('owner rules are canonically ordered one through four and neural expansion remains final-stage only',()=>{
   const rules=roadmap.ownerCanonicalRules;
-  assert.deepEqual(rules.implementationOrder,['RULE_1','RULE_2','RULE_3','RULE_4','RULE_5']);
+  assert.deepEqual(rules.implementationOrder,['RULE_1','RULE_2','RULE_3','RULE_4']);
   assert.equal(rules.orderedImplementationRequired,true);
   const rule=rules.rule4;
   assert.equal(rule.id,'RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION');
@@ -37,8 +37,6 @@ test('owner rules are canonically ordered one through five while rule4 remains t
   assert.equal(rule.invariants.authorityExpansion,false);
   assert.equal(rule.invariants.qaGateWeakening,false);
   assert.equal(rule.invariants.securityGateWeakening,false);
-  assert.equal(rules.rule5.orderedPosition.rule4RemainsLastMutatingNeuralExpansionStage,true);
-  assert.equal(rules.rule5.orderedPosition.role,'FINAL_NON_AUTHORITY_CONSISTENCY_CLOSURE');
 });
 
 test('self architecture evolution keeps neural expansion pending until readiness evidence passes',()=>{
@@ -54,13 +52,6 @@ test('self architecture evolution keeps neural expansion pending until readiness
   assert.equal(contract.neuralExpansionAllowed,false);
   assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:NO'));
   assert.ok(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
-  assert.ok(task.evidence.includes('architecture-rule5-atomization-required:YES'));
-  assert.ok(task.evidence.includes('architecture-rule5-neuronization-required:YES'));
-  assert.ok(task.evidence.includes('architecture-rule5-central-code-sync-required:YES'));
-  assert.ok(task.completionCriteria.includes('RULE5_CENTRAL_ARCHITECTURE_CODE_TEST_SYNC_PASS'));
-  assert.equal(contract.rule5AtomicArchitectureRequired,true);
-  assert.equal(contract.rule5NeuronizationRequired,true);
-  assert.equal(contract.rule5CentralCodeSyncRequired,true);
 });
 
 test('Vibe self-authorizes internal neural expansion when final-stage readiness evidence is verified',()=>{
