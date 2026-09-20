@@ -7,34 +7,40 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
     now:'2026-09-19T12:00:00Z',
     queueInput:{maxConcurrentTasks:32,tasks:[
       {id:'stale',gameId:'a',target:'web',goal:'x',status:'running',reservedAt:'2026-09-19T10:00:00Z'},
-      {id:'dead-a',gameId:'b',target:'web',goal:'x',status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed'},
-      {id:'dead-b',gameId:'c',target:'web',goal:'x',status:'failed',retries:4,maxRetries:2,blocker:'source-candidate-generation-failed'}
+      {id:'dead-a',gameId:'b',target:'web',department:'development',type:'implementation',goal:'x',status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed'},
+      {id:'dead-b',gameId:'c',target:'web',department:'development',type:'implementation',goal:'x',status:'failed',retries:4,maxRetries:2,blocker:'source-candidate-generation-failed'}
     ]},
     controlInput:{currentMax:4,lastUpdatedAt:'2026-09-19T09:00:00Z'}
   });
   assert.equal(result.action,'RECOVER_STALE_RUNNING_RESERVATION');
-  assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','REGENERATE_RETRY_EXHAUSTED_TASK','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_STALE_PARALLELISM_PRESSURE','ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256']);
+  assert.deepEqual(result.actions,['RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE','RESET_STALE_PARALLELISM_PRESSURE','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256']);
   assert.equal(result.queue.maxConcurrentTasks,256);
-  assert.equal(result.control.currentMax,256);
+  assert.equal(result.control.currentMax,20);
   assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');
   for(const id of ['dead-a','dead-b']){
     const task=result.queue.tasks.find(t=>t.id===id);
-    assert.equal(task.status,'queued'); assert.equal(task.retries,0);
+    assert.equal(task.status,'queued'); assert.equal(task.retries,id==='dead-a'?3:4);
+    assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+    assert.equal(task.maxRetries,null);
+    assert(task.evidence.includes('repair-mode:UNLIMITED_CAUSAL_REPAIR'));
     assert(task.evidence.includes('system-steward:failure-signature:source-candidate-generation-failed'));
-    assert(task.evidence.includes('system-steward:fix-pattern:retry-exhausted-causal-regeneration'));
+    assert(task.evidence.includes('system-steward:fix-pattern:causal-repair-without-attempt-ceiling'));
   }
 });
 
-test('steward regenerates retry-exhausted useful work with a new generation',()=>{
-  const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'dead',gameId:'b',target:'web',goal:'x',status:'failed',retries:3,maxRetries:2,recoveryGeneration:1}]},controlInput:{currentMax:256}});
+test('steward resumes safe development failure with unlimited causal repair without erasing retry history',()=>{
+  const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'dead',gameId:'b',target:'web',department:'development',type:'implementation',goal:'x',status:'failed',retries:3,maxRetries:2,recoveryGeneration:1}]},controlInput:{currentMax:256}});
   const task=result.queue.tasks[0];
-  assert.equal(result.action,'REGENERATE_RETRY_EXHAUSTED_TASK'); assert.equal(task.status,'queued'); assert.equal(task.retries,0); assert.equal(task.recoveryGeneration,2); assert.equal(task.speculativeEligible,true);
-  assert(task.evidence.includes('repair-mode:CAUSAL_REGENERATION_GENERATION_2'));
+  assert.equal(result.action,'RESUME_UNLIMITED_CAUSAL_REPAIR'); assert.equal(task.status,'queued'); assert.equal(task.retries,3); assert.equal(task.recoveryGeneration,2);
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR'); assert.equal(task.maxRetries,null);
+  assert(task.evidence.includes('system-steward:unlimited-causal-repair:resume:generation-2'));
+  assert(task.evidence.includes('repair-mode:UNLIMITED_CAUSAL_REPAIR'));
 });
 
-test('steward expires stale backpressure and restores the 256 external execution wave',()=>{
+test('steward expires stale backpressure at the pressure floor while keeping 256 as the external boundary',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[]},controlInput:{currentMax:4,lastUpdatedAt:'2026-09-19T09:00:00Z'}});
-  assert.equal(result.action,'RESET_STALE_PARALLELISM_PRESSURE'); assert.equal(result.control.currentMax,256); assert.equal(result.control.lastDecision,'RESET');
+  assert.equal(result.action,'RESET_INVALID_PARALLELISM_STATE'); assert.equal(result.control.currentMax,20); assert.equal(result.control.lastDecision,'RESET');
+  assert.equal(result.queue.maxConcurrentTasks,256);
 });
 
 test('steward immediately repairs invalid v3 parallelism and requeues stale machine blockers in the same pass',()=>{
@@ -47,8 +53,8 @@ test('steward immediately repairs invalid v3 parallelism and requeues stale mach
   });
   const task=result.queue.tasks[0];
   assert.equal(result.queue.maxConcurrentTasks,256);
-  assert.equal(result.control.currentMax,256);
-  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET');
+  assert.equal(result.control.currentMax,20);
+  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET_TO_20');
   assert.equal(task.status,'queued');
   assert.equal(task.blocker,null);
   assert(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
@@ -87,7 +93,7 @@ test('steward requeues stale machine-state blockers only after raw state is norm
   assert.equal(recovered.status,'queued');
   assert.equal(recovered.blocker,null);
   assert.equal(recovered.lastOutcome,'SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED');
-  assert(recovered.evidence.includes('system-steward:machine-state-revalidated:v3-external-wave-256'));
+  assert(recovered.evidence.includes('system-steward:machine-state-revalidated:v3-external-boundary-256'));
 
   const unhealthy=runSystemStewardState({
     now:'2026-09-19T12:00:00Z',
@@ -99,4 +105,19 @@ test('steward requeues stale machine-state blockers only after raw state is norm
   assert.equal(unhealthy.queue.tasks[0].status,'blocked');
   assert.equal(unhealthy.queue.tasks[0].blocker,'MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED');
   assert.equal(unhealthy.actions.includes('RECOVER_STALE_MACHINE_STATE_BLOCKER'),false);
+});
+
+
+test('steward never reopens bounded QA or protected failures as unlimited causal repair',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:256,tasks:[
+      {id:'qa-fail',gameId:'q',target:'web',department:'qa',type:'qa',goal:'verify',status:'failed',retries:9,maxRetries:2,blocker:'qa-failed'},
+      {id:'protected-dev',gameId:'p',target:'web',department:'development',type:'implementation',goal:'protected',status:'failed',retries:9,maxRetries:2,protectedChange:true,blocker:'protected-failed'}
+    ]},
+    controlInput:{currentMax:20,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  assert.equal(result.actions.includes('RESUME_UNLIMITED_CAUSAL_REPAIR'),false);
+  assert.equal(result.queue.tasks.find(t=>t.id==='qa-fail').status,'failed');
+  assert.equal(result.queue.tasks.find(t=>t.id==='protected-dev').status,'failed');
 });
