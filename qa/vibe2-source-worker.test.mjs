@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -1140,6 +1140,44 @@ test('focused no-op retry keeps speculative base budget but grants only targeted
   assert.match(workerSource,/focusedReplaceAnchorCursor\+=1/);
   assert.match(workerSource,/focusedReplaceNoOpCreditUsed=true/);
 });
+test('focused replace recovery salvages a complete replace string from an unfinished outer JSON object',()=>{
+  const spec={path:'index.html',find:'<button id="play">Play</button>'};
+  const raw='{"replace":"<button id=\\\"play\\\">Continue</button>"\n';
+  const recovered=recoverFocusedReplaceOnly(raw,spec);
+  assert.ok(recovered);
+  assert.equal(recovered.edits[0].path,'index.html');
+  assert.equal(recovered.edits[0].find,spec.find);
+  assert.equal(recovered.edits[0].replace,'<button id="play">Continue</button>');
+  assert.equal(recoverFocusedReplaceOnly('{"replace":"<button id=\\\"play\\\">Cont',spec),null);
+  assert.equal(recoverFocusedReplaceOnly('{"replace":"COMPLETE_REPLACEMENT_SOURCE_SNIPPET"',spec),null);
+  assert.equal(recoverFocusedReplaceOnly(JSON.stringify({replace:spec.find}).slice(0,-1),spec),null);
+});
+
+test('focused Web repair recovers malformed focused replacement when the replace string is complete',async()=>{
+  const cwd=tempRoot();
+  const malformed=path.join(cwd,'malformed-first.txt');
+  const focusedMalformed=path.join(cwd,'focused-malformed.txt');
+  const workOrder=order({
+    target:'web',
+    root:'web-games/demo',
+    responsibleFiles:['web-games/demo/index.html'],
+    taskId:'focused-string-recovery'
+  });
+  workOrder.goal='[WEB_REPAIR] 기존 플레이 버튼 동작을 직접 보강';
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>\n<button id="play">Play</button>\n</body></html>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(malformed,'not-json');
+  write(focusedMalformed,'{"replace":"<button id=\\\"play\\\">Continue</button>"\n');
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[malformed,focusedMalformed]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.focusedReplaceStringRecovery,true);
+  assert.equal(result.codingMethod.focusedReplaceStringRecovery,true);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-string-recovery/files/index.html'),'utf8'),/Continue/);
+});
+
 test('focused replace-only rejects unchanged replacement and supports early completion',()=>{
   const spec={path:'index.html',find:'const state={running:false};'};
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:spec.find}),spec),/변경 없는 edit/);
