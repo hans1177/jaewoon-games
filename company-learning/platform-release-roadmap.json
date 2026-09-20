@@ -1,5 +1,5 @@
 {
-  "version": 174,
+  "version": 175,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6098,7 +6098,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_SHADOW_EVENT_ROUTER_CANDIDATE",
+    "status": "PHASE2_SHADOW_ROUTER_AUDIT_CANDIDATE",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6519,7 +6519,31 @@
         "securityReviewRequired": true,
         "centralPolicyExplicitPromotionRequired": true,
         "automaticPromotionFromAccuracyForbidden": true,
-        "currentWaveSchedulerRemainsAuthoritative": true
+        "currentWaveSchedulerRemainsAuthoritative": true,
+        "shadowVsWaveAuditRequired": true,
+        "shadowAuditCannotSelfPromote": true
+      },
+      "audit": {
+        "module": "tools/vibe2-neural-shadow-audit.mjs",
+        "fanInBinding": "tools/vibe2-fan-in-review.mjs",
+        "qa": "qa/vibe2-neural-shadow-audit.test.mjs",
+        "compares": [
+          "SHADOW_PROPOSED_ACTION",
+          "SHADOW_WOULD_FIRE_WITHOUT_AUTHORITY",
+          "CURRENT_WAVE_FAN_IN_OUTCOME",
+          "ROOT_CAUSE_STATE"
+        ],
+        "comparisonClasses": [
+          "BOTH_HOLD_OR_OBSERVE",
+          "BOTH_PROCEED_DIFFERENT_ACTION_SEMANTICS",
+          "NEURAL_WOULD_ACT_WAVE_HOLDS",
+          "WAVE_PROCEEDS_NEURAL_HOLDS"
+        ],
+        "winnerSelectionAllowed": false,
+        "automaticTuningAllowed": false,
+        "automaticLearningAllowed": false,
+        "interpretationAuthority": "NONE",
+        "phase2AuthorityReady": false
       }
     }
   }
