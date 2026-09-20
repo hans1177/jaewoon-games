@@ -80,7 +80,7 @@ function isHealthy(telemetry = {}) {
     && num(telemetry.checkout?.p95Ms) < 15000;
 }
 
-export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = 4 } = {}) {
+export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = 4, maximumMax = DEFAULT_ADAPTIVE_MAX } = {}) {
   let control = createParallelismControl(controlInput);
   const nowMs = Date.parse(now);
   const previousAt = Date.parse(clean(control.lastUpdatedAt));
@@ -108,11 +108,12 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   }
 
   const configuredFloor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
+  const configuredCeiling = clamp(Math.floor(num(maximumMax) || DEFAULT_ADAPTIVE_MAX), configuredFloor, DEFAULT_ADAPTIVE_MAX);
   const originalCurrent = control.currentMax;
-  const current = Math.max(originalCurrent, configuredFloor);
+  const current = clamp(Math.max(originalCurrent, configuredFloor), configuredFloor, configuredCeiling);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
-  const effectiveMax = Math.max(1, Math.floor(num(telemetry.effectiveMax) || current));
-  const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
+  const effectiveMax = clamp(Math.floor(num(telemetry.effectiveMax) || current), 1, configuredCeiling);
+  const saturationFloor = Math.max(1, Math.ceil(Math.min(current, effectiveMax) * 0.75));
   const loaded = workerCount >= saturationFloor;
   const localBackpressureActive = effectiveMax < current;
   const level = pressureLevel(telemetry);
@@ -169,7 +170,13 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   }
 
   if (next < configuredFloor) next = configuredFloor;
-  if (originalCurrent < configuredFloor && next === configuredFloor) {
+  if (next > configuredCeiling) next = configuredCeiling;
+  if (originalCurrent > configuredCeiling && next === configuredCeiling && !strongPressure && !mediumPressure) {
+    decision = 'DOWN';
+    reason = `EXECUTION_CAP_${configuredCeiling}`;
+    healthyStreak = 0;
+    pressureStreak = 0;
+  } else if (originalCurrent < configuredFloor && next === configuredFloor) {
     decision = 'UP';
     reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
   } else if (originalCurrent === configuredFloor && next === configuredFloor && strongPressure) {
