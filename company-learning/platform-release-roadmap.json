@@ -1,5 +1,5 @@
 {
-  "version": 208,
+  "version": 209,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -4983,7 +4983,7 @@
       }
     },
     "fullCodingAbsorptionAndCapabilityDistillation": {
-      "state": "PHASE_3_RUNTIME_VERIFIED_COMPLETE",
+      "state": "PHASE_4_CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
       "objective": "CAPTURE_ALL_OBSERVABLE_CODING_ATTEMPTS_AVAILABLE_TO_THE_EXISTING_WORKFLOW_SELF_REPLAY_WHERE_SAFE_AND_DISTILL_VERIFIED_CODING_PROBLEM_SOLVING_AND_TOOL_USE_CAPABILITIES",
       "teacherSources": [
         "VIBE_GENERATED_CODING",
@@ -5488,6 +5488,140 @@
           "strongGeneralizationStillRequiresUnseenProblemBenchmark": true,
           "runtimeRef": "vibe2-unreal-core"
         }
+      },
+      "implementationPhase4": {
+        "state": "CENTRAL_STRATEGY_DEFINED_IMPLEMENTATION_PENDING",
+        "scope": "CONTROLLED_UNSEEN_GENERALIZATION_BENCHMARK_AND_CAPABILITY_CAUSAL_ATTRIBUTION",
+        "objective": "CONVERT_GENERALIZATION_CANDIDATES_TO_STRONGLY_VERIFIED_GENERAL_CAPABILITIES_ONLY_WHEN_UNSEEN_CROSS_GAME_TASKS_AND_CONTROLLED_COMPARISONS PROVIDE_CAPABILITY_SPECIFIC_EVIDENCE_WITHOUT_EXPANDING_EXECUTION_AUTHORITY",
+        "prerequisites": {
+          "phase1Complete": true,
+          "phase2Complete": true,
+          "phase3RuntimeVerified": true,
+          "phase3SourceRunId": 35491605325,
+          "capabilityApplicationEvidenceAvailable": true,
+          "repeatedApplicationVerifiedAvailable": true,
+          "generalizationCandidatesAvailable": true,
+          "strongGeneralizationVerifiedCountAtEntry": 0
+        },
+        "problemStatement": [
+          "CO_APPLIED_CAPABILITY_SUCCESS_IS_CORRELATED_EVIDENCE_NOT_INDIVIDUAL_CAUSAL_PROOF",
+          "REPEATED_APPLICATION_VERIFICATION_ALONE_MUST_NOT_CREATE_STRONG_GENERALIZATION",
+          "GENERALIZATION_CANDIDATES_REQUIRE_UNSEEN_PROBLEM_EVIDENCE",
+          "CAPABILITY_SPECIFIC_CONTRADICTIONS_MUST_BE_DISTINGUISHED_FROM_UNRELATED_TASK_FAILURES"
+        ],
+        "benchmarkEligibility": {
+          "lifecycleStateRequired": "REPEATED_APPLICATION_VERIFIED_OR_GENERALIZATION_CANDIDATE",
+          "exactCapabilityIdRequired": true,
+          "freshApplicabilityCheckRequired": true,
+          "crossGameKeywordOverlapRequired": true,
+          "sameEngineAloneEligible": false,
+          "unresolvedCapabilitySpecificContradictionAllowed": false,
+          "projectSpecificGameplayValuesTransferAllowed": false,
+          "unseenGameRequired": true,
+          "unseenProblemFingerprintRequired": true
+        },
+        "controlledComparison": {
+          "preferredShape": "PAIRED_CONTROL_CHALLENGER",
+          "control": "SAME_TASK_CONTEXT_WITH_TARGET_CAPABILITY_WITHHELD",
+          "challenger": "SAME_TASK_CONTEXT_WITH_TARGET_CAPABILITY_INCLUDED",
+          "sameSourceBaselineRequired": true,
+          "sameModelAndGenerationBudgetRequired": true,
+          "sameWritableScopeRequired": true,
+          "sameQaContractRequired": true,
+          "sameProtectedGameplaySemanticsRequired": true,
+          "nonTargetContextHeldConstant": true,
+          "coAppliedCapabilitiesHeldConstantAcrossPair": true,
+          "targetCapabilityOnlyGuidanceDelta": true,
+          "existingCandidateTournamentReusePreferred": true,
+          "newWorkerCreationForbidden": true,
+          "queueMutationForbidden": true,
+          "waveReorderForbidden": true
+        },
+        "strongGeneralizationGate": {
+          "minimumIndependentUnseenPasses": 2,
+          "minimumDistinctUnseenGames": 2,
+          "freshQaPassRequiredForEveryCountedChallenger": true,
+          "capabilitySpecificPositiveSupportRequired": true,
+          "zeroCapabilitySpecificContradictionsRequired": true,
+          "noRegressionAgainstControlRequired": true,
+          "ambiguousOrNeutralEvidenceKeepsCandidateState": true,
+          "controlFailureChallengerPassMayCountAsDirectSupport": true,
+          "sameOutcomeWithoutDirectSupportDoesNotProveCausality": true,
+          "outputLifecycleState": "GENERALIZED_VERIFIED",
+          "generalizedCapabilityRemainsAdvisoryOnly": true,
+          "automaticModelOrPolicyPromotion": false
+        },
+        "contradictionAndSupersession": {
+          "singleBenchmarkFailureAutomaticDeprecation": false,
+          "unrelatedTaskFailureAutomaticDeprecation": false,
+          "repeatedCapabilitySpecificContradictionCreatesReviewCandidate": true,
+          "automaticDeprecation": false,
+          "supersessionRequiresPairedHeadToHeadEvidence": true,
+          "supersessionRequiresNoRegression": true,
+          "supersessionRequiresExistingReviewGate": true
+        },
+        "scheduling": {
+          "productionWorkPreemptsBenchmark": true,
+          "naturalUnseenProductionEvidencePreferred": true,
+          "controlledBenchmarkMayUseExistingLearningIdleOrExistingCandidateTournament": true,
+          "gamePrimaryWaveMustNotBeBlockedForBenchmark": true,
+          "newExecutionLaneCreated": false,
+          "schedulerAuthority": "EXISTING_WAVE_SCHEDULER_ONLY"
+        },
+        "storage": {
+          "canonicalCapabilityStore": "vibe2-unreal-core:.vibe2/experience.json",
+          "existingCodingTraceLedgerMayProvideProvenanceOnly": true,
+          "newParallelLearningLedgerCreated": false,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "secretsOrCredentialsStored": false,
+          "benchmarkEvidenceMustBeSanitizedAndIdentityBound": true
+        },
+        "retrievalPreservation": {
+          "generalizedVerifiedStillRequiresContextualRelevance": true,
+          "crossGameKeywordOverlapRequired": true,
+          "sameEngineAloneEligible": false,
+          "advisoryOnly": true,
+          "writableScopeExpansionAllowed": false,
+          "qaBypassAllowed": false,
+          "protectedGameplayMutationAllowed": false
+        },
+        "metrics": [
+          "GENERALIZATION_CANDIDATE_COUNT",
+          "UNSEEN_BENCHMARK_PAIR_COUNT",
+          "INDEPENDENT_UNSEEN_PASS_COUNT",
+          "DISTINCT_UNSEEN_GAME_COUNT",
+          "CAPABILITY_SPECIFIC_SUPPORT_COUNT",
+          "CAPABILITY_SPECIFIC_CONTRADICTION_COUNT",
+          "CONTROL_CHALLENGER_DIVERGENCE_COUNT",
+          "GENERALIZED_VERIFIED_COUNT",
+          "INCONCLUSIVE_BENCHMARK_COUNT",
+          "SUPERSESSION_REVIEW_CANDIDATE_COUNT",
+          "BENCHMARK_PRODUCTION_INTERFERENCE_COUNT"
+        ],
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "lockPolicyMutationAuthority": false,
+          "automaticLearningTuningPromotionAuthority": false,
+          "automaticPolicyPromotionAuthority": false,
+          "directMainPromotionAuthority": false,
+          "authorityChange": "NONE"
+        },
+        "exitCriteria": [
+          "PAIRED_CONTROL_CHALLENGER_CAN_ISOLATE_TARGET_CAPABILITY_WITHIN_EXISTING_EXECUTION_PATH",
+          "UNSEEN_GAME_AND_UNSEEN_PROBLEM_IDENTITY_ARE_BOUND_TO_BENCHMARK_EVIDENCE",
+          "GENERALIZED_VERIFIED_REQUIRES_TWO_INDEPENDENT_UNSEEN_PASSES_ACROSS_TWO_DISTINCT_GAMES",
+          "CAPABILITY_SPECIFIC_POSITIVE_SUPPORT_REQUIRED",
+          "UNRELATED_FAILURE_DOES_NOT_CAUSE_DEPRECATION",
+          "NO_NEW_EXECUTION_LANE_OR_WORKER_AUTHORITY",
+          "NO_RAW_OUTPUT_PERSISTENCE",
+          "CI_AND_REAL_UNSEEN_RUNTIME_VERIFICATION"
+        ],
+        "nextGate": "IMPLEMENT_PHASE_4_CONTROLLED_GENERALIZATION_BENCHMARK_THEN_VERIFY_REAL_UNSEEN_RUNTIME_WITHOUT_AUTHORITY_EXPANSION"
       }
     }
   },
