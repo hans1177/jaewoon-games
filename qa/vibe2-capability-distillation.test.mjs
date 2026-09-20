@@ -376,5 +376,13 @@ test('continuous runner injects verified capability memory once and partitions i
   assert.match(source,/exactInjectedCapabilityIds/);
   assert.match(source,/SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA/);
   assert.match(source,/VIBE2_VERIFIED_CAPABILITY_COUNT/);
+  assert.match(source,/VIBE2_CAPABILITY_APPLICATION_IDS/);
   assert.match(source,/VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED/);
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/capabilityApplicationIds/);
+  assert.match(workflow,/exactInjectedCapabilityIds/);
+  assert.match(workflow,/capabilityApplication,durationMs/);
+  const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(fanIn,/buildCapabilityApplicationReviews/);
+  assert.match(fanIn,/capabilityApplicationReviews/);
 });
