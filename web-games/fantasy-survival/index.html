@@ -2728,6 +2728,25 @@ function drawFantasyCreatureVectorFallback(type,r){
  ctx.beginPath();ctx.moveTo(-r*1.35,0);ctx.quadraticCurveTo(-r*.7,-r,0,-r*.85);ctx.quadraticCurveTo(r*1.25,-r*.55,r*1.45,0);ctx.quadraticCurveTo(r*.7,r,0,r*.85);ctx.quadraticCurveTo(-r*.8,r,-r*1.35,0);ctx.closePath();ctx.fill();ctx.stroke();
  ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(-r*.35,-r*.72);ctx.lineTo(0,-r*1.18);ctx.lineTo(r*.35,-r*.72);ctx.closePath();ctx.fill()
 }
+function fantasyCreatureMotionPose(e,now){
+ const seed=String(e?.type?.id||'').length*.73+(Number(e?.x)||0)*.002+(Number(e?.y)||0)*.002;
+ const gait=e?.moving?Math.sin(now*.016+seed):0;
+ const breath=Math.sin(now*.0048+seed)*.018;
+ const untilAttack=(Number(e?.nextAttackAt)||0)-now;
+ const windup=e?.hostile&&untilAttack>0&&untilAttack<180?1-untilAttack/180:0;
+ const attackElapsed=now-(Number(e?.attackAt)||-100000);
+ const impact=attackElapsed>=0&&attackElapsed<105?1-attackElapsed/105:0;
+ const recovery=attackElapsed>=105&&attackElapsed<360?1-(attackElapsed-105)/255:0;
+ const hurt=now<(Number(e?.hitAt)||0)?clamp(((Number(e?.hitAt)||0)-now)/110,0,1):0;
+ return{
+  gait,windup,impact,recovery,hurt,
+  scaleX:1+breath+Math.abs(gait)*.018+impact*.09-windup*.055-hurt*.035,
+  scaleY:1-breath-impact*.07+windup*.055+hurt*.045,
+  lean:gait*.035-windup*.09+recovery*.025-hurt*.055,
+  offsetX:-windup*5+impact*8-recovery*2-hurt*5,
+  offsetY:Math.abs(gait)*1.4+hurt*2
+ }
+}
 function drawFantasyCreatureAssetLocal(type,r,now,moving=false,phase=-1){
  const image=fantasyCreatureVisualAsset(type),size=Math.max(48,r*3.35),height=size*.75;
  const bob=Math.sin(now*.009+(String(type?.id||'').length*.7))*(moving?2.8:1.2);
@@ -2737,10 +2756,12 @@ function drawFantasyCreatureAssetLocal(type,r,now,moving=false,phase=-1){
  else drawFantasyCreatureVectorFallback(type,r)
 }
 function drawThemedCreatureAsset(e,x,y,now){
- const phase=enemyAttackPhase(e,now,420);
+ const phase=enemyAttackPhase(e,now,420),pose=fantasyCreatureMotionPose(e,now);
  ctx.save();ctx.translate(x,y);
- ctx.fillStyle='rgba(0,0,0,.23)';ctx.beginPath();ctx.ellipse(0,e.type.r*.75,e.type.r*1.3,e.type.r*.42,0,0,Math.PI*2);ctx.fill();
- ctx.rotate(creatureAngle(e));drawFantasyCreatureAssetLocal(e.type,e.type.r,now,!!e.moving,phase);ctx.restore()
+ ctx.fillStyle='rgba(0,0,0,.23)';ctx.beginPath();ctx.ellipse(pose.offsetX*.18,e.type.r*.75,e.type.r*(1.28+pose.impact*.08),e.type.r*.42,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(creatureAngle(e)+pose.lean);ctx.translate(pose.offsetX,pose.offsetY);ctx.scale(pose.scaleX,pose.scaleY);
+ if(pose.windup>.04){ctx.strokeStyle='rgba(255,211,117,'+(pose.windup*.52)+')';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,e.type.r*1.5,-.6,.6);ctx.stroke()}
+ drawFantasyCreatureAssetLocal(e.type,e.type.r,now,!!e.moving,phase);ctx.restore()
 }
 
 function enemyAttackPhase(e,now,duration=360){
@@ -2885,22 +2906,30 @@ function drawProjectiles(cx,cy){
 }
 function drawPlayer(cx,cy,now){
  const p=state.player,x=p.x-cx,y=p.y-cy,moveInput=(state.stick&&Math.hypot(state.stick.x||0,state.stick.y||0)>.12)||['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].some(k=>state.keys.has(k));
- const bob=Math.sin(now*.012)*(moveInput?2.4:.8),attackActive=now<p.attackFx,angle=Math.atan2(p.faceY||0,p.faceX||1);
+ const attackActive=now<p.attackFx,attackElapsed=Math.max(0,now-(p.attackAt||0)),attackProgress=attackActive?clamp(attackElapsed/150,0,1):1;
+ const impact=attackActive&&attackProgress<.42?1-attackProgress/.42:0,recovery=attackActive&&attackProgress>=.42?1-(attackProgress-.42)/.58:0;
+ const gait=moveInput?Math.sin(now*.017):0,bob=Math.sin(now*.012)*(moveInput?2.4:.8),angle=Math.atan2(p.faceY||0,p.faceX||1);
+ const bodyScaleX=1+Math.abs(gait)*.018+impact*.07,bodyScaleY=1-impact*.055+recovery*.018,bodyLean=gait*.045-impact*.08+recovery*.025,bodyLunge=impact*7-recovery*2;
  ctx.save();
  if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;
- ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y+23,22,8,0,0,Math.PI*2);ctx.fill();
- ctx.translate(x+(attackActive?Math.cos(angle)*4:0),y+bob+(attackActive?Math.sin(angle)*4:0));ctx.rotate(angle);
+ ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x+Math.cos(angle)*bodyLunge*.18,y+23,22+impact*2,8,0,0,Math.PI*2);ctx.fill();
+ ctx.translate(x+Math.cos(angle)*bodyLunge,y+bob+Math.sin(angle)*bodyLunge);ctx.rotate(angle+bodyLean);ctx.scale(bodyScaleX,bodyScaleY);
  const playerImage=fantasyPlayerVisualAsset();
  if(playerImage.complete&&playerImage.naturalWidth>0)ctx.drawImage(playerImage,-30,-33,60,66);
  else{ctx.fillStyle='#355f63';ctx.strokeStyle=FANTASY_VISUAL_STYLE_LOCK.outline;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-18,22);ctx.lineTo(-22,-7);ctx.lineTo(0,-29);ctx.lineTo(22,-7);ctx.lineTo(18,22);ctx.closePath();ctx.fill();ctx.stroke()}
  ctx.restore();
  ctx.save();if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;
  if(p.torchEquipped&&p.torch&&p.torchDurability>0){ctx.strokeStyle='#8b6338';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-7,y+5);ctx.lineTo(x-18,y-18);ctx.stroke();ctx.fillStyle='#ffb347';ctx.beginPath();ctx.arc(x-19,y-22,7,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,200,84,.28)';ctx.beginPath();ctx.arc(x-19,y-22,13+Math.sin(now*.02)*2,0,Math.PI*2);ctx.fill()}
- if(p.weapon){ctx.strokeStyle=p.weapon.startsWith('gold-')?'#f3cf52':p.weapon.startsWith('iron-')?'#d8e3e8':p.weapon==='stone-sword'?'#c9d0d2':'#b78652';ctx.lineWidth=p.weapon==='iron-axe'?7:5;ctx.beginPath();ctx.moveTo(x+7,y+4);ctx.lineTo(x+7+p.faceX*27,y+4+p.faceY*27);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x+9,y+2);ctx.lineTo(x+8+p.faceX*25,y+3+p.faceY*25);ctx.stroke()}
+ if(p.weapon){
+  const weaponAngle=angle+(attackActive?(-.34+attackProgress*.68):0),weaponLen=27+impact*5;
+  ctx.strokeStyle=p.weapon.startsWith('gold-')?'#f3cf52':p.weapon.startsWith('iron-')?'#d8e3e8':p.weapon==='stone-sword'?'#c9d0d2':'#b78652';ctx.lineWidth=p.weapon==='iron-axe'?7:5;
+  ctx.beginPath();ctx.moveTo(x+Math.cos(angle)*8,y+Math.sin(angle)*8);ctx.lineTo(x+Math.cos(weaponAngle)*weaponLen,y+Math.sin(weaponAngle)*weaponLen);ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x+Math.cos(angle)*9,y+Math.sin(angle)*9);ctx.lineTo(x+Math.cos(weaponAngle)*(weaponLen-2),y+Math.sin(weaponAngle)*(weaponLen-2));ctx.stroke()
+ }
  if(now<(p.weakenedUntil||0))ctx.globalAlpha=Math.min(ctx.globalAlpha,.72);
  if(now<(p.stunnedUntil||0)){ctx.strokeStyle='#f4e76e';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y-28,18,0,Math.PI*2);ctx.stroke()}
  if(p.armor){ctx.strokeStyle='#d5cf9b';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y+8,14,0,Math.PI);ctx.stroke()}
- if(attackActive){ctx.strokeStyle='#f7e699';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,currentRange()*.72,angle-.55,angle+.55);ctx.stroke()}
+ if(attackActive){ctx.strokeStyle='rgba(247,230,153,'+(.45+impact*.45)+')';ctx.lineWidth=3+impact*2;ctx.beginPath();ctx.arc(x,y,currentRange()*.72,angle-.55+attackProgress*.12,angle+.55+attackProgress*.12);ctx.stroke()}
  ctx.restore()
 }
 function drawShadowEgg(cx,cy){
