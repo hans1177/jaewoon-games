@@ -2754,28 +2754,52 @@ function drawFantasyCreatureVectorFallback(type,r){
  ctx.beginPath();ctx.moveTo(-r*1.35,0);ctx.quadraticCurveTo(-r*.7,-r,0,-r*.85);ctx.quadraticCurveTo(r*1.25,-r*.55,r*1.45,0);ctx.quadraticCurveTo(r*.7,r,0,r*.85);ctx.quadraticCurveTo(-r*.8,r,-r*1.35,0);ctx.closePath();ctx.fill();ctx.stroke();
  ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(-r*.35,-r*.72);ctx.lineTo(0,-r*1.18);ctx.lineTo(r*.35,-r*.72);ctx.closePath();ctx.fill()
 }
-function drawFantasyCreatureAssetLocal(type,r,now,moving=false,phase=-1){
+const fantasyLivingMotionState=new WeakMap();
+function fantasyLivingMotion(actor,now,targetAngle,moving){
+ let motion=fantasyLivingMotionState.get(actor);
+ const seed=String(actor?.type?.id||actor?.netId||'player').split('').reduce((sum,ch)=>sum+ch.charCodeAt(0),0)*.071;
+ if(!motion){
+  motion={angle:targetAngle,moveBlend:moving?1:0,lastAt:now,seed};
+  fantasyLivingMotionState.set(actor,motion)
+ }
+ const dt=Math.min(.05,Math.max(0,(now-motion.lastAt)/1000));
+ motion.lastAt=now;
+ const angleDelta=Math.atan2(Math.sin(targetAngle-motion.angle),Math.cos(targetAngle-motion.angle));
+ const turnResponse=1-Math.exp(-dt*(6+motion.moveBlend*5));
+ motion.angle+=angleDelta*turnResponse;
+ const moveTarget=moving?1:0,moveResponse=1-Math.exp(-dt*(moveTarget?7:4.5));
+ motion.moveBlend+=(moveTarget-motion.moveBlend)*moveResponse;
+ const breath=Math.sin(now*.0041+motion.seed)*.72+Math.sin(now*.0023+motion.seed*1.71)*.28;
+ const stride=Math.sin(now*(.0105+motion.moveBlend*.0075)+motion.seed)*motion.moveBlend;
+ const secondary=Math.sin(now*.0062+motion.seed*.63)*(.22+motion.moveBlend*.78);
+ return{angle:motion.angle,moveBlend:motion.moveBlend,breath,stride,secondary}
+}
+function drawFantasyCreatureAssetLocal(type,r,now,moving=false,phase=-1,motion=null){
  const image=fantasyCreatureVisualAsset(type),size=Math.max(48,r*3.35),height=size*.75;
- const bob=Math.sin(now*.009+(String(type?.id||'').length*.7))*(moving?2.8:1.2);
+ const moveBlend=motion?.moveBlend??(moving?1:0);
+ const breath=motion?.breath||0,stride=motion?.stride||0,secondary=motion?.secondary||0;
+ const bob=Math.sin(now*.009+(String(type?.id||'').length*.7))*(1.2+moveBlend*1.6)+Math.abs(stride)*1.15;
  const lunge=phase>=0?Math.sin(Math.PI*phase)*Math.min(18,r*.65):0;
  ctx.translate(lunge,bob);
+ ctx.rotate(stride*.022+secondary*.009);
+ ctx.scale(1-breath*.009,1+breath*.014);
  if(image.complete&&image.naturalWidth>0)ctx.drawImage(image,-size*.5,-height*.5,size,height);
  else drawFantasyCreatureVectorFallback(type,r)
 }
 function drawThemedCreatureAsset(e,x,y,now){
- const phase=enemyAttackPhase(e,now,420);
+ const phase=enemyAttackPhase(e,now,420),targetAngle=creatureAngle(e),motion=fantasyLivingMotion(e,now,targetAngle,!!e.moving);
  ctx.save();ctx.translate(x,y);
- ctx.fillStyle='rgba(0,0,0,.23)';ctx.beginPath();ctx.ellipse(0,e.type.r*.75,e.type.r*1.3,e.type.r*.42,0,0,Math.PI*2);ctx.fill();
- ctx.rotate(creatureAngle(e));drawFantasyCreatureAssetLocal(e.type,e.type.r,now,!!e.moving,phase);ctx.restore()
+ ctx.fillStyle='rgba(0,0,0,.23)';ctx.beginPath();ctx.ellipse(0,e.type.r*.75,e.type.r*(1.3-motion.moveBlend*.04),e.type.r*.42,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(motion.angle);drawFantasyCreatureAssetLocal(e.type,e.type.r,now,!!e.moving,phase,motion);ctx.restore()
 }
 
 function enemyAttackPhase(e,now,duration=360){
  const elapsed=now-(e.attackAt||0);return elapsed>=0&&elapsed<duration?elapsed/duration:-1
 }
 function creatureAngle(e){return Math.atan2(e.faceY||0,e.faceX||1)}
-function drawWolfBodyLocal(e,now,phase=-1){
- const fire=e.type.id==='firewolf',leader=e.type.id==='shadowwolfleader';
- const lunge=phase>=0?Math.sin(Math.PI*phase)*13:0,open=phase>=0?Math.sin(Math.PI*phase):0,step=e.moving?Math.sin(now*.02+(e.x+e.y)*.02)*5:0;
+function drawWolfBodyLocal(e,now,phase=-1,moveBlend=null){
+ const fire=e.type.id==='firewolf',leader=e.type.id==='shadowwolfleader',motionBlend=moveBlend??(e.moving?1:0);
+ const lunge=phase>=0?Math.sin(Math.PI*phase)*13:0,open=phase>=0?Math.sin(Math.PI*phase):0,step=Math.sin(now*.02+(e.x+e.y)*.02)*5*motionBlend;
  const body=fire?'#a83227':leader?'#25283b':'#303c4f',mid=fire?'#d64a2c':leader?'#3b405d':'#465a73',edge=fire?'#ff9b48':leader?'#9f91ca':'#8eb4d4',dark=fire?'#5d1716':'#18212c';
  ctx.lineCap='round';ctx.lineJoin='round';
  ctx.strokeStyle='#111923';ctx.lineWidth=4;ctx.fillStyle=body;
@@ -2801,12 +2825,12 @@ function drawWolfBodyLocal(e,now,phase=-1){
  if(fire){ctx.globalAlpha=.32;ctx.strokeStyle='#ff6f32';ctx.lineWidth=8;ctx.beginPath();ctx.ellipse(-3,0,39,25,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}
 }
 function drawWolfModel(e,x,y,now){
- const phase=enemyAttackPhase(e,now,380);ctx.save();ctx.translate(x,y);
- ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(-3,17,43,13,0,0,Math.PI*2);ctx.fill();
- ctx.rotate(creatureAngle(e));drawWolfBodyLocal(e,now,phase);ctx.restore()
+ const phase=enemyAttackPhase(e,now,380),motion=fantasyLivingMotion(e,now,creatureAngle(e),!!e.moving);ctx.save();ctx.translate(x,y);
+ ctx.fillStyle='rgba(0,0,0,.24)';ctx.beginPath();ctx.ellipse(-3,17,43-motion.moveBlend*2,13,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(motion.angle);ctx.rotate(motion.secondary*.012);ctx.scale(1-motion.breath*.008,1+motion.breath*.012);drawWolfBodyLocal(e,now,phase,motion.moveBlend);ctx.restore()
 }
-function drawBearBodyLocal(e,now,phase=-1){
- const crystal=e.type.id==='crystalbear',step=e.moving?Math.sin(now*.016+(e.x+e.y)*.015)*6:0,lunge=phase>=0?Math.sin(Math.PI*phase)*15:0,open=phase>=0?Math.sin(Math.PI*phase):0;
+function drawBearBodyLocal(e,now,phase=-1,moveBlend=null){
+ const motionBlend=moveBlend??(e.moving?1:0),crystal=e.type.id==='crystalbear',step=Math.sin(now*.016+(e.x+e.y)*.015)*6*motionBlend,lunge=phase>=0?Math.sin(Math.PI*phase)*15:0,open=phase>=0?Math.sin(Math.PI*phase):0;
  const body=crystal?'#5f4aa2':'#51331f',mid=crystal?'#816ac8':'#795238',edge=crystal?'#d8cfff':'#d0b28a',dark=crystal?'#372b66':'#271810';
  ctx.lineCap='round';ctx.lineJoin='round';
  ctx.fillStyle=body;ctx.strokeStyle=dark;ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(-5,0,42,28,0,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -2827,16 +2851,16 @@ function drawBearBodyLocal(e,now,phase=-1){
  ctx.restore()
 }
 function drawBearModel(e,x,y,now){
- const phase=enemyAttackPhase(e,now,420);ctx.save();ctx.translate(x,y);
- ctx.fillStyle='rgba(0,0,0,.26)';ctx.beginPath();ctx.ellipse(-4,21,50,15,0,0,Math.PI*2);ctx.fill();
- ctx.rotate(creatureAngle(e));drawBearBodyLocal(e,now,phase);ctx.restore()
+ const phase=enemyAttackPhase(e,now,420),motion=fantasyLivingMotion(e,now,creatureAngle(e),!!e.moving);ctx.save();ctx.translate(x,y);
+ ctx.fillStyle='rgba(0,0,0,.26)';ctx.beginPath();ctx.ellipse(-4,21,50-motion.moveBlend*2,15,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(motion.angle);ctx.rotate(motion.secondary*.008);ctx.scale(1-motion.breath*.01,1+motion.breath*.015);drawBearBodyLocal(e,now,phase,motion.moveBlend);ctx.restore()
 }
 function drawFireSnakeModel(e,x,y,now){
- const phase=enemyAttackPhase(e,now,430),crystal=e.type.id==='crystalfiresnake',open=phase>=0?Math.sin(Math.PI*phase):0,lunge=phase>=0?Math.sin(Math.PI*phase)*19:0;
+ const phase=enemyAttackPhase(e,now,430),crystal=e.type.id==='crystalfiresnake',open=phase>=0?Math.sin(Math.PI*phase):0,lunge=phase>=0?Math.sin(Math.PI*phase)*19:0,motion=fantasyLivingMotion(e,now,creatureAngle(e),!!e.moving);
  ctx.save();ctx.translate(x,y);
- ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(-12,15,54,12,0,0,Math.PI*2);ctx.fill();
- ctx.rotate(creatureAngle(e));
- const wiggle=Math.sin(now*.011+(e.x+e.y)*.012)*(e.moving?7:3);
+ ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(-12,15,54-motion.moveBlend*2,12,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(motion.angle);ctx.rotate(motion.secondary*.01);ctx.scale(1-motion.breath*.006,1+motion.breath*.01);
+ const wiggle=Math.sin(now*.011+(e.x+e.y)*.012)*(3+motion.moveBlend*4);
  const dark=crystal?'#40246f':'#6e2018',body=crystal?'#9b6bd0':'#db4d25',edge=crystal?'#dfc9ff':'#ffb145';
  ctx.lineCap='round';ctx.strokeStyle=dark;ctx.lineWidth=28;ctx.beginPath();ctx.moveTo(-62,wiggle);ctx.bezierCurveTo(-44,-25-wiggle,-21,24+wiggle,7,0);ctx.stroke();
  ctx.strokeStyle=body;ctx.lineWidth=20;ctx.beginPath();ctx.moveTo(-62,wiggle);ctx.bezierCurveTo(-44,-25-wiggle,-21,24+wiggle,8,0);ctx.stroke();
@@ -2911,11 +2935,12 @@ function drawProjectiles(cx,cy){
 }
 function drawPlayer(cx,cy,now){
  const p=state.player,x=p.x-cx,y=p.y-cy,moveInput=(state.stick&&Math.hypot(state.stick.x||0,state.stick.y||0)>.12)||['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].some(k=>state.keys.has(k));
- const bob=Math.sin(now*.012)*(moveInput?2.4:.8),attackActive=now<p.attackFx,angle=Math.atan2(p.faceY||0,p.faceX||1);
+ const attackActive=now<p.attackFx,angle=Math.atan2(p.faceY||0,p.faceX||1),motion=fantasyLivingMotion(p,now,angle,moveInput);
+ const bob=Math.sin(now*(.0105+motion.moveBlend*.0065))*(.7+motion.moveBlend*1.9)+Math.abs(motion.stride)*.7;
  ctx.save();
  if(now<p.invuln&&Math.floor(now/80)%2===0)ctx.globalAlpha=.45;
- ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y+23,22,8,0,0,Math.PI*2);ctx.fill();
- ctx.translate(x+(attackActive?Math.cos(angle)*4:0),y+bob+(attackActive?Math.sin(angle)*4:0));ctx.rotate(angle);
+ ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y+23,22-motion.moveBlend,8,0,0,Math.PI*2);ctx.fill();
+ ctx.translate(x+(attackActive?Math.cos(angle)*4:0),y+bob+(attackActive?Math.sin(angle)*4:0));ctx.rotate(motion.angle+motion.stride*.018+motion.secondary*.007);ctx.scale(1-motion.breath*.008,1+motion.breath*.013);
  const playerImage=fantasyPlayerVisualAsset();
  if(playerImage.complete&&playerImage.naturalWidth>0)ctx.drawImage(playerImage,-30,-33,60,66);
  else{ctx.fillStyle='#355f63';ctx.strokeStyle=FANTASY_VISUAL_STYLE_LOCK.outline;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-18,22);ctx.lineTo(-22,-7);ctx.lineTo(0,-29);ctx.lineTo(22,-7);ctx.lineTo(18,22);ctx.closePath();ctx.fill();ctx.stroke()}
