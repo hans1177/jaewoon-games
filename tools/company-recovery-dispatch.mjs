@@ -64,7 +64,17 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         };
       });
     }else return rec;
-    if(touched===0)return rec;
+    if(touched===0){
+      if(owner==='SYSTEM_AI'&&clean(rec.sourceQueue).toLowerCase()==='security'){
+        return{
+          ...rec,
+          status:'blocked-executor-missing',
+          dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'security-recovery-executor-missing','recovery-dispatch-blocked-at:'+stamp]),
+          updatedAt:stamp
+        };
+      }
+      return rec;
+    }
     dispatched.push({id:rec.id,owner,touched});
     return{...rec,status:'dispatched',dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
   });
