@@ -114,6 +114,32 @@ test('focused Web repair malformed output fast-escalates to focused replace on t
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/malformed-fast-escalation/files/index.html'), 'utf8'), /Continue/);
 });
 
+
+test('single-file generic malformed output fast-escalates to focused replace on attempt two', async () => {
+  const cwd = tempRoot();
+  const malformed = path.join(cwd, 'generic-malformed.txt');
+  const focused = path.join(cwd, 'generic-focused.json');
+  const workOrder = order({
+    target: 'web',
+    root: 'web-games/demo',
+    responsibleFiles: ['web-games/demo/index.html'],
+    taskId: 'generic-malformed-fast-escalation'
+  });
+  workOrder.goal = '기존 플레이 버튼 표현을 실제 동작과 함께 보강';
+  write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>\n<button id="play">Play</button>\n<script>let started=false;</script>\n</body></html>\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(malformed, 'not-json');
+  write(focused, JSON.stringify({ replace: '<button id="play">Continue</button>' }));
+  const result = await runVibe2SourceWorker({ cwd, responseFiles: [malformed, focused] });
+  assert.equal(result.generation.attempts, 2);
+  assert.equal(result.generation.recoveryUsed, true);
+  assert.equal(result.generation.focusedWebRepair, false);
+  assert.equal(result.generation.focusedReplaceOnly, true);
+  assert.equal(result.generation.malformedFastEscalation, true);
+  assert.deepEqual(result.changedFiles, ['index.html']);
+  assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/generic-malformed-fast-escalation/files/index.html'), 'utf8'), /Continue/);
+});
+
 test('exact edit dry run validates sequential applicability without mutating source', () => {
   const cwd = tempRoot();
   const source = path.join(cwd, 'Player.cs');
