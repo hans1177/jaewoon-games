@@ -180,12 +180,16 @@ export function summarizeNeuralFeedbackEvidence(values=[]){
     }
     bySample.set(sampleId,row);
   }
-  const rows=[...bySample.values(),...legacyRows];
+  const identifiedRows=[...bySample.values()];
+  const rows=[...identifiedRows,...legacyRows];
   const eligible=rows.filter(row=>row.sampleEligible===true);
+  const identifiedEligible=identifiedRows.filter(row=>row.sampleEligible===true);
   const matches=eligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
   const mismatches=eligible.filter(row=>row.responsibilityMatch===false||clean(row.matchState)==='MISMATCH').length;
+  const identifiedMatches=identifiedEligible.filter(row=>row.responsibilityMatch===true||clean(row.matchState)==='MATCH').length;
+  const identifiedMismatches=identifiedEligible.filter(row=>row.responsibilityMatch===false||clean(row.matchState)==='MISMATCH').length;
   return{
-    version:2,
+    version:3,
     rawEvidenceRows:parsedRows.length,
     durableEvidenceSamples:rows.length,
     distinctSampleIds:bySample.size,
@@ -193,10 +197,14 @@ export function summarizeNeuralFeedbackEvidence(values=[]){
     duplicateSampleRows,
     sampleConflicts,
     calibrationEligible:eligible.length,
+    identifiedCalibrationEligible:identifiedEligible.length,
     matches,
     mismatches,
+    identifiedMatches,
+    identifiedMismatches,
     unknown:rows.length-eligible.length,
     observedAccuracy:eligible.length?matches/eligible.length:null,
+    identifiedObservedAccuracy:identifiedEligible.length?identifiedMatches/identifiedEligible.length:null,
     phase2AuthorityReady:false,
     automaticAuthorityEscalationForbidden:true
   };
