@@ -4,7 +4,7 @@
 // 원칙: trace 자체는 학습 정답이 아니며, full regression/검증된 실패 원인 전에는 재사용 권한이 없다.
 
 import crypto from 'node:crypto';
-import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication } from '../assets/vibe-experience-memory.js';
+import { createVibeExperienceMemory, searchVibeExperience, recordVibeCapabilityApplication, recordVibeCapabilityBenchmark, recordVibeCapabilityPortfolioDecision } from '../assets/vibe-experience-memory.js';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -357,12 +357,70 @@ export function applyCapabilityApplicationReviews(memoryInput={},reviews=[]){
     automaticDeprecation:false
   });
 }
+export function applyCapabilityBenchmarkReviews(memoryInput={},reviews=[]){
+  let memory=createVibeExperienceMemory(memoryInput);
+  let applied=0,duplicates=0,missing=0;
+  const results=[];
+  for(const review of Array.isArray(reviews)?reviews:[]){
+    const result=recordVibeCapabilityBenchmark(memory,review);
+    results.push(Object.freeze({
+      capabilityId:clean(review?.capabilityId)||null,
+      benchmarkId:clean(review?.benchmarkId)||null,
+      updated:result.updated===true,
+      duplicate:result.duplicate===true,
+      reason:result.reason
+    }));
+    if(result.updated){applied+=1;memory=result.memory;}
+    else if(result.duplicate)duplicates+=1;
+    else missing+=1;
+  }
+  return Object.freeze({
+    memory,
+    applied,
+    duplicates,
+    missing,
+    results:Object.freeze(results),
+    authorityExpanded:false,
+    automaticPromotion:false
+  });
+}
+
+export function applyCapabilityPortfolioDecisions(memoryInput={},decisions=[]){
+  let memory=createVibeExperienceMemory(memoryInput);
+  let applied=0,duplicates=0,rejected=0;
+  const results=[];
+  for(const decision of Array.isArray(decisions)?decisions:[]){
+    const result=recordVibeCapabilityPortfolioDecision(memory,decision);
+    results.push(Object.freeze({
+      capabilityId:clean(decision?.capabilityId)||null,
+      decisionId:clean(decision?.decisionId)||null,
+      updated:result.updated===true,
+      duplicate:result.duplicate===true,
+      reason:result.reason
+    }));
+    if(result.updated){applied+=1;memory=result.memory;}
+    else if(result.duplicate)duplicates+=1;
+    else rejected+=1;
+  }
+  return Object.freeze({
+    memory,
+    applied,
+    duplicates,
+    rejected,
+    results:Object.freeze(results),
+    authorityExpanded:false,
+    automaticDeprecation:false,
+    automaticSupersession:false
+  });
+}
+
 export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5}={}){
   const memory=createVibeExperienceMemory(experienceInput);
   const records=memory.records.filter(record=>
     record?.verified===true
     &&record?.reusable===true
     &&clean(record?.taskType)==='coding-capability-distillation'
+    &&record?.capabilityLifecycle?.retrievalEligible!==false
   );
   const capabilityMemory=createVibeExperienceMemory({records});
   const result=searchVibeExperience(capabilityMemory,{
@@ -403,6 +461,10 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     capabilityLifecycle:record.capabilityLifecycle||null,
     applicationCount:Number(record.capabilityLifecycle?.applicationCount||0),
     independentPassCount:Number(record.capabilityLifecycle?.independentPassCount||0),
+    generalizationCandidate:record.capabilityLifecycle?.generalizationCandidate===true,
+    strongGeneralizationVerified:record.capabilityLifecycle?.strongGeneralizationVerified===true,
+    unseenBenchmarkPassCount:Number(record.capabilityLifecycle?.unseenBenchmarkPassCount||0),
+    portfolioState:clean(record.capabilityLifecycle?.portfolioState)||'ACTIVE',
     relevance:Number(score||0),
     reasons:Object.freeze([...(reasons||[])])
   }));
@@ -417,6 +479,8 @@ export function retrieveVerifiedCapabilities({experienceInput={},task={},limit=5
     rawCodeUsed:false,
     crossGameKeywordOverlapRequired:true,
     sameEngineAloneEligible:false,
+    deprecatedOrSupersededRetrievalEligible:false,
+    generalizedRetrievalStillRequiresProblemRelevance:true,
     writableScopeExpansionAllowed:false,
     qaBypassAllowed:false,
     authorityExpanded:false
