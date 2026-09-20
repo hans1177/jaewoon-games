@@ -320,7 +320,7 @@ test('scheduler flow starts eligible long work, keeps conflicts, and dispatches 
 
   const finished=finishVibeQueueTask(started.queue,{taskId:'long-safe',outcome:'PASS'});
   assert.equal(finished.updated,true);
-  assert.equal(finished.queue.tasks.find(task=>task.id==='long-safe').status,'done');
+  assert.equal(finished.queue.tasks.find(task=>task.id==='long-safe').status,'verified');
   assert.equal(finished.next.selected[0].id,'short-critical');
   assert.equal(finished.dispatchNext,true);
   assert.ok(finished.next.deferredConflicts.some(row=>row.task.id==='long-conflict'));
