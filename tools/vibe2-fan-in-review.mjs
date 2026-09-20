@@ -164,7 +164,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[],microFa
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
       reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute,microFanIn:microFanIn===true});
-      if(microFanIn||!previouslyMicroReviewed)releaseCandidates.push({taskId:clean(task.id),candidateBranch});
+      if(!previouslyMicroReviewed)releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
   });
