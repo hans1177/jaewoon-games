@@ -74,3 +74,16 @@ test('system AI control conflict retry reloads latest control branch and recompu
   assert.match(reserve,/COMPANY_SYSTEM_AI_CONTROL_REFRESH_RETRY/);
   assert.doesNotMatch(reserve,/git pull --rebase origin vibe2-unreal-core/);
 });
+
+
+test('verification-only System AI tasks run deterministic contracts before any model call',()=>{
+  const preverify=workflow.indexOf('- name: Verify existing verifier contract before model');
+  const implement=workflow.indexOf('- name: Execute external AI assignment');
+  const currentMain=workflow.indexOf('- name: Verify no-change assignment against current main');
+  assert.ok(preverify>=0&&implement>preverify&&currentMain>implement);
+  assert.match(workflow,/if: startsWith\(matrix\.taskId, 'sys-verify-'\)/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_PREVERIFY_SATISFIED=YES/);
+  assert.match(workflow,/if: steps\.preverify\.outcome != 'success'/);
+  assert.match(workflow,/const preverified=process\.env\.PREVERIFY_OUTCOME==='success'/);
+  assert.match(workflow,/model-call-skipped:deterministic-verifier-already-satisfied/);
+});
