@@ -143,14 +143,19 @@ export function computeParallelismTelemetry(input={}){
   }
   const sourceGenerationFailureCount=Object.values(sourceFailureClasses).reduce((sum,value)=>sum+value,0);
   const failedWorkerCount=outcomes.FAIL+outcomes.BLOCKED;
-  let bottleneck='NONE';
-  if(workerCount&&peak<targetPeak)bottleneck='RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION';
-  else if(sourceGenerationFailureCount&&sourceGenerationFailureCount>=Math.max(1,Math.ceil(failedWorkerCount*.5)))bottleneck='SOURCE_CANDIDATE_GENERATION';
-  else if(cacheKnown.length&&cacheHits/cacheKnown.length<.8)bottleneck='OLLAMA_CACHE_MISS_RATE';
-  else if(qa.p95Ms>0&&qa.p95Ms>candidate.p95Ms*1.25)bottleneck='INCREMENTAL_QA';
-  else if(checkout.p95Ms>30000)bottleneck='CHECKOUT_NETWORK';
-  else if(workload.preparationRatioPct>45)bottleneck='PREPARATION_OVERHEAD';
-  else if(failureRate>=.4)bottleneck='WORKER_FAILURES_UNCLASSIFIED';
+  const bottleneckCandidates=[];
+  const sourceGenerationDominant=sourceGenerationFailureCount>0
+    &&sourceGenerationFailureCount>=Math.max(1,Math.ceil(failedWorkerCount*.5));
+  if(sourceGenerationDominant)bottleneckCandidates.push('SOURCE_CANDIDATE_GENERATION');
+  if(workerCount&&peak<targetPeak)bottleneckCandidates.push('RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION');
+  if(cacheKnown.length&&cacheHits/cacheKnown.length<.8)bottleneckCandidates.push('OLLAMA_CACHE_MISS_RATE');
+  if(qa.p95Ms>0&&qa.p95Ms>candidate.p95Ms*1.25)bottleneckCandidates.push('INCREMENTAL_QA');
+  if(checkout.p95Ms>30000)bottleneckCandidates.push('CHECKOUT_NETWORK');
+  if(workload.preparationRatioPct>45)bottleneckCandidates.push('PREPARATION_OVERHEAD');
+  if(failureRate>=.4&&!bottleneckCandidates.length)bottleneckCandidates.push('WORKER_FAILURES_UNCLASSIFIED');
+  const rankedBottlenecks=[...new Set(bottleneckCandidates)];
+  const bottleneck=rankedBottlenecks[0]||'NONE';
+  const secondaryBottlenecks=rankedBottlenecks.slice(1);
   const pressureLevel=failureRate>=.4?'SEVERE':failureRate>=.2?'HIGH':failureRate>=.1?'MEDIUM':'LOW';
   return{
     version:4,
@@ -181,6 +186,8 @@ export function computeParallelismTelemetry(input={}){
     },
     workload,
     bottleneck,
+    secondaryBottlenecks,
+    bottleneckCandidates:rankedBottlenecks,
     pass:workerCount===0?true:(peak>=targetPeak&&failureRate<.2)
   };
 }
