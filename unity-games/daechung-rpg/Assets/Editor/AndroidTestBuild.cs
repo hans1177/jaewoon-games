@@ -16,7 +16,7 @@ namespace JaewoonGames.DaechungRpg.Editor
         private const string ScenePath = "Assets/Scenes/Main.unity";
         private const string ApplicationId = "com.jaewoon.games.daechungrpg";
 
-        public static void Build()
+        public static void Build() { /* Minimal real replacement */ }
         {
             EnsureTestScene();
 
