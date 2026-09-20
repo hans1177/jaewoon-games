@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, EXTERNAL_MATRIX_BATCH_MAX } from '../assets/vibe-continuous-queue.js';
 import { createParallelismControl, DEFAULT_ADAPTIVE_TARGET, DEFAULT_TELEMETRY_TTL_MS, ADAPTIVE_PARALLELISM_STEPS } from './vibe2-adaptive-backpressure.mjs';
+import { injectSelfArchitectureEvolutionTasks } from './vibe2-self-architecture-evolution.mjs';
 
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback={})=>file&&fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
@@ -114,10 +115,17 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
   }
   actions.push(...machineRepairActions);
 
+  const evolution=injectSelfArchitectureEvolutionTasks(queue,control);
+  if(evolution.changed){
+    queue=evolution.queue;
+    actions.push('ENQUEUE_SELF_ARCHITECTURE_EVOLUTION');
+    taskIds.push(...evolution.added.map(task=>task.id));
+  }
+
   const active=queue.tasks.filter(t=>activeStatus(t.status)&&!waitBlocker(t.blocker));
   const action=actions[0]||(active.length?'HEALTHY_NO_SCOPED_REPAIR':'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
   return {action,actions:uniq(actions),
-    changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256'].includes(x)),
+    changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256','ENQUEUE_SELF_ARCHITECTURE_EVOLUTION'].includes(x)),
     changedControl:actions.some(x=>['RESET_INVALID_PARALLELISM_STATE','RESET_STALE_PARALLELISM_PRESSURE'].includes(x)),
     taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control};
 }

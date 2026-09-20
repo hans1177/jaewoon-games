@@ -2830,6 +2830,51 @@
             }
           }
         ]
+      },
+      "selfArchitectureEvolution": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-21",
+        "enabled": true,
+        "objective": "VIBE_MAY_PROPOSE_DESIGN_IMPLEMENT_VERIFY_AND_ITERATE_ITS_OWN_INTERNAL_ARCHITECTURE_WHEN_VERIFIED_STRUCTURAL_EVIDENCE_JUSTIFIES_IT",
+        "actor": "VIBE2_VIBE3",
+        "externalPromptRequired": false,
+        "loop": [
+          "DETECT_STRUCTURAL_BOTTLENECK",
+          "VERIFY_CAUSAL_STRUCTURE",
+          "GENERATE_AT_LEAST_TWO_ARCHITECTURE_ALTERNATIVES",
+          "SELECT_SMALLEST_CAUSAL_UPGRADE",
+          "IMPLEMENT_IN_ISOLATED_CANDIDATE",
+          "RUN_SAME_FAILURE_RECHECK",
+          "RUN_RELATED_AND_FULL_REGRESSION",
+          "RUN_SECURITY_CHECK",
+          "COMPARE_BEFORE_AFTER_METRICS",
+          "ADOPT_ONLY_IF_VERIFIED_IMPROVEMENT",
+          "DISTILL_RESULT_AND_GENERATE_NEXT_SIGNAL"
+        ],
+        "totalEvolutionGenerationLimit": null,
+        "proposalGenerationLimit": null,
+        "systemConstructionAllowed": true,
+        "existingSystemRefactorAllowed": true,
+        "directResponsibleSystemModificationPreferred": true,
+        "wrapperOrShadowSystemForbidden": true,
+        "unchangedEvidenceBusyLoopForbidden": true,
+        "newEvidenceMayGenerateNextEvolution": true,
+        "candidateBranchRequired": true,
+        "directMainWriteForbidden": true,
+        "beforeAfterComparisonRequired": true,
+        "fullRegressionRequired": true,
+        "securityVerificationRequired": true,
+        "rollbackOnRegressionOrNoImprovement": true,
+        "authorityExpansionForbidden": true,
+        "gateWeakeningForbidden": true,
+        "thresholdReductionForbidden": true,
+        "runtimePassFabricationForbidden": true,
+        "verifiedLearningDeletionForbidden": true,
+        "humanOrSecretBoundActionsRemainInhibited": true,
+        "executionUsesExistingScheduler": true,
+        "systemStewardProtectedLane": "RECOVERY_FAST",
+        "producer": "tools/vibe2-self-architecture-evolution.mjs",
+        "steward": "tools/vibe2-system-steward.mjs"
       }
     },
     "webIterationPolicy": {

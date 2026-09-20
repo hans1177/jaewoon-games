@@ -2073,5 +2073,23 @@
     "rawHostilePayloadRetention": false,
     "externalProviderAttack": false,
     "authorityChange": "NONE"
+  },
+  "vibeSelfArchitectureEvolution": {
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.selfArchitectureEvolution",
+    "sensor": "tools/vibe2-self-architecture-evolution.mjs",
+    "scheduler": "EXISTING_VIBE_DAG_RECOVERY_FAST",
+    "executor": "VIBE2_VIBE3_SYSTEM_ARCHITECTURE_CANDIDATE",
+    "verification": [
+      "SAME_FAILURE_RECHECK",
+      "RELATED_REGRESSION",
+      "FULL_REGRESSION",
+      "SECURITY",
+      "BEFORE_AFTER_METRICS"
+    ],
+    "totalGenerationLimit": null,
+    "proposalGenerationLimit": null,
+    "directMainWrite": false,
+    "authorityExpansion": false,
+    "gateWeakening": false
   }
 }
