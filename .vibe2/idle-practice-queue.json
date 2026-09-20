@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "vibe2-idle-practice-queue",
   "productionWorkAlwaysPreemptsPractice": true,
-  "phase4GeneralizationDrills": 18,
+  "phase4GeneralizationDrills": 20,
   "drills": [
     {
       "id": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30-control",
@@ -347,6 +347,44 @@
       "mayPromoteGeneralization": false
     },
     {
+      "id": "phase4-generalization-capability_ctrace_0d2630a9c5fc72b6115ab032-control",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_0d2630a9c5fc72b6115ab032",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_0d2630a9c5fc72b6115ab032",
+      "phase4PairId": "phase4-pair-nbrmet",
+      "phase4Role": "CONTROL",
+      "holdoutGameId": "amusement-tycoon",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-fsygu3",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_0d2630a9c5fc72b6115ab032-challenger",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_0d2630a9c5fc72b6115ab032",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_0d2630a9c5fc72b6115ab032",
+      "phase4PairId": "phase4-pair-nbrmet",
+      "phase4Role": "CHALLENGER",
+      "holdoutGameId": "amusement-tycoon",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-fsygu3",
+      "mayPromoteGeneralization": false
+    },
+    {
       "id": "review-fail_3e38u6",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -398,22 +436,6 @@
       "sourceFailure": "fail_wu3qnk"
     },
     {
-      "id": "review-fail_c9xvk3",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME"
-      ],
-      "sourceFailure": "fail_c9xvk3"
-    },
-    {
       "id": "review-fail_lhx93q",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -429,6 +451,22 @@
         "WEB_RUNTIME"
       ],
       "sourceFailure": "fail_lhx93q"
+    },
+    {
+      "id": "review-fail_c9xvk3",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_c9xvk3"
     },
     {
       "id": "gap-asset_adaptation-l1",
