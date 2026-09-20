@@ -897,7 +897,7 @@ test('presentation quality passes are queued in canonical order',()=>{
   queue={tasks:stages.map(row=>done(row.id))};
   const finalPass=findWebPresentationQualityTask(project,root,queue);
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
-  assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
+  assert.match(finalPass.goal,/data-presentation-quality-version="2"/);
   assert.equal(finalPass.estimatedRisk,'high');
   assert.equal(finalPass.speculativeEligible,true);
   assert.equal(finalPass.atomicNeuronMode,'PER_TASK_MICRO_FANIN');
@@ -933,7 +933,7 @@ test('web art direction and presentation are mandatory before platform handoff',
   });
   const task=result.tasks.find(row=>row.gameId===gameId);
   assert.ok(task);
-  assert.equal(task.supervisionContract.version,2);
+  assert.equal(task.supervisionContract.version,3);
   assert.ok(task.supervisionContract.stages.includes('GAME_ART_DIRECTION_STYLE_LOCK'));
   assert.ok(task.supervisionContract.stages.includes('PRESENTATION_IMPLEMENTATION'));
   assert.ok(task.supervisionContract.hardReject.includes('PLACEHOLDER_MONSTER_OR_CHARACTER'));
