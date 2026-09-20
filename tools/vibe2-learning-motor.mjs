@@ -315,6 +315,8 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     const domains=inferDomains(clean(task.goal),task.target);
     for(const domain of domains){
       const row=confidence.domains[domain];if(!row)continue;
+      const nativePassAllowed=outcome!=='PASS'||nativePositiveMasteryAllowed({engine:task.target,evidence,engineQaVerified:task?.engineQaVerified===true,nativeRuntimeVerified:task?.nativeRuntimeVerified===true,runtimeVerified:task?.runtimeVerified===true},domain);
+      if(!nativePassAllowed)continue;
       if(outcome==='PASS'){row.verifiedApplications+=1;if(evidence.some(x=>x.startsWith('phase4-unseen-game:')||x==='phase4-strong-generalization-evidence:YES'))row.holdoutPasses+=1;}
       else row.verifiedFailures+=1;
       row.games[gameId]=(row.games[gameId]||0)+1;row.level=productionConfidenceLevel(row);row.lastEvidence=eventId;row.lastUpdatedAt=new Date().toISOString();
