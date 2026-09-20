@@ -347,11 +347,14 @@ async function callModelBatch(targets){
     seedMaterialSelection:t.materialSelection,
     seedMaterials:t.materials.map(m=>({id:m.materialId,sourceFamily:m.sourceFamily,concept:m.concept,mechanic:m.mechanic,setting:m.setting})),
     optionalSuccessfulGameReferences:t.benchmarkCandidates,
-    targetSessionMinutes:30,
-    multiplayerMustBeDecidedNow:true,
-    allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
+    suggestedTargetSessionMinutes:30,
+    targetSessionMinutesRequired:false,
+    multiplayerMustBeDecidedNow:false,
+    exampleMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
+    seedMaterialsAreOptionalSuggestions:true,
+    vibeMayIgnoreOrExtendMaterials:true,
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리고 반복/재시작/대기로 시간을 채우지 않는다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED는 참고자료일 뿐 창작 제약이 아니다. Vibe가 게임 아이디어와 조합을 스스로 결정한다. seedMaterials는 선택 가능한 참고 예시이며 일부/전부를 무시하거나 새로운 재료·메커니즘·조합을 만들 수 있다. 재료 개수, 조합 방식, 세션 길이, 멀티 형식에는 GAME_SEED 단계의 고정 제한이 없다. 기존 게임 reference도 선택사항이다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제만 금지한다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -511,7 +514,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log('HISTORICAL_SIX_CATEGORY_ROLE=BASELINE_AND_FALLBACK_ONLY');
     console.log('GAMEPLAY_SKETCH_REQUIRED_FOR_NEW_SEEDS=YES');
     console.log('TARGET_SESSION_MINUTES=30');
-    console.log('GAME_SEED_MATERIALS_ARE_GAMES=NO');
+    console.log('GAME_SEED_MATERIALS_ARE_GAMES=NO');console.log('GAME_SEED_GUIDANCE_ONLY=YES');console.log('GAME_SEED_CREATIVE_CONSTRAINTS=NONE');
     console.log('GAME_SEED_PAID_API=NO');
   }).catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});
 }
