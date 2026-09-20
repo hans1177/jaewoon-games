@@ -2768,7 +2768,12 @@
         "name": "마력숲 생존기",
         "directive": "MAIN_DEVELOPMENT_FOCUS",
         "developmentPriority": "P0_OWNER_FOCUSED_GAME",
-        "selectedPlatform": "UNITY",
+        "targetPlatforms": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "platformDevelopmentMode": "UNITY_ROBLOX_CONCURRENT",
+        "concurrentPlatformDevelopment": true,
         "lifecycleStateRequired": "ACTIVE",
         "productionClassRequired": "DEVELOPMENT_CONFIRMED",
         "preemptsGeneralGameDevelopment": true,
