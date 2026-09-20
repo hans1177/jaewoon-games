@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-neural-feedback.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedback } from '../tools/vibe2-neural-feedback.mjs';
+import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedback, summarizeNeuralFeedbackEvidence } from '../tools/vibe2-neural-feedback.mjs';
 
 function diagnosis(system='SOURCE_GENERATION',confidence=.8){
   return{
@@ -101,4 +101,24 @@ test('summary never grants phase2 authority from shadow samples alone',()=>{
   assert.equal(summary.unknown,1);
   assert.equal(summary.observedAccuracy,.5);
   assert.equal(summary.phase2AuthorityReady,false);
+});
+
+
+test('durable evidence aggregation reports accuracy but never auto-enables phase2',()=>{
+  const match=neuralFeedbackEvidence(evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.8),
+    outcome:'FAIL',candidateFailure:{class:'NO_OP'},roleResults:{implementation:'FAIL'}
+  }));
+  const mismatch=neuralFeedbackEvidence(evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('GAME_RUNTIME',.8),
+    outcome:'FAIL',candidateFailure:{class:'EDIT_MATCH'},roleResults:{implementation:'FAIL'}
+  }));
+  const summary=summarizeNeuralFeedbackEvidence([...match,...mismatch]);
+  assert.equal(summary.durableEvidenceSamples,2);
+  assert.equal(summary.calibrationEligible,2);
+  assert.equal(summary.matches,1);
+  assert.equal(summary.mismatches,1);
+  assert.equal(summary.observedAccuracy,.5);
+  assert.equal(summary.phase2AuthorityReady,false);
+  assert.equal(summary.automaticAuthorityEscalationForbidden,true);
 });
