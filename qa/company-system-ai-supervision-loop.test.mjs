@@ -49,3 +49,18 @@ test('System AI reserve self-heals recurring failed sources before reservation',
   assert.match(workflow,/qa\/company-recovery-learning\.test\.mjs/);
   assert.match(workflow,/git diff --quiet -- \.vibe2\/system-ai-queue\.json \.vibe2\/recovery-queue\.json/);
 });
+
+
+test('no-change system task may close only after deterministic current-main verification',()=>{
+  const current=workflow.indexOf('- name: Verify no-change assignment against current main');
+  const verify=workflow.indexOf('- name: Verify external AI candidate');
+  const publish=workflow.indexOf('- name: Publish verified candidate PR');
+  assert.ok(current>=0&&verify>current&&publish>verify);
+  assert.match(workflow,/grep -q 'SYSTEM_AI_NO_CHANGE' \/tmp\/system-ai-worker\.log/);
+  assert.match(workflow,/SYSTEM_AI_CURRENT_MAIN_VERIFICATION_REQUIRED/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_CURRENT_MAIN_SATISFIED=YES/);
+  assert.match(workflow,/outcome:currentMainSatisfied\?'CURRENT_MAIN_SATISFIED':candidateOk\?'PASS':'FAIL'/);
+  assert.match(workflow,/no-candidate-required:current-main-already-satisfies-task/);
+  assert.match(queue,/DETERMINISTIC_CURRENT_MAIN_SATISFIED/);
+  assert.match(queue,/deterministic-current-main-satisfied/);
+});
