@@ -26,7 +26,8 @@ import {
   buildIdlePracticeQueue,
   injectIdlePracticeTask,
   dedupeIdlePracticeTasks,
-  buildWebRobloxHandoffs
+  buildWebRobloxHandoffs,
+  amplifyVerifiedWebPatterns
 } from '../tools/vibe2-learning-motor.mjs';
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
@@ -876,3 +877,29 @@ test('verified-only strategy memory opens candidate tournament to gather preferr
   assert.equal(policy.gateBypass,false);
 });
 
+
+
+test('one verified Web fix fans out to more than 100 independently verified application candidates',()=>{
+  const games=Array.from({length:105},(_,i)=>({id:'web-'+String(i+1).padStart(3,'0'),webPath:'web-games/web-'+String(i+1).padStart(3,'0'),hasWebArchive:true,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}));
+  const codePatternsInput={patterns:[{id:'pat-one-fix',gameId:games[0].id,engine:'web',taskType:'bugfix',system:'STATE_MACHINE',pattern:'VERIFIED_STATE_MACHINE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION',verified:true,sourceRevision:'abc123verified',independentQa:'PASS',browserQa:'PASS'}]};
+  const result=amplifyVerifiedWebPatterns({tasks:[]},codePatternsInput,{records:[]},{games});
+  assert.equal(result.sourceCount,1);
+  assert.equal(result.eligibleTargetCount,105);
+  assert.equal(result.added,104);
+  assert.equal(result.fanoutLimit,null);
+  assert.ok(result.queue.tasks.every(task=>task.retryPolicy==='UNLIMITED_CAUSAL_REPAIR'));
+  assert.ok(result.queue.tasks.every(task=>task.evidence.includes('pattern-applicability-required')));
+  assert.ok(result.queue.tasks.every(task=>task.evidence.includes('raw-code-copy:NO')));
+  assert.ok(result.queue.tasks.every(task=>task.completionCriteria.includes('FRESH_REGRESSION_PASS')));
+  const again=amplifyVerifiedWebPatterns(result.queue,codePatternsInput,{records:[]},{games});
+  assert.equal(again.added,0);
+});
+
+test('verified Web experience also becomes an amplification source without raw code reuse',()=>{
+  const experienceInput={records:[{id:'web-final-g1-r1',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',evidence:['source-revision:r1'],reusablePatterns:['save-restore-verified','WEB_SEMANTIC:STATE_MODEL:round state']}]};
+  const catalogInput={games:[{id:'g1',webPath:'web-games/g1',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'},{id:'g2',webPath:'web-games/g2',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  const result=amplifyVerifiedWebPatterns({tasks:[]},{patterns:[]},experienceInput,catalogInput);
+  assert.equal(result.added,1);
+  assert.match(result.queue.tasks[0].goal,/sourceRevision=r1/);
+  assert.match(result.queue.tasks[0].goal,/raw 코드를 복사하지 말고/);
+});

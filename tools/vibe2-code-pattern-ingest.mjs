@@ -82,7 +82,7 @@ export function ingestVerifiedCodePatterns({samplesDir='company-learning/trainin
   }
   return {
     version:1,kind:'vibe2-verified-code-pattern-library',
-    patterns:[...byId.values()].sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id))).slice(-1000),
+    patterns:[...byId.values()].sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id))),
     policy:{verifiedEvidenceRequired:true,rawCodeStored:false,wholeGameCopyForbidden:true,unauthorizedExternalCodeForbidden:true},
     stats:{examined,added,total:byId.size},
     updatedAt:new Date().toISOString()
