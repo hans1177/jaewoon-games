@@ -1,5 +1,5 @@
 {
-  "version": 183,
+  "version": 184,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6325,7 +6325,7 @@
       "documentedAt": "2026-09-20",
       "summary": "Vibe evolves from wave-primary execution toward an event-driven neural work graph. Waves remain the safe execution engine during migration and end as an optional synchronization pattern only.",
       "architectureMap": "company-learning/company-architecture-map.json",
-      "phase1ImplementationCommitState": "CANDIDATE_BRANCH",
+      "phase1ImplementationCommitState": "MERGED_MAIN_SHADOW_ACTIVE",
       "phase1Bindings": [
         "tools/vibe2-neural-diagnosis.mjs",
         "tools/vibe2-auto-planner.mjs",
@@ -6334,14 +6334,29 @@
         ".github/workflows/vibe2-core-qa.yml",
         ".github/workflows/vibe2-continuous-core.yml"
       ],
-      "phase1CalibrationState": "CANDIDATE_BRANCH",
+      "phase1CalibrationState": "MERGED_MAIN_SHADOW_ACTIVE",
       "phase1CalibrationBindings": [
         "tools/vibe2-neural-feedback.mjs",
         "tools/vibe2-queue-control.mjs",
         ".github/workflows/vibe2-continuous-core.yml",
         "qa/vibe2-neural-feedback.test.mjs",
         "qa/vibe2-queue-control.test.mjs"
-      ]
+      ],
+      "postMergeHardening": {
+        "state": "MERGED_MAIN",
+        "sourcePr": 1806,
+        "sourceBranch": "assistant/neural-shadow-hardening-main-v1",
+        "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+        "consolidatedSupportPrs": [
+          1795,
+          1797,
+          1801,
+          1803
+        ],
+        "securityFollowupPr": 1808,
+        "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
+        "authorityChange": "NONE"
+      }
     },
     "phase1Implementation": {
       "mode": "HYBRID_NEURAL_DIAGNOSIS_WAVE_EXECUTION",
@@ -6645,7 +6660,11 @@
           "neuralExecutionAuthorityGranted": false,
           "automaticPromotionAllowed": false,
           "automaticLearningAllowed": false,
-          "automaticTuningAllowed": false
+          "automaticTuningAllowed": false,
+          "state": "MERGED_MAIN",
+          "sourcePr": 1806,
+          "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+          "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79"
         }
       },
       "sampleIdentity": {
@@ -6666,7 +6685,7 @@
     },
     "activation": {
       "mode": "MERGED_MAIN_SHADOW_OBSERVATION",
-      "mainCommit": "42d6863a1d47bd7ad7863457e8562a22136b3c5a",
+      "mainCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
       "activated": true,
       "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
       "neuralExecutionAuthority": false,
@@ -6676,7 +6695,10 @@
       "neuralLearningAuthority": false,
       "neuralAutomaticPromotionAuthority": false,
       "readinessMeaning": "REVIEW_ELIGIBILITY_ONLY",
-      "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY"
+      "nextGate": "COLLECT_DURABLE_SHADOW_EVIDENCE_AND_REVIEW_BEFORE_ANY_PHASE2_AUTHORITY",
+      "shadowHardeningCommit": "37266037d7b2fc58073876c374259f197c9e0006",
+      "securityLearningHoldCommit": "ce00d4d3b2ffcf1ba6c263ac7b2b359c5b28ec79",
+      "syncedMainHead": "71ab26aa12bb6877cabdcf6f1560bebf7b4702f0"
     },
     "currentWaveExecution": {
       "mode": "CAPACITY_AWARE_FREE_SLOT_REFILL",
