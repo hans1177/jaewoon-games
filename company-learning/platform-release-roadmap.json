@@ -7164,7 +7164,12 @@
       ],
       "runtimeVfxBindingRequired": true,
       "runtimeCameraBindingRequired": true,
-      "markerOnlyOrStaticDescriptionCompletionForbidden": true
+      "markerOnlyOrStaticDescriptionCompletionForbidden": true,
+      "presentationAtomicNeuronExecutionRequired": true,
+      "audioAtomicNeuronExecutionRequired": true,
+      "creativeExpansionAtomicNeuronExecutionRequired": true,
+      "presentationTaskMicroFanInRequired": true,
+      "presentationGlobalWaveBarrierForbidden": true
     },
     "verificationTests": [
       "qa/vibe2-auto-planner.test.mjs",
@@ -9911,6 +9916,113 @@
       "strongerThanHumanBaselineMayBeRecordedOnlyWhenMatchedBenchmarkEvidenceExists": true,
       "unverifiedSuperhumanClaimForbidden": true,
       "capabilityGrowthDoesNotExpandAuthority": true
+    }
+  },
+  "selfExpansionLearningContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "enabled": true,
+    "objective": "UNBOUNDED_VERIFIED_SELF_EXPANSION_WITH_FAST_ATOMIC_DISTILLATION",
+    "execution": {
+      "atomicNeuronDefault": true,
+      "mode": "PER_TASK_MICRO_FANIN",
+      "microFanInRequired": true,
+      "isolatedCandidateBranchesRequired": true,
+      "globalWaveBarrierForbidden": true,
+      "existingSchedulerAndNeuronContractOnly": true,
+      "authorityExpansion": false,
+      "gateWeakening": false
+    },
+    "closedLoop": [
+      "WEAKNESS_DETECT",
+      "FRONTIER_EXPLORE",
+      "ATOMIC_PRACTICE",
+      "MICRO_DISTILL",
+      "RECOMBINE",
+      "FRESH_PROJECT_REVALIDATE",
+      "MASTERY_UPDATE",
+      "HARDER_RECURSIVE_CURRICULUM",
+      "REPEAT"
+    ],
+    "microDistillation": {
+      "knowledgeAtomizationRequired": true,
+      "fastLane": "VERIFIED_ADVISORY_ONLY",
+      "fastLaneMayIncreaseMastery": false,
+      "fastLaneMayCreateCanonicalTrainingSample": false,
+      "freshProjectOutcomeRequiredForPositiveMasteryOrTraining": true,
+      "lineageRequired": true,
+      "contextTagsRequired": true,
+      "contradictionCreatesRecheckCandidate": true,
+      "lifecycle": [
+        "ACTIVE",
+        "RECHECK",
+        "RETIRED"
+      ],
+      "compressionMustPreserveProvenance": true,
+      "rawPracticeTextPersistentStorage": false
+    },
+    "selfExpansion": {
+      "weakestVerifiedDomainsReceivePracticePriority": true,
+      "verifiedFailureClustersCreateFrontierCandidates": true,
+      "shadowDomainCandidatesAllowed": true,
+      "shadowDomainMayNotExpandAuthority": true,
+      "shadowDomainPromotionRequiresCrossProjectIndependentEvidence": true,
+      "domainSplitMergeMayOnlyCreateCandidates": true,
+      "repeatedVerifiedWorkflowMayCreatePlaybookCandidate": true,
+      "transferConfidenceMustBeContextScoped": true,
+      "selfConfidenceCalibrationRequired": true,
+      "recursiveCurriculumRequired": true,
+      "difficultyEscalatesWithVerifiedMastery": true,
+      "staleOrContradictedKnowledgeRecheckRequired": true
+    },
+    "creativeExpansion": {
+      "tracks": [
+        "INTRO_HOOK",
+        "ONBOARDING_FEEL",
+        "FIRST_MINUTE_PACING",
+        "PRESENTATION_COMPOSITION",
+        "CONCEPT_DIVERSITY",
+        "ENVIRONMENTAL_STORYTELLING",
+        "LIGHTING_FEEL"
+      ],
+      "introObservationWindowsSeconds": [
+        5,
+        15,
+        30,
+        60
+      ],
+      "presentationCompositionDomains": [
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE",
+        "UI_STATE"
+      ],
+      "conceptAxes": [
+        "PLAYER_FANTASY",
+        "PLAYER_ROLE",
+        "CORE_ACTION",
+        "SPACE_STRUCTURE",
+        "PROGRESSION",
+        "RISK_STRUCTURE",
+        "ART_DIRECTION",
+        "MOOD",
+        "SESSION_STRUCTURE"
+      ],
+      "noveltyPressureRequired": true,
+      "exactConceptFingerprintRepetitionPenalty": true,
+      "conceptMutationMustChangeOneOrMoreAxes": true,
+      "gameIdentityOwnerLockedFactsSaveBalanceAndAuthorityPreserved": true
+    },
+    "verification": {
+      "actualArtifactRequiredWhenApplicable": true,
+      "previousVerifiedResultComparisonRequired": true,
+      "freshIndependentQaRequired": true,
+      "runtimeEvidenceRequiredForRuntimeClaims": true,
+      "productionPassCannotComeFromPractice": true,
+      "positiveMasteryStillUsesExistingVerifiedProjectOutcomeGate": true
     }
   },
   "genrePresentationQualityContract": {

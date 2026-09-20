@@ -14,6 +14,7 @@ const sha256=(value)=>crypto.createHash('sha256').update(String(value)).digest('
 const SHA256=/^[a-f0-9]{64}$/i;
 const MIN_EVIDENCE=2;
 const MAX_ENTRIES=200;
+const KNOWLEDGE_LIFECYCLE=new Set(['ACTIVE','RECHECK','RETIRED']);
 
 const DOMAIN_PATTERNS=Object.freeze({
   CORE_LOOP:/core.?loop|game.?loop|runtime.?loop|session|retry|restart|run.?state/i,
@@ -58,6 +59,39 @@ const CODE_PATTERN_DOMAINS=Object.freeze({
   REGRESSION_REPAIR:['DEBUGGING']
 });
 
+function techniqueFingerprints(result={}){
+  return uniq([...(Array.isArray(result?.reusablePatterns)?result.reusablePatterns:[]),...(Array.isArray(result?.avoidPatterns)?result.avoidPatterns:[])]
+    .map(clean).filter(Boolean).map(value=>'sha256:'+sha256(value)));
+}
+function atomFromEvidence({domain='',knowledgeId='',verificationEvidence=[],techniqueFingerprints:fps=[],lifecycle='ACTIVE'}={}){
+  const normalizedDomain=upper(domain);
+  const normalizedLifecycle=KNOWLEDGE_LIFECYCLE.has(upper(lifecycle))?upper(lifecycle):'ACTIVE';
+  const evidence=uniq(verificationEvidence).slice(0,20);
+  const fingerprints=uniq(fps).slice(0,12);
+  return {
+    id:'knowledge-atom:'+sha256([normalizedDomain,knowledgeId,...evidence,...fingerprints].join('|')).slice(0,24),
+    domain:normalizedDomain,kind:'VERIFIED_PRACTICE_TECHNIQUE_SIGNAL',lifecycle:normalizedLifecycle,
+    contextTags:[normalizedDomain,'PRACTICE','ADVISORY'],techniqueFingerprints:fingerprints,verificationEvidence:evidence,
+    lineage:{sourceKnowledgeId:clean(knowledgeId)||null,verificationEvidence:evidence},
+    verified:true,independentlyVerified:true,advisoryOnly:true,directMasteryCredit:false,directTrainingSample:false,authorityExpanded:false
+  };
+}
+function normalizeStoredEntry(row={}){
+  const domain=upper(row.domain);
+  const lifecycle=KNOWLEDGE_LIFECYCLE.has(upper(row.lifecycle))?upper(row.lifecycle):'ACTIVE';
+  const fingerprints=uniq(row.techniqueFingerprints||[]).slice(0,12);
+  const knowledgeId=clean(row.id);
+  let atoms=(Array.isArray(row.knowledgeAtoms)?row.knowledgeAtoms:[]).filter(atom=>clean(atom?.id)).map(atom=>({
+    ...atom,id:clean(atom.id),domain:upper(atom.domain||domain),
+    lifecycle:KNOWLEDGE_LIFECYCLE.has(upper(atom.lifecycle))?upper(atom.lifecycle):lifecycle,
+    contextTags:uniq(atom.contextTags||[upper(atom.domain||domain),'PRACTICE','ADVISORY']).slice(0,12),
+    techniqueFingerprints:uniq(atom.techniqueFingerprints||fingerprints).slice(0,12),
+    verificationEvidence:uniq(atom.verificationEvidence||row.verificationEvidence||[]).slice(0,20),
+    verified:true,independentlyVerified:true,advisoryOnly:true,directMasteryCredit:false,directTrainingSample:false,authorityExpanded:false
+  }));
+  if(!atoms.length&&domain&&knowledgeId)atoms=[atomFromEvidence({domain,knowledgeId,verificationEvidence:row.verificationEvidence||[],techniqueFingerprints:fingerprints,lifecycle})];
+  return {...row,domain,lifecycle,techniqueFingerprints:fingerprints,knowledgeAtoms:atoms,fastLaneAdvisoryOnly:true,authorityExpanded:false};
+}
 function readJson(file,fallback={}){try{return file&&fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){return Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));}
@@ -138,14 +172,20 @@ export function distillPracticeResult({result={},order={},experienceInput={},cod
   for(const domain of candidateDomains(result,order)){
     const verificationEvidence=evidenceForDomain(domain,{experienceInput,codePatternsInput,knowledgeInput});
     if(verificationEvidence.length<MIN_EVIDENCE){rejected.push({domain,reason:'INSUFFICIENT_VERIFIED_CORROBORATION',evidenceCount:verificationEvidence.length});continue;}
+    const id='practice-distilled:'+sha256(domain+'|'+verificationEvidence.join('|')).slice(0,20);
+    const fingerprints=techniqueFingerprints(result);
     accepted.push({
-      id:'practice-distilled:'+sha256(domain+'|'+verificationEvidence.join('|')).slice(0,20),
+      id,
       domain,
       verified:true,
       independentlyVerified:true,
       verificationMethod:'internal-verified-corroboration',
       verificationEvidence,
       authority:'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE',
+      lifecycle:'ACTIVE',
+      techniqueFingerprints:fingerprints,
+      knowledgeAtoms:[atomFromEvidence({domain,knowledgeId:id,verificationEvidence,techniqueFingerprints:fingerprints,lifecycle:'ACTIVE'})],
+      fastLaneAdvisoryOnly:true,
       practiceTaskId:clean(result.taskId)||null,
       rawModelOutputSha256:clean(result.rawModelOutputSha256).toLowerCase(),
       rawModelOutputStored:false,
@@ -165,9 +205,9 @@ export function distillPracticeResult({result={},order={},experienceInput={},cod
 export function createPracticeDistilledStore(seed={}){
   const rows=Array.isArray(seed?.entries)?seed.entries:[];
   return {
-    version:1,
+    version:2,
     kind:'vibe2-practice-distilled-knowledge',
-    entries:rows.slice(-MAX_ENTRIES),
+    entries:rows.map(normalizeStoredEntry).slice(-MAX_ENTRIES),
     policy:{
       rawPracticeModelOutputStored:false,
       candidateTextStored:false,
@@ -180,6 +220,13 @@ export function createPracticeDistilledStore(seed={}){
       directMasteryCredit:false,
       directTrainingSample:false,
       verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining:true,
+      knowledgeAtomizationRequired:true,
+      fastLaneAdvisoryOnly:true,
+      fastLaneMayIncreaseMastery:false,
+      fastLaneMayCreateCanonicalTrainingSample:false,
+      knowledgeLifecycle:['ACTIVE','RECHECK','RETIRED'],
+      lineageRequired:true,
+      compressionMustPreserveProvenance:true,
       authorityExpanded:false
     },
     authorityExpanded:false
@@ -194,7 +241,7 @@ function safeEntry(row={}){
 }
 export function mergePracticeDistillationStore(storeInput={},distillations=[]){
   const store=createPracticeDistilledStore(storeInput);
-  const byDomain=new Map((store.entries||[]).filter(safeEntry).map(row=>[upper(row.domain),{...row}]));
+  const byDomain=new Map((store.entries||[]).map(normalizeStoredEntry).filter(safeEntry).map(row=>[upper(row.domain),{...row}]));
   let accepted=0;
   for(const payload of distillations||[]){
     for(const row of payload?.accepted||[]){
@@ -206,10 +253,15 @@ export function mergePracticeDistillationStore(storeInput={},distillations=[]){
         cur.practiceTaskIds=uniq([...(cur.practiceTaskIds||[]),clean(row.practiceTaskId)]).slice(-20);
         cur.rawModelOutputSha256s=uniq([...(cur.rawModelOutputSha256s||[]),clean(row.rawModelOutputSha256)]).slice(-20);
         cur.verificationEvidence=uniq([...(cur.verificationEvidence||[]),...(row.verificationEvidence||[])]).slice(0,20);
+        cur.techniqueFingerprints=uniq([...(cur.techniqueFingerprints||[]),...(row.techniqueFingerprints||[])]).slice(0,12);
+        const atomMap=new Map([...(cur.knowledgeAtoms||[]),...(row.knowledgeAtoms||[])].map(atom=>[clean(atom?.id),atom]).filter(([id])=>id));
+        cur.knowledgeAtoms=[...atomMap.values()].slice(-40);
+        cur.lifecycle='ACTIVE';
+        cur.fastLaneAdvisoryOnly=true;
         cur.updatedAt=new Date().toISOString();
       }else{
         byDomain.set(domain,{
-          ...row,
+          ...normalizeStoredEntry(row),
           confirmations:1,
           practiceTaskIds:uniq([clean(row.practiceTaskId)]),
           rawModelOutputSha256s:uniq([clean(row.rawModelOutputSha256)]),
