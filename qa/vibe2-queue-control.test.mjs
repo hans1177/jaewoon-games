@@ -1216,3 +1216,21 @@ test('candidate result workflows use direct repository-dispatch refill instead o
     assert.doesNotMatch(workflow,/gh workflow run vibe2-24h-runner\.yml/);
   }
 });
+
+
+test('shared control-state concurrency keeps pending jobs instead of replacing them',()=>{
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+
+  const planStart=runner.indexOf('\n  plan:');
+  const planSteps=runner.indexOf('\n    steps:',planStart);
+  assert.ok(planStart>=0&&planSteps>planStart);
+  const planHeader=runner.slice(planStart,planSteps);
+  assert.match(planHeader,/group: vibe2-control-state-vibe2-unreal-core\n\s+cancel-in-progress: false\n\s+queue: max/);
+
+  const sharedGroup='vibe2-control-state-vibe2-unreal-core';
+  const sharedMentions=core.split(sharedGroup).length-1;
+  const queuedShared=core.match(/group:[^\n]*vibe2-control-state-vibe2-unreal-core[^\n]*\n\s+cancel-in-progress: false\n\s+queue: max/g)||[];
+  assert.ok(sharedMentions>=2);
+  assert.equal(queuedShared.length,sharedMentions);
+});
