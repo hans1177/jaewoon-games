@@ -2243,12 +2243,13 @@ function updateHazards(now){
   if(coldArmor?.coldImmune)p.cold=Math.max(0,(p.cold||0)-coldDt*20);
   else{const div=Math.max(1,Number(coldArmor?.coldDivisor)||1),mult=now<(p.coldBurstUntil||0)?3:1;p.cold=clamp((p.cold||0)+coldDt*6*mult/div,0,100)}
  }else p.cold=Math.max(0,(p.cold||0)-coldDt*8);
- if((p.cold||0)>=100&&!p.coldFrozenAt){p.coldFrozenAt=now;p.coldDamageAt=now;showNotice('완전 동결 · 10초 안에 해제되지 않으면 즉사')}
- if(p.coldFrozenAt){
-  p.stunnedUntil=Math.max(p.stunnedUntil||0,now+300);
-  if(now>=p.coldDamageAt){p.coldDamageAt=now+200;p.hp=Math.max(0,p.hp-3);state.dirty=true;updateHud()}
-  if(now-p.coldFrozenAt>=10000){p.hp=0;knockoutPlayer('추위에 완전히 얼어붙었다');return}
-  if(!inSnow&&p.cold<70){p.coldFrozenAt=0;p.cold=Math.min(p.cold,65);showNotice('동결이 풀렸다')}
+ if((p.cold||0)>=100&&!p.coldFrozenAt){
+  p.coldFrozenAt=now;p.stunnedUntil=Math.max(p.stunnedUntil||0,now+3000);p.coldDamageAt=0;
+  showNotice('완전 동결 · 3초')
+ }
+ if(p.coldFrozenAt&&now-p.coldFrozenAt>=3000){
+  p.coldFrozenAt=0;p.cold=1;p.coldTickAt=now;p.coldDamageAt=0;state.dirty=true;
+  showNotice('동결 해제 · 추위 1부터 다시 시작')
  }
  if(p.burnTicks>0&&now>=p.burnNext){p.hp=Math.max(0,p.hp-5);p.burnTicks--;p.burnNext=now+1000;state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('화염 피해로 쓰러졌다');return}}
  if(now<(p.poisonUntil||0)&&now>=(p.poisonNext||0)){p.poisonNext=now+1000;p.hp=Math.max(0,p.hp-5);state.dirty=true;updateHud();if(p.hp<=0){knockoutPlayer('독 피해로 쓰러졌다');return}}
