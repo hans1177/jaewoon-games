@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "let audioCtx=null,master=null,osc=null,muted=false;",
+      "replace": "let audioCtx=null,master=null,osc=null,muted=false;async function ensureAudio(){try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=.03*Number($('#volume').value||.24);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='triangle';osc.frequency.value=146.8;osc.connect(master);osc.start()}if(audioCtx.state==='suspended')await audioCtx.resume();document.body.dataset.audioState=muted?'muted':'running'}catch{document.body.dataset.audioState='muted'}}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
