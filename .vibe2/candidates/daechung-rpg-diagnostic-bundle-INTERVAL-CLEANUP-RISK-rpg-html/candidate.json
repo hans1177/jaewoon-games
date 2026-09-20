@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 deterministic diagnostic repair",
+  "expectedEffect": "eliminate reproduced INTERVAL_CLEANUP_RISK before model generation",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": " AUDIO.timer=setInterval(()=>{",
+      "replace": " window.addEventListener('pagehide',()=>{if(AUDIO.timer){clearInterval(AUDIO.timer);AUDIO.timer=null;}},{once:true}); AUDIO.timer=setInterval(()=>{"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
