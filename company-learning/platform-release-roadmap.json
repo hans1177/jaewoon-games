@@ -1,5 +1,5 @@
 {
-  "version": 178,
+  "version": 179,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6098,7 +6098,7 @@
   "neuralDevelopmentBrain": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
-    "status": "PHASE2_READINESS_REVIEW_GATE_CANDIDATE",
+    "status": "PHASE2_DURABLE_SHADOW_AUDIT_READINESS_CANDIDATE",
     "objective": "EVENT_DRIVEN_NEURAL_WORK_GRAPH",
     "governingPrinciple": "CENTRAL_POLICY_IS_CONSTITUTION_AND_LONG_TERM_MEMORY; NEURAL_GRAPH_PERFORMS_DIAGNOSIS_AND_DECISION; EXECUTION_FIRES_ONLY THROUGH_GATED_WORK_CONTRACTS",
     "currentExecutionMode": "WAVE_EXECUTION_WITH_CENTRAL_POLICY_AND_EVENT_CHAIN",
@@ -6548,7 +6548,11 @@
         "automaticTuningAllowed": false,
         "automaticLearningAllowed": false,
         "interpretationAuthority": "NONE",
-        "phase2AuthorityReady": false
+        "phase2AuthorityReady": false,
+        "durableEvidencePrefix": "neural-shadow-wave-audit:",
+        "durableAcrossFanInCycles": true,
+        "readinessUsesDurableAuditSamples": true,
+        "currentBatchAuditStillReportedSeparately": true
       },
       "eventBindings": {
         "fanInReview": {
@@ -6614,7 +6618,9 @@
         "explicitPrimaryReviewRequired": true,
         "securityReviewRequired": true,
         "explicitCentralPolicyPromotionRequired": true,
-        "disagreementReviewRequired": true
+        "disagreementReviewRequired": true,
+        "waveAuditSampleSource": "DURABLE_QUEUE_EVIDENCE",
+        "currentBatchSampleCountMayNotSatisfyHistoricalThresholdByItself": true
       }
     }
   }
