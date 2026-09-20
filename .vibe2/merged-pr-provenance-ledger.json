@@ -5577,11 +5577,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_350082006498ca0d66f61322",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2054",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7cbb241053b7b10d4108e1a41a52820805448ae2",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2054,
+        "baseBranch": "main",
+        "headBranch": "assistant/neural-quality-hardening-v2",
+        "baseSha": "7cbb241053b7b10d4108e1a41a52820805448ae2",
+        "headSha": "009c548d6529604644847de2e4c91c958f283815",
+        "mergeCommitSha": "b28abcdaf3c42bd0d529938e7dc6b7418c3b8244",
+        "mergedAt": "2026-09-20T10:19:32Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2bf598c097c0778d96e1ee48cf5189a8f30d15c4000918a5902face2f642ca52",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/neural-quality-hardening-v2",
+        "candidateSha": "009c548d6529604644847de2e4c91c958f283815"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 279,
+        "deletedLineCount": 23,
+        "changedFiles": [
+          "qa/vibe2-neural-diagnosis.test.mjs",
+          "qa/vibe2-neural-feedback.test.mjs",
+          "qa/vibe2-neural-phase2-readiness.test.mjs",
+          "qa/vibe2-neural-root-cause.test.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "tools/vibe2-neural-diagnosis.mjs",
+          "tools/vibe2-neural-feedback.mjs",
+          "tools/vibe2-neural-phase2-readiness.mjs",
+          "tools/vibe2-neural-root-cause.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/vibe2-neural-diagnosis.test.mjs",
+          "qa/vibe2-neural-feedback.test.mjs",
+          "qa/vibe2-neural-phase2-readiness.test.mjs",
+          "qa/vibe2-neural-root-cause.test.mjs",
+          "tools/vibe2-fan-in-review.mjs",
+          "tools/vibe2-neural-diagnosis.mjs",
+          "tools/vibe2-neural-feedback.mjs",
+          "tools/vibe2-neural-phase2-readiness.mjs",
+          "tools/vibe2-neural-root-cause.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2054",
+        "merge-commit:b28abcdaf3c42bd0d529938e7dc6b7418c3b8244",
+        "base-main:7cbb241053b7b10d4108e1a41a52820805448ae2"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 45
+    "total": 46
   }
 }
