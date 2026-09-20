@@ -12,6 +12,9 @@ on:
       - 'tools/company-system-ai-worker.mjs'
       - 'tools/company-system-ai-queue.mjs'
       - 'tools/company-recovery-dispatch.mjs'
+      - 'tools/company-recovery-escalation.mjs'
+      - 'tools/company-recovery-queue.mjs'
+      - 'qa/company-recovery-learning.test.mjs'
       - 'qa/company-system-ai-worker.test.mjs'
       - 'qa/company-system-ai-supervision-loop.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -54,7 +57,9 @@ jobs:
           node --check tools/company-system-ai-worker.mjs
           node --check tools/company-system-ai-queue.mjs
           node --check tools/company-recovery-dispatch.mjs
-          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-supervision-loop.test.mjs
+          node --check tools/company-recovery-escalation.mjs
+          node --check tools/company-recovery-queue.mjs
+          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-recovery-learning.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/system-ai-shared-context.json
 
       - name: Reserve disjoint supervised assignments
@@ -67,6 +72,12 @@ jobs:
           git worktree prune
           git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
           test -f /tmp/system-ai-control/.vibe2/system-ai-queue.json
+          test -f /tmp/system-ai-control/.vibe2/recovery-queue.json
+
+          node tools/company-recovery-escalation.mjs \
+            --queue=/tmp/system-ai-control/.vibe2/queue.json \
+            --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
+            --recovery=/tmp/system-ai-control/.vibe2/recovery-queue.json | tee /tmp/system-ai-recovery-escalation.log
 
           node tools/company-recovery-dispatch.mjs \
             --route=system-ai \
@@ -80,7 +91,7 @@ jobs:
           cd /tmp/system-ai-control
           git config user.name 'jaewoon-system-ai-scheduler'
           git config user.email 'system-ai-scheduler@users.noreply.github.com'
-          if ! git diff --quiet -- .vibe2/system-ai-queue.json; then
+          if ! git diff --quiet -- .vibe2/system-ai-queue.json .vibe2/recovery-queue.json; then
             git add .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
             git commit -m "system-ai: reserve supervised assignments [skip ci]"
             for attempt in 1 2 3; do
