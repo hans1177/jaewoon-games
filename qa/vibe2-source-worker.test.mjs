@@ -111,6 +111,33 @@ test('missing diagnostic postcondition is a retryable generation failure',()=>{
   assert.match(source,/diagnosticFocusedReplaceOnly\|\|\(focusedFinal/);
 });
 
+test('speculative diagnostic postcondition gets one bounded focused correction credit', async()=>{
+  const cwd=tempRoot();
+  const bad1=path.join(cwd,'diagnostic-bad-1.json');
+  const bad2=path.join(cwd,'diagnostic-bad-2.json');
+  const good=path.join(cwd,'diagnostic-good.json');
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/rpg.html'],taskId:'diagnostic-credit'});
+  workOrder.goal='[DIAGNOSTIC_BUNDLE] repair interval cleanup';
+  workOrder.candidateStrategyRole={variant:'speculative-1',strategy:'DIAGNOSTIC_CAUSAL_REPAIR'};
+  workOrder.selectedTask={
+    id:'diagnostic-credit',gameId:'demo',target:'web',department:'development',type:'implementation',
+    blocker:'runtime-failure',lastOutcome:'FAIL',
+    evidence:['diagnostic:INTERVAL_CLEANUP_RISK','diagnostic-key:INTERVAL_CLEANUP_RISK:rpg.html']
+  };
+  write(path.join(cwd,'web-games/demo/rpg.html'),['<!doctype html><html><body><script>','const AUDIO={timer:null};','function start(){ AUDIO.timer=setInterval(()=>tick(),285); }','function tick(){}','</script></body></html>'].join('\\n'));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(bad1,JSON.stringify({replace:'function start(){ AUDIO.timer=setInterval(()=>tick(),300); }'}));
+  write(bad2,JSON.stringify({replace:'function start(){ AUDIO.timer=setInterval(()=>tick(),320); }'}));
+  write(good,JSON.stringify({replace:'function stop(){ if(AUDIO.timer){ clearInterval(AUDIO.timer); AUDIO.timer=null; } }\\nfunction start(){ stop(); AUDIO.timer=setInterval(()=>tick(),285); }'}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.baseAttemptBudget,2);
+  assert.equal(result.generation.effectiveAttemptBudget,3);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.diagnosticPostcondition.pass,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/diagnostic-credit/files/rpg.html'),'utf8'),/clearInterval/);
+});
+
 test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),3);
   assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'primary'}),4);
