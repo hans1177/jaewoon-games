@@ -7,7 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
-import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
+import { diagnoseGame, microTaskFromIssue, diagnosticResponsibleSystem } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
 import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 
@@ -294,6 +294,21 @@ function webRepairImplementationHints(evidence=[]){
   add(/REAL_GAME_FOOTPRINT_TOO_SMALL|REAL_GAME_LOGIC_TOO_SMALL/,'문자 수를 채우지 말고 위 검증 실패를 해결하는 실제 gameplay 로직·상태·입력 연결을 추가한다.');
   return [...new Set(hints)].slice(0,8);
 }
+function inheritedDiagnosticEvidence(gameId='',relative='',queue={tasks:[]}){
+  const prefix=`web-games/${clean(gameId)}/`,localFile=posix(relative).startsWith(prefix)?posix(relative).slice(prefix.length):posix(relative);
+  for(const item of Array.isArray(queue?.tasks)?queue.tasks:[]){
+    if(clean(item?.gameId)!==clean(gameId))continue;
+    const evidence=(item?.evidence||[]).map(clean).filter(Boolean);
+    const key=evidence.find(value=>value.startsWith('diagnostic-key:')&&value.endsWith(`:${localFile}`));
+    if(!key)continue;
+    const type=clean(key.slice('diagnostic-key:'.length,-(`:${localFile}`.length))).toUpperCase();
+    const system=diagnosticResponsibleSystem(type);
+    if(!system||!evidence.includes(`diagnostic:${type}`))continue;
+    return[`diagnostic:${type}`,`diagnostic-key:${type}:${localFile}`,`diagnostic-responsibility-shadow:${system}`,'diagnostic-carryover:EXACT_WEB_REPAIR'];
+  }
+  return[];
+}
+
 function findWebAssessmentTask(project,repoRoot,queue){
   if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
@@ -319,7 +334,8 @@ function findWebAssessmentTask(project,repoRoot,queue){
       ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}${runtimeHintContext}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
       :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
     const goal=`[WEB_REPAIR] 게임: ${project.name||project.gameId}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
-    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game']);out.ownerDirective=true;out.speculativeEligible=false;return out;
+    const diagnosticEvidence=inheritedDiagnosticEvidence(project.gameId,relative,queue);
+    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game',...diagnosticEvidence]);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
   const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;

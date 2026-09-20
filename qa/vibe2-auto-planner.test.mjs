@@ -299,7 +299,7 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   const staleDiagnostic={
     id:`${gameId}-diagnostic-bundle-old-index-html`,gameId,target:'web',department:'development',type:'implementation',
     sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'stale diagnostic',
-    releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,blocker:null,evidence:['diagnostic-key:OLD:index.html']
+    releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,blocker:null,evidence:['diagnostic:TOUCH_ACTION_UNSPECIFIED','diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html']
   };
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
@@ -314,6 +314,10 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   assert.deepEqual(task.responsibleFiles,[`web-games/${gameId}/index.html`]);
   assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
+  assert.ok(task.evidence.includes('diagnostic:TOUCH_ACTION_UNSPECIFIED'));
+  assert.ok(task.evidence.includes('diagnostic-key:TOUCH_ACTION_UNSPECIFIED:index.html'));
+  assert.ok(task.evidence.includes('diagnostic-responsibility-shadow:GAME_INPUT'));
+  assert.ok(task.evidence.includes('diagnostic-carryover:EXACT_WEB_REPAIR'));
   assert.match(task.goal,/\[WEB_REPAIR\]/);
   assert.match(task.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
   assert.match(task.goal,/requested-stage=WEB_REPAIR/);
