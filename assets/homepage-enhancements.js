@@ -320,7 +320,6 @@ function simplifyPage(){
   document.querySelector('.catalogIntro')?.remove();
   document.querySelector('.reviews')?.remove();
   document.getElementById('autonomousFocusStrip')?.remove();
-  document.getElementById('homeDevelopmentGameCenter')?.remove();
 }
 async function refresh(){
   if(refreshInFlight)return;
