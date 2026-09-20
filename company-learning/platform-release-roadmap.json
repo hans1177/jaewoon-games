@@ -1,5 +1,5 @@
 {
-  "version": 216,
+  "version": 217,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -8542,7 +8542,7 @@
         }
       },
       "incrementalQaBottleneckRepair": {
-        "state": "IMPLEMENTED_IN_PR_1989_PENDING_MERGE",
+        "state": "MERGED_MAIN",
         "sourcePr": 1989,
         "triggerRunId": 35497006959,
         "observed": {
@@ -8606,7 +8606,8 @@
           "tools/vibe2-source-worker.mjs::evaluateDiagnosticPostcondition",
           "tools/vibe2-incremental-qa.mjs::runCausalReplay"
         ],
-        "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
+        "verification": "POST_MERGE_PRODUCTION_WAVE_OBSERVATION_ACTIVE",
+        "mergedCommit": "d28e404fbe785dad8c80cdce2636d7e74f26ebe4"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
         "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
@@ -8658,6 +8659,109 @@
           "authorityChange": "NONE"
         },
         "nextGate": "VERIFY_NEXT_PRODUCTION_WAVES_USE_ONE_ADAPTIVE_GAME_PRIMARY_TARGET_ACROSS_24H_AND_FANIN_REFILL_PATHS"
+      },
+      "vibeBottleneckCentralCheckpoint": {
+        "state": "ACTIVE_BOTTLENECK_FIRST_REPAIR_PR_2013_PENDING_MERGE",
+        "recordedAt": "2026-09-20T17:55:00+09:00",
+        "syncedMainHead": "674c755a9c20d761c47306089abffb548b86aa70",
+        "completedRepairs": [
+          {
+            "pr": 1983,
+            "mergedCommit": "f6a97fb325780ebab4f1f2038a2e42a8f025ae6b",
+            "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+            "correction": "BOUND_STANDARD_JSON_EDIT_CONTEXT_AND_FORCE_STRUCTURED_JSON_OUTPUT",
+            "keyChanges": {
+              "maxContextBytes": "96000->48000",
+              "jsonContextWindow": "32768->16384",
+              "ollamaJsonModeForJsonCompletions": true
+            },
+            "authorityChange": "NONE"
+          },
+          {
+            "pr": 1984,
+            "mergedCommit": "86cababdd39c0649b9291c01e491dd52cf1746b1",
+            "bottleneck": "CENTRAL_POLICY_STALE_FALSE_INVALIDATION",
+            "correction": "COMPARE_WORKER_EXECUTION_POLICY_PROJECTION_INSTEAD_OF_UNRELATED_FULL_ROADMAP_PROGRESS",
+            "fullDocumentValidationPreserved": true,
+            "preSourceGenerationCheckPreserved": true,
+            "preCandidateWriteCheckPreserved": true,
+            "authorityChange": "NONE"
+          },
+          {
+            "pr": 1989,
+            "mergedCommit": "d28e404fbe785dad8c80cdce2636d7e74f26ebe4",
+            "bottleneck": "INCREMENTAL_QA_REPEATED_DIAGNOSTIC_MISS",
+            "correction": "ROUTE_REPRODUCED_DIAGNOSTIC_TO_EXACT_FIRST_SOURCE_EDIT_AND_REQUIRE_GENERATION_POSTCONDITION",
+            "canonicalIncrementalQaRequired": true,
+            "fullRegressionRequired": true,
+            "qaBypassAllowed": false,
+            "authorityChange": "NONE"
+          }
+        ],
+        "latestRuntimeObservation": {
+          "controlRef": "vibe2-unreal-core",
+          "runId": 35500348340,
+          "lastUpdatedAt": "2026-09-20T08:52:28.902Z",
+          "workerCount": 21,
+          "actualPeakConcurrency": 19,
+          "failureRatePct": 52.38,
+          "pressureLevel": "SEVERE",
+          "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "controlCurrentMax": 256,
+          "telemetryEffectiveMax": 256,
+          "effectivePeakUtilizationPct": 7.42,
+          "queueSnapshot": {
+            "cancelled": 64,
+            "done": 33,
+            "blocked": 1,
+            "running": 5,
+            "queued": 4
+          }
+        },
+        "openBottlenecks": [
+          {
+            "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
+            "state": "OPEN_INVESTIGATION",
+            "evidence": {
+              "latestRunId": 35500348340,
+              "workerCount": 21,
+              "actualPeakConcurrency": 19,
+              "telemetryEffectiveMax": 256,
+              "priorGamePrimaryEffectiveMaxObserved": 20
+            },
+            "suspectedArea": [
+              "tools/vibe2-parallelism-telemetry.mjs::computeParallelismTelemetry",
+              "tools/vibe2-queue-control.mjs::fan-in",
+              ".vibe2/parallelism-control.json"
+            ],
+            "rule": "DO_NOT_CLAIM_LOW_LOAD_FROM_GLOBAL_CONTROL_MAX_WHEN_GAME_PRIMARY_EXECUTION_CONTRACT_IS_LOWER",
+            "nextGate": "VERIFY_EFFECTIVE_MAX_SOURCE_AND_BIND_TELEMETRY_DENOMINATOR_TO_THE_ACTUAL_GAME_PRIMARY_EXECUTION_CAP_WITHOUT_EXPANDING_EXECUTION_AUTHORITY"
+          },
+          {
+            "id": "POST_1989_SOURCE_GENERATION_FAILURES",
+            "state": "OPEN_PRODUCTION_VERIFICATION",
+            "evidence": {
+              "latestRunId": 35500348340,
+              "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+              "failureRatePct": 52.38
+            },
+            "nextGate": "CLASSIFY_POST_1989_SOURCE_GENERATION_FAILURE_CLASSES_BEFORE_ANY_CONCURRENCY_EXPANSION"
+          }
+        ],
+        "priorityOrder": [
+          "CORRECT_TELEMETRY_DENOMINATOR_AND_LOAD_CLASSIFICATION",
+          "CLASSIFY_AND_REPAIR_POST_1989_SOURCE_GENERATION_FAILURES",
+          "ONLY_THEN_REEVALUATE_CONCURRENCY_OR_MODEL_PARALLELISM"
+        ],
+        "constraints": {
+          "existingWaveSchedulerOnly": true,
+          "noWorkerAuthorityExpansion": true,
+          "noQueueMutationAuthorityExpansion": true,
+          "noWaveReorderAuthorityExpansion": true,
+          "noDirectMainAuthorityExpansion": true,
+          "noQaBypass": true
+        },
+        "sourcePr": 2013
       }
     }
   },

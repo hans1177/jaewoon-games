@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -407,7 +407,7 @@
         }
       },
       "diagnosticFirstSourceGeneration": {
-        "state": "IMPLEMENTED_IN_PR_1989_PENDING_MERGE",
+        "state": "MERGED_MAIN",
         "sourcePr": 1989,
         "triggerRunId": 35497006959,
         "upstream": "tools/vibe2-exploration-worker.mjs::verifyDiagnosticReplayBaseline",
@@ -430,7 +430,8 @@
         "fullRegressionRequired": true,
         "writableScopeExpansionAllowed": false,
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
-        "authorityChange": "NONE"
+        "authorityChange": "NONE",
+        "mergedCommit": "d28e404fbe785dad8c80cdce2636d7e74f26ebe4"
       },
       "selfAdaptiveGamePrimaryConcurrency": {
         "state": "IMPLEMENTED_IN_PR_1994_PENDING_MERGE",
@@ -463,6 +464,41 @@
         "matrixFanOutUsesCurrentAdaptiveTarget": true,
         "telemetryEffectiveMaxUsesCurrentAdaptiveTarget": true,
         "authorityChange": "NONE"
+      },
+      "bottleneckFirstRuntimeCheckpoint": {
+        "version": 1,
+        "state": "ACTIVE_PR_2013_PENDING_MERGE",
+        "sourceRoadmap": "company-learning/platform-release-roadmap.json#assistantRoadmapOrchestration.implementationState.vibeBottleneckCentralCheckpoint",
+        "completedRepairPrs": [
+          1983,
+          1984,
+          1989
+        ],
+        "latestRuntime": {
+          "runId": 35500348340,
+          "workerCount": 21,
+          "actualPeakConcurrency": 19,
+          "failureRatePct": 52.38,
+          "pressureLevel": "SEVERE",
+          "reportedPrimaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "telemetryEffectiveMax": 256,
+          "controlCurrentMax": 256
+        },
+        "openTelemetryInvariant": {
+          "id": "GAME_PRIMARY_EFFECTIVE_MAX_DENOMINATOR_MISMATCH",
+          "state": "OPEN_INVESTIGATION",
+          "expectedMeaning": "EFFECTIVE_MAX_MUST_REFLECT_THE_EXECUTION_CAP_THAT_CAN_ACTUALLY_CONSTRAIN_GAME_PRIMARY_WORKERS_FOR_THE_OBSERVED_WAVE",
+          "doNotInferLowLoadFromUnrelatedGlobalMax": true,
+          "responsibleSystems": [
+            "tools/vibe2-parallelism-telemetry.mjs",
+            "tools/vibe2-queue-control.mjs",
+            ".vibe2/parallelism-control.json"
+          ]
+        },
+        "nextRuntimeGate": "FIX_OR_VERIFY_EFFECTIVE_MAX_BINDING_THEN_RECLASSIFY_POST_1989_SOURCE_GENERATION_FAILURES",
+        "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+        "authorityChange": "NONE",
+        "sourcePr": 2013
       }
     },
     "phase2Shadow": {
