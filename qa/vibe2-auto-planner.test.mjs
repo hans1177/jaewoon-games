@@ -892,3 +892,88 @@ test('presentation quality passes are queued in canonical order',()=>{
   assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
   assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
 });
+
+
+test('web art direction and presentation are mandatory before platform handoff',()=>{
+  const root=tempRepo();
+  const gameId='art-direction-web-base';
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,
+      name:'Art Direction Web Base',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',
+      homepageWebPlayable:false,
+      hasWebArchive:false
+    }]},
+    developmentQueue:{items:[{
+      gameId,
+      gameName:'Art Direction Web Base',
+      status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',
+      canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,
+      sourcePath:`web-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.equal(task.supervisionContract.version,2);
+  assert.ok(task.supervisionContract.stages.includes('GAME_ART_DIRECTION_STYLE_LOCK'));
+  assert.ok(task.supervisionContract.stages.includes('PRESENTATION_IMPLEMENTATION'));
+  assert.ok(task.supervisionContract.hardReject.includes('PLACEHOLDER_MONSTER_OR_CHARACTER'));
+  assert.ok(task.supervisionContract.hardReject.includes('CONTEXT_MISMATCH_BACKGROUND'));
+  assert.ok(task.supervisionContract.hardReject.includes('INCOMPLETE_ACTION_MOTION_SET'));
+  assert.match(task.goal,/게임별 아트 방향과 Style Lock/);
+  assert.match(task.goal,/idle\/move\/attack\/hit\/death/);
+  assert.match(task.goal,/임시 모형 몹/);
+  assert.match(task.goal,/Roblox\/Unity\/UEFN 이관/);
+});
+
+test('web repair converts presentation blockers into concrete visual and motion repair hints',()=>{
+  const root=tempRepo();
+  const gameId='presentation-runtime-repair';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing game</main></body></html>','utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,
+      name:'Presentation Runtime Repair',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',
+      homepageWebPlayable:false,
+      hasWebArchive:true,
+      webPath:`/web-games/${gameId}/`
+    }]},
+    developmentQueue:{items:[{
+      gameId,
+      gameName:'Presentation Runtime Repair',
+      status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_REPAIR',
+      canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,
+      sourcePath:`web-games/${gameId}`,
+      vibeWebRequestedStage:'WEB_REPAIR',
+      vibeWebImplementationReason:'PRESENTATION_RUNTIME_QUALITY_REQUIRED|ACTION_PRESENTATION_QUALITY_REQUIRED'
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.match(task.goal,/Style Lock/);
+  assert.match(task.goal,/임시 모형 몹/);
+  assert.match(task.goal,/무맥락 배경/);
+  assert.match(task.goal,/idle\/move\/attack\/hit\/death/);
+  assert.match(task.goal,/anticipation\/windup/);
+  assert.match(task.goal,/impact 이벤트/);
+});
