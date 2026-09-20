@@ -102,7 +102,6 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   const expected = docs.machineStateVersions || {};
   const state = docs.runtimeState || {};
   const work = runtime.workManagement || {};
-  const nextWorker = work.nextWorkerDirective || {};
   const adaptive = runtime.adaptiveBackpressure || {};
   const sources = runtime.sources || {};
   const continuous = runtime.continuous || {};
@@ -193,6 +192,7 @@ export function buildVibe2Handoff({
   const projectRows = Array.isArray(projectLifecycle.projects) ? projectLifecycle.projects : [];
   const docs = runtime.documentation || {};
   const work = runtime.workManagement || {};
+  const nextWorker = work.nextWorkerDirective || {};
   const adaptive = runtime.adaptiveBackpressure || {};
   const reusable = tasks.filter((task) => clean(task.packageId) || reusableEvidence(task).length || clean(task.blocker));
 
