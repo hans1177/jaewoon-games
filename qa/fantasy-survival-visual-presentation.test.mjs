@@ -179,3 +179,26 @@ test('multiplayer snapshots derive visual hit timing only from authoritative hp 
   assert.doesNotMatch(snapshot,/n\.hp\s*=/);
   assert.doesNotMatch(snapshot,/old\.hp\s*=/);
 });
+
+test('camera presentation smooths follow and caps combat response on mobile without mutating gameplay state',()=>{
+  const camera=functionBody('updateCameraPresentation');
+  assert.match(camera,/camera\.area!==state\.area/);
+  assert.match(camera,/Math\.exp\(-Math\.max\(0,dt\)\*followRate\)/);
+  assert.match(camera,/innerWidth<=900/);
+  assert.match(camera,/shakeCap=mobile\?3\.2:5\.2/);
+  assert.match(camera,/p\.attackAt/);
+  assert.match(camera,/p\.invuln/);
+  assert.match(camera,/camera\.x=clamp/);
+  assert.match(camera,/camera\.y=clamp/);
+  assert.doesNotMatch(camera,/p\.(?:x|y|faceX|faceY|attackAt|attackFx|invuln)\s*=/);
+});
+
+test('camera update replaces hard snap while keeping world tap coordinates aligned to rendered camera',()=>{
+  const update=functionBody('update');
+  assert.match(update,/updateCameraPresentation\(p,dt,now,camW,camH\)/);
+  assert.doesNotMatch(update,/state\.camera\.x=clamp\(p\.x-innerWidth\/2/);
+  assert.doesNotMatch(update,/state\.camera\.y=clamp\(p\.y-innerHeight\/2/);
+  const worldTap=functionBody('handleWorldTap');
+  assert.match(worldTap,/e\.clientX\+state\.camera\.x/);
+  assert.match(worldTap,/e\.clientY\+state\.camera\.y/);
+});
