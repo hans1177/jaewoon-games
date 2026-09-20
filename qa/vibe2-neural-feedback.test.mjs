@@ -138,3 +138,18 @@ test('durable evidence aggregation reports accuracy but never auto-enables phase
   assert.equal(summary.phase2AuthorityReady,false);
   assert.equal(summary.automaticAuthorityEscalationForbidden,true);
 });
+
+
+test('feedback evidence preserves deterministic sample identity for retry-safe telemetry',()=>{
+  const feedback=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.8),
+    outcome:'FAIL',
+    candidateFailure:{class:'NO_OP'},
+    roleResults:{implementation:'FAIL'},
+    sampleId:'task-a|run-1:1|primary|candidate-a'
+  });
+  assert.equal(feedback.sampleId,'task-a|run-1:1|primary|candidate-a');
+  const marker=neuralFeedbackEvidence(feedback).find(x=>x.startsWith('neural-shadow-feedback:'));
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-shadow-feedback:'.length)));
+  assert.equal(payload.sampleId,'task-a|run-1:1|primary|candidate-a');
+});
