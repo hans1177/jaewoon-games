@@ -55,10 +55,14 @@
       "distinctiveness"
     ],
     "releaseRequiresFreshCompetitiveRevalidation": true,
-    "singleWebPassCannotTriggerRelease": true
+    "singleWebPassCannotTriggerRelease": true,
+    "genreSpecificUiAnimationRequired": true,
+    "artDirectionStyleLockRequiredBeforePresentationImplementation": true,
+    "commercialReadinessRequiredBeforeNativeDispatch": true,
+    "placeholderOrContextMismatchCannotPass": true
   },
   "livingMotionVisualQualityContract": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "objective": "LIVING_CONTINUOUS_MOTION_STRONG_GAME_FEEL_STYLE_ADAPTABLE_ASSETS_BEFORE_OPTIONAL_HIGH_FIDELITY_REALISM",
@@ -91,7 +95,13 @@
       "existingWorkingGameplayAndSaveStructurePreserved": true,
       "highFidelityRealismDeferredUntilLivingMotionBaselinePasses": true,
       "platformSpecificPresentationAdaptationAllowed": true,
-      "approvedGameplayMeaningMustRemainStableAcrossPresentationChanges": true
+      "approvedGameplayMeaningMustRemainStableAcrossPresentationChanges": true,
+      "genreSpecificPresentationRequired": true,
+      "uiAndAnimationMustBeAuthoredPerGameContext": true,
+      "placeholderMonsterOrCharacterForbiddenAtFinalWebPass": true,
+      "contextMismatchBackgroundForbiddenAtFinalWebPass": true,
+      "enemyIdentityMustDifferBySilhouetteMotionOrBehaviorNotColorOnly": true,
+      "visualRegressionAgainstLastPassingPresentationForbidden": true
     },
     "assetAdaptation": {
       "originalAssetMustRemainPreserved": true,
@@ -146,7 +156,12 @@
         "UI_MOTION_LANGUAGE"
       ],
       "newAssetsMustConformToGameStyleLock": true,
-      "styleLockMayChangeOnlyByApprovedDesignOrArtRevision": true
+      "styleLockMayChangeOnlyByApprovedDesignOrArtRevision": true,
+      "uiShapeAndIconLanguageRequired": true,
+      "typographyToneRequired": true,
+      "enemySilhouetteLanguageRequired": true,
+      "environmentContextLanguageRequired": true,
+      "lockIdentifierAndRevisionEvidenceRequired": true
     },
     "livingMotion": {
       "alwaysAliveIdleRequired": true,
@@ -3733,7 +3748,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-20",
+  "updatedAt": "2026-09-20T00:00:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9327,5 +9342,209 @@
     "existingWaveSchedulerOnly": true,
     "gateWeakening": false,
     "authorityExpansion": false
+  },
+  "genrePresentationQualityContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "objective": "GENRE_SPECIFIC_UI_ANIMATION_WORLD_FEEDBACK_WITHOUT_CHANGING_CANONICAL_PIPELINE_ORDER",
+    "pipelineOrderMustRemainCanonical": true,
+    "appliesInsideExistingPresentationPasses": true,
+    "common": {
+      "uiMustBeCreatedFromGenreAndGameplayRules": true,
+      "sameHudCopiedAcrossUnrelatedGenresForbidden": true,
+      "uiMotionLanguageMustFollowStyleLock": true,
+      "gameplayCriticalControlsMustRemainThumbReachableOnMobile": true,
+      "animationMustReflectBodyWeaponCreatureAndInteractionSemantics": true,
+      "colorOnlyEnemyDifferentiationForbidden": true,
+      "enemyTypesNeedDistinctSilhouetteMotionOrBehavior": true,
+      "idleMoveAttackHitDeathRequiredWhenApplicable": true,
+      "equipInteractUseItemSkillCelebrateRequiredWhenCoreToGame": true
+    },
+    "genres": {
+      "RPG": {
+        "ui": [
+          "HP_MANA_XP",
+          "QUICKSLOT",
+          "QUEST"
+        ],
+        "animation": [
+          "WEAPON_SPECIFIC_ATTACK",
+          "SKILL_CAST",
+          "NPC_INTERACTION"
+        ]
+      },
+      "SURVIVAL": {
+        "ui": [
+          "HP_SURVIVAL_PRESSURE",
+          "CRAFTING",
+          "RESOURCE"
+        ],
+        "animation": [
+          "GATHER",
+          "CRAFT",
+          "CREATURE_ECOLOGY_ATTACK",
+          "WEATHER_REACTION"
+        ]
+      },
+      "DEFENSE": {
+        "ui": [
+          "WAVE",
+          "CURRENCY",
+          "BASE_HP",
+          "TOWER_BUILD"
+        ],
+        "animation": [
+          "TOWER_FIRE",
+          "PROJECTILE",
+          "ENEMY_ROLE_MOTION",
+          "BASE_IMPACT"
+        ]
+      },
+      "TYCOON_SIM": {
+        "ui": [
+          "MONEY",
+          "SATISFACTION",
+          "BUILD",
+          "UPGRADE"
+        ],
+        "animation": [
+          "CUSTOMER_FLOW",
+          "QUEUE",
+          "WORKER",
+          "FACILITY_OPERATION"
+        ]
+      },
+      "ACTION_ROGUELIKE": {
+        "ui": [
+          "HP_RESOURCE",
+          "SKILL_COOLDOWN",
+          "RUN_PROGRESS"
+        ],
+        "animation": [
+          "ANTICIPATION",
+          "ACTIVE_CONTACT",
+          "RECOVERY",
+          "WEAPON_SPECIFIC"
+        ]
+      },
+      "SHOOTER": {
+        "ui": [
+          "AMMO",
+          "RETICLE",
+          "RELOAD",
+          "HP"
+        ],
+        "animation": [
+          "RECOIL",
+          "RELOAD",
+          "HIT_RESPONSE",
+          "ENEMY_AIM_COVER_CHASE"
+        ]
+      },
+      "PUZZLE": {
+        "ui": [
+          "RULE_STATE",
+          "MOVES_OR_TIMER_WHEN_DESIGNED",
+          "GOAL"
+        ],
+        "animation": [
+          "INPUT_RESPONSE",
+          "CHAIN",
+          "ERROR",
+          "COMPLETE"
+        ]
+      },
+      "HORROR": {
+        "ui": [
+          "MINIMAL_SURVIVAL_SIGNAL",
+          "INTERACTION",
+          "THREAT_READABILITY"
+        ],
+        "animation": [
+          "SEARCH",
+          "DETECT",
+          "CHASE",
+          "LIGHT_AUDIO_REACTION"
+        ]
+      },
+      "RACING": {
+        "ui": [
+          "SPEED",
+          "POSITION",
+          "LAP_OR_ROUTE"
+        ],
+        "animation": [
+          "ACCELERATION",
+          "BRAKE",
+          "DRIFT",
+          "COLLISION"
+        ]
+      },
+      "STRATEGY": {
+        "ui": [
+          "SELECTION",
+          "RESOURCE",
+          "PRODUCTION",
+          "COMMAND"
+        ],
+        "animation": [
+          "UNIT_MOVE",
+          "ATTACK",
+          "BUILD",
+          "PRODUCTION"
+        ]
+      },
+      "LIFE_HEALING": {
+        "ui": [
+          "ACTIVITY",
+          "INVENTORY",
+          "TIME_WEATHER"
+        ],
+        "animation": [
+          "FISH",
+          "FARM",
+          "COOK",
+          "GATHER",
+          "NPC_DAILY_LIFE"
+        ]
+      }
+    }
+  },
+  "commercialReadinessGate": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "objective": "SHIP_QUALITY_WEB_BEFORE_NATIVE_HANDOFF_WITHOUT_NEW_PIPELINE",
+    "runsInsideExistingValidationAndPolishStages": true,
+    "requiredBeforeNativeDispatch": true,
+    "failureAction": "REPAIR_REQUIRED_AND_IMMEDIATE_REVALIDATION",
+    "axes": [
+      "FIRST_10_MINUTES_AND_ONBOARDING",
+      "GENRE_SPECIFIC_UI",
+      "ART_STYLE_CONSISTENCY",
+      "ANIMATION_CONTINUITY_AND_GAME_FEEL",
+      "ACTION_AND_INTERACTION_FEEDBACK",
+      "AUDIO_MIX_AND_VARIATION",
+      "MOBILE_PERFORMANCE",
+      "ACCESSIBILITY",
+      "SAVE_AND_UPDATE_STABILITY",
+      "EARLY_MID_LATE_CONTENT_STRUCTURE",
+      "REPLAY_OR_RETURN_MOTIVATION",
+      "MONETIZATION_SEPARATION_AND_PLATFORM_POLICY_COMPATIBILITY"
+    ],
+    "hardReject": [
+      "PLACEHOLDER_OR_GEOMETRIC_FINAL_CHARACTER",
+      "CONTEXT_MISMATCH_BACKGROUND",
+      "COLOR_ONLY_ENEMY_VARIANT_AS_DISTINCT_TYPE",
+      "STATIC_OR_METADATA_ONLY_PRESENTATION_EVIDENCE",
+      "UI_BLOCKS_CORE_GAMEPLAY",
+      "BROKEN_OR_TINY_MOBILE_CONTROLS",
+      "UNCONTROLLED_FLASH_SHAKE_OR_AUDIO",
+      "SAVE_RESET_WITHOUT_MIGRATION",
+      "PAY_TO_PROGRESS_BLOCKING_CORE_LOOP"
+    ],
+    "runtimeEvidencePreferred": true,
+    "priorPassingPresentationRegressionMustRepair": true
   }
 }
