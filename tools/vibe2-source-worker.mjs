@@ -696,7 +696,7 @@ export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|DIAGNOSTIC_POSTCONDITION_MISSING|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
 }
-export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[]}={}){
+export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
   const marker='\n=== FILE ';
   const starts=[];
@@ -711,6 +711,24 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     }catch{}
   }
   const rows=[];
+  const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
+  if(fullSource&&preferred.length){
+    for(const symbol of preferred.slice(0,12)){
+      const escaped=regexEscape(symbol);
+      const patterns=[
+        new RegExp('function\\s+'+escaped+'\\s*\\([^)]{0,180}\\)\\s*\\{'),
+        new RegExp('(?:const|let|var)\\s+'+escaped+'\\s*=\\s*[^;\\n]{1,320};?')
+      ];
+      for(const pattern of patterns){
+        const match=fullSource.match(pattern);
+        if(!match)continue;
+        const original=match[0];
+        if(fullSource.split(original).length-1!==1)continue;
+        rows.push({value:original,score:100,length:original.length});
+        break;
+      }
+    }
+  }
   for(let i=0;i<starts.length;i++){
     const sectionStart=starts[i]+1;
     const sectionEnd=i+1<starts.length?starts[i+1]:raw.length;
@@ -759,7 +777,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
 }
 
-export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0}={}){
+export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
   const raw=String(prompt??'');
   const allowedLine=raw.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
@@ -769,7 +787,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   if(!exactResponsible.length)return null;
   const candidates=[];
   for(const relative of exactResponsible){
-    const anchors=exactRetryAnchorSuggestions(raw,{max:5,sourceRoot,responsibleFiles:[relative]});
+    const anchors=exactRetryAnchorSuggestions(raw,{max:5,sourceRoot,responsibleFiles:[relative],preferredTargets});
     for(const find of anchors)candidates.push({path:relative,find});
   }
   const index=Math.max(0,Math.min(candidates.length-1,Number(anchorIndex)||0));
@@ -792,8 +810,8 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   }
   return{path:selected.path,find:selected.find,context};
 }
-export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0}={}){
-  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex});
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
+  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
@@ -1085,8 +1103,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const diagnosticFocusedReplaceOnly=!allowFullRewrite
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
+    const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
     const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
-      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor})
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets})
       :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
@@ -1185,7 +1204,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         focusedReplaceAnchorCursor+=1;
         focusedReplaceAnchorRotations+=1;
         if(speculativeVariant&&attempt>=maxAttempts&&!focusedReplaceNoOpCreditUsed){
-          const alternate=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor});
+          const alternate=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets});
           if(alternate&&alternate.find&&alternate.find!==focusedReplaceOnly.spec.find){
             maxAttempts=attempt+1;
             focusedReplaceNoOpCreditUsed=true;

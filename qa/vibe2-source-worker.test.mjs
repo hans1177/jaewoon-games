@@ -1316,6 +1316,21 @@ test('focused replace-only pins exact path and anchor while model emits only rep
   assert.notEqual(normalized.edits[0].replace,focused.spec.find);
 });
 
+test('focused replace-only prioritizes primary target symbols in compressed Web source',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  const source='<!doctype html><script>const CONFIG={mode:"defense"}; function helper(){return 1} function actDefense(i){if(i===0){state.towers++;}else{state.power++;}} const footer=1;</script>';
+  write(path.join(sourceRoot,'index.html'),source);
+  const prompt=['Goal: repair tower placement input','Allowed edit paths: index.html','','=== FILE index.html [EDITABLE] ===',source].join('\n');
+  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles:['index.html'],sourceRoot,preferredTargets:['actDefense']});
+  assert.ok(spec);
+  assert.equal(spec.path,'index.html');
+  assert.match(spec.find,/^function actDefense\(i\)\{$/);
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:['index.html'],sourceRoot,preferredTargets:['actDefense']});
+  assert.equal(focused.spec.find,spec.find);
+  assert.match(focused.prompt,/tower placement input/);
+});
+
 test('focused replace-only selects a concrete anchor across multiple responsible files',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'system-root');
