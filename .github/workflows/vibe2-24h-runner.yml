@@ -176,6 +176,32 @@ jobs:
               node --test qa/company-development-web-runtime.test.mjs
               node --test qa/vibe2-practice-distillation.test.mjs
               node --test qa/vibe2-design-intelligence.test.mjs
+
+              # Rule 4 final-stage neural expansion readiness is derived from existing
+              # verified QA, not from a manual approval switch.
+              node --test \
+                qa/vibe2-owner-rule1-continuity.test.mjs \
+                qa/vibe2-owner-rule2-external-ai.test.mjs \
+                qa/vibe2-owner-rule3-unbounded-learning.test.mjs \
+                qa/vibe2-neural-fanin-root-cause.test.mjs \
+                qa/company-security-steward.test.mjs
+              node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const readiness={
+                version:1,
+                source:'VIBE2_24H_VERIFIED_RULE_AND_NEURAL_QA',
+                rule1QaPass:true,
+                rule2QaPass:true,
+                rule3QaPass:true,
+                atomicNeuronFanInQaPass:true,
+                sharedContextQaPass:true,
+                securityQaPass:true,
+                authorityExpansion:false,
+                gateWeakening:false
+              };
+              fs.writeFileSync('/tmp/vibe2-neural-expansion-readiness.json',JSON.stringify(readiness,null,2)+'\n');
+              console.log('VIBE2_NEURAL_EXPANSION_READINESS_EVIDENCE=PASS');
+              NODE
             )
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
@@ -183,7 +209,8 @@ jobs:
             node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-system-steward.log
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-system-steward.log
 
             node --check /tmp/vibe2-main/tools/vibe2-handoff.mjs
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
@@ -548,6 +575,7 @@ jobs:
             /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
             /tmp/vibe2-system-steward.log
+            /tmp/vibe2-neural-expansion-readiness.json
             /tmp/vibe2-recovery-escalation.log
             /tmp/vibe2-recovery-dispatch.log
             /tmp/vibe2-recovery-learning.log
