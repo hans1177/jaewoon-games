@@ -905,9 +905,9 @@ jobs:
             else if(!testOk){outcome='FAIL';blocker='incremental-qa-failed';}
             else{outcome='FAIL';blocker='performance-sanity-failed';}
           }else if(process.env.ORDER_RUN==='true' && route==='engine-editor') blocker='engine-editor-worker-not-connected';
-          else if(process.env.ORDER_RUN==='true' && route==='analysis-only'){
-            if(process.env.PRACTICE_OUTCOME==='success'){outcome='PASS';blocker='learning-practice-complete';}
-            else{outcome='FAIL';blocker='learning-practice-worker-failed';}
+          else if(process.env.ORDER_RUN==='true' && ['analysis-only','learning-web-artifact'].includes(route)){
+            if(process.env.PRACTICE_OUTCOME==='success'){outcome='PASS';blocker=route==='learning-web-artifact'?'learning-web-artifact-practice-complete':'learning-practice-complete';}
+            else{outcome='FAIL';blocker=route==='learning-web-artifact'?'learning-web-artifact-practice-failed':'learning-practice-worker-failed';}
           }
 
           let manifest={};
@@ -1048,7 +1048,17 @@ jobs:
                 'shared-context-sync:PASS'
               ];
             })():['shared-context-sync:MISSING']),
-            ...(route==='analysis-only'?['learning-practice-only','production-pass:NO','source-write:NO']:[ ])
+            ...(['analysis-only','learning-web-artifact'].includes(route)?['learning-practice-only','production-pass:NO','source-write:NO']:[ ]),
+            ...(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')?(()=>{
+              const p=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
+              return[
+                'learning-web-artifact-practice',
+                `practice-artifact-score:${Number(p?.artifact?.score||0)}`,
+                `practice-artifact-improved:${p?.artifact?.improved===true?'YES':'NO'}`,
+                `practice-artifact-sha256:${clean(p?.artifact?.sha256)}`,
+                `practice-next-signal:${clean(p?.nextPracticeSignal)||'RETRY_CAUSAL_VARIATION'}`
+              ];
+            })():[])
           ].filter(Boolean);
           const workerStartedAt=Number(fs.readFileSync(process.env.WORKER_STARTED_AT_FILE,'utf8'))||Date.now();
           const workerFinishedAt=Date.now();
@@ -1061,7 +1071,7 @@ jobs:
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };
           let practiceDistillation=null;
-          if(route==='analysis-only'&&fs.existsSync('/tmp/vibe2-practice-distillation.json')){
+          if(['analysis-only','learning-web-artifact'].includes(route)&&fs.existsSync('/tmp/vibe2-practice-distillation.json')){
             const distilled=JSON.parse(fs.readFileSync('/tmp/vibe2-practice-distillation.json','utf8'));
             practiceDistillation={
               version:Number(distilled.version||1),
@@ -1071,6 +1081,19 @@ jobs:
               rawCandidateStored:false,
               authorityExpanded:false
             };
+          }
+          let practiceArtifact=null;
+          if(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')){
+            const practice=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
+            if(practice?.artifact){
+              practiceArtifact={
+                kind:clean(practice.artifact.kind),ephemeral:true,repositorySourceWrite:false,productionPromotionAllowed:false,
+                sha256:clean(practice.artifact.sha256),score:Number(practice.artifact.score||0),
+                previousScore:practice.artifact.previousScore===null?null:Number(practice.artifact.previousScore||0),
+                improved:practice.artifact.improved===true,nextPracticeSignal:clean(practice.nextPracticeSignal)||null,
+                validation:practice.artifact.validation||null
+              };
+            }
           }
           const candidateBranch=clean(process.env.CANDIDATE_BRANCH)||null;
           const baseMainSha=clean(process.env.BASE_SHA)||null;
@@ -1125,7 +1148,7 @@ jobs:
             infrastructureFailurePenalizesKnowledge:false,
             authorityExpanded:false
           }:null;
-          const result={version:13,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,metrics};
+          const result={version:13,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
