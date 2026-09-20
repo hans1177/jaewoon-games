@@ -591,7 +591,7 @@
     },
     {
       "id": "sys-verify-web-strict-gate-integrity-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "goal": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
       "responsibleFiles": [
@@ -616,12 +616,12 @@
       ],
       "retries": 1,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480756748:1",
+      "reservedAt": "2026-09-20T01:12:20.576Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -636,11 +636,11 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T01:11:44.069Z"
+      "updatedAt": "2026-09-20T01:12:20.576Z"
     },
     {
       "id": "sys-verify-development-queue-transition-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "goal": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
       "responsibleFiles": [
@@ -666,12 +666,12 @@
       ],
       "retries": 1,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480756748:1",
+      "reservedAt": "2026-09-20T01:12:20.576Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -686,12 +686,12 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T01:11:44.069Z"
+      "updatedAt": "2026-09-20T01:12:20.576Z"
     },
     {
       "id": "sys-verify-web-platform-handoff-v1",
-      "status": "queued",
-      "priority": "normal",
+      "status": "running",
+      "priority": "critical",
       "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
       "responsibleFiles": [
         "qa/company-web-platform-handoff-contract.test.mjs"
@@ -714,14 +714,14 @@
       "dependencies": [
         "sys-web-vibe-handoff-e2e-contract-v1"
       ],
-      "retries": 2,
+      "retries": 0,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35480756748:1",
+      "reservedAt": "2026-09-20T01:12:20.576Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -733,11 +733,14 @@
         "worker-self-acceptance:NO",
         "primary-ai-review-required:YES",
         "verification-rebound-to-existing-independent-contracts:2026-09-20",
-        "actions-run:35480075259"
+        "actions-run:35480075259",
+        "recovery-queue:recovery-9fce20c4cf29f0380341",
+        "recovery-strategy:ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
+        "recovery-exact-stage:system-ai-implementation-failed"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-20T01:11:44.069Z"
+      "updatedAt": "2026-09-20T01:12:20.576Z"
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
