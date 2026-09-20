@@ -21,6 +21,7 @@ import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeura
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
+import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemetry.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -559,8 +560,10 @@ export function applyVibeFanInResults(queueInput, results = []) {
     queue = settled.queue;
     applied.push({ taskId, outcome, neuralFeedback:neuralVariantFeedback });
   }
-  const neuralCalibration=summarizeNeuralFeedbackEvidence(queue.tasks.flatMap(task=>Array.isArray(task.evidence)?task.evidence:[]));
-  return { queue, applied, summary: summarizeVibeContinuousQueue(queue), neuralCalibration };
+  const durableEvidence=queue.tasks.flatMap(task=>Array.isArray(task.evidence)?task.evidence:[]);
+  const neuralCalibration=summarizeNeuralFeedbackEvidence(durableEvidence);
+  const neuralEventTelemetry=summarizeNeuralEventShadowEvidence(durableEvidence);
+  return { queue, applied, summary: summarizeVibeContinuousQueue(queue), neuralCalibration, neuralEventTelemetry };
 }
 
 export function runQueueCommand(args = {}) {
