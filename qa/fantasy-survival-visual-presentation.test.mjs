@@ -322,3 +322,60 @@ test('final presentation gate keeps all synchronized feel layers on the same pre
   assert.match(source,/hitStop=attackElapsed/);
   assert.match(source,/jaewoon_fantasy_survival_v1/);
 });
+
+test('nearby auto gather keeps the existing manual gather path and mobile toggle reachable',()=>{
+  assert.match(source,/id="autoGather"[^>]*data-gameplay-action="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
+  assert.match(source,/\.autoGather\{height:44px/);
+  assert.match(source,/@media\(max-width:430px\)[\s\S]*?\.autoGather\{height:44px;font-size:9px\}/);
+  assert.match(source,/gather\(state\.gathering\.manualTarget,false\)/);
+});
+
+test('auto gather reuses authoritative resource balance and tool gates instead of duplicating rewards',()=>{
+  const gather=functionBody('gather');
+  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\)amount=1/);
+  assert.match(gather,/best\.kind==='iron'.*stone-pick.*iron-pick.*gold-pick/);
+  assert.match(gather,/best\.kind==='gold'.*p\.tool!=='iron-pick'/);
+  assert.match(gather,/best\.kind==='poisonstone'.*p\.tool!=='gold-pick'/);
+  assert.match(gather,/best\.kind==='essence'.*iron-axe.*gold-axe/);
+  const auto=functionBody('updateAutoGather');
+  assert.match(auto,/nearestGatherResource\(\)/);
+  assert.match(auto,/gather\(target,true\)/);
+  assert.doesNotMatch(auto,/wood\+\=|stone\+\=|fiber\+\=|ironOre\+\=|goldOre\+\=|essence\+\=/);
+});
+
+test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
+  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=38/);
+  assert.match(source,/gathering:\{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
+  const nearest=functionBody('nearestGatherResource');
+  assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
+  assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
+  const save=functionBody('saveGame');
+  assert.doesNotMatch(save,/gathering|autoGather/);
+  assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
+  assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
+});
+
+test('auto gather stops on combat attack hit range exit and resource depletion',()=>{
+  const combat=functionBody('playerCombatActive');
+  assert.match(combat,/e\.hostile\|\|e\.enemyTarget\|\|state\.pet\.targetId===e\.netId/);
+  const auto=functionBody('updateAutoGather');
+  assert.match(auto,/playerCombatActive\(\)/);
+  assert.match(auto,/now<\(p\.stunnedUntil\|\|0\)/);
+  assert.match(auto,/nearestGatherResource\(\)/);
+  assert.match(auto,/if\(!gathered\|\|target\.dead\)g\.target=null/);
+  assert.match(functionBody('attack'),/interruptAutoGather\(now\)/);
+  assert.match(functionBody('damagePlayer'),/interruptAutoGather\(now\)/);
+  assert.match(functionBody('updateHazards'),/interruptAutoGather\(now\)/);
+});
+
+test('manual world targeting stays separate from automatic nearest selection',()=>{
+  const tap=functionBody('handleWorldTap');
+  assert.match(tap,/state\.gathering\.manualTarget=gatherTarget/);
+  assert.match(tap,/채집 대상 지정/);
+  const gather=functionBody('gather');
+  assert.match(gather,/if\(target&&!target\.dead\)/);
+  assert.match(gather,/지정한 자원 가까이 가/);
+  const auto=functionBody('updateAutoGather');
+  assert.doesNotMatch(auto,/manualTarget/);
+});
+
