@@ -223,6 +223,16 @@ function nextCausalGenerationId(queue,basePrefix){
   if(status==='verified')return `${basePrefix}-v${latest.version+1}`;
   return null;
 }
+function latestCausalGeneration(queue,basePrefix){
+  const prefix=`${basePrefix}-v`;
+  return (queue.tasks||[]).map(item=>{
+    const id=clean(item.id);
+    if(!id.startsWith(prefix))return null;
+    const versionText=id.slice(prefix.length);
+    if(!/^\d+$/.test(versionText))return null;
+    return{item,version:Number(versionText)};
+  }).filter(Boolean).sort((a,b)=>a.version-b.version).at(-1)||null;
+}
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
 function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
@@ -390,7 +400,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   if(missing){
     const id=nextCausalGenerationId(queue,`${project.gameId}-web-base-implementation`);if(!id)return null;
     const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 읽고 게임별 아트 방향과 Style Lock을 먼저 확정한 뒤 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. Web 단계에서 플레이어·몬스터·배경을 컨셉과 지역 맥락에 맞는 실제 표현으로 만들고 그래픽을 후순위로 미루지 않는다. 액션·전투가 있는 게임은 idle/move/attack/hit/death를 실제 상태에 연결하고 공격·피격·사망 모션과 VFX/SFX를 실제 판정 시점에 동기화한다. 이모지·단순 도형·임시 모형 몹·무맥락 배경은 PASS 근거로 인정하지 않으며, 장르와 실제 규칙에서 UI/애니메이션을 별도로 만들고 첫 10분·오디오·모바일 성능·접근성·저장 안정성·콘텐츠 구조까지 Commercial Readiness를 기존 검증 파이프 안에서 만족해야 한다. 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
-    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING']);out.ownerDirective=true;out.speculativeEligible=false;return out;
+    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING','real-web-artifact-practice-loop:v1','practice-input:ACTUAL_WEB_GAME_SOURCE','practice-baseline:CURRENT_VERIFIED_WEB_ARTIFACT','practice-repeat-on-verified-improvement:YES']);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
   if(queueState==='WEB_VIBE_REPAIR_REQUIRED'||queueStep==='VIBE_WEB_REPAIR'){
@@ -410,7 +420,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
       :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
     const goal=`[WEB_REPAIR] 게임: ${project.name||project.gameId}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. 그래픽 결함이 원인이면 승인 설계/아트북의 게임별 아트 방향과 Style Lock을 기준으로 플레이어·몬스터·배경·모션을 실제 화면에서 직접 고치며 임시 모형 몹이나 컨셉과 맞지 않는 배경을 남긴 채 PASS 처리하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 전환을 실제 상태에 연결한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
     const diagnosticEvidence=inheritedDiagnosticEvidence(project.gameId,relative,queue);
-    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game',...diagnosticEvidence]);out.ownerDirective=true;out.speculativeEligible=false;return out;
+    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game','real-web-artifact-practice-loop:v1','practice-input:ACTUAL_WEB_GAME_SOURCE','practice-baseline:CURRENT_VERIFIED_WEB_ARTIFACT','practice-repeat-on-verified-improvement:YES',...diagnosticEvidence]);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
   const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
@@ -738,12 +748,19 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
         }
         return item;
       }
-      const exactTaskId=sourceMissing?`${gameId}-web-base-implementation-v1`:`${gameId}-web-runtime-repair-v1`;
+      const exactStage=sourceMissing?'VIBE_WEB_BASE_IMPLEMENTATION':'VIBE_WEB_REPAIR';
+      const exactTaskPrefix=sourceMissing?`${gameId}-web-base-implementation`:`${gameId}-web-runtime-repair`;
+      const latestExactGeneration=latestCausalGeneration(queue,exactTaskPrefix);
+      const exactTaskId=clean(latestExactGeneration?.item?.id)||`${exactTaskPrefix}-v1`;
       if(clean(item?.id)===exactTaskId){
         const blocker=clean(item?.blocker);
-        const staleExactBaseCancellation=blocker==='superseded-by:VIBE_WEB_REPAIR'||/^production-authority-inactive:/.test(blocker);
-        if(sourceMissing&&status==='cancelled'&&staleExactBaseCancellation){
-          return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION',`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+        const staleExactCancellation=status==='cancelled'&&(blocker===`superseded-by:${exactStage}`||/^production-authority-inactive:/.test(blocker));
+        if(staleExactCancellation){
+          return{
+            ...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,
+            lastOutcome:sourceMissing?'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION':'RESTORED_BY_LATEST_WEB_REPAIR_GENERATION',
+            evidence:[...new Set([...(item.evidence||[]),`restored-exact-stage:${sourceMissing?'WEB_BASE_IMPLEMENTATION':'WEB_REPAIR'}`,`restored-causal-generation:v${latestExactGeneration?.version||1}`,`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','real-web-artifact-practice-loop:v1'])]
+          };
         }
         if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
           const diagnosticEvidence=inheritedDiagnosticEvidence(gameId,indexPath,queue);
@@ -777,7 +794,6 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       const implementation=clean(item?.target).toLowerCase()==='web'&&clean(item?.department).toLowerCase()==='development'&&clean(item?.type).toLowerCase()==='implementation';
       const overlapsIndex=posix(item?.sourceRoot)===`web-games/${gameId}`&&(item?.responsibleFiles||[]).map(posix).includes(indexPath);
       if(!implementation||!overlapsIndex||!['queued','failed','blocked'].includes(status))return item;
-      const exactStage=sourceMissing?'VIBE_WEB_BASE_IMPLEMENTATION':'VIBE_WEB_REPAIR';
       const exactOutcome=sourceMissing?'SUPERSEDED_BY_EXACT_WEB_BASE_IMPLEMENTATION':'SUPERSEDED_BY_EXACT_WEB_REPAIR';
       return{...item,status:'cancelled',blocker:`superseded-by:${exactStage}`,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:exactOutcome,evidence:[...new Set([...(item.evidence||[]),`superseded-by:${exactStage}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
     });
