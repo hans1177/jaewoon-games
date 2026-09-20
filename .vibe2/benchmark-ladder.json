@@ -465,9 +465,9 @@
       "capabilityId": "capability_ctrace_dd1edc1a11a1e7a360dfda28",
       "sourceGameId": "village-dungeons",
       "targetEngine": "web",
-      "holdoutGameId": "daechung-rpg",
-      "pairId": "phase4-pair-sz0r1c",
-      "unseenProblemFingerprint": "phase4-unseen-y7iejq",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-4lvx95",
+      "unseenProblemFingerprint": "phase4-unseen-1661cbz",
       "pairRoles": [
         "CONTROL",
         "CHALLENGER"
@@ -615,6 +615,166 @@
       "authority": "practice-and-measurement-only"
     },
     {
+      "id": "phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_74d39d52bb47e6444412ec04",
+      "sourceGameId": "bug-defense",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-12if2gi",
+      "unseenProblemFingerprint": "phase4-unseen-5ljgy4",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_1a453e3e34004eb1c376197d",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_1a453e3e34004eb1c376197d",
+      "sourceGameId": "bug-defense",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-sp37bj",
+      "unseenProblemFingerprint": "phase4-unseen-c9tgi1",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_31bc6402f5611fd66c298fb4",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_31bc6402f5611fd66c298fb4",
+      "sourceGameId": "seed-single-defense-strat-celestial-bastion",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-9pkoj1",
+      "unseenProblemFingerprint": "phase4-unseen-6ir7b7",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_107b55ca6e8e05ede28f9b9f",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_107b55ca6e8e05ede28f9b9f",
+      "sourceGameId": "seed-single-defense-strat-celestial-bastion",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-1kvig28",
+      "unseenProblemFingerprint": "phase4-unseen-1aud03a",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
       "id": "phase4-generalization-capability_ctrace_0d2630a9c5fc72b6115ab032",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -655,6 +815,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 10,
+  "phase4GeneralizationCases": 14,
   "authority": "practice-and-measurement-only"
 }
