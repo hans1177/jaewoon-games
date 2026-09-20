@@ -26,16 +26,20 @@ test('owner rules are canonically ordered one through four and neural expansion 
   assert.equal(rule.id,'RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION');
   assert.equal(rule.architectureEvolutionGenerationLimit,null);
   assert.equal(rule.capabilityGrowthGenerationLimit,null);
-  assert.equal(rule.currentNeuralExpansionAuthorization,false);
+  assert.equal(rule.currentNeuralExpansionAuthorization,'EVIDENCE_GATED_SELF_ACTIVATION');
   assert.equal(rule.neuralExpansion.phase,'LAST_STAGE_ONLY');
-  assert.equal(rule.neuralExpansion.currentAuthorization,false);
-  assert.equal(rule.neuralExpansion.automaticActivationForbidden,true);
+  assert.equal(rule.neuralExpansion.currentAuthorization,'EVIDENCE_GATED');
+  assert.equal(rule.neuralExpansion.evidenceGatedSelfActivationAllowed,true);
+  assert.equal(rule.neuralExpansion.ownerApprovalRequiredAfterPrerequisites,false);
+  assert.equal(rule.neuralExpansion.ungatedAutomaticActivationForbidden,true);
+  assert.equal(rule.neuralExpansion.internalNeuralStructureExpansionAllowed,true);
+  assert.equal(rule.neuralExpansion.neuralExecutionAuthorityExpansionAllowed,false);
   assert.equal(rule.invariants.authorityExpansion,false);
   assert.equal(rule.invariants.qaGateWeakening,false);
   assert.equal(rule.invariants.securityGateWeakening,false);
 });
 
-test('self architecture evolution task is executable architecture work but explicitly not neural expansion',()=>{
+test('self architecture evolution keeps neural expansion pending until readiness evidence passes',()=>{
   const result=injectSelfArchitectureEvolutionTasks({tasks:[failure('a'),failure('b'),failure('c')]},{});
   assert.equal(result.added.length,1);
   const task=result.added[0];
@@ -43,9 +47,29 @@ test('self architecture evolution task is executable architecture work but expli
   assert.equal(contract.valid,true);
   assert.equal(contract.systemConstructionAllowed,true);
   assert.equal(contract.neuralExpansionPhase,'LAST_STAGE_ONLY');
+  assert.equal(contract.neuralExpansionMode,'EVIDENCE_GATED_SELF_EXPANSION');
+  assert.equal(contract.neuralExpansionReadiness,'PENDING');
   assert.equal(contract.neuralExpansionAllowed,false);
   assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:NO'));
   assert.ok(task.completionCriteria.includes('NEURAL_EXECUTION_AUTHORITY_UNCHANGED'));
+});
+
+test('Vibe self-authorizes internal neural expansion when final-stage readiness evidence is verified',()=>{
+  const result=injectSelfArchitectureEvolutionTasks({tasks:[failure('a'),failure('b'),failure('c')]},{
+    neuralExpansionReadiness:{
+      source:'RULE4_TEST_VERIFIED_QA',
+      rule1QaPass:true,rule2QaPass:true,rule3QaPass:true,
+      atomicNeuronFanInQaPass:true,sharedContextQaPass:true,securityQaPass:true
+    }
+  });
+  assert.equal(result.neuralExpansionReadiness.pass,true);
+  const task=result.added[0];
+  const contract=assertSystemArchitectureTask(task);
+  assert.equal(contract.neuralExpansionReadiness,'PASS');
+  assert.equal(contract.neuralExpansionAllowed,true);
+  assert.equal(contract.neuralExecutionAuthorityExpansionAllowed,false);
+  assert.ok(task.evidence.includes('architecture-neural-expansion-allowed:YES'));
+  assert.ok(task.completionCriteria.includes('NEURAL_EXPANSION_IF_CHOSEN_REQUIRES_CAUSAL_PROOF'));
 });
 
 test('system evolution release retains full regression and security verification before adoption',()=>{
