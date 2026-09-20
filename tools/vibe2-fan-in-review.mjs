@@ -119,6 +119,34 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       const supervisionReview=task?.supervisionReview&&typeof task.supervisionReview==='object'?task.supervisionReview:null;
       const supervisionDecision=clean(supervisionReview?.decision).toUpperCase();
       const supervisionVerified=supervisionReview?.verified===true;
+      let supervisorNeuralEventRoute=null;
+      if(supervised&&supervisionVerified){
+        const supervisorOutcome=supervisionDecision||'REVISE';
+        const supervisorEvidence=[...new Set([
+          ...evidence,
+          ...((supervisionReview?.evidence||[]).map(clean).filter(Boolean))
+        ])];
+        supervisorNeuralEventRoute=simulateNeuralEventRoute({
+          event:{
+            id:[resultSampleId(selectedResult)||clean(task.id),'SUPERVISOR_RESULT',supervisorOutcome].filter(Boolean).join('|'),
+            type:'SUPERVISOR_RESULT',
+            taskId:clean(task.id),
+            gameId:clean(task.gameId),
+            outcome:supervisorOutcome,
+            stage:'ASSISTANT_SUPERVISION_REVIEW',
+            signature:clean(supervisionReview?.id)||clean(supervisionReview?.rationale)||clean(supervisionReview?.reason)||null,
+            evidence:supervisorEvidence
+          },
+          diagnosis:selectedResult?.neuralDiagnosis||task?.neuralDiagnosis||null,
+          rootCause,
+          policyFresh:!evidence.has('CENTRAL_POLICY_STALE_OR_INVALID'),
+          lockConflict:false,
+          securityBlocked:evidence.has('SECURITY_POLICY_BLOCK')
+        });
+        for(const marker of neuralEventRouteEvidence(supervisorNeuralEventRoute))evidence.add(marker);
+        evidence.add('assistant-atomic-neuron:connected');
+        evidence.add(`assistant-supervisor-result:${supervisorOutcome}`);
+      }
       if(supervised&&supervisionVerified&&selectedResult){
         experienceReviews.push(buildSupervisedWebExperienceReview({task,candidateResult:selectedResult,supervisionReview}));
       }
@@ -127,13 +155,13 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('supervised-promotion:BLOCKED');
         evidence.add(supervisionVerified?`supervised-review:${supervisionDecision||'REVISE'}`:'supervised-review:REQUIRED');
         const releaseBlocker=supervisionVerified&&supervisionDecision&&supervisionDecision!=='PASS'?`SUPERVISED_${supervisionDecision}`:'SUPERVISED_APPROVAL_REQUIRED';
-        reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause,neuralEventRoute});
+        reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:true,releaseBlocker,rootCause,neuralEventRoute,supervisorNeuralEventRoute});
         return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
       }
       evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
-      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute});
+      reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
