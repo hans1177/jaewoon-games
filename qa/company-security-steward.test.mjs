@@ -60,6 +60,7 @@ test('central authority mutation requires direct review but is not attack quaran
   });
   assert.equal(store.incidents[0].status,'RESOLVED_VERIFIED');
   assert.equal(store.incidents[0].verificationMode,'AUTHORIZED_POLICY_REVIEW_PASS');
+  assert.equal(store.incidents[0].learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
 });
 
 test('explicit policy-review learning hold is not auto-promoted',()=>{
@@ -77,7 +78,7 @@ test('explicit policy-review learning hold is not auto-promoted',()=>{
     primaryAiReview:'PASS',
     verificationMode:'AUTHORIZED_POLICY_REVIEW_PASS'
   });
-  store.incidents[0].learningPromotion='HOLD_POLICY_REVIEW_ONLY';
+  assert.equal(store.incidents[0].learningPromotion,'HOLD_POLICY_REVIEW_ONLY');
   const learned=distillSecurityLearning({
     incidentsInput:store,
     experienceInput:{version:3,records:[]},
@@ -100,6 +101,7 @@ test('security incident must be verified and primary-AI reviewed before immune l
     id:store.incidents[0].id,rootCause:'untrusted installer',remediation:'remove remote pipe and pin verified dependency path',
     evidence:['security-rescan:PASS','regression:PASS'],securityCheckPass:true,regressionPass:true,primaryAiReview:'PASS'
   });
+  assert.equal(store.incidents[0].learningPromotion,'PENDING');
   const learned=distillSecurityLearning({incidentsInput:store,experienceInput:{version:3,records:[]},codePatternsInput:{patterns:[]}});
   assert.equal(learned.experienceAdded,1);
   assert.equal(learned.patternsAdded,1);

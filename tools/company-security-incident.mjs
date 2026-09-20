@@ -58,7 +58,7 @@ export function resolveSecurityIncident(storeInput={},{
     return{...row,status:'RESOLVED_VERIFIED',rootCause:clean(rootCause),remediation:clean(remediation),
       verificationMode:mode,
       verificationEvidence:uniq([...(row.verificationEvidence||[]),...evidence,modeEvidence,'regression:PASS','primary-ai-security-review:PASS']),
-      primaryAiReview:'PASS',resolvedAt:now(),learningPromotion:'PENDING'};
+      primaryAiReview:'PASS',resolvedAt:now(),learningPromotion:authorizedPolicyReview?'HOLD_POLICY_REVIEW_ONLY':'PENDING'};
   });
   if(!found)throw new Error('SECURITY_INCIDENT_NOT_FOUND:'+target);
   return{...store,incidents};
