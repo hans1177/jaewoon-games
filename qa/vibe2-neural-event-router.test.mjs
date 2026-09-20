@@ -96,7 +96,35 @@ test('shadow event evidence records simulated intent without granting authority'
   assert.equal(payload.fireAllowed,false);
   assert.equal(payload.workerCreationAllowed,false);
   assert.equal(payload.queueMutationAllowed,false);
+  assert.equal(payload.waveReorderAllowed,false);
+  assert.equal(payload.lockAcquisitionAllowed,false);
+  assert.equal(payload.policyMutationAllowed,false);
+  assert.equal(payload.learningEligible,false);
   assert.equal(payload.authorityPromotionEligible,false);
+});
+
+test('shadow event evidence does not mask accidental forbidden authority bits',()=>{
+  const route={
+    mode:'PHASE2_SHADOW_EVENT_ROUTER',
+    event:{id:'authority-probe',type:'POLICY_CHANGE'},
+    proposedAction:{kind:'RECOMPILE_WORK_CONTRACT',reason:'CENTRAL_POLICY_CHANGED'},
+    inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+    wouldFireWithoutPhase2Authority:false,
+    fireAllowed:false,
+    workerCreationAllowed:false,
+    queueMutationAllowed:false,
+    waveReorderAllowed:false,
+    lockAcquisitionAllowed:true,
+    policyMutationAllowed:true,
+    learningEligible:true,
+    authorityPromotionEligible:true
+  };
+  const marker=neuralEventRouteEvidence(route).find(x=>x.startsWith('neural-event-shadow:'));
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-event-shadow:'.length)));
+  assert.equal(payload.lockAcquisitionAllowed,true);
+  assert.equal(payload.policyMutationAllowed,true);
+  assert.equal(payload.learningEligible,true);
+  assert.equal(payload.authorityPromotionEligible,true);
 });
 
 
