@@ -7,6 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const clean = (value) => String(value ?? '').trim();
+const cleanList = (value) => [...new Set((Array.isArray(value) ? value : []).map(clean).filter(Boolean))];
 
 function readJson(file, fallback = null) {
   if (!file || !fs.existsSync(file)) {
@@ -101,6 +102,7 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   const expected = docs.machineStateVersions || {};
   const state = docs.runtimeState || {};
   const work = runtime.workManagement || {};
+  const nextWorker = work.nextWorkerDirective || {};
   const adaptive = runtime.adaptiveBackpressure || {};
   const sources = runtime.sources || {};
   const continuous = runtime.continuous || {};
@@ -212,6 +214,18 @@ export function buildVibe2Handoff({
       ownerDirectivePreemptsAutonomy: work.ownerDirectivePreemptsAutonomy !== false,
       humanMaintainedHandoff: work.humanMaintainedHandoff === true,
       reusableWorkerContext: work.reusableWorkerContext !== false
+    },
+    nextWorkerContinuation: {
+      objective: clean(nextWorker.objective) || null,
+      freshnessRule: clean(nextWorker.freshnessRule) || null,
+      observedMainHead: clean(nextWorker.observedMainHead) || null,
+      verifiedAt: clean(nextWorker.verifiedAt) || null,
+      centralGoalRefs: cleanList(nextWorker.centralGoalRefs),
+      verifiedState: cleanList(nextWorker.verifiedState),
+      liveEvidence: cleanList(nextWorker.liveEvidence),
+      priorities: cleanList(nextWorker.priorities),
+      hardConstraints: cleanList(nextWorker.hardConstraints),
+      successEvidence: cleanList(nextWorker.successEvidence)
     },
     workState: {
       taskCount: tasks.length,
