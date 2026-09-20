@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -9102,6 +9102,14 @@
         "rawExternalOutputAuthority": "NONE",
         "verificationAndDistillationRequiredBeforeReusableKnowledge": true
       }
+    },
+    "rule5ConsistencyClosure": {
+      "required": true,
+      "position": "AFTER_ANY_STRUCTURAL_OR_NEURAL_ARCHITECTURE_MUTATION_BEFORE_ACTIVATION",
+      "atomicNodeDefinitionRequired": true,
+      "neuronTypeAndEdgeMappingRequired": true,
+      "centralArchitectureCodeTestConsistencyRequired": true,
+      "executionAuthorityAdded": false
     }
   },
   "assistantRoadmapOrchestration": {
@@ -10118,9 +10126,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 4,
+    "version": 5,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
+    "rule1Handling": "RULE_1_THROUGH_RULE_5_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -10422,9 +10430,142 @@
       "RULE_1",
       "RULE_2",
       "RULE_3",
-      "RULE_4"
+      "RULE_4",
+      "RULE_5"
     ],
-    "orderedImplementationRequired": true
+    "orderedImplementationRequired": true,
+    "rule5": {
+      "id": "RULE_5_ARCHITECTURE_ATOMIZATION_NEURONIZATION_AND_CENTRAL_CODE_CONSISTENCY",
+      "label": "제5규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "EVERY_VIBE_STRUCTURAL_CHANGE_MUST_BE_DEFINED_AS_ATOMIC_ARCHITECTURE_AND_NEURON_CONTRACTS_THEN KEPT CONSISTENT ACROSS CENTRAL_POLICY ARCHITECTURE_MAP RESPONSIBLE_CODE AND CONTRACT_TESTS BEFORE ACTIVATION",
+      "scope": [
+        "SYSTEM_ARCHITECTURE",
+        "DEPARTMENT_TOPOLOGY",
+        "EXECUTION_FLOW",
+        "ROUTING",
+        "LEARNING_AND_MEMORY",
+        "SECURITY_AND_RECOVERY",
+        "RELEASE_AND_POST_RELEASE",
+        "GROWTH_MONETIZATION_AND_MARKETING",
+        "RECORDS_AND_EVIDENCE_GOVERNANCE",
+        "PLATFORM_ADAPTER_AND_SHARED_INFRASTRUCTURE"
+      ],
+      "meaningOfStructure": "A_PERSISTENT_RESPONSIBILITY_BOUNDARY_FLOW_ROUTER_STATE_MACHINE_POLICY_TOPOLOGY_OR_SHARED_EXECUTION_COMPONENT; ORDINARY_GAME_CONTENT_OR_BALANCE_VALUE_CHANGE_IS_NOT AUTOMATICALLY A SYSTEM_STRUCTURE_CHANGE",
+      "orderedPosition": {
+        "after": "RULE_4",
+        "role": "FINAL_NON_AUTHORITY_CONSISTENCY_CLOSURE",
+        "rule4RemainsLastMutatingNeuralExpansionStage": true,
+        "rule5AddsNoNewExecutionAuthority": true
+      },
+      "canonicalSequence": [
+        "IDENTIFY_STRUCTURAL_CHANGE",
+        "DEFINE_ARCHITECTURE_BOUNDARY_AND_RESPONSIBILITY",
+        "DECOMPOSE_INTO_MINIMUM_ATOMIC_NODES",
+        "DEFINE_NODE_INPUTS_OUTPUTS_DEPENDENCIES_INHIBITORS_AND_EVIDENCE",
+        "MAP_ATOMIC_NODES_TO_NEURON_TYPES_AND_EDGES",
+        "REGISTER_OR_UPDATE_CENTRAL_MACHINE_POLICY",
+        "REGISTER_OR_UPDATE_COMPANY_ARCHITECTURE_MAP",
+        "BIND_EACH_NODE_TO_RESPONSIBLE_CODE_PATHS",
+        "ADD_OR_UPDATE_CONTRACT_AND_REGRESSION_TESTS",
+        "VERIFY_CENTRAL_ARCHITECTURE_CODE_TEST_CONSISTENCY",
+        "ACTIVATE_ONLY_AFTER_CONSISTENCY_PASS",
+        "EMIT_VERIFIED_STRUCTURE_EVIDENCE_TO_EXISTING_LEARNING_AND_NEXT_CYCLE"
+      ],
+      "atomicArchitectureContract": {
+        "minimumUnit": "ONE_RESPONSIBILITY_ONE_CAUSAL_PURPOSE",
+        "requiredFields": [
+          "NODE_ID",
+          "RESPONSIBILITY",
+          "INPUTS",
+          "OUTPUTS",
+          "DEPENDENCIES",
+          "INHIBITORS",
+          "EVIDENCE",
+          "RESPONSIBLE_CODE_PATHS",
+          "CONTRACT_TEST_PATHS"
+        ],
+        "duplicateShadowNodeForbidden": true,
+        "overlappingResponsibilityRequiresExplicitMergeOrBoundary": true,
+        "wrapperOnlyAtomizationForbidden": true,
+        "atomicNodeMustMapToRealResponsibleSystem": true
+      },
+      "neuronizationContract": {
+        "required": true,
+        "canonicalNeuronTypes": [
+          "INTENT",
+          "SENSOR",
+          "FACT",
+          "HYPOTHESIS",
+          "CAUSAL",
+          "BOTTLENECK",
+          "RESPONSIBILITY",
+          "PLANNING",
+          "ACTION",
+          "CRITIC",
+          "MEMORY",
+          "SUPERVISOR"
+        ],
+        "everyAtomicNodeMustDeclareNeuronType": true,
+        "edgesMustDeclareCausalOrDependencyMeaning": true,
+        "evidenceTraceRequired": true,
+        "activationCannotOverrideHardInhibitors": true,
+        "neuronizationDoesNotGrantExecutionAuthority": true
+      },
+      "consistencyContract": {
+        "centralPolicy": "company-learning/platform-release-roadmap.json",
+        "architectureMap": "company-learning/company-architecture-map.json",
+        "responsibleCodeMustExist": true,
+        "contractTestsMustExist": true,
+        "centralAndArchitectureIdsMustMatch": true,
+        "codeBindingMustReferenceRealResponsibleSystem": true,
+        "staleOrMissingProjectionAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_STRUCTURAL_STAGE",
+        "activationWhenMismatchForbidden": true,
+        "runtimeMayNotInventMissingPolicy": true,
+        "sourceCodeMayNotSilentlyDivergeFromCentralArchitecture": true,
+        "architectureMapMayNotDescribeUnboundPhantomSystem": true
+      },
+      "structuralChangeGate": {
+        "beforeImplementation": [
+          "ATOMIC_ARCHITECTURE_DEFINED",
+          "NEURON_MAPPING_DEFINED",
+          "CENTRAL_POLICY_PATH_IDENTIFIED",
+          "ARCHITECTURE_MAP_PATH_IDENTIFIED",
+          "RESPONSIBLE_CODE_SCOPE_IDENTIFIED"
+        ],
+        "beforeAdoption": [
+          "CENTRAL_POLICY_UPDATED",
+          "ARCHITECTURE_MAP_UPDATED",
+          "RESPONSIBLE_CODE_UPDATED_OR_VERIFIED_UNCHANGED",
+          "CONTRACT_TESTS_PASS",
+          "RELATED_REGRESSION_PASS",
+          "SECURITY_PASS_WHEN_RELEVANT",
+          "CENTRAL_ARCHITECTURE_CODE_TEST_CONSISTENCY_PASS"
+        ],
+        "mismatchBlocksAdoption": true,
+        "directMainWriteForbidden": true,
+        "candidateBranchAndReviewRequired": true
+      },
+      "invariants": {
+        "authorityExpansion": false,
+        "qaGateWeakening": false,
+        "securityGateWeakening": false,
+        "releaseGateBypass": false,
+        "fabricatedConsistencyPassForbidden": true,
+        "runtimePolicyCreationForbidden": true,
+        "shadowArchitectureForbidden": true,
+        "verifiedLearningDeletionForbidden": true
+      },
+      "codeBindings": {
+        "consistencyValidator": "tools/vibe2-architecture-neuron-consistency.mjs",
+        "systemArchitectureContract": "tools/vibe2-system-architecture-contract.mjs",
+        "selfArchitectureEvolution": "tools/vibe2-self-architecture-evolution.mjs",
+        "centralPolicyQa": ".github/workflows/company-central-policy-contract-qa.yml",
+        "rule5Test": "qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs"
+      },
+      "operationalStatus": "CENTRAL_POLICY_BOUND_IMPLEMENTATION_IN_PROGRESS"
+    }
   },
   "planningGrowthMarketingDepartment": {
     "version": 1,

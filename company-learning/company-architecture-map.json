@@ -1,5 +1,5 @@
 {
-  "version": 70,
+  "version": 71,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -86,6 +86,17 @@
       "VIBE_OR_RELEASE_DECISION",
       "VERIFIED_RECORD_RETENTION_OR_SUPERSESSION",
       "SCHEDULED_HYGIENE_SCAN"
+    ],
+    "architectureNeuronConsistency": [
+      "STRUCTURAL_CHANGE_SIGNAL",
+      "ATOMIC_ARCHITECTURE_DECOMPOSITION",
+      "NEURON_TYPE_AND_EDGE_MAPPING",
+      "CENTRAL_POLICY_PROJECTION",
+      "ARCHITECTURE_MAP_PROJECTION",
+      "RESPONSIBLE_CODE_BINDING",
+      "CONTRACT_TEST_BINDING",
+      "CONSISTENCY_VALIDATION",
+      "ACTIVATE_OR_REQUEUE"
     ]
   },
   "workerRoles": {
@@ -97,7 +108,8 @@
     "PRIMARY_AI_ORCHESTRATOR": "NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR",
     "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS",
     "PLANNING_GROWTH_MARKETING": "EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING",
-    "RECORDS_GOVERNANCE": "SHARED_MACHINE_RECORD_SCHEMA_PATH_PROVENANCE_RETENTION_AND_INTEGRITY_VALIDATION"
+    "RECORDS_GOVERNANCE": "SHARED_MACHINE_RECORD_SCHEMA_PATH_PROVENANCE_RETENTION_AND_INTEGRITY_VALIDATION",
+    "RULE5_ARCHITECTURE_CONSISTENCY": "VALIDATE_ATOMIC_NEURON_CENTRAL_ARCHITECTURE_CODE_TEST_ALIGNMENT_WITHOUT_AUTHORITY_EXPANSION"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -109,7 +121,9 @@
     "beforeWork": "LOAD_AND_VALIDATE_ROADMAP_LOG_ARCHITECTURE_SECURITY_POLICY",
     "duringWork": "DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY",
     "afterWork": "REVALIDATE_SHARED_CONTEXT_AND_BIND_OUTPUT_EVIDENCE",
-    "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
+    "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+    "rule5BeforeStructuralActivation": "VALIDATE_ATOMIC_NEURON_CENTRAL_ARCHITECTURE_CODE_TEST_CONSISTENCY",
+    "rule5MismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_STRUCTURAL_STAGE"
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
@@ -2122,7 +2136,11 @@
     "candidateVerifier": "tools/vibe2-system-evolution-verify.mjs",
     "promotion": ".github/workflows/vibe2-system-evolution-release.yml",
     "adoptionProof": "BASE_FAIL_CANDIDATE_PASS_SAME_REGRESSION_TEST",
-    "automaticPrAdoption": true
+    "automaticPrAdoption": true,
+    "rule5ClosureRequired": true,
+    "rule5AtomicArchitectureRequired": true,
+    "rule5NeuronMappingRequired": true,
+    "rule5CentralArchitectureCodeTestSyncRequired": true
   },
   "departmentTopology": {
     "planning": {
@@ -2152,5 +2170,82 @@
     "runtimeMediaRoot": "assets/runtime-evidence",
     "legacyMigration": "MIGRATE_ON_TOUCH",
     "directPolicyCreationOutsideCentralRoadmap": false
+  },
+  "rule5ArchitectureNeuronConsistency": {
+    "version": 1,
+    "centralRulePath": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.rule5",
+    "status": "CANONICAL_ARCHITECTURE_PROJECTION",
+    "purpose": "PROJECT_OWNER_RULE_5_INTO_CONCRETE_SYSTEM_TOPOLOGY_AND_CODE_BINDINGS",
+    "appliesToStructuralChanges": true,
+    "atomicNodeSchema": {
+      "required": [
+        "NODE_ID",
+        "RESPONSIBILITY",
+        "INPUTS",
+        "OUTPUTS",
+        "DEPENDENCIES",
+        "INHIBITORS",
+        "EVIDENCE",
+        "RESPONSIBLE_CODE_PATHS",
+        "CONTRACT_TEST_PATHS"
+      ],
+      "oneResponsibilityOneCausalPurpose": true,
+      "duplicateShadowNodeForbidden": true,
+      "phantomNodeForbidden": true
+    },
+    "neuronSchema": {
+      "canonicalTypes": [
+        "INTENT",
+        "SENSOR",
+        "FACT",
+        "HYPOTHESIS",
+        "CAUSAL",
+        "BOTTLENECK",
+        "RESPONSIBILITY",
+        "PLANNING",
+        "ACTION",
+        "CRITIC",
+        "MEMORY",
+        "SUPERVISOR"
+      ],
+      "everyNodeTyped": true,
+      "edgeMeaningRequired": true,
+      "evidenceTraceRequired": true,
+      "hardInhibitorsPreserved": true,
+      "authorityExpansion": false
+    },
+    "consistencyTriangle": {
+      "central": "company-learning/platform-release-roadmap.json",
+      "architecture": "company-learning/company-architecture-map.json",
+      "code": [
+        "tools/vibe2-architecture-neuron-consistency.mjs",
+        "tools/vibe2-system-architecture-contract.mjs",
+        "tools/vibe2-self-architecture-evolution.mjs"
+      ],
+      "tests": [
+        "qa/vibe2-owner-rule5-architecture-neuron-consistency.test.mjs",
+        "qa/vibe2-owner-rule4-self-architecture.test.mjs",
+        "qa/vibe2-system-architecture-execution.test.mjs",
+        "qa/company-central-policy-contract.test.mjs"
+      ],
+      "workflow": ".github/workflows/company-central-policy-contract-qa.yml"
+    },
+    "activationGate": [
+      "ATOMIC_ARCHITECTURE_DEFINED",
+      "NEURON_MAPPING_DEFINED",
+      "CENTRAL_POLICY_UPDATED",
+      "ARCHITECTURE_MAP_UPDATED",
+      "RESPONSIBLE_CODE_BOUND",
+      "CONTRACT_TEST_BOUND",
+      "CONSISTENCY_VALIDATOR_PASS",
+      "RELATED_REGRESSION_PASS"
+    ],
+    "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_STRUCTURAL_STAGE",
+    "runtimeMayCreateMissingPolicy": false,
+    "sourceMaySilentlyDiverge": false,
+    "rule4Relationship": {
+      "rule4": "LAST_MUTATING_SELF_ARCHITECTURE_OR_NEURAL_EXPANSION_STAGE",
+      "rule5": "FINAL_NON_MUTATING_CONSISTENCY_CLOSURE_BEFORE_ACTIVATION"
+    }
   }
 }
