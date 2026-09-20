@@ -5526,17 +5526,28 @@
           "crossEngineClaimRequiresNativeEvidencePerClaimedEngine": true,
           "singleUnseenPassEstablishesStrongGeneralization": false,
           "benchmarkFailureAutomaticallyDeprecatesLocalCapability": false,
-          "unrelatedBenchmarkFailurePenalizesCapability": false
+          "unrelatedBenchmarkFailurePenalizesCapability": false,
+          "unseenGameRequired": true,
+          "unseenProblemFingerprintRequired": true,
+          "pairedControlChallengerRequired": true,
+          "nonTargetContextFixedBetweenControlAndChallenger": true,
+          "writableScopeFixedBetweenControlAndChallenger": true,
+          "modelBudgetFixedBetweenControlAndChallenger": true,
+          "qaContractFixedBetweenControlAndChallenger": true
         },
         "generalizationPromotion": {
           "targetState": "GENERALIZED_VERIFIED",
           "evidenceMustBindExactCapabilityId": true,
           "benchmarkCasesMustRemainIndependent": true,
           "coAppliedBenchmarkSuccessIndividuallyProvesEachCapability": false,
-          "capabilitySpecificSupportPreferred": true,
-          "challengerOrControlledReplayPreferredForAmbiguousAttribution": true,
+          "capabilitySpecificSupportPreferred": false,
+          "challengerOrControlledReplayPreferredForAmbiguousAttribution": false,
           "automaticModelOrTuningPromotion": false,
-          "directTrainingPromotion": false
+          "directTrainingPromotion": false,
+          "capabilitySpecificPositiveSupportRequired": true,
+          "zeroCapabilitySpecificContradictionsRequired": true,
+          "pairedControlChallengerRequiredForStrongGeneralization": true,
+          "ambiguousOrNeutralEvidenceRemainsGeneralizationCandidate": true
         },
         "portfolioGovernance": {
           "preserveProvenanceOnDeprecationOrSupersession": true,
@@ -5600,6 +5611,9 @@
         "exitCriteria": [
           "GENERALIZATION_CANDIDATE_TO_UNSEEN_BENCHMARK_BINDING_IMPLEMENTED_IN_EXISTING_PATHS",
           "STRONG_GENERALIZATION_REQUIRES_MULTIPLE_INDEPENDENT_UNSEEN_PASSES",
+          "PAIRED_CONTROL_CHALLENGER_ISOLATES_TARGET_CAPABILITY_EFFECT",
+          "CAPABILITY_SPECIFIC_POSITIVE_SUPPORT_REQUIRED_FOR_GENERALIZED_VERIFIED",
+          "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS_REQUIRED_FOR_GENERALIZED_VERIFIED",
           "CROSS_ENGINE_GENERALIZATION_REQUIRES_NATIVE_EVIDENCE_PER_ENGINE",
           "PORTFOLIO_SUPERSESSION_AND_DEPRECATION_RETAIN_PROVENANCE",
           "GENERALIZED_RETRIEVAL_REMAINS_RELEVANCE_GATED",
