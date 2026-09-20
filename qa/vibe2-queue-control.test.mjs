@@ -19,6 +19,7 @@ import {
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
   recoverFanInRegressionFailure,
+  resolveExecutionLaneCapacity,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -26,6 +27,41 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
+
+test('game-primary execution cap stays 20 even when global and adaptive maxima are 256',()=>{
+  const capacity=resolveExecutionLaneCapacity({executionLane:'game-primary',configuredMax:256,adaptiveMax:256,gamePrimaryCap:20});
+  assert.deepEqual(capacity,{lane:'game-primary',configuredMax:256,contractMax:20,effectiveMax:20});
+  const auxiliary=resolveExecutionLaneCapacity({executionLane:'control-fast',configuredMax:256,adaptiveMax:20,gamePrimaryCap:20});
+  assert.deepEqual(auxiliary,{lane:'control-fast',configuredMax:256,contractMax:256,effectiveMax:256});
+});
+
+test('game-primary reserve and fan-in share the same 20-worker execution denominator',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-cap-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const batchFile=path.join(dir,'batch.json');
+  const fanFile=path.join(dir,'fan.json');
+  const tasks=Array.from({length:24},(_,i)=>({id:`game-cap-${i}`,gameId:`g-${i}`,target:'web',department:'development',type:'implementation',goal:'work',status:'queued',sourceRoot:`web-games/g-${i}`,responsibleFiles:[`f-${i}.js`]}));
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:256,lastDecision:'HOLD'},null,2));
+  const reserved=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'4','game-primary-cap':'20',output:batchFile});
+  assert.equal(reserved.executionContractMaxConcurrentTasks,20);
+  assert.equal(reserved.reservationMaxConcurrentTasks,20);
+  assert.equal(reserved.tasks.length,20);
+  const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
+  assert.equal(batch.scheduler.executionContractMaxConcurrentTasks,20);
+  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,20);
+  const results=reserved.tasks.slice(0,19).map((task,i)=>({taskId:task.id,reservationId:task.reservationId,variant:'primary',outcome:'PASS',evidence:['actions-run:game-cap-live'],metrics:{requestedMax:256,effectiveMax:256,reservedAt:1000,workerStartedAt:1000+i,workerFinishedAt:5000+i,checkoutMs:10,candidateMs:100,qaMs:20,workerTotalMs:4000,ollamaCacheHit:true}}));
+  fs.writeFileSync(fanFile,JSON.stringify({results},null,2));
+  const fan=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:fanFile,lane:'game-primary',min:'4','game-primary-cap':'20'});
+  assert.equal(fan.executionContractMaxConcurrentTasks,20);
+  assert.equal(fan.telemetry.requestedMax,20);
+  assert.equal(fan.telemetry.effectiveMax,20);
+  assert.equal(fan.telemetry.actualPeakConcurrency,19);
+  assert.equal(fan.telemetry.effectivePeakUtilizationPct,95);
+  assert.notEqual(fan.adaptiveControl.lastReason,'LOW_LOAD');
+  assert.equal(fan.adaptiveControl.currentMax,20);
+});
 
 test('learning-idle lane reservation uses its own cap instead of game adaptive cap',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-lane-'));
