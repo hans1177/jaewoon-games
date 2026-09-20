@@ -7188,11 +7188,170 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_26fa8a86010ff53030e8d12b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2095",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ef755e3a22de7528647a55b50fe284d73b9f42a0",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2095,
+        "baseBranch": "main",
+        "headBranch": "assistant/vibe2-atomic-graphics-ingress-v1",
+        "baseSha": "ef755e3a22de7528647a55b50fe284d73b9f42a0",
+        "headSha": "7f0f0b4da958c8eaa8a1d36841b3725dd927431e",
+        "mergeCommitSha": "9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+        "mergedAt": "2026-09-20T14:09:09Z",
+        "authorLogin": "hans1177",
+        "titleHash": "07812cb8af140866f7dc74cfef5adcc70ea47cebb1bdd402e98c697e84dfa42c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/vibe2-atomic-graphics-ingress-v1",
+        "candidateSha": "7f0f0b4da958c8eaa8a1d36841b3725dd927431e"
+      },
+      "changeStats": {
+        "changedFileCount": 24,
+        "codingRelevantFileCount": 21,
+        "addedLineCount": 1066,
+        "deletedLineCount": 189,
+        "changedFiles": [
+          ".github/agents/development.agent.md",
+          ".github/agents/graphics.agent.md",
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "COMPANY_FLOW.md",
+          "company-directive.json",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-speed-sequence-workflow.test.mjs",
+          "qa/company-top30-platform-promotion-learning.test.mjs",
+          "qa/company-web-evidence-freshness-contract.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-exploration-worker.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-web-gameplay-validation.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-performance-sanity.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "company-directive.json",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-speed-sequence-workflow.test.mjs",
+          "qa/company-top30-platform-promotion-learning.test.mjs",
+          "qa/company-web-evidence-freshness-contract.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-exploration-worker.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-web-gameplay-validation.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-performance-sanity.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/fantasy-survival/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2095",
+        "merge-commit:9744332e0d333d19c2956740ba6b5cfbeceaed0f",
+        "base-main:ef755e3a22de7528647a55b50fe284d73b9f42a0"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 58
+    "total": 59
   }
 }
