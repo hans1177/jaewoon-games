@@ -12,6 +12,7 @@ import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
 import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
+import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -201,7 +202,7 @@ function candidateStrategyRole(variant='primary',preference={}){
   return freeze({variant:normalized,strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'});
 }
 
-export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {} } = {}) {
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {}, centralPolicySnapshot = null } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
@@ -222,6 +223,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
   if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
   const task = resolved.task;
+  const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:false });
+  if (centralPolicy.required === true && centralPolicy.valid !== true) {
+    return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
+  }
   const requiresWrite = taskRequiresWrite(task);
   if (requiresWrite && !writableTargetAllowed(runtime, task.target)) return freeze({ ...base, reason:`WRITABLE_TARGET_FORBIDDEN:${task.target}`, selectedTask:task });
 
@@ -283,6 +288,17 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const assetGuidance = assetProductionGuidance(assetProduction);
   const presentationQuality = buildPresentationQualityContract(task,plan.target);
   const presentationGuidance = presentationQualityGuidance(presentationQuality);
+  const responsibleFiles = freezeList(task.responsibleFiles || []);
+  const compiledWorkContract = compileVibeCentralWorkContract({
+    snapshot:centralPolicy,
+    task:{...task,supervisionApproved},
+    plan,
+    route,
+    responsibleFiles,
+    presentationQuality,
+    supervisionContract
+  });
+  const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
   const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
@@ -339,8 +355,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'The candidate must be independently playable and reviewable; validation-only patches, placeholder source, and unrelated rewrites are forbidden.',
     supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
   ].join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
-  const responsibleFiles = freezeList(task.responsibleFiles || []);
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, supervisionGuidance, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
@@ -354,6 +369,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'asset-runtime-visual-qa-required',
     ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
     ...(supervisionContract?['supervised-web-build-contract','supervised-promotion-approval-required']:[]),
+    ...(compiledWorkContract.required?['central-compiled-work-contract','central-policy-freshness-before-and-after']:[]),
     'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
     'telemetry-evidence-after-implementation',
@@ -374,6 +390,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     }),
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     supervisionContract,
+    compiledWorkContract,
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
@@ -400,6 +417,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       authoringGeneratorRequestAllowed:true,
       authoringGeneratorRequestIsNotCompletion:true,
       explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
+      centralPolicyFreshnessRequired:compiledWorkContract.required===true, centralPolicyMismatchAction:compiledWorkContract.freshness?.mismatchAction||null,
       sourceRootBootstrapAllowed,
       roleSeparation:true, sameFileParallelWrite:false,
       speculativeParallelism:tournament.candidateCount>1, speculativeVariants:tournament.candidateCount
@@ -419,7 +437,8 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
   const resolvedPracticeDistilledFile=clean(practiceDistilledFile)||clean(runtime?.sources?.practiceDistilledKnowledge)||'.vibe2/practice-distilled-knowledge.json';
   const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled });
+  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, centralPolicySnapshot });
   writeJson(resolvedOutputFile, order);
   return order;
 }
