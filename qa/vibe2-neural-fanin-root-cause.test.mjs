@@ -72,6 +72,12 @@ test('fan-in regression and review confirm causal repair but do not invent respo
   assert.ok(task.evidence.includes('role-result:regression:PASS'));
   assert.ok(task.evidence.includes('role-result:review:PASS'));
   assert.equal(result.releaseCandidates.length,1);
+  assert.equal(result.neuralShadowAudit.mode,'PHASE2_SHADOW_VS_WAVE_AUDIT');
+  assert.equal(result.neuralShadowAudit.sampleCount,1);
+  assert.equal(result.neuralShadowAudit.rows[0].actualWaveOutcome,'WAVE_RELEASE_ELIGIBLE');
+  assert.equal(result.neuralShadowAudit.rows[0].comparisonClass,'WAVE_PROCEEDS_NEURAL_HOLDS');
+  assert.equal(result.neuralShadowAudit.phase2AuthorityReady,false);
+  assert.equal(result.neuralShadowAudit.automaticLearningAllowed,false);
 });
 
 test('explicit independently verified responsible system can verify root cause without granting neural execution authority',()=>{
