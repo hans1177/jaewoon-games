@@ -297,3 +297,28 @@ test('hit-stop polish keeps frame work bounded and avoids transient queues or ti
   assert.match(functionBody('drawEnemyCombatVfx'),/e\.hitAt/);
   assert.match(source,/jaewoon_fantasy_survival_v1/);
 });
+
+test('presentation runtime exposes the central quality contract marker',()=>{
+  assert.match(source,/<html lang="ko" data-presentation-quality-version="1">/);
+});
+
+test('frame stability keeps simulation delta and decorative rendering costs bounded',()=>{
+  assert.match(source,/function loop\(now\)\{const dt=Math\.min\(\.033,\(now-state\.last\)\/1000\)/);
+  const weather=functionBody('weatherParticleBudget');
+  assert.match(weather,/return \.45/);
+  assert.match(weather,/return \.7/);
+  assert.match(weather,/return 1/);
+  const resize=functionBody('resize');
+  assert.match(resize,/Math\.min\(mobileCanvas\?1\.5:2,devicePixelRatio\|\|1\)/);
+  assert.doesNotMatch(source,/(?:combatFx|impactFx|hitFx|sfxQueue|soundQueue)\s*=\s*\[/);
+});
+
+test('final presentation gate keeps all synchronized feel layers on the same preserved runtime',()=>{
+  assert.match(source,/function fantasyLivingMotion\(/);
+  assert.match(source,/function fantasyEnemyAttackPose\(/);
+  assert.match(source,/function drawEnemyCombatVfx\(/);
+  assert.match(source,/function playCombatAudio\(/);
+  assert.match(source,/function updateCameraPresentation\(/);
+  assert.match(source,/hitStop=attackElapsed/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+});
