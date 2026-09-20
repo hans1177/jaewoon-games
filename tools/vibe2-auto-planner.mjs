@@ -218,7 +218,7 @@ function supervisedWebBuildRequired(project={},goal=''){
 }
 function supervisedWebBuildContract(){
   return{
-    version:2,
+    version:3,
     mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
     required:true,
     status:'REVIEW_REQUIRED',
@@ -233,11 +233,12 @@ function supervisedWebBuildContract(){
       'VIBE_IMPLEMENTATION_CANDIDATE',
       'PRESENTATION_IMPLEMENTATION',
       'SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW',
+      'REAL_RUNTIME_VISUAL_EVIDENCE_REVIEW',
       'MOBILE_AND_RUNTIME_QA',
       'SUPERVISED_PROMOTION'
     ],
     protectedSemantics:['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES'],
-    hardReject:['PLACEHOLDER_SOURCE','PLACEHOLDER_MONSTER_OR_CHARACTER','CONTEXT_MISMATCH_BACKGROUND','INCOMPLETE_ACTION_MOTION_SET','STATIC_PRESENTATION_EVIDENCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BROKEN_MOBILE_INPUT']
+    hardReject:['PLACEHOLDER_SOURCE','PLACEHOLDER_MONSTER_OR_CHARACTER','PRIMITIVE_ONLY_CHARACTER_OR_MONSTER','CONTEXT_MISMATCH_BACKGROUND','BACKGROUND_NOT_BOUND_TO_GAME_CONTEXT','INCOMPLETE_ACTION_MOTION_SET','MISSING_COMBAT_DEATH_MOTION','STATIC_PRESENTATION_EVIDENCE','MARKER_ONLY_PRESENTATION_PASS','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BROKEN_MOBILE_INPUT']
   };
 }
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
@@ -435,9 +436,9 @@ function presentationStagesForProject(project={}){
       ?'표현 책임 C# 소스에 public const int PresentationQualityVersion = 1 형태의 실제 품질 계약 마커를 기록한다.'
       :'표현 책임 Luau 소스에 local PRESENTATION_QUALITY_VERSION = 1 형태의 실제 품질 계약 마커를 기록한다.';
   const stages=[
-    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/임시 placeholder는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.'},
-    {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 판정·이동속도·밸런스는 변경하지 않는다.'},
-    {key:'animation-feel',pass:'ANIMATION_FEEL',goal:'[PRESENTATION_PASS:ANIMATION_FEEL] 주요 공격/상호작용 하나 이상을 준비→가속→impact→짧은 표현용 hit-stop→반동→복귀 흐름으로 다듬는다. 빠른 동작은 smear/trail, 무거운 동작은 overshoot/settle을 검토한다. 실제 데미지/쿨다운/판정 시점은 기존 authoritative gameplay event를 보존하고 표현만 동기화한다.'},
+    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 캐릭터·몬스터 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. 그래픽 검토 문장이나 마커만 남기지 말고 실제 렌더 소스를 변경한다.'},
+    {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 플레이어와 주요 몬스터/엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 실제 이동 속도와 상태에 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.'},
+    {key:'animation-feel',pass:'ANIMATION_FEEL',goal:'[PRESENTATION_PASS:ANIMATION_FEEL] 주요 공격/상호작용 하나 이상을 준비→가속→impact→짧은 표현용 hit-stop→반동→복귀 흐름으로 다듬는다. 공격/피격/사망 모션은 실제 attack/hit/death gameplay event에 각각 연결하고, 적 제거가 발생하면 사망 모션 근거가 런타임에서 관찰돼야 한다. 빠른 동작은 smear/trail, 무거운 동작은 overshoot/settle을 검토한다. 실제 데미지/쿨다운/판정 시점은 기존 authoritative gameplay event를 보존하고 표현만 동기화한다.'},
     {key:'vfx',pass:'VFX',goal:'[PRESENTATION_PASS:VFX] 핵심 행동의 시각 피드백을 hit flash, trail/afterimage, impact wave/particle, danger telegraph, reward emphasis 중 게임에 맞는 방식으로 강화한다. 효과는 모바일 입력과 위험 정보를 가리지 않게 제한하고 무제한 파티클 생성이나 매 프레임 불필요한 객체 생성을 피한다.'},
     {key:'camera-language',pass:'CAMERA_LANGUAGE',goal:'[PRESENTATION_PASS:CAMERA_LANGUAGE] 일반 행동은 미세한 카메라 반응, 강한 행동은 짧고 강한 반응, 보스/중요 순간은 통제된 hero moment가 되도록 카메라 언어를 정리한다. 줌/흔들림/추적은 모바일 가독성과 조작을 해치지 않고 멀미를 유발할 정도로 지속되지 않게 한다.'},
     {key:'polish-mobile',pass:'POLISH_MOBILE',goal:`[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다. 앞선 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→CAMERA_LANGUAGE 패스가 실제 구현된 상태를 보존한 뒤 ${finalMarker}`}
@@ -472,7 +473,10 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       'presentation-preserve-gameplay-semantics',
       'presentation-runtime-qa-required',
       'graphics-pass-real-asset-binding-runtime-required',
-      'mobile-performance-qa-required'
+      'mobile-performance-qa-required',
+      'presentation-real-runtime-graphics:v2',
+      'presentation-marker-only-pass:forbidden',
+      'presentation-placeholder-primitives:forbidden'
     ]);
     out.workUnits=4;
     out.assetProductionLane=true;
