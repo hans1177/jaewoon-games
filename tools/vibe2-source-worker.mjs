@@ -624,6 +624,53 @@ function markerTouched(text='',markers=[]){
     return needle.length>=3&&lower.includes(needle);
   });
 }
+function storageContractSnapshot(source=''){
+  const raw=String(source??'');
+  const literalKeys=unique([...raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g)].map(match=>match[1]));
+  const keyVariables=unique([...raw.matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*([A-Za-z_$][\w$]*)\b/g)].map(match=>match[1]));
+  const variableBindings={};
+  for(const name of keyVariables){
+    const re=new RegExp('\\b(?:const|let|var)\\s+'+regexEscape(name)+'\\s*=\\s*([^;\\n]{1,420})\\s*;');
+    const match=re.exec(raw);
+    if(match)variableBindings[name]=clean(match[1]);
+  }
+  return{literalKeys,variableBindings};
+}
+function storageContractMutationRows({sourceRoot='',edits=[]}={}){
+  if(!clean(sourceRoot)||!Array.isArray(edits)||!edits.length)return[];
+  const grouped=new Map();
+  for(const edit of edits){
+    const relative=clean(edit?.path);
+    if(!relative)continue;
+    if(!grouped.has(relative))grouped.set(relative,[]);
+    grouped.get(relative).push(edit);
+  }
+  const mutations=[];
+  for(const [relative,rows] of grouped){
+    try{
+      const file=path.resolve(sourceRoot,relative);
+      if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+      const beforeSource=fs.readFileSync(file,'utf8');
+      const before=storageContractSnapshot(beforeSource);
+      if(!before.literalKeys.length&&!Object.keys(before.variableBindings).length)continue;
+      let afterSource=beforeSource,applicable=true;
+      for(const edit of rows){
+        const find=String(edit?.find??''),replace=String(edit?.replace??'');
+        if(!find||afterSource.split(find).length-1!==1){applicable=false;break;}
+        afterSource=afterSource.replace(find,replace);
+      }
+      if(!applicable)continue;
+      const after=storageContractSnapshot(afterSource);
+      for(const key of before.literalKeys){
+        if(!after.literalKeys.includes(key))mutations.push(relative+':literal:'+key);
+      }
+      for(const [name,expression] of Object.entries(before.variableBindings)){
+        if(after.variableBindings[name]!==expression)mutations.push(relative+':binding:'+name);
+      }
+    }catch{}
+  }
+  return unique(mutations);
+}
 export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFullRewrite=false,bootstrap=false,sourceRoot=''}={}){
   const confidence=clean(editContract?.responsibilityConfidence).toUpperCase()||'LOW';
   const developmentMode=clean(editContract?.codingArchitecture?.developmentMode).toUpperCase();
@@ -665,15 +712,20 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
       if(String(edit.find||'').includes(key)&&!String(edit.replace||'').includes(key))saveKeyViolations.push(clean(edit.path)+':'+key);
     }
   }
+  const saveKeyMigrationAllowed=budget.saveKeyMigrationAllowed===true;
+  const saveContractMutations=storageContractMutationRows({sourceRoot,edits});
+  const saveInvariantGate=!saveKeyMigrationAllowed&&(saveKeyViolations.length>0||saveContractMutations.length>0);
   const violations=[];
   if(hardGate&&budget.unrelatedSystemMutationForbidden===true&&unexpectedSystems.length)violations.push('UNRELATED_SYSTEM:'+unexpectedSystems.join(','));
   if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
-  if(hardGate&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
+  if(!saveKeyMigrationAllowed&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
+  if(!saveKeyMigrationAllowed&&saveContractMutations.length)violations.push('SAVE_CONTRACT_MUTATION:'+saveContractMutations.join(','));
   return{
-    version:1,mode:hardGate?'HARD_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
+    version:1,mode:hardGate?'HARD_ENFORCE':saveInvariantGate?'INVARIANT_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
     markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
-    unprovenEditPaths:unprovenEdits.map(row=>row.path),protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,violations,
-    ambiguousClassificationObserved:!hardGate,writableScopeExpansionAllowed:false,authorityExpanded:false
+    unprovenEditPaths:unprovenEdits.map(row=>row.path),protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,saveContractMutations,
+    saveKeyMigrationAllowed,saveContractInvariantEnforced:saveInvariantGate,violations,
+    ambiguousClassificationObserved:!hardGate&&!saveInvariantGate,writableScopeExpansionAllowed:false,authorityExpanded:false
   };
 }
 export function generationFailureClass(error){
