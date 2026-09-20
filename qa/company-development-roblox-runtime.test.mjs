@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,validateWebPlatformHandoff} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 
 const buildProfile=(genre,subgenre=null,playMode='SINGLE')=>{
@@ -335,3 +335,40 @@ test('owner-focused concurrent Roblox source lane preserves canonical selected U
   assert.doesNotMatch(secondaryBlock,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
 });
 
+
+
+test('Roblox Web handoff requires ready commercial presentation contract',()=>{
+  const roadmap={developmentLifecycleMachine:{webToPlatformHandoff:{
+    required:true,manifestVersion:1,
+    carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context','presentation-contract']
+  }}};
+  const handoff={
+    version:1,stage:'WEB_DEVELOPMENT_BASELINE_READY',gameId:'demo',
+    sourcePath:'web-games/demo',evidencePath:'design/demo/web-gameplay-validation.json',baselineSource:'design/demo/design-revised.json',
+    sourceIndexSha256:'a'.repeat(64),designBaselineSha256:'b'.repeat(64),validationSchemaVersion:5,strictScore:92,
+    promotionRevalidationPassed:true,nativeRuntimePassTransferred:false,
+    carryForward:[...roadmap.developmentLifecycleMachine.webToPlatformHandoff.carryForward],
+    presentationContract:{
+      version:1,kind:'WEB_TO_NATIVE_PRESENTATION_CONTRACT',ready:true,
+      styleLock:{id:'demo-style',revision:'r1',uiMotionLanguage:'snappy'},
+      commercialReadiness:{version:1,pass:true},
+      webAssetBinaryCopyRequired:false
+    }
+  };
+  const passed=validateWebPlatformHandoff({handoff,roadmap,gameId:'demo'});
+  assert.equal(passed.pass,true,passed.blockers.join(','));
+
+  const failed=validateWebPlatformHandoff({handoff:{...handoff,presentationContract:null},roadmap,gameId:'demo'});
+  assert.equal(failed.pass,false);
+  assert.ok(failed.blockers.includes('WEB_HANDOFF_PRESENTATION_READY_REQUIRED'));
+  assert.ok(failed.blockers.includes('WEB_HANDOFF_STYLE_LOCK_REQUIRED'));
+  assert.ok(failed.blockers.includes('WEB_HANDOFF_COMMERCIAL_READINESS_REQUIRED'));
+});
+
+test('development router carries presentation contract without changing canonical target sequence',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/presentationReady=evidenceGate\.presentationContract\?\.ready===true/);
+  assert.match(workflow,/presentationContract:evidenceGate\.presentationContract/);
+  assert.match(workflow,/['"]presentation-contract['"]/);
+  assert.match(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
+});
