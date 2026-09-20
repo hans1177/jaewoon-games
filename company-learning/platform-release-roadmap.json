@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -11173,6 +11173,77 @@
       "security": "SECURITY_FINDING_REMEDIATION_AND_RESCAN_EVIDENCE",
       "homepage": "ONLY_VERIFIED_RELEASE_LINKS_AND_RUNTIME_MEDIA",
       "vibe": "CONSUMES_EVIDENCE_AND_DECIDES_APPLICATION_SCOPE_TIMING_PRIORITY"
+    }
+  },
+  "runtimeGameplayMediaPublishing": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "objective": "AFTER_MEANINGFUL_GRAPHICS_OR_MOTION_UPDATE_CAPTURE_REAL_RUNTIME_GAMEPLAY_AND_PUBLISH_VERIFIED_MEDIA_TO_HOMEPAGE_WITH_RELEASE_LINK",
+    "appliesTo": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN",
+      "WEB"
+    ],
+    "canonicalMediaContract": "company-records/record-contract.json",
+    "homepageIndex": "runtime-media-homepage.json",
+    "homepageIndexBuilder": "tools/runtime-media-homepage-index.mjs",
+    "captureTriggers": [
+      "MEANINGFUL_GRAPHICS_UPDATE",
+      "MEANINGFUL_MOTION_OR_ANIMATION_UPDATE",
+      "MAJOR_PRESENTATION_UPDATE",
+      "NEW_RELEASE_OR_MAJOR_UPDATE",
+      "EXISTING_HOMEPAGE_CAPTURE_NO_LONGER_REPRESENTS_CURRENT_VISUAL_QUALITY"
+    ],
+    "publishingRules": {
+      "actualRuntimeGameplayOnly": true,
+      "conceptArtCannotReplaceRuntimeCapture": true,
+      "generatedMarketingImageCannotBeLabeledGameplay": true,
+      "verifiedRuntimeMediaManifestRequired": true,
+      "sha256BindingRequired": true,
+      "sourceRevisionBindingRequired": true,
+      "artifactIdentityBindingRequired": true,
+      "runtimeVerificationPassRequired": true,
+      "latestVerifiedCapturePerGamePlatformPreferred": true,
+      "homepageRefreshAfterVerifiedCapture": true,
+      "platformLaunchLinkShownOnlyWhenVerifiedEvidenceProvidesLaunchTarget": true
+    },
+    "unity": {
+      "captureMode": "AUTOMATED_RUNTIME_CAPTURE_ALLOWED_WHEN_BOUND_TO_EXACT_VERIFIED_BUILD",
+      "preferredEvidence": "ANDROID_OR_TARGET_RUNTIME_GAMEPLAY_CAPTURE",
+      "captureMayBeAutomated": true,
+      "movementMayBeAutomatedInside_OWN_BUILD_QA": true,
+      "screenshotMustMatchVerifiedArtifact": true
+    },
+    "roblox": {
+      "captureMode": "HUMAN_CONSENTED_CLIENT_CAPTURE_OR_APPROVED_STUDIO_RUNTIME_EVIDENCE",
+      "dedicatedQaAccountAllowed": true,
+      "automatedLoginForbidden": true,
+      "automatedExperienceJoinWithoutUserConsentForbidden": true,
+      "automatedInGameMovementForbidden": true,
+      "preferredPublicRuntimeFlow": [
+        "DEDICATED_QA_ACCOUNT_MANUAL_LOGIN",
+        "MANUAL_EXPERIENCE_JOIN",
+        "NO_DISRUPTIVE_OR_AUTOMATED_GAMEPLAY",
+        "ROBLOX_OFFICIAL_CAPTURE_OR_OS_SCREENSHOT",
+        "UPLOAD_CAPTURE_WITH_RUNTIME_MEDIA_MANIFEST",
+        "HOMEPAGE_INDEX_REFRESH"
+      ],
+      "studioUnattendedAutomationStillForbidden": true
+    },
+    "updateFreshness": {
+      "graphicsUpdateInvalidatesOldCapturePreference": true,
+      "oldCaptureMayRemainArchiveEvidence": true,
+      "homepageShouldPreferCaptureFromLatestVerifiedPresentationArtifact": true,
+      "ifFreshCaptureMissingUseExistingGameArtWithoutFalseGameplayLabel": true
+    },
+    "homepage": {
+      "runtimeCaptureOverridesCardArtWhenVerified": true,
+      "actualGameplayBadgeRequired": true,
+      "captureDateShownWhenAvailable": true,
+      "focusPlatformLaunchButtonRequiredWhenVerifiedTargetExists": true,
+      "releaseShelfRequiresCanonicalReleaseState": true,
+      "developmentBuildLinkMayAppearOnlyWhenExistingVerifiedBuildContractPasses": true
     }
   }
 }
