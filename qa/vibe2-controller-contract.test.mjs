@@ -475,6 +475,14 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('neuralDiagnosis'));
 });
 
+test('continuous worker transports causal replay prepatch reproduction evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED/);
+  assert.match(workflow,/causal_replay_prepatch_reproduced=/);
+  assert.match(workflow,/IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED:/);
+  assert.match(workflow,/causal-replay-prepatch-reproduced:/);
+});
+
 test('continuous worker captures incremental QA failure signature before failed step exits',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   const start=workflow.indexOf('- name: Run impact-first incremental QA role');
