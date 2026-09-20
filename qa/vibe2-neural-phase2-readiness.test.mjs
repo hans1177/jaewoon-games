@@ -8,6 +8,7 @@ const enc=(prefix,payload)=>prefix+encodeURIComponent(JSON.stringify(payload));
 function evidenceSet({events=30,feedback=20,root=10}={}){
   const rows=[];
   for(let i=0;i<events;i++)rows.push(enc('neural-event-shadow:',{
+    eventId:`event-${i}`,
     eventType:'WORKER_RESULT',
     actionKind:'REQUEST_EVIDENCE',
     wouldFireWithoutPhase2Authority:false,
@@ -15,6 +16,7 @@ function evidenceSet({events=30,feedback=20,root=10}={}){
     fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
   }));
   for(let i=0;i<feedback;i++)rows.push(enc('neural-shadow-feedback:',{
+    sampleId:`feedback-${i}`,
     predictedResponsibility:'GAME_RUNTIME',
     observedResponsibility:'GAME_RUNTIME',
     matchState:'MATCH',
@@ -181,6 +183,37 @@ test('legacy root-cause evidence without sample identity cannot satisfy identity
   assert.equal(result.reviewEligible,false);
 });
 
+test('legacy unidentified feedback events and audit volume cannot qualify Phase2 review',()=>{
+  const evidence=evidenceSet({events:0,feedback:0,root:10});
+  for(let i=0;i<30;i++)evidence.push(enc('neural-event-shadow:',{
+    eventType:'WORKER_RESULT',
+    actionKind:'REQUEST_EVIDENCE',
+    wouldFireWithoutPhase2Authority:false,
+    inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+    fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+  }));
+  for(let i=0;i<20;i++)evidence.push(enc('neural-shadow-feedback:',{
+    predictedResponsibility:'GAME_RUNTIME',
+    observedResponsibility:'GAME_RUNTIME',
+    matchState:'MATCH',
+    responsibilityMatch:true,
+    sampleEligible:true
+  }));
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:10,distinctSampleIds:0,legacyUnidentifiedRows:10}
+  });
+  assert.equal(result.evidenceSummary.events.total,30);
+  assert.equal(result.evidenceSummary.events.identifiedEventCount,0);
+  assert.equal(result.evidenceSummary.feedback.calibrationEligible,20);
+  assert.equal(result.evidenceSummary.feedback.identifiedCalibrationEligible,0);
+  assert.equal(result.gates.shadowEventVolume,false);
+  assert.equal(result.gates.calibrationVolume,false);
+  assert.equal(result.gates.waveAuditVolume,false);
+  assert.equal(result.gates.verifiedRootCauseVolume,true);
+  assert.equal(result.reviewEligible,false);
+});
+
 test('any unauthorized shadow fire blocks review eligibility',()=>{
   const evidence=evidenceSet();
   evidence.push(enc('neural-event-shadow:',{
@@ -197,6 +230,53 @@ test('any unauthorized shadow fire blocks review eligibility',()=>{
   assert.equal(result.reviewEligible,false);
   assert.equal(result.gates.zeroUnauthorizedFire,false);
   assert.equal(result.gates.shadowSafetyInvariant,false);
+});
+
+test('conflicting readiness sample identities block explicit review across feedback events and audit',()=>{
+  const evidence=evidenceSet();
+  evidence.push(
+    enc('neural-shadow-feedback:',{
+      sampleId:'feedback-conflict',
+      predictedResponsibility:'GAME_RUNTIME',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MATCH',
+      responsibilityMatch:true,
+      sampleEligible:true
+    }),
+    enc('neural-shadow-feedback:',{
+      sampleId:'feedback-conflict',
+      predictedResponsibility:'VALIDATOR',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MISMATCH',
+      responsibilityMatch:false,
+      sampleEligible:true
+    }),
+    enc('neural-event-shadow:',{
+      eventId:'event-conflict',
+      eventType:'WORKER_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    }),
+    enc('neural-event-shadow:',{
+      eventId:'event-conflict',
+      eventType:'QA_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    })
+  );
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:10,sampleConflicts:1}
+  });
+  assert.equal(result.gates.zeroFeedbackSampleConflicts,false);
+  assert.equal(result.gates.zeroShadowEventConflicts,false);
+  assert.equal(result.gates.zeroShadowAuditSampleConflicts,false);
+  assert.equal(result.reviewEligible,false);
+  assert.equal(result.executionAuthorityGranted,false);
 });
 
 test('root cause summary preserves prediction contradictions for explicit review',()=>{
