@@ -84,6 +84,26 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.adaptiveBackpressure.externalBatchMax,256);
 });
 
+test('real Web artifact practice repeats in GAME_PRIMARY while source-free idle learning stays read-only',()=>{
+  const practice=runtime.continuous.realWebArtifactPracticeLoop;
+  assert.equal(runtime.version>=17,true);
+  assert.equal(practice.enabled,true);
+  assert.equal(practice.lane,'GAME_PRIMARY');
+  assert.equal(practice.firstBaseline,'APPROVED_DESIGN_BOOTSTRAP');
+  assert.equal(practice.recurringBaseline,'CURRENT_VERIFIED_WEB_ARTIFACT');
+  assert.equal(practice.sourceWriteScope,'CANDIDATE_BRANCH_ONLY');
+  assert.equal(practice.freshQaRequired,true);
+  assert.equal(practice.runtimeComparisonRequired,true);
+  assert.equal(practice.repeatOnVerifiedImprovement,true);
+  assert.equal(practice.terminalCompletion,false);
+  assert.equal(practice.productionReleaseUsesExistingGateOnly,true);
+  assert.equal(practice.directMainWrite,false);
+  assert.equal(runtime.continuous.executionLanes.LEARNING_IDLE.sourceWriteAllowed,false);
+  assert.equal(runtime.continuous.executionLanes.LEARNING_IDLE.productionReleaseAllowed,false);
+  assert.equal(runtime.continuous.signalLiveness.realArtifactPracticeFeedsNextCausalGeneration,true);
+  assert.equal(runtime.continuous.signalLiveness.verifiedBetterArtifactIsNextPracticeBaseline,true);
+});
+
 test('graphics presentation uses atomic neuron task micro-fan-in without expanding authority',()=>{
   const presentation=roadmap.presentationPipelineImplementation;
   const assets=roadmap.assetProductionParallelContract;
