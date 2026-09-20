@@ -8,7 +8,7 @@ const enc=(prefix,payload)=>prefix+encodeURIComponent(JSON.stringify(payload));
 function evidenceSet({events=30,feedback=20,root=10}={}){
   const rows=[];
   for(let i=0;i<events;i++)rows.push(enc('neural-event-shadow:',{
-    eventId:`event-${i}`,
+    eventId:`task-${i}|reservation-${i}|primary|candidate-${i}`,
     eventType:'WORKER_RESULT',
     actionKind:'REQUEST_EVIDENCE',
     wouldFireWithoutPhase2Authority:false,
@@ -16,7 +16,7 @@ function evidenceSet({events=30,feedback=20,root=10}={}){
     fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
   }));
   for(let i=0;i<feedback;i++)rows.push(enc('neural-shadow-feedback:',{
-    sampleId:`feedback-${i}`,
+    sampleId:`feedback-task-${i}|feedback-reservation-${i}|primary|feedback-candidate-${i}`,
     predictedResponsibility:'GAME_RUNTIME',
     observedResponsibility:'GAME_RUNTIME',
     matchState:'MATCH',
@@ -27,7 +27,7 @@ function evidenceSet({events=30,feedback=20,root=10}={}){
     authorityPromotionEligible:false
   }));
   for(let i=0;i<root;i++)rows.push(enc('neural-root-cause:',{
-    sampleId:`root-${i}`,
+    sampleId:`root-task-${i}|root-reservation-${i}|primary|root-candidate-${i}`,
     state:'ROOT_CAUSE_VERIFIED',
     rootCauseVerified:true,
     responsibleSystemVerified:true,
@@ -127,7 +127,7 @@ test('duplicate root-cause evidence with the same sampleId counts once',()=>{
   const evidence=evidenceSet({root:0});
   for(let i=0;i<10;i++){
     const row=enc('neural-root-cause:',{
-      sampleId:'same-root-sample',
+      sampleId:'same-root-task|same-root-reservation|primary|same-root-candidate',
       state:'ROOT_CAUSE_VERIFIED',
       rootCauseVerified:true,
       responsibleSystemVerified:true,
@@ -150,7 +150,7 @@ test('duplicate root-cause evidence with the same sampleId counts once',()=>{
 test('conflicting root-cause results for the same sampleId block review',()=>{
   const evidence=evidenceSet();
   evidence.push(enc('neural-root-cause:',{
-    sampleId:'root-0',
+    sampleId:'root-task-0|root-reservation-0|primary|root-candidate-0',
     state:'ROOT_CAUSE_VERIFIED',
     rootCauseVerified:true,
     responsibleSystemVerified:true,
@@ -180,6 +180,52 @@ test('legacy root-cause evidence without sample identity cannot satisfy identity
   assert.equal(result.evidenceSummary.rootCause.verified,10);
   assert.equal(result.evidenceSummary.rootCause.verifiedSampleIdentityCoverage,0);
   assert.equal(result.gates.rootCauseSampleIdentityCoverage,false);
+  assert.equal(result.reviewEligible,false);
+});
+
+test('partial noncanonical identities are treated as legacy and cannot satisfy readiness volume',()=>{
+  const evidence=[
+    enc('neural-event-shadow:',{
+      eventId:'task-only',
+      eventType:'WORKER_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    }),
+    enc('neural-shadow-feedback:',{
+      sampleId:'task-only',
+      predictedResponsibility:'GAME_RUNTIME',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MATCH',
+      responsibilityMatch:true,
+      sampleEligible:true
+    }),
+    enc('neural-root-cause:',{
+      sampleId:'task-only',
+      state:'ROOT_CAUSE_VERIFIED',
+      rootCauseVerified:true,
+      responsibleSystemVerified:true,
+      responsibleSystem:'GAME_RUNTIME',
+      predictedResponsibleSystem:'GAME_RUNTIME',
+      predictedSystemConsistentWithVerified:true
+    })
+  ];
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:1,distinctSampleIds:0},
+    thresholds:{shadowEvents:1,calibrationEligible:1,verifiedRootCause:1,waveAuditSamples:1}
+  });
+  assert.equal(result.evidenceSummary.events.distinctEventIds,0);
+  assert.equal(result.evidenceSummary.events.legacyUnidentifiedRows,1);
+  assert.equal(result.evidenceSummary.feedback.distinctSampleIds,0);
+  assert.equal(result.evidenceSummary.feedback.legacyUnidentifiedRows,1);
+  assert.equal(result.evidenceSummary.rootCause.distinctSampleIds,0);
+  assert.equal(result.evidenceSummary.rootCause.legacyUnidentifiedRows,1);
+  assert.equal(result.gates.shadowEventVolume,false);
+  assert.equal(result.gates.calibrationVolume,false);
+  assert.equal(result.gates.verifiedRootCauseVolume,false);
+  assert.equal(result.gates.waveAuditVolume,false);
   assert.equal(result.reviewEligible,false);
 });
 
@@ -282,7 +328,7 @@ test('conflicting readiness sample identities block explicit review across feedb
 test('root cause summary preserves prediction contradictions for explicit review',()=>{
   const summary=summarizeNeuralRootCauseEvidence([
     enc('neural-root-cause:',{
-      sampleId:'contradiction-sample',
+      sampleId:'contradiction-task|contradiction-reservation|primary|contradiction-candidate',
       state:'ROOT_CAUSE_VERIFIED',
       rootCauseVerified:true,
       responsibleSystemVerified:true,
