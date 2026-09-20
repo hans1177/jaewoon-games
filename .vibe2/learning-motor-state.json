@@ -5,18 +5,18 @@
   "authorityExpanded": false,
   "domains": {
     "CORE_LOOP": {
-      "xp": 801,
+      "xp": 816,
       "level": 10,
       "verifiedSuccesses": 61,
-      "verifiedFailureLessons": 21,
-      "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
+      "verifiedFailureLessons": 24,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "STATE_MACHINE": {
-      "xp": 1207,
+      "xp": 1222,
       "level": 12,
       "verifiedSuccesses": 78,
-      "verifiedFailureLessons": 63,
-      "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
+      "verifiedFailureLessons": 66,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "COMBAT": {
       "xp": 918,
@@ -33,11 +33,11 @@
       "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
     },
     "PROGRESSION": {
-      "xp": 1024,
+      "xp": 1039,
       "level": 11,
       "verifiedSuccesses": 67,
-      "verifiedFailureLessons": 44,
-      "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
+      "verifiedFailureLessons": 47,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "ECONOMY": {
       "xp": 773,
@@ -54,11 +54,11 @@
       "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
     },
     "MOBILE_INPUT": {
-      "xp": 654,
+      "xp": 669,
       "level": 9,
       "verifiedSuccesses": 45,
-      "verifiedFailureLessons": 30,
-      "lastEvidence": "capability_ctrace_d1fc214a9466b3499d56576b"
+      "verifiedFailureLessons": 33,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "UI_STATE": {
       "xp": 152,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_98ff2306686a32e38f808a33"
     },
     "DEBUGGING": {
-      "xp": 1195,
+      "xp": 1210,
       "level": 12,
       "verifiedSuccesses": 79,
-      "verifiedFailureLessons": 63,
-      "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
+      "verifiedFailureLessons": 66,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "RECOVERY": {
       "xp": 829,
@@ -159,11 +159,11 @@
       "lastEvidence": null
     },
     "QUEST_DESIGN": {
-      "xp": 935,
+      "xp": 950,
       "level": 11,
       "verifiedSuccesses": 60,
-      "verifiedFailureLessons": 43,
-      "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
+      "verifiedFailureLessons": 46,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "CHARACTER_ARC": {
       "xp": 0,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1087,
+      "xp": 1102,
       "level": 11,
       "verifiedSuccesses": 66,
-      "verifiedFailureLessons": 59,
-      "lastEvidence": "capability_ctrace_c309f6cac4c6972e940e2026"
+      "verifiedFailureLessons": 62,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -399,7 +399,10 @@
     "capability_ctrace_c77e9012adc1458e5f026af9",
     "capability_ctrace_adb1ce10908e499845334f28",
     "capability_ctrace_d1fc214a9466b3499d56576b",
-    "capability_ctrace_c309f6cac4c6972e940e2026"
+    "capability_ctrace_c309f6cac4c6972e940e2026",
+    "capability_ctrace_12dba6009c4fe760e1a6434c",
+    "capability_ctrace_b1c2d614daba7e9c3d08916a",
+    "capability_ctrace_7be1cd8142cd777790f2e0ed"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -607,8 +610,8 @@
       ]
     },
     "fail_lhx93q": {
-      "count": 6,
-      "lastEvidence": "capability_ctrace_eadef2ba18e5b70b32b8ecfa",
+      "count": 9,
+      "lastEvidence": "capability_ctrace_7be1cd8142cd777790f2e0ed",
       "example": "SOURCE_CANDIDATE_GENERATION:DIAGNOSTIC_POSTCONDITION",
       "domains": [
         "CORE_LOOP",
@@ -617,7 +620,9 @@
         "SAVE",
         "MOBILE_INPUT",
         "DEBUGGING",
-        "WEB_RUNTIME"
+        "WEB_RUNTIME",
+        "PROGRESSION",
+        "QUEST_DESIGN"
       ]
     },
     "fail_17sa11i": {
@@ -7382,7 +7387,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T20:25:11.276Z",
+    "lastBuiltAt": "2026-09-20T20:25:26.595Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9793,5 +9798,5 @@
       "knowledge_1berobn"
     ]
   },
-  "updatedAt": "2026-09-20T20:25:11.276Z"
+  "updatedAt": "2026-09-20T20:25:26.595Z"
 }
