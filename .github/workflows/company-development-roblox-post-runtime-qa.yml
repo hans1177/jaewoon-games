@@ -5,6 +5,16 @@ on:
     workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      studio_qa_approved:
+        description: 'Explicit human approval to run one local-place Roblox Studio mobile/regression QA session'
+        required: true
+        default: false
+        type: boolean
+      game_id:
+        description: 'Exact gameId allowed for this Studio QA session; required when studio_qa_approved=true'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -16,7 +26,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'
+  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'
 
 jobs:
   qa-plan:
@@ -47,31 +57,59 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - name: Resolve exact-artifact post-runtime QA targets
         id: targets
+        env:
+          STUDIO_QA_APPROVED: ${{ inputs.studio_qa_approved }}
+          MANUAL_GAME_ID: ${{ inputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const humanApproved=process.env.GITHUB_EVENT_NAME==='workflow_dispatch'
+            &&String(process.env.STUDIO_QA_APPROVED||'').toLowerCase()==='true'
+            &&String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]';
+          const manualGameId=String(process.env.MANUAL_GAME_ID||'').trim();
           const rows=[];
+          if(!humanApproved||!manualGameId){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'count=0\n');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:[]})}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json=[]\n');
+            console.log('ROBLOX_STUDIO_QA_UNATTENDED_AUTORUN=FORBIDDEN');
+            console.log('ROBLOX_STUDIO_QA_MANUAL_APPROVAL_REQUIRED=YES');
+            console.log(`ROBLOX_STUDIO_QA_APPROVAL_PRESENT=${humanApproved?'YES':'NO'}`);
+            console.log(`ROBLOX_STUDIO_QA_EXACT_GAME_ID_PRESENT=${manualGameId?'YES':'NO'}`);
+            process.exit(0);
+          }
           for(const item of q.items||[]){
+            if(item.gameId!==manualGameId)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
-            const revision=String(item.robloxSourceCommit||'').trim();
-            const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
-            const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
-            const runtime=item.robloxRuntimePassed===true&&item.robloxServerClientBoundaryPassed===true;
-            const pending=item.robloxMobileControlUiPassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true;
+            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exact=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+            const runtime=secondaryOwnerFocus
+              ?item.ownerFocusRobloxRuntimePassed===true&&item.ownerFocusRobloxServerClientBoundaryPassed===true
+              :item.robloxRuntimePassed===true&&item.robloxServerClientBoundaryPassed===true;
+            const pending=secondaryOwnerFocus
+              ?item.ownerFocusRobloxMobileControlUiPassed!==true||item.ownerFocusRobloxIndependentQaPassed!==true||item.ownerFocusRobloxRegressionPassed!==true
+              :item.robloxMobileControlUiPassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true;
             if(!exact||!runtime||!pending)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact});
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact,secondaryOwnerFocus});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3');
-          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES');
+          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1');
+          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION');
           NODE
 
   qa-worker:
@@ -80,7 +118,7 @@ jobs:
     if: needs.qa-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 1
       matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 45
@@ -229,6 +267,7 @@ jobs:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           ARTIFACT_RUN: ${{ steps.package.outputs.artifact_run }}
           PACKAGE_OUTCOME: ${{ steps.package.outcome }}
           STUDIO_OUTCOME: ${{ steps.studio.outcome }}
@@ -249,7 +288,7 @@ jobs:
           $runId = 0
           if ($env:ARTIFACT_RUN -match '^\d+$') { $runId = [int64]$env:ARTIFACT_RUN }
           $evidence = [ordered]@{
-            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; checkedAt=(Get-Date).ToUniversalTime().ToString('o');
+            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; secondaryOwnerFocus=($env:SECONDARY_OWNER_FOCUS -eq 'true'); checkedAt=(Get-Date).ToUniversalTime().ToString('o');
             sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=$runId; exactRevision=$true;
             actualStudioRuntime=$true; phoneDeviceSimulationPassed=$independentPass; mobileTouchInteractionPassed=$independentPass;
             mobileControlUiPassed=$independentPass; independentQaPassed=$independentPass; regressionPassed=$regressionPass;
@@ -339,9 +378,26 @@ jobs:
           for(const target of expected){
             const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
             const r=byId.get(target.gameId);
-            const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity&&r?.exactRevision===true;
+            const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            const sourceRevision=secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit;
+            const artifactIdentity=secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity;
+            const exact=r?.sourceRevision===sourceRevision&&r?.artifactIdentity===artifactIdentity&&r?.exactRevision===true&&Boolean(r?.secondaryOwnerFocus)===secondaryOwnerFocus;
             const independent=exact&&r?.mobileControlUiPassed===true&&r?.independentQaPassed===true;
             const regression=independent&&r?.regressionPassed===true;
+            if(secondaryOwnerFocus){
+              item.ownerFocusRobloxPostRuntimeQaEvidence=r||null;
+              item.ownerFocusRobloxMobileControlUiPassed=independent;
+              item.ownerFocusRobloxIndependentQaPassed=independent;
+              item.ownerFocusRobloxRegressionPassed=regression;
+              item.ownerFocusRobloxExactRevisionPassed=exact;
+              item.ownerFocusRobloxIndependentQaPassedAt=independent?stamp:null;
+              item.ownerFocusRobloxRegressionPassedAt=regression?stamp:null;
+              item.ownerFocusRobloxAssetPipelineState=regression?'QA_READY':independent?'REGRESSION_REPAIR_REQUIRED':'INDEPENDENT_QA_REPAIR_REQUIRED';
+              item.ownerFocusRobloxPostRuntimeFailure=regression?null:independent?'ROBLOX_REGRESSION_FAILED':(r?.failure||'ROBLOX_INDEPENDENT_QA_FAILED');
+              item.updatedAt=stamp;
+              if(regression)pass++;else fail++;
+              continue;
+            }
             item.robloxPostRuntimeQaEvidence=r||null;
             item.robloxMobileControlUiPassed=independent;
             item.robloxIndependentQaPassed=independent;
@@ -472,8 +528,8 @@ jobs:
       - name: Final summary
         run: |
           echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
-          echo 'ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3'
-          echo 'ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES'
+          echo 'ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1'
+          echo 'ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION'
           echo 'ROBLOX_MOBILE_CONTROL_UI_REAL_DEVICE_SIMULATION_REQUIRED=YES'
           echo 'ROBLOX_INDEPENDENT_QA_REAL_STUDIO_REQUIRED=YES'
           echo 'ROBLOX_REGRESSION_EXACT_ARTIFACT_REQUIRED=YES'

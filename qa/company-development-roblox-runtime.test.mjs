@@ -221,7 +221,7 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
   assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
 
-test('Roblox package completion has one canonical continuation into preflight and actual Studio runtime',()=>{
+test('Roblox package completion auto-dispatches preflight only while Studio remains human-approved',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const continuation=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   assert.ok(continuation.includes('workflow_dispatch:'));
@@ -231,6 +231,10 @@ test('Roblox package completion has one canonical continuation into preflight an
   assert.ok(continuation.includes('Roblox Studio runtime'));
   assert.ok(continuation.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'));
   assert.ok(continuation.includes('ROBLOX_FAKE_RUNTIME_PASS=FORBIDDEN'));
+  assert.ok(continuation.includes('studio_run_approved:'));
+  assert.ok(continuation.includes('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN'));
+  assert.ok(continuation.includes("process.env.GITHUB_EVENT_NAME==='workflow_dispatch'"));
+  assert.ok(continuation.includes("String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]'"));
   assert.ok(!continuation.includes('company-development-roblox-bootstrap.mjs'));
   assert.ok(!continuation.includes('company-development-roblox-package.mjs'));
 });
@@ -245,7 +249,7 @@ test('new Roblox package identity clears every downstream preflight runtime and 
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('bot-dispatched Roblox package flow wakes continuation and preserves exact runtime handoff',()=>{
+test('bot-dispatched Roblox package flow wakes preflight continuation but never grants Studio approval',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.ok(workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
@@ -254,7 +258,11 @@ test('bot-dispatched Roblox package flow wakes continuation and preserves exact 
   assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_MANUAL_WORKFLOW_DISPATCH_REQUIRED=YES'));
+  assert.ok(!workflow.includes('studio_run_approved=true'));
 });
+
 
 test('Roblox bootstrap consumes Vibe3 playbook and transformative learning context',()=>{
   const playbooks={
@@ -392,4 +400,14 @@ test('owner-focused concurrent Roblox lane carries exact merged source revision 
   assert.doesNotMatch(secondaryPersist,/targetPlatform:'ROBLOX'/);
   assert.doesNotMatch(secondaryPersist,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
   assert.doesNotMatch(secondaryPersist,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+});
+
+test('owner-focused Roblox package completion dispatches the existing continuation without canonical Unity mutation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/ownerFocusRobloxBuildOrPackagePassed===true/);
+  assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
+  assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
+  assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
 });

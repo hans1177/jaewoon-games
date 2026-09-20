@@ -91,19 +91,26 @@ test('malformed Vibe2 handoff cannot bypass missing Web or music eligibility at 
   assert.ok(result.blockers.includes('music-validation-missing'));
 });
 
-test('runtime uses authenticated self-hosted Windows runner pool and the original package identity for actual Roblox Studio multiplayer sessions',()=>{
+test('runtime uses one explicitly human-approved local-place Studio session and exact package identity',()=>{
   assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '9'"));
-  assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'"));
+  assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'"));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.ok(!workflow.includes('runs-on: windows-latest'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));
-  assert.ok(workflow.includes('max-parallel: 3'));
+  assert.ok(workflow.includes("studio_run_approved:"));
+  assert.ok(workflow.includes("game_id:"));
+  assert.ok(workflow.includes("process.env.GITHUB_EVENT_NAME==='workflow_dispatch'"));
+  assert.ok(workflow.includes("String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]'"));
+  assert.ok(workflow.includes("ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN"));
+  assert.ok(workflow.includes("ROBLOX_STUDIO_MANUAL_APPROVAL_REQUIRED=YES"));
+  assert.ok(workflow.includes("if(item.gameId!==manualGameId)continue;"));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION'));
+  assert.ok(workflow.includes('max-parallel: 1'));
   assert.ok(workflow.includes("const maxRetryableFailures=2"));
   assert.ok(workflow.includes("const retryBudgetAvailable=retryCount<maxRetryableFailures"));
-  assert.ok(workflow.includes("const securityHold=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure)"));
-  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'")||workflow.includes("const retryableStudioBusy=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
-  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'")||workflow.includes("const retryableStudioStateMigration=!securityHold&&!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
+  assert.ok(workflow.includes("const securityHold=runtimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure)"));
+  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&runtimePassed!==true&&runtimeEvidence?.failure==='roblox-studio-busy'"));
+  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&runtimePassed!==true&&runtimeEvidence?.failure==='roblox-studio-busy'"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('Resolve authenticated local Roblox Studio'));
@@ -125,9 +132,9 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes('ROBLOX_STUDIO_STALE_AUTOMATION_CLEANUP=YES'));
   assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
   assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
-  assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
+  assert.ok(workflow.includes("runtimeEvidence?.failure==='roblox-studio-install-failed'"));
   assert.ok(workflow.includes("'roblox-studio-runtime-failed','roblox-studio-runtime-timeout'"));
-  assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
+  assert.ok(workflow.includes("failureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
   assert.ok(workflow.includes("$authDeadline = (Get-Date).AddSeconds(15)"));
   assert.ok(workflow.includes('$p.WaitForExit(165000)'));
   assert.ok(workflow.includes("'roblox-studio-authentication-required'"));
@@ -139,6 +146,9 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes("'roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
+  assert.ok(!workflow.includes('--placeId'));
+  assert.ok(!workflow.includes('--universeId'));
+  assert.ok(!workflow.includes('PublishAsync'));
   assert.ok(workflow.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'));
   assert.ok(smoke.includes('StudioTestService:ExecuteMultiplayerTestAsync(1'));
   assert.ok(smoke.includes('task.delay(90'));
@@ -146,8 +156,8 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES'));
   assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));
   assert.ok(!smoke.includes('print("ROBLOX_RUNTIME_SMOKE=PASS")'));
-  assert.ok(workflow.includes("(item.robloxRuntimePassed===true&&sameHarness)"));
-  assert.ok(workflow.includes("(item.robloxRuntimePassed!==true||!sameHarness)"));
+  assert.ok(workflow.includes("(runtimePassed===true&&sameHarness)"));
+  assert.ok(workflow.includes("if(preflightPassed!==true||(runtimePassed===true&&sameHarness)"));
   assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
 });
 
@@ -195,4 +205,49 @@ test('runtime success does not invent later QA, datastore, regression, final rev
   assert.ok(persistHelper.includes('ROBLOX_FINAL_REVIEW_PASS=NO'));
   assert.ok(persistHelper.includes('ROBLOX_RELEASE_CLAIM=NO'));
   assert.ok(persistHelper.includes('robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true'));
+});
+
+test('owner-focused secondary Roblox keeps canonical Unity while using exact preflight and Studio runtime evidence',()=>{
+  const item={
+    gameId:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    webValidationPassedAt:'2026-09-20T00:00:00.000Z',musicValidationPassed:true,
+    ownerFocusRobloxSourceBootstrapPassedAt:'2026-09-20T00:01:00.000Z',
+    ownerFocusRobloxSourceCommit:'a'.repeat(40),
+    ownerFocusRobloxBuildOrPackagePassed:true,
+    ownerFocusRobloxBuildSourceRevision:'a'.repeat(40),
+    ownerFocusRobloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  };
+  const verdict=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus:true});
+  assert.equal(verdict.pass,true,verdict.blockers.join(','));
+  assert.equal(verdict.secondaryOwnerFocus,true);
+  assert.equal(item.selectedPlatform,'UNITY');
+  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
+  assert.match(workflow,/--secondary-owner-focus="\$SECONDARY_OWNER_FOCUS"/);
+  assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed:true/);
+  assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
+  assert.match(workflow,/secondaryOwnerFocus=\(\$env:SECONDARY_OWNER_FOCUS -eq 'true'\)/);
+  assert.match(persistHelper,/ownerFocusRobloxAssetPipelineState:'RUNTIME_READY'/);
+  assert.match(persistHelper,/Boolean\(r\?\.secondaryOwnerFocus\)===secondaryOwnerFocus/);
+});
+
+test('secondary Roblox runtime persistence never rewrites the canonical selected-platform fields',()=>{
+  const start=persistHelper.indexOf("if(secondaryOwnerFocus){");
+  const end=persistHelper.indexOf("\n    continue;",start);
+  assert.ok(start>=0&&end>start,'secondary runtime persist branch missing');
+  const block=persistHelper.slice(start,end);
+  assert.doesNotMatch(block,/selectedPlatform\s*:/);
+  assert.doesNotMatch(block,/targetPlatform\s*:/);
+  assert.doesNotMatch(block,/currentStep\s*:/);
+  assert.doesNotMatch(block,/canonicalState\s*:/);
+});
+
+
+test('automatic continuation may run preflight but can never launch Studio without a human dispatch',()=>{
+  assert.match(workflow,/studio_run_approved:/);
+  assert.match(workflow,/STUDIO_RUN_APPROVED: \$\{\{ inputs\.studio_run_approved \}\}/);
+  assert.match(workflow,/GITHUB_EVENT_NAME==='workflow_dispatch'/);
+  assert.match(workflow,/GITHUB_ACTOR\|\|''\)!=='github-actions\[bot\]'/);
+  assert.match(workflow,/ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN/);
+  assert.match(workflow,/const runnerWip=1/);
+  assert.match(workflow,/if\(!humanApproved\|\|!manualGameId\)\{/);
 });
