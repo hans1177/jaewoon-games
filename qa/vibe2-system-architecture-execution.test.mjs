@@ -30,6 +30,12 @@ test('system architecture contract restricts exact repo system paths',()=>{
   assert.equal(c.rule5NeuronizationRequired,true);
   assert.equal(c.rule5CentralCodeSyncRequired,true);
 });
+test('system architecture task fails closed when rule5 closure evidence is missing',()=>{
+  const t=task();
+  t.evidence=t.evidence.filter(value=>!value.startsWith('architecture-rule5-'));
+  assert.throws(()=>assertSystemArchitectureTask(t),/SYSTEM_ARCHITECTURE_RULE5_ATOMIZATION_REQUIRED/);
+});
+
 test('system architecture task bypasses game design pipeline but keeps central work contract',()=>{
   const t=task();
   const policy=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
