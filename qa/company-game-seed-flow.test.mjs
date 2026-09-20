@@ -240,7 +240,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(seedDesignWorkflow,/sleep 15/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.ok((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length>=5);
-  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=CANONICAL_ROADMAP/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=\$\{unboundedByPolicy\?'CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH':'CANONICAL_ROADMAP_NUMERIC_CAP'\}/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_SCHEDULING_MODE=/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_ROBLOX_FIRST=/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_FORCE_PROMOTION=NO/);
