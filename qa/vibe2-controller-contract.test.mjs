@@ -530,7 +530,9 @@ test('phase 4 passive benchmark reuses existing tournament workers without queue
   const runner=fs.readFileSync('tools/vibe2-continuous-runner.mjs','utf8');
   assert.match(runner,/buildPassiveCapabilityBenchmarkContract/);
   assert.match(runner,/phase4BenchmarkVerification/);
-  assert.match(runner,/PHASE4_FIXED_CONTEXT_CONTROLLED_AB/);
+  assert.match(runner,/fixedCandidateStrategy/);
+  const capability=fs.readFileSync('tools/vibe2-capability-distillation.mjs','utf8');
+  assert.match(capability,/PHASE4_FIXED_CONTEXT_CONTROLLED_AB/);
   assert.match(runner,/workerCreationRequired:false|phase4BenchmarkVerification/);
   const sourceWorker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(sourceWorker,/explorationOrder=order\?\.phase4BenchmarkVerification\?\.active===true/);
