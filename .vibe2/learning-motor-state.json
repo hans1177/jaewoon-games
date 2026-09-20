@@ -1025,7 +1025,8 @@
       "coding_1ai0xhw",
       "coding_tqivdn",
       "coding_7gfkdk",
-      "coding_1ef16il"
+      "coding_1ef16il",
+      "coding_85f8qx"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -1899,13 +1900,14 @@
       "coding_negative_1dw64g0",
       "coding_negative_p562xy",
       "coding_negative_z9yov6",
-      "coding_negative_l0e87t"
+      "coding_negative_l0e87t",
+      "coding_negative_1hsanq7"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 40,
+        "verifiedApplications": 41,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 106,
+        "totalGenerationAttempts": 108,
         "verifiedFailures": 318,
         "games": {
           "territory-war": 2,
@@ -1920,12 +1922,12 @@
           "monster-adventure": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 2,
           "village-dungeons": 3,
-          "survival": 3,
+          "survival": 4,
           "line-defense": 3,
           "seed-casual-realm-weaver": 1
         },
         "targets": {
-          "web": 40
+          "web": 41
         },
         "contextModes": {
           "UNKNOWN": {
@@ -1949,14 +1951,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 28,
+            "verifiedApplications": 29,
             "verifiedFailures": 160,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 62,
-            "totalContextBytes": 471007,
-            "lastEvidence": "coding_tqivdn",
+            "totalGenerationAttempts": 64,
+            "totalContextBytes": 478699,
+            "lastEvidence": "coding_85f8qx",
             "lastFailureEvidence": "coding_negative_z9yov6",
-            "lastUpdatedAt": "2026-09-20T16:38:57.201Z"
+            "lastUpdatedAt": "2026-09-20T16:40:13.961Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -2571,34 +2573,34 @@
             "lastUpdatedAt": "2026-09-20T14:12:01.167Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
-            "verifiedApplications": 3,
+            "verifiedApplications": 4,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 6,
+            "totalGenerationAttempts": 8,
             "verifiedFailures": 0,
             "games": {
-              "survival": 3
+              "survival": 4
             },
             "targets": {
-              "web": 3
+              "web": 4
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_1mg84p1",
+            "lastEvidence": "coding_85f8qx",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
+            "lastUpdatedAt": "2026-09-20T16:40:13.961Z"
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_tqivdn",
+        "lastEvidence": "coding_85f8qx",
         "lastFailureEvidence": "coding_negative_z9yov6",
-        "lastUpdatedAt": "2026-09-20T16:38:57.201Z"
+        "lastUpdatedAt": "2026-09-20T16:40:13.961Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 46,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 99,
-        "verifiedFailures": 278,
+        "verifiedFailures": 279,
         "games": {
           "territory-war": 11,
           "bug-defense": 2,
@@ -2641,13 +2643,13 @@
           },
           "PRIMARY_SYMBOL_WINDOWS": {
             "verifiedApplications": 24,
-            "verifiedFailures": 98,
+            "verifiedFailures": 99,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 48,
             "totalContextBytes": 249551,
             "lastEvidence": "coding_8o7skt",
-            "lastFailureEvidence": "coding_negative_l0e87t",
-            "lastUpdatedAt": "2026-09-20T16:38:57.201Z"
+            "lastFailureEvidence": "coding_negative_1hsanq7",
+            "lastUpdatedAt": "2026-09-20T16:40:13.961Z"
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 2,
@@ -2757,7 +2759,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 4,
+            "verifiedFailures": 5,
             "games": {
               "bug-defense": 1,
               "survival": 1
@@ -2767,18 +2769,18 @@
             },
             "failureGames": {
               "bug-defense": 2,
-              "survival": 2
+              "survival": 3
             },
             "failureTargets": {
-              "web": 4
+              "web": 5
             },
             "failureClasses": {
               "EDIT_MATCH": 2,
-              "NO_OP": 2
+              "NO_OP": 3
             },
             "lastEvidence": "coding_15r57ty",
-            "lastFailureEvidence": "coding_negative_1uuhjru",
-            "lastUpdatedAt": "2026-09-20T16:16:51.968Z"
+            "lastFailureEvidence": "coding_negative_1hsanq7",
+            "lastUpdatedAt": "2026-09-20T16:40:13.961Z"
           },
           "web|TIMEOUT": {
             "verifiedApplications": 20,
@@ -3571,8 +3573,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_vpzoof",
-        "lastFailureEvidence": "coding_negative_l0e87t",
-        "lastUpdatedAt": "2026-09-20T16:38:57.201Z"
+        "lastFailureEvidence": "coding_negative_1hsanq7",
+        "lastUpdatedAt": "2026-09-20T16:40:13.961Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 333,
@@ -7057,7 +7059,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-20T16:39:52.122Z",
+    "lastBuiltAt": "2026-09-20T16:40:13.988Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -9246,5 +9248,5 @@
       "knowledge_1r2fe2j"
     ]
   },
-  "updatedAt": "2026-09-20T16:39:52.122Z"
+  "updatedAt": "2026-09-20T16:40:13.988Z"
 }
