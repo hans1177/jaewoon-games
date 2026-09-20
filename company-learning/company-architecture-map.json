@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -235,7 +235,7 @@
     "version": 1,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
-    "currentState": "PHASE2_DETERMINISTIC_SAMPLE_ID_CONNECTED",
+    "currentState": "PHASE2_SHADOW_OBSERVATION_ACTIVE_ON_MAIN",
     "targetState": "EVENT_DRIVEN_NEURAL_WORK_GRAPH_PRIMARY",
     "layers": [
       "CENTRAL_CONSTITUTION",
@@ -379,6 +379,13 @@
       "sampleIdentityDeterministic": true,
       "sampleDedupScope": "EXACT_EVENT_SAMPLE_ONLY",
       "retrySamplesAcrossReservationsRemainDistinct": true
+    },
+    "activation": {
+      "mainCommit": "42d6863a1d47bd7ad7863457e8562a22136b3c5a",
+      "shadowObservationActive": true,
+      "eventRoutingExecutionAuthority": "NONE",
+      "waveSchedulerAuthority": "UNCHANGED_AND_AUTHORITATIVE",
+      "promotionAuthority": "EXPLICIT_CENTRAL_POLICY_ONLY"
     }
   }
 }
