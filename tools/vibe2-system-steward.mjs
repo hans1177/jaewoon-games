@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, EXTERNAL_MATRIX_BATCH_MAX } from '../assets/vibe-continuous-queue.js';
-import { createParallelismControl, DEFAULT_TELEMETRY_TTL_MS } from './vibe2-adaptive-backpressure.mjs';
+import { createParallelismControl, DEFAULT_ADAPTIVE_TARGET, DEFAULT_TELEMETRY_TTL_MS, ADAPTIVE_PARALLELISM_STEPS } from './vibe2-adaptive-backpressure.mjs';
 
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback={})=>file&&fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
@@ -16,8 +16,8 @@ const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>
 const safeTask=t=>t?.requiresOwnerDecision!==true&&t?.protectedChange!==true&&t?.paidResourceRequired!==true;
 const activeStatus=s=>['queued','running'].includes(clean(s).toLowerCase());
 const waitBlocker=v=>/WAITING_FOR_GEMINI_QUOTA|external.*model.*quota|roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME/i.test(clean(v));
-const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'retry-exhausted';
-const ADAPTIVE_STEPS=new Set([4,8,16,20,32,64,128,256]);
+const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'causal-repair-required';
+const ADAPTIVE_STEPS=new Set(ADAPTIVE_PARALLELISM_STEPS.filter(step=>step>=DEFAULT_ADAPTIVE_TARGET));
 const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));
 const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   Number(queueInput?.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
@@ -32,8 +32,12 @@ function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
     return !Number.isFinite(at)||nowMs-at>Math.max(60_000,Number(staleMs)||45*60*1000);
   }).map(task=>task.id));
 }
-function exhaustedTasks(queue){
-  return queue.tasks.filter(task=>clean(task.status).toLowerCase()==='failed'&&Number(task.retries||0)>Number(task.maxRetries??2)&&safeTask(task));
+function unlimitedCausalRepairTasks(queue){
+  return queue.tasks.filter(task=>clean(task.status).toLowerCase()==='failed'
+    &&clean(task.retryPolicy).toUpperCase()==='UNLIMITED_CAUSAL_REPAIR'
+    &&clean(task.department).toLowerCase()==='development'
+    &&clean(task.type||'implementation').toLowerCase()==='implementation'
+    &&safeTask(task));
 }
 
 export function runSystemStewardState({queueInput={},controlInput={},now=new Date().toISOString(),staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS}={}){
@@ -46,11 +50,11 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
 
   if(rawControlVersionHealthy&&!rawControlStepHealthy){
     control=createParallelismControl({
-      currentMax:EXTERNAL_MATRIX_BATCH_MAX,
+      currentMax:DEFAULT_ADAPTIVE_TARGET,
       healthyStreak:0,
       pressureStreak:0,
       lastDecision:'RESET',
-      lastReason:'SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET',
+      lastReason:`SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET_TO_${DEFAULT_ADAPTIVE_TARGET}`,
       lastRunId:null,
       lastUpdatedAt:now,
       lastTelemetry:null
@@ -59,7 +63,7 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
   }
   if(queue.maxConcurrentTasks!==EXTERNAL_MATRIX_BATCH_MAX){
     queue=createVibeContinuousQueue({maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX,tasks:queue.tasks});
-    machineRepairActions.push('ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256');
+    machineRepairActions.push('ALIGN_QUEUE_EXTERNAL_BOUNDARY_256');
   }
 
   const repairedMachineStateHealthy=
@@ -75,7 +79,7 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
   if(staleMachineIds.size){
     queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>staleMachineIds.has(row.id)?{
       ...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED',
-      evidence:uniq([...(row.evidence||[]),'system-steward:stale-machine-state-blocker-recovered','system-steward:machine-state-revalidated:v3-external-wave-256'])
+      evidence:uniq([...(row.evidence||[]),'system-steward:stale-machine-state-blocker-recovered','system-steward:machine-state-revalidated:v3-external-boundary-256'])
     }:row)});
     actions.push('RECOVER_STALE_MACHINE_STATE_BLOCKER'); taskIds.push(...staleMachineIds);
   }
@@ -89,23 +93,23 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
     actions.push('RECOVER_STALE_RUNNING_RESERVATION'); taskIds.push(...staleIds);
   }
 
-  const exhausted=exhaustedTasks(queue);
-  if(exhausted.length){
-    const ids=new Set(exhausted.map(task=>task.id)),signatures=uniq(exhausted.map(failureSignature));
+  const causalRepair=unlimitedCausalRepairTasks(queue);
+  if(causalRepair.length){
+    const ids=new Set(causalRepair.map(task=>task.id)),signatures=uniq(causalRepair.map(failureSignature));
     queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>{
       if(!ids.has(row.id))return row;
       const generation=Math.max(0,Number(row.recoveryGeneration||0))+1,signature=failureSignature(row);
-      return {...clearReservation(row),status:'queued',retries:0,blocker:null,lastOutcome:'SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION',
-        recoveryGeneration:generation,estimatedRisk:'high',speculativeEligible:true,
-        evidence:uniq([...(row.evidence||[]),`system-steward:retry-exhausted-regenerated:generation-${generation}`,`repair-mode:CAUSAL_REGENERATION_GENERATION_${generation}`,`system-steward:failure-signature:${signature}`,'system-steward:fix-pattern:retry-exhausted-causal-regeneration'])};
+      return {...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_UNLIMITED_CAUSAL_REPAIR_RESUMED',
+        recoveryGeneration:generation,
+        evidence:uniq([...(row.evidence||[]),`system-steward:unlimited-causal-repair:resume:generation-${generation}`,'repair-mode:UNLIMITED_CAUSAL_REPAIR',`system-steward:failure-signature:${signature}`,'system-steward:fix-pattern:causal-repair-without-attempt-ceiling'])};
     })});
-    actions.push('REGENERATE_RETRY_EXHAUSTED_TASK'); taskIds.push(...ids);
+    actions.push('RESUME_UNLIMITED_CAUSAL_REPAIR'); taskIds.push(...ids);
     if(signatures.length)actions.push('PERSIST_REPEATED_FAILURE_SIGNATURE_SCOPE');
   }
 
   const lastAt=Date.parse(clean(control.lastUpdatedAt));
-  if(control.currentMax<EXTERNAL_MATRIX_BATCH_MAX&&Number.isFinite(lastAt)&&nowMs-lastAt>Math.max(60_000,Number(telemetryTtlMs)||DEFAULT_TELEMETRY_TTL_MS)){
-    control=createParallelismControl({currentMax:EXTERNAL_MATRIX_BATCH_MAX,healthyStreak:0,pressureStreak:0,lastDecision:'RESET',lastReason:'SYSTEM_STEWARD_STALE_TELEMETRY_RESET',lastRunId:null,lastUpdatedAt:now,lastTelemetry:null});
+  if(Number.isFinite(lastAt)&&nowMs-lastAt>Math.max(60_000,Number(telemetryTtlMs)||DEFAULT_TELEMETRY_TTL_MS)){
+    control=createParallelismControl({currentMax:DEFAULT_ADAPTIVE_TARGET,healthyStreak:0,pressureStreak:0,lastDecision:'RESET',lastReason:`SYSTEM_STEWARD_STALE_TELEMETRY_RESET_TO_${DEFAULT_ADAPTIVE_TARGET}`,lastRunId:null,lastUpdatedAt:now,lastTelemetry:null});
     actions.push('RESET_STALE_PARALLELISM_PRESSURE');
   }
   actions.push(...machineRepairActions);
@@ -113,7 +117,7 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
   const active=queue.tasks.filter(t=>activeStatus(t.status)&&!waitBlocker(t.blocker));
   const action=actions[0]||(active.length?'HEALTHY_NO_SCOPED_REPAIR':'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
   return {action,actions:uniq(actions),
-    changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','REGENERATE_RETRY_EXHAUSTED_TASK','ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256'].includes(x)),
+    changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256'].includes(x)),
     changedControl:actions.some(x=>['RESET_INVALID_PARALLELISM_STATE','RESET_STALE_PARALLELISM_PRESSURE'].includes(x)),
     taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control};
 }

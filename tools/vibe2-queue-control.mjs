@@ -251,7 +251,10 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
       dependencies: Array.isArray(taskInput.dependencies) ? taskInput.dependencies : [],
       priority: priority(taskInput.priority, ownerDirective),
       releaseState: clean(taskInput.releaseState) || 'other',
-      status: 'queued', retries: 0, maxRetries: Math.max(0, Math.min(5, Number(taskInput.maxRetries ?? 2) || 0)),
+      status: 'queued',
+      retries: 0,
+      retryPolicy: clean(taskInput.retryPolicy).toUpperCase() || undefined,
+      maxRetries: Math.max(0, Math.min(5, Number(taskInput.maxRetries ?? 2) || 0)),
       ownerDirective,
       requiresOwnerDecision: Boolean(taskInput.requiresOwnerDecision),
       protectedChange: Boolean(taskInput.protectedChange),
@@ -671,7 +674,7 @@ export function runQueueCommand(args = {}) {
     queue = enqueueVibeTask(queue, {
       id: args.id, gameId: args.game, target: args.target, department: args.department, type: args.type, goal: args.goal,
       responsibleFiles: list(args.files), dependencies: list(args.dependencies), priority: args.priority, releaseState: args['release-state'],
-      maxRetries: args.retries, ownerDirective: bool(args.owner), requiresOwnerDecision: bool(args['owner-decision']),
+      maxRetries: args.retries, retryPolicy: args['retry-policy'], ownerDirective: bool(args.owner), requiresOwnerDecision: bool(args['owner-decision']),
       protectedChange: bool(args.protected), paidResourceRequired: bool(args.paid), sourceRoot: args['source-root'],
       speculativeEligible: bool(args.speculative), estimatedRisk: args.risk
     });
@@ -833,6 +836,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if(result.executionLane)console.log(`VIBE2_EXECUTION_LANE=${result.executionLane}`);
   if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
   if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
+  if(Array.isArray(result.dependencyReadyTaskIds)){
+    console.log(`VIBE2_DEPENDENCY_READY_BATCH=${result.dependencyReadyTaskIds.join(',')||'NONE'}`);
+    console.log(`VIBE2_DEPENDENCY_EVENT_REQUIRED=${result.dependencyEventRequired===true?'YES':'NO'}`);
+  }
   if(result.command==='neuron-complete'){
     console.log(`VIBE2_NEURON_RESULT=${result.reason || 'UNKNOWN'}`);
     console.log(`VIBE2_NEURON_TASK_READY=${result.ready===true?'YES':'NO'}`);
