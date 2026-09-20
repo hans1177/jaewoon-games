@@ -963,7 +963,7 @@ test('work package metadata survives queue normalization and larger functional p
 });
 
 
-test('practice-only PASS settles done without candidate QA promotion', () => {
+test('practice-only PASS settles verified checkpoint without candidate QA promotion', () => {
   let queue=createVibeContinuousQueue({tasks:[{
     id:'practice',target:'web',department:'development',type:'research',goal:'[VIBE_LEARNING_PRACTICE] save',
     status:'running',priority:'low',releaseState:'other',evidence:['learning-practice-only','production-pass:NO']
