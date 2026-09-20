@@ -153,3 +153,23 @@ test('feedback evidence preserves deterministic sample identity for retry-safe t
   const payload=JSON.parse(decodeURIComponent(marker.slice('neural-shadow-feedback:'.length)));
   assert.equal(payload.sampleId,'task-a|run-1:1|primary|candidate-a');
 });
+
+
+test('different retry sample identities remain distinct durable feedback markers',()=>{
+  const a=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.8),
+    outcome:'FAIL',candidateFailure:{class:'NO_OP'},roleResults:{implementation:'FAIL'},
+    sampleId:'task-r|run-1:1|primary|candidate-a'
+  });
+  const b=evaluateNeuralDiagnosisFeedback({
+    diagnosis:diagnosis('SOURCE_GENERATION',.8),
+    outcome:'FAIL',candidateFailure:{class:'NO_OP'},roleResults:{implementation:'FAIL'},
+    sampleId:'task-r|run-2:1|primary|candidate-b'
+  });
+  const ma=neuralFeedbackEvidence(a).find(x=>x.startsWith('neural-shadow-feedback:'));
+  const mb=neuralFeedbackEvidence(b).find(x=>x.startsWith('neural-shadow-feedback:'));
+  assert.notEqual(ma,mb);
+  const summary=summarizeNeuralFeedbackEvidence([ma,mb]);
+  assert.equal(summary.durableEvidenceSamples,2);
+  assert.equal(summary.calibrationEligible,2);
+});
