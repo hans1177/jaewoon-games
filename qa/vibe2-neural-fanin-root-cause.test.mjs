@@ -63,7 +63,12 @@ test('fan-in regression and review confirm causal repair but do not invent respo
   assert.equal(review.rootCause.responsibleSystemVerified,false);
   assert.equal(review.rootCause.rootCauseVerified,false);
   assert.equal(review.rootCause.phase2AuthorityEligible,false);
+  assert.equal(review.neuralEventRoute.mode,'PHASE2_SHADOW_EVENT_ROUTER');
+  assert.equal(review.neuralEventRoute.proposedAction.kind,'REQUEST_RESPONSIBLE_SYSTEM_VERIFICATION');
+  assert.equal(review.neuralEventRoute.fireAllowed,false);
+  assert.equal(review.neuralEventRoute.queueMutationAllowed,false);
   assert.ok(task.evidence.includes('neural-root-cause-state:CAUSAL_REPAIR_CONFIRMED_SYSTEM_UNVERIFIED'));
+  assert.ok(task.evidence.includes('neural-event-shadow-action:REQUEST_RESPONSIBLE_SYSTEM_VERIFICATION'));
   assert.ok(task.evidence.includes('role-result:regression:PASS'));
   assert.ok(task.evidence.includes('role-result:review:PASS'));
   assert.equal(result.releaseCandidates.length,1);
@@ -85,6 +90,10 @@ test('explicit independently verified responsible system can verify root cause w
   assert.equal(review.rootCause.actionFiringAllowed,false);
   assert.equal(review.rootCause.eventRoutingAuthorityAllowed,false);
   assert.equal(review.rootCause.phase2AuthorityEligible,false);
+  assert.equal(review.neuralEventRoute.proposedAction.kind,'PREPARE_EXACT_RESPONSIBLE_SYSTEM_REPAIR');
+  assert.equal(review.neuralEventRoute.wouldFireWithoutPhase2Authority,true);
+  assert.equal(review.neuralEventRoute.fireAllowed,false);
+  assert.ok(review.neuralEventRoute.inhibitors.includes('PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'));
   const encoded=result.queue.tasks[0].evidence.find(value=>value.startsWith('neural-root-cause:'));
   assert.ok(encoded);
   const payload=JSON.parse(decodeURIComponent(encoded.slice('neural-root-cause:'.length)));
