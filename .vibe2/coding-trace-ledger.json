@@ -6663,13 +6663,925 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_d2fcb1c2aa3dcc65019c80b7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "primary",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackNow",
+          "enter",
+          "initAudio"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "AI",
+          "GOAL_STATE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "OTHER",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 314773,
+        "candidateMs": 267084,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:OTHER"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_16209e9344d851f08b620d44",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "speculative-1",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackNow",
+          "enter",
+          "initAudio"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "AI",
+          "GOAL_STATE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "OTHER",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 305160,
+        "candidateMs": 274356,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:OTHER"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_3ea2350a17e7bd4a2597861a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "speculative-2",
+        "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. rpg.html에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackNow",
+          "enter",
+          "initAudio"
+        ],
+        "primarySystems": [
+          "CORE_STATE",
+          "AI",
+          "GOAL_STATE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "OTHER",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "READY_FOR_POSTPATCH_DIAGNOSTIC_RESCAN",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 310239,
+        "candidateMs": 263150,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:OTHER"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_66aee8e0fc2ce6ae421ac5e5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "primary",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "OTHER",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 303132,
+        "candidateMs": 254573,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:OTHER"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_b65cfdc0271126c968a5759f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "speculative-1",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "OTHER",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 306576,
+        "candidateMs": 266816,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:OTHER"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_7f82020b1f65dcfe207b7cc5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "fantasy-survival-presentation-asset-adaptation-v1",
+        "workKey": null,
+        "gameId": "fantasy-survival",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "speculative-2",
+        "goal": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "OTHER",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 287537,
+        "candidateMs": 258125,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:OTHER"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_86966e8aee10bcda15d07ef1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T05:01:48.606Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 "
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "TIMEOUT",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 436806,
+        "candidateMs": 406763,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:TIMEOUT"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_ee9ce904802d3b7cdad46e0f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T05:01:48.606Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 "
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EDIT_MATCH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 295858,
+        "candidateMs": 254767,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:EDIT_MATCH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_58209addc38732b36ae3b1bc",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "df96bf07b91091ad15134dd6ee72a10ef949b992",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 수정의 개화\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:scope-mobileux-9237576110\nlast-validation-at=2026-09-20T05:01:48.606Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n위 실패 증거와 현재 index.html을 직접 대조해서 "
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|EDIT_MATCH|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "NO_OP",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 316785,
+        "candidateMs": 275509,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35490685697",
+        "reservation-id:35490685697:1",
+        "source-generation-failure:NO_OP"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 3,
+    "added": 9,
     "refreshed": 0,
-    "total": 57,
+    "total": 66,
     "verified": 4,
-    "failures": 45
+    "failures": 54
   }
 }
