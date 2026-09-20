@@ -41,6 +41,11 @@ jobs:
       candidate_branch: ${{ steps.gate.outputs.candidate_branch }}
       origin: ${{ steps.gate.outputs.origin }}
       already_promoted: ${{ steps.gate.outputs.already_promoted }}
+      phase4_role: ${{ steps.gate.outputs.phase4_role }}
+      phase4_capability_id: ${{ steps.gate.outputs.phase4_capability_id }}
+      phase4_case_id: ${{ steps.gate.outputs.phase4_case_id }}
+      phase4_pair_id: ${{ steps.gate.outputs.phase4_pair_id }}
+      phase4_unseen_problem_fingerprint: ${{ steps.gate.outputs.phase4_unseen_problem_fingerprint }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -92,6 +97,7 @@ jobs:
           const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
           const base=String(m.baseMainSha||'').trim();
           const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
+          const phase4=m?.phase4BenchmarkVerification?.active===true?m.phase4BenchmarkVerification:null;
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
           const productionClass=String(row?.productionClass||'').trim().toUpperCase();
           const legacyState=String(row?.homepageCategory||'other').toLowerCase();
@@ -107,6 +113,11 @@ jobs:
           put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
           put('target',target); put('source_root',root); put('base_sha',base); put('release_state',state); put('production_class',productionClass); put('origin',origin);
           put('request_file',target==='unity'?`.build-requests/unity/${game}.json`:'');
+          put('phase4_role',String(phase4?.role||'').trim().toUpperCase());
+          put('phase4_capability_id',String(phase4?.capabilityId||'').trim());
+          put('phase4_case_id',String(phase4?.caseId||'').trim());
+          put('phase4_pair_id',String(phase4?.pairId||'').trim());
+          put('phase4_unseen_problem_fingerprint',String(phase4?.unseenProblemFingerprint||'').trim());
           NODE
 
           decision="$(sed -n 's/^candidate_decision=//p' "$GITHUB_OUTPUT" | tail -n1)"
