@@ -100,7 +100,7 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,2);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
-  assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
+  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
   assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
@@ -223,8 +223,18 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
   assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
 });
 
-test('controller serializes only shared queue state writes while worker branches stay parallel',()=>{
-  assert(workflow.includes('concurrency:\n      group: vibe2-control-state-vibe2-unreal-core'));
+test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
+  assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
+  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
+  const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
+  const end=workflow.indexOf('  model_cache:',start);
+  const reserveBlock=workflow.slice(start,end);
+  assert(reserveBlock.includes('for state_attempt in 1 2 3 4 5; do'));
+  assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_ATTEMPT='));
+  assert(reserveBlock.includes('git reset --hard origin/vibe2-unreal-core'));
+  assert(reserveBlock.includes('git push origin HEAD:vibe2-unreal-core'));
+  assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_RETRY='));
+  assert.equal(reserveBlock.includes('git pull --rebase origin vibe2-unreal-core'),false);
   assert(workflow.includes('actions/upload-artifact@v4'));
   assert(workflow.includes('actions/download-artifact@v4'));
   assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
@@ -246,6 +256,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(workflow.includes("event_type:'vibe2-neuron-complete'"));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
   assert(workflow.includes('VIBE2_ATOMIC_NEURON_MICRO_FANIN=PASS'));
+  assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
   assert.equal(runtime.continuous.executionTopology,'ATOMIC_NEURON_STREAM');
   assert.equal(runtime.continuous.atomicNeuronStream.fixedWaveBarrier,false);
   assert.equal(runtime.continuous.atomicNeuronStream.taskMicroFanIn,true);
