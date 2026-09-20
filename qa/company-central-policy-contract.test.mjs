@@ -639,3 +639,20 @@ test('company records use one canonical format, path, retention and runtime-medi
   assert.equal(architecture.recordsGovernance.legacyMigration,'MIGRATE_ON_TOUCH');
   assert.ok(architecture.executionTopology.recordsGovernance.includes('SCHEDULED_HYGIENE_SCAN'));
 });
+
+
+test('runtime gameplay media publication keeps real capture and platform safety boundaries',()=>{
+  const media=roadmap.runtimeGameplayMediaPublication;
+  assert.deepEqual(media.appliesTo,['UNITY','ROBLOX','FORTNITE_UEFN']);
+  assert.equal(media.homepage.realRuntimeCapturePreferredOverConceptArtAfterVerifiedGraphicsUpdate,true);
+  assert.equal(media.homepage.staleCaptureForbiddenAfterNewerGraphicsOrPresentationSourceRevision,true);
+  assert.equal(media.unity.automaticCaptureAllowed,true);
+  assert.equal(media.unity.automaticPublicationAllowedAfterRuntimePassAndExactBuildBinding,true);
+  assert.equal(media.roblox.dedicatedTestAccountAllowed,true);
+  assert.equal(media.roblox.unattendedAccountLoginAutomationForbidden,true);
+  assert.equal(media.roblox.automatedClientJoinWithoutSupportedRobloxMechanismForbidden,true);
+  assert.equal(media.roblox.captureServiceSupported,true);
+  assert.equal(media.roblox.captureApi,'CaptureService:TakeScreenshotCaptureAsync');
+  assert.equal(media.roblox.humanPermissionMayBeRequired,true);
+  assert.equal(media.roblox.publicReleaseHomepageRequiresPublicClientCapture,true);
+});
