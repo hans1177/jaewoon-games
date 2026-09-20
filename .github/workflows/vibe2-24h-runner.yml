@@ -244,8 +244,10 @@ jobs:
             node --check /tmp/vibe2-main/tools/company-recovery-learning.mjs
             node --check /tmp/vibe2-main/tools/company-recovery-code-distillation.mjs
             node --check /tmp/vibe2-main/tools/company-security-learning.mjs
-            node --test /tmp/vibe2-main/qa/company-recovery-learning.test.mjs
-            node --test /tmp/vibe2-main/qa/company-security-steward.test.mjs
+            (
+              cd /tmp/vibe2-main
+              node --test qa/company-recovery-learning.test.mjs qa/company-security-steward.test.mjs
+            )
 
             test -f .vibe2/recovery-queue.json || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > .vibe2/recovery-queue.json
             test -f .vibe2/system-ai-queue.json || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > .vibe2/system-ai-queue.json
