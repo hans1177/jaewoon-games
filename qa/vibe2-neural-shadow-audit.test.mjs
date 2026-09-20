@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-neural-shadow-audit.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildNeuralShadowAudit } from '../tools/vibe2-neural-shadow-audit.mjs';
+import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from '../tools/vibe2-neural-shadow-audit.mjs';
 
 test('audit records wave release versus neural hypothetical action without choosing a winner',()=>{
   const audit=buildNeuralShadowAudit({reviewed:[{
@@ -53,4 +53,25 @@ test('audit preserves wave-proceeds neural-holds disagreement without tuning eit
   }]});
   assert.equal(audit.rows[0].comparisonClass,'WAVE_PROCEEDS_NEURAL_HOLDS');
   assert.equal(audit.automaticLearningAllowed,false);
+});
+
+
+test('shadow versus wave audit can be persisted and accumulated without granting authority',()=>{
+  const audit=buildNeuralShadowAudit({reviewed:[{
+    taskId:'persisted',
+    pass:true,
+    releaseBlocked:false,
+    neuralEventRoute:{
+      proposedAction:{kind:'REQUEST_EVIDENCE',reason:'ROOT_CAUSE_UNRESOLVED'},
+      wouldFireWithoutPhase2Authority:false,
+      fireAllowed:false
+    }
+  }]});
+  const evidence=neuralShadowAuditEvidence(audit);
+  assert.equal(evidence.length,1);
+  const summary=summarizeDurableNeuralShadowAudit([...evidence,...evidence]);
+  assert.equal(summary.sampleCount,2);
+  assert.equal(summary.counts.WAVE_PROCEEDS_NEURAL_HOLDS,2);
+  assert.equal(summary.phase2AuthorityReady,false);
+  assert.equal(summary.automaticLearningAllowed,false);
 });
