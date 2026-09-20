@@ -12480,8 +12480,7 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web",
-      "updatedAt": "2026-09-20T06:43:38.560Z"
+      "shard": "web"
     },
     {
       "id": "bug-defense-web-runtime-repair-v1",
@@ -17342,8 +17341,7 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web",
-      "updatedAt": "2026-09-20T06:43:38.560Z"
+      "shard": "web"
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
@@ -18498,8 +18496,7 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web",
-      "updatedAt": "2026-09-20T06:43:38.560Z"
+      "shard": "web"
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
@@ -20510,8 +20507,7 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web",
-      "updatedAt": "2026-09-20T06:43:38.560Z"
+      "shard": "web"
     },
     {
       "id": "daechung-rpg-presentation-asset-adaptation-v1",
@@ -25617,8 +25613,7 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web",
-      "updatedAt": "2026-09-20T06:43:38.560Z"
+      "shard": "web"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star-presentation-asset-adaptation-v1",
@@ -25771,7 +25766,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "cancelled",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
@@ -25815,7 +25810,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": null,
+      "blocker": "superseded-by:VIBE_WEB_REPAIR",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -25837,17 +25832,20 @@
         "package-work-units:4",
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
-        "package-quantity-goal:FEATURE_COMPLETION"
+        "package-quantity-goal:FEATURE_COMPLETION",
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "superseded-by:VIBE_WEB_REPAIR",
+        "company-runtime-state:WEB_VIBE_REPAIR_REQUIRED"
       ],
-      "lastOutcome": null,
+      "lastOutcome": "SUPERSEDED_BY_EXACT_WEB_REPAIR",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
       "reservedAt": null,
       "companyContext": null,
       "sourceRoot": "web-games/seed-idle-growth-rpg-crystal-bloom",
-      "speculativeEligible": false,
-      "estimatedRisk": "medium",
+      "speculativeEligible": true,
+      "estimatedRisk": "high",
       "taskWorkUnits": 4,
       "packageId": "seed-idle-growth-rpg-crystal-bloom-wp-4p4api",
       "packageGoal": "수정의 개화: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.",
