@@ -1,5 +1,5 @@
 {
-  "version": 194,
+  "version": 195,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -6473,7 +6473,17 @@
           "rootCauseSystemVerified": false,
           "runtimeOrIndependentQaStillRequired": true,
           "responsibleSystemMappingStillRequired": true,
-          "mayGrantExecutionAuthority": false
+          "mayGrantExecutionAuthority": false,
+          "failedReplayTelemetryHardening": {
+            "state": "MERGED_MAIN",
+            "sourcePr": 1854,
+            "mergedCommit": "a2f751e0c5f46450da6fd10b45744a825af0bee1",
+            "executedFailPreservesExecutedFlag": true,
+            "executedFailPreservesPrepatchReproductionFlag": true,
+            "executedFailCannotVerifyResponsibleSystem": true,
+            "independentResponsibleSystemEvidenceStillRequiresExecutedPass": true,
+            "authorityChange": "NONE"
+          }
         }
       },
       "rootCauseVerifier": {
@@ -6926,7 +6936,83 @@
         "readinessHardeningCommit": "22001a9afce546e93d9a4b1e05f522b65f57fc1d",
         "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
         "neuralExecutionAuthority": false,
-        "nextGate": "OBSERVE_NEXT_PRODUCTION_WAVE_WITH_IDENTIFIED_DISTINCT_SHADOW_EVIDENCE"
+        "nextGate": "CONTINUE_PRODUCTION_SHADOW_OBSERVATION_AND_VERIFY_SOURCE_CANDIDATE_GENERATION_BOTTLENECK_AND_ZERO_UNAUTHORIZED_FIRE"
+      },
+      "latestProductionRuntimeObservation": {
+        "workKey": "NEURAL_PRODUCTION_SHADOW_RUNTIME_OBSERVATION",
+        "dedupeKey": "neural-production-shadow-runtime-observation",
+        "observedAt": "2026-09-20T03:15:00Z",
+        "documentSyncBaseMainHead": "8847217bc22b6135f6eec6e3cdb3d6b0666527cf",
+        "queueBranch": "vibe2-unreal-core",
+        "queueBlobSha": "1d259511f7cf10b520cc1c30a0da9a10fa62a7b0",
+        "currentQueueSnapshot": {
+          "totalTasks": 105,
+          "statusCounts": {
+            "cancelled": 63,
+            "done": 32,
+            "blocked": 1,
+            "running": 5,
+            "queued": 4
+          },
+          "latestInProgressWave": {
+            "runId": 35485977606,
+            "state": "WORKERS_IN_PROGRESS_AT_OBSERVATION",
+            "reservedTaskCount": 1,
+            "workerFanOut": 3,
+            "reservePassed": true,
+            "modelCachePassed": true,
+            "fanInObserved": false
+          }
+        },
+        "latestCompletedPostV2Wave": {
+          "runId": 35485554432,
+          "fanInPassed": true,
+          "workerCount": 12,
+          "effectiveMax": 20,
+          "actualPeakConcurrency": 12,
+          "effectivePeakUtilizationPct": 60,
+          "failureRatePct": 16.67,
+          "pressureLevel": "MEDIUM",
+          "primaryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "shadowEventIdentityVersion": 2,
+          "shadowEventRows": 16,
+          "shadowEventTypes": {
+            "WORKER_RESULT": 12,
+            "CI_RESULT": 4
+          },
+          "normalizedEventIdentityDuplicateKeys": 0,
+          "waveAuditRows": 4,
+          "waveAuditDuplicateSampleKeys": 0,
+          "calibrationFeedbackRows": 12,
+          "calibrationEligibleRows": 2,
+          "calibrationStates": {
+            "UNKNOWN": 10,
+            "MISMATCH": 2
+          },
+          "unauthorizedAuthorityBitFireCount": 0
+        },
+        "durableQueueEvidenceSnapshot": {
+          "shadowEventRows": 255,
+          "rawVersion1EventRows": 239,
+          "eventIdentityVersion2Rows": 16,
+          "legacyV1SampleOnlyEventIdCollisionKeys": 47,
+          "normalizedEventIdentityDuplicateKeys": 0,
+          "waveAuditRows": 51,
+          "waveAuditDuplicateSampleKeys": 0,
+          "exactPerTaskEvidenceDuplicateRows": 0,
+          "unauthorizedAuthorityBitFireCount": 0,
+          "interpretation": "LEGACY_V1_SAMPLE_ONLY_EVENT_ID_COLLISIONS_REMAIN_AUDITABLE_BUT_EVENT_TYPE_NORMALIZATION_AND_V2_EVENT_IDS_SHOW_ZERO_TRUE_EVENT_DUPLICATES"
+        },
+        "authoritySafety": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "neuralExecutionAuthority": false,
+          "neuralWorkerCreationAuthority": false,
+          "neuralQueueMutationAuthority": false,
+          "neuralWaveReorderAuthority": false,
+          "neuralLockOrPolicyMutationAuthority": false,
+          "neuralAutomaticLearningTuningPromotion": false
+        },
+        "nextGate": "CONTINUE_PRODUCTION_SHADOW_OBSERVATION_AND_VERIFY_SOURCE_CANDIDATE_GENERATION_BOTTLENECK_AND_ZERO_UNAUTHORIZED_FIRE"
       }
     }
   },
