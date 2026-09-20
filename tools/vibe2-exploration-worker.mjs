@@ -443,6 +443,14 @@ export function explorationGuidance(handoff={}){
       `관찰 결과=${handoff.editContract.requiredObservableResult||'NONE'}`,
       `Semantic diff 허용 시스템=${(handoff.editContract.semanticDiffBudget?.allowedSystems||[]).join(', ')||'NONE'}; unrelated mutation=${handoff.editContract.semanticDiffBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
+      ...(handoff.editContract.causalReplay?.required===true?[
+        `[CAUSAL REPLAY CONTRACT] mode=${handoff.editContract.causalReplay.mode||'PLAN_ONLY'}; prepatch=${handoff.editContract.causalReplay.prePatchReproduced===true?'REPRODUCED':'NOT_REPRODUCED'}; executable=${handoff.editContract.causalReplay.executable===true?'YES':'NO'}`,
+        ...(handoff.editContract.causalReplay.mode==='DIAGNOSTIC_RESCAN'&&handoff.editContract.causalReplay.executable===true?[
+          `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
+          'HARD IMPLEMENTATION POSTCONDITION: the first source edit must directly address the exact diagnostic target above, and the same deterministic postpatch rescan must no longer report that diagnostic. Do not spend the first edit on an unrelated symbol while the exact diagnostic remains.',
+          'This postcondition does not weaken or replace canonical QA; it only constrains the implementation to the independently reproduced failure.'
+        ]:[])
+      ]:[]),
       ...(handoff.editContract.patchRecipe?[
         `[PATCH RECIPE] mode=${handoff.editContract.patchRecipe.mode}; failure=${handoff.editContract.patchRecipe.failureFingerprint||'NONE'}; verifiedMemory=${handoff.editContract.patchRecipe.verifiedMemoryCount||0}`,
         `recipe steps=${(handoff.editContract.patchRecipe.steps||[]).join(' -> ')||'NONE'}`,
