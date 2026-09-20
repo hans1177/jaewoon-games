@@ -355,7 +355,7 @@
     },
     {
       "id": "sec_review_4908eba52035c8e65960",
-      "status": "REVIEW_REQUIRED",
+      "status": "RESOLVED_VERIFIED",
       "disposition": "REVIEW",
       "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
       "severity": "HIGH",
@@ -391,17 +391,36 @@
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
       "reviewUnit": "SECURITY_SCAN_AND_FILE",
       "compactedPolicyReview": true,
-      "rootCause": null,
-      "remediation": null,
-      "verificationEvidence": [],
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
-      "resolvedAt": null,
-      "verificationMode": null
+      "rootCause": "owner-authorized central policy sync triggered the fail-closed policy-integrity review gate without attack or quarantine evidence",
+      "remediation": "retain explicit primary-AI review and unchanged authority boundaries before resolving policy-review findings",
+      "verificationEvidence": [
+        "github-pr-review:1894#pullrequestreview-5259542555",
+        "security-run:35489582895",
+        "security-artifact:10598880594",
+        "security-pr-run:35489495339",
+        "security-pr-artifact:10598970392",
+        "authorized-policy-review:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "primaryAiReview": "PASS",
+      "learningPromotion": "HOLD_POLICY_REVIEW_ONLY",
+      "resolvedAt": "2026-09-20T05:27:27.306Z",
+      "verificationMode": "AUTHORIZED_POLICY_REVIEW_PASS",
+      "policyReviewApproval": {
+        "decision": "PRIMARY_AI_DIRECT_REVIEW=PASS",
+        "source": "GITHUB_PR_REVIEW",
+        "prNumber": 1894,
+        "sourceUrl": "https://github.com/hans1177/jaewoon-games/pull/1894#pullrequestreview-5259542555",
+        "securityRunId": 35489582895,
+        "securityArtifactId": 10598880594,
+        "scanDetectedAt": "2026-09-20T04:37:23.252Z",
+        "findingCount": 15
+      }
     },
     {
       "id": "sec_review_6cbf2d63e2ddfce54f02",
-      "status": "REVIEW_REQUIRED",
+      "status": "RESOLVED_VERIFIED",
       "disposition": "REVIEW",
       "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
       "severity": "HIGH",
@@ -458,13 +477,32 @@
       "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
       "reviewUnit": "SECURITY_SCAN_AND_FILE",
       "compactedPolicyReview": true,
-      "rootCause": null,
-      "remediation": null,
-      "verificationEvidence": [],
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
-      "resolvedAt": null,
-      "verificationMode": null
+      "rootCause": "owner-authorized central policy sync triggered the fail-closed policy-integrity review gate without attack or quarantine evidence",
+      "remediation": "retain explicit primary-AI review and unchanged authority boundaries before resolving policy-review findings",
+      "verificationEvidence": [
+        "github-pr-review:1894#pullrequestreview-5259542555",
+        "security-run:35489582895",
+        "security-artifact:10598880594",
+        "security-pr-run:35489495339",
+        "security-pr-artifact:10598970392",
+        "authorized-policy-review:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "primaryAiReview": "PASS",
+      "learningPromotion": "HOLD_POLICY_REVIEW_ONLY",
+      "resolvedAt": "2026-09-20T05:27:27.306Z",
+      "verificationMode": "AUTHORIZED_POLICY_REVIEW_PASS",
+      "policyReviewApproval": {
+        "decision": "PRIMARY_AI_DIRECT_REVIEW=PASS",
+        "source": "GITHUB_PR_REVIEW",
+        "prNumber": 1894,
+        "sourceUrl": "https://github.com/hans1177/jaewoon-games/pull/1894#pullrequestreview-5259542555",
+        "securityRunId": 35489582895,
+        "securityArtifactId": 10598880594,
+        "scanDetectedAt": "2026-09-20T04:37:23.252Z",
+        "findingCount": 15
+      }
     },
     {
       "id": "sec_review_ce1bcd027820915de100",
