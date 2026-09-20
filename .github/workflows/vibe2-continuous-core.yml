@@ -675,6 +675,7 @@ jobs:
           replay_status="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_executed="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_EXECUTED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           replay_prepatch_reproduced="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_verified_responsible_system="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_status="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_risk="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_RISK=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_score="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SCORE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
@@ -689,6 +690,7 @@ jobs:
           echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
           echo "causal_replay_executed=$replay_executed" >> "$GITHUB_OUTPUT"
           echo "causal_replay_prepatch_reproduced=$replay_prepatch_reproduced" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_verified_responsible_system=$replay_verified_responsible_system" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_status=$drift_status" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_risk=$drift_risk" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_score=$drift_score" >> "$GITHUB_OUTPUT"
@@ -755,6 +757,7 @@ jobs:
           IQA_CAUSAL_REPLAY_STATUS: ${{ steps.incremental_qa.outputs.causal_replay_status }}
           IQA_CAUSAL_REPLAY_EXECUTED: ${{ steps.incremental_qa.outputs.causal_replay_executed }}
           IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED: ${{ steps.incremental_qa.outputs.causal_replay_prepatch_reproduced }}
+          IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM: ${{ steps.incremental_qa.outputs.causal_replay_verified_responsible_system }}
           IQA_ARCHITECTURE_DRIFT_STATUS: ${{ steps.incremental_qa.outputs.architecture_drift_status }}
           IQA_ARCHITECTURE_DRIFT_RISK: ${{ steps.incremental_qa.outputs.architecture_drift_risk }}
           IQA_ARCHITECTURE_DRIFT_SCORE: ${{ steps.incremental_qa.outputs.architecture_drift_score }}
@@ -857,6 +860,7 @@ jobs:
             clean(process.env.IQA_CAUSAL_REPLAY_STATUS)&&`causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
             clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)&&`causal-replay-prepatch-reproduced:${clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_STATUS)==='EXECUTED_PASS'&&clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'&&clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED).toUpperCase()==='YES'&&clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM)&&clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM).toUpperCase()!=='NONE'&&`independent-qa-verified-responsible-system:${clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM).toUpperCase()}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)&&`architecture-drift-status:${clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)&&`architecture-drift-risk:${clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)&&`architecture-drift-score:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)}`,
