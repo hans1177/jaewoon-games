@@ -1,5 +1,5 @@
 {
-  "version": 214,
+  "version": 215,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -1645,8 +1645,8 @@
           "priorReservedTasks": 19,
           "recoveryAdaptiveStep": 16
         },
-        "ownerPreferredCurrentWave": 20,
-        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
+        "ownerPreferredCurrentWave": null,
+        "ownerPreferredWaveAuthority": "RETIRED_BY_OWNER_DIRECTIVE_2026-09-20_VIBE_SELF_CONTROL",
         "gameImplementationPreemptsNonblockingSupervision": true,
         "nonblockingSupervisionUsesSpareCapacityOnly": true,
         "ownerAndSystemStewardProtectionPreserved": true,
@@ -1659,14 +1659,12 @@
         "perWorkerRefillDispatchForbidden": true,
         "refillAfterFanInOnly": true,
         "currentWaveMustCompleteBeforeNextWaveRefill": true,
-        "ownerPreferredWaveIsCurrentMinimum": true,
-        "adaptiveBackpressureMayNotDropBelowOwnerPreferredWave": true,
-        "ownerPreferredWaveFloorBindings": [
-          "tools/vibe2-adaptive-backpressure.mjs",
-          "tools/vibe2-queue-control.mjs",
-          ".github/workflows/vibe2-continuous-core.yml",
-          "vibe2-runtime.json"
-        ]
+        "ownerPreferredWaveIsCurrentMinimum": false,
+        "adaptiveBackpressureMayNotDropBelowOwnerPreferredWave": false,
+        "ownerPreferredWaveFloorBindings": [],
+        "vibeSelfControlsConcurrency": true,
+        "internalArtificialConcurrencyCapsForbidden": true,
+        "externalCapacityOnly": true
       },
       "invariants": {
         "noGateBypass": true,
@@ -4026,12 +4024,17 @@
     "principle": "GAME_PRIMARY_WAVE_IS_EXECUTION_CAP_NOT_TOTAL_COMPANY_CONCURRENCY",
     "gamePrimary": {
       "taskClass": "DEVELOPMENT_IMPLEMENTATION",
-      "activeWorkerWaveTarget": 20,
-      "activeWorkerWaveMax": 20,
+      "activeWorkerWaveTarget": null,
+      "activeWorkerWaveMax": null,
       "reserveOnlyAfterSuccessfulFanIn": true,
       "taskLocalExplorationRequired": true,
       "sourceWriteOnlyOnCandidateBranch": true,
-      "directMainGameSourceWriteForbidden": true
+      "directMainGameSourceWriteForbidden": true,
+      "adaptiveWaveTarget": true,
+      "internalHardCap": null,
+      "currentExternalProviderBatchMax": 256,
+      "historicalReferenceWave": 20,
+      "concurrencyControlAuthority": "VIBE_RUNTIME_TELEMETRY"
     },
     "planningBacklog": {
       "developmentBacklogMinimum": 40,
@@ -7776,12 +7779,16 @@
       "gameStudyStillRequiresIdleGameWave": true,
       "phase2NeuralExecutionAuthority": false,
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": 20,
-      "refillFormula": "MAX(0, MIN(EXTERNAL_EFFECTIVE_MAX, GAME_PRIMARY_ACTIVE_CAP_20) - ACTIVE_GAME_WORKERS)",
+      "gamePrimaryActiveExecutionCap": null,
+      "refillFormula": "MAX(0, EXTERNAL_EFFECTIVE_MAX - ACTIVE_GAME_WORKERS)",
       "observedExample": "ACTIVE_8 => REFILL_12; NEVER_REFILL_248",
       "adaptiveBackpressureMayLowerBelow20": true,
-      "adaptiveBackpressureMayNotRaiseGamePrimaryAbove20": true,
-      "rationale": "Independent game work must not wait for all active workers when safe capacity remains."
+      "adaptiveBackpressureMayNotRaiseGamePrimaryAbove20": false,
+      "rationale": "Vibe decides GAME_PRIMARY concurrency from live pressure and external capacity. Twenty is historical/reference evidence, not a hard cap or owner floor.",
+      "internalPolicyCap": null,
+      "controlMode": "VIBE_SELF_ADAPTIVE_EXTERNAL_CAPACITY_ONLY",
+      "adaptiveBackpressureMayRaiseAbove20": true,
+      "historicalReferenceWave": 20
     },
     "liveShadowObservation": {
       "observedAt": "2026-09-20",
@@ -8590,6 +8597,40 @@
           "tools/vibe2-source-worker.mjs::buildDiagnosticFocusedReplaceOnlyPrompt",
           "tools/vibe2-source-worker.mjs::evaluateDiagnosticPostcondition",
           "tools/vibe2-incremental-qa.mjs::runCausalReplay"
+        ],
+        "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
+      },
+      "selfAdaptiveConcurrencyBottleneckRepair": {
+        "state": "IMPLEMENTED_IN_PR_PENDING_MERGE",
+        "sourcePr": null,
+        "ownerDirectiveDate": "2026-09-20",
+        "directive": "AI_CONCURRENCY_INTERNAL_UNBOUNDED_VIBE_SELF_CONTROLLED",
+        "rootCause": "STALE_FIXED_20_GAME_PRIMARY_CAP_AND_OWNER_FLOOR_CONTRADICTED_UNBOUNDED_INTERNAL_POLICY",
+        "correction": {
+          "fixedGamePrimaryCapRemoved": true,
+          "ownerMinimumWave20Removed": true,
+          "runtimeLaneMaxUsesCurrentExternalBatchCapacity": true,
+          "adaptiveControllerUsesCallerProvidedExternalMaximum": true,
+          "adaptiveControllerMayScaleBeyond256WhenExternalMaximumIncreases": true,
+          "externalCapacityStillPracticalBoundary": true,
+          "currentExternalBatchMax": 256,
+          "historicalWave20RetainedAsEvidenceOnly": true,
+          "qaOrReleaseGatesChanged": false
+        },
+        "authority": {
+          "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+          "concurrencyDecision": "VIBE_RUNTIME_TELEMETRY",
+          "workerCreationAuthority": false,
+          "queueMutationAuthority": false,
+          "waveReorderAuthority": false,
+          "directMainAuthority": false
+        },
+        "responsibleSystems": [
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "tools/vibe2-adaptive-backpressure.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "vibe2-runtime.json"
         ],
         "verification": "CI_AND_NEXT_PRODUCTION_WAVE_REQUIRED"
       }
