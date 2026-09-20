@@ -199,6 +199,53 @@ test('any unauthorized shadow fire blocks review eligibility',()=>{
   assert.equal(result.gates.shadowSafetyInvariant,false);
 });
 
+test('conflicting readiness sample identities block explicit review across feedback events and audit',()=>{
+  const evidence=evidenceSet();
+  evidence.push(
+    enc('neural-shadow-feedback:',{
+      sampleId:'feedback-conflict',
+      predictedResponsibility:'GAME_RUNTIME',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MATCH',
+      responsibilityMatch:true,
+      sampleEligible:true
+    }),
+    enc('neural-shadow-feedback:',{
+      sampleId:'feedback-conflict',
+      predictedResponsibility:'VALIDATOR',
+      observedResponsibility:'GAME_RUNTIME',
+      matchState:'MISMATCH',
+      responsibilityMatch:false,
+      sampleEligible:true
+    }),
+    enc('neural-event-shadow:',{
+      eventId:'event-conflict',
+      eventType:'WORKER_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    }),
+    enc('neural-event-shadow:',{
+      eventId:'event-conflict',
+      eventType:'QA_RESULT',
+      actionKind:'REQUEST_EVIDENCE',
+      wouldFireWithoutPhase2Authority:false,
+      inhibitors:['PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED'],
+      fireAllowed:false,workerCreationAllowed:false,queueMutationAllowed:false,waveReorderAllowed:false
+    })
+  );
+  const result=evaluatePhase2Readiness({
+    evidence,
+    shadowAudit:{sampleCount:10,sampleConflicts:1}
+  });
+  assert.equal(result.gates.zeroFeedbackSampleConflicts,false);
+  assert.equal(result.gates.zeroShadowEventConflicts,false);
+  assert.equal(result.gates.zeroShadowAuditSampleConflicts,false);
+  assert.equal(result.reviewEligible,false);
+  assert.equal(result.executionAuthorityGranted,false);
+});
+
 test('root cause summary preserves prediction contradictions for explicit review',()=>{
   const summary=summarizeNeuralRootCauseEvidence([
     enc('neural-root-cause:',{
