@@ -406,6 +406,20 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
     verifiedCapabilityMemory,
+    capabilityApplicationContract:freeze({
+      version:1,
+      layer:'verifiedCapabilityMemory',
+      exactInjectedCapabilityIds:freezeList((verifiedCapabilityMemory?.records||[]).map(record=>record?.id)),
+      binding:'SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA',
+      onlyActuallyInjectedCapabilitiesEligible:true,
+      freshTaskQaRequired:true,
+      singleSuccessCausalProof:false,
+      taskFailureAlonePenalizesCapability:false,
+      rawCodeStored:false,
+      rawModelOutputStored:false,
+      hiddenChainOfThoughtStored:false,
+      authorityExpanded:false
+    }),
     capabilityMemoryPartition:freeze({
       distinctLayer:'verifiedCapabilityMemory',
       genericLearningExcludesTaskType:'coding-capability-distillation',
@@ -493,6 +507,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_UNIFIED_EXPERIENCE_COUNT=${order.unifiedLearning?.experience?.length||0}`);
     console.log(`VIBE2_VERIFIED_CAPABILITY_COUNT=${order.verifiedCapabilityMemory?.count||0}`);
     console.log(`VIBE2_VERIFIED_CAPABILITY_APPLIED=${order.verifiedCapabilityMemoryAppliedToWorkerGoal?'YES':'NO'}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_IDS=${(order.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).join(',')||'NONE'}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_BINDING=${order.capabilityApplicationContract?.binding||'NONE'}`);
     console.log(`VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED=${order.capabilityMemoryPartition?.excludedRecordCount||0}`);
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
