@@ -892,7 +892,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const priorFailureClass=generationFailureClass(lastError);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
-    const malformedFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
+    const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const focusedReplaceOnly=focusedFinal
@@ -923,7 +923,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     const temperature=focusedReplaceOnly?0.26:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(retry?(attempt>=3?0.22:0.16):0.08));
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly;
-    const completionMode=focusedReplaceOnly?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':((timeoutFastEscalation||malformedFastEscalation||focusedFirstEditEarlyStop)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    const completionMode=focusedReplaceOnly?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':((timeoutFastEscalation||focusedFirstEditEarlyStop)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
       lastRaw=raw;
