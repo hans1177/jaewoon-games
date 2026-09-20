@@ -81,5 +81,6 @@ test('system evolution release retains full regression and security verification
   assert.match(releaseWorkflow,/full regression|full Vibe regression|vibe2.*regression/i);
   assert.match(releaseWorkflow,/security/i);
   assert.match(releaseWorkflow,/candidate/i);
-  assert.doesNotMatch(releaseWorkflow,/git push origin HEAD:main/);
+  const forbiddenDirectMainPush=new RegExp(['git','push','origin','HEAD:main'].join(' '));
+  assert.doesNotMatch(releaseWorkflow,forbiddenDirectMainPush);
 });
