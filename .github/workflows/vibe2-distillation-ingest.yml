@@ -220,6 +220,8 @@ jobs:
           console.log(`VIBE3_TRAJECTORY_SAMPLES_WRITTEN=${trajectory.written?.length||0}`);
           console.log(`VIBE3_PUMP_POSITIVE_MEMORY=${pump.verifiedPositiveMemory||0}`);
           console.log(`VIBE3_PUMP_FAILURE_WARNINGS=${pump.failureWarnings||0}`);
+          console.log(`VIBE3_CAPABILITY_TRACES=${pump.capabilityTraces||0}`);
+          console.log(`VIBE3_CAPABILITY_PATTERNS=${pump.capabilityPatterns||0}`);
           console.log(`VIBE3_PUMP_PLAYBOOKS=${pump.playbooks||0}`);
           console.log(`VIBE3_PUMP_BENCHMARKS=${pump.benchmarks||0}`);
           console.log(`VIBE3_RECOMBINATION_MATERIALS=${pump.recombinationMaterials||0}`);
@@ -319,6 +321,8 @@ jobs:
           echo '- authorized Block Blast source: owner-authorized static source/assets/native/algorithm learning; STATIC_VERIFIED is not runtime PASS' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity/Roblox/Fortnite UEFN browser QA: NOT_APPLICABLE; verified native runtime evidence required' >> "$GITHUB_STEP_SUMMARY"
           echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
+          echo '- observable coding traces: winner/candidate/repair/QA facts only; hidden chain-of-thought persistence: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '- capability distillation: verified trajectory patterns feed existing playbooks as advisory context; automatic promotion: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- local weight training required for Pump: NO' >> "$GITHUB_STEP_SUMMARY"
