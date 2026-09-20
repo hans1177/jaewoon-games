@@ -9853,9 +9853,9 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "rule1Handling": "PRESERVE_EXISTING_OWNER_RULE_1_SEMANTICS; RULE_2_AND_RULE_4_ARE_CANONICALIZED_HERE; RULE_3_REMAINS_EXISTING_EXECUTION_CONTRACT_UNTIL_ITS_EXPLICIT_CANONICALIZATION",
+    "rule1Handling": "RULE_1_CANONICALIZED_HERE; VERIFIED_COMPLETION_IS_A_CHECKPOINT_AND_CONTINUATION_SIGNAL; NO_TERMINAL_DONE_STATE_WITHOUT_EXPLICIT_OWNER_STOP",
     "rule2": {
       "id": "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
       "label": "제2규칙",
@@ -9965,6 +9965,41 @@
       ],
       "failureBehavior": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING",
       "completionIsCheckpointNotStop": true
+    },
+    "rule1": {
+      "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
+      "label": "제1규칙",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "objective": "VIBE_GAME_DEVELOPMENT_CONTINUES_WITHOUT_A_TERMINAL_DONE_STATE_UNTIL_THE_OWNER_EXPLICITLY_INSTRUCTS_IT_TO_STOP",
+      "doneCommandRemoved": true,
+      "terminalDoneStateForbidden": true,
+      "verifiedCompletionMeaning": "VERIFIED_CHECKPOINT_NOT_TERMINATION",
+      "verifiedCheckpointMustGenerateNextCausalInput": true,
+      "noIndependentSafeAutonomousTaskMeaning": "TRIGGER_CAUSAL_REPLAN_OR_NEW_GAME_DEVELOPMENT_NEURON_NOT_SYSTEM_STOP",
+      "emptyQueueMeaning": "TRIGGER_PLANNER_REFILL_GAME_STUDY_OR_NEXT_SAFE_DEVELOPMENT_SIGNAL",
+      "continuousCycle": [
+        "READ_LATEST_SHARED_CONTEXT",
+        "PLAN_OR_RESERVE_NEXT_SAFE_GAME_DEVELOPMENT_WORK",
+        "EXECUTE_ATOMIC_WORK",
+        "VERIFY_RESULT",
+        "FAN_IN_VERIFIED_EVIDENCE",
+        "PERSIST_CHECKPOINT",
+        "GENERATE_OR_REFILL_NEXT_CAUSAL_WORK",
+        "DISPATCH_NEXT_CYCLE"
+      ],
+      "completionIsCheckpointNotStop": true,
+      "ownerExplicitStopRequired": true,
+      "hourlyScheduleRole": "SAFETY_NET_ONLY_NOT_PRIMARY_CONTINUATION",
+      "primaryContinuation": "EVENT_OR_WORKFLOW_DISPATCH_CHAIN",
+      "invariants": {
+        "authorityExpansion": false,
+        "qaGateWeakening": false,
+        "securityGateWeakening": false,
+        "paidResourceAutoUse": false,
+        "unsafeWorkGenerationForbidden": true,
+        "busyLoopWithoutUsefulPlanningForbidden": true
+      }
     }
   }
 }
