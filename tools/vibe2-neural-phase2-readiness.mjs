@@ -114,7 +114,7 @@ export function evaluatePhase2Readiness({
   const reviewEligible=Object.values(gates).every(Boolean);
 
   return{
-    version:1,
+    version:2,
     mode:'PHASE2_READINESS_REVIEW_GATE',
     required,
     gates,
