@@ -109,6 +109,24 @@ try{
   const enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
   if(!enteredGameplay)throw new Error('UNITY_WEB_QA_GAMEPLAY_START_MISSING');
 
+  const mobileTargetLine=markers.slice().reverse().find(x=>x.includes(' MOBILE_TARGET ')&&x.includes('role=action'))||'';
+  const mobileTargetX=Number(mobileTargetLine.match(/\bx=([0-9.]+)/)?.[1]);
+  const mobileTargetY=Number(mobileTargetLine.match(/\by=([0-9.]+)/)?.[1]);
+  if(!mobileTargetLine||!Number.isFinite(mobileTargetX)||!Number.isFinite(mobileTargetY)||mobileTargetX<=0||mobileTargetX>=1||mobileTargetY<=0||mobileTargetY>=1){
+    throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_TARGET_MISSING');
+  }
+  const mobileMarkerStart=markers.length;
+  const cdp=await page.context().newCDPSession(page);
+  const touchX=Math.round(390*mobileTargetX);
+  const touchY=Math.round(844*mobileTargetY);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchX,y:touchY,radiusX:8,radiusY:8,force:1,id:1}]});
+  await page.waitForTimeout(120);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.waitForTimeout(900);
+  await cdp.detach();
+  const mobileInputObserved=markers.slice(mobileMarkerStart).some(x=>x.includes(' MOBILE_INPUT ')&&x.includes('role=action')&&x.includes('status=PASS'));
+  if(!mobileInputObserved)throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_NOT_OBSERVED');
+
   for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
     await page.waitForTimeout(250);
@@ -116,8 +134,10 @@ try{
 
   const actions=markers.filter(x=>x.includes(' ATTACK ')||x.includes(' ACTION '));
   const progress=markers.filter(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));
+  const coreFunMarkers=markers.filter(x=>x.includes(' CORE_FUN ')&&x.includes('status=PASS'));
   if(actions.length<1)throw new Error('UNITY_WEB_QA_CORE_ACTION_EVIDENCE_MISSING');
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
+  if(coreFunMarkers.length<1)throw new Error('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
 
   await page.keyboard.press('KeyR');
   await page.waitForTimeout(2200);
@@ -158,7 +178,7 @@ try{
     sourcePath:source,
     pass:true,
     boot:{pass:true},
-    input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT'},
+    input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved},
     gameplay:{
       pass:true,
       gameplayStartObserved:true,
@@ -168,11 +188,20 @@ try{
       safeReturnOrResetObserved:true,
     },
     coreFun:{
-      pass:enteredGameplay&&actions.length>0&&progress.length>0,
-      evidence:'REAL_START_ACTION_PROGRESS_LOOP',
+      pass:coreFunMarkers.length>0,
+      evidence:'GAME_EMITTED_GENRE_CORE_FUN_AFTER_REAL_PROGRESS',
+      markerCount:coreFunMarkers.length,
+      markers:coreFunMarkers,
     },
     saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
-    mobile:{pass:true,viewport:{width:390,height:844},touch:true},
+    mobile:{
+      pass:mobileInputObserved,
+      viewport:{width:390,height:844},
+      touch:true,
+      target:{role:'action',x:mobileTargetX,y:mobileTargetY},
+      actualBrowserTouchDispatched:true,
+      realGameTouchHandlerObserved:mobileInputObserved,
+    },
     performance:{pass:bootMilliseconds<=90000&&fatal.length===0,bootMilliseconds,fatalRuntimeErrorCount:fatal.length},
     noCriticalRuntimeError:fatal.length===0,
     markers,
