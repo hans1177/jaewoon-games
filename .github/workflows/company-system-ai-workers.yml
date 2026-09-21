@@ -69,7 +69,7 @@ jobs:
     timeout-minutes: 6
     concurrency:
       group: company-system-ai-control
-      cancel-in-progress: false
+      cancel-in-progress: true
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       count: ${{ steps.matrix.outputs.count }}
