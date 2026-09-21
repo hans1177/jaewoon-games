@@ -77,7 +77,7 @@
     "afterWorkFlow": [
       "HOMEPAGE_MANAGER_APPLY",
       "HOMEPAGE_MANAGER_SELF_QA",
-      "DIRECTOR_SINGLE_POST_WORK_SUPERVISION",
+      "DIRECTOR_SINGLE_POST_WORK_SUPERVISION_AND_PUBLICATION",
       "LIVE_STATUS_CONFIRMATION"
     ],
     "secondHomepageManagerForbidden": true,
@@ -125,6 +125,12 @@
       "executionPath": "tools/game-catalog-normalization.mjs",
       "runsInsideExistingCompanyStatusSync": true,
       "humanDocumentRequired": false
+    },
+    "executionPipeline": {
+      "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
+      "jobCount": 2,
+      "separatePublishJobForbidden": true,
+      "duplicateCandidateApplyForbidden": true
     }
   },
   "production": {
