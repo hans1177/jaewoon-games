@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "gameId": "horror-escape-room",
   "gameName": "심야 술래잡기",
   "releaseStrategy": "FAST_MVP",
@@ -7,27 +7,32 @@
   "unityParallelNotBlockingRobloxMvp": true,
   "scopeFreeze": true,
   "launchCore": [
-    "one school chase map",
+    "three chase maps: school, abandoned hospital, abandoned theme park",
+    "map-specific random events",
     "player monster role selection",
     "fair forced monster rotation",
     "freeze/rescue",
     "survivor dash",
     "five classic monsters",
-    "solo AI fill"
+    "solo AI fill",
+    "server-authoritative action validation and movement abuse guards"
   ],
   "deferredUntilAfterMvp": [
-    "hospital map",
-    "theme-park map",
     "extra monsters",
     "advanced evolution trees",
     "ranked competition"
   ],
   "releaseGates": [
+    "3-map round rotation",
+    "map event visibility",
     "1-player AI fill",
     "2+ player real monster assignment",
     "freeze/rescue sync",
     "monster abilities",
     "mobile controls",
+    "start UI collapses after selection",
+    "remote action allowlist and spam rejection",
+    "teleport/speed/out-of-bounds abuse rejection",
     "save/rejoin",
     "round restart regression"
   ],
@@ -37,7 +42,9 @@
     "multiplayerPassRequired": true,
     "saveRejoinPassRequired": true,
     "regressionPassRequired": true,
-    "aiMayInventPass": false
+    "aiMayInventPass": false,
+    "abuseResistancePassRequired": true,
+    "startUiRegressionPassRequired": true
   },
-  "updatedAt": "2026-09-22T02:43:00+09:00"
+  "updatedAt": "2026-09-22T07:22:00+09:00"
 }

@@ -1,10 +1,21 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
+local SoundService=game:GetService("SoundService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local remote=RS:WaitForChild(C.RemoteName)
+
+local function makeSound(name,id,volume,looped)
+ local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
+end
+local bgm=makeSound("MidnightBackground",C.Audio.Background,.18,true)
+local chase=makeSound("MidnightChase",C.Audio.Chase,.22,true)
+local actionSfx=makeSound("MidnightAction",C.Audio.Action,.32,false)
+local warningSfx=makeSound("MidnightWarning",C.Audio.Warning,.26,false)
+local wasFrozen=false
+bgm:Play()
 
 local gui=Instance.new("ScreenGui");gui.Name="MidnightTagHUD";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui")
 local root=Instance.new("Frame");root.AnchorPoint=Vector2.new(.5,1);root.Position=UDim2.fromScale(.5,.98);root.Size=UDim2.new(1,-18,0,330);root.BackgroundTransparency=.08;root.Parent=gui
@@ -17,27 +28,50 @@ local defs={
  {C.Actions.ABILITY,"몬스터 스킬","MONSTER"},{C.Actions.NEXT_MONSTER,"몬스터 변경","PREF"}
 }
 local buttons={}
+local setupDismissed=false
 for i,a in ipairs(defs)do
  local b=Instance.new("TextButton");local c=(i-1)%4;local r=math.floor((i-1)/4)
  b.Size=UDim2.new(.235,0,0,72);b.Position=UDim2.new(.015+c*.247,0,0,132+r*82);b.Text=a[2];b.TextScaled=true;b.Parent=root
- b.Activated:Connect(function()remote:FireServer(a[1])end);buttons[i]={button=b,mode=a[3]}
+ b.Activated:Connect(function()
+  actionSfx.TimePosition=0;actionSfx:Play()
+  remote:FireServer(a[1])
+  if a[3]=="PREF"or a[3]=="SOLO"then
+   setupDismissed=true
+   for _,x in ipairs(buttons)do if x.mode=="PREF"or x.mode=="SOLO"then x.button.Visible=false end end
+   root.Size=UDim2.new(1,-18,0,132);root.BackgroundTransparency=.35
+  end
+ end);buttons[i]={button=b,mode=a[3]}
 end
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRAK";for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f.Name end end;return"드라크"
 end
 local function render()
  local role=p:GetAttribute("Role")or"WAITING";local round=p:GetAttribute("RoundState")or"WAITING"
- status.Text=string.format("%s | %s | %.0f초\n역할 %s · %s · %s\n생존 %d / 얼음 %d · XP %d · 코인 %d",
-  C.GameName,round,p:GetAttribute("TimeLeft")or 0,role,p:GetAttribute("Frozen")==true and"얼음!"or"이동 가능",monsterName(),
+ status.Text=string.format("%s | %s | %.0f초\n%s · %s\n역할 %s · %s · %s\n생존 %d / 얼음 %d · XP %d · 코인 %d",
+  C.GameName,round,p:GetAttribute("TimeLeft")or 0,p:GetAttribute("CurrentMap")or"맵 준비",p:GetAttribute("CurrentMapEvent")or"",
+  role,p:GetAttribute("Frozen")==true and"얼음!"or"이동 가능",monsterName(),
   p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0,p:GetAttribute("MonsterXP")or 0,p:GetAttribute("Coins")or 0)
  local running=round=="RUNNING"
+ if running then
+  if bgm.IsPlaying then bgm:Stop()end
+  if not chase.IsPlaying then chase:Play()end
+ else
+  if chase.IsPlaying then chase:Stop()end
+  if not bgm.IsPlaying then bgm:Play()end
+ end
+ local frozen=p:GetAttribute("Frozen")==true
+ if frozen and not wasFrozen then warningSfx.TimePosition=0;warningSfx:Play()end
+ wasFrozen=frozen
+ local showSetup=not running and not setupDismissed
+ root.Size=UDim2.new(1,-18,0,(running or showSetup)and 330 or 132)
+ root.BackgroundTransparency=(running or showSetup)and .08 or .35
  for _,x in ipairs(buttons)do
   if x.mode=="MONSTER"then x.button.Visible=running and role=="MONSTER"
   elseif x.mode=="SURVIVOR"then x.button.Visible=running and role=="SURVIVOR"
-  else x.button.Visible=not running end
+  else x.button.Visible=showSetup end
  end
 end
-for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount"})do p:GetAttributeChangedSignal(k):Connect(render)end
+for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent"})do p:GetAttributeChangedSignal(k):Connect(render)end
 render()
 
 remote.OnClientEvent:Connect(function(kind,snapshot)

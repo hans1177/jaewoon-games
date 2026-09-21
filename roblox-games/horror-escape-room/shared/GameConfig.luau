@@ -9,6 +9,24 @@ local Config={
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=2,
  TargetPopulation=6,RoundSeconds=120,IntermissionSeconds=8,TagDistance=5.5,RescueDistance=8,RemoteName="GameAction",
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
+ RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=36,ArenaLimit=86,
+ Audio={
+  Background="rbxassetid://9044889073",
+  Chase="rbxassetid://9042664292",
+  Action="rbxassetid://1837829181",
+  Warning="rbxassetid://9043346574",
+ },
+ Maps={
+  {Id="SCHOOL",Name="학교",Events={
+   {Id="LIGHTS_OUT",Name="복도 소등"},{Id="RED_HALL",Name="비상등 점등"},{Id="FOG_HALL",Name="안개 낀 복도"},
+  }},
+  {Id="HOSPITAL",Name="폐병원",Events={
+   {Id="POWER_OUTAGE",Name="병동 정전"},{Id="EMERGENCY_LIGHTS",Name="응급등 점등"},{Id="STERILE_FOG",Name="소독 안개"},
+  }},
+  {Id="THEME_PARK",Name="폐놀이공원",Events={
+   {Id="NEON_SURGE",Name="네온 폭주"},{Id="RIDE_BLACKOUT",Name="놀이기구 정전"},{Id="MIDWAY_FOG",Name="광장 안개"},
+  }},
+ },
  MonsterForms={
   {Id="DRAK",Name="드라크",UnlockXP=0,Ability="BAT_DASH"},
   {Id="FRANKEN",Name="프랑켄",UnlockXP=250,Ability="POWER_CHARGE"},
