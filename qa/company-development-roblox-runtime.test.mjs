@@ -1,9 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,validateWebPlatformHandoff} from '../tools/company-development-roblox-bootstrap.mjs';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 
+const platformProfile=()=>({
+  platform:'ROBLOX',
+  inputModel:'Roblox touch controls with ContextActionService and gamepad fallback',
+  sessionModel:'Roblox private experience session with server-authoritative player lifecycle',
+  multiplayerRuntime:'Roblox server RemoteEvent authority with synchronized participant state',
+  performanceBudget:'Mobile-first Roblox frame, memory, instance and network budget',
+  uiUx:'Roblox ScreenGui touch-first HUD with safe-area friendly controls',
+  saveAndNetwork:'DataStore persistence when required and validated RemoteEvent network boundaries',
+  platformContentAdaptation:'Roblox-native scene, avatar, camera, UI and interaction adaptation',
+  internalReleaseTarget:'Private or restricted Roblox test experience playable by owner',
+  validationEvidence:'Roblox runtime, independent QA and regression evidence on exact source revision'
+});
 const buildProfile=(genre,subgenre=null,playMode='SINGLE')=>{
   const multiplayerRequired=playMode!=='SINGLE';
   return {
@@ -23,6 +35,7 @@ const baseline={content:{
   coreLoop:['collect resources','upgrade production','unlock the next area'],
   mobileUx:'touch controls',progressionDirection:'Persistent progression system',
   robloxBuildProfile:buildProfile('Simulation','Tycoon','SINGLE'),
+  platformProfiles:{ROBLOX:platformProfile()},
 }};
 const shared=`local Config = {
   PolicySource = "company-learning/platform-release-roadmap.json",
@@ -112,7 +125,7 @@ test('persistent Roblox design requires save evidence in generated source',()=>{
 test('Roblox build profile is mandatory and normalized before source generation',()=>{
   assert.equal(robloxBuildProfileFromBaseline(baseline).genre,'Simulation');
   assert.equal(robloxBuildProfileFromBaseline(baseline).playMode,'SINGLE');
-  assert.throws(()=>robloxBuildProfileFromBaseline({content:{identity:'missing profile'}}),/ROBLOX_BUILD_PROFILE_REQUIRED/);
+  assert.throws(()=>robloxBuildProfileFromBaseline({content:{identity:'missing profile'}}),/ROBLOX_PLATFORM_DESIGN_PROFILE_REQUIRED/);
 });
 
 test('Roblox bootstrap static gate accepts profile-bound server-authoritative mobile source with save',()=>{
@@ -156,6 +169,7 @@ test('deterministic Roblox compiler binds approved genre and play mode to genera
       coreLoop:['explore or collect','perform the main challenge','receive reward and progress'],
       mobileUx:'touch controls',progressionDirection:'Persistent progression system',
       robloxBuildProfile:buildProfile(genre,subgenre,playMode),
+      platformProfiles:{ROBLOX:platformProfile()},
     }};
     const inventory=deriveApprovedScopeInventory(locked);
     const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{}});
@@ -325,60 +339,31 @@ test('Roblox source workflow requires durable Vibe3 learning memory for source g
   assert.ok(workflow.includes('e.vibe3LearningApplied!==true||!e.recombinationRecipeId'));
 });
 
-test('owner-focused concurrent Roblox source lane preserves canonical selected Unity state',()=>{
+test('Roblox source workflow treats every development-confirmed game as the Roblox side of the automatic pair',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  assert.ok(workflow.includes('ownerFocusedSecondaryPlatformEligible'));
-  assert.ok(workflow.includes("const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX')"));
-  assert.ok(workflow.includes('secondaryOwnerFocus,'));
-  assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_READY'"));
-  assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_PROMOTION_PENDING'"));
-  assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED'"));
-  const persistAt=workflow.indexOf('const secondaryOwnerFocus=target.secondaryOwnerFocus===true;');
-  assert.ok(persistAt>=0,'secondary P0 persistence branch missing');
-  const primaryAt=workflow.indexOf("if(result.pass===true){",persistAt+1);
-  const secondaryBlock=workflow.slice(persistAt,primaryAt);
-  assert.doesNotMatch(secondaryBlock,/selectedPlatform:'ROBLOX'/);
-  assert.doesNotMatch(secondaryBlock,/targetPlatform:'ROBLOX'/);
-  assert.doesNotMatch(secondaryBlock,/currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
-  assert.doesNotMatch(secondaryBlock,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.ok(workflow.includes("platformDevelopmentEligible(item,'ROBLOX')"));
+  assert.ok(workflow.includes("target=`roblox-games/${item.gameId}`")||workflow.includes("const target=`roblox-games/${item.gameId}`"));
+  assert.ok(workflow.includes('ROBLOX_EXECUTION_BATCH_CAPACITY='));
+  assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
+  assert.ok(workflow.includes('ROBLOX_RUNNER_PARALLEL_CAPACITY=6'));
 });
 
 
-
-test('Roblox Web handoff requires ready commercial presentation contract',()=>{
-  const roadmap={developmentLifecycleMachine:{webToPlatformHandoff:{
-    required:true,manifestVersion:1,
-    carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context','presentation-contract']
-  }}};
-  const handoff={
-    version:1,stage:'WEB_DEVELOPMENT_BASELINE_READY',gameId:'demo',
-    sourcePath:'web-games/demo',evidencePath:'design/demo/web-gameplay-validation.json',baselineSource:'design/demo/design-revised.json',
-    sourceIndexSha256:'a'.repeat(64),designBaselineSha256:'b'.repeat(64),validationSchemaVersion:5,strictScore:92,
-    promotionRevalidationPassed:true,nativeRuntimePassTransferred:false,
-    carryForward:[...roadmap.developmentLifecycleMachine.webToPlatformHandoff.carryForward],
-    presentationContract:{
-      version:1,kind:'WEB_TO_NATIVE_PRESENTATION_CONTRACT',ready:true,
-      styleLock:{id:'demo-style',revision:'r1',uiMotionLanguage:'snappy'},
-      commercialReadiness:{version:1,pass:true},
-      webAssetBinaryCopyRequired:false
-    }
-  };
-  const passed=validateWebPlatformHandoff({handoff,roadmap,gameId:'demo'});
-  assert.equal(passed.pass,true,passed.blockers.join(','));
-
-  const failed=validateWebPlatformHandoff({handoff:{...handoff,presentationContract:null},roadmap,gameId:'demo'});
-  assert.equal(failed.pass,false);
-  assert.ok(failed.blockers.includes('WEB_HANDOFF_PRESENTATION_READY_REQUIRED'));
-  assert.ok(failed.blockers.includes('WEB_HANDOFF_STYLE_LOCK_REQUIRED'));
-  assert.ok(failed.blockers.includes('WEB_HANDOFF_COMMERCIAL_READINESS_REQUIRED'));
+test('Roblox compiler is admitted by native platform design and does not consume Web handoff',()=>{
+  const compiled=compileRobloxSource({gameId:'demo',gameName:'Demo',baseline,artbook:{},webHandoff:{stage:'INVALID_WEB_STAGE'}});
+  assert.equal(compiled.validation.pass,true);
+  assert.equal(compiled.webHandoff,null);
+  assert.ok(compiled.result.sharedConfig.includes('DesignBaseline = {'));
+  assert.ok(compiled.result.sharedConfig.includes('PlatformProfile = {'));
+  assert.ok(compiled.result.sharedConfig.includes('AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY"'));
 });
 
-test('development router carries presentation contract without changing canonical target sequence',()=>{
+test('central development orchestrator dispatches both native lanes without Web presentation gate',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
-  assert.match(workflow,/presentationReady=evidenceGate\.presentationContract\?\.ready===true/);
-  assert.match(workflow,/presentationContract:firstGatePass\?null:evidenceGate\.presentationContract/);
-  assert.match(workflow,/['"]presentation-contract['"]/);
-  assert.match(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
+  assert.match(workflow,/company-development-roblox-runtime\.yml/);
+  assert.match(workflow,/company-development-unity-runtime\.yml/);
+  assert.match(workflow,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
 test('owner-focused concurrent Roblox lane carries exact merged source revision into package without replacing canonical Unity',()=>{
