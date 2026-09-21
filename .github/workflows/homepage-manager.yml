@@ -24,6 +24,8 @@ on:
       - 'artbook-viewer.html'
       - 'artbook-submissions/**'
       - 'web-games/**'
+      - 'company-records/runtime-media/**'
+      - 'assets/runtime-evidence/**'
       - 'assets/**'
       - 'manifest.webmanifest'
       - 'install.html'
@@ -190,6 +192,9 @@ jobs:
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "runtimeInfoAuthority='company-runtime'" tools/company-status-sync.mjs
+          grep -Fq 'loadVerifiedHomepageRuntimeMedia' tools/company-status-sync.mjs
+          grep -Fq 'data-runtime-preview="true"' assets/homepage-enhancements.js
+          grep -Fq 'IntersectionObserver' assets/homepage-enhancements.js
           node <<'NODE'
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
