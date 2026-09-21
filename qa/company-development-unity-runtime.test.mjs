@@ -60,8 +60,9 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
     assert.equal(meta.version,3);
     assert.equal(meta.category,mode);
     assert.equal(meta.selectedPlatform,'UNITY');
-    assert.equal(meta.webEvidenceOptional,true);
-    assert.equal(meta.webEvidenceBound,false);
+    assert.equal(meta.nativeAppOnly,true);
+    assert.equal(meta.unityWebEnabled,false);
+    assert.equal(meta.platformDesignProfile.platform,'UNITY');
     assert.equal(meta.releaseAuthority,false);
     assert.equal(meta.purpose,'TARGET_PLATFORM_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
@@ -108,10 +109,10 @@ test('Unity native generator ignores legacy Web evidence and emits no WebGL path
 test('Unity executor uses unbounded eligibility with capacity batching, canary and exact-stage resume sequence',()=>{
   assert.match(workflowSource,/selectTargetPlatformDevelopmentWindow/);
   assert.match(workflowSource,/selectRepresentativeCanary/);
-  assert.match(workflowSource,/const EXECUTION_BATCH_MAX=256/);
-  assert.match(workflowSource,/Math\.min\(EXECUTION_BATCH_MAX,selected\.length\|\|1\)/);
+  assert.match(workflowSource,/const batchMax=Math\.max\(1,Math\.min\(256,/);
+  assert.match(workflowSource,/rows\.slice\(0,batchMax\)/);
+  assert.match(workflowSource,/Math\.min\(batchMax,selected\.length\|\|1\)/);
   assert.match(workflowSource,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
-  assert.match(workflowSource,/UNITY_EXECUTION_BATCH_CAPACITY=/);
   assert.match(workflowSource,/REPRESENTATIVE_CANARY=/);
   assert.match(workflowSource,/COMMON_FAILURE_DETECTED=/);
   assert.match(workflowSource,/CHANGE_DETECTION=/);
