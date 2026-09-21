@@ -52,6 +52,7 @@ namespace JaewoonGames.DungeonCompany
                 PrepareStarterDefense();
                 game.StartWave();
                 Debug.Log("JAEWOON_UNITY_WEB_QA START game=dungeon-company region=dungeon status=PASS");
+                Debug.Log("JAEWOON_UNITY_WEB_QA ATTACK game=dungeon-company action=start-defense status=PASS");
                 Debug.Log("JAEWOON_UNITY_WEB_QA PROGRESS game=dungeon-company kind=starter-defense status=PASS");
                 LogState();
             }
