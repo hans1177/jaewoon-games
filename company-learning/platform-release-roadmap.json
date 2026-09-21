@@ -1261,7 +1261,12 @@
       "activationBoundary": "AFTER_INITIAL_SECOND_PLATFORM_ADAPTATION_GATE_AND_PUBLIC_RELEASE",
       "internalPlatformReleaseDoesNotActivatePostReleaseUpdateEngine": true,
       "initialPlatformRebuildHandledBy": "developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate",
-      "updateGatesMovedAfterPublicRelease": true
+      "updateGatesMovedAfterPublicRelease": true,
+      "publicReleaseEligibility": {
+        "newPipeline": "SECOND_PLATFORM_GATE_PASS_PLUS_EXPLICIT_EXTERNAL_PUBLICATION_EVIDENCE",
+        "legacyMigration": "PREEXISTING_VERIFIED_PUBLIC_RELEASE_REMAINS_ELIGIBLE",
+        "internalPlatformRelease": "NOT_ELIGIBLE"
+      }
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -4310,7 +4315,9 @@
         "fullPublicState": "PUBLIC_RELEASE",
         "homepageIsInternalCompanySurface": true,
         "internalHomepageMayExposeAllDevelopmentEvidence": true,
-        "marketingOrExternalListingBeforeSecondGateForbidden": true
+        "marketingOrExternalListingBeforeSecondGateForbidden": true,
+        "explicitExternalPublicationEvidenceRequiredAfterSecondGate": true,
+        "secondGatePassAloneDoesNotClaimPublication": true
       },
       "implementation": {
         "controlTool": "tools/company-platform-exposure-control.mjs",
@@ -4329,6 +4336,13 @@
         "currentPublicVersionRemainsLiveDuringMajorPreparation": true,
         "initialSecondGateNotRepeatedAsGenericUpdateGate": true,
         "platformSpecificRequirementsRemainApplicableToChangedAreas": true
+      },
+      "activatedAt": "2026-09-21",
+      "migration": {
+        "verifiedPublicReleasesExistingBeforeActivationRemainPublic": true,
+        "doNotRetroactivelyConvertExistingPublicReleaseToInternalOnly": true,
+        "legacyPublicReleaseStillUsesPostPublicHotfixMinorMajorOperations": true,
+        "newOrRebuiltReleaseAfterActivationMustUseSecondPlatformGate": true
       }
     }
   },
