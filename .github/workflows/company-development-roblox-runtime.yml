@@ -84,7 +84,7 @@ jobs:
             --source-revision="$SOURCE_REVISION" \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Resolve next Roblox source execution slice from global six-game window
+      - name: Resolve next Roblox source execution slice from unbounded native queue
         id: targets
         shell: bash
         run: |
@@ -859,7 +859,7 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
+          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
@@ -919,7 +919,7 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
+          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
