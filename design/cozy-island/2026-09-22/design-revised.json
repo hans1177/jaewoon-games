@@ -6,7 +6,7 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T00:45:00+09:00",
-  "updatedAt": "2026-09-22T01:22:00+09:00",
+  "updatedAt": "2026-09-22T02:16:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
@@ -87,7 +87,14 @@
       "networkingRequired": true,
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "displayLabelKo": "Simulation · Life Simulation"
+      "displayLabelKo": "Simulation · Life Simulation",
+      "visualQualityTarget": "STYLIZED_ROBLOX_HIGH_READABILITY",
+      "visualPriority": [
+        "island-silhouette",
+        "resource-biome-readability",
+        "base-conquest-feedback",
+        "army-movement"
+      ]
     },
     "platformProfiles": {
       "ROBLOX": {
@@ -114,6 +121,10 @@
         "internalReleaseTarget": "내부 Android 테스트 빌드를 첫 Unity 내부 출시 대상으로 한다.",
         "validationEvidence": "실기기 터치, 저장 복구, 프레임, 독립 QA와 회귀검증을 같은 빌드에서 확인한다."
       }
+    },
+    "visualDirection": "밝고 따뜻한 스타일라이즈드 3D 디오라마. Roblox의 읽기 쉬운 실루엣을 유지하되 장난감처럼 싸보이지 않게 섬 지형·기지·자원 지역을 큰 형태와 재질 차이로 구분한다. 초원·산악·사막·화산·해안이 멀리서도 즉시 구분되고, 주민·병사보다 섬 확장과 군대 이동 장면에 시각 예산을 우선 배분한다.",
+    "artAudioDirection": {
+      "visualIdentity": "작은 왕국 디오라마 + 밝은 자연광 + 지역별 강한 색/재질 차이. 기본섬은 녹색 생활권, 철광산은 회색 슬레이트, 목장은 연두 초원, 금광은 황금 사막, 화산은 검은 현무암과 주황 발광으로 식별한다."
     }
   }
 }

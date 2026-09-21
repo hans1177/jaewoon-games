@@ -346,8 +346,8 @@
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/daechung-rpg",
-      "currentStep": "TARGET_PLATFORM_SOURCE_REFRESH",
-      "canonicalState": "PRIMARY_DEVELOPMENT_SOURCE_REFRESH",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "ROBLOX_SOURCE_READY_RUNTIME_QA_PENDING",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -374,10 +374,11 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-owner-directed-source-refresh-pending"
+        "roblox-runtime-evidence-pending",
+        "roblox-multiplayer-qa-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "updatedAt": "2026-09-22T02:16:00+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -502,7 +503,9 @@
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
       "ownerDirectDevelopment": true,
-      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22"
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "robloxSourceCommit": "f57e0f6525c1ed360c72e79d291cdf807162b695",
+      "visualArtPass": "STYLIZED_ROBLOX_V1"
     },
     {
       "gameId": "monster-adventure",
@@ -2371,8 +2374,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "TARGET_PLATFORM_SOURCE_REFRESH",
-      "canonicalState": "PRIMARY_DEVELOPMENT_SOURCE_REFRESH",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "ROBLOX_SOURCE_READY_RUNTIME_QA_PENDING",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -2381,15 +2384,16 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T01:35:00+09:00",
-      "robloxSourceCommit": "957db34d959c4525db5e9e948cb076e7e2f1a034",
+      "updatedAt": "2026-09-22T02:16:00+09:00",
+      "robloxSourceCommit": "f57e0f6525c1ed360c72e79d291cdf807162b695",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-owner-directed-source-refresh-pending"
+        "roblox-runtime-evidence-pending",
+        "roblox-multiplayer-qa-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -2462,7 +2466,8 @@
       "tradeExpansion": true,
       "navalSiegeExpansion": true,
       "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 1
+      "ownerPrimaryRank": 1,
+      "visualArtPass": "STYLIZED_ROBLOX_V1"
     },
     {
       "gameId": "territory-war",
@@ -2643,19 +2648,22 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "TARGET_PLATFORM_SOURCE_REFRESH",
-      "canonicalState": "PRIMARY_DEVELOPMENT_SOURCE_REFRESH",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "ROBLOX_SOURCE_READY_RUNTIME_QA_PENDING",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-owner-directed-source-refresh-pending"
+        "roblox-runtime-evidence-pending",
+        "roblox-multiplayer-qa-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "updatedAt": "2026-09-22T02:16:00+09:00",
       "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 3
+      "ownerPrimaryRank": 3,
+      "robloxSourceCommit": "f57e0f6525c1ed360c72e79d291cdf807162b695",
+      "visualArtPass": "STYLIZED_ROBLOX_V1"
     }
   ],
   "updatedAt": "2026-09-22T01:22:00+09:00",

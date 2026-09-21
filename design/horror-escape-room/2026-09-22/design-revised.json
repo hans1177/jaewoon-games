@@ -6,7 +6,7 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T01:05:00+09:00",
-  "updatedAt": "2026-09-22T01:53:00+09:00",
+  "updatedAt": "2026-09-22T02:16:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
@@ -81,7 +81,14 @@
       "networkingRequired": true,
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "displayLabelKo": "몬스터 · 얼음땡 · 술래잡기"
+      "displayLabelKo": "몬스터 · 얼음땡 · 술래잡기",
+      "visualQualityTarget": "STYLIZED_ROBLOX_HORROR_READABLE",
+      "visualPriority": [
+        "monster-silhouette",
+        "chase-readability",
+        "map-landmarks",
+        "freeze-rescue-feedback"
+      ]
     },
     "platformProfiles": {
       "ROBLOX": {
@@ -145,6 +152,10 @@
         "ability": "그림자 점프",
         "playStyle": "짧은 거리 순간이동으로 코너와 장애물을 넘겨 추격한다"
       }
-    ]
+    ],
+    "visualDirection": "어둡지만 길을 잃을 정도로 어둡지 않은 Roblox 스타일 공포 3D. 학교·병원·놀이공원처럼 익숙한 공간을 큰 실루엣과 명확한 동선으로 만들고, 몬스터는 고전 공포 원형을 과장된 체형·색·발광 포인트로 한눈에 구분한다. 실사 공포보다 추격 중 가독성과 캐릭터 식별을 우선한다.",
+    "artAudioDirection": {
+      "visualIdentity": "차가운 야간 조명, 회색 콘크리트, 청록 사물함과 제한된 네온 포인트. 드라크는 적색, 프랑켄은 녹색, 울프는 갈색/황색, 미이라는 사막색, 리퍼는 보라색 포인트로 구분한다."
+    }
   }
 }

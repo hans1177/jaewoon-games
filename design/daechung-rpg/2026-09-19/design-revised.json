@@ -116,7 +116,7 @@
       "performanceBudget": "동시에 활성화되는 AI 동료·적 수를 전투 구역 단위로 제한하고 경로탐색/스킬 평가 주기를 분산한다.",
       "sessionConstraints": "짧은 사냥과 긴 스토리/던전 모두 가능하지만 한 전투 안에서는 파티 조합의 차이가 빠르게 드러나야 한다."
     },
-    "visualDirection": "로우폴리(Low-Poly) 스타일의 캐주얼 3D 그래픽을 채택하여 가볍고 경쾌한 느낌을 줍니다. 원색 위주의 명확한 컬러 대비를 통해 함정과 몬스터, 보상 상자를 직관적으로 구분할 수 있게 하며, 주사위가 굴러갈 때의 물리 효과와 타격 이펙트를 과장되게 표현하여 시각적 쾌감을 극대화합니다.",
+    "visualDirection": "세 게임 중 캐릭터와 전투 연출 퀄리티를 가장 높게 잡는 애니메이션풍 스타일라이즈드 판타지 3D. 기본 Roblox 아바타 감각은 유지하되 직업·동료·보스가 얼굴, 무기, 실루엣, 스킬 이펙트만 봐도 구분되도록 한다. 실사보다 강한 색 대비와 읽기 쉬운 전투 이펙트를 우선한다.",
     "mobileUx": "직접 전투 조작은 이동·기본공격·회피·핵심 스킬 중심으로 단순화하고, 파티 편성·장비·AI 성향은 전투 밖에서 명확한 카드형 UI로 관리한다.",
     "uxAccessibilityPlan": {
       "hudPriorities": "화면 최상단에 현재 체력과 획득 골드를 표시하고, 중앙에는 주사위 판정 창, 하단에는 전진/탈출 액션 버튼을 배치하여 시각적 위계를 명확히 합니다.",
@@ -125,7 +125,7 @@
       "accessibility": "적녹색약 플레이어를 위해 함정과 몬스터의 경고 범위를 단순 색상이 아닌 빗금 패턴과 아이콘으로 병행 표기합니다."
     },
     "artAudioDirection": {
-      "visualIdentity": "장난감 같은 아기자기한 캐릭터 디자인과 대비되는 어둡고 신비로운 던전 배경의 조화를 통해 독특한 캐주얼 다크 판타지 분위기를 형성합니다.",
+      "visualIdentity": "판타지 광장, 룬 기둥, 발광 수정, 무기 실루엣을 중심으로 한 스타일라이즈드 3D. 동료는 직업별 색과 무기 실루엣이 명확하고 보스는 큰 체형·별도 조명·전용 색으로 즉시 구분한다.",
       "audioIdentity": "경쾌한 8비트 레트로 사운드와 웅장한 오케스트라 악기를 혼합하여, 가볍지만 모험의 긴장감을 잃지 않는 독창적인 사운드트랙을 제공합니다.",
       "gameplayFeedbackSync": "주사위가 굴러가서 멈추는 순간의 둔탁한 타격음과 몬스터 처치 시 골드가 쏟아지는 금속성 효과음을 화면 연출과 0.01초 단위로 동기화하여 타격감을 극대화합니다."
     },
@@ -195,6 +195,15 @@
       "profilesDistinctByPlatformEnvironment": true,
       "strictReviewRefreshRequired": true,
       "migratedAt": "2026-09-21T14:58:12.035Z"
+    },
+    "robloxBuildProfile": {
+      "visualQualityTarget": "STYLIZED_FANTASY_PREMIUM_FOR_ROBLOX",
+      "visualPriority": [
+        "companion-identity",
+        "combat-effects",
+        "boss-silhouette",
+        "equipment-readability"
+      ]
     }
   },
   "recovery": {
@@ -210,5 +219,5 @@
     "aiVerdictUsed": false,
     "materializedAt": "2026-09-19T03:39:07.577Z"
   },
-  "updatedAt": "2026-09-22T01:35:00+09:00"
+  "updatedAt": "2026-09-22T02:16:00+09:00"
 }
