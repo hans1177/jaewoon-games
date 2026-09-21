@@ -1,5 +1,5 @@
 {
-  "version": 237,
+  "version": 238,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4871,56 +4871,97 @@
       "testCandidateManifestIsHomepageShelf": false
     },
     "frontDoor": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-21",
-      "mode": "SIMPLE_GAME_FIRST_RESPONSIVE",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-21_SAMPLE_EXACT",
+      "mode": "SAMPLE_FRONT_DOOR_V1",
+      "legacyMixingForbidden": true,
       "order": [
+        "HEADER",
         "FEATURED_GAME",
-        "LIVE_SUMMARY",
-        "GAME_CENTER",
-        "DEVELOPMENT_PIPELINE",
-        "SECONDARY_COMMUNITY_AND_COMPANY"
+        "THREE_METRICS",
+        "PLAY_NOW",
+        "IN_DEVELOPMENT",
+        "DEVELOPMENT_FLOW",
+        "FOOTER"
       ],
-      "desktop": {
-        "featuredHeroFirst": true,
-        "concisePrimaryNavigation": true,
-        "gameGridPreferredColumns": 4
-      },
-      "mobile": {
-        "touchFirst": true,
-        "fixedBottomNavigation": true,
-        "horizontalGameCardBrowse": true,
-        "horizontalDevelopmentStepBrowse": true,
-        "oversizedTextAndLongIntroAvoided": true
-      },
-      "runtimeDataAuthority": "company-runtime",
-      "renderer": "index.html + assets/homepage-enhancements.js",
-      "gameplayAndReleaseSemanticsUnchanged": true,
-      "directPlayPriority": true,
-      "runtimeRendererContract": {
-        "renderer": "assets/homepage-enhancements.js",
-        "mustPreserveLiveSummary": true,
-        "desktopGameColumns": 4,
-        "mobileGameBrowse": "HORIZONTAL_TOUCH_CARDS",
-        "runtimeMayOverrideApprovedFrontDoor": false,
-        "singleCanonicalDataFetchOwner": "assets/homepage-enhancements.js",
-        "legacyInlineInitialRenderDisabled": true,
-        "liveSummaryOwnedByRuntimeRenderer": true,
-        "refreshCadenceMs": 30000,
-        "eventRefresh": [
-          "FOCUS",
-          "ONLINE",
-          "VISIBILITY_RETURN"
+      "header": {
+        "brand": "JAEWOON GAMES",
+        "links": [
+          "GAME",
+          "DEVELOPMENT",
+          "CHATGPT"
         ],
-        "hiddenTabPolling": false
+        "chatgptUrl": "https://chatgpt.com/",
+        "appInstallVisible": true
       },
-      "secondaryPlacement": {
-        "portfolioBoard": "AFTER_DEVELOPMENT_PIPELINE",
-        "mayPreemptFeaturedGame": false,
-        "mayPreemptLiveSummary": false,
-        "mayPreemptGameCenter": false,
-        "mayPreemptDevelopmentPipeline": false
-      }
+      "hero": {
+        "oneFeaturedGame": true,
+        "primaryAction": "PLAY_NOW",
+        "carouselForbidden": true,
+        "operationalBadgesLimited": true
+      },
+      "metrics": {
+        "count": 3,
+        "items": [
+          "PLAYABLE",
+          "IN_DEVELOPMENT",
+          "RELEASED"
+        ]
+      },
+      "shelves": [
+        {
+          "id": "PLAY_NOW",
+          "source": "CANONICAL_WEB_PUBLISHED"
+        },
+        {
+          "id": "IN_DEVELOPMENT",
+          "source": "DEVELOPMENT_CONFIRMED"
+        }
+      ],
+      "developmentFlow": {
+        "visible": true,
+        "steps": 5,
+        "labels": [
+          "WEB_BUILD",
+          "WEB_QA",
+          "PLATFORM",
+          "PLATFORM_QA",
+          "RELEASE"
+        ]
+      },
+      "forbiddenFrontDoorElements": [
+        "REVIEWS",
+        "MUSIC_PLAYER",
+        "DEVELOPER_PROFILE",
+        "PORTFOLIO_CONTROL_BOARD",
+        "ROBLOX_HISTORY_SHELF",
+        "RELEASE_SHELF",
+        "LEGACY_SEARCH_FILTERS",
+        "LEGACY_SORT_CONTROLS"
+      ],
+      "mobile": {
+        "fixedBottomNavigation": true,
+        "navItems": [
+          "HOME",
+          "GAME",
+          "DEVELOPMENT",
+          "CHATGPT"
+        ],
+        "chatgptUrl": "https://chatgpt.com/",
+        "horizontalGameCards": true,
+        "horizontalDevelopmentSteps": true
+      },
+      "runtimeAuthority": "company-runtime",
+      "runtimeRenderer": "assets/homepage-enhancements.js",
+      "rendererMayAddLegacyFrontDoorElements": false,
+      "singleCanonicalDataOwner": "assets/homepage-enhancements.js",
+      "refreshCadenceMs": 30000,
+      "hiddenTabPolling": false,
+      "eventRefresh": [
+        "FOCUS",
+        "ONLINE",
+        "VISIBILITY_RETURN"
+      ]
     }
   },
   "serverHomepageIntegration": {
