@@ -1,4 +1,5 @@
 import * as pc from 'playcanvas';
+import {SLIME_GLB_BASE64} from './assets/slime-data.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('app');
@@ -7,8 +8,8 @@ app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
 app.setCanvasResolution(pc.RESOLUTION_AUTO);
 app.start();
 
-app.scene.ambientLight=new pc.Color(.34,.38,.44);
-app.scene.exposure=1.12;
+app.scene.ambientLight=new pc.Color(.22,.24,.30);
+app.scene.exposure=1.18;
 app.scene.gammaCorrection=pc.GAMMA_SRGB;
 
 const mat=(r,g,b,metal=0,gloss=.35)=>{
@@ -33,11 +34,61 @@ function primitive(name,type,pos,scale,material,parent=app.root){
 function destroyChildren(root){while(root.children.length)root.children[0].destroy()}
 
 const sun=new pc.Entity('Sun');
-sun.addComponent('light',{type:'directional',color:new pc.Color(1,.93,.82),intensity:1.4,castShadows:true,shadowBias:.18,shadowDistance:70});
-sun.setEulerAngles(48,-35,0);app.root.addChild(sun);
+sun.addComponent('light',{type:'directional',color:new pc.Color(1,.78,.62),intensity:1.55,castShadows:true,shadowBias:.16,shadowDistance:70});
+sun.setEulerAngles(52,-38,0);app.root.addChild(sun);
+const fill=new pc.Entity('MoonFill');
+fill.addComponent('light',{type:'directional',color:new pc.Color(.28,.42,.65),intensity:.42,castShadows:false});
+fill.setEulerAngles(35,145,0);app.root.addChild(fill);
 
 const zoneRoot=new pc.Entity('ZoneRoot');app.root.addChild(zoneRoot);
 const actorRoot=new pc.Entity('ActorRoot');app.root.addChild(actorRoot);
+
+const CARTOON={
+  warrior:null,ranger:null,wizard:null,slime:null,ready:false,slimeUrl:null
+};
+function base64BlobUrl(base64,type='model/gltf-binary'){
+  const raw=atob(base64),bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  return URL.createObjectURL(new Blob([bytes],{type}));
+}
+function loadContainer(url,filename){
+  return new Promise(resolve=>app.assets.loadFromUrlAndFilename(url,filename,'container',(err,asset)=>resolve(err?null:asset)));
+}
+function mountAsset(parent,asset,key,{scale=1,y=0,rotY=180}={}){
+  if(!asset?.resource?.instantiateRenderEntity||parent.__cartoonVisual)return null;
+  const visual=asset.resource.instantiateRenderEntity();
+  visual.name='CartoonVisual-'+key;parent.addChild(visual);
+  visual.setLocalPosition(0,y,0);visual.setLocalEulerAngles(0,rotY,0);visual.setLocalScale(scale,scale,scale);
+  parent.__cartoonVisual=visual;if(parent.model)parent.model.enabled=false;
+  visual.findComponents?.('render').forEach(r=>{r.castShadows=true;r.receiveShadows=true});
+  return visual;
+}
+function applyNpcAsset(n){
+  const asset=n.role==='trainer-archer'?CARTOON.ranger:n.role==='trainer-mage'?CARTOON.wizard:CARTOON.warrior;
+  return mountAsset(n,asset,n.role,{scale:.72,y:0,rotY:180});
+}
+function applyEnemyAsset(e){
+  if(!/슬라임/.test(e.enemyName||''))return null;
+  return mountAsset(e,CARTOON.slime,'slime',{scale:.82,y:-.82,rotY:180});
+}
+function applyCartoonVisuals(){
+  const pv=mountAsset(player,CARTOON.warrior,'player',{scale:.72,y:-1.1,rotY:180});
+  if(pv){if(sword.model)sword.model.enabled=false;if(armorPlate.model)armorPlate.model.enabled=false;if(helmet.model)helmet.model.enabled=false}
+  npcs.forEach(applyNpcAsset);enemies.forEach(applyEnemyAsset);
+}
+async function loadCartoonAssets(){
+  CARTOON.slimeUrl=base64BlobUrl(SLIME_GLB_BASE64);
+  const [warrior,ranger,wizard,slime]=await Promise.all([
+    loadContainer('./assets/Warrior.gltf','Warrior.gltf'),
+    loadContainer('./assets/Ranger.gltf','Ranger.gltf'),
+    loadContainer('./assets/Wizard.gltf','Wizard.gltf'),
+    loadContainer(CARTOON.slimeUrl,'Slime.glb')
+  ]);
+  CARTOON.warrior=warrior;CARTOON.ranger=ranger;CARTOON.wizard=wizard;CARTOON.slime=slime;
+  CARTOON.ready=Boolean(warrior||ranger||wizard||slime);
+  applyCartoonVisuals();
+  if(CARTOON.ready)toast('카툰 RPG 에셋 적용 완료');
+}
 
 const player=primitive('Player','capsule',[0,1.1,8],[1.05,1.05,1.05],M.hero,actorRoot);
 const sword=primitive('Sword','box',[.75,1.15,0],[.12,1.2,.18],M.stone,player);sword.setLocalEulerAngles(0,0,-18);
@@ -106,7 +157,7 @@ function addNpc(name,role,x,z,material){
   const root=new pc.Entity('NPC-'+name);zoneRoot.addChild(root);root.setLocalPosition(x,0,z);
   primitive('Body','capsule',[0,1.15,0],[.9,1,.9],material,root);
   primitive('Head','sphere',[0,2.15,0],[.65,.65,.65],M.wood,root);
-  root.npcName=name;root.role=role;npcs.push(root);return root;
+  root.npcName=name;root.role=role;npcs.push(root);if(CARTOON.ready)applyNpcAsset(root);return root;
 }
 function ensureAiUsers(){
   if(aiUsers.length)return;
@@ -142,7 +193,7 @@ function spawnEnemy(i,spec){
   const angle=(i/7)*Math.PI*2+.4,r=10+(i%3)*4;
   const e=primitive(name+'-'+i,'sphere',[Math.cos(angle)*r,.85,Math.sin(angle)*r-8],[1.3,.85,1.3],material,zoneRoot);
   e.enemyName=name;e.hp=hp;e.maxHp=hp;e.attack=atk;e.speed=speed;e.alive=true;e.hitCd=.2+Math.random()*.5;
-  enemies.push(e);
+  enemies.push(e);if(CARTOON.ready)applyEnemyAsset(e);
 }
 function buildHunt(id){
   destroyChildren(zoneRoot);portals=[];enemies=[];returnPortal=null;npcs=[];
@@ -434,7 +485,7 @@ function clampPlayer(){
   const p=player.getPosition();player.setPosition(Math.max(-34,Math.min(34,p.x)),1.1,Math.max(-34,Math.min(34,p.z)));
 }
 
-buildTown();recalcStats();refreshHud();
+buildTown();recalcStats();refreshHud();loadCartoonAssets().catch(()=>{});
 
 app.on('update',dt=>{
   state.attackCd=Math.max(0,state.attackCd-dt);state.damageCd=Math.max(0,state.damageCd-dt);state.portalCd=Math.max(0,state.portalCd-dt);state.stunT=Math.max(0,state.stunT-dt);hero.skillCd=Math.max(0,hero.skillCd-dt);
