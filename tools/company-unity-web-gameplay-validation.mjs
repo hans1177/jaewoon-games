@@ -116,14 +116,12 @@ try{
     throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_TARGET_MISSING');
   }
   const mobileMarkerStart=markers.length;
-  const cdp=await page.context().newCDPSession(page);
-  const touchX=Math.round(390*mobileTargetX);
-  const touchY=Math.round(844*mobileTargetY);
-  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchX,y:touchY,radiusX:8,radiusY:8,force:1,id:1}]});
-  await page.waitForTimeout(120);
-  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  const canvasBox=await page.locator('canvas').first().boundingBox();
+  if(!canvasBox||canvasBox.width<1||canvasBox.height<1)throw new Error('UNITY_WEB_QA_CANVAS_BOUNDS_MISSING_FOR_TOUCH');
+  const touchX=canvasBox.x+(canvasBox.width*mobileTargetX);
+  const touchY=canvasBox.y+(canvasBox.height*mobileTargetY);
+  await page.touchscreen.tap(touchX,touchY);
   await page.waitForTimeout(900);
-  await cdp.detach();
   const mobileInputObserved=markers.slice(mobileMarkerStart).some(x=>x.includes(' MOBILE_INPUT ')&&x.includes('role=action')&&x.includes('status=PASS'));
   if(!mobileInputObserved)throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_NOT_OBSERVED');
 
@@ -198,7 +196,7 @@ try{
       pass:mobileInputObserved,
       viewport:{width:390,height:844},
       touch:true,
-      target:{role:'action',x:mobileTargetX,y:mobileTargetY},
+      target:{role:'action',x:mobileTargetX,y:mobileTargetY,canvasBox,touchPoint:{x:touchX,y:touchY}},
       actualBrowserTouchDispatched:true,
       realGameTouchHandlerObserved:mobileInputObserved,
     },
