@@ -104,6 +104,9 @@ test('internal release workflow publishes only retained exact artifact to restri
   assert.match(workflow,/canonical Roblox publication target changed before persist/);
   assert.match(workflow,/ROBLOX_PUBLICATION_TARGET_PERSISTED/);
   assert.match(workflow,/ROBLOX_V3_STATE=READY/);
+  assert.match(workflow,/legacy-develop\/v1\/universes\/\$ROBLOX_UNIVERSE_ID\/deactivate/);
+  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS/);
+  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO/);
   assert.match(workflow,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
   assert.match(workflow,/ROBLOX_V3_STATE=PUBLISHED/);
   assert.match(workflow,/actions: write/);
