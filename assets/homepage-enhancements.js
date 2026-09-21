@@ -75,7 +75,7 @@ const portfolioClassOf=id=>'portfolio-'+String(portfolioDecisionKeyOf(id)).toLow
 const exposureOf=id=>(platformExposure?.games||[]).find(x=>String(x.gameId||'')===String(id||''))||null;
 const exposureStateOf=id=>String(exposureOf(id)?.externalPublicReleaseState||'INTERNAL_ONLY');
 const exposureLabelOf=id=>({INTERNAL_ONLY:'내부전용',PUBLIC_RELEASE_READY:'외부공개 준비',PUBLIC_RELEASE:'외부공개'})[exposureStateOf(id)]||exposureStateOf(id);
-const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).map(p=>{const fit=row.suitability?.[p.platform]?.score;const gate=p.secondGate?.pass===true?'2차관문 PASS':p.internalReleaseReady===true?'내부배포':'기술검증';return `${p.platform} ${gate}${Number.isFinite(Number(fit))?` · 적합도 ${Number(fit)}`:''}`;}).join(' / ');};
+const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).filter(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p.platform))).map(p=>{const state=p.externalExposureState==='PUBLIC_RELEASE'?'공개출시':p.internalReleaseReady===true?'내부출시':'개발중';return `${normalizePlatform(p.platform)} ${state}`;}).join(' / ');};
 
 function latestVerifiedUnityBuilds(status){
   const map=new Map();
@@ -83,7 +83,7 @@ function latestVerifiedUnityBuilds(status){
     const id=String(build?.gameId||'').trim();
     const download=String(build?.download||'').trim();
     const runtimePassed=build?.installAndLaunchVerified===true||build?.runtimeInstallLaunchVerified===true||String(build?.runtimeVerification||'').toLowerCase().endsWith('-passed');
-    if(!id||!download||build?.status!=='ready'||build?.mobileReady!==true||build?.homepagePublished!==true||build?.signatureVerified!==true||!runtimePassed)continue;
+    if(!id||!download||build?.status!=='ready'||build?.mobileReady!==true||build?.signatureVerified!==true||!runtimePassed)continue;
     const old=map.get(id);
     const t=Date.parse(build?.builtAt||build?.homepagePublishedAt||'')||0;
     const oldT=Date.parse(old?.builtAt||old?.homepagePublishedAt||'')||0;
@@ -92,7 +92,6 @@ function latestVerifiedUnityBuilds(status){
   return map;
 }
 function bindVerifiedUnityBuild(row,status){
-  if(normalizePlatform(selectedPlatform(row))!=='UNITY')return row;
   const build=latestVerifiedUnityBuilds(status).get(gameIdOf(row));
   return build?{...row,unityBuildUrl:build.download,unityBuildSha256:build.sha256,unityBuildApplicationId:build.applicationId,unityBuildVerified:true}:row;
 }
@@ -166,23 +165,18 @@ function platformLinks(game){
   const placeId=String(target?.placeId||'').trim();
   const roblox=/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true)?`https://www.roblox.com/games/${placeId}`:'';
   const unity=game?.unityBuildVerified===true?String(game?.unityBuildUrl||'').trim():'';
-  const fortnite=(game?.uefnInternalReleaseReady===true||game?.fortniteInternalReleaseReady===true)?String(game?.uefnUrl||game?.fortniteUrl||game?.fortniteUefnUrl||'').trim():'';
-  return {roblox,unity,fortnite};
+  return {roblox,unity};
 }
 function internalReleaseLinks(game){
   const links=platformLinks(game);
   const exposure=exposureOf(gameIdOf(game));
-  if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return {roblox:'',unity:'',fortnite:''};
-  const ready=new Set(exposure.platforms.filter(p=>p?.internalReleaseReady===true).map(p=>normalizePlatform(p?.platform)));
-  return {
-    roblox:ready.has('ROBLOX')?links.roblox:'',
-    unity:ready.has('UNITY')?links.unity:'',
-    fortnite:ready.has('FORTNITE_UEFN')?links.fortnite:''
-  };
+  if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return {roblox:'',unity:''};
+  const ready=new Set(exposure.platforms.filter(p=>p?.internalReleaseReady===true||p?.externalExposureState==='PUBLIC_RELEASE').map(p=>normalizePlatform(p?.platform)));
+  return {roblox:ready.has('ROBLOX')?links.roblox:'',unity:ready.has('UNITY')?links.unity:''};
 }
 function hasInternalRelease(game){
   const links=internalReleaseLinks(game);
-  return Boolean(links.roblox||links.unity||links.fortnite);
+  return Boolean(links.roblox||links.unity);
 }
 function internalReleaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
@@ -206,32 +200,33 @@ function recentModificationRows(catalog){
 }
 function platformHref(game){
   const links=platformLinks(game);
-  return links.roblox||links.unity||links.fortnite||'';
+  return links.roblox||links.unity||'';
 }
 function installStyles(){document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';}
 function buildFocus(catalog,status){
   const hero=document.getElementById('hero');
   if(!hero)return;
-  const allRows=[...releaseRows(catalog,status),...webPublishedRows(catalog),...developmentRows(catalog,status)];
+  const allRows=[...releaseRows(catalog,status),...developmentRows(catalog,status)];
   const seen=new Set();
   const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
   const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
   if(!row)return;
-  const game=mergeGame(row),web=game.webPath;
+  const game=mergeGame(row),native=platformHref(game);
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${web?`<a class="homeFocusBtn" href="${esc(web)}">지금 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${native?`<a class="homeFocusBtn" href="${esc(native)}">내부 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">개발 상태 보기</a>'}</div>`;
 }
 function buildCard(row){
-  const game=mergeGame(row),web=game.webPath,links=internalReleaseLinks(game);
+  const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
+  const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return p?.externalExposureState==='PUBLIC_RELEASE'?'공개출시':p?.internalReleaseReady===true?'내부출시':'개발중';};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
-    button(web,'Web 플레이','Web 준비중','webAction'),
-    button(links.roblox,'Roblox','Roblox 개발중','robloxAction'),
-    button(links.unity,'Unity','Unity 개발중','unityAction'),
-    button(links.fortnite,'Fortnite','Fortnite 개발중','uefnAction')
+    button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'robloxAction'),
+    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'unityAction')
   ].join('');
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameActions">${actions}</div></div></article>`;
+  const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
+  const direct=links.roblox||links.unity||'';
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
@@ -284,10 +279,7 @@ function buildGameCenter(catalog,status){
 }
 function directPlayTarget(card){
   if(!card)return'';
-  const explicit=String(card.dataset?.directPlay||card.dataset?.webPath||'').trim();
-  if(explicit)return explicit;
-  const webAnchor=[...card.querySelectorAll('a[href]')].find(a=>String(a.getAttribute('href')||'').includes('/web-games/'));
-  return String(webAnchor?.getAttribute('href')||'').trim();
+  return String(card.dataset?.directPlay||'').trim();
 }
 function bindDirectGameLaunch(){
   if(document.documentElement.dataset.directGameLaunchBound==='1')return;
