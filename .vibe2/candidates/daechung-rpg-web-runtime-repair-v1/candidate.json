@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const d=fr.contentDocument;",
+      "replace": "const d=fr.contentDocument; // 로딩 중인 게임 문서를 저장"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
