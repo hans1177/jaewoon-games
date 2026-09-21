@@ -52,6 +52,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Synchronize shared worker context
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-native.json
+
       - name: Validate direct-native machine contracts
         run: |
           set -euo pipefail
