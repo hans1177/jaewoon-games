@@ -193708,13 +193708,353 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_61ae63bdb7225f6bd2c64a05",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 대충 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_FOOTPRINT_TOO_SMALL:1888:12000|REAL_GAME_LOGIC_TOO_SMALL:959:6000|REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-43bf31c5e2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-50e57f1683|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-777fe3d29d|APPROVED_SCOPE_ITEM_MISSING:scope-co"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "add",
+          "boot"
+        ],
+        "primarySystems": [
+          "SAVE",
+          "AI",
+          "PRESENTATION",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 1720,
+        "failureFingerprint": "web|MALFORMED_OUTPUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-web-runtime-repair-v1-primary-35543879619-1",
+        "candidateSha": "9d7b95e4ce3c580d07fb2a85de75f26cde3c011c"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 313029,
+        "candidateMs": 271651,
+        "qaMs": 75
+      },
+      "evidenceRefs": [
+        "actions-run:35543879619",
+        "reservation-id:35543879619:1",
+        "incremental-qa-hash:65f939da1e7ae2c1c361f158d6c456f699fe2be42dba2199176ae2e27259936d"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_373d35d0853bd992839ebe2b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 대충 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_FOOTPRINT_TOO_SMALL:1888:12000|REAL_GAME_LOGIC_TOO_SMALL:959:6000|REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-43bf31c5e2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-50e57f1683|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-777fe3d29d|APPROVED_SCOPE_ITEM_MISSING:scope-co"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "add",
+          "boot"
+        ],
+        "primarySystems": [
+          "SAVE",
+          "AI",
+          "PRESENTATION",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 1720,
+        "failureFingerprint": "web|MALFORMED_OUTPUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-web-runtime-repair-v1-speculative-1-35543879619-1",
+        "candidateSha": "fe797c4c412d015410a7da944f8e722f1901573d"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 198855,
+        "candidateMs": 154538,
+        "qaMs": 58
+      },
+      "evidenceRefs": [
+        "actions-run:35543879619",
+        "reservation-id:35543879619:1",
+        "incremental-qa-hash:65f939da1e7ae2c1c361f158d6c456f699fe2be42dba2199176ae2e27259936d"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_886050854ed8041983ed1057",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "daechung-rpg-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 대충 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_FOOTPRINT_TOO_SMALL:1888:12000|REAL_GAME_LOGIC_TOO_SMALL:959:6000|REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-43bf31c5e2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-50e57f1683|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-777fe3d29d|APPROVED_SCOPE_ITEM_MISSING:scope-co"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "add",
+          "boot"
+        ],
+        "primarySystems": [
+          "SAVE",
+          "AI",
+          "PRESENTATION",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 1720,
+        "failureFingerprint": "web|MALFORMED_OUTPUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "HIGH"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/daechung-rpg-web-runtime-repair-v1-speculative-2-35543879619-1",
+        "candidateSha": "0fd2aa46c05a9f0f3693fa7695bcd9a20d60adae"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 305277,
+        "candidateMs": 273973,
+        "qaMs": 91
+      },
+      "evidenceRefs": [
+        "actions-run:35543879619",
+        "reservation-id:35543879619:1",
+        "incremental-qa-hash:65f939da1e7ae2c1c361f158d6c456f699fe2be42dba2199176ae2e27259936d"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 8,
+    "added": 3,
     "refreshed": 0,
-    "total": 1670,
-    "verified": 285,
+    "total": 1673,
+    "verified": 286,
     "failures": 1008
   }
 }
