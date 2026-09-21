@@ -392,6 +392,7 @@ export default{
     if(url.pathname==='/web-games/egg-heist/'||url.pathname==='/web-games/egg-heist/index.html')return new Response('Not Found',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate'}});
     if(url.pathname==='/web-games/survival2/'||url.pathname==='/web-games/survival2/index.html')return serveSurvival2(request,env);
     const response=await env.ASSETS.fetch(request);
+    if(url.pathname.startsWith('/web-games/daechung-rpg/'))return response;
     if(url.pathname.startsWith('/web-games/'))return injectUniversalTouchControls(response);
     if(!['/','/index.html'].includes(url.pathname))return response;
     const type=response.headers.get('content-type')||'';
