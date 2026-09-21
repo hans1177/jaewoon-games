@@ -13117,11 +13117,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_18afe982212a3631403830fd",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2385",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "72d18e801266b0bf94ceec120906e39c644acec4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2385,
+        "baseBranch": "main",
+        "headBranch": "assistant/unity-redroid-adb-serial",
+        "baseSha": "72d18e801266b0bf94ceec120906e39c644acec4",
+        "headSha": "fe7fd2ea63736f3ff65ceaa8dec42898d4ba7ffa",
+        "mergeCommitSha": "a4453521c515c079c1c7dbe02110eaf60a81bdec",
+        "mergedAt": "2026-09-21T09:33:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9a9cdb29b6394c8abd427897cc930982f2bfcec991e009517a3d528a8e987910",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/unity-redroid-adb-serial",
+        "candidateSha": "fe7fd2ea63736f3ff65ceaa8dec42898d4ba7ffa"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 7,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          ".github/workflows/unity-android-independent-qa.yml",
+          ".github/workflows/unity-android-regression.yml",
+          ".github/workflows/unity-android-runtime-smoke.yml",
+          "qa/company-development-unity-runtime.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/unity-android-independent-qa.yml",
+          ".github/workflows/unity-android-regression.yml",
+          ".github/workflows/unity-android-runtime-smoke.yml",
+          "qa/company-development-unity-runtime.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2385",
+        "merge-commit:a4453521c515c079c1c7dbe02110eaf60a81bdec",
+        "base-main:72d18e801266b0bf94ceec120906e39c644acec4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 107
+    "total": 108
   }
 }
