@@ -26,10 +26,12 @@ export function hasVerifiedVibe2SourceHandoff(item={}){
   );
 }
 
-export function eligibleForRobloxSourceReconciliation(item={}){
-  if(!clean(item.gameId))return false;
-  if(clean(item.currentStep).toUpperCase()!=='TARGET_PLATFORM_SOURCE_BIND')return false;
-  return platformDevelopmentEligible(item,'ROBLOX');
+export function eligibleForRobloxSourceReconciliation(item={}, {changedGameIds=[]}={}){
+  const gameId=clean(item.gameId);
+  if(!gameId||!platformDevelopmentEligible(item,'ROBLOX'))return false;
+  if(clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND')return true;
+  const changed=changedGameIds instanceof Set?changedGameIds:new Set((changedGameIds||[]).map(clean).filter(Boolean));
+  return changed.has(gameId);
 }
 
 export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
@@ -69,12 +71,14 @@ function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   }
 }
 
-export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline}={}){
+export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',changedGameIds=[],loadBaseline}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
+  const changed=changedGameIds instanceof Set?changedGameIds:new Set((changedGameIds||[]).map(clean).filter(Boolean));
   const results=[];
   for(const item of queue.items||[]){
-    if(!eligibleForRobloxSourceReconciliation(item))continue;
+    if(!eligibleForRobloxSourceReconciliation(item,{changedGameIds:changed}))continue;
     const sourcePath=`roblox-games/${item.gameId}`;
+    const reconciliationReason=clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'?'source-bind':'source-drift';
     const root=path.join(repoRoot,sourcePath);
     if(!fs.existsSync(root))continue;
     const handoffVerified=hasVerifiedVibe2SourceHandoff(item);
@@ -90,6 +94,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
           saveRequired:false,
           blockers:['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH'],
           failure:'verified-vibe2-source-handoff-mismatch',
+          reconciliationReason,
         });
         continue;
       }
@@ -101,6 +106,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         saveRequired:false,
         blockers:[],
         failure:null,
+        reconciliationReason,
         authority:'verified-vibe2-source-handoff',
       });
       continue;
@@ -116,6 +122,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         saveRequired:verdict.saveRequired,
         blockers:verdict.blockers,
         failure:verdict.pass?null:'existing-source-static-revalidation-failed',
+        reconciliationReason,
       });
     }catch(error){
       results.push({
@@ -126,6 +133,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         saveRequired:false,
         blockers:['SOURCE_BASELINE_OR_VALIDATION_UNAVAILABLE'],
         failure:'existing-source-static-revalidation-unavailable',
+        reconciliationReason,
         detail:String(error?.message||error),
       });
     }
@@ -139,12 +147,14 @@ function runCli(){
   const repoRoot=arg('repo-root','.');
   const sourceRevision=arg('source-revision');
   const resultsFile=arg('results','/tmp/roblox-source-reconciliation.json');
+  const changedGameIds=arg('changed-game-ids').split(',').map(clean).filter(Boolean);
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
   const queue=readJson(queueFile);
   const results=evaluateExistingRobloxSources({
     queue,
     repoRoot,
     sourceRevision,
+    changedGameIds,
     loadBaseline:item=>{
       const baselinePath=clean(item.designBaselineSource);
       if(!baselinePath)throw new Error(`designBaselineSource missing: ${item.gameId}`);
