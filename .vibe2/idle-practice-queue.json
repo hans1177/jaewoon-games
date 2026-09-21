@@ -25,7 +25,10 @@
         "QUEST_DESIGN",
         "WEB_RUNTIME",
         "CORE_LOOP",
-        "COMBAT"
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -60,28 +63,12 @@
         "QUEST_DESIGN",
         "WEB_RUNTIME",
         "UI_STATE",
-        "COMBAT"
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_wu3qnk"
-    },
-    {
-      "id": "review-fail_lhx93q",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "COMBAT",
-        "SAVE",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "WEB_RUNTIME",
-        "PROGRESSION",
-        "QUEST_DESIGN"
-      ],
-      "sourceFailure": "fail_lhx93q"
     },
     {
       "id": "review-fail_c9xvk3",
@@ -105,6 +92,25 @@
       "sourceFailure": "fail_c9xvk3"
     },
     {
+      "id": "review-fail_lhx93q",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "SAVE",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "WEB_RUNTIME",
+        "PROGRESSION",
+        "QUEST_DESIGN"
+      ],
+      "sourceFailure": "fail_lhx93q"
+    },
+    {
       "id": "relearn-fail_1agpu1k",
       "kind": "RELEARNING_REPLAY_DRILL",
       "priority": "high",
@@ -118,7 +124,10 @@
         "QUEST_DESIGN",
         "WEB_RUNTIME",
         "CORE_LOOP",
-        "COMBAT"
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_1agpu1k"
     },
@@ -153,7 +162,10 @@
         "QUEST_DESIGN",
         "WEB_RUNTIME",
         "UI_STATE",
-        "COMBAT"
+        "COMBAT",
+        "RECOVERY",
+        "SECURITY",
+        "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -854,7 +866,7 @@
       ]
     },
     {
-      "id": "gap-security-l3",
+      "id": "gap-security-l4",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
