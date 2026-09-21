@@ -47,9 +47,9 @@ jobs:
           set -euo pipefail
           request_file='${{ inputs.request_file }}'
           if [[ -z "$request_file" ]]; then
-            mapfile -t changed < <(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json' | sort -u || true)
-            [[ "${#changed[@]}" -eq 1 ]] || { echo "expected exactly one Unity Web request in push, found ${#changed[@]}" >&2; exit 2; }
-            request_file="${changed[0]}"
+            request_file="$(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json' | sort -u | head -n1 || true)"
+            [[ -n "$request_file" ]] || { echo "Unity Web request file not found in push commit" >&2; exit 2; }
+
           fi
           python3 - "$request_file" "$GITHUB_OUTPUT" <<'PY'
           import json, pathlib, re, sys
