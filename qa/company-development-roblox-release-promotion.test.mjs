@@ -126,7 +126,7 @@ test('internal release workflow publishes only retained exact artifact to restri
   assert.match(workflow,/item\.robloxInternalReleaseReady=true/);
   assert.match(workflow,/item\.robloxReleaseClaim=false/);
   assert.match(workflow,/item\.robloxPublicRelease=false/);
-  assert.match(workflow,/visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'/);
+  assert.match(workflow,/const visibilityIntent=String\(process\.env\.VISIBILITY_INTENT\|\|'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'\)/);
   assert.match(workflow,/publicDiscoveryAllowed:false/);
   assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
   assert.match(workflow,/item\.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
