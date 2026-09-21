@@ -335,3 +335,15 @@ test('game cards keep Web fixed and expose all concurrent platform tracks',()=>{
   assert.match(index,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
+
+test('game cards keep Web fixed and expose concurrent platform slots',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const index=fs.readFileSync('index.html','utf8');
+  assert.match(runtime,/function platformLinks\(game\)/);
+  assert.match(runtime,/button\(web,'Web 플레이','Web 준비중'/);
+  assert.match(runtime,/button\(links\.roblox,'Roblox','Roblox 개발중'/);
+  assert.match(runtime,/button\(links\.unity,'Unity','Unity 개발중'/);
+  assert.match(runtime,/button\(links\.fortnite,'Fortnite','Fortnite 개발중'/);
+  assert.match(runtime,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+  assert.match(index,/foldGameActions\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+});
