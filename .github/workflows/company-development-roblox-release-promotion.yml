@@ -1,10 +1,10 @@
-name: Company DEVELOPMENT_CONFIRMED Roblox Release Promotion
+name: Company DEVELOPMENT_CONFIRMED Roblox Internal Release Promotion
 
 on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: Exact DEVELOPMENT_CONFIRMED Roblox gameId to publish after canonical final review
+        description: Exact DEVELOPMENT_CONFIRMED Roblox gameId to publish as private/restricted internal release after canonical final review
         required: true
         type: string
 
@@ -21,7 +21,7 @@ env:
 
 jobs:
   release:
-    name: publish exact final-reviewed Roblox artifact
+    name: publish exact final-reviewed Roblox artifact for internal playtest
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify final release promotion contract
+      - name: Verify internal release promotion contract
         working-directory: main
         run: |
           set -euo pipefail
@@ -74,24 +74,28 @@ jobs:
           const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
           const artifactRunId=Number(item.robloxRuntimeEvidence?.artifactRunId||0);
-          const currentRelease=item.robloxReleaseClaim===true
-            &&item.robloxReleaseEvidence?.published===true
-            &&item.robloxReleaseEvidence?.sourceRevision===revision
-            &&item.robloxReleaseEvidence?.artifactIdentity===artifact
-            &&Number(item.robloxReleaseEvidence?.versionNumber)>0;
+          const currentRelease=item.robloxInternalReleaseReady===true
+            &&item.robloxInternalReleaseEvidence?.published===true
+            &&item.robloxInternalReleaseEvidence?.sourceRevision===revision
+            &&item.robloxInternalReleaseEvidence?.artifactIdentity===artifact
+            &&Number(item.robloxInternalReleaseEvidence?.versionNumber)>0;
           if(currentRelease){
             put('skip','true');put('skip_reason','already-published');
-            console.log(`ROBLOX_RELEASE_ALREADY_PUBLISHED=${gameId}`);
+            console.log(`ROBLOX_INTERNAL_RELEASE_ALREADY_PUBLISHED=${gameId}`);
             process.exit(0);
           }
           const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
           const canonical=
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
-            &&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX'
+            &&(
+              (Array.isArray(item.concurrentTargetPlatforms)&&item.concurrentTargetPlatforms.map(value=>String(value||'').toUpperCase()).includes('ROBLOX'))
+              ||Boolean(item.platformDesignProfiles?.ROBLOX)
+              ||Boolean(item.targetSourcePaths?.ROBLOX)
+            )
             &&item.robloxFinalReviewPassed===true
             &&item.robloxFailureStage==='RELEASE_PROMOTION'
             &&item.robloxFailureSignature==='ROBLOX_RELEASE_PROMOTION_PENDING'
-            &&item.robloxReleaseClaim!==true
+            &&item.robloxInternalReleaseReady!==true
             &&item.robloxBuildOrPackagePassed===true
             &&item.robloxBuildSourceRevision===revision
             &&item.robloxBuildPreflightPassed===true
@@ -110,7 +114,7 @@ jobs:
 
           const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
           const persistedTarget=item.robloxPublicationTarget||{};
-          const priorPublishedTarget=item.robloxReleaseEvidence?.published===true?item.robloxReleaseEvidence:{};
+          const priorPublishedTarget=item.robloxInternalReleaseEvidence?.published===true?item.robloxInternalReleaseEvidence:(item.robloxReleaseEvidence?.published===true?item.robloxReleaseEvidence:{});
           const knownGood=JSON.parse(fs.readFileSync('roblox-games/known-good-runtime-evidence.json','utf8'));
           const targetEvidence=(knownGood.records||[]).find(row=>
             row.gameId===gameId
@@ -161,6 +165,7 @@ jobs:
           put('universe_id',universeId);
           put('place_id',placeId);
           put('publication_target_source',selected.source);
+          put('visibility_intent','PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           console.log(`ROBLOX_RELEASE_CANONICAL_TARGET=${gameId}`);
           console.log(`ROBLOX_RELEASE_SOURCE_REVISION=${revision}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_IDENTITY=${artifact}`);
@@ -168,9 +173,10 @@ jobs:
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           console.log(`ROBLOX_RELEASE_PUBLICATION_TARGET_SOURCE=${selected.source}`);
+          console.log('ROBLOX_INTERNAL_RELEASE_VISIBILITY_INTENT=PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           NODE
 
-      - name: Verify unchanged source and assemble canonical release evidence
+      - name: Verify unchanged source and assemble canonical internal-release evidence
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
@@ -195,8 +201,9 @@ jobs:
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'
           echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
+          echo 'ROBLOX_PUBLIC_RELEASE=NO'
 
-      - name: Resolve retained immutable package by exact SHA256
+      - name: Resolve retained immutable internal-release package by exact SHA256
         id: package
         if: steps.target.outputs.skip != 'true'
         working-directory: main
@@ -230,7 +237,7 @@ jobs:
           echo 'ROBLOX_RELEASE_IMMUTABLE_ARTIFACT_BIND=PASS'
           echo "ROBLOX_RELEASE_PACKAGE_SHA256=$hash"
 
-      - name: Validate Open Cloud publish plan fail-closed
+      - name: Validate internal Open Cloud publish plan fail-closed
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
@@ -248,7 +255,7 @@ jobs:
           grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-final-release-plan.log
           echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
 
-      - name: Publish exact final-reviewed package through Roblox Open Cloud
+      - name: Publish exact final-reviewed package to internal Roblox target
         id: publish
         if: steps.target.outputs.skip != 'true'
         working-directory: main
@@ -311,7 +318,7 @@ jobs:
             sleep "$retry_seconds"
           done
 
-      - name: Persist proven release promotion state only
+      - name: Persist proven internal release state only
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
         working-directory: runtime
         env:
@@ -322,6 +329,7 @@ jobs:
           UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           PLACE_ID: ${{ steps.target.outputs.place_id }}
           PUBLICATION_TARGET_SOURCE: ${{ steps.target.outputs.publication_target_source }}
+          VISIBILITY_INTENT: ${{ steps.target.outputs.visibility_intent }}
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -349,18 +357,23 @@ jobs:
           const existingValid=/^[1-9][0-9]*$/.test(String(existingTarget.universeId||''))&&/^[1-9][0-9]*$/.test(String(existingTarget.placeId||''));
           if(existingValid&&(String(existingTarget.universeId)!==universeId||String(existingTarget.placeId)!==placeId))throw new Error('canonical Roblox publication target changed before persist');
           const stamp=new Date().toISOString();
+          const visibilityIntent=String(process.env.VISIBILITY_INTENT||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
+          if(visibilityIntent!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE')throw new Error('internal release visibility intent changed');
           item.robloxPublicationTarget={
-            version:1,
+            version:2,
             gameId:item.gameId,
             universeId,
             placeId,
             verified:true,
             verifiedAt:existingTarget.verifiedAt||stamp,
             lastVerifiedAt:stamp,
-            source:existingTarget.source||targetSource||'proven-open-cloud-release',
+            source:existingTarget.source||targetSource||'proven-open-cloud-internal-release',
             authority:'roblox-canonical-publication-target',
+            visibilityIntent,
+            internalOnly:true,
+            publicDiscoveryAllowed:false,
           };
-          item.robloxReleaseEvidence={
+          item.robloxInternalReleaseEvidence={
             version:1,
             gameId:item.gameId,
             platform:'ROBLOX',
@@ -371,36 +384,30 @@ jobs:
             placeId,
             finalReviewPassed:true,
             published:true,
+            publicRelease:false,
+            exposure:'PRIVATE_OR_RESTRICTED',
+            visibilityIntent,
             versionNumber:version,
             workflowRunId:releaseRunId,
             publishedAt:stamp,
-            authority:'roblox-open-cloud-final-review-release-promotion',
+            authority:'roblox-open-cloud-internal-release',
           };
-          item.robloxReleaseClaim=true;
-          item.robloxReleasePublishedAt=stamp;
+          item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-open-cloud-internal-release-compatibility'};
+          item.robloxInternalReleaseReady=true;
+          item.robloxInternalReleaseAt=stamp;
+          item.robloxPublicReleaseReady=false;
+          item.robloxPublicRelease=false;
+          item.robloxReleaseClaim=false;
+          item.robloxReleasePublishedAt=null;
           item.robloxReleaseVersionNumber=version;
-          item.postReleaseFocusedDevelopment={
-            version:1,
-            state:'ACTIVE',
-            machineStage:'POST_RELEASE_FOCUSED_DEVELOPMENT',
-            platform:'ROBLOX',
-            runnerSlots:1,
-            activeTaskMax:1,
-            sourceRoot:`roblox-games/${item.gameId}`,
-            releaseSourceRevision:process.env.SOURCE_REVISION,
-            releaseVersionNumber:version,
-            activatedAt:item.postReleaseFocusedDevelopment?.activatedAt||stamp,
-            lastReleaseAt:stamp,
-            policy:'company-learning/platform-release-roadmap.json',
-          };
-          item.currentStep='POST_RELEASE_FOCUSED_DEVELOPMENT';
-          item.canonicalState='POST_RELEASE_FOCUSED_DEVELOPMENT';
-          item.robloxLastSuccessfulStage='RELEASE_PROMOTION';
+          item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+          item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+          item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
           item.robloxFailureStage=null;
           item.robloxFailureSignature=null;
           item.routingBlockers=(item.routingBlockers||[]).filter(value=>value!=='roblox-release-promotion-pending');
           if(item.executionEvidence){
-            item.executionEvidence.lastSuccessfulStage='RELEASE_PROMOTION';
+            item.executionEvidence.lastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
             item.executionEvidence.failureStage=null;
             item.executionEvidence.failureSignature=null;
           }
@@ -408,19 +415,25 @@ jobs:
           q.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
           console.log(`ROBLOX_PUBLICATION_TARGET_PERSISTED=${universeId}/${placeId}`);
-          console.log(`ROBLOX_RELEASE_CLAIM=${item.robloxReleaseClaim?'YES':'NO'}`);
-          console.log(`ROBLOX_RELEASE_VERSION_NUMBER=${version}`);
-          console.log('ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT=ACTIVE');
-          console.log('ROBLOX_POST_RELEASE_FOCUSED_RUNNER_SLOTS=1');
+          console.log('ROBLOX_INTERNAL_RELEASE_READY=YES');
+          console.log('ROBLOX_RELEASE_CLAIM=NO');
+          console.log(`ROBLOX_INTERNAL_RELEASE_VERSION_NUMBER=${version}`);
+          console.log('ROBLOX_PUBLIC_RELEASE=NO');
+          console.log('ROBLOX_NEXT_STAGE=INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           NODE
+          git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs 2>/dev/null || true
+          if [[ -f tools/company-homepage-platform-exposure-sync.mjs && -f game-catalog.json ]]; then
+            node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+          fi
+          git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
+          git add development-queue.json homepage-platform-exposure.json 2>/dev/null || git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist proven Roblox Open Cloud release [skip ci]'
+            git commit -m 'runtime: persist proven Roblox internal release [skip ci]'
             pushed=0
             for attempt in 1 2 3; do
               if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
@@ -432,7 +445,7 @@ jobs:
           fi
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
-      - name: Release promotion summary
+      - name: Internal release promotion summary
         if: always()
         env:
           SKIP: ${{ steps.target.outputs.skip }}
@@ -443,11 +456,11 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$SKIP" = 'true' ]; then
-            echo "ROBLOX_RELEASE_PROMOTION=SKIPPED:$SKIP_REASON"
+            echo "ROBLOX_INTERNAL_RELEASE_PROMOTION=SKIPPED:$SKIP_REASON"
             exit 0
           fi
           if [ "$RETRY_DEFERRED" = 'true' ]; then
-            echo 'ROBLOX_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY'
+            echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY'
             echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=60'
             echo 'ROBLOX_RUNTIME_RERUN=NO'
             echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
@@ -456,9 +469,9 @@ jobs:
             exit 0
           fi
           [ "$PUBLISH_OUTCOME" = 'success' ]
-          echo 'ROBLOX_RELEASE_PROMOTION=PASS'
-          echo 'ROBLOX_RELEASE_EXACT_ARTIFACT=YES'
-          echo 'ROBLOX_RELEASE_FINAL_REVIEW_REQUIRED=YES'
+          echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=PASS'
+          echo 'ROBLOX_INTERNAL_RELEASE_EXACT_ARTIFACT=YES'
+          echo 'ROBLOX_INTERNAL_RELEASE_FINAL_REVIEW_REQUIRED=YES'
           echo 'ROBLOX_RUNTIME_RERUN=NO'
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'
