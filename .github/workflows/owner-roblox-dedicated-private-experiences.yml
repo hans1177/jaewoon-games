@@ -180,12 +180,34 @@ jobs:
           ref: company-runtime
           fetch-depth: 1
 
-      - name: Download dedicated publication results
-        uses: actions/download-artifact@v4
-        with:
-          pattern: roblox-dedicated-*
-          path: /tmp/roblox-dedicated-results
-          merge-multiple: true
+      - name: Download latest dedicated publication result per game
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/roblox-dedicated-results /tmp/roblox-dedicated-zips
+          api="https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100"
+          curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$api" > /tmp/roblox-artifacts.json
+          for name in \
+            roblox-dedicated-cozy-island \
+            roblox-dedicated-daechung-rpg \
+            roblox-dedicated-horror-escape-room
+          do
+            id="$(jq -r --arg n "$name" '[.artifacts[] | select(.name==$n and (.expired|not))] | sort_by(.created_at) | last | .id // empty' /tmp/roblox-artifacts.json)"
+            test -n "$id" || { echo "Missing latest artifact: $name" >&2; exit 1; }
+            zip="/tmp/roblox-dedicated-zips/$name.zip"
+            curl -fsSL \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$id/zip" \
+              -o "$zip"
+            unzip -q -o "$zip" -d /tmp/roblox-dedicated-results
+            echo "ROBLOX_DEDICATED_LATEST_ARTIFACT=$name:$id"
+          done
 
       - name: Persist dedicated Experience targets
         shell: bash
