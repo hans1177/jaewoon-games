@@ -63,7 +63,7 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
     relatedTaskIds,
     failureStage:stage,failureSignature:signature,blastRadius,
     checkpoint:clean(task.candidateSha||task.sourceRevision||task.baseMainSha||task.reservedAt)||null,
-    evidence:uniq([...(task.evidence||[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route,...(sharedInfrastructure?['shared-system-ai-infrastructure-repair:YES','representative-canary-required:YES']:[])]),
+    evidence:uniq([...(task.evidence||[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route,'primary-ai-collaboration:REQUESTED','primary-ai-collaboration-reason:'+(sharedInfrastructure?'SHARED_SYSTEM_AI_INFRASTRUCTURE':blastRadius.startsWith('portfolio')||blastRadius.startsWith('shared-worker-contract')?'COMMON_BOTTLENECK':'REPEATED_FAILURE_SIGNATURE'),'primary-ai-collaboration-task:'+clean(task.id),...(sharedInfrastructure?['shared-system-ai-infrastructure-repair:YES','representative-canary-required:YES']:[])]),
     recoveryOwner:route,
     recoveryStrategy:sharedInfrastructure
       ?'REPAIR_SHARED_SYSTEM_AI_INFRASTRUCTURE_WITH_ONE_CANARY_THEN_RELEASE_DEPENDENT_COHORT'
