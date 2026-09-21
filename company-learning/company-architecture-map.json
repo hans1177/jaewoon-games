@@ -2394,6 +2394,15 @@
       "primary-ai-collaboration-reason:",
       "primary-ai-collaboration-task:"
     ],
-    "runtimeRule": "PRIMARY_AI_ABSENCE_NEVER_BLOCKS_24H_INTERNAL_AI_EXECUTION"
+    "runtimeRule": "PRIMARY_AI_ABSENCE_NEVER_BLOCKS_24H_INTERNAL_AI_EXECUTION",
+    "capabilityGrowthRoleLock": {
+      "capabilityGrowthAllowed": true,
+      "capabilityExpansionDoesNotChangeAuthority": true,
+      "primaryAiRole": "NON_BLOCKING_ASSISTANT_AND_COLLABORATOR",
+      "primaryAiRuntimeOwnership": false,
+      "deterministicQaAuthorityPreserved": true,
+      "vibeImplementationOwnershipPreserved": true,
+      "authorityChangeSource": "EXPLICIT_CENTRAL_POLICY_OR_OWNER_DIRECTIVE_ONLY"
+    }
   }
 }
