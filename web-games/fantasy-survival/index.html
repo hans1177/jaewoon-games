@@ -863,6 +863,8 @@ function drawMap(){
  }
  if(state.discovered.snow){m.strokeStyle='#b9d8e4';m.lineWidth=2;m.strokeRect(SNOW_REGION.x*sx,SNOW_REGION.y*sy,SNOW_REGION.w*sx,SNOW_REGION.h*sy);m.fillStyle='#eaf8ff';m.font='bold 11px system-ui';m.fillText('설원',(SNOW_REGION.x+SNOW_REGION.w/2)*sx,(SNOW_REGION.y+SNOW_REGION.h/2)*sy)}
  if(state.discovered.jungle){m.strokeStyle='#4f8b58';m.lineWidth=2;m.strokeRect(JUNGLE_REGION.x*sx,JUNGLE_REGION.y*sy,JUNGLE_REGION.w*sx,JUNGLE_REGION.h*sy);m.fillStyle='#b8efaa';m.font='bold 11px system-ui';m.fillText('밀림',(JUNGLE_REGION.x+JUNGLE_REGION.w/2)*sx,700*sy);for(const l of JUNGLE_LAKES){m.fillStyle='#4f9b91';m.beginPath();m.arc(l.x*sx,l.y*sy,4,0,Math.PI*2);m.fill()}}
+ const tx=JUNGLE_TEMPLE_ENTRANCE.x*sx,ty=JUNGLE_TEMPLE_ENTRANCE.y*sy;
+ m.save();m.fillStyle='#f0cf68';m.strokeStyle='#3d321a';m.lineWidth=2;m.beginPath();m.moveTo(tx,ty-7);m.lineTo(tx+7,ty+5);m.lineTo(tx-7,ty+5);m.closePath();m.fill();m.stroke();m.fillStyle='#fff0ad';m.font='bold 9px system-ui';m.textAlign='center';m.fillText('밀림 신전',tx,ty-10);m.restore();
  if(state.discovered.giantlake){m.strokeStyle='#4ba6c8';m.lineWidth=2;m.strokeRect(GIANT_LAKE_SURFACE.x*sx,GIANT_LAKE_SURFACE.y*sy,GIANT_LAKE_SURFACE.w*sx,GIANT_LAKE_SURFACE.h*sy);m.fillStyle='#a8e8ff';m.font='bold 11px system-ui';m.fillText('거대 호수',6800*sx,900*sy)}
  if(state.discovered.crystal){m.strokeStyle='#9a84e8';m.lineWidth=2;m.strokeRect(CRYSTAL_REGION.x*sx,0,CRYSTAL_REGION.w*sx,WORLD.h*sy);m.fillStyle='#d7ccff';m.font='bold 11px system-ui';m.fillText('수정 지대',15500*sx,800*sy);m.beginPath();m.arc(CRYSTAL_HEART.x*sx,CRYSTAL_HEART.y*sy,5,0,Math.PI*2);m.fill()}
  if(state.discovered.volcano){m.strokeStyle='#6d2426';m.lineWidth=2;m.strokeRect(2400*sx,2000*sy,12000*sx,3200*sy);m.font='bold 10px system-ui';m.fillStyle='#8fc9ff';m.fillText('오아시스',OASIS.x*sx-18,OASIS.y*sy);m.fillStyle='#ffe073';m.fillText('화산 황무지',(WASTELAND.x+250)*sx,(WASTELAND.y+250)*sy);m.fillStyle='#e88484';m.fillText('화산',12700*sx,2500*sy)}
@@ -877,7 +879,7 @@ function drawMap(){
      m.fillStyle='#54d8ff';m.beginPath();m.arc(x,y,5,0,Math.PI*2);m.fill();m.fillText('동료',x,y-7)
    }
  }
- m.fillStyle='#ffffff';m.beginPath();m.arc(state.player.x*sx,state.player.y*sy,4,0,Math.PI*2);m.fill()
+ const mapPlayerPos=state.area.startsWith('jungletemple')?JUNGLE_TEMPLE_ENTRANCE:state.player;m.fillStyle='#ffffff';m.beginPath();m.arc(mapPlayerPos.x*sx,mapPlayerPos.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){tabState();ui.sheetBody.innerHTML='<div class="info"><b>지도</b><br>직접 가본 곳만 표시돼. 아직 탐험하지 않은 곳은 비어 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';drawMap()}
 
