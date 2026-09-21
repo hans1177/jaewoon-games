@@ -2258,6 +2258,21 @@
     "terminalFailureFromRetryCount": false,
     "hardInhibitorsRemainFailClosed": true,
     "primaryAiPresenceRequired": false,
-    "deterministicEvidenceRequiredForCompletion": true
+    "deterministicEvidenceRequiredForCompletion": true,
+    "repeatedFailureMutationGate": {
+      "contract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.autonomousBottleneckRecovery.repeatedFailureMutationGate",
+      "detect": "tools/company-recovery-escalation.mjs",
+      "state": "tools/company-recovery-queue.mjs",
+      "dispatch": "tools/company-recovery-dispatch.mjs",
+      "systemAiGate": "tools/company-system-ai-queue.mjs",
+      "workerGate": ".github/workflows/company-system-ai-workers.yml",
+      "sequence": [
+        "CAPTURE_BASELINE_REVISION",
+        "REQUIRE_RESPONSIBLE_SOURCE_MUTATION",
+        "REJECT_UNCHANGED_SOURCE_REVALIDATION",
+        "VERIFY_CHANGED_REVISION",
+        "RESUME_PIPELINE"
+      ]
+    }
   }
 }
