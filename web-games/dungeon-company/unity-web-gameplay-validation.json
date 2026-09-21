@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "engine": "UNITY_WEB",
+  "gameId": "dungeon-company",
+  "sourcePath": "web-games/dungeon-company",
+  "pass": true,
+  "boot": {
+    "pass": true
+  },
+  "input": {
+    "pass": true,
+    "qaMode": "REAL_GAME_FUNCTION_INPUT"
+  },
+  "gameplay": {
+    "pass": true,
+    "gameplayStartObserved": true,
+    "coreActionObserved": true,
+    "coreActionCount": 1,
+    "progressObserved": true,
+    "safeReturnOrResetObserved": true
+  },
+  "coreFun": {
+    "pass": true,
+    "evidence": "REAL_START_ACTION_PROGRESS_LOOP"
+  },
+  "saveRestore": {
+    "pass": true,
+    "persistentChangedKeys": [
+      "gold"
+    ],
+    "restoredKeys": [
+      "gold"
+    ]
+  },
+  "mobile": {
+    "pass": true,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "touch": true
+  },
+  "performance": {
+    "pass": true,
+    "bootMilliseconds": 4177,
+    "fatalRuntimeErrorCount": 0
+  },
+  "noCriticalRuntimeError": true,
+  "markers": [
+    "JAEWOON_UNITY_WEB_QA BOOT game=dungeon-company status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=dungeon-company gold=320 infamy=0 wave=1 core=100 rooms=3\n",
+    "JAEWOON_UNITY_WEB_QA START game=dungeon-company region=dungeon status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=dungeon-company action=start-defense status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA PROGRESS game=dungeon-company kind=starter-defense status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=dungeon-company gold=190 infamy=0 wave=1 core=100 rooms=3\n",
+    "JAEWOON_UNITY_WEB_QA RESET game=dungeon-company region=management status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=dungeon-company gold=190 infamy=0 wave=1 core=100 rooms=3\n",
+    "JAEWOON_UNITY_WEB_QA BOOT game=dungeon-company status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=dungeon-company gold=190 infamy=0 wave=1 core=100 rooms=3\n"
+  ],
+  "generatedAt": "2026-09-21T13:50:27.908Z"
+}
