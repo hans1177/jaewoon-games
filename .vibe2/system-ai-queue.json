@@ -917,7 +917,7 @@
     },
     {
       "id": "game-fantasy-survival-web-second-gate-collab-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -955,17 +955,17 @@
         "node --test qa/company-web-real-game-regression.test.mjs"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -988,15 +988,16 @@
         "retry-budget-consumed:NO",
         "learning-penalty:NO",
         "actions-run:35567379397",
-        "preflight:success"
+        "preflight:success",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1024,17 +1025,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/ant-simulator/latest.json --game-id=ant-simulator"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1053,15 +1054,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1089,17 +1091,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/amusement-tycoon/latest.json --game-id=amusement-tycoon"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1118,15 +1120,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-bug-defense-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1154,17 +1157,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/bug-defense/latest.json --game-id=bug-defense"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1183,15 +1186,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-daechung-rpg-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1219,17 +1223,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/daechung-rpg/latest.json --game-id=daechung-rpg"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1248,15 +1252,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-line-defense-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1284,17 +1289,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/line-defense/latest.json --game-id=line-defense"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1313,15 +1318,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-village-dungeons-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1349,17 +1355,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/village-dungeons/latest.json --game-id=village-dungeons"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1378,15 +1384,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-fantasy-survival-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1414,17 +1421,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/fantasy-survival/latest.json --game-id=fantasy-survival"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1443,15 +1450,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-monster-adventure-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1479,17 +1487,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/monster-adventure/latest.json --game-id=monster-adventure"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1508,15 +1516,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-seed-action-survival-rogu-echoes-of-the-lost-star-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1544,17 +1553,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-action-survival-rogu-echoes-of-the-lost-star/latest.json --game-id=seed-action-survival-rogu-echoes-of-the-lost-star"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1573,15 +1582,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-seed-casual-realm-weaver-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1609,17 +1619,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-casual-realm-weaver/latest.json --game-id=seed-casual-realm-weaver"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1638,15 +1648,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-seed-idle-growth-rpg-crystal-bloom-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1674,17 +1685,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-idle-growth-rpg-crystal-bloom/latest.json --game-id=seed-idle-growth-rpg-crystal-bloom"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1703,15 +1714,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-seed-puzzle-chromatic-cascade-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1739,17 +1751,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-puzzle-chromatic-cascade/latest.json --game-id=seed-puzzle-chromatic-cascade"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1768,15 +1780,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-seed-single-defense-strat-celestial-bastion-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1804,17 +1817,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-single-defense-strat-celestial-bastion/latest.json --game-id=seed-single-defense-strat-celestial-bastion"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1833,15 +1846,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-seed-story-complete-rpg-chronicles-of-eldoria-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1869,17 +1883,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-story-complete-rpg-chronicles-of-eldoria/latest.json --game-id=seed-story-complete-rpg-chronicles-of-eldoria"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1898,15 +1912,16 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     },
     {
       "id": "marketing-survival-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": null,
       "taskType": null,
@@ -1934,17 +1949,17 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/survival/latest.json --game-id=survival"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "sourceMutationRequired": false,
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:35568382649:1",
-      "reservedAt": "2026-09-21T06:25:48.337Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1963,11 +1978,12 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35568382649"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:25:48.337Z"
+      "updatedAt": "2026-09-21T06:45:10.897Z"
     }
   ]
 }
