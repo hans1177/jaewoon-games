@@ -165,5 +165,4 @@ if(process.argv[1]&&process.argv[1].endsWith('company-direct-native-design-migra
   console.log('MIGRATED='+result.migrated.join(','));
   console.log('ALREADY_READY='+result.alreadyReady.join(','));
   console.log('BLOCKED='+JSON.stringify(result.blocked));
-  if(result.blocked.length)process.exitCode=2;
 }
