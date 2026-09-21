@@ -45,6 +45,7 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
     const projectVersion=fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8');
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
     const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
+    const linkerConfig=fs.readFileSync(path.join(project,'Assets','link.xml'),'utf8');
     assert.equal(meta.version,3);
     assert.equal(meta.category,mode);
     assert.equal(meta.selectedPlatform,'UNITY');
@@ -70,6 +71,8 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
     assert.match(runtimeScript,/JAEWOON_TECH_ACTION/);
     assert.match(runtimeScript,/JAEWOON_TECH_SAVE/);
     assert.match(runtimeScript,/JAEWOON_TECH_METRIC/);
+    assert.match(linkerConfig,/<assembly fullname="UnityEngine\.ContentLoadModule">/);
+    assert.match(linkerConfig,/<type fullname="Unity\.Loading\.ContentLoadingSystem" preserve="all"\s*\/>/);
     assert.equal(projectVersion.trim(),`m_EditorVersion: ${expectedUnityEditorVersion}\nm_EditorVersionWithRevision: ${expectedUnityEditorVersion} (${expectedUnityEditorRevision})`);
   }
 });
