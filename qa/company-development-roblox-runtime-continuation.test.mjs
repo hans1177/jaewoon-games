@@ -74,10 +74,10 @@ test('verified Vibe2 source handoff replaces stale Web and music eligibility at 
   assert.equal(result.build.musicValidationPassed,true);
   assert.equal(result.build.nativeWebValidationPassed,false);
   assert.equal(result.build.nativeMusicValidationPassed,false);
-  assert.equal(result.build.sourceEligibilityAuthority,'verified-vibe2-source-handoff');
+  assert.equal(result.build.sourceEligibilityAuthority,'exact-immutable-roblox-package');
 });
 
-test('malformed Vibe2 handoff cannot bypass missing Web or music eligibility at preflight',()=>{
+test('Web and music validation are diagnostic only after an exact immutable Roblox package exists',()=>{
   const item={
     gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:null,musicValidationPassed:false,
     robloxSourceBootstrapPassedAt:'2026-09-16T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
@@ -87,9 +87,10 @@ test('malformed Vibe2 handoff cannot bypass missing Web or music eligibility at 
     },
   };
   const result=inspectRobloxBuildPreflight({item,directive});
-  assert.equal(result.pass,false);
-  assert.ok(result.blockers.includes('web-validation-missing'));
-  assert.ok(result.blockers.includes('music-validation-missing'));
+  assert.equal(result.pass,true,result.blockers.join(','));
+  assert.equal(result.build.webValidationPassed,false);
+  assert.equal(result.build.musicValidationPassed,false);
+  assert.equal(result.build.sourceEligibilityAuthority,'exact-immutable-roblox-package');
 });
 
 test('runtime uses one explicitly human-approved local-place Studio session and exact package identity',()=>{

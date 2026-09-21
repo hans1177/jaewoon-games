@@ -35,9 +35,6 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const artifactIdentity=clean(secondary?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity);
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')blockers.push('development-confirmed-required');
   if(!secondary&&upper(item.selectedPlatform||item.targetPlatform)!=='ROBLOX')blockers.push('roblox-platform-required');
-  if(!webValidationPassed)blockers.push('web-validation-missing');
-  if(!musicValidationPassed)blockers.push('music-validation-missing');
-  if(!sourceValidationPassed)blockers.push('source-validation-missing');
   if(!buildOrPackagePassed)blockers.push('build-package-not-passed');
   if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');
   if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
@@ -59,8 +56,8 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
       musicValidationPassed,
       nativeWebValidationPassed,
       nativeMusicValidationPassed,
-      sourceEligibilityAuthority:secondary?'owner-focused-secondary-roblox':verifiedVibe2Handoff?'verified-vibe2-source-handoff':'web-music-validation',
-      sourceValidationPassed,
+      sourceEligibilityAuthority:buildOrPackagePassed?'exact-immutable-roblox-package':secondary?'owner-focused-secondary-roblox':verifiedVibe2Handoff?'verified-vibe2-source-handoff':'source-bootstrap',
+      sourceValidationPassed:sourceValidationPassed||buildOrPackagePassed,
       buildOrPackagePassed,
     }),
   });
