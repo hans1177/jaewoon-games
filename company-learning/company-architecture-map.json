@@ -2327,6 +2327,25 @@
       "SECONDARY_DOMAIN_SUPPORT_ONLY",
       "IRRELEVANT_DOMAIN_SUPPRESSED",
       "FAILURE_EVIDENCE_WEIGHTED_ABOVE_GOAL_TEXT"
-    ]
+    ],
+    "effectivenessFeedback": {
+      "evaluator": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes",
+      "state": ".vibe2/learning-motor-state.json#knowledgeAttribution",
+      "loop": [
+        "INJECT_EXACT_KNOWLEDGE_IDS",
+        "RUN_FRESH_QA",
+        "MEASURE_FIRST_PASS_AND_FAILURE_CLEAR",
+        "MEASURE_REGRESSION",
+        "UPDATE_KNOWLEDGE_LIFECYCLE",
+        "REWEIGHT_NEXT_RETRIEVAL"
+      ],
+      "lifecycle": [
+        "CANDIDATE",
+        "VERIFIED",
+        "PREFERRED",
+        "DEMOTED",
+        "RETIRED"
+      ]
+    }
   }
 }
