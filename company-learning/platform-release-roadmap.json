@@ -4210,6 +4210,43 @@
         "directCardLaunchMustUseCanonicalHref": true
       }
     },
+    "runtimeMedia": {
+      "enabled": true,
+      "source": "VERIFIED_RUNTIME_MEDIA_MANIFEST",
+      "manifestRoot": "company-records/runtime-media",
+      "assetRoot": "assets/runtime-evidence",
+      "actualRuntimeOnly": true,
+      "homepageRepresentativeRequiresVerifiedManifest": true,
+      "cardAndHeroPreferVerifiedRuntimeMedia": true,
+      "staticRepresentativeKinds": [
+        "IMAGE"
+      ],
+      "movingPreviewKinds": [
+        "VIDEO"
+      ],
+      "preferredVideoMimes": [
+        "video/webm",
+        "video/mp4"
+      ],
+      "runtimeMediaMustMatchGameIdAndSelectedPlatform": true,
+      "sourceRevisionArtifactIdentityCaptureAtAndSha256Required": true,
+      "staleOrHashMismatchForbidden": true,
+      "generatedOrMarketingMockGameplayLabelForbidden": true,
+      "movingPreviewPosterRequired": true,
+      "autoplayPolicy": "MUTED_LOOP_PLAY_IN_VIEWPORT_ONLY",
+      "fallbackToCatalogArtworkWhenVerifiedRuntimeMediaUnavailable": true,
+      "manifestMediaEntryShape": [
+        "kind",
+        "path",
+        "mime",
+        "sha256",
+        "captureAt",
+        "sourceRevision",
+        "artifactIdentity",
+        "runtimeVerification",
+        "representative"
+      ]
+    },
     "top30Shelf": {
       "enabled": false,
       "removalReason": "DUPLICATE_OF_UNBOUNDED_WEB_GAME_SHELF",
