@@ -1,6 +1,6 @@
 {
   "version": 29,
-  "updatedAt": "2026-09-22T01:05:00+09:00",
+  "updatedAt": "2026-09-22T01:12:00+09:00",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -2805,11 +2805,12 @@
     {
       "id": "cozy-island",
       "name": "포근섬",
-      "description": "섬에서 채집과 낚시를 즐기는 힐링 생활 게임",
+      "description": "섬을 개척하고 병영을 키워 자동전투로 새로운 지역을 확보하는 생활·전략 게임",
       "genre": [
-        "힐링",
-        "생활",
-        "낚시"
+        "개척",
+        "자동전투",
+        "협동",
+        "생활"
       ],
       "image": "assets/title-cozy-island.svg",
       "webPath": null,
@@ -2826,7 +2827,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "멀티 협동 + 병영 + 자동전투 개발 반영",
+      "homepageRecentWork": "메인 루프를 섬 개척·생산시설·병영·자동전투로 재정렬, 낚시·채집은 보조 콘텐츠로 변경",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -2960,7 +2961,7 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-22T01:05:00+09:00",
+      "updatedAt": "2026-09-22T01:12:00+09:00",
       "playModes": [
         "SINGLE",
         "COOP"

@@ -4088,16 +4088,18 @@
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
-        "relaxing daily activity loop",
-        "collection and fishing progression",
-        "small-island personalization"
+        "island expansion and visible settlement growth",
+        "barracks and troop progression",
+        "server-authoritative auto battle",
+        "optional relaxing side activities"
       ],
       "CORE_LOOP": [
-        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
-        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
-        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        "목재·식량·광석 같은 생산 자원을 확보하고 섬의 다음 건설 목표를 정한다.",
+        "생산시설과 병영을 건설·강화하고 병사를 모집해 전투력을 높인다.",
+        "자동전투로 적 거점이나 위협 지역을 정리해 새 땅과 생산 보너스를 확보한다.",
+        "확보한 지역의 생산량으로 더 강한 병영·병사·시설을 열고 다음 전투를 준비한다."
       ],
-      "DISTINCT_IDENTITY": "작은 포근한 섬에서 낚시·채집·생활 흔적이 섬의 모습과 다음 활동을 바꾸는 고유의 힐링 생활 게임으로 완전히 처음부터 다시 설계한다.",
+      "DISTINCT_IDENTITY": "작은 섬을 개척해 생산시설과 병영을 세우고 병사를 키워 자동전투로 주변 섬과 위험 지역을 확보하는 생활·개척 전략 게임. 낚시와 채집은 메인 루프가 아니라 건설과 병영 성장을 돕는 보조 활동이다.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -4533,7 +4535,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-09-22T01:05:00+09:00",
+      "updatedAt": "2026-09-22T01:12:00+09:00",
       "promotion": {
         "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
@@ -19619,7 +19621,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-09-22T01:05:00+09:00",
+  "updatedAt": "2026-09-22T01:12:00+09:00",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
