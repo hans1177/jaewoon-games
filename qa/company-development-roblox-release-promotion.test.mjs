@@ -133,8 +133,9 @@ test('internal release workflow publishes only retained exact artifact to restri
   assert.match(workflow,/ROBLOX_PUBLIC_RELEASE=NO/);
   assert.doesNotMatch(workflow,/item\.currentStep='POST_RELEASE_FOCUSED_DEVELOPMENT'/);
   assert.match(workflow,/steps\.publish\.outcome == 'success'/);
-  assert.match(workflow,/company-homepage-platform-exposure-sync\.mjs/);
-  assert.match(workflow,/homepage-platform-exposure\.json/);
+  assert.doesNotMatch(workflow,/company-homepage-platform-exposure-sync\.mjs/);
+  assert.doesNotMatch(workflow,/git add development-queue\.json homepage-platform-exposure\.json/);
+  assert.match(workflow,/pending\?\.gameId/);
   assert.match(workflow,/ROBLOX_RUNTIME_RERUN=NO/);
   assert.match(workflow,/ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
   assert.match(workflow,/ROBLOX_REGRESSION_RERUN=NO/);
