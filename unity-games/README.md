@@ -52,6 +52,10 @@ Unity Web 빌드의 loader, wasm, data, framework.js, StreamingAssets 등 배포
 
 게임 자체에서 Unity Input System, On-Screen Stick/Button, Pointer/Touch 또는 필요한 Virtual Joystick을 구현한다.
 
+자동 QA의 키보드 입력은 모바일 조작 PASS가 아니다. `?qa=1`에서 실제 화면의 핵심 모바일 컨트롤 좌표를 `JAEWOON_UNITY_WEB_QA MOBILE_TARGET`으로 노출하고, 브라우저 Touch가 그 실제 컨트롤을 작동시켰을 때만 `MOBILE_INPUT status=PASS`를 기록한다.
+
+장르 핵심 루프의 실제 상태 진행/보상 완료 시점에는 `CORE_FUN status=PASS loop=<genre-specific-loop>`를 기록한다. QA 전용 가짜 승리/보상/상태 변경으로 이 마커를 만들면 안 된다.
+
 공통 Worker가 게임 밖에서 조이스틱을 강제로 주입하는 방식은 장기 기본 입력 경로로 사용하지 않는다.
 
 ## 그래픽
