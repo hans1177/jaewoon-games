@@ -148,6 +148,13 @@ jobs:
           set -euo pipefail
           cp /tmp/homepage-runtime/game-catalog.json game-catalog.json
           cp /tmp/homepage-runtime/company-status.json company-status.json
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:company-records/runtime-media" 2>/dev/null; then
+            mkdir -p company-records/runtime-media assets/runtime-evidence
+            git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- company-records/runtime-media assets/runtime-evidence
+            echo 'HOMEPAGE_RUNTIME_MEDIA_CANDIDATE=BOUND'
+          else
+            echo 'HOMEPAGE_RUNTIME_MEDIA_CANDIDATE=NONE'
+          fi
           node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
           echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
           echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
@@ -269,7 +276,7 @@ jobs:
           candidate_dir='.homepage-candidate'
           rm -rf "$candidate_dir"
           mkdir -p "$candidate_dir"
-          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions company-records/runtime-media assets/runtime-evidence)
           base_sha="$(git rev-parse HEAD)"
           git add -- "${published_paths[@]}"
           git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
@@ -283,7 +290,7 @@ jobs:
             baseSha:process.env.BASE_SHA,
             patchSha256:process.env.PATCH_SHA256,
             changed:process.env.CANDIDATE_CHANGED==='true',
-            paths:['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
+            paths:['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions','company-records/runtime-media','assets/runtime-evidence'],
           },null,2)+'\n');
           NODE
           git reset --quiet
@@ -435,7 +442,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-homepage-manager'
           git config user.email 'homepage-manager@users.noreply.github.com'
-          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions company-records/runtime-media assets/runtime-evidence)
           git add -- "${published_paths[@]}"
           if git diff --cached --quiet; then
             echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'
