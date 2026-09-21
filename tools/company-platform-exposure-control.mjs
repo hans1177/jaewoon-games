@@ -57,7 +57,7 @@ function ensureRebuildTask(queue,gameId,platform){
     id,gameId,target:platform.toLowerCase(),department:'development',type:'implementation',
     goal:rebuildGoal(gameId,platform),responsibleFiles:rebuildFiles(gameId,platform),
     dependencies:[],priority:'high',releaseState:'development-confirmed',status:'queued',
-    retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
+    retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,estimatedRisk:'medium',speculativeEligible:false,
     productionMode:'AUTONOMOUS_VIBE',supervisionApproved:false,
     evidence:[
@@ -68,13 +68,16 @@ function ensureRebuildTask(queue,gameId,platform){
     ]
   }]};
 }
-function platformState(item,tickets,platform){
+function platformState(item,tickets,platform,roadmap={}){
   const gameId=clean(item.gameId),internal=internalReady(item,platform),adapt=adaptationEvidence(item,platform),blocking=openBlockingTickets(tickets,gameId,platform);
   const rebuildComplete=adapt.rebuildCompleted===true||adapt.rebuildPassed===true;
   const adaptationPass=adapt.pass===true&&adapt.runtimeEvidencePass===true;
   const secondGatePass=internal&&rebuildComplete&&adaptationPass&&blocking.length===0;
   const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
-  const legacyPublic=platform==='ROBLOX'&&item.robloxReleaseClaim===true&&item.robloxReleaseEvidence?.published===true&&item.robloxFinalReviewPassed===true&&item.robloxRegressionPassed===true;
+  const activation=Date.parse(clean(roadmap?.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.activatedAt)||'2026-09-21T00:00:00Z');
+  const releaseEvidence=item.robloxReleaseEvidence||{};
+  const publishedAt=Date.parse(clean(releaseEvidence.publishedAt||releaseEvidence.releasedAt||releaseEvidence.observedAt||item.robloxReleasedAt||item.releaseConfirmedAt));
+  const legacyPublic=platform==='ROBLOX'&&item.robloxReleaseClaim===true&&releaseEvidence.published===true&&item.robloxFinalReviewPassed===true&&item.robloxRegressionPassed===true&&(item.preexistingPublicReleaseBeforeExposureGate===true||(Number.isFinite(publishedAt)&&Number.isFinite(activation)&&publishedAt<activation));
   const publicReleased=legacyPublic||(secondGatePass&&explicitPublic);
   return{
     platform,
@@ -90,14 +93,14 @@ function platformState(item,tickets,platform){
     rebuildRequired:internal&&!secondGatePass
   };
 }
-export function controlPlatformExposure({developmentQueue={},ticketQueue={},suitability={},vibeQueue={}}={}){
+export function controlPlatformExposure({developmentQueue={},ticketQueue={},suitability={},vibeQueue={},roadmap={}}={}){
   let queue={...vibeQueue,tasks:[...(vibeQueue.tasks||[])]};
   const suitabilityById=new Map((suitability.games||[]).map(x=>[clean(x.gameId),x]));
   const games=[];
   for(const item of developmentQueue.items||[]){
     if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))continue;
     const gameId=clean(item.gameId);if(!gameId)continue;
-    const platforms=['ROBLOX','UNITY'].map(platform=>platformState(item,ticketQueue,platform));
+    const platforms=['ROBLOX','UNITY'].map(platform=>platformState(item,ticketQueue,platform,roadmap));
     for(const p of platforms)if(p.rebuildRequired)queue=ensureRebuildTask(queue,gameId,p.platform);
     games.push({
       gameId,gameName:clean(item.gameName||gameId),platformExecutionMode:'ROBLOX_UNITY_CONCURRENT',
@@ -127,7 +130,8 @@ if(process.argv[1]===new URL(import.meta.url).pathname){
     developmentQueue:readJson(a['development-queue'],{items:[]}),
     ticketQueue:readJson(a.tickets,{tickets:[]}),
     suitability:readJson(a.suitability,{games:[]}),
-    vibeQueue:readJson(a.queue,{tasks:[]})
+    vibeQueue:readJson(a.queue,{tasks:[]}),
+    roadmap:readJson(a.roadmap,{})
   });
   writeJson(a.output||'.vibe2/platform-exposure-state.json',result.state);
   if(a.queue)writeJson(a.queue,result.queue);
