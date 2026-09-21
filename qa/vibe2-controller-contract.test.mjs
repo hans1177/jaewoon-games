@@ -129,10 +129,16 @@ test('graphics presentation uses atomic neuron task micro-fan-in without expandi
   assert.match(continuousRunnerSource,/actionStateCoverage:freezeList\(\['IDLE','MOVE','ATTACK','HIT','DEATH'\]\)/);
 });
 
-test('work order exposes Web source bootstrap authority only from explicit task evidence',()=>{
-  assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed=plan\.target==='web'/);
-  assert.match(continuousRunnerSource,/task\.evidence\|\|\[\]\)\.includes\('source-root-bootstrap-required'\)/);
+test('work order exposes source bootstrap only for explicit Web or Unity Web first-stage evidence',()=>{
+  assert.match(continuousRunnerSource,/webSourceRootBootstrapAllowed=plan\.target==='web'/);
+  assert.match(continuousRunnerSource,/unityWebSourceRootBootstrapAllowed=plan\.target==='unity'/);
+  assert.match(continuousRunnerSource,/taskEvidence\.has\('source-root-bootstrap-required'\)/);
+  assert.match(continuousRunnerSource,/taskEvidence\.has\('unity-web-source-root-bootstrap-required'\)/);
   assert.match(continuousRunnerSource,/SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(continuousRunnerSource,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(continuousRunnerSource,/responsibleFiles\.length===2/);
+  assert.match(continuousRunnerSource,/GameCore\\\.cs/);
+  assert.match(continuousRunnerSource,/RuntimeBootstrap\\\.cs/);
   assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
 });
 
