@@ -773,6 +773,7 @@ jobs:
         env:
           PLANNED_RUNTIME_SHA: ${{ needs.web-plan.outputs.runtime_sha }}
           EXPECTED_TARGETS_JSON: ${{ needs.web-plan.outputs.targets_json }}
+          FIRST_STAGE_ENGINE: ${{ needs.web-plan.outputs.first_stage_engine }}
         shell: bash
         run: |
           set -euo pipefail
@@ -813,6 +814,9 @@ jobs:
               designDate:item?.designDate||'',
               selectedPlatform:item?.selectedPlatform||item?.targetPlatform||'ROBLOX',
               targetSourcePath:item?.targetSourcePath||item?.sourcePath||'',
+              firstStageEngine:process.env.FIRST_STAGE_ENGINE||'LEGACY_WEB',
+              unitySourcePath:`unity-games/${item?.gameId}`,
+              unitySourceTreeSha:process.env.FIRST_STAGE_ENGINE==='UNITY_WEB'?(()=>{try{return execFileSync('git',['rev-parse',`HEAD:unity-games/${item?.gameId}`],{encoding:'utf8'}).trim();}catch{return'';}})():'',
               webSourcePath:item?.webSourcePath||item?.optionalWebSourcePath||`web-games/${item?.gameId}`,
               runtimeStage,
               existingWebValidated:Boolean(item?.webValidationPassedAt)&&!forceWebRepair,
@@ -842,7 +846,9 @@ jobs:
             const baseline=String(target.designBaselineSource||'').trim();
             const status=baseline?baseline.replace(/design-revised\.json$/,'cycle-status.json'):'';
             const source=String(target.webInitialCycleSourcePath||target.webSourcePath||'').replace(/^\/+|\/+$/g,'');
-            const files=[baseline,status,source?`${source}/index.html`:'',target.webInitialCycleEvidencePath||'',target.webFinalContentDepthEvidencePath||''];
+            const files=target.firstStageEngine==='UNITY_WEB'
+              ?[baseline,status]
+              :[baseline,status,source?`${source}/index.html`:'',target.webInitialCycleEvidencePath||'',target.webFinalContentDepthEvidencePath||''];
             for(const file of new Set(files.filter(Boolean))){
               if(!sameFile(file))blockers.push(`TARGET_RUNTIME_BINDING_CHANGED:${target.gameId}:${file}`);
             }
@@ -882,6 +888,7 @@ jobs:
         if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.web-plan.outputs.targets_json }}
+          FIRST_STAGE_ENGINE: ${{ needs.web-plan.outputs.first_stage_engine }}
         shell: bash
         run: |
           set -euo pipefail
@@ -942,7 +949,9 @@ jobs:
             Object.assign(item,result.update);
             if(result.pass===true)passCount++;else failCount++;
           }
-          queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
+          queue.webValidationPolicy=process.env.FIRST_STAGE_ENGINE==='UNITY_WEB'
+            ?'UNITY_WEB_FIRST_STAGE_GATE_THEN_EXISTING_PLATFORM_PIPELINE'
+            :'WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
           queue.webValidationContractVersion=4;
           queue.webValidationEvidenceSchemaMinimum=WEB_VALIDATION_SCHEMA_VERSION;
           queue.webPromotionRevalidationRequired=true;
