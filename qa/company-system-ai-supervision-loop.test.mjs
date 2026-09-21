@@ -26,6 +26,19 @@ test('System AI supervision is reserve then implementation then verification the
   assert.match(workflow,/--command=fan-in/);
 });
 
+test('System AI preflight blocks infrastructure failures before model execution and excludes them from learning',()=>{
+  const preflight=workflow.indexOf('- name: Preflight worker contract before model');
+  const implement=workflow.indexOf('- name: Execute external AI assignment');
+  assert.ok(preflight>=0&&implement>preflight);
+  assert.match(workflow,/--preflight=true/);
+  assert.match(workflow,/steps\.preflight\.outcome == 'success' && steps\.preverify\.outcome != 'success'/);
+  assert.match(workflow,/INFRASTRUCTURE_CONTRACT_FAILURE/);
+  assert.match(workflow,/learningCandidate:!infrastructureFailure/);
+  assert.match(workflow,/retry-budget-consumed:NO/);
+  assert.match(workflow,/recovery-state:REPAIR_REQUIRED/);
+  assert.match(workflow,/const clean=v=>String\(v\?\?''\)\.trim\(\);/);
+});
+
 test('System AI cannot self-accept and malformed JSON uses strict retry',()=>{
   assert.match(worker,/STRICT RETRY: return exactly one valid JSON object only/);
   assert.match(worker,/workerSelfAcceptance:false/);
