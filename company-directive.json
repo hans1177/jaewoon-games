@@ -17,11 +17,17 @@
     "genrePresentationAndCommercialReadinessMirrored": true,
     "syncTargets": [
       "company-learning/platform-release-roadmap.json",
+      "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
       "COMPANY_FLOW.md",
+      ".github/agents/planning.agent.md",
       ".github/agents/development.agent.md",
       ".github/agents/graphics.agent.md",
+      ".github/agents/qa.agent.md",
+      ".github/agents/balance.agent.md",
       "tools/vibe2-auto-planner.mjs",
-      "tools/company-development-web-gameplay-validation.mjs"
+      "tools/company-selected-platform-router.mjs",
+      "assets/homepage-enhancements.js",
+      "_worker.js"
     ]
   },
   "homepageOperations": {
@@ -93,38 +99,42 @@
       "displayFields": [
         "status",
         "currentStep",
-        "selectedPlatform",
-        "score"
+        "concurrentTargetPlatforms",
+        "platformReleaseState"
       ],
       "separateFromTop30Promotion": true,
       "mustNotClaimValidationOrRelease": true,
-      "webTestButtonEnabled": true,
-      "webTestButtonLabel": "웹 테스트",
+      "webTestButtonEnabled": false,
+      "webTestButtonLabel": null,
       "platformTestButtonEnabled": true,
       "platformTestButtonLabelMode": "PLATFORM_NAME",
-      "webAndPlatformTestButtonsMustBeSeparate": true,
+      "webAndPlatformTestButtonsMustBeSeparate": false,
       "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
-      "scoreDisplayEnabled": true,
-      "ranking": "SCORE_DESC",
-      "unratedGamesLast": true,
-      "scoreSource": "CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE",
-      "scoreRequiresInitialCyclePass": true,
-      "scoreRequiresMusicPass": true,
-      "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": true,
-      "reworkOrRevalidationScoresNotShownAsCurrent": true,
-      "scoreRequiresSchema15": true
+      "scoreDisplayEnabled": false,
+      "ranking": "CATALOG_ORDER",
+      "unratedGamesLast": false,
+      "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+      "scoreRequiresInitialCyclePass": false,
+      "scoreRequiresMusicPass": false,
+      "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
+      "reworkOrRevalidationScoresNotShownAsCurrent": false,
+      "scoreRequiresSchema15": false
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
       "enabled": true,
-      "webGameOnly": true,
+      "webGameOnly": false,
       "explicitOwnerOrCatalogValueWins": true,
       "overwriteExplicitValue": false,
       "missingPlatform": "VIBE_AUTO_CLASSIFY",
       "missingGenre": "VIBE_AUTO_CLASSIFY",
       "executionPath": "tools/game-catalog-normalization.mjs",
       "runsInsideExistingCompanyStatusSync": true,
-      "humanDocumentRequired": false
+      "humanDocumentRequired": false,
+      "activePlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ]
     },
     "executionPipeline": {
       "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
