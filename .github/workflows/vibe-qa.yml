@@ -193,6 +193,9 @@ jobs:
         run: |
           node qa/external-mobile-free-game-playtest-workflow.test.mjs
           node qa/vibe2-google-play-catalog-coverage.test.mjs
+      - name: Validate horror escape room release gates
+        run: node --test qa/horror-escape-room-release.test.mjs
+
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
 
