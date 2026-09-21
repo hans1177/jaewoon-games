@@ -2159,5 +2159,25 @@
     "runtimeMediaRoot": "assets/runtime-evidence",
     "legacyMigration": "MIGRATE_ON_TOUCH",
     "directPolicyCreationOutsideCentralRoadmap": false
+  },
+  "concurrentPlatformDevelopment": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.concurrentRobloxUnityDefault",
+    "defaultTargets": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "executionMode": "ROBLOX_UNITY_CONCURRENT",
+    "suitabilityRole": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+    "suitabilityState": "vibe2-unreal-core:.vibe2/platform-suitability.json",
+    "router": "tools/company-selected-platform-router.mjs",
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "platformProfiles": {
+      "ROBLOX": "SOCIAL_FAST_SESSION",
+      "UNITY": "DEEP_IMMERSIVE_SESSION"
+    },
+    "independentRuntimeEvidence": true,
+    "onePlatformFailureDoesNotCancelOther": true,
+    "uefn": "OWNER_HOLD"
   }
 }
