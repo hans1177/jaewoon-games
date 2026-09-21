@@ -13,17 +13,32 @@ test('PlayCanvas migration pins engine and keeps mobile controls',()=>{
   assert.match(main,/new pc\.Application/);
 });
 
-test('3D foundation includes player, portals, combat and lights',()=>{
-  assert.match(main,/const player=/);
-  assert.match(main,/portalPositions/);
-  assert.match(main,/const enemies=/);
-  assert.match(main,/addComponent\('light'/);
-  assert.match(main,/attackCooldown/);
+test('phase 2 has real portal traversal and return flow',()=>{
+  assert.match(main,/const ZONES=/);
+  assert.match(main,/function buildTown\(/);
+  assert.match(main,/function buildHunt\(/);
+  assert.match(main,/function enterZone\(/);
+  assert.match(main,/returnPortal/);
+  assert.match(main,/updatePortals\(\)/);
 });
 
-test('migration stays parallel until parity gates pass',()=>{
+test('phase 2 has hunting combat damage death and growth',()=>{
+  assert.match(main,/function updateEnemies\(/);
+  assert.match(main,/function playerDamage\(/);
+  assert.match(main,/function killEnemy\(/);
+  assert.match(main,/function addXp\(/);
+  assert.match(main,/hero\.gold/);
+  assert.match(main,/hero\.lv\+\+/);
+  assert.match(html,/id="gold"/);
+  assert.match(html,/id="xp"/);
+});
+
+test('migration remains parallel until full parity gates pass',()=>{
   assert.equal(migration.strategy,'PARALLEL_MIGRATION_THEN_CUTOVER');
-  assert.equal(migration.phaseName,'3D_FOUNDATION');
+  assert.equal(migration.phase,2);
+  assert.equal(migration.phaseName,'PORTAL_HUNTING_COMBAT_LOOP');
+  assert.ok(migration.completedSystems.includes('real portal zone traversal'));
+  assert.ok(migration.completedSystems.includes('enemy chase and contact damage'));
+  assert.ok(migration.cutoverGate.includes('quest/shop/inventory parity'));
   assert.ok(migration.cutoverGate.includes('Android WebView smoke pass'));
-  assert.ok(migration.preserveSystems.includes('multiplayer rooms 1-10'));
 });
