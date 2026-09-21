@@ -139,7 +139,10 @@ function prefetchVisibleGames(){
     const p=document.createElement('link');p.rel='prefetch';p.href=href;p.as='document';p.dataset.gamePrefetch=href;document.head.appendChild(p);
   }
 }
-(window.requestIdleCallback||((fn)=>setTimeout(fn,600)))(prefetchVisibleGames);
+(window.requestIdleCallback||((fn)=>setTimeout(fn,600)))(()=>{
+  prefetchVisibleGames();
+  const p=document.createElement('link');p.rel='prefetch';p.href='/command.html?from=chatgpt-shortcut';p.as='document';document.head.appendChild(p);
+});
 registerHomepagePwa();
 </script>
 <script type="module" src="/assets/homepage-enhancements.js"></script>
