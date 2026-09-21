@@ -145,8 +145,13 @@ ownerCurrentProductionContract:
     categorySelectionMayRoundRobin: true
     selectedPlatformMustDriveImplementationAndScoring: true
     webIsNotNativeDevelopmentSubstitute: true
+    firstWebStageEngine: UNITY_WEB
+    firstWebStageScopeOnly: true
+    firstWebStageCanonicalSourceRoot: unity-games/<gameId>/
+    firstWebStageBuildOutputRoot: web-games/<gameId>/
+    postWebPlatformPipelineUnchanged: true
   webToTargetPlatformContinuity:
-    mode: WEB_PORTABLE_BASE_THEN_NATIVE_CONTINUATION
+    mode: UNITY_WEB_FIRST_STAGE_THEN_NATIVE_CONTINUATION
     webPhaseIsDisposablePrototype: false
     webPhasePurpose:
       - REAL_PLAYABLE_VALIDATION
@@ -165,7 +170,7 @@ ownerCurrentProductionContract:
       - UI_STATE_CONTRACT
       - FAILURE_RETRY_AND_SESSION_FLOW
     platformHandoff:
-      source: CURRENT_VALIDATED_WEB_COMPANION_PLUS_APPROVED_DESIGN_BASELINE
+      source: CURRENT_VALIDATED_UNITY_WEB_BUILD_PLUS_APPROVED_DESIGN_BASELINE
       target: PROJECT_SELECTED_PLATFORM
       preserveValidatedGameplaySemantics: true
       silentCoreSystemReimplementationDriftForbidden: true
