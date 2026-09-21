@@ -108,12 +108,21 @@ function assertRelativeSourcePath(relative,target){const normalized=posix(relati
 function normalizeResponsibleFiles(order,root,target){return(order?.source?.responsibleFiles||[]).map(value=>{const normalized=posix(value);const relative=normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;return assertRelativeSourcePath(relative,target);}).filter(Boolean);}
 function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
-  return target==='web'
-    &&order?.workerPolicy?.sourceRootBootstrapAllowed===true
-    &&evidence.has('source-root-bootstrap-required')
-    &&responsibleFiles.length===1
-    &&responsibleFiles[0]==='index.html'
-    &&/^web-games\/[a-zA-Z0-9._-]+$/.test(root);
+  if(order?.workerPolicy?.sourceRootBootstrapAllowed!==true||!evidence.has('source-root-bootstrap-required'))return false;
+  if(target==='web'){
+    return responsibleFiles.length===1
+      &&responsibleFiles[0]==='index.html'
+      &&/^web-games\/[a-zA-Z0-9._-]+$/.test(root);
+  }
+  if(target==='unity'){
+    const files=new Set(responsibleFiles);
+    return evidence.has('unity-web-source-root-bootstrap-required')
+      &&/^unity-games\/[a-zA-Z0-9._-]+$/.test(root)
+      &&responsibleFiles.length===2
+      &&files.has('Assets/Scripts/GameCore.cs')
+      &&files.has('Assets/Scripts/RuntimeBootstrap.cs');
+  }
+  return false;
 }
 function normalizeModelPath(value,{target,responsibleFiles=[],sourceRootRelative=''}={}){let normalized=posix(value);if(normalized.startsWith(`${sourceRootRelative}/`))normalized=normalized.slice(sourceRootRelative.length+1);if(PLACEHOLDER_PATHS.has(normalized.toLowerCase())){if(responsibleFiles.length!==1)throw new Error(`모델 예시 경로를 실제 파일로 결정할 수 없음: ${value}`);normalized=responsibleFiles[0];}normalized=assertRelativeSourcePath(normalized,target);if(responsibleFiles.length&&!responsibleFiles.includes(normalized))throw new Error(`책임 파일 범위 밖 수정 금지: ${normalized}`);return normalized;}
 function listContextFiles(root,target,ignored=[]){const ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_CONTEXT_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_CONTEXT_FILES)return;if(['.git','node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache'].includes(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(targetExtensions(target).has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative});}}};walk(root);return rows;}
@@ -623,6 +632,7 @@ allowFullRewrite?'Required output format:\nVIBE2_FULL_FILE\nPATH:index.html\nSUM
 'Do not output binary assets. Do not use wrapper/monkey patches.',
 clean(order.target).toLowerCase()==='system'?'For system target, edit only exact allowed paths. Company policy files may be edited only when they are explicitly listed. Never alter authority or weaken gates. When Allowed edit paths contain both a non-QA system source file and a qa/*.test.js|mjs|cjs regression file, the candidate MUST change both in one atomic candidate: repair the responsible source and add or strengthen the exact causal regression test that fails on the base and passes after the repair.':'Do not change homepage/company files.',
 clean(order.target).toLowerCase()==='web'?'For web target, stay inside the existing web-games/<game> root.':'',
+sourceRootBootstrap&&clean(order.target).toLowerCase()==='unity'?'UNITY WEB BOOTSTRAP: the project configuration and WebBuild.cs scaffold are supplied by the system. You MUST edit BOTH Assets/Scripts/GameCore.cs and Assets/Scripts/RuntimeBootstrap.cs from the exact provided stub text. Implement real approved gameplay, state, save meaning, mobile input, and QA markers in those existing files. Do not create HTML/Canvas source and do not return newFiles or replaceFiles.':'',
 'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
 allowFullRewrite?'':'This is an implementation candidate. You MUST produce at least one real source change. Never return empty edits/newFiles/replaceFiles. When responsible files are listed, use an edits[] entry on an exact allowed path; copy find text exactly from the FILE block and make replace materially different.',
 focusedWebRepair&&!allowFullRewrite?'FOCUSED WEB REPAIR STREAM CONTRACT: put the edits array first. Emit the smallest single complete edits[0] object before optional summary/tests. The worker may stop generation immediately after one complete exact edit is available, so that first edit must independently satisfy the Goal and preserve unrelated behavior.':'',
@@ -1492,9 +1502,147 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
 async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT'}={}){const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const body=JSON.stringify({model,prompt,stream:true,think:false,...(/^JSON_/.test(completionMode)?{format:'json'}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='';const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(typeof payload?.response==='string'){output+=payload.response;if(modelResponseComplete(output,completionMode))finish(null,output);}};response.on('data',chunk=>{if(settled)return;try{pending+=chunk;let at;while((at=pending.indexOf('\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+1);consume(line);if(settled)return;}}catch(error){finish(error);}});response.on('end',()=>{if(settled)return;try{if(pending.trim())consume(pending);if(settled)return;if(!output.trim())throw new Error('Ollama 응답 비어 있음');finish(null,output);}catch(error){finish(error);}});response.on('error',finish);});request.on('error',finish);request.end(body);});}
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
 function assertCandidateBranch(cwd){const branch=currentBranch(cwd);if(!branch||branch==='main'||branch==='master'||!branch.startsWith('vibe2/candidate/'))throw new Error(`source 적용은 vibe2/candidate/* 브랜치에서만 허용: ${branch||'unknown'}`);return branch;}
+function unityWebBootstrapScaffold(sourceRootRelative=''){
+  const gameId=posix(sourceRootRelative).split('/').pop()||'unity-web-game';
+  const safeProduct=gameId.replace(/[^a-zA-Z0-9 _.-]+/g,' ').trim()||'Unity Web Game';
+  const buildScript=`// 파일명: WebBuild.cs
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+
+namespace JaewoonGames.UnityWeb.Editor
+{
+    public static class WebBuild
+    {
+        private const string ScenePath = "Assets/Scenes/Main.unity";
+
+        public static void BuildWeb()
+        {
+            if (!AssetDatabase.IsValidFolder("Assets/Scenes"))
+                AssetDatabase.CreateFolder("Assets", "Scenes");
+
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            if (!EditorSceneManager.SaveScene(scene, ScenePath))
+                throw new InvalidOperationException("UNITY_WEB_SCENE_SAVE_FAILED");
+
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+            if (!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL))
+                throw new InvalidOperationException("UNITY_WEB_TARGET_SWITCH_FAILED");
+
+            PlayerSettings.companyName = "Jaewoon Games";
+            PlayerSettings.productName = "${safeProduct}";
+
+            var repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", ".."));
+            var output = Path.Combine(repoRoot, "build", "WebGL", "${gameId}");
+            Directory.CreateDirectory(output);
+
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = new[] { ScenePath },
+                locationPathName = output,
+                target = BuildTarget.WebGL,
+                options = BuildOptions.Development
+            });
+            if (report.summary.result != BuildResult.Succeeded)
+                throw new InvalidOperationException("UNITY_WEB_BUILD_FAILED:" + report.summary.result);
+            var index = Path.Combine(output, "index.html");
+            if (!File.Exists(index) || new FileInfo(index).Length <= 0)
+                throw new InvalidOperationException("UNITY_WEB_INDEX_MISSING");
+        }
+    }
+}
+`;
+  const coreStub=`// 파일명: GameCore.cs
+using UnityEngine;
+
+namespace JaewoonGames.Generated
+{
+    public sealed class GameCore : MonoBehaviour
+    {
+        // Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.
+    }
+}
+`;
+  const runtimeStub=`// 파일명: RuntimeBootstrap.cs
+using UnityEngine;
+
+namespace JaewoonGames.Generated
+{
+    public sealed class RuntimeBootstrap : MonoBehaviour
+    {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void AutoStart()
+        {
+            var go = new GameObject("RuntimeBootstrap");
+            DontDestroyOnLoad(go);
+            go.AddComponent<RuntimeBootstrap>();
+        }
+
+        private void Start()
+        {
+            Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=${gameId} status=BOOTSTRAP_STUB");
+        }
+    }
+}
+`;
+  return{
+    'Packages/manifest.json':JSON.stringify({dependencies:{'com.unity.inputsystem':'1.17.0'}},null,2)+'\n',
+    'ProjectSettings/ProjectVersion.txt':'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n',
+    'Assets/Editor/WebBuild.cs':buildScript,
+    'Assets/Scripts/GameCore.cs':coreStub,
+    'Assets/Scripts/RuntimeBootstrap.cs':runtimeStub
+  };
+}
+function writeUnityWebBootstrapScaffold(root,sourceRootRelative){
+  const files=unityWebBootstrapScaffold(sourceRootRelative),changed=[];
+  for(const [relative,content] of Object.entries(files)){
+    const target=path.join(root,relative);
+    fs.mkdirSync(path.dirname(target),{recursive:true});
+    if(!fs.existsSync(target)){
+      fs.writeFileSync(target,content,'utf8');
+      changed.push(relative);
+    }
+  }
+  return changed;
+}
 function applyNewFiles(root,newFiles){const changed=[];for(const file of newFiles){const target=path.join(root,file.path);if(fs.existsSync(target))throw new Error(`newFiles 대상이 이미 존재함: ${file.path}`);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}return changed;}
 function applyReplaceFiles(root,replaceFiles,{allowCreate=false}={}){const changed=[];for(const file of replaceFiles){const target=path.join(root,file.path);const exists=fs.existsSync(target)&&fs.statSync(target).isFile();if(!exists&&!allowCreate)throw new Error(`replaceFiles 대상 없음: ${file.path}`);if(!exists)fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return changed;}
-function createCandidateSnapshot(sourceRoot,candidateRoot,candidate){const changed=[];const filesRoot=path.join(candidateRoot,'files');for(const relative of unique(candidate.edits.map(edit=>edit.path))){const source=path.join(sourceRoot,relative),target=path.join(filesRoot,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);}if(candidate.edits.length)changed.push(...applyExactEdits(filesRoot,candidate.edits));for(const file of candidate.newFiles){const target=path.join(filesRoot,file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}for(const file of candidate.replaceFiles){const target=path.join(filesRoot,file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return[...new Set(changed)];}
+function createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles=null}={}){
+  const changed=[],filesRoot=path.join(candidateRoot,'files');
+  if(scaffoldFiles){
+    for(const [relative,content] of Object.entries(scaffoldFiles)){
+      const target=path.join(filesRoot,relative);
+      fs.mkdirSync(path.dirname(target),{recursive:true});
+      fs.writeFileSync(target,content,'utf8');
+      changed.push(relative);
+    }
+  }
+  for(const relative of unique(candidate.edits.map(edit=>edit.path))){
+    const target=path.join(filesRoot,relative);
+    if(!fs.existsSync(target)){
+      const source=path.join(sourceRoot,relative);
+      fs.mkdirSync(path.dirname(target),{recursive:true});
+      fs.copyFileSync(source,target);
+    }
+  }
+  if(candidate.edits.length)changed.push(...applyExactEdits(filesRoot,candidate.edits));
+  for(const file of candidate.newFiles){
+    const target=path.join(filesRoot,file.path);
+    fs.mkdirSync(path.dirname(target),{recursive:true});
+    fs.writeFileSync(target,file.content,'utf8');
+    changed.push(file.path);
+  }
+  for(const file of candidate.replaceFiles){
+    const target=path.join(filesRoot,file.path);
+    fs.mkdirSync(path.dirname(target),{recursive:true});
+    fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');
+    changed.push(file.path);
+  }
+  return[...new Set(changed)];
+}
 function validateSystemCandidateSyntax({candidate,sourceRoot}={}){
   const touched=unique([
     ...(candidate?.edits||[]).map(row=>row.path),
@@ -1560,9 +1708,12 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const preferredContextMode=clean(order?.codingStrategyPreference?.preferredContextMode).toUpperCase();
   const preferBoundedContext=sourceRootExists&&focusedWebRepair&&preferredContextMode==='BOUNDED_FILE_EXCERPT_FALLBACK';
   const bootstrapHtml='<!doctype html><html><head><meta charset="utf-8"><title>Approved Web Bootstrap</title></head><body><main id="game"></main><script></script></body></html>';
+  const unityBootstrapFiles=bootstrap&&target==='unity'?unityWebBootstrapScaffold(sourceRootRelative):null;
   const focusedContext=sourceRootExists&&focusedWebRepair&&!preferBoundedContext?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
   const context=!sourceRootExists&&bootstrap
-    ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
+    ?(target==='unity'
+      ?{files:responsibleFiles.map(relative=>({path:relative,content:unityBootstrapFiles[relative],truncated:false,editable:true})),bytes:responsibleFiles.reduce((n,relative)=>n+Buffer.byteLength(unityBootstrapFiles[relative]||'','utf8'),0),mode:'UNITY_WEB_BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
+      :{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false})
     :(focusedContext||{
       ...readContext(
         sourceRoot,
@@ -1593,6 +1744,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       ...(candidate.newFiles||[]).map(row=>row.path),
       ...(candidate.replaceFiles||[]).map(row=>row.path)
     ]);
+    if(bootstrap&&target==='unity'){
+      for(const relative of responsibleFiles)if(!touched.has(relative))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:'+relative);
+      if((candidate.newFiles||[]).length||(candidate.replaceFiles||[]).length)throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_EDITS_ONLY');
+    }
     if(systemCausalPairRequired){
       const sourceTouched=systemSourceFiles.some(file=>touched.has(file));
       const testTouched=systemRegressionFiles.some(file=>touched.has(file));
@@ -1623,8 +1778,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
-  if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
+  if(bootstrap&&target==='web'&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
+  }
+  if(bootstrap&&target==='unity'){
+    const touched=new Set(candidate.edits.map(row=>row.path));
+    if(candidate.newFiles.length||candidate.replaceFiles.length||responsibleFiles.some(file=>!touched.has(file))){
+      throw new Error('Unity Web source bootstrap는 GameCore.cs와 RuntimeBootstrap.cs 실제 편집을 모두 요구');
+    }
   }
   const centralPolicyCompletion=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_CANDIDATE_WRITE'});
   const taskId=safeId(order.taskId);
@@ -1633,8 +1794,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   fs.rmSync(candidateRoot,{recursive:true,force:true});
   fs.mkdirSync(candidateRoot,{recursive:true});
   let changedFiles,branch=null;
-  if(applySource){branch=assertCandidateBranch(cwd);changedFiles=[...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles,{allowCreate:bootstrap})];}
-  else changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate);
+  if(applySource){
+    branch=assertCandidateBranch(cwd);
+    const scaffoldChanged=bootstrap&&target==='unity'?writeUnityWebBootstrapScaffold(sourceRoot,sourceRootRelative):[];
+    changedFiles=[...scaffoldChanged,...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles,{allowCreate:bootstrap})];
+  }else{
+    const scaffoldFiles=bootstrap&&target==='unity'?unityBootstrapFiles:null;
+    changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFiles});
+  }
   const codingMethod={
     version:2,
     strategy:clean(order?.candidateStrategyRole?.strategy)||clean(editContract.strategyHint)||'UNCLASSIFIED',
