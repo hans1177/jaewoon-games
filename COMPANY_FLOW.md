@@ -137,7 +137,7 @@ ownerCurrentProductionContract:
         countsTowardDevelopmentPipeline: false
         autonomousRediscoveryForbidden: true
     developmentPipelineTarget: 60
-    activeDevelopmentWipMax: 20
+    activeDevelopmentWipMax: null
     readyBacklogPreferredRange: [25, 30]
     reworkRebuildPreferredRange: [10, 15]
     releasedLiveUsesSeparateSlots: true
@@ -279,9 +279,10 @@ ownerCurrentProductionContract:
       learningMayExpandAuthority: false
   developmentConcurrency:
     scope: DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION
-    concurrentGameWipTarget: 20
+    concurrentGameWipTarget: null
     concurrentGameWipMax: null
     externalProviderBoundary: 256
+    externalProviderBoundaryIsEligibilityCap: false
     globalAcrossConfiguredSelectedPlatformExecutors: true
     parallelExecutionDefault: true
     webValidationParallelismTarget: 0
@@ -978,9 +979,9 @@ portfolioGovernance:
     forcedSixOfSixReleaseForbidden: true
     expansionBeyondRepresentativeSetAllowedWithFiveDepartmentScoreAndEvidence: true
     implementationWip:
-      target: 6
-      max: 6
-      scope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
+      target: null
+      max: null
+      scope: UNBOUNDED_ELIGIBLE_GAMES_EXTERNAL_CAPACITY_BATCHED
       parallelExecutionDefault: true
       webValidationParallelismTarget: 0
       webValidationParallelismMax: 0
