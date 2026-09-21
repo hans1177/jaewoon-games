@@ -24,6 +24,35 @@ test('repeated failure is escalated into recovery queue',()=>{
   assert.deepEqual(row.responsibleFiles,['web-games/g1/index.html']);
 });
 
+test('repeated System-AI infrastructure failure creates one repair canary and gates the cohort',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const systemAiQueueInput={tasks:[
+    {id:'sys-a',status:'failed',retries:2,blocker:'system-ai-infrastructure-contract-failed',responsibleFiles:['qa/a.test.mjs'],contextFiles:['game-catalog.json'],dependencies:[]},
+    {id:'sys-b',status:'failed',retries:2,blocker:'system-ai-infrastructure-contract-failed',responsibleFiles:['qa/b.test.mjs'],contextFiles:['game-catalog.json'],dependencies:[]}
+  ]};
+  const escalated=escalateRecoveryCandidates({systemAiQueueInput});
+  assert.equal(escalated.added.length,1);
+  const rec=escalated.queue.tasks[0];
+  assert.equal(rec.blastRadius,'shared-worker-contract:2');
+  assert.deepEqual(rec.responsibleFiles,[
+    'tools/company-system-ai-worker.mjs',
+    '.github/workflows/company-system-ai-workers.yml',
+    'qa/company-system-ai-worker.test.mjs',
+    'qa/company-system-ai-supervision-loop.test.mjs'
+  ]);
+  const dispatched=dispatchRecovery({recoveryInput:escalated.queue,systemAiQueueInput});
+  const repairTask=dispatched.systemAi.tasks.find(x=>x.id==='recovery-'+rec.id);
+  assert.ok(repairTask);
+  assert.equal(repairTask.status,'queued');
+  assert.equal(repairTask.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  for(const id of ['sys-a','sys-b']){
+    const task=dispatched.systemAi.tasks.find(x=>x.id===id);
+    assert.equal(task.status,'queued');
+    assert.ok(task.dependencies.includes(repairTask.id));
+    assert.match(task.blocker,/shared-signature-canary-pending/);
+  }
+});
+
 test('cancelled or completed tasks never re-enter recovery escalation from stale failure evidence',()=>{
   const result=escalateRecoveryCandidates({
     gameQueueInput:{tasks:[
