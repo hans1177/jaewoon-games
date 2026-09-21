@@ -1,0 +1,109 @@
+name: Company Platform Exposure Sync
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Company DEVELOPMENT_CONFIRMED Roblox Runtime
+      - Company DEVELOPMENT_CONFIRMED Unity Runtime
+      - Company DEVELOPMENT_CONFIRMED Roblox Release Promotion
+      - Vibe2 Unity Release Result
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'tools/company-platform-exposure-control.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - '.github/workflows/company-platform-exposure-sync.yml'
+      - 'qa/company-platform-exposure-control.test.mjs'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-platform-exposure-sync
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  sync:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate exposure contract
+        run: |
+          set -euo pipefail
+          node --check tools/company-platform-exposure-control.mjs
+          node --test qa/company-platform-exposure-control.test.mjs
+
+      - name: Build exact company-runtime platform exposure snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          rm -rf /tmp/platform-exposure
+          mkdir -p /tmp/platform-exposure
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/platform-exposure/development-queue.json
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:tester-ticket-queue.json" 2>/dev/null; then
+            git show "origin/$COMPANY_RUNTIME_BRANCH:tester-ticket-queue.json" > /tmp/platform-exposure/tickets.json
+          else
+            printf '%s\n' '{"version":1,"tickets":[]}' > /tmp/platform-exposure/tickets.json
+          fi
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:platform-suitability.json" 2>/dev/null; then
+            git show "origin/$COMPANY_RUNTIME_BRANCH:platform-suitability.json" > /tmp/platform-exposure/suitability.json
+          else
+            printf '%s\n' '{"version":1,"games":[]}' > /tmp/platform-exposure/suitability.json
+          fi
+          node tools/company-platform-exposure-control.mjs \
+            --development-queue=/tmp/platform-exposure/development-queue.json \
+            --tickets=/tmp/platform-exposure/tickets.json \
+            --suitability=/tmp/platform-exposure/suitability.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --output=/tmp/platform-exposure/state.json \
+            --homepage-output=/tmp/platform-exposure/homepage-platform-exposure.json
+          node -e "const x=require('/tmp/platform-exposure/homepage-platform-exposure.json');if(x.version!==2||x.internalCompanySurface!==true||!Array.isArray(x.games))process.exit(2);console.log('PLATFORM_EXPOSURE_SNAPSHOT=PASS:'+x.games.length)"
+
+      - name: Persist exposure snapshot to company-runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-platform-exposure'
+          git config user.email 'platform-exposure@users.noreply.github.com'
+          worktree="/tmp/platform-exposure-runtime"
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git worktree remove --force "$worktree" 2>/dev/null || true
+            rm -rf "$worktree"
+            git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            cp /tmp/platform-exposure/homepage-platform-exposure.json "$worktree/homepage-platform-exposure.json"
+            git -C "$worktree" add homepage-platform-exposure.json
+            if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
+            git -C "$worktree" commit -m 'runtime: sync Roblox Unity platform exposure [skip ci]'
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          git worktree remove --force "$worktree" 2>/dev/null || true
+          git worktree prune
+          test "$pushed" = 1
+          echo 'COMPANY_RUNTIME_PLATFORM_EXPOSURE=PERSISTED'
+
+      - name: Refresh homepage runtime mirror
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run homepage-manager.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'HOMEPAGE_PLATFORM_EXPOSURE_REFRESH=DISPATCHED'
