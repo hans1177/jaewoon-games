@@ -9,11 +9,9 @@ const args = Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--
 const gameId=String(args['game-id']||'').trim();
 const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
-const webEvidencePath=String(args['web-evidence']||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).trim().replaceAll('\\','/');
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`invalid game id: ${gameId}`);
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error(`design baseline missing: ${baselinePath}`);
-if(webEvidencePath&&!fs.existsSync(webEvidencePath))throw new Error(`web evidence missing: ${webEvidencePath}`);
 if(!/^unity-games\/[A-Za-z0-9._-]+$/.test(output)||output.includes('..'))throw new Error(`invalid Unity output: ${output}`);
 
 const UNITY_EDITOR_VERSION='6000.6.0f1';
@@ -27,10 +25,6 @@ if(String(unityPlatformProfile.platform||'').trim().toUpperCase()!=='UNITY')thro
 for(const field of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
   if(String(unityPlatformProfile[field]||'').trim().length<8)throw new Error('UNITY_PLATFORM_PROFILE_FIELD_REQUIRED:'+field);
 }
-const webEvidenceBound=false;
-const platformDesign=design?.platformProfiles?.UNITY;
-if(!platformDesign||typeof platformDesign!=='object'||Array.isArray(platformDesign))throw new Error('UNITY_PLATFORM_DESIGN_PROFILE_REQUIRED');
-if(String(platformDesign.platform||'').trim().toUpperCase()!=='UNITY')throw new Error('UNITY_PLATFORM_DESIGN_TARGET_MISMATCH');
 for(const field of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
   if(String(platformDesign[field]||'').trim().length<8)throw new Error('UNITY_PLATFORM_DESIGN_FIELD_REQUIRED:'+field);
 }
@@ -293,33 +287,6 @@ public static class SeedAndroidBuild
         Debug.Log("JAEWOON_DEVELOPMENT_APK_READY=" + outputPath + " SIZE=" + new FileInfo(outputPath).Length);
     }
 
-    public static void BuildWeb()
-    {
-        EnsureScene();
-        string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-        string outputDir = Path.GetFullPath(Path.Combine(projectRoot, "..", "..", "build", "WebGL", "${csharp(gameId)}"));
-        Directory.CreateDirectory(outputDir);
-
-        PlayerSettings.productName = "${csharp(gameName)}";
-        PlayerSettings.companyName = "Jaewoon Games";
-        PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
-
-        BuildPlayerOptions options = new BuildPlayerOptions
-        {
-            scenes = new[] { ScenePath },
-            locationPathName = outputDir,
-            target = BuildTarget.WebGL,
-            options = BuildOptions.Development
-        };
-        BuildReport report = BuildPipeline.BuildPlayer(options);
-        if (report.summary.result != BuildResult.Succeeded)
-            throw new Exception("WebGL build failed: " + report.summary.result);
-        string indexPath = Path.Combine(outputDir, "index.html");
-        if (!File.Exists(indexPath) || new FileInfo(indexPath).Length <= 0)
-            throw new Exception("WebGL index missing or empty: " + indexPath);
-        Debug.Log("JAEWOON_DEVELOPMENT_WEBGL_READY=" + outputDir + " INDEX=" + indexPath);
-    }
-
     private static void EnsureScene()
     {
         if (!AssetDatabase.IsValidFolder(SceneFolder))
@@ -357,11 +324,10 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   selectedPlatform:'UNITY',
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
   generatorFingerprint,
-  platformDesignProfile:platformDesign,
+  platformDesignProfile:unityPlatformProfile,
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
-  designBaseline:baselinePath,webEvidence:webEvidencePath||null,
-  webEvidenceBound,webEvidenceOptional:true,productionClass:'DEVELOPMENT_CONFIRMED',
-  webBuildMethod:'SeedAndroidBuild.BuildWeb',firstWebStageEngine:'UNITY_WEB',
+  designBaseline:baselinePath,productionClass:'DEVELOPMENT_CONFIRMED',
+  nativeAppOnly:true,unityWebEnabled:false,
   purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',releaseAuthority:false,
   generatedAt:new Date().toISOString()
 },null,2)+'\n');
@@ -371,8 +337,6 @@ console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_TECH_GENERATOR_FINGERPRINT=${generatorFingerprint}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
-console.log('UNITY_WEB_BUILD_METHOD=SeedAndroidBuild.BuildWeb');
+console.log('UNITY_WEB_ENABLED=NO');
 console.log('ANDROID_GRAPHICS_COMPATIBILITY_PROFILE=OPEN_GLES3_ES30_MINIMUM');
-console.log(`WEB_EVIDENCE_BOUND=${webEvidenceBound?'YES':'NO'}`);
-console.log('WEB_EVIDENCE_OPTIONAL=YES');
 console.log('RELEASE_AUTHORITY=NO');
