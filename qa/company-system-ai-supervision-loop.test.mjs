@@ -100,7 +100,7 @@ test('verification-only System AI tasks run deterministic contracts before any m
   const implement=workflow.indexOf('- name: Execute external AI assignment');
   const currentMain=workflow.indexOf('- name: Verify no-change assignment against current main');
   assert.ok(preverify>=0&&implement>preverify&&currentMain>implement);
-  assert.match(workflow,/if: startsWith\(matrix\.taskId, 'sys-verify-'\) && env\.SOURCE_MUTATION_REQUIRED != 'true'/);
+  assert.match(workflow,/if: steps\.preflight\.outcome == 'success' && startsWith\(matrix\.taskId, 'sys-verify-'\) && env\.SOURCE_MUTATION_REQUIRED != 'true'/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_PREVERIFY_SATISFIED=YES/);
   assert.match(workflow,/if: steps\.preverify\.outcome != 'success'/);
   assert.match(workflow,/const preverified=!mutationRequired&&process\.env\.PREVERIFY_OUTCOME==='success'/);
