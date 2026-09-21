@@ -231,3 +231,13 @@ test('runtime portfolio board stays after the core game and pipeline flow',()=>{
   assert.match(block,/insertBefore\(section,pipeline\.nextSibling\)/);
   assert.doesNotMatch(block,/insertBefore\(section,hub\)/);
 });
+
+test('homepage has one canonical runtime data renderer',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.doesNotMatch(index,/\nloadData\(\);/);
+  assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
+  assert.match(runtime,/updateLiveSummary\(catalog,status\);buildFocus/);
+  assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
+  assert.match(runtime,/getJson\('\/company-status\.json'\)/);
+});
