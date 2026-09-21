@@ -75,14 +75,12 @@ const portfolioClassOf=id=>'portfolio-'+String(portfolioDecisionKeyOf(id)).toLow
 const exposureOf=id=>(platformExposure?.games||[]).find(x=>String(x.gameId||'')===String(id||''))||null;
 const exposureStateOf=id=>String(exposureOf(id)?.externalPublicReleaseState||'INTERNAL_ONLY');
 const exposureLabelOf=id=>({INTERNAL_ONLY:'내부전용',PUBLIC_RELEASE_READY:'외부공개 준비',PUBLIC_RELEASE:'외부공개'})[exposureStateOf(id)]||exposureStateOf(id);
-const platformReleaseLabel=p=>({
-  NATIVE_DEVELOPMENT:'개발중',
-  INTERNAL_RELEASE_READY:'내부출시 준비',
-  INTERNAL_PLAYTEST_AND_DEBUG:'내부 플레이테스트',
-  INTERNAL_PLAYTEST_PASS:'플레이테스트 PASS',
-  PUBLIC_RELEASE_READY:'공개출시 준비',
-  PUBLIC_RELEASE:'공개출시'
-})[String(p?.internalReleaseState||'')]||(p?.externalExposureState==='PUBLIC_RELEASE'?'공개출시':p?.internalReleaseReady===true?'내부출시 준비':'개발중');
+const platformReleaseLabel=p=>{
+  if(p?.publicRelease===true||p?.publicReleaseState==='PUBLIC_RELEASE')return'공개출시';
+  if(p?.publicReleaseReady===true||p?.publicReleaseState==='PUBLIC_RELEASE_READY')return'공개출시 준비';
+  if(p?.internalReleaseReady===true)return'내부출시';
+  return p?.developmentState==='NATIVE_DEVELOPMENT'?'개발중':'준비중';
+};
 const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).filter(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p.platform))).map(p=>`${normalizePlatform(p.platform)} ${platformReleaseLabel(p)}`).join(' / ');};
 
 function latestVerifiedUnityBuilds(status){
@@ -168,23 +166,29 @@ function mergeGame(row){
   return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
+  const exposure=exposureOf(gameIdOf(game));
+  const platform=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
+  const rp=platform('ROBLOX'),up=platform('UNITY');
   const canonical=publicationOf(game).roblox||{};
   const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
-  const placeId=String(target?.placeId||'').trim();
-  const roblox=/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true)?`https://www.roblox.com/games/${placeId}`:'';
-  const unity=game?.unityBuildVerified===true?String(game?.unityBuildUrl||'').trim():'';
+  const placeId=String(rp.placeId||target?.placeId||'').trim();
+  const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||(/^[1-9][0-9]*$/.test(placeId)?`https://www.roblox.com/games/${placeId}`:'')).trim();
+  const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
   return {roblox,unity};
 }
 function internalReleaseLinks(game){
   const links=platformLinks(game);
   const exposure=exposureOf(gameIdOf(game));
-  if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return {roblox:'',unity:''};
-  const ready=new Set(exposure.platforms.filter(p=>p?.internalReleasePublished===true||p?.externalExposureState==='PUBLIC_RELEASE').map(p=>normalizePlatform(p?.platform)));
-  return {roblox:ready.has('ROBLOX')?links.roblox:'',unity:ready.has('UNITY')?links.unity:''};
+  const state=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
+  const roblox=state('ROBLOX'),unity=state('UNITY');
+  return {
+    roblox:roblox.internalReleaseReady===true||roblox.publicRelease===true?links.roblox:'',
+    unity:unity.internalReleaseReady===true||unity.publicRelease===true?links.unity:''
+  };
 }
 function hasInternalRelease(game){
-  const links=internalReleaseLinks(game);
-  return Boolean(links.roblox||links.unity);
+  const exposure=exposureOf(gameIdOf(game));
+  return (exposure?.platforms||[]).some(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))&&(p?.internalReleaseReady===true||p?.publicRelease===true));
 }
 function internalReleaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
