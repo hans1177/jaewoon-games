@@ -74,7 +74,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const materialContractOk=!materialComposed||(materials.length>=2&&materials.length<=4);
   const revalidated=revisionProven(designRecord,cycleStatus);
   const platform=clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase();
-  const platformKnown=['ROBLOX','UNITY','FORTNITE_UEFN'].includes(platform);
+  const platformKnown=['ROBLOX','UNITY'].includes(platform);
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
 
@@ -92,8 +92,19 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const expansionConnected=objectListReady(design.contentExpansionPlan,['milestone','newGameplay','systemImpact'],3,12);
   const failureBasic=Boolean(design.failureRetryRisk);
   const failureConnected=failureBasic&&Array.isArray(design.failureRetryRisk?.failureStates)&&distinct(design.failureRetryRisk.failureStates).length>=2&&textReady(design.failureRetryRisk?.retryFlow,20)&&textReady(design.failureRetryRisk?.riskPressure,20)&&textReady(design.failureRetryRisk?.recoveryRules,20);
-  const platformBasic=platformKnown&&Boolean(design.platformFitPlan)&&textReady(design.mobileUx,20);
-  const platformConnected=platformBasic&&clean(design.platformFitPlan?.targetPlatform).toUpperCase()===platform&&textReady(design.platformFitPlan?.targetPlatform,3)&&objectReady(design.platformFitPlan,['inputModel','performanceBudget','sessionConstraints'],16);
+  const platformProfileFields=['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'];
+  const robloxProfile=design?.platformProfiles?.ROBLOX||{};
+  const unityProfile=design?.platformProfiles?.UNITY||{};
+  const robloxProfileReady=clean(robloxProfile.platform).toUpperCase()==='ROBLOX'&&objectReady(robloxProfile,platformProfileFields,16);
+  const unityProfileReady=clean(unityProfile.platform).toUpperCase()==='UNITY'&&objectReady(unityProfile,platformProfileFields,16);
+  const profilesDistinct=robloxProfileReady&&unityProfileReady&&(
+    clean(robloxProfile.inputModel)!==clean(unityProfile.inputModel)||
+    clean(robloxProfile.sessionModel)!==clean(unityProfile.sessionModel)||
+    clean(robloxProfile.performanceBudget)!==clean(unityProfile.performanceBudget)||
+    clean(robloxProfile.platformContentAdaptation)!==clean(unityProfile.platformContentAdaptation)
+  );
+  const platformBasic=platformKnown&&Boolean(design.platformFitPlan)&&Boolean(design.platformProfiles)&&textReady(design.mobileUx,20)&&robloxProfileReady&&unityProfileReady;
+  const platformConnected=platformBasic&&profilesDistinct&&clean(design.platformFitPlan?.targetPlatform).toUpperCase()===platform&&textReady(design.platformFitPlan?.targetPlatform,3)&&objectReady(design.platformFitPlan,['inputModel','performanceBudget','sessionConstraints'],16);
   const uxBasic=Boolean(design.uxAccessibilityPlan)&&textReady(design.mobileUx,20);
   const uxConnected=uxBasic&&objectReady(design.uxAccessibilityPlan,['hudPriorities','touchAndInput','readability','accessibility'],16);
   const artBasic=Boolean(design.artAudioDirection)&&textReady(design.visualDirection,20);
