@@ -1421,7 +1421,10 @@
       "coding_1bh2l2q",
       "coding_1ehq4y8",
       "coding_1ixf68n",
-      "coding_1xedkn3"
+      "coding_1xedkn3",
+      "coding_6pivhj",
+      "coding_18cde9q",
+      "coding_1q72h89"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -2455,9 +2458,9 @@
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 76,
+        "verifiedApplications": 77,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 177,
+        "totalGenerationAttempts": 179,
         "verifiedFailures": 376,
         "games": {
           "territory-war": 2,
@@ -2473,11 +2476,11 @@
           "seed-action-survival-rogu-echoes-of-the-lost-star": 3,
           "village-dungeons": 3,
           "survival": 5,
-          "line-defense": 32,
+          "line-defense": 33,
           "seed-casual-realm-weaver": 1
         },
         "targets": {
-          "web": 76
+          "web": 77
         },
         "contextModes": {
           "UNKNOWN": {
@@ -2501,14 +2504,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 63,
+            "verifiedApplications": 64,
             "verifiedFailures": 191,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 132,
-            "totalContextBytes": 1050970,
-            "lastEvidence": "coding_1b9v024",
+            "totalGenerationAttempts": 134,
+            "totalContextBytes": 1070201,
+            "lastEvidence": "coding_18cde9q",
             "lastFailureEvidence": "coding_negative_1mhoefz",
-            "lastUpdatedAt": "2026-09-21T01:39:07.335Z"
+            "lastUpdatedAt": "2026-09-21T02:02:24.162Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -3147,22 +3150,22 @@
             "lastUpdatedAt": "2026-09-20T16:51:13.769Z"
           },
           "web|OTHER|TIMEOUT": {
-            "verifiedApplications": 25,
+            "verifiedApplications": 26,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 50,
+            "totalGenerationAttempts": 52,
             "verifiedFailures": 0,
             "games": {
-              "line-defense": 25
+              "line-defense": 26
             },
             "targets": {
-              "web": 25
+              "web": 26
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_1b9v024",
+            "lastEvidence": "coding_18cde9q",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-21T01:39:07.335Z"
+            "lastUpdatedAt": "2026-09-21T02:02:24.162Z"
           },
           "web|INVALID_PATH|OTHER|TIMEOUT": {
             "verifiedApplications": 1,
@@ -3231,14 +3234,14 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1b9v024",
+        "lastEvidence": "coding_18cde9q",
         "lastFailureEvidence": "coding_negative_a0bmaa",
-        "lastUpdatedAt": "2026-09-21T01:50:07.427Z"
+        "lastUpdatedAt": "2026-09-21T02:02:24.162Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 91,
-        "firstCandidatePasses": 16,
-        "totalGenerationAttempts": 181,
+        "verifiedApplications": 92,
+        "firstCandidatePasses": 17,
+        "totalGenerationAttempts": 182,
         "verifiedFailures": 317,
         "games": {
           "territory-war": 11,
@@ -3252,12 +3255,12 @@
           "seed-idle-growth-rpg-crystal-bloom": 1,
           "egg-heist": 7,
           "monster-adventure": 1,
-          "daechung-rpg": 32,
+          "daechung-rpg": 33,
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
           "fantasy-survival": 13
         },
         "targets": {
-          "web": 83,
+          "web": 84,
           "unity": 8
         },
         "contextModes": {
@@ -3282,14 +3285,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 48,
+            "verifiedApplications": 49,
             "verifiedFailures": 116,
-            "firstCandidatePasses": 16,
-            "totalGenerationAttempts": 87,
-            "totalContextBytes": 290831,
-            "lastEvidence": "coding_89qk7j",
+            "firstCandidatePasses": 17,
+            "totalGenerationAttempts": 88,
+            "totalContextBytes": 292551,
+            "lastEvidence": "coding_6pivhj",
             "lastFailureEvidence": "coding_negative_4f8f4z",
-            "lastUpdatedAt": "2026-09-21T01:34:58.887Z"
+            "lastUpdatedAt": "2026-09-21T02:02:24.162Z"
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 22,
@@ -3924,15 +3927,15 @@
             "lastUpdatedAt": "2026-09-19T20:57:41.776Z"
           },
           "web|MALFORMED_OUTPUT": {
-            "verifiedApplications": 24,
-            "firstCandidatePasses": 16,
-            "totalGenerationAttempts": 39,
+            "verifiedApplications": 25,
+            "firstCandidatePasses": 17,
+            "totalGenerationAttempts": 40,
             "verifiedFailures": 4,
             "games": {
-              "daechung-rpg": 24
+              "daechung-rpg": 25
             },
             "targets": {
-              "web": 24
+              "web": 25
             },
             "failureGames": {
               "monster-adventure": 3,
@@ -3944,9 +3947,9 @@
             "failureClasses": {
               "MALFORMED_OUTPUT": 4
             },
-            "lastEvidence": "coding_89qk7j",
+            "lastEvidence": "coding_6pivhj",
             "lastFailureEvidence": "coding_negative_d2otrd",
-            "lastUpdatedAt": "2026-09-21T01:34:58.887Z"
+            "lastUpdatedAt": "2026-09-21T02:02:24.162Z"
           },
           "web|MALFORMED_OUTPUT|NO_OP|TIMEOUT": {
             "verifiedApplications": 0,
@@ -4319,14 +4322,14 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_60udmj",
+        "lastEvidence": "coding_6pivhj",
         "lastFailureEvidence": "coding_negative_1q2oqjb",
-        "lastUpdatedAt": "2026-09-21T01:50:07.427Z"
+        "lastUpdatedAt": "2026-09-21T02:02:24.162Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 442,
-        "firstCandidatePasses": 63,
-        "totalGenerationAttempts": 1001,
+        "verifiedApplications": 443,
+        "firstCandidatePasses": 64,
+        "totalGenerationAttempts": 1002,
         "verifiedFailures": 307,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 62,
@@ -4339,7 +4342,7 @@
           "bug-defense": 40,
           "village-dungeons": 49,
           "survival2": 7,
-          "monster-adventure": 75,
+          "monster-adventure": 76,
           "daechung-rpg": 40,
           "island-village": 1,
           "territory-war": 1,
@@ -4350,7 +4353,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 442
+          "web": 443
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -4364,14 +4367,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 406,
+            "verifiedApplications": 407,
             "verifiedFailures": 157,
-            "firstCandidatePasses": 63,
-            "totalGenerationAttempts": 908,
-            "totalContextBytes": 7488775,
-            "lastEvidence": "coding_1xedkn3",
+            "firstCandidatePasses": 64,
+            "totalGenerationAttempts": 909,
+            "totalContextBytes": 7494181,
+            "lastEvidence": "coding_1q72h89",
             "lastFailureEvidence": "coding_negative_1enni0i",
-            "lastUpdatedAt": "2026-09-21T01:55:08.020Z"
+            "lastUpdatedAt": "2026-09-21T02:02:24.173Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 6,
@@ -4815,16 +4818,16 @@
             "lastUpdatedAt": "2026-09-20T02:28:49.224Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
-            "verifiedApplications": 83,
-            "firstCandidatePasses": 34,
-            "totalGenerationAttempts": 177,
+            "verifiedApplications": 84,
+            "firstCandidatePasses": 35,
+            "totalGenerationAttempts": 178,
             "verifiedFailures": 19,
             "games": {
-              "monster-adventure": 58,
+              "monster-adventure": 59,
               "ant-simulator": 25
             },
             "targets": {
-              "web": 83
+              "web": 84
             },
             "failureGames": {
               "ant-simulator": 10,
@@ -4836,9 +4839,9 @@
             "failureClasses": {
               "MALFORMED_OUTPUT": 19
             },
-            "lastEvidence": "coding_1bh2l2q",
+            "lastEvidence": "coding_1q72h89",
             "lastFailureEvidence": "coding_negative_x5bmhr",
-            "lastUpdatedAt": "2026-09-21T01:46:15.700Z"
+            "lastUpdatedAt": "2026-09-21T02:02:24.173Z"
           },
           "web|OTHER": {
             "verifiedApplications": 0,
@@ -5044,9 +5047,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_1xedkn3",
+        "lastEvidence": "coding_1q72h89",
         "lastFailureEvidence": "coding_negative_17aj4ni",
-        "lastUpdatedAt": "2026-09-21T01:55:08.020Z"
+        "lastUpdatedAt": "2026-09-21T02:02:24.173Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 95,
@@ -7877,7 +7880,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-21T02:01:06.571Z",
+    "lastBuiltAt": "2026-09-21T02:02:24.213Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10630,5 +10633,5 @@
       "knowledge_h0ghqp"
     ]
   },
-  "updatedAt": "2026-09-21T02:01:06.571Z"
+  "updatedAt": "2026-09-21T02:02:24.213Z"
 }
