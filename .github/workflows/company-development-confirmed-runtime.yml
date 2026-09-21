@@ -623,7 +623,7 @@ jobs:
         id: unity_prepare
         if: matrix.firstStageEngine == 'UNITY_WEB'
         env:
-          GACE_ID: ${{ matrix.gameId }}
+          GAME_ID: ${{ matrix.gameId }}
           DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
           UNITY_SOURCE_PATH: ${{ matrix.unitySourcePath }}
         shell: bash
@@ -637,10 +637,10 @@ jobs:
             --game-id="$GAME_ID" \
             --source-root="$UNITY_SOURCE_PATH" \
             --baseline="$DESIGN_BASELINE_SOURCE" \
-            --source-commit="$GITHBA_SHA" \
+            --source-commit="$GITHUB_SHA" \
             --output=/tmp/unity-web-prepare.json
           echo "ready=$(jq -r '.ready // false' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
-          echo "reason=$(jq -r '.reason // "UNITY_WEB_PREPARE_FAILED"' /tmp/unity-web-prepare.json)" >> "$GITHBA_OUTPUT"
+          echo "reason=$(jq -r '.reason // "UNITY_WEB_PREPARE_FAILED"' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
           echo "source_tree=$(jq -r '.sourceTreeSha // ""' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
           echo "baseline_sha=$(jq -r '.designBaselineSha256 // ""' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
           echo "build_method=$(jq -r '.buildMethod // ""' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
@@ -656,7 +656,7 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          api="repos/$GITHBA_REPOSITORY/actions/workflows/unity-web-first-stage-build.yml"
+          api="repos/$GITHUB_REPOSITORYY/actions/workflows/unity-web-first-stage-build.yml"
           baseline="$(gh api "$api/runs?event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0' 2>/dev/null || echo 0)"
           payload="$(jq -n \
             --arg ref main \
@@ -666,8 +666,8 @@ jobs:
             --arg source "$GITHUB_SHA" \
             '{ref:$ref,inputs:{request_file:"",game_id:$game,project_path:$project,build_method:$method,source_commit:$source,publish_to_main:"false"}}')"
           if ! printf '%s' "$payload" | gh api --method POST "$api/dispatches" --input - >/dev/null 2>&1; then
-            echo 'conclusion=failure' >> "$GITHBA_OUTPUT"
-            echo 'reason=UNITY_WEB_CHILD_DISPATCH_FAILED' >> "$GITHBA_OUTPUT"
+            echo 'conclusion=failure' >> "$GITHUB_OUTPUT"
+            echo 'reason=UNITY_WEB_CHILD_DISPATCH_FAILED' >> "$GITHUB_OUTPUT"
             exit 0
           fi
           run_id=''
@@ -685,8 +685,8 @@ jobs:
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           conclusion=''
           for _ in $(seq 1 540); do
-            status="$(gh api "repos/$GITHBA_REPOSITOR/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
-            conclusion="$(gh api "repos/$GITHBA_REPOSITOR/actions/runs/$run_id" --jq '.conclusion // ""' 2>/dev/null || true)"
+            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            conclusion="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.conclusion // ""' 2>/dev/null || true)"
             [[ "$status" == 'completed' ]] && break
             sleep 8
           done
@@ -702,13 +702,13 @@ jobs:
             echo 'reason=UNITY_WEB_CHILD_ARTIFACT_DOWNLOAD_FAILED' >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo 'conclusion=success' >> "$GITHBA_OUTPUT"
+          echo 'conclusion=success' >> "$GITHUB_OUTPUT"
           echo 'reason=PASS' >> "$GITHUB_OUTPUT"
 
       - name: Build Unity Web worker result
         if: always() && matrix.firstStageEngine == 'UNITY_WEB'
         env:
-          GACE_ID: ${{ matrix.gameId }}
+          GAME_ID: ${{ matrix.gameId }}
           DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
           UNITY_SOURCE_PATH: ${{ matrix.unitySourcePath }}
           PREP_READY: ${{ steps.unity_prepare.outputs.ready }}
