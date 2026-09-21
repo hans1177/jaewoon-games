@@ -28,10 +28,11 @@ export function hasVerifiedVibe2SourceHandoff(item={}){
 
 export function eligibleForRobloxSourceReconciliation(item={}, {changedGameIds=[]}={}){
   const gameId=clean(item.gameId);
-  if(!gameId||!platformDevelopmentEligible(item,'ROBLOX'))return false;
-  if(clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND')return true;
+  if(!gameId)return false;
+  if(clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND')return platformDevelopmentEligible(item,'ROBLOX');
   const changed=changedGameIds instanceof Set?changedGameIds:new Set((changedGameIds||[]).map(clean).filter(Boolean));
-  return changed.has(gameId);
+  if(!changed.has(gameId))return false;
+  return platformDevelopmentEligible({...item,currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'},'ROBLOX');
 }
 
 export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
