@@ -67,8 +67,8 @@ function addHouse(x,z){
 }
 function addPortal(x,z,id,material,label){
   const base=primitive('Portal-'+label,'cylinder',[x,.22,z],[2.2,.22,2.2],material,zoneRoot);
-  const ring=primitive('PortalRing-'+label,'torus',[x,2.0,z],[1.5,1.5,1.5],material,zoneRoot);
-  ring.setLocalEulerAngles(90,0,0);base.portalId=id;base.label=label;return base;
+  primitive('PortalGlow-'+label,'cylinder',[x,1.7,z],[1.35,3.2,1.35],material,zoneRoot);
+  base.portalId=id;base.label=label;return base;
 }
 function buildTown(){
   destroyChildren(zoneRoot);portals=[];enemies=[];returnPortal=null;
