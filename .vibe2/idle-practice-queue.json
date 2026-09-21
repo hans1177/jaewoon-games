@@ -9,7 +9,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 24,
+  "phase4GeneralizationDrills": 22,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -395,44 +395,6 @@
       "holdoutGameId": "fantasy-survival",
       "targetEngine": "web",
       "unseenProblemFingerprint": "phase4-unseen-1mvt1ns",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_d5f1596f6da4a12df001d268-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_d5f1596f6da4a12df001d268",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d5f1596f6da4a12df001d268",
-      "phase4PairId": "phase4-pair-iskbxz",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-351jy9",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_d5f1596f6da4a12df001d268-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_d5f1596f6da4a12df001d268",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d5f1596f6da4a12df001d268",
-      "phase4PairId": "phase4-pair-iskbxz",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-351jy9",
       "mayPromoteGeneralization": false
     },
     {
