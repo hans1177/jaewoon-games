@@ -419,6 +419,7 @@ jobs:
               --development-queue=/tmp/vibe2-company-runtime-queue.json \
               --tickets="$control_root/.vibe2/tester-debug-tickets.json" \
               --suitability="$control_root/.vibe2/platform-suitability.json" \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
               --queue="$control_root/.vibe2/queue.json" \
               --output="$control_root/.vibe2/platform-exposure-state.json" \
               --homepage-output="$control_root/.vibe2/homepage-platform-exposure.json" | tee /tmp/vibe2-platform-exposure.log
