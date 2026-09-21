@@ -539,12 +539,12 @@
       "id": "P0103",
       "slug": "territory-war",
       "name": "영토전쟁",
-      "sourcePath": "web-games/territory-war",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "sourcePath": "roblox-games/territory-war",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "ROBLOX_UNITY",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -553,7 +553,69 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": false
+      "targetPlatformReady": false,
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/territory-war",
+        "UNITY": "unity-games/territory-war"
+      },
+      "webValidationRequired": false,
+      "designBaselineSource": "design/territory-war/2026-09-22/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "ownerDirectDevelopment": true,
+      "updatedAt": "2026-09-22T00:45:00+09:00"
+    },
+    {
+      "id": "OWNER-cozy-island",
+      "slug": "cozy-island",
+      "name": "포근섬",
+      "protectedValues": [
+        "core-loop",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
+      },
+      "sourcePath": "roblox-games/cozy-island",
+      "webValidationRequired": false,
+      "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "ownerDirectDevelopment": true,
+      "updatedAt": "2026-09-22T00:45:00+09:00"
     }
   ],
   "productionClassState": {
@@ -763,5 +825,5 @@
       }
     ]
   },
-  "updatedAt": "2026-09-21T15:36:25.219Z"
+  "updatedAt": "2026-09-22T00:45:00+09:00"
 }

@@ -1,6 +1,6 @@
 {
   "version": 29,
-  "updatedAt": "2026-09-21T15:36:25.219Z",
+  "updatedAt": "2026-09-22T00:45:00+09:00",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -2812,21 +2812,21 @@
         "낚시"
       ],
       "image": "assets/title-cozy-island.svg",
-      "webPath": "/web-games/cozy-island/",
+      "webPath": null,
       "hasWebArchive": true,
       "featured": false,
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "설계 · 재평가 중",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "Owner 직접 개발 착수 · 기본설계 즉시 확정 · Roblox 소스 구현 시작",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -2947,7 +2947,20 @@
         }
       },
       "catalogOrder": 19,
-      "selectedPlatform": "ROBLOX"
+      "selectedPlatform": "ROBLOX",
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
+      },
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "ownerDirectDevelopment": true,
+      "updatedAt": "2026-09-22T00:45:00+09:00"
     },
     {
       "id": "egg-heist",
@@ -3562,21 +3575,21 @@
         "영토"
       ],
       "image": "assets/page-bg-v2.webp",
-      "webPath": "/web-games/territory-war/",
+      "webPath": null,
       "hasWebArchive": false,
       "featured": false,
       "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "Owner 직접 개발 착수 · 기본설계 즉시 확정 · Roblox 소스 구현 시작",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -3703,7 +3716,18 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/territory-war",
+        "UNITY": "unity-games/territory-war"
+      },
+      "ownerDirectDevelopment": true,
+      "updatedAt": "2026-09-22T00:45:00+09:00"
     },
     {
       "id": "zombie-survival",

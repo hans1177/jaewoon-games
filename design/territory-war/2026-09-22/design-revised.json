@@ -1,0 +1,92 @@
+{
+  "version": 3,
+  "gameId": "territory-war",
+  "gameName": "영토전쟁",
+  "gameCategory": "SINGLE_DEFENSE_STRATEGY",
+  "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+  "authority": "OWNER_DIRECTIVE_2026-09-22",
+  "createdAt": "2026-09-22T00:45:00+09:00",
+  "updatedAt": "2026-09-22T00:45:00+09:00",
+  "ownerDirectDevelopment": true,
+  "strictDesignReviewRequiredForAdmission": false,
+  "strictDesignReviewContinuesInParallel": true,
+  "content": {
+    "identity": "짧은 전선 변화와 지역 특성, 자원 배분을 중심으로 영토를 점령하고 방어선을 넓히는 모바일 우선 Roblox 전략 게임.",
+    "coreFun": "현재 국경 압력을 읽고 병력과 자원을 공격·방어·경제에 배분해 실제 영토 소유가 바뀌는 결과를 만드는 전략 판단.",
+    "coreLoop": [
+      "현재 전선과 적 압력을 확인하고 다음 점령 목표를 고른다.",
+      "병력과 자원을 공격, 방어, 경제 강화 중 하나에 투입한다.",
+      "전투 결과로 영토와 수입이 변하고 새 전선에서 다음 결정을 반복한다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "영토 점령",
+        "purpose": "공격 성공 시 실제 소유 영토 수가 증가하고 다음 전선이 열린다."
+      },
+      {
+        "name": "전선 압력",
+        "purpose": "적 위협 수치가 시간과 행동에 따라 변해 방어와 공격 우선순위를 만든다."
+      },
+      {
+        "name": "자원 배분",
+        "purpose": "병력 충원과 경제 강화 사이의 선택이 다음 전투 가능성을 바꾼다."
+      }
+    ],
+    "progressionDirection": "점령 영토와 경제 레벨이 늘수록 더 강한 전선과 지역 보너스가 열리고 캠페인 진행 상태가 저장된다.",
+    "failureRetryRisk": {
+      "failureStates": [
+        "병력이 부족한 상태에서 공격해 영토 점령에 실패함",
+        "방어를 소홀히 해 전선 압력이 높아지고 자원을 잃음"
+      ],
+      "retryDirection": "실패 원인을 즉시 보여주고 같은 핵심 루프로 빠르게 재시도한다."
+    },
+    "multiplayerMode": "SINGLE",
+    "technicalAssumptions": [
+      "Roblox 서버가 전투 결과와 자원 변경을 권한 처리하고 클라이언트는 명령만 요청한다.",
+      "모바일에서도 전선 상태와 공격·방어·경제 선택을 한 화면에서 빠르게 읽을 수 있어야 한다."
+    ],
+    "mobileUx": "모바일 우선 큰 터치 입력과 화면 잘림 없는 안전영역 UI를 사용한다.",
+    "robloxBuildProfile": {
+      "version": 2,
+      "targetPlatform": "ROBLOX",
+      "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+      "declaredGameCategory": "SINGLE_DEFENSE_STRATEGY",
+      "genre": "Strategy",
+      "subgenre": "Territory Strategy",
+      "playMode": "SINGLE",
+      "multiplayerRequired": false,
+      "coopImplementationRequired": false,
+      "competitiveImplementationRequired": false,
+      "networkingRequired": false,
+      "multiplayerQaRequired": false,
+      "minimumParticipantsForRequiredQa": 1,
+      "displayLabelKo": "Strategy · Territory Strategy"
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "영토 선택과 공격·방어·경제 명령을 큰 터치 버튼으로 처리하고 마우스와 게임패드를 보조한다.",
+        "sessionModel": "짧은 싱글 전략 세션에서 전선 선택부터 점령 결과까지 반복하며 저장된 캠페인 상태를 이어간다.",
+        "multiplayerRuntime": "초기 개발은 SINGLE이며 서버가 영토·자원·전투 결과를 authoritative하게 관리하고 PvP는 후속 확장으로 둔다.",
+        "performanceBudget": "모바일 Roblox에서 전장 파트와 유닛 표시 수를 제한하고 전투는 집계형 상태 변화로 처리한다.",
+        "uiUx": "상단 자원과 영토 수, 중앙 전선 상태, 하단 공격·방어·경제 명령을 안전영역 안에 표시한다.",
+        "saveAndNetwork": "DataStore에 캠페인 영토와 경제 진행을 저장하고 RemoteEvent 명령을 서버에서 검증·rate limit한다.",
+        "platformContentAdaptation": "Roblox 3D 영토 노드와 단순 전선 시각화, 서버 권한 전략 상태로 웹 컨셉을 네이티브 재구성한다.",
+        "internalReleaseTarget": "Owner가 플레이 가능한 비공개 또는 제한 Roblox 테스트 경험을 첫 내부 출시 대상으로 한다.",
+        "validationEvidence": "실제 Roblox 런타임, 모바일 입력, 저장 재접속, 서버 권한, 독립 QA와 회귀검증을 확인한다."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Android 터치로 영토 노드 선택과 전략 명령을 수행하며 에디터 마우스 입력을 보조로 둔다.",
+        "sessionModel": "내부 모바일 전략 세션에서 전선 선택과 점령 결과를 반복하고 캠페인 진행을 복원한다.",
+        "multiplayerRuntime": "초기 Unity 앱은 SINGLE이며 네트워크 PvP는 별도 설계와 동기화 검증 후 추가한다.",
+        "performanceBudget": "중급 Android 기기에서 전선과 효과를 단순화해 안정적인 프레임을 유지한다.",
+        "uiUx": "자원·영토·위협 정보를 한 화면에 유지하고 하단에 큰 전략 명령 버튼을 둔다.",
+        "saveAndNetwork": "캠페인 상태를 버전 저장하며 온라인 기능 도입 전까지 로컬 저장 의미를 유지한다.",
+        "platformContentAdaptation": "Unity 3D 전장 노드와 모바일 카메라를 사용해 동일한 영토 전략 의미를 보존한다.",
+        "internalReleaseTarget": "내부 Android 테스트 빌드를 첫 Unity 내부 출시 대상으로 한다.",
+        "validationEvidence": "실기기 터치, 캠페인 저장 복구, 성능, 독립 QA와 회귀검증을 같은 빌드에서 확인한다."
+      }
+    }
+  }
+}

@@ -4442,9 +4442,9 @@
         "relaxing sound music and responsive feedback",
         "zero blocking runtime or console errors"
       ],
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "preserveExistingWebArchive": true,
       "existingWebSourcePath": "web-games/cozy-island",
       "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
@@ -4506,6 +4506,54 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "ownerDirectDevelopmentRequestedAt": "2026-09-22T00:45:00+09:00",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cozy-island/2026-09-22/design-revised.json",
+        "date": "2026-09-22",
+        "authority": "OWNER_DIRECT_BASIC_BASELINE",
+        "admissionByOwnerDirect": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-09-22T00:45:00+09:00",
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "OWNER_DIRECT_DEVELOPMENT",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cozy-island",
+          "UNITY": "unity-games/cozy-island"
+        },
+        "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-09-22T00:45:00+09:00"
       }
     },
     {
@@ -7292,11 +7340,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7355,6 +7403,54 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "ownerDirectDevelopmentRequestedAt": "2026-09-22T00:45:00+09:00",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/territory-war/2026-09-22/design-revised.json",
+        "date": "2026-09-22",
+        "authority": "OWNER_DIRECT_BASIC_BASELINE",
+        "admissionByOwnerDirect": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-09-22T00:45:00+09:00",
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "OWNER_DIRECT_DEVELOPMENT",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/territory-war",
+          "UNITY": "unity-games/territory-war"
+        },
+        "designBaselineSource": "design/territory-war/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-09-22T00:45:00+09:00"
       }
     },
     {
@@ -19464,7 +19560,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-09-21T15:36:25.296Z",
+  "updatedAt": "2026-09-22T00:45:00+09:00",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",

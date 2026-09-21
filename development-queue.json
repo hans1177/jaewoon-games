@@ -2306,9 +2306,135 @@
       "unityInternalReleaseEvidence": null,
       "unityPublicReleaseReady": false,
       "unityPublicRelease": false
+    },
+    {
+      "gameId": "cozy-island",
+      "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+      "gameName": "포근섬",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
+      },
+      "robloxProjectPath": "roblox-games/cozy-island",
+      "unityProjectPath": "unity-games/cozy-island",
+      "targetSourcePath": "roblox-games/cozy-island",
+      "sourcePath": "roblox-games/cozy-island",
+      "webSourcePath": null,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
+      "webPlatformHandoff": null,
+      "unityWebFirstStagePassed": false,
+      "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+      "designDate": "2026-09-22",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cozy-island/2026-09-22/design-revised.json",
+        "date": "2026-09-22",
+        "authority": "OWNER_DIRECT_BASIC_BASELINE",
+        "admissionByOwnerDirect": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "homepageTestCandidate": false,
+      "homepageOfficialCard": false,
+      "enqueuedAt": "2026-09-22T00:45:00+09:00",
+      "updatedAt": "2026-09-22T00:45:00+09:00"
+    },
+    {
+      "gameId": "territory-war",
+      "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+      "gameName": "영토전쟁",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/territory-war",
+        "UNITY": "unity-games/territory-war"
+      },
+      "robloxProjectPath": "roblox-games/territory-war",
+      "unityProjectPath": "unity-games/territory-war",
+      "targetSourcePath": "roblox-games/territory-war",
+      "sourcePath": "roblox-games/territory-war",
+      "webSourcePath": null,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
+      "webPlatformHandoff": null,
+      "unityWebFirstStagePassed": false,
+      "designBaselineSource": "design/territory-war/2026-09-22/design-revised.json",
+      "designDate": "2026-09-22",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/territory-war/2026-09-22/design-revised.json",
+        "date": "2026-09-22",
+        "authority": "OWNER_DIRECT_BASIC_BASELINE",
+        "admissionByOwnerDirect": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "homepageTestCandidate": false,
+      "homepageOfficialCard": false,
+      "enqueuedAt": "2026-09-22T00:45:00+09:00",
+      "updatedAt": "2026-09-22T00:45:00+09:00"
     }
   ],
-  "updatedAt": "2026-09-21T15:39:08.934Z",
+  "updatedAt": "2026-09-22T00:45:00+09:00",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -2325,5 +2451,5 @@
   "webPromotionRevalidationRequired": true,
   "developmentGameWipMax": null,
   "reconciliationPolicy": "CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE",
-  "nativeDevelopmentPolicy": "MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT"
+  "nativeDevelopmentPolicy": "OWNER_DIRECT_OR_MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT"
 }
