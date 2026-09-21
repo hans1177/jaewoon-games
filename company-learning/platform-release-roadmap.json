@@ -3782,7 +3782,27 @@
         "rawPrivateReasoningRequired": false,
         "directMainWriteGrantedByCollaboration": false,
         "policyMutationAuthorityGrantedByCollaboration": false,
-        "selfAcceptanceGrantedByCollaboration": false
+        "selfAcceptanceGrantedByCollaboration": false,
+        "capabilityGrowthRoleLock": {
+          "version": 1,
+          "rule": "INTERNAL_AI_CAPABILITY_GROWTH_NEVER_AUTO_PROMOTES_AUTHORITY_OR_CHANGES_PRIMARY_AI_FROM_ASSISTANT_COLLABORATOR_ROLE",
+          "primaryAiRoleAfterCapabilityGrowth": "NON_BLOCKING_ASSISTANT_AND_COLLABORATOR",
+          "internalAiAuthorityAfterCapabilityGrowth": "UNCHANGED_UNLESS_EXPLICIT_CENTRAL_POLICY_OR_OWNER_DIRECTIVE_CHANGES_IT",
+          "capabilityMayIncrease": true,
+          "autonomyMayImprove": true,
+          "authorityMayAutoIncrease": false,
+          "primaryAiMayBecomeRuntimeOwner": false,
+          "primaryAiMayReplaceDeterministicQa": false,
+          "primaryAiMayReplaceVibeImplementationOwnership": false,
+          "supportFocus": [
+            "CAUSAL_ANALYSIS",
+            "CROSS_SYSTEM_CONTEXT",
+            "REPAIR_ASSISTANCE",
+            "REVIEW",
+            "SECURITY_AND_QA_CHECK",
+            "DOCUMENT_SYNCHRONIZATION"
+          ]
+        }
       }
     },
     "freeAiExecution": {
