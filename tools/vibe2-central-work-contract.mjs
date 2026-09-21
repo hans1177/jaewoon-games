@@ -54,7 +54,15 @@ function workerExecutionPolicyProjection(policy={}){
       appliesToExistingAndFutureRegisteredInternalAi:primaryCollaboration.appliesToExistingAndFutureRegisteredInternalAi===true,
       directMainWriteGrantedByCollaboration:primaryCollaboration.directMainWriteGrantedByCollaboration===true,
       policyMutationAuthorityGrantedByCollaboration:primaryCollaboration.policyMutationAuthorityGrantedByCollaboration===true,
-      selfAcceptanceGrantedByCollaboration:primaryCollaboration.selfAcceptanceGrantedByCollaboration===true
+      selfAcceptanceGrantedByCollaboration:primaryCollaboration.selfAcceptanceGrantedByCollaboration===true,
+      capabilityGrowthRoleLock:{
+        primaryAiRoleAfterCapabilityGrowth:clean(primaryCollaboration?.capabilityGrowthRoleLock?.primaryAiRoleAfterCapabilityGrowth)||null,
+        capabilityMayIncrease:primaryCollaboration?.capabilityGrowthRoleLock?.capabilityMayIncrease===true,
+        authorityMayAutoIncrease:primaryCollaboration?.capabilityGrowthRoleLock?.authorityMayAutoIncrease===true,
+        primaryAiMayBecomeRuntimeOwner:primaryCollaboration?.capabilityGrowthRoleLock?.primaryAiMayBecomeRuntimeOwner===true,
+        primaryAiMayReplaceDeterministicQa:primaryCollaboration?.capabilityGrowthRoleLock?.primaryAiMayReplaceDeterministicQa===true,
+        primaryAiMayReplaceVibeImplementationOwnership:primaryCollaboration?.capabilityGrowthRoleLock?.primaryAiMayReplaceVibeImplementationOwnership===true
+      }
     },
     assistantRoadmapOrchestration:{
       sourceOfTruth:clean(orchestration.sourceOfTruth)||null,
@@ -104,6 +112,10 @@ function policyValidationErrors(policy={}){
   if(collaboration.autonomous24hExecutionContinuesWithoutPrimaryAi!==true||collaboration.primaryAiPresenceIsRuntimeGate!==false)errors.push('PRIMARY_AI_INTERNAL_VIBE_NONBLOCKING');
   if(collaboration.appliesToExistingAndFutureRegisteredInternalAi!==true)errors.push('PRIMARY_AI_INTERNAL_VIBE_COVERAGE');
   if(collaboration.directMainWriteGrantedByCollaboration!==false||collaboration.policyMutationAuthorityGrantedByCollaboration!==false||collaboration.selfAcceptanceGrantedByCollaboration!==false)errors.push('PRIMARY_AI_INTERNAL_VIBE_AUTHORITY');
+  const capabilityLock=collaboration?.capabilityGrowthRoleLock||{};
+  if(clean(capabilityLock.primaryAiRoleAfterCapabilityGrowth)!=='NON_BLOCKING_ASSISTANT_AND_COLLABORATOR')errors.push('PRIMARY_AI_CAPABILITY_GROWTH_ROLE_LOCK');
+  if(capabilityLock.capabilityMayIncrease!==true||capabilityLock.authorityMayAutoIncrease!==false)errors.push('VIBE_CAPABILITY_AUTHORITY_SEPARATION');
+  if(capabilityLock.primaryAiMayBecomeRuntimeOwner!==false||capabilityLock.primaryAiMayReplaceDeterministicQa!==false||capabilityLock.primaryAiMayReplaceVibeImplementationOwnership!==false)errors.push('PRIMARY_AI_ASSISTANT_BOUNDARY_AFTER_CAPABILITY_GROWTH');
   if(clean(orchestration.sourceOfTruth)!==CANONICAL_VIBE_POLICY_PATH)errors.push('ASSISTANT_SOURCE_OF_TRUTH');
   if(orchestration.blockerOnly!==false)errors.push('BLOCKER_ONLY');
   if(orchestration?.operatingModel?.dedupeRequired!==true)errors.push('DEDUPE_REQUIRED');
