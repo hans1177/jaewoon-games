@@ -27,24 +27,38 @@ function failureStage(task={}){
   if(explicit)return clean(explicit.slice('failure-stage:'.length));
   return clean(task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE');
 }
+const CENTRAL_POLICY_FILES=new Set([
+  'company-learning/platform-release-roadmap.json',
+  'company-learning/company-architecture-map.json',
+  'company-learning/company-log-map.json',
+  'company-directive.json'
+]);
+function scopedExternalRepairEligible(task={}){
+  const files=uniq(task.responsibleFiles).map(x=>x.replaceAll('\\','/').replace(/^\.\//,''));
+  if(!files.length)return false;
+  if(files.some(file=>CENTRAL_POLICY_FILES.has(file)))return false;
+  if(task.protectedChange===true||task.requiresOwnerDecision===true||task.paidResourceRequired===true)return false;
+  return true;
+}
 function gameRepairRoute(task={}){
   const target=clean(task.target).toLowerCase();
   const source=clean(task.sourceRoot);
   const gameSource=/^(web|roblox|unity|unreal|godot)-games\//.test(source)||['web','roblox','unity','unreal','godot'].includes(target);
+  if(gameSource&&scopedExternalRepairEligible(task))return'SYSTEM_AI';
   return gameSource?'VIBE2_VIBE3':'SYSTEM_AI';
 }
 function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-task',relatedTaskIds=[]}){
   const route=sourceQueue==='system-ai'? 'SYSTEM_AI':gameRepairRoute(task);
   return{
     priority:blastRadius.startsWith('portfolio')?'critical':'high',
-    sourceQueue,sourceTaskId:clean(task.id),relatedTaskIds,
+    sourceQueue,sourceTaskId:clean(task.id),gameId:clean(task.gameId),responsibleFiles:uniq(task.responsibleFiles),contextFiles:uniq(task.contextFiles),goal:clean(task.goal),relatedTaskIds,
     failureStage:stage,failureSignature:signature,blastRadius,
     checkpoint:clean(task.candidateSha||task.sourceRevision||task.baseMainSha||task.reservedAt)||null,
     evidence:uniq([...(task.evidence||[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route]),
     recoveryOwner:route,
     recoveryStrategy:route==='VIBE2_VIBE3'
       ?'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT'
-      :'ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK',
+      :'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
     verificationPlan:[
       'RERUN_EXACT_FAILED_STAGE',
       'INDEPENDENT_QA_WHEN_APPLICABLE',
