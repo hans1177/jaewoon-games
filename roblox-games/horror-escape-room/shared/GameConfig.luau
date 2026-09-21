@@ -10,6 +10,12 @@ local Config={
  TargetPopulation=6,RoundSeconds=120,IntermissionSeconds=8,TagDistance=5.5,RescueDistance=8,RemoteName="GameAction",
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=36,ArenaLimit=86,
+ Audio={
+  Background="rbxassetid://9044889073",
+  Chase="rbxassetid://9043365993",
+  Ui="rbxassetid://282906960",
+  Action="rbxassetid://130113322",
+ },
  Maps={
   {Id="SCHOOL",Name="학교",Events={
    {Id="LIGHTS_OUT",Name="복도 소등"},{Id="RED_HALL",Name="비상등 점등"},{Id="FOG_HALL",Name="안개 낀 복도"},
