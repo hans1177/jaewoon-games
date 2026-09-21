@@ -47,6 +47,16 @@ test('서버가 순간이동 속도조작 맵밖 이동을 되돌린다',()=>{
   assert.ok(launch.releaseGates.includes('teleport/speed/out-of-bounds abuse rejection'));
 });
 
+
+test('검증된 Creator Store 오디오가 실제 런타임에 연결된다',()=>{
+  for(const id of ['9044889073','9042664292','1837829181','9043346574'])assert.match(config,new RegExp(id));
+  assert.match(client,/local SoundService=game:GetService\("SoundService"\)/);
+  assert.match(client,/bgm:Play\(\)/);
+  assert.match(client,/chase:Play\(\)/);
+  assert.match(client,/actionSfx:Play\(\)/);
+  assert.match(client,/warningSfx:Play\(\)/);
+});
+
 test('기존 출시 핵심 게이트는 유지된다',()=>{
   for(const gate of [
     '1-player AI fill',
