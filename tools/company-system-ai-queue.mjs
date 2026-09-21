@@ -51,6 +51,29 @@ function dependencyReady(task,queue){
   const byId=new Map(queue.tasks.map(x=>[x.id,x]));
   return (task.dependencies||[]).every(id=>byId.get(id)?.status==='done');
 }
+export function reclaimStaleSystemAiReservations(queueInput,{leaseMinutes=30,at=Date.now()}={}){
+  const queue=normalizeSystemAiQueue(queueInput),stamp=new Date(at).toISOString();
+  const leaseMs=Math.max(1,Number(leaseMinutes)||30)*60*1000;
+  let reclaimed=0;
+  const tasks=queue.tasks.map(task=>{
+    if(task.status!=='running')return task;
+    const missingReservation=!clean(task.reservationId);
+    const reservedMs=Date.parse(clean(task.reservedAt)||clean(task.updatedAt));
+    const expired=Number.isFinite(reservedMs)&&(at-reservedMs)>=leaseMs;
+    if(!missingReservation&&!expired)return task;
+    reclaimed+=1;
+    return{
+      ...task,
+      status:'queued',
+      blocker:'stale-system-ai-reservation-reclaimed',
+      reservationId:null,
+      reservedAt:null,
+      updatedAt:stamp,
+      evidence:unique([...(task.evidence||[]),'system-ai-stale-reservation-reclaimed:YES',missingReservation?'stale-reservation-cause:MISSING_RESERVATION_ID':'stale-reservation-cause:LEASE_EXPIRED','retry-budget-consumed:NO','learning-penalty:NO'])
+    };
+  });
+  return{queue:{...queue,tasks},reclaimed};
+}
 export function assignSecurityRecovery(queueInput,recoveryInput,{recoveryId='',decision=''}={}){
   const queue=normalizeSystemAiQueue(queueInput);
   const recovery={...recoveryInput,tasks:(recoveryInput.tasks||[]).map(x=>({...x}))};
@@ -193,8 +216,9 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}=
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid};
 }
 
-export function reserveSystemAiBatch(queueInput,{max=16,reservationId=''}={}){
-  const queue=normalizeSystemAiQueue(queueInput), active=queue.tasks.filter(t=>t.status==='running');
+export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now()}={}){
+  const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
+  const queue=reclaimed.queue, active=queue.tasks.filter(t=>t.status==='running');
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
     .sort((a,b)=>rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
   const chosen=[];
@@ -206,10 +230,11 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId=''}={}){
   const ids=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai:${Date.now()}`;
   const tasks=queue.tasks.map(t=>ids.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed};
 }
-export function reserveSystemAiTargets(queueInput,{ids=[],reservationId=''}={}){
-  const queue=normalizeSystemAiQueue(queueInput),active=queue.tasks.filter(t=>t.status==='running');
+export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
+  const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
+  const queue=reclaimed.queue,active=queue.tasks.filter(t=>t.status==='running');
   const wanted=unique(ids);
   if(!wanted.length)throw new Error('SYSTEM_AI_TARGET_IDS_REQUIRED');
   const byId=new Map(queue.tasks.map(t=>[t.id,t]));
@@ -225,7 +250,7 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId=''}={}){
   const chosenIds=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai-target:${Date.now()}`;
   const tasks=queue.tasks.map(t=>chosenIds.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed};
 }
 export function applySystemAiResults(queueInput,results=[]){
   let queue=normalizeSystemAiQueue(queueInput);const byResult=new Map((results||[]).map(r=>[clean(r.taskId),r]).filter(([id])=>id));
@@ -290,12 +315,12 @@ export function runSystemAiQueue(args={}){
     return{command,...result};
   }
   if(command==='reserve'){
-    const result=reserveSystemAiBatch(queue,{max:Number(args.max||16),reservationId:args.reservation});
+    const result=reserveSystemAiBatch(queue,{max:Number(args.max||16),reservationId:args.reservation,leaseMinutes:Number(args['lease-minutes']||30)});
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }
   if(command==='reserve-targets'){
-    const result=reserveSystemAiTargets(queue,{ids:clean(args.ids).split(',').map(clean).filter(Boolean),reservationId:args.reservation});
+    const result=reserveSystemAiTargets(queue,{ids:clean(args.ids).split(',').map(clean).filter(Boolean),reservationId:args.reservation,leaseMinutes:Number(args['lease-minutes']||30)});
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }
@@ -314,4 +339,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const counts=result.queue.tasks.reduce((m,t)=>(m[t.status]=(m[t.status]||0)+1,m),{});
   console.log(`COMPANY_SYSTEM_AI_QUEUE=${result.command.toUpperCase()}`);
   console.log(`COMPANY_SYSTEM_AI_COUNTS=${JSON.stringify(counts)}`);
+  if(Number.isFinite(Number(result.reclaimed)))console.log(`COMPANY_SYSTEM_AI_STALE_RESERVATIONS_RECLAIMED=${Number(result.reclaimed)}`);
 }
