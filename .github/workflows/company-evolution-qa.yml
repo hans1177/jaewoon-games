@@ -74,10 +74,10 @@ jobs:
           const reviewCount=Number(directive.ai?.departmentReviewModelCount||1);
           const leads=roles.map(role=>directive.ai?.departmentLeadModels?.[role]).filter(Boolean);
           const distinctLeads=[...new Set(leads)];
-          if(reviewCount!==1||pool.length<roles.length)throw new Error('five direct lead review contract missing');
-          if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
+          if(reviewCount!==1||pool.length<1)throw new Error('direct lead review contract missing');
+          if(directive.ai?.departmentLeadModelsMustBeDistinct!==false||directive.ai?.departmentLeadAssignmentRemappable!==true||Number(directive.ai?.minDistinctLeadModelsAcrossDepartments||1)!==1)throw new Error('lead distinctness efficiency contract missing');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
-          if(directive.ai?.departmentRepresentativeAuthoredByLead!==false||directive.ai?.departmentRebuttalAuthoredByLead!==false||directive.ai?.meeting?.designOnlyMeetingRequired!==false||Number(directive.ai?.meeting?.crossDepartmentRebuttalRounds||0)!==0)throw new Error('five direct lead no-meeting contract missing');
+          if(directive.ai?.departmentRepresentativeAuthoredByLead!==false||directive.ai?.departmentRebuttalAuthoredByLead!==false||directive.ai?.meeting?.designOnlyMeetingRequired!==false||Number(directive.ai?.meeting?.crossDepartmentRebuttalRounds||0)!==0)throw new Error('direct lead no-meeting contract missing');
           if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
@@ -101,7 +101,8 @@ jobs:
             if(fs.existsSync(obsoletePolicyMirror))throw new Error(`obsolete human-readable policy mirror must stay removed: ${obsoletePolicyMirror}`);
           }
           console.log('CENTRAL_POLICY=PASS');
-          console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
+          console.log(`DEPARTMENT_LEAD_DISTINCTNESS_REQUIRED=NO`);
+          console.log(`CONFIGURED_DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
           console.log('DEVELOPMENT_GATED_DIRECT_POLICY=PASS');
           console.log('RELEASE_GATED_DIRECT_POLICY=PASS');
           console.log('RELEASE_SELECTED_PLATFORM_REVIEW_POLICY=PASS');
