@@ -72,6 +72,7 @@ test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 
   assert.match(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
   assert.match(homepage,/buildShelf\(hub,'homeWebGameCenter'/);
   assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter'/);
+  assert.doesNotMatch(homepage,/document\.getElementById\('homeDevelopmentGameCenter'\)\?\.remove\(\)/);
   assert.doesNotMatch(homepage,/homeTop30GameCenter/);
   assert.doesNotMatch(homepage,/const TOP_LIMIT=/);
   assert.match(homepage,/dataset\.homeWebGameCount/);
@@ -97,6 +98,15 @@ test('homepage exposes current Web to selected-platform to live-focus developmen
   assert.match(homepage,/dataset\.selectedPlatformCount/);
   assert.match(homepage,/dataset\.focusRunnerActive/);
   assert.match(homepage,/buildDevelopmentPipeline\(catalog,status,testManifest\|\|\{\}\)/);
+});
+
+test('verified Roblox deployment history is independent of the primary selected platform',()=>{
+  assert.match(homepage,/const displayPlatform=row=>/);
+  assert.match(homepage,/function verifiedRobloxDeploymentRows\(catalog\)/);
+  assert.match(homepage,/historicalPublicationTargetVerified===true/);
+  assert.match(homepage,/homepageDisplayMode:'ROBLOX_HISTORICAL_DEPLOYMENT'/);
+  assert.doesNotMatch(homepage,/normalizePlatform\(selectedPlatform\(game\)\)!=='ROBLOX'/);
+  assert.match(homepage,/const p=normalizePlatform\(displayPlatform\(game\)\)/);
 });
 
 test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
