@@ -83,11 +83,236 @@ jobs:
           [[ "$(getconf PAGESIZE)" == "4096" ]] || { echo '[JAEWOON_BUILD_ERROR:ARM64_RUNNER_PAGE_SIZE] Redroid runtime requires the verified 4K-page ARM64 runner.' >&2; exit 8; }
 
           sudo apt-get update -y
-          sudo apt-get install -y adb aapt
+          sudo apt-get install -y adb aapt git make gcc "linux-headers-$(uname -r)"
           sudo apt-get install -y "linux-modules-extra-$(uname -r)" || true
           command -v docker >/dev/null 2>&1 || { echo '[JAEWOON_BUILD_ERROR:DOCKER_MISSING] Docker is unavailable on ARM64 runner.' >&2; exit 9; }
           sudo systemctl start docker || sudo service docker start || true
           docker version >/tmp/jaewoon-redroid-docker.txt 2>&1 || { cat /tmp/jaewoon-redroid-docker.txt >&2; exit 9; }
+          redroid_modules_sha='86f0a99f00388122aa2fdfaddf5fd507c58aac66'
+          redroid_modules="$RUNNER_TEMP/jaewoon-redroid-modules"
+          rm -rf "$redroid_modules"
+          git init -q "$redroid_modules"
+          git -C "$redroid_modules" remote add origin https://github.com/remote-android/redroid-modules.git
+          git -C "$redroid_modules" fetch -q --depth=1 origin "$redroid_modules_sha"
+          git -C "$redroid_modules" checkout -q --detach FETCH_HEAD
+          [[ "$(git -C "$redroid_modules" rev-parse HEAD)" == "$redroid_modules_sha" ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_REDROID_MODULE_SOURCE_MISMATCH] pinned redroid module source mismatch.' >&2; exit 9; }
+
+          python3 - "$redroid_modules/ashmem/ashmem.c" <<'PY'
+          import pathlib, sys
+          path=pathlib.Path(sys.argv[1])
+          text=path.read_text(encoding='utf-8')
+
+          def replace_once(old,new,label):
+              global text
+              if text.count(old)!=1:
+                  raise SystemExit(f'ashmem 6.17 patch anchor mismatch: {label}')
+              text=text.replace(old,new,1)
+
+          replace_once(
+              '#include <linux/shmem_fs.h>\n',
+              '#include <linux/shmem_fs.h>\n#include <linux/sched/mm.h>\n',
+              'sched-mm-include'
+          )
+          replace_once(
+              'static unsigned long\nashmem_vmfile_get_unmapped_area',
+              'static const struct file_operations *ashmem_vmfile_orig_fops;\n\nstatic unsigned long\nashmem_vmfile_get_unmapped_area',
+              'orig-fops'
+          )
+          replace_once(
+              '\treturn current->mm->get_unmapped_area(file, addr, len, pgoff, flags);',
+              '#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)\n\treturn mm_get_unmapped_area(current->mm, file, addr, len, pgoff,\n\t\t\t\t    flags);\n#else\n\treturn current->mm->get_unmapped_area(file, addr, len, pgoff, flags);\n#endif',
+              'get-unmapped-area'
+          )
+          replace_once(
+              '\t\t\tvmfile_fops = *vmfile->f_op;',
+              '\t\t\tashmem_vmfile_orig_fops = vmfile->f_op;\n\t\t\tvmfile_fops = *ashmem_vmfile_orig_fops;',
+              'vmfile-fops'
+          )
+          old='''\tget_file(asma->file);
+
+\t/*
+\t * XXX - Reworked to use shmem_zero_setup() instead of
+\t * shmem_set_file while we're in staging. -jstultz
+\t */
+\tif (vma->vm_flags & VM_SHARED) {
+\t\tret = shmem_zero_setup(vma);
+\t\tif (ret) {
+\t\t\tfput(asma->file);
+\t\t\tgoto out;
+\t\t}
+\t} else {
+\t\tvma_set_anonymous(vma);
+\t}
+
+\tif (vma->vm_file)
+\t\tfput(vma->vm_file);
+\tvma->vm_file = asma->file;
+'''
+          new='''\tif (vma->vm_flags & VM_SHARED) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
+\t\tconst struct file_operations *saved_fops = asma->file->f_op;
+
+\t\tget_file(asma->file);
+\t\tif (vma->vm_file)
+\t\t\tfput(vma->vm_file);
+\t\tvma->vm_file = asma->file;
+
+\t\t/*
+\t\t * Kernel 6.17+ requires the original shmem mmap hook for the
+\t\t * first shared ashmem mapping. Restore guarded fops afterwards.
+\t\t */
+\t\tasma->file->f_op = ashmem_vmfile_orig_fops;
+\t\tret = vfs_mmap(vma->vm_file, vma);
+\t\tasma->file->f_op = saved_fops;
+\t\tif (ret)
+\t\t\tgoto out;
+#else
+\t\tget_file(asma->file);
+
+\t\t/*
+\t\t * XXX - Reworked to use shmem_zero_setup() instead of
+\t\t * shmem_set_file while we're in staging. -jstultz
+\t\t */
+\t\tret = shmem_zero_setup(vma);
+\t\tif (ret) {
+\t\t\tfput(asma->file);
+\t\t\tgoto out;
+\t\t}
+
+\t\tif (vma->vm_file)
+\t\t\tfput(vma->vm_file);
+\t\tvma->vm_file = asma->file;
+#endif
+\t} else {
+\t\tget_file(asma->file);
+\t\tvma_set_anonymous(vma);
+\t\tif (vma->vm_file)
+\t\t\tfput(vma->vm_file);
+\t\tvma->vm_file = asma->file;
+\t}
+'''
+          replace_once(old,new,'shared-mmap')
+          path.write_text(text,encoding='utf-8')
+          PY
+
+          make -C "$redroid_modules/ashmem" >/tmp/jaewoon-ashmem-build.log 2>&1 || { cat /tmp/jaewoon-ashmem-build.log >&2; echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_BUILD_FAILED] kernel-compatible ashmem build failed.' >&2; exit 9; }
+          sudo rmmod ashmem_linux >/dev/null 2>&1 || true
+          sudo insmod "$redroid_modules/ashmem/ashmem_linux.ko" || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_LOAD_FAILED] compatible ashmem module could not be loaded.' >&2; exit 9; }
+          grep -Eq '^[[:space:]]*[0-9]+[[:space:]]+ashmem
+
+          sudo modprobe binder_linux devices="binder,hwbinder,vndbinder" || { echo '[JAEWOON_BUILD_ERROR:BINDER_MODULE_UNAVAILABLE] binder_linux could not be loaded.' >&2; exit 10; }
+          sudo mkdir -p /dev/binderfs
+          if ! mountpoint -q /dev/binderfs; then sudo mount -t binder binder /dev/binderfs; fi
+          binder_devices=()
+          for device in binder hwbinder vndbinder; do
+            host_device="/dev/binderfs/$device"
+            [[ -c "$host_device" ]] || { echo "[JAEWOON_BUILD_ERROR:BINDER_DEVICE_MISSING] $device missing" >&2; exit 10; }
+            binder_devices+=(--device "$host_device:/dev/$device")
+          done
+
+          image='redroid/redroid:16.0.0_64only-latest'
+          docker pull "$image"
+          docker rm -f jaewoon-unity-redroid >/dev/null 2>&1 || true
+          data="$RUNNER_TEMP/jaewoon-unity-redroid-data"
+          mkdir -p "$data"
+          docker run -d --privileged --name jaewoon-unity-redroid \
+            -p 127.0.0.1:5555:5555 \
+            "${binder_devices[@]}" \
+            -v "$data:/data" \
+            "$image" \
+            androidboot.use_memfd=true \
+            androidboot.redroid_width=1080 \
+            androidboot.redroid_height=2400 \
+            androidboot.redroid_dpi=420 \
+            androidboot.redroid_gpu_mode=guest > /tmp/jaewoon-redroid-container.txt
+
+          deadline=$((SECONDS+240))
+          until [[ "$(timeout --kill-after=5s 20s docker exec jaewoon-unity-redroid getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" == "1" ]]; do
+            if (( SECONDS >= deadline )); then
+              docker logs jaewoon-unity-redroid > /tmp/jaewoon-redroid.log 2>&1 || true
+              docker inspect jaewoon-unity-redroid > /tmp/jaewoon-redroid-inspect.json 2>&1 || true
+              docker ps -a --filter name=jaewoon-unity-redroid >&2 || true
+              tail -n 200 /tmp/jaewoon-redroid.log >&2 || true
+              echo '[JAEWOON_BUILD_ERROR:REDROID_BOOT_TIMEOUT] ARM64 Android 16 runtime did not boot.' >&2
+              exit 11
+            fi
+            sleep 5
+          done
+          docker logs jaewoon-unity-redroid > /tmp/jaewoon-redroid.log 2>&1 || true
+          docker inspect jaewoon-unity-redroid > /tmp/jaewoon-redroid-inspect.json 2>&1 || true
+
+          adb start-server >/dev/null
+          connected=false
+          for _ in $(seq 1 30); do
+            adb connect 127.0.0.1:5555 >/tmp/jaewoon-redroid-adb-connect.txt 2>&1 || true
+            if adb devices | awk '$1=="127.0.0.1:5555" && $2=="device" {ok=1} END{exit ok?0:1}'; then connected=true; break; fi
+            sleep 2
+          done
+          [[ "$connected" == "true" ]] || { adb devices -l >&2 || true; cat /tmp/jaewoon-redroid-adb-connect.txt >&2 || true; exit 12; }
+
+          api="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
+          abis="$(adb shell getprop ro.product.cpu.abilist | tr -d '\r')"
+          release="$(adb shell getprop ro.build.version.release | tr -d '\r')"
+          [[ "$api" == "36" ]] || { echo "[JAEWOON_BUILD_ERROR:ANDROID_API_MISMATCH] expected=36 actual=$api" >&2; exit 13; }
+          grep -q 'arm64-v8a' <<<"$abis" || { echo "[JAEWOON_BUILD_ERROR:ANDROID_ARM64_RUNTIME_MISSING] abilist=$abis" >&2; exit 14; }
+          printf 'HOST_ARCH=%s\nANDROID_RELEASE=%s\nANDROID_API=%s\nANDROID_ABIS=%s\nIMAGE=%s\n' "$(uname -m)" "$release" "$api" "$abis" "$image" | tee /tmp/jaewoon-redroid-device.txt
+          echo 'UNITY_ANDROID_RUNTIME=ARM64_REDROID_ANDROID_16_READY'
+
+      - name: Run Android 16 black-box APK play smoke
+        shell: bash
+        run: bash tools/unity-apk-runtime-smoke.sh '${{ steps.apk.outputs.path }}' qa-artifacts/unity-runtime-smoke
+
+      - name: Bind runtime evidence to exact APK and source
+        env:
+          UPSTREAM_RUN: ${{ steps.upstream.outputs.run_id }}
+          BUILD_ID: ${{ steps.apk.outputs.sha256 }}
+          SOURCE_COMMIT: ${{ steps.apk.outputs.source_commit }}
+          SOURCE_TREE: ${{ steps.apk.outputs.source_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib
+          path = pathlib.Path('qa-artifacts/unity-runtime-smoke/evidence.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          if data.get('qaPassEligibleRuntimeEvidence') is not True:
+              raise SystemExit('runtime evidence is not QA-pass eligible')
+          if data.get('runtimeAbiCompatible') is not True or 'arm64-v8a' not in str(data.get('deviceAbis','')):
+              raise SystemExit('runtime evidence is not ARM64-compatible')
+          data.update({
+              'state': 'PASS',
+              'runtime': 'PASS',
+              'bound': True,
+              'runtimeProvider': 'REDROID_NATIVE_ARM64_ANDROID_16',
+              'upstreamBuildRunId': int(os.environ['UPSTREAM_RUN']),
+              'buildId': os.environ['BUILD_ID'],
+              'apkSha256': os.environ['BUILD_ID'],
+              'buildSourceCommit': os.environ['SOURCE_COMMIT'],
+              'sourceTreeSha': os.environ.get('SOURCE_TREE') or None,
+          })
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+          echo "UNITY_RUNTIME_EVIDENCE=PASS"
+          echo "UNITY_RUNTIME_BUILD_ID=$BUILD_ID"
+          echo "UNITY_RUNTIME_SOURCE_COMMIT=$SOURCE_COMMIT"
+
+      - name: Upload Unity runtime QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-runtime-smoke-${{ steps.upstream.outputs.run_id }}
+          path: |
+            qa-artifacts/unity-runtime-smoke/
+            /tmp/jaewoon-redroid.log
+            /tmp/jaewoon-redroid-device.txt
+            /tmp/jaewoon-redroid-docker.txt
+            /tmp/jaewoon-redroid-adb-connect.txt
+            /tmp/jaewoon-redroid-inspect.json
+          if-no-files-found: warn
+          retention-days: 14 /proc/misc || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_DEVICE_MISSING] ashmem misc device missing after module load.' >&2; exit 9; }
+          [[ -c /dev/ashmem ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_NODE_MISSING] /dev/ashmem missing after module load.' >&2; exit 9; }
+          echo 'UNITY_ANDROID_ASHMEM_6_17_COMPAT=READY'
+
 
           sudo modprobe binder_linux devices="binder,hwbinder,vndbinder" || { echo '[JAEWOON_BUILD_ERROR:BINDER_MODULE_UNAVAILABLE] binder_linux could not be loaded.' >&2; exit 10; }
           sudo mkdir -p /dev/binderfs
