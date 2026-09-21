@@ -282,6 +282,8 @@ When local capability becomes available, the accumulated verified trajectories/s
 
 `company-learning/platform-release-roadmap.json`의 `unityWebFirstStage`가 권한 원본이다. Vibe3는 이 규칙을 구현/학습에 반영할 뿐 별도 정책을 만들지 않는다.
 
+동기화 실행 문서는 `company-learning/UNITY_WEB_FIRST_STAGE.md`다. 이 문서는 정책 권한을 만들지 않고 Vibe/Unity/Web QA/후속 플랫폼 바인딩을 같은 의미로 유지한다.
+
 - 변경 범위는 **1차 Web 게임 제작/검증 단계만**이다. Unity/Roblox/Fortnite UEFN의 후속 플랫폼 플로우와 증거 권한은 그대로 유지한다.
 - 모든 신규 1차 Web 게임의 원본은 `unity-games/<gameId>/` Unity 프로젝트다.
 - `web-games/<gameId>/`는 직접 HTML/Canvas 게임을 작성하는 원본이 아니라 Unity Web 빌드 산출물 배포 경로다.
