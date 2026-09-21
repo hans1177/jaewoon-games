@@ -149,6 +149,13 @@ ownerCurrentProductionContract:
     firstWebStageScopeOnly: true
     firstWebStageCanonicalSourceRoot: unity-games/<gameId>/
     firstWebStageBuildOutputRoot: web-games/<gameId>/
+    firstWebStageActualBrowserTouchRequired: true
+    firstWebStageKeyboardQaCannotSatisfyMobilePass: true
+    firstWebStageGenreCoreFunMarkerRequired: true
+    firstWebStageQaMarkers:
+      - MOBILE_TARGET
+      - MOBILE_INPUT
+      - CORE_FUN
     postWebPlatformPipelineUnchanged: true
     centralSyncDocument: company-learning/UNITY_WEB_FIRST_STAGE.md
   webToTargetPlatformContinuity:
