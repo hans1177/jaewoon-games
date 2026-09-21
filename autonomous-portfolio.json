@@ -584,7 +584,11 @@
       "name": "포근섬",
       "protectedValues": [
         "core-loop",
-        "save-meaning"
+        "save-meaning",
+        "base-by-base-conquest",
+        "resource-geography",
+        "resident-automation",
+        "auto-battle"
       ],
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -615,7 +619,8 @@
         }
       },
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-21T15:45:01.809Z"
+      "updatedAt": "2026-09-22T01:22:00+09:00",
+      "gameplayDirection": "MANUAL_BASIC_ECONOMY_TO_RESIDENT_AUTOMATION_TO_BASE_CONQUEST"
     },
     {
       "id": "OWNER-horror-escape-room",
@@ -865,5 +870,5 @@
       }
     ]
   },
-  "updatedAt": "2026-09-22T01:05:00+09:00"
+  "updatedAt": "2026-09-22T01:22:00+09:00"
 }
