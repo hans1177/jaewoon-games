@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-headless-fast-mvp.mjs';
+const config='local Config={PolicySource = "company-learning/platform-release-roadmap.json", Platform = "ROBLOX", MobileFirst = true, SaveEnabled=true, PlayMode="COOP", MultiplayerRequired=true} return Config';
+const server='local DSS=game:GetService("DataStoreService") local r=Instance.new("RemoteEvent") r.OnServerEvent:Connect(function(p,action) if typeof(action)~="string" then return end end) r:FireAllClients("MULTIPLAYER_SYNC",{}) local s=DSS:GetDataStore("x") s:GetAsync("x") s:SetAsync("x",{})';
+const client='local UIS=game:GetService("UserInputService") local touchEnabled=UIS.TouchEnabled button.Activated:Connect(function() remote:FireServer("A") end) remote.OnClientEvent:Connect(function() end)';
+const project='{"tree":{"$className":"DataModel","ServerScriptService":{"GameServer":{"$path":"server"}},"StarterPlayer":{"StarterPlayerScripts":{"GameClient":{"$path":"client"}}}}}';
+test('headless FAST_MVP passes complete source contract without Studio',()=>{const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,config,server,client,project});assert.equal(r.pass,true);assert.equal(r.validationMode,'HEADLESS_FAST_MVP');});
+test('headless FAST_MVP blocks artifact drift',()=>{const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),artifactRunId:123,config,server,client,project});assert.equal(r.pass,false);assert.ok(r.blockers.includes('exactArtifact'));});
