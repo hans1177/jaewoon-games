@@ -1,23 +1,21 @@
 {
   "version": 1,
-  "before": "f5e275711ebd1c3b8bcf45b4175125f0dbfc353a",
-  "after": "db1596a6ff3be262fb7093467049209d2005e9de",
-  "generatedAt": "2026-09-21T10:42:56.295Z",
+  "before": "db1596a6ff3be262fb7093467049209d2005e9de",
+  "after": "578d24548b3e8fc8161e4b523d1f92f91830316e",
+  "generatedAt": "2026-09-21T10:45:52.575Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "daechung-rpg",
       "sourcePath": "web-games/daechung-rpg",
-      "sourceBefore": "f5e275711ebd1c3b8bcf45b4175125f0dbfc353a",
-      "sourceAfter": "db1596a6ff3be262fb7093467049209d2005e9de",
-      "semanticIntentFingerprint": "f1c7b4f4f97df4bdf68c29ec241dc29ded5e4640fe232f9a2cfe41ca7fb3269f",
+      "sourceBefore": "db1596a6ff3be262fb7093467049209d2005e9de",
+      "sourceAfter": "578d24548b3e8fc8161e4b523d1f92f91830316e",
+      "semanticIntentFingerprint": "33f0d343302908bcdb282062b745390943e1f0ef6bbdb4eac6c7ee849ec373dd",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
-        "INVENTORY",
         "WORLD",
-        "MULTIPLAYER",
         "PROGRESSION",
         "UI_UX",
         "BALANCE"
@@ -29,7 +27,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-21T10:42:56.295Z",
+      "detectedAt": "2026-09-21T10:45:52.575Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
