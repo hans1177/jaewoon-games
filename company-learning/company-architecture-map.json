@@ -1,5 +1,5 @@
 {
-  "version": 71,
+  "version": 72,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2453,6 +2453,23 @@
         "CROSS_PIPELINE_BOTTLENECK"
       ],
       "mayBypassDirector": false
+    },
+    "presentation": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#homepagePresentation.frontDoor",
+      "surface": "index.html",
+      "sequence": [
+        "FEATURED_GAME",
+        "LIVE_SUMMARY",
+        "GAME_CENTER",
+        "DEVELOPMENT_PIPELINE",
+        "SECONDARY_CONTENT"
+      ],
+      "mobileNavigation": "FIXED_BOTTOM_NAV",
+      "mobileGameBrowse": "HORIZONTAL_TOUCH_CARDS",
+      "runtimeAuthority": "company-runtime",
+      "executionOwner": "HOMEPAGE_MANAGER",
+      "supervisor": "DIRECTOR",
+      "systemAiExecutionOwner": false
     }
   }
 }
