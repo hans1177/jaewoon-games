@@ -37,6 +37,7 @@ on:
       - 'tools/homepage-test-candidate-sync.mjs'
       - 'tools/game-catalog-normalization.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/homepage-manager-publication-order.test.mjs'
       - '.github/workflows/homepage-manager.yml'
@@ -71,6 +72,7 @@ on:
       - 'tools/homepage-test-candidate-sync.mjs'
       - 'tools/game-catalog-normalization.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/homepage-manager-publication-order.test.mjs'
       - '.github/workflows/homepage-manager.yml'
@@ -212,7 +214,7 @@ jobs:
             COMPANY_FLOW.md company-directive.json _headers; do
             test -f "$file"
           done
-          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
