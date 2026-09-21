@@ -1,5 +1,5 @@
 {
-  "version": 84,
+  "version": 85,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2465,9 +2465,9 @@
         "HEADER",
         "FEATURED_GAME",
         "THREE_METRICS",
-        "PLAY_NOW",
+        "PLATFORM_AVAILABLE",
         "IN_DEVELOPMENT",
-        "DEVELOPMENT_FLOW",
+        "RECENT_UPDATES",
         "FOOTER"
       ],
       "legacyMixing": "FORBIDDEN",
@@ -2480,11 +2480,11 @@
         "bottomNavigation": [
           "HOME",
           "GAME",
-          "DEVELOPMENT",
+          "RECENT_UPDATES",
           "CHATGPT"
         ],
         "horizontalGameCards": true,
-        "horizontalDevelopmentSteps": true
+        "recentUpdatesVertical": true
       },
       "forbiddenElements": [
         "REVIEWS",
@@ -2533,7 +2533,17 @@
         "ROBLOX_CONCURRENT",
         "UNITY_CONCURRENT",
         "FORTNITE_UEFN_CONCURRENT"
-      ]
+      ],
+      "gameShelves": {
+        "platformAvailable": "VERIFIED_INTERNAL_PLATFORM_RELEASE_ONLY",
+        "development": "DEVELOPMENT_CONFIRMED_EXCLUDING_PLATFORM_AVAILABLE",
+        "web": "CARD_ACTION_ONLY"
+      },
+      "recentUpdates": {
+        "source": "CANONICAL_HOMEPAGE_RUNTIME_LATEST_WORK",
+        "limit": 5,
+        "replacesDevelopmentFlow": true
+      }
     },
     "centralSyncTriggers": {
       "roadmap": "company-learning/platform-release-roadmap.json",
