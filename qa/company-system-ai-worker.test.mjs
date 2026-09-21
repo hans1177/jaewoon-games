@@ -133,6 +133,9 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
 });
 
 test('System AI consumes only verified Vibe learning context and records exact knowledge ids',()=>{
+  const learningContext=fs.readFileSync('tools/company-system-ai-learning-context.mjs','utf8');
+  const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
   assert.match(learningContext,/retrieveUnifiedLearning/);
   assert.match(learningContext,/verifiedOnly:true/);
   assert.match(learningContext,/advisoryOnly:true/);
