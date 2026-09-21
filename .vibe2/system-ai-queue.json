@@ -2067,7 +2067,7 @@
     },
     {
       "id": "recovery-recovery-a84ac1939c7d23662341",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -2097,17 +2097,17 @@
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
       "dependencies": [],
-      "retries": 0,
+      "retries": 1,
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-09-21T06:46:45.661Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:35570434490:1",
-      "reservedAt": "2026-09-21T06:56:44.602Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -2141,11 +2141,16 @@
         "shared-signature-canary:YES",
         "shared-signature:FAIL",
         "cohort-size:16",
-        "primary-ai-collaboration-task:recovery-recovery-a84ac1939c7d23662341"
+        "primary-ai-collaboration-task:recovery-recovery-a84ac1939c7d23662341",
+        "actions-run:35570434490",
+        "current-main-verification:skipped",
+        "source-mutation-required:YES",
+        "source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION",
+        "system-ai-retry:UNLIMITED_CAUSAL_REPAIR"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T06:56:44.534Z",
-      "updatedAt": "2026-09-21T06:56:44.602Z"
+      "updatedAt": "2026-09-21T07:02:00.805Z"
     }
   ]
 }
