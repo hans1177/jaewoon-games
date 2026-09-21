@@ -2320,6 +2320,13 @@
       "SAME_ENGINE_ONLY_NEVER_SUFFICIENT",
       "TASK_TARGET_INFERRED_FROM_RESPONSIBLE_SOURCE_OR_DEPARTMENT",
       "EXACT_KNOWLEDGE_IDS_AUDITED"
+    ],
+    "domainClassifier": "tools/vibe2-learning-motor.mjs::classifyLearningDomains",
+    "domainPolicy": [
+      "PRIMARY_DOMAIN_FIRST",
+      "SECONDARY_DOMAIN_SUPPORT_ONLY",
+      "IRRELEVANT_DOMAIN_SUPPRESSED",
+      "FAILURE_EVIDENCE_WEIGHTED_ABOVE_GOAL_TEXT"
     ]
   }
 }
