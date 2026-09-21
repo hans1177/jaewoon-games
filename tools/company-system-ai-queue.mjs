@@ -26,6 +26,8 @@ function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of arg
 function normalizeTask(row={}){
   return{
     id:clean(row.id),status:clean(row.status)||'queued',priority:clean(row.priority)||'normal',
+    department:clean(row.department)||null,taskType:clean(row.taskType)||null,gameId:clean(row.gameId)||null,
+    jointDecisionRequired:row.jointDecisionRequired===true,
     goal:clean(row.goal),responsibleFiles:unique(row.responsibleFiles),contextFiles:unique(row.contextFiles),
     focusPatterns:row.focusPatterns&&typeof row.focusPatterns==='object'?row.focusPatterns:{},
     acceptanceCriteria:unique(row.acceptanceCriteria),verificationCommands:unique(row.verificationCommands),
