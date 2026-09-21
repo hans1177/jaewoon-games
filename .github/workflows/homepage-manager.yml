@@ -406,7 +406,6 @@ jobs:
       - name: Recheck owner-fixed PWA and chat contract
         run: |
           set -euo pipefail
-          node tools/homepage-manager.mjs
           grep -Fq '"id": "/command.html"' manifest.webmanifest
           grep -Fq '"start_url": "/command.html"' manifest.webmanifest
           grep -Fq "navigator.serviceWorker.register('/sw.js'" install.html
