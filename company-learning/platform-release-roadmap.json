@@ -4203,6 +4203,117 @@
         "unityWorkflow": ".github/workflows/company-development-unity-runtime.yml",
         "robloxWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
       }
+    },
+    "internalPlatformReleaseAndPublicExposureGate": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "ALLOW_FAST_NATIVE_INTERNAL_RELEASE_AND_REAL_PLATFORM_TESTING_BEFORE PUBLIC EXPOSURE; REQUIRE PLATFORM-SPECIFIC REBUILD AND SECOND-GATE PASS BEFORE FULL PUBLIC RELEASE",
+      "stages": [
+        "WEB_FIRST_GATE",
+        "ROBLOX_UNITY_FAST_NATIVE_IMPLEMENTATION",
+        "INTERNAL_PLATFORM_RELEASE",
+        "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+        "PLATFORM_SPECIFIC_REBUILD",
+        "SECOND_PLATFORM_ADAPTATION_GATE",
+        "PUBLIC_RELEASE_READY",
+        "PUBLIC_RELEASE"
+      ],
+      "internalRelease": {
+        "defaultAfterNativeTechnicalEvidence": true,
+        "externalDiscoveryForbidden": true,
+        "externalMarketingForbidden": true,
+        "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
+        "testAudience": "INTERNAL_TESTERS_AND_AUTHORIZED_PLATFORM_TESTERS",
+        "roblox": {
+          "state": "INTERNAL_PLATFORM_RELEASE",
+          "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+          "serverPublicationAllowed": true,
+          "publicDiscoveryAllowed": false
+        },
+        "unity": {
+          "state": "INTERNAL_PLATFORM_RELEASE",
+          "distributionIntent": "GOOGLE_PLAY_INTERNAL_OR_CLOSED_TEST_TRACK_WHEN_PUBLISH_CREDENTIALS_EXIST",
+          "publicProductionTrackAllowed": false,
+          "localOrArtifactInternalTestingAllowed": true,
+          "missingStorePublishCredentials": "MARK_INTERNAL_TEST_TRACK_READY_NOT_PUBLIC_RELEASE"
+        }
+      },
+      "secondGate": {
+        "role": "PUBLIC_EXPOSURE_HARD_GATE_ONLY",
+        "mustNotBlockInternalRelease": true,
+        "mustNotRetroactivelyBlockNativeDevelopment": true,
+        "requiredBeforeExternalPublicRelease": true,
+        "commonRequirements": [
+          "NATIVE_RUNTIME_PASS",
+          "INDEPENDENT_QA_PASS",
+          "REGRESSION_PASS",
+          "NO_OPEN_CRITICAL_OR_HIGH_REPRODUCIBLE_TESTER_BUG",
+          "PLATFORM_SPECIFIC_REBUILD_COMPLETED",
+          "PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS"
+        ],
+        "ROBLOX": [
+          "FAST_ENTRY",
+          "MOBILE_FIRST_INPUT_AND_UI",
+          "SOCIAL_OR_MULTIPLAYER_WHEN_GAME_DESIGN_REQUIRES",
+          "SHORT_REPEATABLE_GOALS",
+          "SERVER_AUTHORITATIVE_SYNC_WHEN_MULTIPLAYER",
+          "ROBLOX_NATIVE_SERVICES_WHEN_APPLICABLE",
+          "LOW_END_DEVICE_PRESENTATION_DENSITY"
+        ],
+        "UNITY": [
+          "DEEP_SYSTEM_PRESENTATION",
+          "LONG_SESSION_SUPPORT_WHEN_DESIGN_REQUIRES",
+          "DETAILED_CONTROLS",
+          "CAMERA_AND_CINEMATIC_LANGUAGE",
+          "RICHER_NATIVE_VISUAL_PRESENTATION",
+          "IMMERSIVE_AUDIO",
+          "DEVICE_PERFORMANCE_SCALING"
+        ]
+      },
+      "rebuild": {
+        "startsAfterInternalPlatformRelease": true,
+        "usesActualPlatformPlaytestEvidence": true,
+        "usesTesterDebugTickets": true,
+        "usesDepartmentSuitabilityAsDirectionOnly": true,
+        "priority": "HIGH",
+        "onePlatformRebuildMayProceedIndependently": true,
+        "preserve": [
+          "CORE_GAME_IDENTITY",
+          "APPROVED_BALANCE_MEANING",
+          "SAVE_MEANING",
+          "PROGRESSION_MEANING"
+        ],
+        "mayChange": [
+          "INPUT",
+          "UI",
+          "CAMERA",
+          "SESSION_PRESENTATION",
+          "SOCIAL_SURFACES",
+          "GRAPHICS_DENSITY",
+          "VFX_DENSITY",
+          "AUDIO_PRESENTATION",
+          "TUTORIAL",
+          "PLATFORM_SERVICES"
+        ]
+      },
+      "publicExposure": {
+        "default": false,
+        "stateBeforeSecondGate": "INTERNAL_ONLY",
+        "secondGatePassState": "PUBLIC_RELEASE_READY",
+        "fullPublicState": "PUBLIC_RELEASE",
+        "homepageIsInternalCompanySurface": true,
+        "internalHomepageMayExposeAllDevelopmentEvidence": true,
+        "marketingOrExternalListingBeforeSecondGateForbidden": true
+      },
+      "implementation": {
+        "controlTool": "tools/company-platform-exposure-control.mjs",
+        "state": "vibe2-unreal-core:.vibe2/platform-exposure-state.json",
+        "testerTickets": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json",
+        "suitability": "vibe2-unreal-core:.vibe2/platform-suitability.json",
+        "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+        "homepageSnapshot": "homepage-platform-exposure.json"
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
