@@ -310,3 +310,13 @@ test('homepage workflow validates the exact sample deployment contract',()=>{
   assert.match(workflow,/https:\/\/chatgpt\.com\//);
   assert.match(workflow,/SYNC_INTERVAL_MS=30000/);
 });
+
+test('featured hero is explicit and ChatGPT launcher is app-first with safe fallback',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
+  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
+  assert.match(index,/package=com\.openai\.chatgpt/);
+  assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
+  assert.match(index,/function openChatGpt\(\)/);
+});
