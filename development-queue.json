@@ -66,7 +66,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T04:04:45+09:00",
+      "updatedAt": "2026-09-22T04:13:30+09:00",
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -200,7 +200,7 @@
       "fastLaunchPriority": true,
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaPassed": false,
-      "robloxInternalReleaseReady": true,
+      "robloxInternalReleaseReady": false,
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
@@ -329,7 +329,9 @@
       "robloxPublicReleaseReady": false,
       "robloxPublicRelease": false,
       "robloxReleaseClaim": false,
-      "robloxReleasePublishedAt": "2026-09-21T18:45:54.909Z"
+      "robloxReleasePublishedAt": "2026-09-21T18:45:54.909Z",
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": "daechung-rpg"
     },
     {
       "gameId": "daechung-rpg",
@@ -385,7 +387,7 @@
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-22T04:04:45+09:00",
+      "updatedAt": "2026-09-22T04:13:30+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -662,7 +664,9 @@
         "workflowRunId": 35642358237,
         "publishedAt": "2026-09-21T19:04:42.533Z",
         "authority": "roblox-open-cloud-internal-release"
-      }
+      },
+      "robloxSharedTargetCurrent": true,
+      "robloxFastMvpSupersededBy": null
     },
     {
       "gameId": "horror-escape-room",
@@ -727,7 +731,7 @@
         "roblox-internal-release-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-21T18:26:19.165Z",
+      "updatedAt": "2026-09-22T04:13:30+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -857,7 +861,9 @@
         "authority": "roblox-headless-fast-mvp"
       },
       "robloxHeadlessFinalReviewPassed": true,
-      "robloxHeadlessPassedAt": "2026-09-21T18:26:19.165Z"
+      "robloxHeadlessPassedAt": "2026-09-21T18:26:19.165Z",
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null
     },
     {
       "gameId": "bug-defense",
@@ -3368,7 +3374,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-21T19:08:55.278Z",
+  "updatedAt": "2026-09-22T04:13:30+09:00",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
