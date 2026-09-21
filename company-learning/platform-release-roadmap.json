@@ -1,8 +1,8 @@
 {
-  "version": 253,
+  "version": 254,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-21",
+  "recordedAt": "2026-09-22",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -826,15 +826,9 @@
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-09-22",
       "requiredStages": [
-        "EXACT_SOURCE_STATIC_VALIDATION",
-        "ROJO_PACKAGE",
-        "VIBE_SHARED_MODEL_PREFLIGHT",
-        "SERVER_CLIENT_AUTHORITY_CONTRACT",
-        "REMOTE_SECURITY_CONTRACT",
-        "MOBILE_INPUT_UI_CONTRACT",
-        "SAVE_REJOIN_CONTRACT_WHEN_APPLICABLE",
-        "MULTIPLAYER_STATE_SYNC_CONTRACT_WHEN_APPLICABLE",
-        "HEADLESS_REGRESSION",
+        "EXACT_SOURCE_ROJO_PACKAGE",
+        "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
+        "CORE_HEADLESS_QA",
         "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_PUBLISH"
       ],
       "evidenceField": "robloxHeadlessFastMvpEvidence",
@@ -846,7 +840,21 @@
         "company-runtime-publication-target",
         "prior-proven-open-cloud-release",
         "owner-pinned-open-cloud-target"
-      ]
+      ],
+      "coreHeadlessQaChecks": [
+        "SERVER_CLIENT_AUTHORITY_CONTRACT",
+        "REMOTE_SECURITY_CONTRACT",
+        "MOBILE_INPUT_UI_CONTRACT",
+        "SAVE_REJOIN_CONTRACT_WHEN_APPLICABLE",
+        "MULTIPLAYER_STATE_SYNC_CONTRACT_WHEN_APPLICABLE",
+        "EXACT_ARTIFACT_BINDING"
+      ],
+      "separateIndependentQaRequired": false,
+      "separateRegressionStageRequired": false,
+      "separateFinalReviewRequired": false,
+      "webRevalidationRequiredForInternalRelease": false,
+      "sharedModelReviewCount": 1,
+      "publicReleasePolicyUnchanged": true
     }
   },
   "unity": {

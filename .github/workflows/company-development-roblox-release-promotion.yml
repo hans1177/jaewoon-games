@@ -107,7 +107,6 @@ jobs:
             &&Number.isInteger(artifactRunId)&&artifactRunId>0;
           const headlessCanonical=headlessMode
             &&item.robloxHeadlessFastMvpPassed===true
-            &&item.robloxHeadlessFinalReviewPassed===true
             &&item.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
             &&item.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING';
           const legacyCanonical=!headlessMode
@@ -555,7 +554,7 @@ jobs:
           [ "$PUBLISH_OUTCOME" = 'success' ]
           echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=PASS'
           echo 'ROBLOX_INTERNAL_RELEASE_EXACT_ARTIFACT=YES'
-          echo 'ROBLOX_INTERNAL_RELEASE_FINAL_REVIEW_REQUIRED=YES'
+          echo 'ROBLOX_INTERNAL_RELEASE_SEPARATE_FINAL_REVIEW_REQUIRED=NO'
           echo 'ROBLOX_RUNTIME_RERUN=NO'
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'

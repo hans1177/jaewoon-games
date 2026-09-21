@@ -1,7 +1,7 @@
 {
   "version": 1,
   "revision": 48,
-  "updatedAt": "2026-09-22T03:45:00+09:00",
+  "updatedAt": "2026-09-22T03:56:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1017,5 +1017,33 @@
       "mayOverrideCentralPolicy": false,
       "humanDocumentRequired": false
     }
+  },
+  "internalReleaseFastMvp": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "appliesTo": "ROBLOX_PRIVATE_OR_RESTRICTED_INTERNAL_RELEASE",
+    "publicReleaseUnaffected": true,
+    "gates": [
+      "EXACT_SOURCE_ROJO_PACKAGE",
+      "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
+      "CORE_HEADLESS_QA",
+      "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_PUBLISH"
+    ],
+    "coreHeadlessQa": [
+      "SERVER_CLIENT_AUTHORITY",
+      "REMOTE_SECURITY",
+      "MOBILE_INPUT_UI",
+      "SAVE_REJOIN_WHEN_APPLICABLE",
+      "MULTIPLAYER_STATE_SYNC_WHEN_APPLICABLE",
+      "EXACT_ARTIFACT_BINDING"
+    ],
+    "separateIndependentQaRequired": false,
+    "separateRegressionStageRequired": false,
+    "separateFinalReviewRequired": false,
+    "webRevalidationRequired": false,
+    "robloxStudioRequired": false,
+    "departmentMultiModelRequired": false,
+    "sharedModelReviewCount": 1,
+    "fakeEvidenceForbidden": true
   }
 }

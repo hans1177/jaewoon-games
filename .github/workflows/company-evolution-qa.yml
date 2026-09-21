@@ -66,7 +66,7 @@ jobs:
             if(!legacyMirror.includes(token))throw new Error(`legacy policy mirror pointer missing: ${token}`);
           }
           const lifecycle=policy.developmentLifecycleMachine?.stages||[];
-          for(const stage of ['WEB_BASE_IMPLEMENTATION','WEB_RUNTIME_VALIDATION','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','RELEASE_PROMOTION']){
+          for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE']){
             if(!lifecycle.includes(stage))throw new Error(`canonical lifecycle stage missing: ${stage}`);
           }
           const roles=['planning','graphics','development','qa','balance'];
