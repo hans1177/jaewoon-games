@@ -4432,7 +4432,32 @@
       "rawModelOutputLearningForbidden": true,
       "selfAcceptanceForbidden": true,
       "verifiedOnly": true,
-      "immediateLearningMotorRerunOnNewPromotion": true
+      "immediateLearningMotorRerunOnNewPromotion": true,
+      "reuseLoop": {
+        "enabled": true,
+        "retriever": "tools/company-system-ai-learning-context.mjs",
+        "consumer": "tools/company-system-ai-worker.mjs",
+        "sourceMemory": [
+          ".vibe2/experience.json",
+          ".vibe2/code-pattern-library.json",
+          ".vibe2/learning-motor-state.json"
+        ],
+        "verifiedOnly": true,
+        "advisoryOnly": true,
+        "exactKnowledgeIdTraceRequired": true,
+        "freshVerificationRequired": true,
+        "rawModelOutputReuseForbidden": true,
+        "authorityExpansionForbidden": true,
+        "feedbackSequence": [
+          "RETRIEVE_RELEVANT_VERIFIED_VIBE_KNOWLEDGE",
+          "INJECT_ADVISORY_CONTEXT",
+          "EXECUTE_SCOPED_SYSTEM_AI_TASK",
+          "FRESH_DETERMINISTIC_VERIFICATION",
+          "RECORD_EXACT_INJECTED_KNOWLEDGE_IDS",
+          "PROMOTE_ONLY_VERIFIED_OUTCOME",
+          "RERUN_VIBE_LEARNING_MOTOR"
+        ]
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
