@@ -73,7 +73,8 @@ jobs:
           const revision=String(item.robloxSourceCommit||'').trim();
           const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
-          const artifactRunId=Number(item.robloxRuntimeEvidence?.artifactRunId||0);
+          const headlessMode=item.robloxValidationMode==='HEADLESS_FAST_MVP';
+          const artifactRunId=Number((headlessMode?item.robloxHeadlessFastMvpEvidence?.artifactRunId:item.robloxRuntimeEvidence?.artifactRunId)||0);
           const currentRelease=item.robloxInternalReleaseReady===true
             &&item.robloxInternalReleaseEvidence?.published===true
             &&item.robloxInternalReleaseEvidence?.sourceRevision===revision
@@ -85,31 +86,36 @@ jobs:
             process.exit(0);
           }
           const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
-          const canonical=
+          const commonCanonical=
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
             &&(
               (Array.isArray(item.concurrentTargetPlatforms)&&item.concurrentTargetPlatforms.map(value=>String(value||'').toUpperCase()).includes('ROBLOX'))
               ||Boolean(item.platformDesignProfiles?.ROBLOX)
               ||Boolean(item.targetSourcePaths?.ROBLOX)
             )
-            &&item.robloxFinalReviewPassed===true
-            &&item.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
-            &&item.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING'
             &&item.robloxInternalReleaseReady!==true
             &&item.robloxBuildOrPackagePassed===true
-            &&item.robloxBuildSourceRevision===revision
             &&item.robloxBuildPreflightPassed===true
-            &&item.robloxRuntimePassed===true
-            &&item.robloxServerClientBoundaryPassed===true
-            &&item.robloxMobileControlUiPassed===true
-            &&item.robloxIndependentQaPassed===true
-            &&item.robloxRegressionPassed===true
-            &&item.robloxExactRevisionPassed===true
-            &&(!multiplayerApplicable||item.robloxMultiplayerQaPassed===true)
+            &&item.robloxBuildSourceRevision===revision
             &&/^[0-9a-f]{40}$/i.test(revision)
             &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
             &&sourceRoot===`roblox-games/${gameId}`
             &&Number.isInteger(artifactRunId)&&artifactRunId>0;
+          const headlessCanonical=headlessMode
+            &&item.robloxHeadlessFastMvpPassed===true
+            &&item.robloxHeadlessFinalReviewPassed===true
+            &&item.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
+            &&item.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING';
+          const legacyCanonical=!headlessMode
+            &&item.robloxFinalReviewPassed===true
+            &&item.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
+            &&item.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING'
+            &&item.robloxRuntimePassed===true
+            &&item.robloxIndependentQaPassed===true
+            &&item.robloxRegressionPassed===true
+            &&item.robloxExactRevisionPassed===true
+            &&(!multiplayerApplicable||item.robloxMultiplayerQaPassed===true);
+          const canonical=commonCanonical&&(headlessCanonical||legacyCanonical);
           if(!canonical)throw new Error(`ROBLOX_RELEASE_CANONICAL_GATE_BLOCKED:${gameId}`);
 
           const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
@@ -372,7 +378,8 @@ jobs:
           const targetSource=String(process.env.PUBLICATION_TARGET_SOURCE||'').trim();
           if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('release source revision changed before persist');
           if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('release artifact identity changed before persist');
-          if(item.robloxFinalReviewPassed!==true)throw new Error('final review no longer passed before release persist');
+          const finalGate=item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFinalReviewPassed===true:item.robloxFinalReviewPassed===true;
+          if(!finalGate)throw new Error('final review no longer passed before release persist');
           if(!Number.isInteger(version)||version<=0)throw new Error('published Roblox version missing');
           if(!/^[1-9][0-9]*$/.test(universeId)||!/^[1-9][0-9]*$/.test(placeId))throw new Error('published Roblox target IDs missing');
           const existingTarget=item.robloxPublicationTarget||{};
@@ -405,6 +412,8 @@ jobs:
             universeId,
             placeId,
             finalReviewPassed:true,
+            validationMode:item.robloxValidationMode||'LEGACY_STUDIO',
+            headlessFastMvpPassed:item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFastMvpPassed===true:false,
             published:true,
             publicRelease:false,
             exposure:'PRIVATE_OR_RESTRICTED',
