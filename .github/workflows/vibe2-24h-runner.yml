@@ -413,7 +413,7 @@ jobs:
             node --check /tmp/vibe2-main/tools/company-platform-exposure-control.mjs
             (
               cd /tmp/vibe2-main
-              node --test qa/company-platform-exposure-control.test.mjs
+              node --test qa/company-platform-exposure-control.test.mjs qa/vibe2-post-release-boundary.test.mjs
             )
             node /tmp/vibe2-main/tools/company-platform-exposure-control.mjs \
               --development-queue=/tmp/vibe2-company-runtime-queue.json \
