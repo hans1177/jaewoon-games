@@ -182,3 +182,20 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
   assert.match(manager,/HOMEPAGE_MANAGER_COUNT=1/);
   assert.match(manager,/HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1/);
 });
+
+test('homepage front door stays simple, game-first and mobile touch-first',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const front=roadmap.homepagePresentation?.frontDoor||{};
+  assert.equal(front.mode,'SIMPLE_GAME_FIRST_RESPONSIVE');
+  assert.deepEqual(front.order.slice(0,4),['FEATURED_GAME','LIVE_SUMMARY','GAME_CENTER','DEVELOPMENT_PIPELINE']);
+  assert.equal(front.mobile?.fixedBottomNavigation,true);
+  assert.equal(front.mobile?.horizontalGameCardBrowse,true);
+  assert.match(index,/class="mainNav"/);
+  assert.match(index,/class="mobileDock"/);
+  assert.match(index,/href="#gameHub"/);
+  assert.match(index,/href="#developmentPipeline"/);
+  assert.match(index,/id="developerProfile"/);
+  assert.match(index,/HOME_FRONT_DOOR_SIMPLE_V2/);
+  assert.ok(index.indexOf('id="hero"')<index.indexOf('aria-label="게임 운영 요약"'));
+  assert.ok(index.indexOf('id="gameHub"')<index.indexOf('id="developmentPipeline"'));
+});
