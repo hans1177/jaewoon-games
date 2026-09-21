@@ -2412,5 +2412,47 @@
       "vibeImplementationOwnershipPreserved": true,
       "authorityChangeSource": "EXPLICIT_CENTRAL_POLICY_OR_OWNER_DIRECTIVE_ONLY"
     }
+  },
+  "homepagePipeline": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#serverHomepageIntegration.executionPipeline",
+    "workflow": ".github/workflows/homepage-manager.yml",
+    "executionOwner": "HOMEPAGE_MANAGER",
+    "supervisor": "DIRECTOR",
+    "stages": [
+      {
+        "id": "manage-and-self-qa",
+        "role": "HOMEPAGE_MANAGER",
+        "responsibilities": [
+          "RUNTIME_BIND",
+          "SNAPSHOT_BUILD",
+          "SELF_QA",
+          "HASHED_CANDIDATE_CAPTURE"
+        ]
+      },
+      {
+        "id": "director-supervision",
+        "role": "DIRECTOR",
+        "responsibilities": [
+          "EXACT_CANDIDATE_VERIFY",
+          "POST_WORK_SUPERVISION",
+          "PUBLICATION_IF_CHANGED"
+        ]
+      }
+    ],
+    "separatePublishJobForbidden": true,
+    "exactCandidateAppliedOnceByDirector": true,
+    "deterministicQaAuthority": true,
+    "systemAi": {
+      "role": "COMMON_BOTTLENECK_RECOVERY_ASSISTANT",
+      "executionOwner": false,
+      "mayHandle": [
+        "REPEATED_FAILURE",
+        "SHARED_INFRASTRUCTURE_FAILURE",
+        "STALE_RESERVATION",
+        "CROSS_PIPELINE_BOTTLENECK"
+      ],
+      "mayBypassDirector": false
+    }
   }
 }
