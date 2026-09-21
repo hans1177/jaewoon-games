@@ -25,19 +25,25 @@ export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={})
   if(Number(handoff.version||0)!==Number(policy.manifestVersion||1))blockers.push('WEB_HANDOFF_VERSION_MISMATCH');
   if(clean(handoff.gameId)!==clean(gameId))blockers.push('WEB_HANDOFF_GAME_ID_MISMATCH');
   if(clean(handoff.stage)!=='WEB_DEVELOPMENT_BASELINE_READY')blockers.push('WEB_HANDOFF_STAGE_INVALID');
-  if(!clean(handoff.sourcePath)||!clean(handoff.evidencePath)||!clean(handoff.baselineSource))blockers.push('WEB_HANDOFF_PATH_BINDING_MISSING');
+  const firstGateAdmission=handoff.firstGatePassed===true&&handoff.secondGateRequired===true&&clean(handoff.secondGateCriteriaAuthority).toUpperCase()==='OWNER_DIRECTIVE';
+  if(!clean(handoff.sourcePath)||!clean(handoff.baselineSource))blockers.push('WEB_HANDOFF_PATH_BINDING_MISSING');
   if(!SHA256.test(clean(handoff.sourceIndexSha256)))blockers.push('WEB_HANDOFF_SOURCE_SHA_INVALID');
   if(!SHA256.test(clean(handoff.designBaselineSha256)))blockers.push('WEB_HANDOFF_BASELINE_SHA_INVALID');
   if(Number(handoff.validationSchemaVersion||0)<=0)blockers.push('WEB_HANDOFF_SCHEMA_INVALID');
-  if(Number(handoff.strictScore||0)<90)blockers.push('WEB_HANDOFF_STRICT_SCORE_BELOW_90');
-  if(handoff.promotionRevalidationPassed!==true)blockers.push('WEB_HANDOFF_PROMOTION_REVALIDATION_REQUIRED');
+  if(!firstGateAdmission){
+    if(!clean(handoff.evidencePath))blockers.push('WEB_HANDOFF_EVIDENCE_PATH_MISSING');
+    if(Number(handoff.strictScore||0)<90)blockers.push('WEB_HANDOFF_STRICT_SCORE_BELOW_90');
+    if(handoff.promotionRevalidationPassed!==true)blockers.push('WEB_HANDOFF_PROMOTION_REVALIDATION_REQUIRED');
+  }
   if(handoff.nativeRuntimePassTransferred!==false)blockers.push('WEB_HANDOFF_NATIVE_PASS_TRANSFER_FORBIDDEN');
   const presentation=handoff.presentationContract||null;
-  if(presentation?.ready!==true)blockers.push('WEB_HANDOFF_PRESENTATION_READY_REQUIRED');
-  if(clean(presentation?.kind)!=='WEB_TO_NATIVE_PRESENTATION_CONTRACT')blockers.push('WEB_HANDOFF_PRESENTATION_KIND_INVALID');
-  if(!clean(presentation?.styleLock?.id))blockers.push('WEB_HANDOFF_STYLE_LOCK_REQUIRED');
-  if(presentation?.commercialReadiness?.pass!==true)blockers.push('WEB_HANDOFF_COMMERCIAL_READINESS_REQUIRED');
-  if(presentation?.webAssetBinaryCopyRequired!==false)blockers.push('WEB_HANDOFF_PLATFORM_NATIVE_ADAPTATION_REQUIRED');
+  if(!firstGateAdmission){
+    if(presentation?.ready!==true)blockers.push('WEB_HANDOFF_PRESENTATION_READY_REQUIRED');
+    if(clean(presentation?.kind)!=='WEB_TO_NATIVE_PRESENTATION_CONTRACT')blockers.push('WEB_HANDOFF_PRESENTATION_KIND_INVALID');
+    if(!clean(presentation?.styleLock?.id))blockers.push('WEB_HANDOFF_STYLE_LOCK_REQUIRED');
+    if(presentation?.commercialReadiness?.pass!==true)blockers.push('WEB_HANDOFF_COMMERCIAL_READINESS_REQUIRED');
+    if(presentation?.webAssetBinaryCopyRequired!==false)blockers.push('WEB_HANDOFF_PLATFORM_NATIVE_ADAPTATION_REQUIRED');
+  }
   for(const field of required)if(!got.includes(clean(field)))blockers.push('WEB_HANDOFF_CARRY_FORWARD_MISSING:'+clean(field));
   return Object.freeze({pass:blockers.length===0,blockers:Object.freeze(blockers),carryForward:Object.freeze(got),presentation:Object.freeze(presentation||{})});
 }
