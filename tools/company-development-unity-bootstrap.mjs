@@ -355,7 +355,8 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,webEvidence:webEvidencePath||null,
   webEvidenceBound,webEvidenceOptional:true,productionClass:'DEVELOPMENT_CONFIRMED',
-  webBuildMethod:'SeedAndroidBuild.BuildWeb',firstWebStageEngine:'UNITY_WEB',\n  purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',releaseAuthority:false,
+  webBuildMethod:'SeedAndroidBuild.BuildWeb',firstWebStageEngine:'UNITY_WEB',
+  purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',releaseAuthority:false,
   generatedAt:new Date().toISOString()
 },null,2)+'\n');
 console.log(`UNITY_TECH_PROJECT=${output}`);
@@ -363,7 +364,8 @@ console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
 console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_TECH_GENERATOR_FINGERPRINT=${generatorFingerprint}`);
 console.log(`UNITY_TECH_MODE=${category}`);
-console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');\nconsole.log('UNITY_WEB_BUILD_METHOD=SeedAndroidBuild.BuildWeb');
+console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
+console.log('UNITY_WEB_BUILD_METHOD=SeedAndroidBuild.BuildWeb');
 console.log('ANDROID_GRAPHICS_COMPATIBILITY_PROFILE=OPEN_GLES3_ES30_MINIMUM');
 console.log(`WEB_EVIDENCE_BOUND=${webEvidenceBound?'YES':'NO'}`);
 console.log('WEB_EVIDENCE_OPTIONAL=YES');
