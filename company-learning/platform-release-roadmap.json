@@ -1,5 +1,5 @@
 {
-  "version": 234,
+  "version": 235,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4903,6 +4903,13 @@
         "desktopGameColumns": 4,
         "mobileGameBrowse": "HORIZONTAL_TOUCH_CARDS",
         "runtimeMayOverrideApprovedFrontDoor": false
+      },
+      "secondaryPlacement": {
+        "portfolioBoard": "AFTER_DEVELOPMENT_PIPELINE",
+        "mayPreemptFeaturedGame": false,
+        "mayPreemptLiveSummary": false,
+        "mayPreemptGameCenter": false,
+        "mayPreemptDevelopmentPipeline": false
       }
     }
   },
