@@ -206,7 +206,6 @@ function killEnemy(e,killer='player'){
 }
 
 function nearestNpc(){
-  if(state.zone!=='town')return null;
   const pp=player.getPosition();let best=null,dist=3.4;
   for(const n of npcs){const d=n.getPosition().distance(pp);if(d<dist){dist=d;best=n}}return best;
 }
@@ -460,4 +459,4 @@ addEventListener('orientationchange',()=>setTimeout(()=>app.resizeCanvas(),120))
 document.addEventListener('visibilitychange',()=>{if(document.hidden)resetTouchState()});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();resetTouchState();toast('그래픽 복구 중...')});
-if(app.graphicsDevice)app.graphicsDevice.maxPixelRatio=Math.min(devicePixelRatio||1,2);
+if(app.graphicsDevice&&'maxPixelRatio' in app.graphicsDevice)app.graphicsDevice.maxPixelRatio=Math.min(devicePixelRatio||1,2);
