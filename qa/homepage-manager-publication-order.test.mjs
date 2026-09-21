@@ -241,3 +241,11 @@ test('homepage has one canonical runtime data renderer',()=>{
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
 });
+
+test('homepage live polling is bounded and event-assisted',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(runtime,/const SYNC_INTERVAL_MS=30000;/);
+  assert.match(runtime,/window\.addEventListener\('focus',refresh\)/);
+  assert.match(runtime,/window\.addEventListener\('online',refresh\)/);
+  assert.match(runtime,/visibilitychange/);
+});
