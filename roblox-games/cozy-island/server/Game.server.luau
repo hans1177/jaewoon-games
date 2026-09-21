@@ -5,6 +5,7 @@ local Lighting=game:GetService("Lighting")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
+local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 local store=DSS:GetDataStore("cozy-island-conquest-v2")
 local remote=RS:FindFirstChild(C.RemoteName) or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
@@ -67,14 +68,14 @@ local function attack(p)
   if battling[p] then msg(p,"전투 중")return end
   local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"현재 공개 기지 전부 점령")return end
   local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return end
-  battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);msg(p,b.Name.." 자동전투")
+  battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));msg(p,b.Name.." 자동전투");BattleVisual.start(p,idx,troops,C,Style)
   task.spawn(function()
     for i=1,4 do if not p.Parent then battling[p]=nil return end;s(p,"BattleProgress",i*25);task.wait(.5)end
     local power=troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p);local won=power*(.92+math.random()*.16)>=b.Strength
     local lost=math.max(1,math.floor(troops*(won and .15 or .35)));s(p,"Troops",math.max(0,n(p,"Troops",0)-lost))
     if won then s(p,b.Reward,n(p,b.Reward,0)+b.Amount);s(p,"Coins",n(p,"Coins",0)+b.Coins);s(p,"CapturedBases",n(p,"CapturedBases",0)+1);if b.IslandFinal then s(p,"CapturedIslands",n(p,"CapturedIslands",0)+1)end;s(p,"NextBaseIndex",idx+1);msg(p,b.Name.." 점령!")
     else msg(p,b.Name.." 패배 - 병력을 키워")end
-    s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil
+    s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won)
   end)
 end
 local H={
@@ -86,5 +87,5 @@ local H={
 Players.PlayerAdded:Connect(load);for _,p in ipairs(Players:GetPlayers())do task.defer(load,p)end
 remote.OnServerEvent:Connect(function(p,a)if typeof(a)~="string" or not H[a] then return end;local t=os.clock();if t-(last[p]or 0)<C.RateLimitSeconds then return end;last[p]=t;H[a](p)end)
 task.spawn(function()while true do task.wait(C.AutomationTickSeconds);for _,p in ipairs(Players:GetPlayers())do local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0);if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end;if f>0 then s(p,"Food",n(p,"Food",0)+f)end;if w+f>0 and not battling[p] then msg(p,string.format("주민 자동생산 나무+%d 식량+%d",w,f))end end end end)
-Players.PlayerRemoving:Connect(function(p)save(p);last[p]=nil;battling[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);last[p]=nil;battling[p]=nil;BattleVisual.cleanup(p)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
