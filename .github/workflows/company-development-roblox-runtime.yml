@@ -175,7 +175,13 @@ jobs:
           artbook="$root/artbook.json"
           web_handoff="$root/web-platform-handoff.json"
           git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
-          git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" 2>/dev/null; then
+            git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
+            echo 'ROBLOX_ARTBOOK_INPUT=BOUND'
+          else
+            printf '{"version":1,"gameId":"%s","nativeDevelopmentNonBlocking":true,"source":"MISSING_POST_WEB_ARTBOOK_FALLBACK"}\n' "$GAME_ID" > "$artbook"
+            echo 'ROBLOX_ARTBOOK_INPUT=NONBLOCKING_FALLBACK'
+          fi
           printf '%s\n' "$WEB_HANDOFF_JSON" > "$web_handoff"
           node -e "const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const first=h?.firstGatePassed===true&&h?.secondGateRequired===true&&String(h?.secondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';if(!h||h.stage!=='WEB_DEVELOPMENT_BASELINE_READY'||(!first&&h.promotionRevalidationPassed!==true))process.exit(2);console.log(first?'ROBLOX_WEB_HANDOFF_INPUT=FIRST_GATE_READY':'ROBLOX_WEB_HANDOFF_INPUT=PROMOTION_READY')" "$web_handoff"
           branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
