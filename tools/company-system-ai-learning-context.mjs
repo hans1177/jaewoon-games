@@ -36,6 +36,7 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
     taskId:clean(task.id),
     resolvedTarget:inferLearningTarget(task),
     exactKnowledgeIds:(retrieval.exactKnowledgeIds||[]).slice(0,20),
+    domainClassification:retrieval.domainClassification||{primary:[],secondary:[],all:[],ranked:[]},
     guidance:learningGuidance(retrieval),
     rawModelOutputIncluded:false,
     verifiedOnly:true,
