@@ -76,7 +76,7 @@ jobs:
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {DEVELOPMENT_GAME_WIP_MAX,resolveSelectedPlatform,selectRepresentativeCanary,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
+          import {DEVELOPMENT_GAME_WIP_MAX,platformDevelopmentEligible,selectRepresentativeCanary,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
@@ -84,7 +84,7 @@ jobs:
             if(!windowIds.has(item.gameId))return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
-            if(resolveSelectedPlatform(item)!=='UNITY')return false;
+            if(!platformDevelopmentEligible(item,'UNITY'))return false;
             const step=String(item.currentStep||'').toUpperCase();
             const state=String(item.canonicalState||'').toUpperCase();
             return step==='TARGET_PLATFORM_SOURCE_BIND'||step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||step==='UNITY_ANDROID_TECHNICAL_VALIDATION'||
