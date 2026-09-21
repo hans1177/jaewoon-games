@@ -283,13 +283,14 @@ jobs:
               --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
               --output=/tmp/vibe2-marketing-plan.json | tee /tmp/vibe2-marketing-plan.log
 
-            mkdir -p /tmp/vibe2-marketing-decisions
+            mkdir -p .vibe2/marketing-decisions
             : > /tmp/vibe2-marketing-decision.log
             while IFS= read -r file; do
               [ -n "$file" ] || continue
               game_id="$(node -p "require('$file').gameId")"
-              node /tmp/vibe2-main/tools/company-growth-marketing-decision.mjs --file="$file" --output="$file" | tee -a /tmp/vibe2-marketing-decision.log
-              node /tmp/vibe2-main/tools/company-growth-marketing-qa.mjs --file="$file" --game-id="$game_id"
+              decision_file=".vibe2/marketing-decisions/${game_id}.json"
+              node /tmp/vibe2-main/tools/company-growth-marketing-decision.mjs --file="$file" --output="$decision_file" | tee -a /tmp/vibe2-marketing-decision.log
+              node /tmp/vibe2-main/tools/company-growth-marketing-qa.mjs --file="$decision_file" --game-id="$game_id"
             done < <(find /tmp/vibe2-main/company-learning/marketing -mindepth 2 -maxdepth 2 -name latest.json -type f 2>/dev/null | sort)
 
             node /tmp/vibe2-main/tools/company-recovery-escalation.mjs \
@@ -393,7 +394,7 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
