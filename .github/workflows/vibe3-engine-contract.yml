@@ -43,6 +43,10 @@ jobs:
           if(JSON.stringify(roadmap?.priorityTiers)!==JSON.stringify([['UNITY','ROBLOX'],['FORTNITE_UEFN']])||roadmap?.currentPhase!=='ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE'||roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false) throw new Error('platform roadmap equal-tier phase/preservation changed');
           if(roadmap?.robloxMustRunFirst!==false||roadmap?.phase1Implementation?.doesNotCreatePlatformPriority!==true) throw new Error('legacy Roblox adapter must not recreate platform priority');
           if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox adapter compatibility contract changed');
+          const uw=c.unityWebFirstStage;
+          if(uw?.enabled!==true||uw?.scope!=='FIRST_WEB_GAME_STAGE_ONLY'||uw?.canonicalSourceRoot!=='unity-games/<gameId>/'||uw?.buildOutputRoot!=='web-games/<gameId>/') throw new Error('Unity Web first-stage contract missing');
+          if(uw?.postGatePlatformPipelineUnchanged!==true||uw?.unityTargetSameProjectContinuation!==true||uw?.robloxAndUefnRemainNative!==true) throw new Error('Unity Web first-stage scope leaked into native platform flow');
+          if(c.portableWebLearning?.sourceEngine!=='UNITY_WEB'||c.portableWebLearning?.directHtmlCanvasAuthoringDefault!==false) throw new Error('Vibe3 portable Web learning is not bound to Unity Web');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
           console.log('PASS Vibe3 Pump machine contract with portable Web context and native Roblox isolation');
           NODE
