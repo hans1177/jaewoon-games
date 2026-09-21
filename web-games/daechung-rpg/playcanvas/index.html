@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0d1720">
+<title>대충 RPG 3D · PlayCanvas 이전판</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1720;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+#app{display:block;width:100%;height:100%}
+#hud{position:fixed;left:12px;top:12px;z-index:10;color:white;font-weight:800;text-shadow:0 2px 5px #000}
+.pill{display:inline-block;margin:0 5px 5px 0;padding:7px 9px;border-radius:10px;background:#07101ccc;border:1px solid #ffffff44;font-size:12px}
+#joy{position:fixed;left:18px;bottom:22px;width:128px;height:128px;border-radius:50%;background:#07101c88;border:2px solid #ffffff55;z-index:12}
+#knob{position:absolute;left:34px;top:34px;width:56px;height:56px;border-radius:50%;background:#ffffff66;border:2px solid #fff9;pointer-events:none}
+#attack{position:fixed;right:24px;bottom:30px;width:94px;height:94px;border:2px solid #fff9;border-radius:50%;background:#b73535e8;color:#fff;font-size:18px;font-weight:900;z-index:12}
+#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#06101bea;z-index:20;color:#fff;padding:24px;text-align:center}
+#start button{width:min(320px,84vw);padding:15px;border:0;border-radius:12px;background:#f0b64f;color:#211405;font-size:18px;font-weight:900}
+#badge{position:fixed;right:12px;top:12px;z-index:10;background:#163c50dd;color:#bfefff;border:1px solid #71cfff66;border-radius:10px;padding:7px 9px;font-size:11px;font-weight:900}
+</style>
+<script type="importmap">
+{"imports":{"playcanvas":"https://cdn.jsdelivr.net/npm/playcanvas@2.22.2/+esm"}}
+</script>
+</head>
+<body>
+<canvas id="app"></canvas>
+<div id="hud"><span class="pill" id="area">마을</span><span class="pill" id="hp">HP 100/100</span><span class="pill" id="atk">공격 10</span></div>
+<div id="badge">PLAYCANVAS 3D MIGRATION</div>
+<div id="joy"><div id="knob"></div></div>
+<button id="attack">공격</button>
+<div id="start"><div><h1>대충 RPG 3D</h1><p>PlayCanvas 이전 1단계 · 마을/캐릭터/포탈/전투 기반</p><button id="startBtn">3D 테스트 시작</button></div></div>
+<script type="module" src="./main.mjs"></script>
+</body>
+</html>
