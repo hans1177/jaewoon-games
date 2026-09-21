@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -149,5 +149,15 @@
     "securityPolicyHashRequired": true,
     "launcherValidationRequired": true,
     "completionMustUseSameValidatedContext": true
+  },
+  "dualNativeCorrelation": {
+    "gameKey": "GAME_ID",
+    "platformKeys": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "sharedDesignEvidence": "design/<gameId>/<date>/design-revised.json",
+    "platformEvidenceIndependent": true,
+    "homepageExposureState": "homepage-platform-exposure.json"
   }
 }
