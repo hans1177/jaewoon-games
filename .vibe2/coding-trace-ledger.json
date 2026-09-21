@@ -257344,13 +257344,298 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_0e601fbcef4404383ab74ed4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-95504813-93d9-4c2c-b1ea-980bd970162c",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "3d05b709b698c7e069d25ed0839f36f67727690c",
+        "variant": "primary",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 한재운 CEO의 지시에 따라 현재 진행 중인 개발 및 수정 작업을 직접 완성하고 보고합니다.\n\n추가 지시:\n- 너가 해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": "STANDARD_CONTEXT",
+        "contextBytes": 20268,
+        "failureFingerprint": "web|INVALID_PATH|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NO_RESPONSIBLE_TEXT_SOURCE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/pwa-95504813-93d9-4c2c-b1ea-980bd970162c-primary-35567818596-1",
+        "candidateSha": "7b76b0bcd4b31356ad56769846440a56011032bf"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 6,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 574869,
+        "candidateMs": 525043,
+        "qaMs": 79
+      },
+      "evidenceRefs": [
+        "actions-run:35567818596",
+        "reservation-id:35567818596:1",
+        "incremental-qa-hash:ff780c3980d622af0088fb1bf8e09bc36663618df4867c0e2fb4c74087cda610"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_10fea14f2b02d9c7196cd09c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-95504813-93d9-4c2c-b1ea-980bd970162c",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "3d05b709b698c7e069d25ed0839f36f67727690c",
+        "variant": "speculative-1",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 한재운 CEO의 지시에 따라 현재 진행 중인 개발 및 수정 작업을 직접 완성하고 보고합니다.\n\n추가 지시:\n- 너가 해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|INVALID_PATH|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "TIMEOUT",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 574299,
+        "candidateMs": 542748,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35567818596",
+        "reservation-id:35567818596:1",
+        "source-generation-failure:TIMEOUT"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_c9e025dfe838e2e6ba9a5ce8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-95504813-93d9-4c2c-b1ea-980bd970162c",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "3d05b709b698c7e069d25ed0839f36f67727690c",
+        "variant": "speculative-2",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 한재운 CEO의 지시에 따라 현재 진행 중인 개발 및 수정 작업을 직접 완성하고 보고합니다.\n\n추가 지시:\n- 너가 해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|INVALID_PATH|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "TIMEOUT",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 577636,
+        "candidateMs": 542821,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35567818596",
+        "reservation-id:35567818596:1",
+        "source-generation-failure:TIMEOUT"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 6,
+    "added": 3,
     "refreshed": 0,
-    "total": 2217,
-    "verified": 434,
-    "failures": 1193
+    "total": 2220,
+    "verified": 435,
+    "failures": 1195
   }
 }
