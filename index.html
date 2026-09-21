@@ -67,7 +67,7 @@ button,a{font:inherit}
   .gameShelfHead h2{font-size:21px}.gameShelfHead p{font-size:10px}
   .gameShelfGrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 1px 4px}.gameShelfGrid::-webkit-scrollbar{display:none}.foldGameCard{flex:0 0 78vw;max-width:320px;scroll-snap-align:start}.foldGameArt{height:170px}
   .pipeline{padding:16px 12px}.pipelineTop h2{font-size:21px}.pipelineTop span{display:none}.pipelineGrid{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.pipelineGrid::-webkit-scrollbar{display:none}.pipelineStep{flex:0 0 68vw;scroll-snap-align:start}
-  .mobileDock{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:50;display:grid;grid-template-columns:repeat(3,1fr);padding:6px;border:1px solid #e2e8ee;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(20,35,50,.16);backdrop-filter:blur(12px)}
+  .mobileDock{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:50;display:grid;grid-template-columns:repeat(4,1fr);padding:6px;border:1px solid #e2e8ee;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(20,35,50,.16);backdrop-filter:blur(12px)}
   .mobileDock a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px;border-radius:10px;color:#718096;text-decoration:none;font-size:9px;font-weight:900}.mobileDock a:first-child{background:#edf5ff;color:#1677ff}.mobileDock b{font-size:17px}
 }
 </style>
@@ -76,7 +76,7 @@ button,a{font:inherit}
 <main class="shell">
 <header class="topbar">
   <a class="brand" href="#top" id="top">JAEWOON <span>GAMES</span></a>
-  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#developmentPipeline">개발 현황</a></nav>
+  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#developmentPipeline">개발 현황</a><a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT</a></nav>
   <div id="appInstallBar"><button class="installMini" id="appInstallBtn" type="button">앱 설치</button><span class="installState" id="appInstallState"></span></div>
 </header>
 
@@ -107,7 +107,7 @@ button,a{font:inherit}
 </section>
 
 <footer class="footer">© 2026 JAEWOON GAMES</footer>
-<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="#developmentPipeline"><b>▥</b><span>개발</span></a></nav>
+<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="#developmentPipeline"><b>▥</b><span>개발</span></a><a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer"><b>GPT</b><span>ChatGPT</span></a></nav>
 </main>
 
 <script>
