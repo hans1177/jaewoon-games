@@ -1,7 +1,7 @@
 // 파일명: sw.js
 // 역할: 재운컴퍼니 PWA 앱 셸과 비상 AI를 캐시하고 연결 차단 시에도 개발 대화를 이어간다.
 
-const CACHE_NAME='jaewoon-pwa-v21';
+const CACHE_NAME='jaewoon-pwa-v22';
 const APP_SHELL=['/command.html','/emergency-ai.js','/install.html','/offline.html','/manifest.webmanifest','/assets/pwa-icon.svg','/assets/pwa-icon-192.png','/assets/pwa-icon-512.png'];
 const NETWORK_ONLY=/\/web-games\/_shared\/touch-controls\.js(?:\?|$)|\/(?:game-catalog|company-status|public-game-health|game-artbooks|public-release-baselines)\.json(?:\?|$)/;
 
@@ -14,15 +14,20 @@ function injectEmergencyScript(response){
 }
 
 async function serveCommand(request){
-  try{
-    const fresh=await fetch(request,{cache:'no-store'});
-    if(fresh.ok){
-      const cache=await caches.open(CACHE_NAME);cache.put('/command.html',fresh.clone()).catch(()=>{});
-      return injectEmergencyScript(fresh);
-    }
-  }catch{}
   const cached=await caches.match('/command.html');
-  if(cached)return injectEmergencyScript(cached.clone());
+  const update=fetch(request,{cache:'no-store'}).then(async fresh=>{
+    if(fresh.ok){
+      const cache=await caches.open(CACHE_NAME);
+      await cache.put('/command.html',fresh.clone());
+    }
+    return fresh;
+  }).catch(()=>null);
+  if(cached){
+    update.catch(()=>{});
+    return injectEmergencyScript(cached.clone());
+  }
+  const fresh=await update;
+  if(fresh?.ok)return injectEmergencyScript(fresh);
   return await caches.match('/offline.html')||Response.error();
 }
 
