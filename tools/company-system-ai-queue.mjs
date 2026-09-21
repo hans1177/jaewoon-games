@@ -24,6 +24,7 @@ function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function normalizeTask(row={}){
+  const retryPolicy=clean(row.retryPolicy).toUpperCase()==='UNLIMITED_CAUSAL_REPAIR'?'UNLIMITED_CAUSAL_REPAIR':'BOUNDED_RETRY';
   return{
     id:clean(row.id),status:clean(row.status)||'queued',priority:clean(row.priority)||'normal',
     department:clean(row.department)||null,taskType:clean(row.taskType)||null,gameId:clean(row.gameId)||null,
@@ -32,7 +33,7 @@ function normalizeTask(row={}){
     focusPatterns:row.focusPatterns&&typeof row.focusPatterns==='object'?row.focusPatterns:{},
     acceptanceCriteria:unique(row.acceptanceCriteria),verificationCommands:unique(row.verificationCommands),
     dependencies:unique(row.dependencies),retries:Math.max(0,Number(row.retries||0)),
-    maxRetries:Math.max(0,Math.min(5,Number(row.maxRetries??2))),reservationId:clean(row.reservationId)||null,
+    retryPolicy,maxRetries:retryPolicy==='UNLIMITED_CAUSAL_REPAIR'?null:Math.max(0,Math.min(5,Number(row.maxRetries??2))),reservationId:clean(row.reservationId)||null,
     reservedAt:clean(row.reservedAt)||null,candidateBranch:clean(row.candidateBranch)||null,
     pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:clean(row.lastOutcome)||null,
     blocker:clean(row.blocker)||null,evidence:unique(row.evidence),supervisorReviewRequired:row.supervisorReviewRequired!==false,
@@ -81,7 +82,8 @@ export function assignSecurityRecovery(queueInput,recoveryInput,{recoveryId='',d
     verificationCommands:['node --test qa/company-security-steward.test.mjs'],
     dependencies:[],
     retries:0,
-    maxRetries:2,
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',
+    maxRetries:null,
     evidence:unique([
       ...(rec.evidence||[]),
       'security-recovery:'+id,
@@ -236,8 +238,9 @@ export function applySystemAiResults(queueInput,results=[]){
     if(outcome==='PASS'&&row.jointAccepted===true&&clean(task.department).toLowerCase()==='planning-growth-marketing')return{...task,status:'done',candidateBranch:null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PRIMARY_AI_VIBE_JOINT_ACCEPTED',blocker:null,evidence:unique([...evidence,'primary-ai-vibe-joint-accept:YES']),updatedAt:stamp,reservationId:null,reservedAt:null};
     if(outcome==='PASS')return{...task,status:'awaiting-supervisor',candidateBranch:clean(row.candidateBranch)||null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PASS',blocker:'primary-ai-review-pending',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
     const retries=task.retries+1;
-    const retry=retries<=task.maxRetries;
-    return{...task,status:retry?'queued':'failed',retries,lastOutcome:outcome||'FAIL',blocker:clean(row.blocker)||'system-ai-worker-failed',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
+    const unlimited=task.retryPolicy==='UNLIMITED_CAUSAL_REPAIR';
+    const retry=unlimited||retries<=task.maxRetries;
+    return{...task,status:retry?'queued':'failed',retries,lastOutcome:outcome||'FAIL',blocker:clean(row.blocker)||'system-ai-worker-failed',evidence:unique([...evidence,...(unlimited?['system-ai-retry:UNLIMITED_CAUSAL_REPAIR']:[])]),updatedAt:stamp,reservationId:null,reservedAt:null};
   })};
   return queue;
 }
