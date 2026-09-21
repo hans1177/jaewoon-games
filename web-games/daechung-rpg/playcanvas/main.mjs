@@ -68,13 +68,22 @@ function applyNpcAsset(n){
   return mountAsset(n,asset,n.role,{scale:.72,y:0,rotY:180});
 }
 function applyEnemyAsset(e){
-  if(!/슬라임/.test(e.enemyName||''))return null;
-  return mountAsset(e,CARTOON.slime,'slime',{scale:.82,y:-.82,rotY:180});
+  const name=e.enemyName||'';
+  let asset=null,scale=.72,y=-.85,key='enemy';
+  if(/슬라임/.test(name)){asset=CARTOON.slime;scale=.82;key='slime'}
+  else if(/마법|악마|망령|심연|주술|마물/.test(name)){asset=CARTOON.wizard;scale=e.isBoss?1.05:.72;key='dark-mage'}
+  else if(/오크|기사|해골|고블린|수호|병사|추종자|대장|군주|왕/.test(name)){asset=CARTOON.warrior;scale=e.isBoss?1.12:.74;key='fighter'}
+  if(!asset)return null;
+  return mountAsset(e,asset,key,{scale,y,rotY:180});
+}
+function applyAiAsset(a){
+  const asset=a.role==='궁수'?CARTOON.ranger:a.role==='힐러'?CARTOON.wizard:CARTOON.warrior;
+  return mountAsset(a,asset,'ai-'+a.role,{scale:.68,y:-1.1,rotY:180});
 }
 function applyCartoonVisuals(){
   const pv=mountAsset(player,CARTOON.warrior,'player',{scale:.72,y:-1.1,rotY:180});
   if(pv){if(sword.model)sword.model.enabled=false;if(armorPlate.model)armorPlate.model.enabled=false;if(helmet.model)helmet.model.enabled=false}
-  npcs.forEach(applyNpcAsset);enemies.forEach(applyEnemyAsset);
+  npcs.forEach(applyNpcAsset);enemies.forEach(applyEnemyAsset);aiUsers.forEach(applyAiAsset);
 }
 async function loadCartoonAssets(){
   CARTOON.slimeUrl=base64BlobUrl(SLIME_GLB_BASE64);
@@ -164,7 +173,7 @@ function ensureAiUsers(){
   AI_ROLES.forEach((role,i)=>{
     const e=primitive('AI-'+(i+1),'capsule',[0,1.1,0],[.92,.92,.92],role==='힐러'?M.cloth:role==='전사'?M.armor:role==='궁수'?M.merchant:M.chief,actorRoot);
     e.aiId='ai'+(i+1);e.aiName='유저 AI '+(i+1);e.role=role;e.hp=100;e.maxHp=100;e.attack=role==='전사'?18:role==='궁수'?14:10;e.range=role==='궁수'?8:2.2;e.cool=0;e.zone='town';e.weapon='맨손';e.gold=100+i*20;e.xp=0;e.contrib=0;
-    aiUsers.push(e);party.contrib[e.aiId]=0;
+    aiUsers.push(e);party.contrib[e.aiId]=0;if(CARTOON.ready)applyAiAsset(e);
   });
 }
 function placeAiForZone(){
@@ -207,7 +216,7 @@ function buildHunt(id){
   if(z.boss){
     const [bn,bhp,batk,bmat]=z.boss;
     const b=primitive('Boss-'+bn,'capsule',[0,1.5,-14],[2.3,2.3,2.3],bmat,zoneRoot);
-    b.enemyName=bn;b.hp=bhp;b.maxHp=bhp;b.attack=batk;b.speed=2.4;b.alive=true;b.hitCd=.5;b.isBoss=true;enemies.push(b);
+    b.enemyName=bn;b.hp=bhp;b.maxHp=bhp;b.attack=batk;b.speed=2.4;b.alive=true;b.hitCd=.5;b.isBoss=true;enemies.push(b);if(CARTOON.ready)applyEnemyAsset(b);
   }
   player.setPosition(0,1.1,13);state.zone=key;state.portalCd=1;placeAiForZone();
   toast(z.name+' 입장');
@@ -355,6 +364,7 @@ function ensureRemoteEntity(id){
   const old=multiplayer.remote.get(id);if(old?.entity)return old.entity;
   const e=primitive('Remote-'+id,'capsule',[0,1.1,0],[1,1,1],M.gold,actorRoot);
   primitive('RemoteHead-'+id,'sphere',[0,1.15,0],[.62,.62,.62],M.cloth,e);
+  if(CARTOON.ready)mountAsset(e,CARTOON.warrior,'remote',{scale:.68,y:-1.1,rotY:180});
   return e;
 }
 function remotePlayerState(payload){
