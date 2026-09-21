@@ -56,7 +56,7 @@ test('verified runtime status and catalog join the same supervised publication c
 
 test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 shelf',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
-  assert.match(homepage,/const SYNC_INTERVAL_MS=5000/);
+  assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
   assert.match(homepage,/getJson\('\/company-status\.json'\)/);
   assert.match(homepage,/getJson\('\/test-game-candidates\.json'\)/);
