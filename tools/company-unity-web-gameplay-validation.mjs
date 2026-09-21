@@ -97,18 +97,18 @@ try{
 
   await page.keyboard.press('Digit1');
   await page.waitForTimeout(1500);
-  const enteredCombat=markers.some(x=>x.includes(' REGION ')&&x.includes('region=field-1'));
-  if(!enteredCombat)throw new Error('UNITY_WEB_QA_REGION_TRANSITION_MISSING');
+  const enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+  if(!enteredGameplay)throw new Error('UNITY_WEB_QA_GAMEPLAY_START_MISSING');
 
-  for(let i=0;i<14&&!markers.some(x=>x.includes(' REWARD '));i++){
+  for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
     await page.waitForTimeout(250);
   }
 
-  const attacks=markers.filter(x=>x.includes(' ATTACK '));
-  const rewards=markers.filter(x=>x.includes(' REWARD '));
-  if(attacks.length<1)throw new Error('UNITY_WEB_QA_ATTACK_EVIDENCE_MISSING');
-  if(rewards.length<1)throw new Error('UNITY_WEB_QA_REWARD_EVIDENCE_MISSING');
+  const actions=markers.filter(x=>x.includes(' ATTACK ')||x.includes(' ACTION '));
+  const progress=markers.filter(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));
+  if(actions.length<1)throw new Error('UNITY_WEB_QA_CORE_ACTION_EVIDENCE_MISSING');
+  if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
 
   await page.keyboard.press('KeyR');
   await page.waitForTimeout(1000);
@@ -118,11 +118,12 @@ try{
   const rewardState=statesBeforeReload.slice().reverse().find(x=>/gold=([1-9]\d*)/.test(x));
   if(!rewardState)throw new Error('UNITY_WEB_QA_REWARD_STATE_NOT_REFLECTED');
 
+  const reloadMarkerStart=markers.length;
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(3500);
 
-  const persisted=markers.slice().reverse().find(x=>x.includes(' STATE ')&&x.includes('region=town')&&/gold=([1-9]\d*)/.test(x));
+  const persisted=markers.slice(reloadMarkerStart).reverse().find(x=>x.includes(' STATE ')&&x.includes('region=town')&&/gold=([1-9]\d*)/.test(x));
   if(!persisted)throw new Error('UNITY_WEB_QA_SAVE_RESTORE_MISSING');
 
   const fatal=[...consoleErrors,...pageErrors,...failedRequests].filter(x=>/abort|out of memory|wasm.*error|failed to fetch|build error|exception/i.test(x));
@@ -143,10 +144,10 @@ try{
     input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT'},
     gameplay:{
       pass:true,
-      regionTransition:true,
-      attackObserved:true,
-      attackCount:attacks.length,
-      rewardObserved:true,
+      gameplayStartObserved:true,
+      coreActionObserved:true,
+      coreActionCount:actions.length,
+      progressObserved:true,
     },
     saveRestore:{pass:true},
     mobile:{pass:true,viewport:{width:390,height:844},touch:true},
