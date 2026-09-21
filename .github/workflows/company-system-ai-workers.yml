@@ -298,9 +298,17 @@ jobs:
           echo "SOURCE_MUTATION_REQUIRED=$mutation_required" >> "$GITHUB_ENV"
           git checkout -b "$branch"
 
+      - name: Preflight worker contract before model
+        id: preflight
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-system-ai-worker.mjs --task=/tmp/system-ai-task.json --preflight=true
+
       - name: Verify existing verifier contract before model
         id: preverify
-        if: startsWith(matrix.taskId, 'sys-verify-') && env.SOURCE_MUTATION_REQUIRED != 'true'
+        if: steps.preflight.outcome == 'success' && startsWith(matrix.taskId, 'sys-verify-') && env.SOURCE_MUTATION_REQUIRED != 'true'
         continue-on-error: true
         shell: bash
         run: |
@@ -321,7 +329,7 @@ jobs:
 
       - name: Execute external AI assignment
         id: implement
-        if: steps.preverify.outcome != 'success'
+        if: steps.preflight.outcome == 'success' && steps.preverify.outcome != 'success'
         continue-on-error: true
         shell: bash
         run: |
@@ -451,6 +459,7 @@ jobs:
           IMPLEMENT_OUTCOME: ${{ steps.implement.outcome }}
           VERIFY_OUTCOME: ${{ steps.verify.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.preflight.outcome }}
           PREVERIFY_OUTCOME: ${{ steps.preverify.outcome }}
           CURRENT_MAIN_OUTCOME: ${{ steps.current_main.outcome }}
           PR_URL: ${{ steps.publish.outputs.pr_url }}
@@ -462,6 +471,7 @@ jobs:
           mkdir -p /tmp/company-system-ai-results
           node - <<'NODE'
           const fs=require('fs');
+          const clean=v=>String(v??'').trim();
           let worker={};
           if(fs.existsSync('/tmp/system-ai-worker-result.json'))worker=JSON.parse(fs.readFileSync('/tmp/system-ai-worker-result.json','utf8'));
           let security={verdict:'NOT_RUN',highestSeverity:'NONE',findings:[]};
@@ -475,18 +485,21 @@ jobs:
           }
           const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
           const mutationRequired=task.sourceMutationRequired===true;
-          const preverified=!mutationRequired&&process.env.PREVERIFY_OUTCOME==='success';
+          const infrastructureFailure=process.env.PREFLIGHT_OUTCOME==='failure';
+          const preverified=!mutationRequired&&!infrastructureFailure&&process.env.PREVERIFY_OUTCOME==='success';
           const currentMainSatisfied=!mutationRequired&&(preverified||(process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success'));
           const candidateOk=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
           const jointAccepted=process.env.JOINT_MERGED==='true';
-          const blocker=currentMainSatisfied||candidateOk?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
-          const executionDisposition=security.verdict==='QUARANTINE'?'TERMINATED_QUARANTINED':security.verdict==='REVIEW'?'HELD_FOR_PRIMARY_AI_REVIEW':candidateOk?'VERIFIED_CANDIDATE':'ENDED_WITHOUT_VERIFIED_CANDIDATE';
+          const blocker=currentMainSatisfied||candidateOk?'':infrastructureFailure?'system-ai-infrastructure-contract-failed':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
+          const executionDisposition=infrastructureFailure?'REPAIR_REQUIRED_INFRASTRUCTURE':security.verdict==='QUARANTINE'?'TERMINATED_QUARANTINED':security.verdict==='REVIEW'?'HELD_FOR_PRIMARY_AI_REVIEW':candidateOk?'VERIFIED_CANDIDATE':'ENDED_WITHOUT_VERIFIED_CANDIDATE';
           const row={
             version:6,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,jointAccepted,
-            ownerRule2:{id:'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',automaticBinding:true,executionDisposition,candidatePublicationAllowed:security.verdict==='PASS',learningCandidate:true,reusableLearning:false,requiresIndependentVerification:true,rawExternalOutputStored:false,verifiedDefensiveAbsorptionOnly:true},
+            failureClass:infrastructureFailure?'INFRASTRUCTURE_CONTRACT_FAILURE':null,
+            ownerRule2:{id:'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',automaticBinding:true,executionDisposition,candidatePublicationAllowed:!infrastructureFailure&&security.verdict==='PASS',learningCandidate:!infrastructureFailure,reusableLearning:false,requiresIndependentVerification:true,rawExternalOutputStored:false,verifiedDefensiveAbsorptionOnly:true},
             candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
             evidence:[
               `actions-run:${process.env.GITHUB_RUN_ID}`,
+              `preflight:${process.env.PREFLIGHT_OUTCOME||'unknown'}`,
               `implementation:${process.env.IMPLEMENT_OUTCOME||'unknown'}`,
               `verification:${process.env.VERIFY_OUTCOME||'unknown'}`,
               `publish:${process.env.PUBLISH_OUTCOME||'unknown'}`,
@@ -500,6 +513,7 @@ jobs:
               ...(worker.learningKnowledgeIds||[]).map(x=>`learning-knowledge-id:${x}`),
               ...(candidateOk&&mutationRequired&&process.env.CANDIDATE_SHA?[`source-mutation-sha:${process.env.CANDIDATE_SHA}`]:[]),
               ...(mutationRequired?['source-mutation-required:YES']:[]),
+              ...(infrastructureFailure?['failure-class:INFRASTRUCTURE_CONTRACT_FAILURE','learning-authority:NONE','retry-budget-consumed:NO','recovery-state:REPAIR_REQUIRED']:[]),
               worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
               'worker-self-acceptance:NO',
               ...(jointAccepted?['primary-ai-vibe-joint-accept:YES','primary-ai-review-required:NO']:['primary-ai-review-required:YES'])
