@@ -39,6 +39,34 @@ async function parseResponse(response){
   return {text,payload:safeJson(text)};
 }
 
+export async function introspectRobloxApiKey({
+  apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+  fetchImpl=globalThis.fetch,
+}={}){
+  const key=clean(apiKey);
+  if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
+  const response=await fetchImpl('https://apis.roblox.com/api-keys/v1/introspect',{
+    method:'POST',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify({apiKey:key}),
+  });
+  const {payload}=await parseResponse(response);
+  if(!response.ok)throw new Error(`Roblox API key introspect failed HTTP ${response.status}`);
+  const scopes=Array.isArray(payload?.scopes)?payload.scopes:[];
+  const safeScopes=scopes.map(scope=>Object.freeze({
+    name:clean(scope?.name)||null,
+    operations:Array.isArray(scope?.operations)?scope.operations.map(clean):[],
+    universeIds:Array.isArray(scope?.universeIds)?scope.universeIds.map(clean):[],
+    userIds:Array.isArray(scope?.userIds)?scope.userIds.map(clean):[],
+    groupIds:Array.isArray(scope?.groupIds)?scope.groupIds.map(clean):[],
+  }));
+  return Object.freeze({
+    enabled:payload?.enabled===true,
+    expired:payload?.expired===true,
+    scopes:Object.freeze(safeScopes),
+  });
+}
+
 async function resolveRootPlaceId(universeId,{fetchImpl=globalThis.fetch}={}){
   const response=await fetchImpl(`https://develop.roblox.com/v1/universes/${universeId}/places`);
   const {payload}=await parseResponse(response);
@@ -182,6 +210,14 @@ export async function publishRobloxDedicatedPlace({
     const detail=errText(payload);
     const transient=response.status===409&&/server is busy|unable to process your upload request/i.test(detail);
     if(transient&&i<retryDelaysMs.length){await sleep(retryDelaysMs[i]);continue;}
+    if(response.status===401||response.status===403){
+      try{
+        const scope=await introspectRobloxApiKey({apiKey:key,fetchImpl});
+        console.log('ROBLOX_API_KEY_SCOPE='+JSON.stringify(scope));
+      }catch(error){
+        console.log('ROBLOX_API_KEY_SCOPE_DIAGNOSTIC_FAILED='+String(error?.message||error));
+      }
+    }
     throw new Error(`Roblox publish failed HTTP ${response.status}: ${detail}`);
   }
   throw new Error('Roblox publish retry loop exhausted');
