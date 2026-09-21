@@ -276,16 +276,33 @@ jobs:
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
         shell: bash
         run: |
           set -euo pipefail
-          [[ -n "$ROBLOX_OPEN_CLOUD_API_KEY" ]] || { echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=BLOCKED:MISSING_API_KEY' >&2; exit 41; }
           response=/tmp/roblox-deactivate-response.txt
-          code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' \
-            --request POST \
-            --header "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
-            "https://apis.roblox.com/legacy-develop/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
+          code=000
+          if [[ -n "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
+            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" "https://apis.roblox.com/legacy-develop/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
+          fi
+          if [[ "$code" != 200 && "$code" != 201 && "$code" != 204 ]]; then
+            raw_cookie="${ROBLOX_ROBLOSECURITY:-${ROBLOX_SECURITY_COOKIE:-}}"
+            if [[ -z "$raw_cookie" ]]; then
+              cat "$response" >&2 || true
+              echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code:NO_COOKIE_FALLBACK" >&2
+              exit 42
+            fi
+            if [[ "$raw_cookie" == *'.ROBLOSECURITY='* ]]; then cookie="$raw_cookie"; else cookie=".ROBLOSECURITY=$raw_cookie;"; fi
+            csrf_headers=/tmp/roblox-deactivate-headers.txt
+            : > "$csrf_headers"
+            curl --silent --show-error --output /tmp/roblox-deactivate-csrf-body.txt --dump-header "$csrf_headers" --request POST --header "cookie: $cookie" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate" || true
+            csrf="$(awk 'BEGIN{IGNORECASE=1}/^x-csrf-token:/{sub(/\r$/,"",$2);print $2;exit}' "$csrf_headers")"
+            [[ -n "$csrf" ]] || { cat /tmp/roblox-deactivate-csrf-body.txt >&2 || true; echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:NO_CSRF' >&2; exit 43; }
+            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "cookie: $cookie" --header "x-csrf-token: $csrf" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
+            echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_FALLBACK=COOKIE_CSRF'
+          fi
           case "$code" in
             200|201|204) ;;
             *) cat "$response" >&2 || true; echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code" >&2; exit 42 ;;
