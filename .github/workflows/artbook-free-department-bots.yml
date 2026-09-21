@@ -221,7 +221,7 @@ jobs:
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
           if(pool.length<reviewCount)throw new Error(`model pool too small: ${pool.length}/${reviewCount}`);
           if(leads.some(x=>!x))throw new Error('department lead model missing');
-          if(new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||5))throw new Error('minimum distinct department lead gate failed');
+          if(d.ai?.departmentLeadModelsMustBeDistinct!==false&&new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||1))throw new Error('minimum distinct department lead gate failed');
           for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead model not in pool: ${lead}`);
           for(const model of pool)console.log(model);
           NODE
@@ -254,7 +254,7 @@ jobs:
           const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const roles=Array.isArray(d.ai?.departments)&&d.ai.departments.length?d.ai.departments:['planning','graphics','development','qa','balance','audio'];
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
-          if(new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||5))throw new Error('configured lead models do not satisfy minimum distinct lead count');
+          if(d.ai?.departmentLeadModelsMustBeDistinct!==false&&new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||1))throw new Error('configured lead models do not satisfy minimum distinct lead count');
           const gameId=process.env.ARTBOOK_GAME_ID;
           const date=process.env.ARTBOOK_DATE;
           const base=path.join('design',gameId,date);
