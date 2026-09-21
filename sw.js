@@ -1,7 +1,7 @@
 // 파일명: sw.js
 // 역할: 재운컴퍼니 PWA 앱 셸과 비상 AI를 캐시하고 연결 차단 시에도 개발 대화를 이어간다.
 
-const CACHE_NAME='jaewoon-pwa-v20';
+const CACHE_NAME='jaewoon-pwa-v21';
 const APP_SHELL=['/command.html','/emergency-ai.js','/install.html','/offline.html','/manifest.webmanifest','/assets/pwa-icon.svg','/assets/pwa-icon-192.png','/assets/pwa-icon-512.png'];
 const NETWORK_ONLY=/\/web-games\/_shared\/touch-controls\.js(?:\?|$)|\/(?:game-catalog|company-status|public-game-health|game-artbooks|public-release-baselines)\.json(?:\?|$)/;
 
@@ -40,7 +40,8 @@ self.addEventListener('fetch',event=>{
   if(url.pathname==='/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
   if(NETWORK_ONLY.test(url.pathname+url.search)){event.respondWith(fetch(request,{cache:'no-store'}));return;}
   if(request.mode==='navigate'){
-    event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match('/offline.html')||Response.error()));return;
+    const isWebGame=url.pathname.startsWith('/web-games/');
+    event.respondWith(fetch(request,isWebGame?{cache:'default'}:{cache:'no-store'}).catch(async()=>await caches.match(request)||await caches.match('/offline.html')||Response.error()));return;
   }
   event.respondWith(caches.match(request).then(cached=>cached||fetch(request).then(response=>{if(response.ok&&APP_SHELL.includes(url.pathname)){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(request,copy));}return response;})));
 });
