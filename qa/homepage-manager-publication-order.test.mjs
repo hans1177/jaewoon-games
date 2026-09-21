@@ -68,9 +68,9 @@ test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 
   assert.match(homepage,/function canonicalWebHref\(row\)/);
   assert.match(homepage,/function buildFocus\(catalog,status\)/);
   assert.match(homepage,/function buildGameCenter\(catalog,status\)/);
-  assert.match(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
-  assert.match(homepage,/buildShelf\(hub,'homeWebGameCenter'/);
-  assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter'/);
+  assert.doesNotMatch(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
+  assert.match(homepage,/buildShelf\(hub,'homeWebGameCenter','지금 플레이'/);
+  assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter','개발 중'/);
   assert.doesNotMatch(homepage,/document\.getElementById\('homeDevelopmentGameCenter'\)\?\.remove\(\)/);
   assert.doesNotMatch(homepage,/homeTop30GameCenter/);
   assert.doesNotMatch(homepage,/const TOP_LIMIT=/);
@@ -85,8 +85,8 @@ test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 
 test('homepage exposes current Web to selected-platform to live-focus development flow',()=>{
   const index=fs.readFileSync('index.html','utf8');
   assert.match(index,/id="developmentPipeline"/);
-  assert.match(index,/Web 베이스/);
-  assert.match(index,/Roblox · Unity · Fortnite UEFN/);
+  assert.match(index,/Web 제작/);
+  assert.match(index,/Roblox · Unity · UEFN/);
   assert.match(index,/출시 후 집중개발/);
   assert.match(index,/data-platform="roblox"/);
   assert.match(index,/data-platform="unity"/);
@@ -194,7 +194,6 @@ test('homepage front door stays simple, game-first and mobile touch-first',()=>{
   assert.match(index,/class="mobileDock"/);
   assert.match(index,/href="#gameHub"/);
   assert.match(index,/href="#developmentPipeline"/);
-  assert.match(index,/id="developerProfile"/);
   assert.match(index,/HOME_FRONT_DOOR_SIMPLE_V2/);
   assert.ok(index.indexOf('id="hero"')<index.indexOf('aria-label="게임 운영 요약"'));
   assert.ok(index.indexOf('id="gameHub"')<index.indexOf('id="developmentPipeline"'));
@@ -215,21 +214,25 @@ test('Director does not rerun the full Homepage Manager contract',()=>{
   assert.match(director,/DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND/);
 });
 
-test('runtime homepage renderer preserves approved simple front door',()=>{
+test('runtime homepage renderer preserves approved sample front door',()=>{
+  const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.doesNotMatch(runtime,/document\.querySelector\('\.opsBar'\)\?\.remove\(\)/);
-  assert.doesNotMatch(runtime,/\.opsBar[^\n]*display:none!important/);
-  assert.match(runtime,/gameShelfGrid\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
-  assert.match(runtime,/scroll-snap-type:x mandatory/);
-  assert.match(runtime,/foldGameCard\{flex:0 0 78vw/);
+  assert.match(runtime,/SAMPLE_FRONT_DOOR_V1/);
+  assert.match(index,/gameShelfGrid\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(index,/scroll-snap-type:x mandatory/);
+  assert.match(index,/foldGameCard\{flex:0 0 78vw/);
+  assert.doesNotMatch(index,/class="reviews"/);
+  assert.doesNotMatch(index,/class="music"/);
+  assert.doesNotMatch(index,/id="developerProfile"/);
 });
 
-test('runtime portfolio board stays after the core game and pipeline flow',()=>{
+test('portfolio control data stays off the public sample front door',()=>{
+  const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const block=(runtime.split('function buildPortfolioBoard(){')[1]||'').split('function buildGameCenter')[0]||'';
-  assert.match(block,/getElementById\('developmentPipeline'\)/);
-  assert.match(block,/insertBefore\(section,pipeline\.nextSibling\)/);
-  assert.doesNotMatch(block,/insertBefore\(section,hub\)/);
+  assert.match(block,/homePortfolioBoard/);
+  assert.doesNotMatch(block,/createElement\('section'\)/);
+  assert.doesNotMatch(index,/homePortfolioBoard/);
 });
 
 test('homepage has one canonical runtime data renderer',()=>{
@@ -248,4 +251,25 @@ test('homepage live polling is bounded and event-assisted',()=>{
   assert.match(runtime,/window\.addEventListener\('focus',refresh\)/);
   assert.match(runtime,/window\.addEventListener\('online',refresh\)/);
   assert.match(runtime,/visibilitychange/);
+});
+
+test('public homepage matches the approved sample structure without legacy mixing',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(index,/JAEWOON <span>GAMES<\/span>/);
+  assert.match(index,/id="hero"/);
+  assert.match(index,/id="metricPlayable"/);
+  assert.match(index,/id="metricDevelopment"/);
+  assert.match(index,/id="metricReleased"/);
+  assert.match(index,/id="gameHub"/);
+  assert.match(index,/id="developmentPipeline"/);
+  assert.match(index,/https:\/\/chatgpt\.com\//);
+  assert.doesNotMatch(index,/게임평 한마디/);
+  assert.doesNotMatch(index,/Developer 한재운/);
+  assert.doesNotMatch(index,/게임 & 지브리 음악/);
+  assert.doesNotMatch(index,/platformFilters|stateFilters|gameSearch|gameSort/);
+  assert.match(runtime,/buildShelf\(hub,'homeWebGameCenter','지금 플레이'/);
+  assert.match(runtime,/buildShelf\(hub,'homeDevelopmentGameCenter','개발 중'/);
+  assert.doesNotMatch(runtime,/buildShelf\(hub,'homeReleaseGameCenter'/);
+  assert.doesNotMatch(runtime,/buildShelf\(hub,'homeRobloxDeploymentCenter'/);
 });
