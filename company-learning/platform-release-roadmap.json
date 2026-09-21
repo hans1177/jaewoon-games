@@ -1,5 +1,5 @@
 {
-  "version": 245,
+  "version": 246,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4524,6 +4524,32 @@
           "RERUN_VIBE_LEARNING_MOTOR"
         ]
       }
+    },
+    "focusedDevelopmentCaretakers": {
+      "version": 1,
+      "enabled": true,
+      "ownerFocusedGameIds": [
+        "fantasy-survival",
+        "daechung-rpg"
+      ],
+      "includeAllReleaseConfirmed": true,
+      "caretakerMode": "PER_GAME_PERSISTENT",
+      "oneLogicalCaretakerPerEligibleGame": true,
+      "caretakerStickyOwnership": true,
+      "physicalRunnerPolicy": "ONE_PRIMARY_WHEN_WORK_EXISTS",
+      "idleBehavior": "RETURN_PHYSICAL_SLOT_KEEP_LOGICAL_OWNERSHIP",
+      "workerFailureHandoff": "REPLACE_WORKER_AND_RESUME_EXACT_CHECKPOINT",
+      "taskPriority": "critical",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "burstWorkers": {
+        "enabled": true,
+        "min": 2,
+        "max": 4,
+        "onlyWhenIndependentHighValueWorkExists": true
+      },
+      "appliesBeforePublicRelease": true,
+      "preservesExistingPostReleaseCaretaker": true,
+      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_RELEASE_CONFIRMED"
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
