@@ -91,6 +91,13 @@ jobs:
             rm -f /tmp/company-runtime-game-seed-state.json
             echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=NO'
           fi
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:company-records/runtime-media" 2>/dev/null; then
+            mkdir -p company-records/runtime-media assets/runtime-evidence
+            git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- company-records/runtime-media assets/runtime-evidence
+            echo 'COMPANY_RUNTIME_MEDIA_OVERLAY=YES'
+          else
+            echo 'COMPANY_RUNTIME_MEDIA_OVERLAY=NO'
+          fi
 
       - name: Detect direct owner Web game changes
         if: github.event_name == 'push'
