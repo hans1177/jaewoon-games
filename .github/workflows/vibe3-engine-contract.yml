@@ -33,9 +33,8 @@ jobs:
           if(c.verifiedRag?.portableContextMayCrossPlatforms!==true||c.verifiedRag?.platformPassEvidenceMayNotTransfer!==true) throw new Error('portable context evidence boundary changed');
           if(!c.verifiedRag?.supportedPlaybooks?.includes('roblox')) throw new Error('Roblox playbook missing');
           const web=c.portableWebLearning;
-          if(web?.enabled!==true||web?.verifiedCanonicalWebGameQaMayFeedSharedV3Memory!==true||web?.robloxMayRetrieveAsContext!==true) throw new Error('portable Web learning route missing');
-          if(web?.webPassCountsAsRobloxPass!==false||web?.webEvidenceMaySatisfyRobloxDatasetGate!==false||web?.webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate!==false||web?.robloxLaneRequiresRealVerifiedRobloxEvidence!==true) throw new Error('Web evidence must not become Roblox evidence');
-          if(web?.useExistingCanonicalDistillationOnly!==true||web?.separateCronOrPipelineAllowed!==false) throw new Error('portable Web learning must reuse canonical distillation');
+          if(web?.enabled!==false||web?.sourceEngine!=='DISABLED'||web?.legacyCompatibilityOnly!==true) throw new Error('portable Web learning must remain disabled');
+          if(web?.separateCronOrPipelineAllowed===true) throw new Error('disabled Web learning may not create a shadow pipeline');
           if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety contract changed');
           if(c.modelSelection?.route!=='LOCAL_SELF_HOSTED_ONLY'||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
           const roadmap=c.platformRoadmap;
