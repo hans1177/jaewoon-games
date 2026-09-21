@@ -87,6 +87,48 @@ function inferDomains(text='',engine=''){
   return uniq(out);
 }
 
+export function classifyLearningDomains(task={}){
+  const engine=lower(task.target||task.engine);
+  const weighted=[
+    {text:[task.blocker,task.lastOutcome,...(task.evidence||[])].filter(Boolean).join(' '),weight:5,source:'failure-evidence'},
+    {text:clean(task.goal),weight:3,source:'goal'},
+    {text:[...(task.acceptanceCriteria||[]),...(task.responsibleFiles||[])].join(' '),weight:2,source:'scope'}
+  ];
+  const scores=new Map(),sources=new Map();
+  for(const row of weighted){
+    for(const domain of inferDomains(row.text,'')){
+      scores.set(domain,(scores.get(domain)||0)+row.weight);
+      if(!sources.has(domain))sources.set(domain,new Set());
+      sources.get(domain).add(row.source);
+    }
+  }
+  for(const domain of inferDomains('',engine)){
+    scores.set(domain,(scores.get(domain)||0)+1);
+    if(!sources.has(domain))sources.set(domain,new Set());
+    sources.get(domain).add('engine');
+  }
+  const ranked=[...scores.entries()]
+    .map(([domain,score])=>({domain,score,sources:[...(sources.get(domain)||[])]}))
+    .sort((a,b)=>b.score-a.score||a.domain.localeCompare(b.domain));
+  const top=ranked[0]?.score||0;
+  const primary=ranked.filter(x=>x.score===top&&top>=3).map(x=>x.domain).slice(0,3);
+  const secondary=ranked.filter(x=>!primary.includes(x.domain)&&x.score>=2).map(x=>x.domain).slice(0,6);
+  return{
+    primary,
+    secondary,
+    all:uniq([...primary,...secondary,...ranked.map(x=>x.domain)]),
+    ranked,
+    authorityExpanded:false
+  };
+}
+
+function domainsForKnowledgeRow(row={}){
+  return uniq(inferDomains([
+    row.id,row.system,row.problem,row.pattern,row.failureCause,
+    ...(row.tags||[]),...(row.reusablePatterns||[]),...(row.avoidPatterns||[])
+  ].filter(Boolean).join(' '),row.engine));
+}
+
 function nativeDomainsForEngine(engine=''){
   const e=lower(engine);
   if(e==='roblox')return ROBLOX_NATIVE_ONLY;
@@ -931,6 +973,9 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const engine=lower(task.target);
   const failureFingerprint=failureFingerprintForTask(task);
   const taskFailureCodes=explicitFailureCodes([task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
+  const domainClassification=classifyLearningDomains(task);
+  const primaryDomains=new Set(domainClassification.primary);
+  const secondaryDomains=new Set(domainClassification.secondary);
   const ranked=(experienceInput?.records||[]).filter(r=>r?.verified===true&&r?.reusable===true).map(record=>{
     let score=0;const reasons=[];
     const recordFailureFingerprint=failureFingerprintForExperience(record);
@@ -962,12 +1007,17 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
       const overlap=overlapScore(qWords,pWords);
       const sameGame=Boolean(gameId&&clean(row.gameId)===gameId);
       const sameEngine=Boolean(engine&&lower(row.engine)===engine);
+      const knowledgeDomains=domainsForKnowledgeRow(row);
+      const primaryMatches=knowledgeDomains.filter(domain=>primaryDomains.has(domain));
+      const secondaryMatches=knowledgeDomains.filter(domain=>secondaryDomains.has(domain));
       let score=overlap*3;
       if(sameGame)score+=30;
-      // Engine equality is only a tie-break/boost after semantic or same-game relevance.
-      // It must never inject unrelated knowledge solely because both rows are "system" or "web".
-      if(sameEngine&&(overlap>0||sameGame))score+=6;
-      return {...row,relevance:score};
+      if(primaryMatches.length)score+=18+Math.min(8,(primaryMatches.length-1)*4);
+      else if(secondaryMatches.length)score+=7+Math.min(4,(secondaryMatches.length-1)*2);
+      if(sameEngine&&(overlap>0||sameGame||primaryMatches.length||secondaryMatches.length))score+=4;
+      const domainMismatch=domainClassification.primary.length>0&&knowledgeDomains.length>0&&!primaryMatches.length&&!secondaryMatches.length;
+      if(domainMismatch&&!sameGame&&overlap<2)score=0;
+      return {...row,relevance:score,knowledgeDomains,primaryDomainMatches:primaryMatches,secondaryDomainMatches:secondaryMatches};
     })
     .filter(x=>x.verified===true&&x.relevance>0)
     .sort((a,b)=>b.relevance-a.relevance)
@@ -994,8 +1044,9 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','SAME_FAILURE_VERIFIED','SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','PRIMARY_DOMAIN_VERIFIED','SAME_FAILURE_VERIFIED','SECONDARY_DOMAIN_VERIFIED','SAME_GAME_VERIFIED','SEMANTIC_MATCH_VERIFIED','SAME_ENGINE_TIE_BREAK_ONLY','VERIFIED_PRACTICE_DISTILLED_ADVISORY','EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY','GENERAL_PLAYBOOK'],
     failureFingerprint,
+    domainClassification,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
     experience:ranked.map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,failureCause:x.record.failureCause,relevance:x.score,reasons:x.reasons})),
     codePatterns:patterns,
@@ -1017,6 +1068,7 @@ export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
   const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game+same-failure > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
   if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
+  if(context.domainClassification)lines.push(`- learning-domains=PRIMARY[${(context.domainClassification.primary||[]).join(',')||'none'}] SECONDARY[${(context.domainClassification.secondary||[]).join(',')||'none'}]`);
   for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);
   for(const row of context.experience||[]) lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}`);
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
