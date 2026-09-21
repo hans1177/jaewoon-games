@@ -16,6 +16,8 @@ on:
       - 'tools/company-growth-marketing-planner.mjs'
       - 'tools/company-growth-marketing-qa.mjs'
       - 'tools/company-growth-marketing-decision.mjs'
+      - 'tools/company-department-portfolio-control.mjs'
+      - 'qa/company-department-portfolio-control.test.mjs'
       - '.github/workflows/company-growth-marketing-runtime.yml'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
@@ -363,6 +365,19 @@ jobs:
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
 
+            node --check /tmp/vibe2-main/tools/company-department-portfolio-control.mjs
+            (
+              cd /tmp/vibe2-main
+              node --test qa/company-department-portfolio-control.test.mjs
+            )
+            node /tmp/vibe2-main/tools/company-department-portfolio-control.mjs \
+              --catalog=/tmp/vibe2-marketing-catalog.json \
+              --development-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --marketing=/tmp/vibe2-main/company-learning/marketing \
+              --previous="$control_root/.vibe2/portfolio-decisions.json" \
+              --output="$control_root/.vibe2/portfolio-decisions.json" | tee /tmp/vibe2-portfolio-control.log
+
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import { createVibeContinuousQueue } from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js';
@@ -394,7 +409,7 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
@@ -405,7 +420,11 @@ jobs:
               commit_message='vibe2: persist verified recovery and security learning [skip ci]'
             elif test -f /tmp/vibe2-system-steward.log && ! grep -Eq '^VIBE2_SYSTEM_STEWARD_ACTION=(HEALTHY_NO_SCOPED_REPAIR|NO_RUNNABLE_WORK_FOR_PLANNER_REFILL)$' /tmp/vibe2-system-steward.log; then
               commit_message='vibe2: repair machine state with system steward [skip ci]'
-            elif test -f /tmp/vibe2-marketing-plan.log && grep -Eq '^MARKETING_TASKS_ADDED=[1-9][0-9]*            elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
+            elif test -f /tmp/vibe2-portfolio-control.log && grep -Eq '^PORTFOLIO_CONTROL_GAMES=[1-9][0-9]*$' /tmp/vibe2-portfolio-control.log; then
+              commit_message='vibe2: apply department-driven portfolio control [skip ci]'
+            elif test -f /tmp/vibe2-marketing-plan.log && grep -Eq '^MARKETING_TASKS_ADDED=[1-9][0-9]*$' /tmp/vibe2-marketing-plan.log; then
+              commit_message='vibe2: queue autonomous growth marketing [skip ci]'
+            elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
               commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
             elif grep -Eq '^VIBE2_WEB_EXTERNAL_AI_DISTILLED_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-web-experience-ingest.log; then
               commit_message='vibe2: absorb verified external AI distilled knowledge [skip ci]'
@@ -669,33 +688,6 @@ jobs:
           done
           echo 'VIBE2_24H_REFILL=FAILED' >&2
           exit 1
- /tmp/vibe2-marketing-plan.log; then
-              commit_message='vibe2: queue autonomous growth marketing [skip ci]'
-            elif grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES            elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
-              commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
-            elif grep -Eq '^VIBE2_WEB_EXTERNAL_AI_DISTILLED_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-web-experience-ingest.log; then
-              commit_message='vibe2: absorb verified external AI distilled knowledge [skip ci]'
-            elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*$' /tmp/vibe2-learning-motor.log; then
-              commit_message='vibe2: absorb verified development mastery [skip ci]'
-            elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
-              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
-            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
-              commit_message='vibe2: plan next machine-state work [skip ci]'
-            else
-              commit_message='vibe2: persist policy-unbounded adaptive parallel queue state [skip ci]'
-            fi
-            git commit -m "$commit_message"
-            if git push origin HEAD:vibe2-unreal-core; then
-              echo 'VIBE2_AUTOPLAN_WRITE=YES'
-              exit 0
-            fi
-            echo "VIBE2_AUTOPLAN_OPTIMISTIC_RETRY=$attempt"
-            sleep $((attempt * 2))
-          done
-
-          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
-          exit 1
-
       - name: Read queue continuation state
         id: queue_state
         shell: bash
