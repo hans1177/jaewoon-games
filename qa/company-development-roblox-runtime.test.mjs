@@ -345,7 +345,8 @@ test('Roblox source workflow treats every development-confirmed game as the Robl
   assert.ok(workflow.includes("target=`roblox-games/${item.gameId}`")||workflow.includes("const target=`roblox-games/${item.gameId}`"));
   assert.ok(workflow.includes('ROBLOX_EXECUTION_BATCH_CAPACITY='));
   assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
-  assert.ok(workflow.includes('ROBLOX_RUNNER_PARALLEL_CAPACITY=6'));
+  assert.ok(workflow.includes('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED'));
+  assert.doesNotMatch(workflow,/max-parallel:\s*6/);
 });
 
 
