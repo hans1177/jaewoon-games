@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "gameId": "daechung-rpg",
+  "target": "PLAYCANVAS_3D_WEB",
+  "engine": "playcanvas@2.22.2",
+  "strategy": "PARALLEL_MIGRATION_THEN_CUTOVER",
+  "legacyEntry": "../index.html",
+  "previewEntry": "./index.html",
+  "phase": 1,
+  "phaseName": "3D_FOUNDATION",
+  "preserveSystems": [
+    "quests",
+    "shops",
+    "7+ portals",
+    "dungeons",
+    "jobs",
+    "party AI",
+    "multiplayer rooms 1-10",
+    "inventory and equipment",
+    "mobile joystick"
+  ],
+  "cutoverGate": [
+    "mobile movement stable",
+    "combat stable",
+    "village and portal traversal implemented",
+    "quest/shop/inventory parity",
+    "party AI parity",
+    "multiplayer parity",
+    "Android WebView smoke pass"
+  ]
+}
