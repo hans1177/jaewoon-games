@@ -131,7 +131,11 @@ test('Unity executor uses unbounded eligibility with capacity batching, canary a
   assert.match(workflowSource,/unity-android-independent-qa\.yml/);
   assert.match(workflowSource,/unity-android-regression\.yml/);
   assert.match(workflowSource,/executionEvidence:evidence/);
-  assert.match(workflowSource,/resumeStage:failure\|\|'IMMEDIATE_NEXT_STAGE_DISPATCH'/);
+  assert.match(workflowSource,/unityInternalReleaseReady:internalReady/);
+  assert.match(workflowSource,/distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'/);
+  assert.match(workflowSource,/unityPublicRelease:false/);
+  assert.match(workflowSource,/currentStep:internalReady\?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+  assert.match(workflowSource,/resumeStage:failure\|\|\(internalReady\?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'\)/);
   assert.match(workflowSource,/BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED/);
   assert.match(workflowSource,/RESUME_EXACT_FAILURE_POINT=ENABLED/);
   assert.match(workflowSource,/QUALITY_GATE_WEAKENING=NO/);
