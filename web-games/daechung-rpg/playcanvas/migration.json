@@ -6,8 +6,8 @@
   "strategy": "PARALLEL_MIGRATION_THEN_CUTOVER",
   "legacyEntry": "../index.html",
   "previewEntry": "./index.html",
-  "phase": 7,
-  "phaseName": "PLAYCANVAS_ROUTE_CUTOVER",
+  "phase": 8,
+  "phaseName": "CARTOON_ASSET_VISUAL_PASS",
   "preserveSystems": [
     "quests",
     "shops",
@@ -74,7 +74,17 @@
     "root route cutover to PlayCanvas",
     "legacy fallback query route",
     "Cloudflare universal touch injection bypass for daechung-rpg",
-    "service worker cache generation bump"
+    "service worker cache generation bump",
+    "Quaternius Warrior player asset",
+    "Quaternius Ranger trainer asset",
+    "Quaternius Wizard trainer asset",
+    "Quaternius animated Slime asset",
+    "local asset fallback loading",
+    "stylized pitched-roof village silhouettes",
+    "layered cartoon trees",
+    "stone town paths",
+    "portal point lighting",
+    "dark warm soft-cartoon lighting"
   ],
   "cutoverCandidateEntry": "./playcanvas/index.html",
   "cutoverStatus": {
@@ -84,7 +94,9 @@
     "liveRuntimeVerified": false,
     "remaining": [
       "public Cloudflare deployment runtime verification",
-      "Android WebView smoke pass"
+      "Android WebView smoke pass",
+      "visual scale/orientation smoke pass"
     ]
-  }
+  },
+  "visualDirection": "DARK_FANTASY_SOFT_CARTOON_ISOMETRIC"
 }
