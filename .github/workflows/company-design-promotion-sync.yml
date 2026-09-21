@@ -62,6 +62,7 @@ jobs:
         run: |
           node --check tools/design-only-promotion-sync.mjs
           node --check tools/company-minimum-design-contract.mjs
+          node --check tools/company-homepage-platform-exposure-sync.mjs
           node --test qa/company-minimum-design-contract.test.mjs
           node --test qa/design-only-promotion-sync.test.mjs qa/design-promotion-workflow-contract.test.mjs
 
@@ -125,11 +126,12 @@ jobs:
             # Re-run the canonical promotion calculation against the newest runtime state.
             # Canonical machine policy must be overlaid from main too; otherwise the runtime branch can revive legacy AI-review blockers.
             # Only runtime JSON files are staged; engine/policy files remain main-owned and are never persisted here.
-            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
-            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
+            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs
+            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
             node tools/design-only-promotion-sync.mjs
+            node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
 
-            git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json
+            git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json homepage-platform-exposure.json
             git diff --cached --check
             if git diff --cached --quiet; then
               echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
