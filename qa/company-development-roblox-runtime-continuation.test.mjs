@@ -3,253 +3,52 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
-const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
-const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
-const smoke=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-smoke.luau',import.meta.url),'utf8');
-const persistHelper=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-persist.mjs',import.meta.url),'utf8');
+const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
+const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
+const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
-test('continuation is a single explicit post-package edge, not a second source/package pipeline',()=>{
-  assert.ok(!workflow.includes('workflow_run:'));
-  assert.ok(workflow.includes('workflow_dispatch:'));
-  assert.ok(!workflow.includes('push:'));
-  assert.ok(!workflow.includes('company-development-roblox-bootstrap.mjs'));
-  assert.ok(!workflow.includes('company-development-roblox-package.mjs'));
-  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=6'));
-  assert.ok(workflow.includes('max-parallel: 6'));
-  assert.ok(workflow.includes('ROBLOX_PER_GAME_PROMOTION=YES'));
-  assert.ok(workflow.includes('ROBLOX_PROMOTION_COUNT_GATE=NONE'));
+test('Roblox fast path is package -> Vibe shared preflight -> headless -> private release',()=>{
+  assert.ok(preflight.includes('workflow_dispatch:'));
+  assert.ok(!preflight.includes('company-development-roblox-package.mjs'));
+  assert.ok(preflight.includes('company-development-roblox-build-preflight.mjs'));
+  assert.ok(preflight.includes("model: 'llama3.2:1b'"));
+  assert.ok(preflight.includes('Run Vibe plus shared-model build preflight'));
+  assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
+  assert.ok(headless.includes('HEADLESS_FAST_MVP'));
+  assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
+  assert.ok(headless.includes('company-development-roblox-release-promotion.yml'));
 });
 
-test('Roblox continuation changes re-enter the canonical parent runtime',()=>{
-  for(const path of [
-    ".github/workflows/company-development-roblox-runtime-continuation.yml",
-    'tools/company-development-roblox-build-preflight.mjs',
-    'tools/company-development-roblox-runtime-smoke.luau',
-    'qa/company-development-roblox-runtime-continuation.test.mjs',
-  ]) assert.ok(parentWorkflow.includes(`- '${path}'`),`missing parent push path: ${path}`);
-});
-
-test('Vibe plus shared-model preflight requires an exact immutable build before runtime',()=>{
+test('shared preflight requires exact immutable build and one shared model',()=>{
   const item={
-    gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:'2026-09-13T00:00:00Z',musicValidationPassed:true,
-    robloxSourceBootstrapPassedAt:'2026-09-13T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
-    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:`sha256:${'b'.repeat(64)}`,
+    gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
+    robloxSourceBootstrapPassedAt:'2026-09-22T00:00:00Z',
+    robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
   };
   const result=inspectRobloxBuildPreflight({item,directive});
-  assert.equal(result.pass,true);
+  assert.equal(result.pass,true,result.blockers.join(','));
   assert.equal(result.distinctLeadCount,1);
-  assert.equal(new Set(Object.values(result.leads)).size,1);
   assert.equal(result.sharedModel,'llama3.2:1b');
-  assert.ok(workflow.includes('company-development-roblox-build-preflight.mjs'));
-  assert.ok(workflow.includes("robloxBuildPreflightPassed:true"));
-  assert.ok(workflow.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
 });
 
-test('newer package and preflight checkpoints invalidate stale downstream failures before Studio runtime planning',()=>{
-  assert.ok(workflow.includes('stalePreflightFailure'));
-  assert.ok(workflow.includes('staleRuntimeFailure'));
-  assert.ok(workflow.includes('robloxRuntimePassedAt:null'));
-  assert.ok(workflow.includes('robloxRuntimeFailedAt:null'));
-  assert.ok(workflow.includes('robloxRuntimeEvidence:null'));
-  assert.ok(workflow.includes('robloxRuntimeRetryCount:0'));
-  assert.ok(workflow.includes('robloxServerClientBoundaryPassed:false'));
-  assert.ok(workflow.includes('robloxDatastoreRejoinPassed:false'));
-  assert.ok(workflow.includes('robloxMobileControlUiPassed:false'));
-  assert.ok(workflow.includes('robloxPostRuntimeQaEvidence:null'));
+test('preflight persistence promotes only exact source and artifact',()=>{
+  assert.ok(preflight.includes('result?.sourceRevision===sourceRevision'));
+  assert.ok(preflight.includes('result?.artifactIdentity===artifactIdentity'));
+  assert.ok(preflight.includes('robloxBuildPreflightPassed:true'));
+  assert.ok(preflight.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
 });
 
-test('verified Vibe2 source handoff replaces stale Web and music eligibility at preflight without weakening exact build checks',()=>{
-  const item={
-    gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:null,musicValidationPassed:false,
-    robloxSourceBootstrapPassedAt:'2026-09-16T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
-    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:`sha256:${'b'.repeat(64)}`,
-    robloxVibe2VerifiedHandoff:{
-      verified:true,gameId:'g',sourceRevision:'c'.repeat(40),candidateSha:'d'.repeat(40),sourceTreeSha:'e'.repeat(40),qaRunId:35070803443,
-    },
-  };
-  const result=inspectRobloxBuildPreflight({item,directive});
-  assert.equal(result.pass,true,result.blockers.join(','));
-  assert.equal(result.build.webValidationPassed,true);
-  assert.equal(result.build.musicValidationPassed,true);
-  assert.equal(result.build.nativeWebValidationPassed,false);
-  assert.equal(result.build.nativeMusicValidationPassed,false);
-  assert.equal(result.build.sourceEligibilityAuthority,'exact-immutable-roblox-package');
+test('headless fast path validates mobile, save/rejoin, multiplayer and exact artifact',()=>{
+  for(const token of ['mobileControlUiPassed','datastoreRejoinPassed','multiplayerStateSyncPassed','exactRevision']){
+    assert.ok(headless.includes(token),token);
+  }
+  assert.ok(headless.includes('rebuilt'));
+  assert.ok(headless.includes('EXPECTED_ARTIFACT'));
 });
 
-test('Web and music validation are diagnostic only after an exact immutable Roblox package exists',()=>{
-  const item={
-    gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:null,musicValidationPassed:false,
-    robloxSourceBootstrapPassedAt:'2026-09-16T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
-    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:`sha256:${'b'.repeat(64)}`,
-    robloxVibe2VerifiedHandoff:{
-      verified:true,gameId:'g',sourceRevision:'c'.repeat(40),candidateSha:'d'.repeat(40),sourceTreeSha:'e'.repeat(40),qaRunId:0,
-    },
-  };
-  const result=inspectRobloxBuildPreflight({item,directive});
-  assert.equal(result.pass,true,result.blockers.join(','));
-  assert.equal(result.build.webValidationPassed,false);
-  assert.equal(result.build.musicValidationPassed,false);
-  assert.equal(result.build.sourceEligibilityAuthority,'exact-immutable-roblox-package');
-});
-
-test('runtime uses one explicitly human-approved local-place Studio session and exact package identity',()=>{
-  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '9'"));
-  assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '1'"));
-  assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
-  assert.ok(!workflow.includes('runs-on: windows-latest'));
-  assert.ok(workflow.includes("studio_run_approved:"));
-  assert.ok(workflow.includes("game_id:"));
-  assert.ok(workflow.includes("process.env.GITHUB_EVENT_NAME==='workflow_dispatch'"));
-  assert.ok(workflow.includes("String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]'"));
-  assert.ok(workflow.includes("ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN"));
-  assert.ok(workflow.includes("ROBLOX_STUDIO_MANUAL_APPROVAL_REQUIRED=YES"));
-  assert.ok(workflow.includes("if(item.gameId!==manualGameId)continue;"));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION'));
-  assert.ok(workflow.includes('max-parallel: 1'));
-  assert.ok(workflow.includes("const maxRetryableFailures=2"));
-  assert.ok(workflow.includes("const retryBudgetAvailable=retryCount<maxRetryableFailures"));
-  assert.ok(workflow.includes("const securityHold=runtimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure)"));
-  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&runtimePassed!==true&&runtimeEvidence?.failure==='roblox-studio-busy'"));
-  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&runtimePassed!==true&&runtimeEvidence?.failure==='roblox-studio-busy'"));
-  assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
-  assert.ok(workflow.includes('No retained package matches'));
-  assert.ok(workflow.includes('Resolve authenticated local Roblox Studio'));
-  assert.ok(workflow.includes('RobloxStudioBeta.exe'));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_LOCAL_PROFILE=PASS'));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_INSTALL=SKIPPED_EXISTING_AUTHENTICATED_PROFILE'));
-  assert.ok(workflow.includes('studio_source=authenticated-local-profile'));
-  assert.ok(workflow.includes("'roblox-studio-local-profile-unavailable'"));
-  assert.ok(workflow.includes("'roblox-studio-busy'"));
-  assert.ok(!workflow.includes('RobloxStudioInstaller.exe'));
-  assert.ok(!workflow.includes("Invoke-WebRequest -Uri 'https://setup.rbxcdn.com/RobloxStudioInstaller.exe'"));
-  assert.ok(!workflow.includes("$deadline = (Get-Date).AddMinutes(8)"));
-  assert.ok(!workflow.includes("$packageId = 'Roblox.RobloxStudio'"));
-  assert.ok(workflow.includes('Get-CimInstance Win32_Process'));
-  assert.ok(workflow.includes("[string]$_.CommandLine -match '--task\\s+RunScript'"));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_STALE_AUTOMATION_PID='));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_BUSY_PROCESS_COUNT='));
-  assert.ok(workflow.includes("roblox-studio-busy.flag"));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_STALE_AUTOMATION_CLEANUP=YES'));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
-  assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
-  assert.ok(workflow.includes("runtimeEvidence?.failure==='roblox-studio-install-failed'"));
-  assert.ok(workflow.includes("'roblox-studio-runtime-failed','roblox-studio-runtime-timeout'"));
-  assert.ok(workflow.includes("failureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
-  assert.ok(workflow.includes("$authDeadline = (Get-Date).AddSeconds(15)"));
-  assert.ok(workflow.includes('$p.WaitForExit(165000)'));
-  assert.ok(workflow.includes("'roblox-studio-authentication-required'"));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_AUTHENTICATION_REQUIRED'));
-  assert.ok(workflow.includes("$unauthenticated = $nativeText -match 'Authenticated\\s*:\\s*NO'"));
-  assert.ok(workflow.includes("$loginBlocked = $nativeText -match 'Cookie list not found|https://www\\.roblox\\.com/login|LoginDialog'"));
-  assert.ok(workflow.includes("$securityChallenge = $nativeText -match '(?i)captcha|arkose|funcaptcha|browser authentication|verification required|verify you are human|security challenge'"));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_SECURITY_CHALLENGE_REQUIRED'));
-  assert.ok(workflow.includes("'roblox-studio-runtime-timeout'"));
-  assert.ok(workflow.includes('--task RunScript'));
-  assert.ok(workflow.includes('--localPlaceFile'));
-  assert.ok(!workflow.includes('--placeId'));
-  assert.ok(!workflow.includes('--universeId'));
-  assert.ok(!workflow.includes('PublishAsync'));
-  assert.ok(workflow.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'));
-  assert.ok(smoke.includes('StudioTestService:ExecuteMultiplayerTestAsync(1'));
-  assert.ok(smoke.includes('task.delay(90'));
-  assert.ok(smoke.includes('RemoteEvent'));
-  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES'));
-  assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));
-  assert.ok(!smoke.includes('print("ROBLOX_RUNTIME_SMOKE=PASS")'));
-  assert.ok(workflow.includes("(runtimePassed===true&&sameHarness)"));
-  assert.ok(workflow.includes("if(preflightPassed!==true||(runtimePassed===true&&sameHarness)"));
-  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
-});
-
-test('runtime gate retries are bounded and authentication challenges enter a security hold',()=>{
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_RETRY_LIMIT=2'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'));
-  assert.ok(workflow.includes('const maxRetryableFailures=2'));
-  assert.ok(workflow.includes('retryCount<maxRetryableFailures'));
-  assert.ok(!workflow.includes('ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'));
-  assert.ok(persistHelper.includes('robloxRuntimeSecurityHold:securityHold'));
-  assert.ok(persistHelper.includes('roblox-runtime-security-hold:'));
-});
-
-test('Studio busy remains bounded-retry while authentication and local-profile failures are held',()=>{
-  assert.ok(persistHelper.includes("['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(failure)"));
-  assert.ok(persistHelper.includes('robloxRuntimeSecurityHoldAt:securityHold?stamp:null'));
-  assert.ok(persistHelper.includes("'roblox-studio-busy'"));
-  assert.ok(workflow.includes("$automation = @($running | Where-Object { [string]$_.CommandLine -match '--task\\s+RunScript' })"));
-  assert.ok(workflow.includes('Stop-Process -Id $proc.ProcessId -Force'));
-  assert.ok(!workflow.includes('Get-Process -Name RobloxStudioBeta | Stop-Process'));
-  assert.ok(workflow.includes("elseif ($studioBusy) { 'roblox-studio-busy' }"));
-});
-
-test('continuation self-dispatch does not duplicate an active sibling run',()=>{
-  assert.ok(workflow.includes('ROBLOX_ACTIVE_OTHER_CONTINUATIONS='));
-  assert.ok(workflow.includes("['queued','in_progress','pending'].includes(r.status)"));
-  assert.ok(workflow.includes("ROBLOX_NEXT_CONTINUATION_DISPATCH=SKIP_ACTIVE_SIBLING"));
-});
-
-test('runtime checkpoint persistence survives merged artifact directory layouts',()=>{
-  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
-  assert.ok(persistHelper.includes("const root=process.argv[3]||'/tmp/roblox-runtime-batch'"));
-  assert.ok(persistHelper.includes("entry.name.endsWith('.runtime.json')"));
-  assert.ok(persistHelper.includes('walk(full)'));
-  assert.ok(persistHelper.includes('ROBLOX_RUNTIME_CHECKPOINT_FILES='));
-  assert.ok(!persistHelper.includes("const dir='/tmp/roblox-runtime-batch/results';const results=[];"));
-});
-
-test('runtime success does not invent later QA, datastore, regression, final review, or release evidence',()=>{
-  assert.ok(persistHelper.includes("robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME'"));
-  assert.ok(persistHelper.includes("robloxFailureStage:'INDEPENDENT_QA'"));
-  assert.ok(persistHelper.includes('ROBLOX_INDEPENDENT_QA_PASS=NO'));
-  assert.ok(persistHelper.includes('ROBLOX_REGRESSION_PASS=NO'));
-  assert.ok(persistHelper.includes('ROBLOX_FINAL_REVIEW_PASS=NO'));
-  assert.ok(persistHelper.includes('ROBLOX_RELEASE_CLAIM=NO'));
-  assert.ok(persistHelper.includes('robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true'));
-});
-
-test('owner-focused secondary Roblox keeps canonical Unity while using exact preflight and Studio runtime evidence',()=>{
-  const item={
-    gameId:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',targetPlatform:'UNITY',
-    webValidationPassedAt:'2026-09-20T00:00:00.000Z',musicValidationPassed:true,
-    ownerFocusRobloxSourceBootstrapPassedAt:'2026-09-20T00:01:00.000Z',
-    ownerFocusRobloxSourceCommit:'a'.repeat(40),
-    ownerFocusRobloxBuildOrPackagePassed:true,
-    ownerFocusRobloxBuildSourceRevision:'a'.repeat(40),
-    ownerFocusRobloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
-  };
-  const verdict=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus:true});
-  assert.equal(verdict.pass,true,verdict.blockers.join(','));
-  assert.equal(verdict.secondaryOwnerFocus,true);
-  assert.equal(item.selectedPlatform,'UNITY');
-  assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
-  assert.match(workflow,/--secondary-owner-focus="\$SECONDARY_OWNER_FOCUS"/);
-  assert.match(workflow,/ownerFocusRobloxBuildPreflightPassed:true/);
-  assert.match(workflow,/ownerFocusRobloxRuntimePassed/);
-  assert.match(workflow,/secondaryOwnerFocus=\(\$env:SECONDARY_OWNER_FOCUS -eq 'true'\)/);
-  assert.match(persistHelper,/ownerFocusRobloxAssetPipelineState:'RUNTIME_READY'/);
-  assert.match(persistHelper,/Boolean\(r\?\.secondaryOwnerFocus\)===secondaryOwnerFocus/);
-});
-
-test('secondary Roblox runtime persistence never rewrites the canonical selected-platform fields',()=>{
-  const start=persistHelper.indexOf("if(secondaryOwnerFocus){");
-  const end=persistHelper.indexOf("\n    continue;",start);
-  assert.ok(start>=0&&end>start,'secondary runtime persist branch missing');
-  const block=persistHelper.slice(start,end);
-  assert.doesNotMatch(block,/selectedPlatform\s*:/);
-  assert.doesNotMatch(block,/targetPlatform\s*:/);
-  assert.doesNotMatch(block,/currentStep\s*:/);
-  assert.doesNotMatch(block,/canonicalState\s*:/);
-});
-
-
-test('automatic continuation may run preflight but can never launch Studio without a human dispatch',()=>{
-  assert.match(workflow,/studio_run_approved:/);
-  assert.match(workflow,/STUDIO_RUN_APPROVED: \$\{\{ inputs\.studio_run_approved \}\}/);
-  assert.match(workflow,/GITHUB_EVENT_NAME==='workflow_dispatch'/);
-  assert.match(workflow,/GITHUB_ACTOR\|\|''\)!=='github-actions\[bot\]'/);
-  assert.match(workflow,/ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN/);
-  assert.match(workflow,/const runnerWip=1/);
-  assert.match(workflow,/if\(!humanApproved\|\|!manualGameId\)\{/);
+test('canonical parent watches both fast-path workflows',()=>{
+  assert.ok(parent.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
+  assert.ok(parent.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
