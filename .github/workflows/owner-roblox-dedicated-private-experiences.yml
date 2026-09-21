@@ -1,0 +1,310 @@
+name: Owner Roblox Dedicated Private Experiences
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/owner-roblox-dedicated-private-experiences.yml'
+      - 'tools/company-roblox-dedicated-experience.mjs'
+      - 'qa/company-roblox-dedicated-experience.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-roblox-dedicated-private-experiences.yml'
+      - 'tools/company-roblox-dedicated-experience.mjs'
+      - 'qa/company-roblox-dedicated-experience.test.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-roblox-dedicated-private-experiences
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test qa/company-roblox-dedicated-experience.test.mjs
+
+  publish:
+    needs: contract
+    if: github.event_name != 'pull_request'
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - gameId: cozy-island
+            gameName: 포근섬
+          - gameId: daechung-rpg
+            gameName: Whatever RPG
+          - gameId: horror-escape-room
+            gameName: 심야 술래잡기
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+
+      - name: Checkout company runtime
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned Rojo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+
+      - name: Resolve existing dedicated target
+        id: reuse
+        working-directory: main
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
+          const t=item.robloxPublicationTarget||{};
+          const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
+          const dedicated=t.dedicated===true&&t.source==='owner-dedicated-github-bootstrap'&&valid(t.universeId)&&valid(t.placeId);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(dedicated?t.universeId:'')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(dedicated?t.placeId:'')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'reuse='+(dedicated?'true':'false')+'\n');
+          console.log('ROBLOX_DEDICATED_TARGET_REUSE='+(dedicated?'YES':'NO'));
+          NODE
+
+      - name: Build exact current main Roblox place
+        working-directory: main
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "roblox-games/$GAME_ID/default.project.json"
+          mkdir -p /tmp/roblox-dedicated
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/roblox-dedicated/$GAME_ID.rbxlx"
+          test -s "/tmp/roblox-dedicated/$GAME_ID.rbxlx"
+          echo "ROBLOX_DEDICATED_BUILD_SHA256=$(sha256sum "/tmp/roblox-dedicated/$GAME_ID.rbxlx" | awk '{print $1}')"
+
+      - name: Create private dedicated Experience and publish
+        id: live
+        continue-on-error: true
+        working-directory: main
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          GAME_NAME: ${{ matrix.gameName }}
+          REUSE_UNIVERSE_ID: ${{ steps.reuse.outputs.universe_id }}
+          REUSE_PLACE_ID: ${{ steps.reuse.outputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --game-id "$GAME_ID"
+            --game-name "$GAME_NAME"
+            --place-file "/tmp/roblox-dedicated/$GAME_ID.rbxlx"
+            --source-revision "$GITHUB_SHA"
+            --output "/tmp/roblox-dedicated/$GAME_ID.result.json"
+          )
+          if [[ -n "${REUSE_UNIVERSE_ID:-}" && -n "${REUSE_PLACE_ID:-}" ]]; then
+            args+=(--reuse-universe-id "$REUSE_UNIVERSE_ID" --reuse-place-id "$REUSE_PLACE_ID")
+          fi
+          node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
+
+      - name: Upload dedicated publication evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-dedicated-${{ matrix.gameId }}
+          path: /tmp/roblox-dedicated/${{ matrix.gameId }}.result.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require dedicated private publish success
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const id=process.env.GAME_ID;
+          const p='/tmp/roblox-dedicated/'+id+'.result.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.pass!==true||r.private!==true||r.published!==true){
+            throw new Error('ROBLOX_DEDICATED_PRIVATE_PUBLISH_FAILED:'+id+':'+r.stage+':'+String(r.error||'unknown'));
+          }
+          NODE
+
+  persist:
+    needs: publish
+    if: always() && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+
+      - name: Download dedicated publication results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: roblox-dedicated-*
+          path: /tmp/roblox-dedicated-results
+          merge-multiple: true
+
+      - name: Persist dedicated Experience targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const root='/tmp/roblox-dedicated-results';
+          const names=fs.existsSync(root)?fs.readdirSync(root).filter(x=>x.endsWith('.result.json')).sort():[];
+          if(names.length===0)throw new Error('no dedicated Roblox results');
+          const stamp=new Date().toISOString();
+          const failures=[];
+          for(const name of names){
+            const r=JSON.parse(fs.readFileSync(path.join(root,name),'utf8'));
+            const item=(q.items||[]).find(x=>x.gameId===r.gameId);
+            if(!item)throw new Error('queue item missing: '+r.gameId);
+            const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
+            if(valid(r.universeId)&&valid(r.placeId)){
+              item.robloxPublicationTarget={
+                version:3,
+                gameId:r.gameId,
+                universeId:String(r.universeId),
+                placeId:String(r.placeId),
+                verified:r.private===true,
+                verifiedAt:stamp,
+                lastVerifiedAt:stamp,
+                source:'owner-dedicated-github-bootstrap',
+                authority:'roblox-canonical-publication-target',
+                dedicated:true,
+                shared:false,
+                visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+                internalOnly:true,
+                publicDiscoveryAllowed:false,
+                bootstrapState:r.pass===true?'PUBLISHED_PRIVATE':String(r.stage||'FAILED'),
+              };
+              item.robloxSharedTargetCurrent=false;
+              item.robloxFastMvpSupersededBy=null;
+            }
+            item.robloxDedicatedExperience={
+              version:1,
+              gameId:r.gameId,
+              sourceRevision:r.sourceRevision||null,
+              artifactIdentity:r.artifactIdentity||null,
+              universeId:r.universeId||null,
+              placeId:r.placeId||null,
+              created:r.created===true,
+              reusedTarget:r.reusedTarget===true,
+              configured:r.configured===true,
+              private:r.private===true,
+              published:r.published===true,
+              versionNumber:Number(r.versionNumber)||null,
+              state:r.pass===true?'PASS':'REPAIR_REQUIRED',
+              stage:r.stage||null,
+              error:r.error||null,
+              workflowRunId:Number(process.env.GITHUB_RUN_ID)||null,
+              updatedAt:stamp,
+              authority:'owner-dedicated-roblox-experience-bootstrap',
+            };
+            if(r.pass===true){
+              item.robloxDedicatedExperiencePublished=true;
+              item.robloxDedicatedExperiencePublishedAt=stamp;
+              item.robloxFastMvpPublished=true;
+              item.robloxFastMvpPublishedAt=stamp;
+              item.robloxReleaseVersionNumber=Number(r.versionNumber);
+              item.robloxInternalReleaseReady=true;
+              item.robloxPublicRelease=false;
+              item.robloxReleaseClaim=false;
+              item.robloxInternalReleaseEvidence={
+                version:2,
+                gameId:r.gameId,
+                platform:'ROBLOX',
+                sourceRevision:r.sourceRevision,
+                artifactIdentity:r.artifactIdentity,
+                universeId:String(r.universeId),
+                placeId:String(r.placeId),
+                finalReviewPassed:item.robloxHeadlessFinalReviewPassed===true||item.robloxFinalReviewPassed===true,
+                validationMode:item.robloxValidationMode||null,
+                headlessFastMvpPassed:item.robloxHeadlessFastMvpPassed===true,
+                published:true,
+                publicRelease:false,
+                exposure:'PRIVATE_OR_RESTRICTED',
+                visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
+                versionNumber:Number(r.versionNumber),
+                workflowRunId:Number(process.env.GITHUB_RUN_ID)||null,
+                publishedAt:stamp,
+                dedicated:true,
+                authority:'owner-direct-github-dedicated-private-publish',
+              };
+              item.robloxLastSuccessfulStage='DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED';
+            }else{
+              item.robloxDedicatedExperiencePublished=false;
+              failures.push(r.gameId+':'+String(r.stage||'unknown')+':'+String(r.error||'unknown'));
+            }
+            item.updatedAt=stamp;
+          }
+          q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          fs.writeFileSync('/tmp/roblox-dedicated-failures.json',JSON.stringify(failures,null,2)+'\n');
+          NODE
+          git config user.name 'jaewoon-roblox-dedicated'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: persist dedicated private Roblox experiences [skip ci]'
+            for i in 1 2 3 4 5; do
+              git push origin HEAD:"$COMPANY_RUNTIME_BRANCH" && break
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH"
+            done
+          fi
+
+      - name: Require all three dedicated publications
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const failures=JSON.parse(fs.readFileSync('/tmp/roblox-dedicated-failures.json','utf8'));
+          if(failures.length)throw new Error('ROBLOX_DEDICATED_REPAIR_REQUIRED:'+failures.join(';'));
+          NODE
