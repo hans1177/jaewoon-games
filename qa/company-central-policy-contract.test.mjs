@@ -171,19 +171,19 @@ test('DESIGN_ONLY retains model policy metadata while deterministic department e
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
-test('Vibe2/Vibe3 are the machine-locked game implementation owner from Web-first onward',()=>{
+test('Vibe2/Vibe3 remain primary integration owner while assigned external AI may collaborate from Web-first onward',()=>{
   const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
-  assert.equal(authority.authority,'VIBE_IMPLEMENTATION_OWNER');
-  assert.equal(authority.implementationOwner,'VIBE2_VIBE3');
+  assert.equal(authority.authority,'VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION');
+  assert.equal(authority.implementationOwner,'VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS');
   assert.equal(authority.appliesFromStage,'WEB_BASE_IMPLEMENTATION');
   assert.equal(authority.ownsWebFirstImplementation,true);
   assert.equal(authority.ownsSelectedPlatformImplementation,true);
   assert.equal(authority.ownsPostReleaseGameSourceDevelopment,true);
   assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
-  assert.equal(authority.nonVibeAiMayWriteGameSource,false);
-  assert.equal(authority.nonVibeAiMayCreateGameplayFeatureCommits,false);
+  assert.equal(authority.nonVibeAiMayWriteGameSource,true);
+  assert.equal(authority.nonVibeAiMayCreateGameplayFeatureCommits,true);
   assert.equal(authority.nonVibeAiMayModifyOrchestrationCiContractsWhenNeeded,true);
-  assert.equal(authority.ownerExplicitInstructionRequiredForAnyException,true);
+  assert.equal(authority.ownerExplicitInstructionRequiredForAnyException,false);
   assert.equal(directive.ai.vibe2.implementationOwner,true);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
