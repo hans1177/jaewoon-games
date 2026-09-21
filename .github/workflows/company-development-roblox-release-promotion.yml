@@ -276,7 +276,7 @@ jobs:
           echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
 
       - name: Force Roblox universe private before internal publish
-        if: steps.target.outputs.skip != 'true'
+        if: steps.target.outputs.skip != 'true' && github.event_name != 'push'
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -388,7 +388,7 @@ jobs:
           UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           PLACE_ID: ${{ steps.target.outputs.place_id }}
           PUBLICATION_TARGET_SOURCE: ${{ steps.target.outputs.publication_target_source }}
-          VISIBILITY_INTENT: ${{ steps.target.outputs.visibility_intent }}
+          VISIBILITY_INTENT: ${{ github.event_name == 'push' && 'PRESERVE_EXISTING_TARGET_VISIBILITY' || steps.target.outputs.visibility_intent }}
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -418,7 +418,8 @@ jobs:
           if(existingValid&&(String(existingTarget.universeId)!==universeId||String(existingTarget.placeId)!==placeId))throw new Error('canonical Roblox publication target changed before persist');
           const stamp=new Date().toISOString();
           const visibilityIntent=String(process.env.VISIBILITY_INTENT||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
-          if(visibilityIntent!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE')throw new Error('internal release visibility intent changed');
+          const preserveExistingVisibility=visibilityIntent==='PRESERVE_EXISTING_TARGET_VISIBILITY';
+          if(!preserveExistingVisibility&&visibilityIntent!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE')throw new Error('release visibility intent changed');
           item.robloxPublicationTarget={
             version:2,
             gameId:item.gameId,
@@ -430,8 +431,8 @@ jobs:
             source:existingTarget.source||targetSource||'proven-open-cloud-internal-release',
             authority:'roblox-canonical-publication-target',
             visibilityIntent,
-            internalOnly:true,
-            publicDiscoveryAllowed:false,
+            internalOnly:!preserveExistingVisibility,
+            publicDiscoveryAllowed:preserveExistingVisibility?null:false,
           };
           item.robloxInternalReleaseEvidence={
             version:1,
@@ -446,25 +447,39 @@ jobs:
             validationMode:item.robloxValidationMode||'LEGACY_STUDIO',
             headlessFastMvpPassed:item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFastMvpPassed===true:false,
             published:true,
-            publicRelease:false,
-            exposure:'PRIVATE_OR_RESTRICTED',
+            publicRelease:preserveExistingVisibility?null:false,
+            exposure:preserveExistingVisibility?'PRESERVE_EXISTING_TARGET_VISIBILITY':'PRIVATE_OR_RESTRICTED',
             visibilityIntent,
             versionNumber:version,
             workflowRunId:releaseRunId,
             publishedAt:stamp,
             authority:'roblox-open-cloud-internal-release',
           };
-          item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-open-cloud-internal-release-compatibility'};
-          item.robloxInternalReleaseReady=true;
-          item.robloxInternalReleaseAt=stamp;
-          item.robloxPublicReleaseReady=false;
-          item.robloxPublicRelease=false;
-          item.robloxReleaseClaim=false;
-          item.robloxReleasePublishedAt=null;
+          item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:preserveExistingVisibility?'roblox-open-cloud-fast-mvp-preserve-visibility':'roblox-open-cloud-internal-release-compatibility'};
           item.robloxReleaseVersionNumber=version;
-          item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-          item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-          item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
+          if(preserveExistingVisibility){
+            item.robloxFastMvpPublished=true;
+            item.robloxFastMvpPublishedAt=stamp;
+            item.robloxFastMvpPublicationEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-open-cloud-fast-mvp-preserve-visibility'};
+            item.robloxInternalReleaseReady=false;
+            item.robloxPublicReleaseReady=false;
+            item.robloxPublicRelease=false;
+            item.robloxReleaseClaim=false;
+            item.robloxReleasePublishedAt=stamp;
+            item.currentStep='FAST_MVP_TARGET_PUBLISHED';
+            item.canonicalState='FAST_MVP_TARGET_PUBLISHED';
+            item.robloxLastSuccessfulStage='FAST_MVP_TARGET_PUBLISHED';
+          }else{
+            item.robloxInternalReleaseReady=true;
+            item.robloxInternalReleaseAt=stamp;
+            item.robloxPublicReleaseReady=false;
+            item.robloxPublicRelease=false;
+            item.robloxReleaseClaim=false;
+            item.robloxReleasePublishedAt=null;
+            item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+            item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+            item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
+          }
           item.robloxFailureStage=null;
           item.robloxFailureSignature=null;
           item.routingBlockers=(item.routingBlockers||[]).filter(value=>value!=='roblox-internal-release-pending'&&value!=='roblox-release-promotion-pending');
@@ -477,11 +492,18 @@ jobs:
           q.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
           console.log(`ROBLOX_PUBLICATION_TARGET_PERSISTED=${universeId}/${placeId}`);
-          console.log('ROBLOX_INTERNAL_RELEASE_READY=YES');
-          console.log('ROBLOX_RELEASE_CLAIM=NO');
-          console.log(`ROBLOX_INTERNAL_RELEASE_VERSION_NUMBER=${version}`);
-          console.log('ROBLOX_PUBLIC_RELEASE=NO');
-          console.log('ROBLOX_NEXT_STAGE=INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+          if(preserveExistingVisibility){
+            console.log('ROBLOX_FAST_MVP_TARGET_PUBLISHED=YES');
+            console.log('ROBLOX_TARGET_VISIBILITY=PRESERVED');
+            console.log(`ROBLOX_FAST_MVP_VERSION_NUMBER=${version}`);
+            console.log('ROBLOX_NEXT_STAGE=FAST_MVP_PLAYTEST_AND_LINK_CHECK');
+          }else{
+            console.log('ROBLOX_INTERNAL_RELEASE_READY=YES');
+            console.log('ROBLOX_RELEASE_CLAIM=NO');
+            console.log(`ROBLOX_INTERNAL_RELEASE_VERSION_NUMBER=${version}`);
+            console.log('ROBLOX_PUBLIC_RELEASE=NO');
+            console.log('ROBLOX_NEXT_STAGE=INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+          }
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           NODE
