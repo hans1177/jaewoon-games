@@ -196,6 +196,11 @@ jobs:
       - name: Validate horror escape room release gates
         run: node --test qa/horror-escape-room-release.test.mjs
 
+      - name: Validate changed Roblox source synchronization
+        run: |
+          node --check tools/company-roblox-source-drift-sync.mjs
+          node --test qa/company-roblox-source-drift-sync.test.mjs
+
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
 
