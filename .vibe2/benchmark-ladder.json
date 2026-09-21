@@ -701,8 +701,88 @@
       ],
       "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
       "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+      "sourceGameId": "line-defense",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-1ilhn23",
+      "unseenProblemFingerprint": "phase4-unseen-nn8x6d",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_577a356116637ad2923c0bf8",
+      "track": "CAPABILITY_GENERALIZATION",
+      "level": 1,
+      "state": "READY_FOR_UNSEEN_SCREEN",
+      "countsAsTrainingSample": false,
+      "countsAsProductionPass": false,
+      "productionPreemptible": true,
+      "capabilityId": "capability_ctrace_577a356116637ad2923c0bf8",
+      "sourceGameId": "seed-single-defense-strat-celestial-bastion",
+      "targetEngine": "web",
+      "holdoutGameId": "amusement-tycoon",
+      "pairId": "phase4-pair-12losc3",
+      "unseenProblemFingerprint": "phase4-unseen-1pxzhy5",
+      "pairRoles": [
+        "CONTROL",
+        "CHALLENGER"
+      ],
+      "pairedControlChallengerRequired": true,
+      "screenOnly": true,
+      "mayPromoteGeneralization": false,
+      "fixedBetweenVariants": [
+        "NON_TARGET_CONTEXT",
+        "WRITABLE_SCOPE",
+        "MODEL_BUDGET",
+        "QA_CONTRACT"
+      ],
+      "requiredVerification": [
+        "UNSEEN_GAME",
+        "UNSEEN_PROBLEM_FINGERPRINT",
+        "PAIRED_CONTROL_CHALLENGER",
+        "FRESH_INDEPENDENT_QA",
+        "REGRESSION",
+        "NATIVE_RUNTIME_WHEN_REQUIRED",
+        "CAPABILITY_SPECIFIC_SUPPORT",
+        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
+      ],
+      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
+      "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 10,
+  "phase4GeneralizationCases": 12,
   "authority": "practice-and-measurement-only"
 }
