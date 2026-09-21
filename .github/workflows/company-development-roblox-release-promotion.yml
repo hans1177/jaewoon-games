@@ -290,7 +290,7 @@ jobs:
           grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-final-release-plan.log
           echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
 
-      - name: Force Roblox universe private before internal publish
+      - name: Ensure Roblox universe is private before internal publish
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
@@ -301,6 +301,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          status=/tmp/roblox-universe-status.json
+          status_code="$(curl --silent --show-error --output "$status" --write-out '%{http_code}' "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID" || true)"
+          already_private=0
+          if [[ "$status_code" == 200 ]]; then
+            already_private="$(node - "$status" <<'NODE'
+          const fs=require('fs');
+          const p=process.argv[2];
+          try{
+            const x=JSON.parse(fs.readFileSync(p,'utf8'));
+            const active=x.isActive ?? x.IsActive ?? x.isUniverseActive ?? x.IsUniverseActive;
+            process.stdout.write(active===false?'1':'0');
+          }catch{process.stdout.write('0');}
+          NODE
+            )"
+          fi
+          if [[ "$already_private" == 1 ]]; then
+            echo 'ROBLOX_INTERNAL_RELEASE_ALREADY_PRIVATE=YES'
+            echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
+            echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
+            exit 0
+          fi
+
           response=/tmp/roblox-deactivate-response.txt
           code=000
           if [[ -n "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
@@ -326,6 +348,16 @@ jobs:
             200|201|204) ;;
             *) cat "$response" >&2 || true; echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code" >&2; exit 42 ;;
           esac
+          verify=/tmp/roblox-universe-status-after.json
+          verify_code="$(curl --silent --show-error --output "$verify" --write-out '%{http_code}' "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID" || true)"
+          if [[ "$verify_code" == 200 ]]; then
+            node - "$verify" <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const active=x.isActive ?? x.IsActive ?? x.isUniverseActive ?? x.IsUniverseActive;
+          if(active===true)process.exit(44);
+          NODE
+          fi
           echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
           echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
 
