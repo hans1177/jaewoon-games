@@ -1106,3 +1106,56 @@ test('owner focused games and all released games receive focused caretaker prior
   assert.equal(focus.caretakerStickyOwnership,true);
   assert.ok(focus.evidence.includes('focused-caretaker:yes'));
 });
+
+
+test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work to canonical Unity source',()=>{
+  const root=tempRepo();
+  const gameId='unity-first-stage-game';
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    machineSourceOfTruth:'company-learning/platform-release-roadmap.json',
+    humanDocumentRequired:false,
+    unityWebFirstStage:{
+      status:'OWNER_DIRECT_LOCKED',
+      scope:'FIRST_WEB_GAME_STAGE_ONLY',
+      appliesToAllGames:true,
+      canonicalGameSourceRoot:'unity-games/<gameId>/',
+      publicWebBuildRoot:'web-games/<gameId>/',
+      postUnityWebGatePipelineUnchanged:true
+    }
+  },null,2),'utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,name:'Unity First Stage',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      homepageCategory:'development-confirmed',
+      lifecycleState:'ACTIVE'
+    }]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Unity First Stage',
+      status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',
+      canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      selectedPlatform:'ROBLOX',
+      webSourcePath:`web-games/${gameId}`
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.equal(task.target,'unity');
+  assert.equal(task.sourceRoot,`unity-games/${gameId}`);
+  assert.deepEqual(task.responsibleFiles,[
+    `unity-games/${gameId}/Assets/Scripts/GameCore.cs`,
+    `unity-games/${gameId}/Assets/Scripts/RuntimeBootstrap.cs`
+  ]);
+  assert.ok(task.evidence.includes('unity-web-first-stage'));
+  assert.ok(task.evidence.includes('unity-web-source-root-bootstrap-required'));
+  assert.match(task.goal,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
+  assert.doesNotMatch(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
+});
