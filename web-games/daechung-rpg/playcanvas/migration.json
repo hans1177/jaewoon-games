@@ -6,8 +6,8 @@
   "strategy": "PARALLEL_MIGRATION_THEN_CUTOVER",
   "legacyEntry": "../index.html",
   "previewEntry": "./index.html",
-  "phase": 6,
-  "phaseName": "JOBS_SKILLS_BOSS_PATTERNS_MOBILE_STABILITY",
+  "phase": 7,
+  "phaseName": "PLAYCANVAS_ROUTE_CUTOVER",
   "preserveSystems": [
     "quests",
     "shops",
@@ -70,16 +70,21 @@
     "orientation resize recovery",
     "visibility touch reset",
     "WebGL context-loss guard",
-    "mobile pixel-ratio cap"
+    "mobile pixel-ratio cap",
+    "root route cutover to PlayCanvas",
+    "legacy fallback query route",
+    "Cloudflare universal touch injection bypass for daechung-rpg",
+    "service worker cache generation bump"
   ],
   "cutoverCandidateEntry": "./playcanvas/index.html",
   "cutoverStatus": {
-    "sourceParity": "NEAR_PARITY",
-    "routeSwitched": false,
+    "sourceParity": "CUTOVER_CANDIDATE",
+    "routeSwitched": true,
+    "legacyFallback": "/web-games/daechung-rpg/?legacy=1",
     "liveRuntimeVerified": false,
     "remaining": [
-      "Android WebView smoke pass",
-      "public deployment runtime verification"
+      "public Cloudflare deployment runtime verification",
+      "Android WebView smoke pass"
     ]
   }
 }
