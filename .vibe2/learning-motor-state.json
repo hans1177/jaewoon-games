@@ -1410,7 +1410,9 @@
       "coding_1chwqsb",
       "coding_owf1jx",
       "coding_89qk7j",
-      "coding_vx4ne1"
+      "coding_vx4ne1",
+      "coding_1e3ltuy",
+      "coding_1b9v024"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -2441,9 +2443,9 @@
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
-        "verifiedApplications": 75,
+        "verifiedApplications": 76,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 175,
+        "totalGenerationAttempts": 177,
         "verifiedFailures": 375,
         "games": {
           "territory-war": 2,
@@ -2459,11 +2461,11 @@
           "seed-action-survival-rogu-echoes-of-the-lost-star": 3,
           "village-dungeons": 3,
           "survival": 5,
-          "line-defense": 31,
+          "line-defense": 32,
           "seed-casual-realm-weaver": 1
         },
         "targets": {
-          "web": 75
+          "web": 76
         },
         "contextModes": {
           "UNKNOWN": {
@@ -2487,14 +2489,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 62,
+            "verifiedApplications": 63,
             "verifiedFailures": 191,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 130,
-            "totalContextBytes": 1031739,
-            "lastEvidence": "coding_n6mitp",
+            "totalGenerationAttempts": 132,
+            "totalContextBytes": 1050970,
+            "lastEvidence": "coding_1b9v024",
             "lastFailureEvidence": "coding_negative_1mhoefz",
-            "lastUpdatedAt": "2026-09-21T01:25:55.813Z"
+            "lastUpdatedAt": "2026-09-21T01:39:07.335Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -3133,22 +3135,22 @@
             "lastUpdatedAt": "2026-09-20T16:51:13.769Z"
           },
           "web|OTHER|TIMEOUT": {
-            "verifiedApplications": 24,
+            "verifiedApplications": 25,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 48,
+            "totalGenerationAttempts": 50,
             "verifiedFailures": 0,
             "games": {
-              "line-defense": 24
+              "line-defense": 25
             },
             "targets": {
-              "web": 24
+              "web": 25
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_n6mitp",
+            "lastEvidence": "coding_1b9v024",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-21T01:25:55.813Z"
+            "lastUpdatedAt": "2026-09-21T01:39:07.335Z"
           },
           "web|INVALID_PATH|OTHER|TIMEOUT": {
             "verifiedApplications": 1,
@@ -3217,9 +3219,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_n6mitp",
+        "lastEvidence": "coding_1b9v024",
         "lastFailureEvidence": "coding_negative_1btgoar",
-        "lastUpdatedAt": "2026-09-21T01:36:17.485Z"
+        "lastUpdatedAt": "2026-09-21T01:39:07.335Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 90,
@@ -4310,16 +4312,16 @@
         "lastUpdatedAt": "2026-09-21T01:36:17.485Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 436,
+        "verifiedApplications": 437,
         "firstCandidatePasses": 62,
-        "totalGenerationAttempts": 987,
+        "totalGenerationAttempts": 989,
         "verifiedFailures": 306,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 60,
           "seed-idle-growth-rpg-crystal-bloom": 5,
           "seed-puzzle-chromatic-cascade": 28,
           "crystal-defense": 4,
-          "amusement-tycoon": 82,
+          "amusement-tycoon": 83,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 5,
           "chess-battle": 8,
           "bug-defense": 40,
@@ -4336,7 +4338,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 436
+          "web": 437
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -4350,14 +4352,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 401,
+            "verifiedApplications": 402,
             "verifiedFailures": 157,
             "firstCandidatePasses": 62,
-            "totalGenerationAttempts": 897,
-            "totalContextBytes": 7386823,
-            "lastEvidence": "coding_vx4ne1",
+            "totalGenerationAttempts": 899,
+            "totalContextBytes": 7414461,
+            "lastEvidence": "coding_1e3ltuy",
             "lastFailureEvidence": "coding_negative_1enni0i",
-            "lastUpdatedAt": "2026-09-21T01:34:58.895Z"
+            "lastUpdatedAt": "2026-09-21T01:39:07.333Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 6,
@@ -4412,17 +4414,17 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 95,
+            "verifiedApplications": 96,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 195,
+            "totalGenerationAttempts": 197,
             "verifiedFailures": 41,
             "games": {
               "seed-puzzle-chromatic-cascade": 8,
-              "amusement-tycoon": 82,
+              "amusement-tycoon": 83,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 5
             },
             "targets": {
-              "web": 95
+              "web": 96
             },
             "failureGames": {
               "seed-puzzle-chromatic-cascade": 6,
@@ -4437,9 +4439,9 @@
               "MALFORMED_OUTPUT": 7,
               "INCREMENTAL_QA": 31
             },
-            "lastEvidence": "coding_1xy8e1j",
+            "lastEvidence": "coding_1e3ltuy",
             "lastFailureEvidence": "coding_negative_1nkf9c8",
-            "lastUpdatedAt": "2026-09-21T01:27:26.875Z"
+            "lastUpdatedAt": "2026-09-21T01:39:07.333Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
             "verifiedApplications": 147,
@@ -5030,9 +5032,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_vx4ne1",
+        "lastEvidence": "coding_1e3ltuy",
         "lastFailureEvidence": "coding_negative_1felk6n",
-        "lastUpdatedAt": "2026-09-21T01:36:17.485Z"
+        "lastUpdatedAt": "2026-09-21T01:39:07.333Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 92,
@@ -7863,7 +7865,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-21T01:37:42.098Z",
+    "lastBuiltAt": "2026-09-21T01:39:07.383Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10614,5 +10616,5 @@
       "knowledge_123347n"
     ]
   },
-  "updatedAt": "2026-09-21T01:37:42.098Z"
+  "updatedAt": "2026-09-21T01:39:07.383Z"
 }
