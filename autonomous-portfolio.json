@@ -354,9 +354,9 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "unity-android",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -372,10 +372,14 @@
         "evidenceNote": "선택 플랫폼은 Unity이며 실제 Unity 본개발 프로젝트와 테스트 빌드 근거를 보존한다"
       },
       "protectedValues": [
-        "save-meaning",
         "core-loop",
-        "unity-primary",
-        "public-web-archive"
+        "save-meaning",
+        "fixed-four-person-party",
+        "companion-story",
+        "party-memory",
+        "destiny-relationships",
+        "equipment-driven-ai",
+        "composition-balance"
       ],
       "lifecycleState": "ACTIVE",
       "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
@@ -404,7 +408,9 @@
         }
       },
       "webValidationRequired": false,
-      "updatedAt": "2026-09-21T15:45:01.809Z"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 2
     },
     {
       "id": "P0007",
@@ -576,7 +582,9 @@
         }
       },
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-21T15:45:01.809Z"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "ownerPrimaryDevelopment": false,
+      "ownerPrimaryRank": null
     },
     {
       "id": "OWNER-cozy-island",
@@ -619,17 +627,22 @@
         }
       },
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-22T01:22:00+09:00",
-      "gameplayDirection": "MANUAL_BASIC_ECONOMY_TO_RESIDENT_AUTOMATION_TO_BASE_CONQUEST"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "gameplayDirection": "MANUAL_BASIC_ECONOMY_TO_RESIDENT_AUTOMATION_TO_BASE_CONQUEST",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 1
     },
     {
       "id": "OWNER-horror-escape-room",
       "slug": "horror-escape-room",
-      "name": "심야 방탈출",
+      "name": "심야 술래잡기",
       "protectedValues": [
         "core-loop",
         "multiplayer-semantics",
-        "save-meaning"
+        "fair-monster-selection",
+        "freeze-rescue-loop",
+        "solo-ai-fill",
+        "monster-progression"
       ],
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
@@ -660,7 +673,9 @@
         }
       },
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-22T01:05:00+09:00"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 3
     }
   ],
   "productionClassState": {
@@ -870,5 +885,14 @@
       }
     ]
   },
-  "updatedAt": "2026-09-22T01:22:00+09:00"
+  "updatedAt": "2026-09-22T01:22:00+09:00",
+  "ownerPrimaryDevelopment": {
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "updatedAt": "2026-09-22T01:35:00+09:00",
+    "gameIds": [
+      "cozy-island",
+      "daechung-rpg",
+      "horror-escape-room"
+    ]
+  }
 }

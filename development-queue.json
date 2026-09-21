@@ -328,7 +328,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "targetPlatform": "ROBLOX",
-      "targetSourcePath": "unity-games/daechung-rpg",
+      "targetSourcePath": "roblox-games/daechung-rpg",
       "webSourcePath": null,
       "designBaselineSource": "design/daechung-rpg/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
@@ -345,9 +345,9 @@
       "homepageTestScore": null,
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
-      "sourcePath": "unity-games/daechung-rpg",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "sourcePath": "roblox-games/daechung-rpg",
+      "currentStep": "TARGET_PLATFORM_SOURCE_REFRESH",
+      "canonicalState": "PRIMARY_DEVELOPMENT_SOURCE_REFRESH",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -374,10 +374,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-owner-directed-source-refresh-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-21T15:45:01.809Z",
+      "updatedAt": "2026-09-22T01:35:00+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -493,7 +493,16 @@
       "robloxSourceCandidateBranch": "development/roblox-daechung-rpg-35615742724-1",
       "robloxSourceCandidateReadyAt": "2026-09-21T15:03:36.929Z",
       "robloxSourceBootstrapFailedAt": null,
-      "robloxRuntimePassed": false
+      "robloxRuntimePassed": false,
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 2,
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "multiplayerMode": "COOP_WITH_AI_FILL",
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2,
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22"
     },
     {
       "gameId": "monster-adventure",
@@ -2362,8 +2371,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_REFRESH",
+      "canonicalState": "PRIMARY_DEVELOPMENT_SOURCE_REFRESH",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -2372,7 +2381,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T01:22:00+09:00",
+      "updatedAt": "2026-09-22T01:35:00+09:00",
       "robloxSourceCommit": "957db34d959c4525db5e9e948cb076e7e2f1a034",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2451,7 +2460,9 @@
       "baseByBaseConquest": true,
       "autoBattle": true,
       "tradeExpansion": true,
-      "navalSiegeExpansion": true
+      "navalSiegeExpansion": true,
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 1
     },
     {
       "gameId": "territory-war",
@@ -2459,7 +2470,7 @@
       "gameName": "영토전쟁",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "status": "ACTIVE",
+      "status": "PAUSED",
       "selectedPlatform": "ROBLOX",
       "targetPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -2508,8 +2519,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "DEFERRED_BY_OWNER_PRIMARY_THREE",
+      "canonicalState": "DEFERRED_BY_OWNER",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -2518,7 +2529,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T01:05:00+09:00",
+      "updatedAt": "2026-09-22T01:35:00+09:00",
       "robloxSourceCommit": "957db34d959c4525db5e9e948cb076e7e2f1a034",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2526,7 +2537,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-multiplayer-source-refresh-pending"
+        "deferred-for-primary-three"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -2575,12 +2586,14 @@
       "soloPlayable": true,
       "multiplayerMode": "COMPETITIVE",
       "multiplayerQaRequired": true,
-      "minimumParticipantsForRequiredQa": 2
+      "minimumParticipantsForRequiredQa": 2,
+      "ownerPrimaryDevelopment": false,
+      "ownerPrimaryRank": null
     },
     {
       "gameId": "horror-escape-room",
       "seedId": "OWNER-DIRECT-HORROR-ESCAPE-ROOM-20260922",
-      "gameName": "심야 방탈출",
+      "gameName": "심야 술래잡기",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
       "status": "ACTIVE",
@@ -2627,20 +2640,22 @@
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
       "multiplayerSupported": true,
       "soloPlayable": true,
-      "multiplayerMode": "COOP",
+      "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_SOURCE_REFRESH",
+      "canonicalState": "PRIMARY_DEVELOPMENT_SOURCE_REFRESH",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-source-refresh-pending"
+        "roblox-owner-directed-source-refresh-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T01:05:00+09:00"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 3
     }
   ],
   "updatedAt": "2026-09-22T01:22:00+09:00",
@@ -2660,5 +2675,18 @@
   "webPromotionRevalidationRequired": true,
   "developmentGameWipMax": null,
   "reconciliationPolicy": "CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE",
-  "nativeDevelopmentPolicy": "MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT"
+  "nativeDevelopmentPolicy": "MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT",
+  "ownerPrimaryDevelopment": {
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "updatedAt": "2026-09-22T01:35:00+09:00",
+    "maxConcurrentPrimary": 3,
+    "gameIds": [
+      "cozy-island",
+      "daechung-rpg",
+      "horror-escape-room"
+    ],
+    "deferredGameIds": [
+      "territory-war"
+    ]
+  }
 }

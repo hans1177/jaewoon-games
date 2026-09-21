@@ -480,11 +480,12 @@
     {
       "id": "daechung-rpg",
       "name": "대충 RPG",
-      "description": "탐험과 전투가 이어지는 RPG",
+      "description": "스토리에서 동료를 영입하고 4인 파티 조합·장비·관계를 연구하는 3D 파티 액션 RPG",
       "genre": [
         "RPG",
-        "탐험",
-        "전투"
+        "4인 파티",
+        "동료 수집",
+        "액션"
       ],
       "image": "assets/fantasy-rpg-v2.webp",
       "webPath": null,
@@ -492,7 +493,7 @@
       "featured": true,
       "unityProjectPath": "unity-games/daechung-rpg",
       "preferredPlatform": "unity-android",
-      "selectedPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
       "homepagePublicationApproved": false,
       "publishTestBuildWhenReady": true,
       "homepageWebPlayable": false,
@@ -507,7 +508,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "4인 파티 · 무한 확장 AI 동료 · 보스/히든 동료 · 파티 기억/숙명 관계 중심으로 재설계",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -558,7 +559,7 @@
           "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
           "target": "unity-android",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
+          "selectedPlatform": "ROBLOX",
           "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
         },
         "sources": {
@@ -572,7 +573,7 @@
             "projectPath": "unity-games/daechung-rpg"
           },
           "roblox": {
-            "projectPath": ""
+            "projectPath": "roblox-games/daechung-rpg"
           }
         },
         "publication": {
@@ -642,7 +643,15 @@
         "ROBLOX": "roblox-games/daechung-rpg",
         "UNITY": "unity-games/daechung-rpg"
       },
-      "updatedAt": "2026-09-21T15:45:01.809Z"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 2,
+      "playModes": [
+        "SINGLE",
+        "COOP"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true
     },
     {
       "id": "line-defense",
@@ -2815,7 +2824,7 @@
       "image": "assets/title-cozy-island.svg",
       "webPath": null,
       "hasWebArchive": true,
-      "featured": false,
+      "featured": true,
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -2961,14 +2970,16 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-22T01:22:00+09:00",
+      "updatedAt": "2026-09-22T01:35:00+09:00",
       "playModes": [
         "SINGLE",
         "COOP"
       ],
       "multiplayerSupported": true,
       "soloPlayable": true,
-      "fishingEnabled": false
+      "fishingEnabled": false,
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 1
     },
     {
       "id": "egg-heist",
@@ -3735,13 +3746,15 @@
         "UNITY": "unity-games/territory-war"
       },
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-22T01:05:00+09:00",
+      "updatedAt": "2026-09-22T01:35:00+09:00",
       "playModes": [
         "SINGLE",
         "COMPETITIVE"
       ],
       "multiplayerSupported": true,
-      "soloPlayable": true
+      "soloPlayable": true,
+      "ownerPrimaryDevelopment": false,
+      "ownerPrimaryRank": null
     },
     {
       "id": "zombie-survival",
@@ -3895,17 +3908,17 @@
     },
     {
       "id": "horror-escape-room",
-      "name": "심야 방탈출",
-      "description": "혼자 또는 친구와 퍼즐을 풀고 괴물을 피해 탈출하는 공포 방탈출",
+      "name": "심야 술래잡기",
+      "description": "플레이어 몬스터 1명이 생존자들을 얼리고 생존자들은 서로 해동하며 버티는 직관형 몬스터 술래잡기",
       "genre": [
-        "공포",
-        "방탈출",
-        "협동"
+        "술래잡기",
+        "몬스터",
+        "비대칭 멀티"
       ],
       "image": "assets/page-bg-v4.webp",
       "webPath": null,
       "hasWebArchive": false,
-      "featured": false,
+      "featured": true,
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -3916,7 +3929,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "싱글 가능 · 2~4인 협동 공포 방탈출 개발 착수",
+      "homepageRecentWork": "몬스터 얼음땡으로 전면 전환 · 공정 역할선정 · AI 충원 · 몬스터 성장/수집",
       "selectedPlatform": "ROBLOX",
       "productionTier": 2,
       "concurrentTargetPlatforms": [
@@ -3928,14 +3941,16 @@
         "UNITY": "unity-games/horror-escape-room"
       },
       "playModes": [
-        "SINGLE",
-        "COOP"
+        "SINGLE_WITH_AI",
+        "ASYMMETRIC_MULTIPLAYER"
       ],
       "multiplayerSupported": true,
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
       "catalogOrder": 26,
-      "updatedAt": "2026-09-22T01:05:00+09:00"
+      "updatedAt": "2026-09-22T01:35:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 3
     }
   ],
   "runtimeAuthority": "company-runtime",
@@ -3979,5 +3994,14 @@
       "seed-roblox-obby-party-minigam-tower-of-hell"
     ],
     "reason": "OWNER_PERMANENT_REMOVAL_INACCESSIBLE_DEPLOYED_GAMES_2026-09-19"
+  },
+  "ownerPrimaryDevelopment": {
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "updatedAt": "2026-09-22T01:35:00+09:00",
+    "gameIds": [
+      "cozy-island",
+      "daechung-rpg",
+      "horror-escape-room"
+    ]
   }
 }
