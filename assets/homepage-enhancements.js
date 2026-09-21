@@ -214,7 +214,18 @@ function platformHref(game){
   const links=platformLinks(game);
   return links.roblox||links.unity||'';
 }
-function installStyles(){document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';}
+function installStyles(){
+  document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';
+  if(document.getElementById('homepageEnhancementStyles'))return;
+  const style=document.createElement('style');
+  style.id='homepageEnhancementStyles';
+  style.textContent=`
+.foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
+@media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
+@media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
+`;
+  document.head.appendChild(style);
+}
 function buildFocus(catalog,status){
   const hero=document.getElementById('hero');
   if(!hero)return;
@@ -228,25 +239,17 @@ function buildFocus(catalog,status){
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${native?`<a class="homeFocusBtn" href="${esc(native)}">내부 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">개발 상태 보기</a>'}</div>`;
 }
-function homepageArtbookPath(game){
-  const explicit=String(game?.homepageArtbookPath||'').trim();
-  if(explicit)return explicit;
-  const id=gameIdOf(game);
-  return id?`/artbook-viewer.html?game=${encodeURIComponent(id)}`:'';
-}
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
   const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return platformReleaseLabel(p);};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
-    button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'robloxAction'),
-    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'unityAction')
+    button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
+    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction')
   ].join('');
-  const artbook=homepageArtbookPath(game);
-  const artbookBtn=artbook?`<a class="foldGameArtbookBtn" href="${esc(artbook)}">아트북 보기</a>`:'';
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
   const direct=links.roblox||links.unity||'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div>${artbookBtn}</div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();

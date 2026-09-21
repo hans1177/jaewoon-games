@@ -65,6 +65,7 @@ test('homepage shows only Roblox and Unity app native release actions',()=>{
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','게임 가능'/);
   assert.match(homepage,/robloxAction/);
   assert.match(homepage,/unityAction/);
+  assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
   assert.doesNotMatch(homepage,/Web 플레이|Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
   assert.doesNotMatch(homepage,/homeTop30GameCenter|const TOP_LIMIT=/);

@@ -67,7 +67,7 @@ export function buildHomepagePlatformExposure({queue={},catalog={}}={}){
       :(r.publicReleaseReady||u.publicReleaseReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY');
     return{
       gameId,
-      gameName:clean(item.gameName||byId.get(gameId)?.name||gameId),
+      gameName:clean(byId.get(gameId)?.name||item.gameName||gameId),
       authority:'company-runtime',
       internalCompanySurface:true,
       externalPublicReleaseState,
