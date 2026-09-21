@@ -37,6 +37,7 @@ function normalize(row={}){
     responsibleFiles:uniq(row.responsibleFiles),contextFiles:uniq(row.contextFiles),goal:clean(row.goal)||null,
     relatedTaskIds:uniq(row.relatedTaskIds),failureStage:clean(row.failureStage),failureSignature:clean(row.failureSignature),
     blastRadius:clean(row.blastRadius)||'single-task',checkpoint:clean(row.checkpoint)||null,
+    sourceMutationRequired:row.sourceMutationRequired!==false,sourceMutationBaseline:clean(row.sourceMutationBaseline||row.checkpoint)||null,
     evidence:uniq(row.evidence),recoveryStrategy:clean(row.recoveryStrategy),verificationPlan:uniq(row.verificationPlan),
     deterministicEvidence:uniq(row.deterministicEvidence),recoveryOwner:clean(row.recoveryOwner)||'SYSTEM_STEWARD_OR_PRIMARY_AI',
     primaryAiReview:clean(row.primaryAiReview)||'PENDING',learningPromotion:clean(row.learningPromotion)||'PENDING',
@@ -62,7 +63,8 @@ export function enqueueRecovery(queueInput,row={},options={}){
       status:reactivated?'queued':x.status,
       priority:item.priority||x.priority,gameId:item.gameId||x.gameId,responsibleFiles:uniq([...(x.responsibleFiles||[]),...(item.responsibleFiles||[])]),contextFiles:uniq([...(x.contextFiles||[]),...(item.contextFiles||[])]),goal:item.goal||x.goal,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
       evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
-      checkpoint:item.checkpoint||x.checkpoint,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
+      checkpoint:item.checkpoint||x.checkpoint,sourceMutationRequired:item.sourceMutationRequired!==false,
+      sourceMutationBaseline:item.sourceMutationBaseline||item.checkpoint||x.sourceMutationBaseline||x.checkpoint||null,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
       verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
     });
     return{queue:{...queue,tasks},added:false,reactivated,id:target.id};
