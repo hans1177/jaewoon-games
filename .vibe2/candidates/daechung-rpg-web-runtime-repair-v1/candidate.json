@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const d=fr.contentDocument;",
+      "replace": "const d=fr.contentDocument; // 주 책임 심볼 추가"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
