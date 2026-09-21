@@ -45,7 +45,15 @@ function writePolicy(root,version=196,overrides={}){
           appliesToExistingAndFutureRegisteredInternalAi:true,
           directMainWriteGrantedByCollaboration:false,
           policyMutationAuthorityGrantedByCollaboration:false,
-          selfAcceptanceGrantedByCollaboration:false
+          selfAcceptanceGrantedByCollaboration:false,
+          capabilityGrowthRoleLock:{
+            primaryAiRoleAfterCapabilityGrowth:'NON_BLOCKING_ASSISTANT_AND_COLLABORATOR',
+            capabilityMayIncrease:true,
+            authorityMayAutoIncrease:false,
+            primaryAiMayBecomeRuntimeOwner:false,
+            primaryAiMayReplaceDeterministicQa:false,
+            primaryAiMayReplaceVibeImplementationOwnership:false
+          }
         }
       }
     },
@@ -258,5 +266,20 @@ test('Primary AI collaboration semantics are part of the Vibe execution fingerpr
   const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
   assert.equal(after.valid,false);
   assert.ok(after.errors.includes('PRIMARY_AI_INTERNAL_VIBE_COVERAGE'));
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+});
+
+
+test('capability growth role lock participates in Vibe execution fingerprint',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.developmentLifecycleMachine.primaryAiOrchestration.internalVibeAiCollaboration.capabilityGrowthRoleLock.authorityMayAutoIncrease=true;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,false);
+  assert.ok(after.errors.includes('VIBE_CAPABILITY_AUTHORITY_SEPARATION'));
   assert.notEqual(after.executionFingerprint,before.executionFingerprint);
 });
