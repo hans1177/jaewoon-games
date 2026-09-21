@@ -66,6 +66,6 @@ test('24H runner wires verified System AI feed before external distillation and 
   const distill=workflow.indexOf('vibe2-external-ai-distillation.mjs',feed);
   const ingest=workflow.indexOf('vibe2-web-experience-ingest.mjs',distill);
   assert.ok(feed>=0&&distill>feed&&ingest>distill);
-  assert.match(workflow,/SYSTEM_AI_EXTERNAL_LEARNING_CANDIDATES/);
-  assert.match(workflow,/VIBE2_EXTERNAL_AI_ACCEPTED/);
+  assert.match(workflow,/system-ai-external-learning-feed\.log/);
+  assert.match(workflow,/vibe2-external-ai-distillation\.log/);
 });
