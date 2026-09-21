@@ -93,7 +93,8 @@ jobs:
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
-            if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
+            const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
+            if(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             const candidateReady=secondaryOwnerFocus
@@ -175,7 +176,7 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
           git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
           printf '%s\n' "$WEB_HANDOFF_JSON" > "$web_handoff"
-          node -e "const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!h||h.stage!=='WEB_DEVELOPMENT_BASELINE_READY'||h.promotionRevalidationPassed!==true)process.exit(2);console.log('ROBLOX_WEB_HANDOFF_INPUT=READY')" "$web_handoff"
+          node -e "const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const first=h?.firstGatePassed===true&&h?.secondGateRequired===true&&String(h?.secondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';if(!h||h.stage!=='WEB_DEVELOPMENT_BASELINE_READY'||(!first&&h.promotionRevalidationPassed!==true))process.exit(2);console.log(first?'ROBLOX_WEB_HANDOFF_INPUT=FIRST_GATE_READY':'ROBLOX_WEB_HANDOFF_INPUT=PROMOTION_READY')" "$web_handoff"
           branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           evidence="/tmp/roblox-source-bootstrap-${safe}.json"
           git config user.name 'jaewoon-roblox-development'
@@ -469,7 +470,8 @@ jobs:
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
-            if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
+            const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
+            if(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
