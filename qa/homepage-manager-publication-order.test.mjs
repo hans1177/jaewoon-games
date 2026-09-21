@@ -54,20 +54,20 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
 });
 
-test('homepage keeps Web as a card action and shows only platform-ready games in the available shelf',()=>{
+test('homepage shows only Roblox and Unity app native release actions',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
   assert.match(homepage,/getJson\('\/company-status\.json'\)/);
-  assert.match(homepage,/function webPublishedRows\(catalog\)/);
-  assert.match(homepage,/function canonicalWebHref\(row\)/);
+  assert.match(homepage,/getJson\('\/homepage-platform-exposure\.json'\)/);
   assert.match(homepage,/function internalReleaseRows\(catalog,status\)/);
   assert.match(homepage,/function internalReleaseLinks\(game\)/);
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','게임 가능'/);
-  assert.match(homepage,/button\(web,'Web 플레이','Web 준비중'/);
+  assert.match(homepage,/robloxAction/);
+  assert.match(homepage,/unityAction/);
+  assert.doesNotMatch(homepage,/Web 플레이|Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
-  assert.doesNotMatch(homepage,/homeTop30GameCenter/);
-  assert.doesNotMatch(homepage,/const TOP_LIMIT=/);
+  assert.doesNotMatch(homepage,/homeTop30GameCenter|const TOP_LIMIT=/);
 });
 
 test('homepage shows recent modification reflection instead of the old development flow',()=>{
@@ -91,34 +91,28 @@ test('verified Roblox deployment history is independent of the primary selected 
   assert.match(homepage,/const canonical=publicationOf\(game\)\.roblox\|\|\{\}/);
 });
 
-test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
-  assert.match(homepage,/function canonicalWebHref\(row\)/);
-  assert.match(homepage,/const expected=`web-games\/\$\{id\}`/);
-  assert.match(homepage,/data-web-path=/);
-  assert.match(homepage,/card\.dataset\.directPlay=target/);
-  assert.match(homepage,/function latestVerifiedUnityBuilds\(status\)/);
-  assert.match(homepage,/signatureVerified!==true/);
-  assert.match(homepage,/runtimePassed/);
+test('homepage native launch paths stay bound to company-runtime exposure evidence',()=>{
   assert.match(homepage,/function platformLinks\(game\)/);
   assert.match(homepage,/function internalReleaseLinks\(game\)/);
   assert.match(homepage,/internalReleaseReady===true/);
+  assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
+  assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.match(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/unityBuildVerified===true/);
+  assert.match(homepage,/exposureAuthority/);
+  assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
   assert.match(homepage,/data-direct-play|dataset\.directPlay/);
-  assert.match(homepage,/dataset\.touchLaunch='true'/);
 });
 
-test('post-Web artbook binding follows current Web validation schema without blocking platform development',()=>{
-  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=15/);
-  assert.match(artbookTool,/WEB_VALIDATION_SCHEMA_VERSION/);
-  assert.match(artbookTool,/validationSchemaVersion\|\|webEvidence\?\.version\)===WEB_VALIDATION_SCHEMA_VERSION/);
-  assert.doesNotMatch(artbookTool,/validationSchemaVersion\|\|webEvidence\?\.version\)===13/);
+test('central development orchestrator dispatches Roblox and Unity directly from minimum design',()=>{
   const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(development,/\n  route:\n[\s\S]{0,600}needs: \[web-gate\]/);
-  assert.doesNotMatch(development,/\n  route:\n[\s\S]{0,600}needs: \[web-gate, post-web-artbook\]/);
-  assert.match(development,/ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES/);
-  assert.match(development,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
+  assert.match(development,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
+  assert.match(development,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(development,/company-development-roblox-runtime\.yml/);
+  assert.match(development,/company-development-unity-runtime\.yml/);
+  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
+  assert.doesNotMatch(development,/web-gate|WEB_PRESENTATION_HANDOFF_REJECTED|Unity Web gate/);
 });
 
 test('validation candidate evidence sync remains semantic-idempotent and is not a homepage shelf',()=>{
@@ -149,11 +143,13 @@ test('PR creation failure remains a blocking publication failure inside Director
   assert.ok(director.includes('exit 1'));
 });
 
-test('current development score policy requires Web schema15 and rejects schema13',()=>{
-  const display=directive.homepageOperations?.developmentProgressDisplay||{};
-  assert.equal(display.scoreRequiresSchema15,true);
-  assert.equal(Object.hasOwn(display,'scoreRequiresSchema13'),false);
-  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+test('native development admission is minimum dual-platform design, not Web score',()=>{
+  const dual=roadmap.directNativeDualPlatformDevelopment||{};
+  assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
+  assert.equal(dual.unityWebEnabled,false);
+  assert.equal(dual.unityWebGateRequired,false);
+  assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
+  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_CONTRACT_READY');
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{
