@@ -13721,11 +13721,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_547841c389c82643dd9dc3e5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-2394",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "f5e275711ebd1c3b8bcf45b4175125f0dbfc353a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2394,
+        "baseBranch": "main",
+        "headBranch": "feat/daechung-rpg-playcanvas-migration-20260921",
+        "baseSha": "f5e275711ebd1c3b8bcf45b4175125f0dbfc353a",
+        "headSha": "459462407356ee487540161f54f1a9e2eb5e8e8d",
+        "mergeCommitSha": "db1596a6ff3be262fb7093467049209d2005e9de",
+        "mergedAt": "2026-09-21T10:41:08Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d3c41f4790f5ca3f185de9ed29adc8da35695de2d6f237a784f95cb496bccddb",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/daechung-rpg-playcanvas-migration-20260921",
+        "candidateSha": "459462407356ee487540161f54f1a9e2eb5e8e8d"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 230,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          ".github/workflows/daechung-rpg-playcanvas-migration-qa.yml",
+          "qa/daechung-rpg-playcanvas-migration.test.mjs",
+          "web-games/daechung-rpg/playcanvas/index.html",
+          "web-games/daechung-rpg/playcanvas/main.mjs",
+          "web-games/daechung-rpg/playcanvas/migration.json"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/daechung-rpg-playcanvas-migration-qa.yml",
+          "qa/daechung-rpg-playcanvas-migration.test.mjs",
+          "web-games/daechung-rpg/playcanvas/index.html",
+          "web-games/daechung-rpg/playcanvas/main.mjs",
+          "web-games/daechung-rpg/playcanvas/migration.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2394",
+        "merge-commit:db1596a6ff3be262fb7093467049209d2005e9de",
+        "base-main:f5e275711ebd1c3b8bcf45b4175125f0dbfc353a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 112
+    "total": 113
   }
 }
