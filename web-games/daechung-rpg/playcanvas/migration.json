@@ -6,8 +6,8 @@
   "strategy": "PARALLEL_MIGRATION_THEN_CUTOVER",
   "legacyEntry": "../index.html",
   "previewEntry": "./index.html",
-  "phase": 5,
-  "phaseName": "MULTIPLAYER_DUNGEONS_BOSSES",
+  "phase": 6,
+  "phaseName": "JOBS_SKILLS_BOSS_PATTERNS_MOBILE_STABILITY",
   "preserveSystems": [
     "quests",
     "shops",
@@ -62,6 +62,24 @@
     "cliff area",
     "amazon area",
     "five 3D dungeons",
-    "dungeon bosses"
-  ]
+    "dungeon bosses",
+    "warrior archer mage trainers",
+    "job skill system",
+    "archer passive modifiers",
+    "boss heavy attack pattern",
+    "orientation resize recovery",
+    "visibility touch reset",
+    "WebGL context-loss guard",
+    "mobile pixel-ratio cap"
+  ],
+  "cutoverCandidateEntry": "./playcanvas/index.html",
+  "cutoverStatus": {
+    "sourceParity": "NEAR_PARITY",
+    "routeSwitched": false,
+    "liveRuntimeVerified": false,
+    "remaining": [
+      "Android WebView smoke pass",
+      "public deployment runtime verification"
+    ]
+  }
 }

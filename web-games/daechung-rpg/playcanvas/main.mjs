@@ -44,8 +44,8 @@ const sword=primitive('Sword','box',[.75,1.15,0],[.12,1.2,.18],M.stone,player);s
 const armorPlate=primitive('ArmorPlate','box',[0,.28,.02],[1.15,.85,.72],M.armor,player);armorPlate.enabled=false;
 const helmet=primitive('Helmet','sphere',[0,1.1,0],[.72,.42,.72],M.armor,player);helmet.enabled=false;
 
-const state={zone:'town',active:false,portalCd:0,attackCd:0,damageCd:0,toastT:0,walkT:0,quest:0,questKills:0,partyKills:0};
-const hero={hp:100,maxHp:100,baseAttack:10,attack:10,speed:7.2,lv:1,xp:0,nextXp:100,gold:0,kills:0,weapon:'맨손',armor:'없음'};
+const state={zone:'town',active:false,portalCd:0,attackCd:0,damageCd:0,toastT:0,walkT:0,quest:0,questKills:0,partyKills:0,stunT:0};
+const hero={hp:100,maxHp:100,baseAttack:10,attack:10,speed:7.2,lv:1,xp:0,nextXp:100,gold:0,kills:0,weapon:'맨손',armor:'없음',job:'미전직',skillCd:0};
 const WEAPONS={
   '낡은 돌검':{price:100,attack:15,scale:[.14,1.3,.2],material:M.stone},
   '철 도끼':{price:500,attack:40,scale:[.2,1.5,.26],material:M.armor},
@@ -129,7 +129,7 @@ function buildTown(){
   primitive('Ground','box',[0,-.5,0],[72,1,72],M.grass,zoneRoot);
   for(const [x,z] of [[-14,-12],[14,-12],[-14,12],[14,12],[-24,0],[24,0]])addHouse(x,z);
   for(let i=0;i<18;i++){const a=i/18*Math.PI*2,r=29+(i%3);addTree(Math.cos(a)*r,Math.sin(a)*r)}
-  addNpc('촌장','chief',-4,7,M.chief);addNpc('무기상인','weapon',7,10,M.merchant);addNpc('방어구상인','armor',11,5,M.armor);
+  addNpc('촌장','chief',-4,7,M.chief);addNpc('무기상인','weapon',7,10,M.merchant);addNpc('방어구상인','armor',11,5,M.armor);addNpc('전사 전직관','trainer-warrior',-10,8,M.redwolf);
   const spots=[[-18,-5],[-12,-5],[-6,-5],[0,-5],[6,-5],[12,-5],[18,-5]];
   portals=spots.map((p,i)=>addPortal(p[0],p[1],'f'+(i+1),portalMats[i],String(i+1)));
   const extra=[['f8',-15,-12,'8'],['f9',-9,-12,'9'],['f10',-3,-12,'10'],['f11',3,-12,'11'],['cliff',9,-12,'절벽'],['amazon',15,-12,'아마존'],
@@ -151,6 +151,8 @@ function buildHunt(id){
   for(let i=0;i<24;i++){const a=i/24*Math.PI*2,r=26+(i%4)*2; if(id===7)addTree(Math.cos(a)*r,Math.sin(a)*r,M.jungle); else primitive('Rock','box',[Math.cos(a)*r,.5,Math.sin(a)*r],[1.8,.9,1.5],M.stone,zoneRoot)}
   returnPortal=addPortal(0,8,'town',portalMats[0],'귀환');
   for(let i=0;i<z.enemy[5];i++)spawnEnemy(i,z.enemy);
+  if(key==='f8')addNpc('궁수 전직관','trainer-archer',-8,6,M.merchant);
+  if(key==='f5')addNpc('마법사 전직관','trainer-mage',8,6,M.demon);
   if(z.boss){
     const [bn,bhp,batk,bmat]=z.boss;
     const b=primitive('Boss-'+bn,'capsule',[0,1.5,-14],[2.3,2.3,2.3],bmat,zoneRoot);
@@ -176,6 +178,7 @@ function refreshHud(){
   const z=state.zone==='town'?'마을':ZONES[state.zone]?.name||state.zone;
   $('area').textContent=z;$('lv').textContent='Lv.'+hero.lv;$('hp').textContent='HP '+Math.ceil(hero.hp)+'/'+hero.maxHp;
   $('atk').textContent='공격 '+hero.attack;$('gold').textContent=hero.gold+' G';$('xp').textContent='EXP '+hero.xp+'/'+hero.nextXp;
+  $('jobText').textContent=hero.job;$('skillBtn').textContent=skillLabel();
   $('quest').textContent=state.quest===0?'퀘스트: 촌장에게 말을 걸어라.':state.quest===1?'퀘스트: 1번 사냥터 슬라임 5마리 처치 ('+Math.min(5,state.questKills)+'/5)':state.quest===2?'완료: 촌장에게 돌아가 보상 받기':'퀘스트 완료 · 자유 사냥';
 }
 function playerDamage(v){
@@ -203,15 +206,14 @@ function killEnemy(e,killer='player'){
 }
 
 function nearestNpc(){
-  if(state.zone!=='town')return null;
   const pp=player.getPosition();let best=null,dist=3.4;
   for(const n of npcs){const d=n.getPosition().distance(pp);if(d<dist){dist=d;best=n}}return best;
 }
 function openDialog(title,text){$('dialogTitle').textContent=title;$('dialogText').innerHTML=text;$('dialog').style.display='flex'}
 function closeOverlay(id){$(id).style.display='none'}
 function recalcStats(){
-  const w=WEAPONS[hero.weapon];hero.attack=hero.baseAttack+(w?.attack||0);
-  const a=ARMORS[hero.armor],bonus=a?.hp||0;hero.maxHp=100+(hero.lv-1)*10+bonus;hero.hp=Math.min(hero.hp,hero.maxHp);
+  const w=WEAPONS[hero.weapon],jobAtk=hero.job==='궁수'?1.5:1;hero.attack=Math.round((hero.baseAttack+(w?.attack||0))*jobAtk);
+  const a=ARMORS[hero.armor],bonus=a?.hp||0,jobHp=hero.job==='궁수'?.7:1;hero.maxHp=Math.max(1,Math.floor((100+(hero.lv-1)*10+bonus)*jobHp));hero.hp=Math.min(hero.hp,hero.maxHp);
   sword.enabled=hero.weapon!=='맨손';
   if(w){sword.setLocalScale(...w.scale);sword.model.material=w.material}
   armorPlate.enabled=hero.armor!=='없음';helmet.enabled=hero.armor==='철 갑옷';
@@ -237,8 +239,14 @@ function renderShop(role){
   });
   $('shop').style.display='flex';
 }
+function becomeJob(job){
+  if(hero.lv<5){openDialog('전직관','Lv.5부터 전직할 수 있다.');return}
+  if(hero.job!=='미전직'){openDialog('전직관','이미 '+hero.job+'로 전직했다.');return}
+  hero.job=job;hero.skillCd=0;recalcStats();hero.hp=hero.maxHp;refreshHud();openDialog('전직관',job+' 전직 완료!');
+}
 function interact(){
   const n=nearestNpc();if(!n){toast('가까운 NPC가 없다');return}
+  if(n.role?.startsWith('trainer-')){const job=n.role==='trainer-warrior'?'전사':n.role==='trainer-archer'?'궁수':'마법사';becomeJob(job);return}
   if(n.role==='chief'){
     if(state.quest===0){state.quest=1;state.questKills=0;openDialog('촌장','1번 사냥터에서 <b>슬라임 5마리</b>를 잡아라.<br>보상: 50골드 + 50 EXP');refreshHud();return}
     if(state.quest===1){openDialog('촌장','아직 슬라임을 더 잡아야 한다. ('+state.questKills+'/5)');return}
@@ -340,6 +348,26 @@ $('multiClose').onclick=()=>closeOverlay('multi');$('multiCreate').onclick=()=>c
 $('dialogClose').onclick=()=>closeOverlay('dialog');$('shopClose').onclick=()=>closeOverlay('shop');$('bagClose').onclick=()=>closeOverlay('bag');
 $('talk').onpointerdown=e=>{e.preventDefault();interact()};
 $('bagBtn').onpointerdown=e=>{e.preventDefault();renderBag();$('bag').style.display='flex'};
+function skillLabel(){
+  if(hero.job==='전사')return hero.skillCd>0?'슬래시 '+Math.ceil(hero.skillCd)+'초':'슬래시';
+  if(hero.job==='마법사')return hero.skillCd>0?'회복 '+Math.ceil(hero.skillCd)+'초':'자가회복';
+  if(hero.job==='궁수')return '패시브';
+  return '스킬';
+}
+function slashWave(){
+  const pp=player.getPosition();
+  for(const m of enemies){if(!m.alive)continue;if(m.getPosition().distance(pp)<5.2){m.hp-=hero.attack*3;if(m.hp<=0)killEnemy(m,'player')}}
+}
+function useJobSkill(){
+  if(!state.active||hero.skillCd>0||state.stunT>0)return;
+  if(hero.job==='전사'){
+    hero.skillCd=10;slashWave();setTimeout(()=>{if(state.active)slashWave()},180);toast('슬래시! 3배 공격 ×2');
+  }else if(hero.job==='마법사'){
+    hero.skillCd=30;hero.hp=Math.min(hero.maxHp,hero.hp+100);refreshHud();toast('자가회복 +100');
+  }else if(hero.job==='궁수')toast('궁수 패시브: 공격력 ×1.5 / 최대 HP ×0.7');
+  else toast('Lv.5 이후 전직관에게 전직 가능');
+}
+$('skillBtn').onpointerdown=e=>{e.preventDefault();useJobSkill()};
 
 const keys=new Set();addEventListener('keydown',e=>keys.add(e.key.toLowerCase()));addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 const joy={x:0,y:0,id:null},joyEl=$('joy'),knob=$('knob');
@@ -369,10 +397,13 @@ function updateEnemies(dt){
   if(state.zone==='town')return;
   const pp=player.getPosition();
   for(const m of enemies){
-    if(!m.alive)continue;m.hitCd=Math.max(0,m.hitCd-dt);
+    if(!m.alive)continue;m.hitCd=Math.max(0,m.hitCd-dt);m.specialCd=Math.max(0,(m.specialCd||0)-dt);
     const mp=m.getPosition(),dx=pp.x-mp.x,dz=pp.z-mp.z,d=Math.hypot(dx,dz);
     if(d<10&&d>1.8){m.translate((dx/d)*m.speed*dt,0,(dz/d)*m.speed*dt)}
-    if(d<=1.9&&m.hitCd<=0){m.hitCd=.9;playerDamage(m.attack)}
+    if(m.isBoss&&d<4.6&&m.specialCd<=0){
+      m.specialCd=5.2;toast(m.enemyName+' · 강타 준비');
+      setTimeout(()=>{if(m.alive&&state.active&&m.getPosition().distance(player.getPosition())<4.8){playerDamage(m.attack*2);toast('보스 강타!')}} ,650);
+    }else if(d<=1.9&&m.hitCd<=0){m.hitCd=.9;playerDamage(m.attack)}
   }
 }
 function nearestAliveEnemy(pos,max=999){
@@ -406,9 +437,9 @@ function clampPlayer(){
 buildTown();recalcStats();refreshHud();
 
 app.on('update',dt=>{
-  state.attackCd=Math.max(0,state.attackCd-dt);state.damageCd=Math.max(0,state.damageCd-dt);state.portalCd=Math.max(0,state.portalCd-dt);
+  state.attackCd=Math.max(0,state.attackCd-dt);state.damageCd=Math.max(0,state.damageCd-dt);state.portalCd=Math.max(0,state.portalCd-dt);state.stunT=Math.max(0,state.stunT-dt);hero.skillCd=Math.max(0,hero.skillCd-dt);
   if(state.toastT>0){state.toastT-=dt;if(state.toastT<=0)$('toast').style.opacity='0'}
-  if(state.active){
+  if(state.active&&state.stunT<=0){
     let x=joy.x+(keys.has('a')?-1:0)+(keys.has('d')?1:0),z=joy.y+(keys.has('w')?-1:0)+(keys.has('s')?1:0),l=Math.hypot(x,z);
     if(l>1){x/=l;z/=l}
     if(Math.hypot(x,z)>.05){
@@ -418,7 +449,14 @@ app.on('update',dt=>{
     clampPlayer();updatePortals();updateEnemies(dt);updateAiUsers(dt);updateMultiplayer(dt);
   }
   for(const p of portals)p.rotate(0,55*dt,0);if(returnPortal)returnPortal.rotate(0,55*dt,0);
+  if(hero.skillCd>0)$('skillBtn').textContent=skillLabel();
   const pp=player.getPosition(),desired=new pc.Vec3(pp.x,10,pp.z+14);
   camera.setPosition(camera.getPosition().lerp(camera.getPosition(),desired,Math.min(1,dt*6)));camera.lookAt(pp.x,1.2,pp.z-1.2);
 });
+function resetTouchState(){stopJoy()}
 addEventListener('resize',()=>app.resizeCanvas());
+addEventListener('orientationchange',()=>setTimeout(()=>app.resizeCanvas(),120));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)resetTouchState()});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();resetTouchState();toast('그래픽 복구 중...')});
+if(app.graphicsDevice&&'maxPixelRatio' in app.graphicsDevice)app.graphicsDevice.maxPixelRatio=Math.min(devicePixelRatio||1,2);
