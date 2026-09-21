@@ -164,3 +164,35 @@ test('scoped Vibe game bottleneck dispatch creates supervised System-AI repair t
   assert.equal(task.supervisorReviewRequired,true);
   assert.equal(task.workerSelfAcceptance,false);
 });
+
+test('recovery queue uses unlimited causal repair and never terminal-fails from retry count',()=>{
+  let q=enqueueRecovery({tasks:[]},{
+    sourceQueue:'vibe2',sourceTaskId:'unlimited',failureStage:'TARGET_PLATFORM_RUNTIME',
+    failureSignature:'runtime-repeat',recoveryStrategy:'REPAIR_AND_RERUN_EXACT_STAGE',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE'],maxRetries:0
+  }).queue;
+  const id=q.tasks[0].id;
+  for(let i=0;i<12;i++)q=settleRecovery(q,{id,outcome:'FAIL',evidence:['attempt:'+i]});
+  const row=q.tasks[0];
+  assert.equal(row.status,'queued');
+  assert.equal(row.retries,12);
+  assert.equal(row.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(row.maxRetries,null);
+});
+
+test('scoped recovery-created System-AI task inherits unlimited causal repair',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const recovery={tasks:[{
+    id:'r-unlimited',status:'queued',sourceQueue:'vibe2',sourceTaskId:'missing-source-task',
+    gameId:'demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:[],
+    failureStage:'WEB_RUNTIME',failureSignature:'runtime-repeat',recoveryOwner:'SYSTEM_AI',
+    recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE'],evidence:[]
+  }]};
+  const result=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  const task=result.systemAi.tasks.find(x=>x.id==='recovery-r-unlimited');
+  assert.ok(task);
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(task.maxRetries,null);
+});
+
