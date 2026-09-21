@@ -99,7 +99,7 @@ jobs:
           NODE
 
   preflight-worker:
-    name: Roblox five-lead preflight ${{ matrix.gameId }}
+    name: Roblox Vibe shared-model preflight ${{ matrix.gameId }}
     needs: preflight-plan
     if: needs.preflight-plan.outputs.count != '0'
     strategy:
@@ -122,23 +122,22 @@ jobs:
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-      - name: Prepare free local lead models
+      - name: Prepare shared local review model
         uses: ./.github/actions/prepare-ollama
         with:
           model: 'llama3.2:1b'
           version: '0.33.3'
           pull-model: 'true'
           department-role: development
-      - name: Ensure all five configured lead models are local
+      - name: Ensure shared preflight model is local
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const role of ['planning','graphics','development','qa','balance'])console.log(d.ai.departmentLeadModels[role])")
+          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
           have="$(ollama list | awk 'NR>1{print $1}')"
-          for model in "${models[@]}"; do
-            grep -Fxq "$model" <<<"$have" || ollama pull "$model"
-          done
-      - name: Run five distinct lead build preflight
+          grep -Fxq "$model" <<<"$have" || ollama pull "$model"
+          echo "ROBLOX_PREFLIGHT_SHARED_MODEL=$model"
+      - name: Run Vibe plus shared-model build preflight
         id: review
         continue-on-error: true
         env:
@@ -177,7 +176,7 @@ jobs:
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
   preflight-persist:
-    name: persist Roblox five-lead preflight checkpoints
+    name: persist Roblox shared-model preflight checkpoints
     needs: [preflight-plan, preflight-worker]
     if: always() && needs.preflight-plan.result == 'success'
     runs-on: ubuntu-latest

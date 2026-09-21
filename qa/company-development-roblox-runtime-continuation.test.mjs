@@ -30,7 +30,7 @@ test('Roblox continuation changes re-enter the canonical parent runtime',()=>{
   ]) assert.ok(parentWorkflow.includes(`- '${path}'`),`missing parent push path: ${path}`);
 });
 
-test('five-lead preflight requires an exact immutable build before runtime',()=>{
+test('Vibe plus shared-model preflight requires an exact immutable build before runtime',()=>{
   const item={
     gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:'2026-09-13T00:00:00Z',musicValidationPassed:true,
     robloxSourceBootstrapPassedAt:'2026-09-13T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
@@ -38,8 +38,9 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
   };
   const result=inspectRobloxBuildPreflight({item,directive});
   assert.equal(result.pass,true);
-  assert.equal(result.distinctLeadCount,5);
-  assert.equal(new Set(Object.values(result.leads)).size,5);
+  assert.equal(result.distinctLeadCount,1);
+  assert.equal(new Set(Object.values(result.leads)).size,1);
+  assert.equal(result.sharedModel,'llama3.2:1b');
   assert.ok(workflow.includes('company-development-roblox-build-preflight.mjs'));
   assert.ok(workflow.includes("robloxBuildPreflightPassed:true"));
   assert.ok(workflow.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
