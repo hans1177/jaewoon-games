@@ -111,6 +111,14 @@ export function verifiedOwnerReleaseHandoffEligible(item={}){
   );
 }
 
+export function firstWebGatePlatformDevelopmentEligible(item={}){
+  return Boolean(
+    item.webFirstGatePassed===true&&
+    item.webSecondGateRequired===true&&
+    clean(item.webSecondGateCriteriaAuthority).toUpperCase()==='OWNER_DIRECTIVE'
+  );
+}
+
 export function targetPlatformDevelopmentEligible(item={}){
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
   const status=upper(item.status);
@@ -123,6 +131,7 @@ export function targetPlatformDevelopmentEligible(item={}){
   const adapter=adapterForPlatform(platform);
   if(!adapter?.existingExecutionPath)return false;
   if(verifiedOwnerReleaseHandoffEligible(item))return true;
+  if(firstWebGatePlatformDevelopmentEligible(item))return true;
   const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
   const score=Number(item.webStrictScore??item.strictImplementationScore);
   return Boolean(
