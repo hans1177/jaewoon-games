@@ -255,6 +255,28 @@ jobs:
           grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-final-release-plan.log
           echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
 
+      - name: Force Roblox universe private before internal publish
+        if: steps.target.outputs.skip != 'true'
+        working-directory: main
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ -n "$ROBLOX_OPEN_CLOUD_API_KEY" ]] || { echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=BLOCKED:MISSING_API_KEY' >&2; exit 41; }
+          response=/tmp/roblox-deactivate-response.txt
+          code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' \
+            --request POST \
+            --header "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" \
+            "https://apis.roblox.com/legacy-develop/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
+          case "$code" in
+            200|201|204) ;;
+            *) cat "$response" >&2 || true; echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code" >&2; exit 42 ;;
+          esac
+          echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
+          echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
+
       - name: Publish exact final-reviewed package to internal Roblox target
         id: publish
         if: steps.target.outputs.skip != 'true'
