@@ -52,7 +52,18 @@ canvas{display:block;width:100vw;height:100vh}
 // 그래픽/오디오는 외부 파일 0개. WebAudio + Canvas만 사용.
 // RPG_PATCH_V7_JUNGLE
 
-const c=document.getElementById('game'),ctx=c.getContext('2d');
+const $id=id=>document.getElementById(id);
+const c=$id('game'),ctx=c.getContext('2d');
+const lv=$id('lv'),gold=$id('gold'),atk=$id('atk'),weaponText=$id('weaponText'),armorText=$id('armorText'),xpText=$id('xpText');
+const hp=$id('hp'),xp=$id('xp'),quest=$id('quest'),hiddenQuest=$id('hiddenQuest'),area=$id('area');
+const attack=$id('attack'),talk=$id('talk'),bagBtn=$id('bagBtn'),soundBtn=$id('soundBtn'),actionBtn=$id('actionBtn');
+const speech=$id('speech'),toast=$id('toast'),start=$id('start'),startBtn=$id('startBtn');
+const bag=$id('bag'),bagList=$id('bagList'),closeBag=$id('closeBag');
+const weaponShop=$id('weaponShop'),weaponList=$id('weaponList'),closeWeapon=$id('closeWeapon');
+const armorShop=$id('armorShop'),armorList=$id('armorList'),closeArmor=$id('closeArmor');
+const hiddenOffer=$id('hiddenOffer'),acceptHidden=$id('acceptHidden'),declineHidden=$id('declineHidden');
+const sellShop=$id('sellShop'),sellList=$id('sellList'),sellAll=$id('sellAll'),closeSell=$id('closeSell');
+const dead=$id('dead'),deadCost=$id('deadCost'),respawn=$id('respawn');
 let W=innerWidth,H=innerHeight,D=Math.min(devicePixelRatio||1,2);
 function resize(){W=innerWidth;H=innerHeight;c.width=W*D;c.height=H*D;ctx.setTransform(D,0,0,D,0,0);ctx.imageSmoothingEnabled=false}
 addEventListener('resize',resize);resize();
@@ -432,6 +443,6 @@ function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapon
 bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display='none';closeArmor.onclick=()=>armorShop.style.display='none';closeSell.onclick=()=>sellShop.style.display='none';sellAll.onclick=sellEverything;
 acceptHidden.onclick=()=>{hq=1;hiddenOffer.style.display='none';sfx('questAccept');spawnHiddenEnemy();hud();toastMsg('히든 퀘스트 수락! 적이 비석 앞에 나타났다')};declineHidden.onclick=()=>hiddenOffer.style.display='none';
 startBtn.onclick=()=>{initAudio();start.style.display='none';reset();run=true;last=performance.now()};respawn.onclick=()=>{sfx('respawn');dead.style.display='none';p.hp=maxHp();p.inv=1;run=true;enter('town');last=performance.now()};
-reset();requestAnimationFrame(loop);
+reset();window.__RPG_BASE_READY=true;requestAnimationFrame(loop);
 </script>
 </body></html>
