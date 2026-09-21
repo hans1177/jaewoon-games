@@ -33,6 +33,7 @@ function normalizeTask(row={}){
     focusPatterns:row.focusPatterns&&typeof row.focusPatterns==='object'?row.focusPatterns:{},
     acceptanceCriteria:unique(row.acceptanceCriteria),verificationCommands:unique(row.verificationCommands),
     dependencies:unique(row.dependencies),retries:Math.max(0,Number(row.retries||0)),
+    sourceMutationRequired:row.sourceMutationRequired===true,sourceMutationBaseline:clean(row.sourceMutationBaseline)||null,
     retryPolicy,maxRetries:retryPolicy==='UNLIMITED_CAUSAL_REPAIR'?null:Math.max(0,Math.min(5,Number(row.maxRetries??2))),reservationId:clean(row.reservationId)||null,
     reservedAt:clean(row.reservedAt)||null,candidateBranch:clean(row.candidateBranch)||null,
     pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:clean(row.lastOutcome)||null,
@@ -232,15 +233,18 @@ export function applySystemAiResults(queueInput,results=[]){
   queue={...queue,tasks:queue.tasks.map(task=>{
     const row=byResult.get(task.id);if(!row)return task;
     if(task.status!=='running')return task;
-    const outcome=clean(row.outcome).toUpperCase();
-    const evidence=unique([...(task.evidence||[]),...(row.evidence||[])]);
+    let outcome=clean(row.outcome).toUpperCase();
+    const rowEvidence=unique(row.evidence);
+    const mutationEvidence=rowEvidence.some(x=>x.startsWith('source-mutation-sha:'))&&rowEvidence.some(x=>x.startsWith('changed-file:'));
+    if(task.sourceMutationRequired===true&&!mutationEvidence&&['PASS','CURRENT_MAIN_SATISFIED'].includes(outcome))outcome='FAIL';
+    const evidence=unique([...(task.evidence||[]),...rowEvidence,...(task.sourceMutationRequired===true&&!mutationEvidence?['source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION']:[])]);
     if(outcome==='CURRENT_MAIN_SATISFIED')return{...task,status:'done',candidateBranch:null,pullRequestUrl:null,lastOutcome:'DETERMINISTIC_CURRENT_MAIN_SATISFIED',blocker:null,evidence:unique([...evidence,'deterministic-current-main-satisfied','worker-self-acceptance:NO']),updatedAt:stamp,reservationId:null,reservedAt:null};
     if(outcome==='PASS'&&row.jointAccepted===true&&clean(task.department).toLowerCase()==='planning-growth-marketing')return{...task,status:'done',candidateBranch:null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PRIMARY_AI_VIBE_JOINT_ACCEPTED',blocker:null,evidence:unique([...evidence,'primary-ai-vibe-joint-accept:YES']),updatedAt:stamp,reservationId:null,reservedAt:null};
     if(outcome==='PASS')return{...task,status:'awaiting-supervisor',candidateBranch:clean(row.candidateBranch)||null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PASS',blocker:'primary-ai-review-pending',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
     const retries=task.retries+1;
     const unlimited=task.retryPolicy==='UNLIMITED_CAUSAL_REPAIR';
     const retry=unlimited||retries<=task.maxRetries;
-    return{...task,status:retry?'queued':'failed',retries,lastOutcome:outcome||'FAIL',blocker:clean(row.blocker)||'system-ai-worker-failed',evidence:unique([...evidence,...(unlimited?['system-ai-retry:UNLIMITED_CAUSAL_REPAIR']:[])]),updatedAt:stamp,reservationId:null,reservedAt:null};
+    return{...task,status:retry?'queued':'failed',retries,lastOutcome:outcome||'FAIL',blocker:task.sourceMutationRequired===true&&!mutationEvidence?'source-mutation-required-before-revalidation':clean(row.blocker)||'system-ai-worker-failed',evidence:unique([...evidence,...(unlimited?['system-ai-retry:UNLIMITED_CAUSAL_REPAIR']:[])]),updatedAt:stamp,reservationId:null,reservedAt:null};
   })};
   return queue;
 }
