@@ -49,22 +49,35 @@ function gameRepairRoute(task={}){
 }
 function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-task',relatedTaskIds=[]}){
   const route=sourceQueue==='system-ai'? 'SYSTEM_AI':gameRepairRoute(task);
+  const sharedInfrastructure=sourceQueue==='system-ai'&&signature==='system-ai-infrastructure-contract-failed';
+  const responsibleFiles=sharedInfrastructure
+    ?['tools/company-system-ai-worker.mjs','.github/workflows/company-system-ai-workers.yml','qa/company-system-ai-worker.test.mjs','qa/company-system-ai-supervision-loop.test.mjs']
+    :uniq(task.responsibleFiles);
+  const contextFiles=sharedInfrastructure
+    ?uniq([...(task.contextFiles||[]),'company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json'])
+    :uniq(task.contextFiles);
   return{
-    priority:blastRadius.startsWith('portfolio')?'critical':'high',
-    sourceQueue,sourceTaskId:clean(task.id),gameId:clean(task.gameId),responsibleFiles:uniq(task.responsibleFiles),contextFiles:uniq(task.contextFiles),goal:clean(task.goal),relatedTaskIds,
+    priority:sharedInfrastructure||blastRadius.startsWith('shared-worker-contract')||blastRadius.startsWith('portfolio')?'critical':'high',
+    sourceQueue,sourceTaskId:clean(task.id),gameId:clean(task.gameId),responsibleFiles,contextFiles,
+    goal:sharedInfrastructure?'Repair the shared System AI worker infrastructure contract for the repeated failure signature, then rerun the exact failed worker stage without expanding writable scope.':clean(task.goal),
+    relatedTaskIds,
     failureStage:stage,failureSignature:signature,blastRadius,
     checkpoint:clean(task.candidateSha||task.sourceRevision||task.baseMainSha||task.reservedAt)||null,
-    evidence:uniq([...(task.evidence||[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route]),
+    evidence:uniq([...(task.evidence||[]),'recovery-escalated-from:'+sourceQueue,'recovery-route:'+route,...(sharedInfrastructure?['shared-system-ai-infrastructure-repair:YES','representative-canary-required:YES']:[])]),
     recoveryOwner:route,
-    recoveryStrategy:route==='VIBE2_VIBE3'
-      ?'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT'
-      :'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
-    verificationPlan:[
-      'RERUN_EXACT_FAILED_STAGE',
-      'INDEPENDENT_QA_WHEN_APPLICABLE',
-      'REGRESSION_WHEN_APPLICABLE',
-      'CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'
-    ]
+    recoveryStrategy:sharedInfrastructure
+      ?'REPAIR_SHARED_SYSTEM_AI_INFRASTRUCTURE_WITH_ONE_CANARY_THEN_RELEASE_DEPENDENT_COHORT'
+      :route==='VIBE2_VIBE3'
+        ?'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT'
+        :'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
+    verificationPlan:sharedInfrastructure
+      ?['node --check tools/company-system-ai-worker.mjs','node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-supervision-loop.test.mjs']
+      :[
+        'RERUN_EXACT_FAILED_STAGE',
+        'INDEPENDENT_QA_WHEN_APPLICABLE',
+        'REGRESSION_WHEN_APPLICABLE',
+        'CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'
+      ]
   };
 }
 export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput={},recoveryInput={}}={}){
@@ -95,11 +108,11 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
   }
   const handled=new Set();
   for(const rows of grouped.values()){
-    if(rows.length<3)continue;
+    if(rows.length<2)continue;
     const first=rows[0],ids=rows.map(x=>clean(x.task.id)).filter(Boolean);
     const result=enqueueRecovery(queue,escalationRow({
       sourceQueue:first.sourceQueue,task:first.task,signature:first.signature,stage:first.stage,
-      blastRadius:'portfolio:'+rows.length,relatedTaskIds:ids
+      blastRadius:(first.sourceQueue==='system-ai'?'shared-worker-contract:':'portfolio:')+rows.length,relatedTaskIds:ids
     }),{reactivateDispatched:rows.some(x=>clean(x.task.status).toLowerCase()==='failed')});
     queue=result.queue;if(result.added)added.push(result.id);if(result.reactivated)reactivated.push(result.id);rows.forEach(x=>handled.add(x.sourceQueue+'|'+clean(x.task.id)));
   }
