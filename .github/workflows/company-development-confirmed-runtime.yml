@@ -973,6 +973,36 @@ jobs:
           for(const target of expected){
             if(byId.has(target.gameId))continue;
             const stamp=new Date().toISOString();
+            if(target.firstStageEngine==='UNITY_WEB'){
+              const bootstrap=!String(target.unitySourceTreeSha||'').trim();
+              const missing={gameId:target.gameId,pass:false,update:{
+                status:'ACTIVE',
+                currentStep:bootstrap?'VIBE_WEB_BASE_IMPLEMENTATION':'VIBE_WEB_REPAIR',
+                canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+                sourcePath:target.unitySourcePath||('unity-games/'+target.gameId),
+                webSourcePath:target.webSourcePath||('web-games/'+target.gameId),
+                webValidationRequired:true,
+                unityWebFirstStagePassed:false,
+                unityWebFirstStagePassedAt:null,
+                unityWebFirstStageEvidencePath:null,
+                unityWebFirstStageBuildRunId:null,
+                unityWebFirstStageSourceTreeSha:target.unitySourceTreeSha||null,
+                vibeWebImplementationRequired:true,
+                vibeWebRequestedStage:bootstrap?'WEB_BASE_IMPLEMENTATION':'WEB_REPAIR',
+                vibeWebImplementationReason:'UNITY_WEB_WORKER_RESULT_MISSING',
+                sourceRootBootstrapRequired:bootstrap,
+                homepageTestEligible:false,
+                homepageTestCandidate:false,
+                formalImplementationPassed:false,
+                formalImplementationVerdict:'REVISE',
+                routingBlockers:['unity-web-first-stage:web-worker-result-missing'],
+                webValidationLastAttemptAt:stamp,
+                updatedAt:stamp
+              }};
+              results.push(missing);
+              byId.set(target.gameId,missing);
+              continue;
+            }
             const finalStage=target.runtimeStage==='final-content-depth';
             const reworkInitial=!finalStage&&(target.webInitialCyclePassed===true||target.existingWebValidated===true);
             const missing=finalStage
