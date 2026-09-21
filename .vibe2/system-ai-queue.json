@@ -833,7 +833,7 @@
     },
     {
       "id": "game-fantasy-survival-web-second-gate-collab-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "goal": "Collaborate with Vibe on fantasy-survival using only the already approved gameplay scope. Inspect the existing Web game and repair second-gate gaps that are already documented in company runtime: complete playable cycle evidence, at least two real world areas, approved visible gameplay scope coverage, and real interaction results. Preserve all owner-authored rules, balance, save semantics, multiplayer semantics, and the first-gate platform admission. Do not invent new gameplay scope or tune numbers. Make only necessary edits to the assigned Web game source.",
       "responsibleFiles": [
@@ -869,12 +869,12 @@
       "dependencies": [],
       "retries": 1,
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35555905973:1",
+      "reservedAt": "2026-09-21T03:01:59.987Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -891,7 +891,7 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-21T02:58:08.352Z"
+      "updatedAt": "2026-09-21T03:01:59.987Z"
     }
   ]
 }
