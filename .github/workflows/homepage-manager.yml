@@ -176,6 +176,39 @@ jobs:
           fi
           node -e "const x=require('./homepage-platform-exposure.json');if(x.version!==2||x.internalCompanySurface!==true||!Array.isArray(x.games))process.exit(1)"
 
+      - name: Persist platform exposure to company runtime
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-homepage-runtime'
+          git config user.email 'homepage-runtime@users.noreply.github.com'
+          persisted=false
+          for attempt in 1 2 3 4; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            wt="/tmp/homepage-runtime-write-$attempt"
+            rm -rf "$wt"
+            git worktree add --detach "$wt" "origin/$COMPANY_RUNTIME_BRANCH"
+            cp homepage-platform-exposure.json "$wt/homepage-platform-exposure.json"
+            git -C "$wt" add -- homepage-platform-exposure.json
+            if git -C "$wt" diff --cached --quiet; then
+              persisted=true
+              git worktree remove --force "$wt"
+              break
+            fi
+            git -C "$wt" commit -m 'runtime: sync homepage platform exposure [skip ci]'
+            if git -C "$wt" push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=true
+              git worktree remove --force "$wt"
+              break
+            fi
+            git worktree remove --force "$wt"
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = true
+          git worktree prune
+          echo 'HOMEPAGE_PLATFORM_EXPOSURE_RUNTIME_SYNC=PASS'
+
       - name: Prepare verified runtime status/catalog candidate
         if: env.HOMEPAGE_PUBLIC_STATUS_SYNC == 'YES'
         shell: bash
