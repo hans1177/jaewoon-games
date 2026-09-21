@@ -3129,7 +3129,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-21T17:46:19.652Z",
+  "updatedAt": "2026-09-22T02:38:00+09:00",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -3186,6 +3186,20 @@
       "cozy-island",
       "daechung-rpg",
       "horror-escape-room"
-    ]
+    ],
+    "robloxStudioHumanApproval": {
+      "approved": true,
+      "gameIds": [
+        "cozy-island",
+        "daechung-rpg",
+        "horror-escape-room"
+      ],
+      "approvalSource": "OWNER_CHAT_EXPLICIT_PROCEED_AND_RELEASE",
+      "approvedAt": "2026-09-22T02:38:00+09:00",
+      "singleSessionOnly": true,
+      "maxParallel": 1,
+      "actualStudioEvidenceRequired": true,
+      "securityChallengeAutoRetry": false
+    }
   }
 }
