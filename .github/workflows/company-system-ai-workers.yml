@@ -38,6 +38,7 @@ on:
       - 'tools/company-system-ai-worker.mjs'
       - 'tools/company-system-ai-queue.mjs'
       - 'tools/company-system-ai-learning.mjs'
+      - 'tools/company-system-ai-learning-context.mjs'
       - 'tools/company-recovery-dispatch.mjs'
       - 'tools/company-recovery-escalation.mjs'
       - 'tools/company-recovery-queue.mjs'
@@ -85,6 +86,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-system-ai-worker.mjs
+          node --check tools/company-system-ai-learning-context.mjs
           node --check tools/company-system-ai-queue.mjs
           node --check tools/company-recovery-dispatch.mjs
           node --check tools/company-recovery-escalation.mjs
@@ -276,6 +278,15 @@ jobs:
           if(task.status!=='running')throw new Error('assignment not reserved: '+id+':'+task.status);
           process.stdout.write(JSON.stringify(task,null,2));
           NODE
+          git show origin/vibe2-unreal-core:.vibe2/experience.json > /tmp/system-ai-experience.json 2>/dev/null || printf '%s\n' '{"version":3,"records":[]}' > /tmp/system-ai-experience.json
+          git show origin/vibe2-unreal-core:.vibe2/code-pattern-library.json > /tmp/system-ai-code-patterns.json 2>/dev/null || printf '%s\n' '{"patterns":[]}' > /tmp/system-ai-code-patterns.json
+          git show origin/vibe2-unreal-core:.vibe2/learning-motor-state.json > /tmp/system-ai-learning-state.json 2>/dev/null || printf '%s\n' '{}' > /tmp/system-ai-learning-state.json
+          node tools/company-system-ai-learning-context.mjs \
+            --task=/tmp/system-ai-task.json \
+            --experience=/tmp/system-ai-experience.json \
+            --patterns=/tmp/system-ai-code-patterns.json \
+            --mastery=/tmp/system-ai-learning-state.json \
+            --output=/tmp/system-ai-learning-context.json | tee /tmp/system-ai-learning-context.log
           safe="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           branch="system-ai/candidate/${safe}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "SYSTEM_AI_BRANCH=$branch" >> "$GITHUB_ENV"
@@ -312,7 +323,7 @@ jobs:
         run: |
           set -o pipefail
           node tools/company-shared-context.mjs --output=/tmp/system-ai-context-before.json
-          node tools/company-system-ai-worker.mjs             --task=/tmp/system-ai-task.json             --output=/tmp/system-ai-worker-result.json 2>&1 | tee /tmp/system-ai-worker.log
+          node tools/company-system-ai-worker.mjs             --task=/tmp/system-ai-task.json             --learning-context=/tmp/system-ai-learning-context.json             --output=/tmp/system-ai-worker-result.json 2>&1 | tee /tmp/system-ai-worker.log
 
       - name: Verify no-change assignment against current main
         id: current_main
@@ -480,6 +491,7 @@ jobs:
               ...(preverified?['model-call-skipped:deterministic-verifier-already-satisfied']:[]),
               ...(currentMainSatisfied?['no-candidate-required:current-main-already-satisfies-task']:[]),
               ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
+              ...(worker.learningKnowledgeIds||[]).map(x=>`learning-knowledge-id:${x}`),
               ...(candidateOk&&mutationRequired&&process.env.CANDIDATE_SHA?[`source-mutation-sha:${process.env.CANDIDATE_SHA}`]:[]),
               ...(mutationRequired?['source-mutation-required:YES']:[]),
               worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
