@@ -89,3 +89,5 @@ Unity Web 빌드의 loader, wasm, data, framework.js, StreamingAssets 등 배포
 자세한 로컬 Unity 제어는 `tools/unity-mcp/README.md`를 따른다.
 
 정책 권한 원본은 `company-learning/platform-release-roadmap.json`의 `unityWebFirstStage`다.
+
+실행/동기화 문서는 `company-learning/UNITY_WEB_FIRST_STAGE.md`를 따른다.
