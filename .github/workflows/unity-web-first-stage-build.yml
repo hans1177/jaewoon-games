@@ -9,9 +9,35 @@ on:
   workflow_dispatch:
     inputs:
       request_file:
-        description: 'Tracked .build-requests/unity-web/*.json request file'
-        required: true
+        description: 'Optional tracked .build-requests/unity-web/*.json request file'
+        required: false
+        default: ''
         type: string
+      game_id:
+        description: 'Direct game id when request_file is omitted'
+        required: false
+        default: ''
+        type: string
+      project_path:
+        description: 'Direct canonical Unity project path'
+        required: false
+        default: ''
+        type: string
+      build_method:
+        description: 'Direct fully qualified Unity BuildWeb method'
+        required: false
+        default: ''
+        type: string
+      source_commit:
+        description: 'Direct source revision binding'
+        required: false
+        default: ''
+        type: string
+      publish_to_main:
+        description: 'Publish verified output to web-games on main'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -35,29 +61,42 @@ jobs:
         id: request
         shell: bash
         env:
-          REQUEST_INPUT: ${{ github.event.inputs.request_file }}
+          REQUEST_INPUT: ${{ inputs.request_file }}
+          DIRECT_GAME_ID: ${{ inputs.game_id }}
+          DIRECT_PROJECT_PATH: ${{ inputs.project_path }}
+          DIRECT_BUILD_METHOD: ${{ inputs.build_method }}
+          DIRECT_SOURCE_COMMIT: ${{ inputs.source_commit }}
         run: |
           set -euo pipefail
           request_file="$REQUEST_INPUT"
-          if [[ -z "$request_file" ]]; then
+          game_id="$DIRECT_GAME_ID"
+          project="$DIRECT_PROJECT_PATH"
+          method="$DIRECT_BUILD_METHOD"
+          source_commit="$DIRECT_SOURCE_COMMIT"
+
+          if [[ -z "$request_file" && -z "$game_id" && "${GITHUB_EVENT_NAME}" == "push" ]]; then
             request_file="$(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json$' | head -n 1 || true)"
           fi
-          [[ -n "$request_file" ]] || { echo 'Unity Web request file not found in this run' >&2; exit 2; }
-          python3 - "$request_file" "$GITHUB_OUTPUT" <<'PY'
+
+          python3 - "$request_file" "$game_id" "$project" "$method" "$source_commit" "$GITHUB_OUTPUT" <<'PY'
           import json, pathlib, re, sys
-          request_file, output = sys.argv[1], sys.argv[2]
-          if not re.fullmatch(r'\.build-requests/unity-web/[A-Za-z0-9._-]+\.json', request_file):
-              raise SystemExit('invalid Unity Web request path')
-          request = pathlib.Path(request_file)
-          if not request.is_file():
-              raise SystemExit('Unity Web request missing')
-          data = json.loads(request.read_text(encoding='utf-8'))
-          game_id = str(data.get('gameId','')).strip()
-          project = str(data.get('projectPath','')).replace('\\','/').strip('/')
-          method = str(data.get('buildMethod','')).strip()
-          source_commit = str(data.get('sourceCommit','')).strip()
-          if data.get('version') != 1:
-              raise SystemExit('unsupported Unity Web request version')
+          request_file, game_id, project, method, source_commit, output = sys.argv[1:]
+          if request_file:
+              if not re.fullmatch(r'\.build-requests/unity-web/[A-Za-z0-9._-]+\.json', request_file):
+                  raise SystemExit('invalid Unity Web request path')
+              request = pathlib.Path(request_file)
+              if not request.is_file():
+                  raise SystemExit('Unity Web request missing')
+              data = json.loads(request.read_text(encoding='utf-8'))
+              if data.get('version') != 1:
+                  raise SystemExit('unsupported Unity Web request version')
+              game_id = str(data.get('gameId','')).strip()
+              project = str(data.get('projectPath','')).replace('\\','/').strip('/')
+              method = str(data.get('buildMethod','')).strip()
+              source_commit = str(data.get('sourceCommit','')).strip()
+          else:
+              project = str(project).replace('\\','/').strip('/')
+
           if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,80}', game_id):
               raise SystemExit('invalid gameId')
           if project != f'unity-games/{game_id}':
@@ -79,7 +118,9 @@ jobs:
               f.write(f'source_commit={source_commit}\n')
               f.write(f'unity_version={version.group(1)}\n')
               f.write(f'unity_revision={revision.group(1)}\n')
-          print(f'UNITY_WEB_REQUEST={request_file}')
+          print(f'UNITY_WEB_GAME_ID={game_id}')
+          print(f'UNITY_WEB_PROJECT={project}')
+          print(f'UNITY_WEB_BUILD_METHOD={method}')
           PY
 
       - name: Verify Unity Web first-stage contract
@@ -284,7 +325,7 @@ jobs:
 
 
       - name: Publish verified Unity Web build
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
