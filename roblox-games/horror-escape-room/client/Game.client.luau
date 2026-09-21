@@ -35,8 +35,9 @@ local function monsterName()
 end
 local function render()
  local role=p:GetAttribute("Role")or"WAITING";local round=p:GetAttribute("RoundState")or"WAITING"
- status.Text=string.format("%s | %s | %.0f초\n역할 %s · %s · %s\n생존 %d / 얼음 %d · XP %d · 코인 %d",
-  C.GameName,round,p:GetAttribute("TimeLeft")or 0,role,p:GetAttribute("Frozen")==true and"얼음!"or"이동 가능",monsterName(),
+ status.Text=string.format("%s | %s | %.0f초\n%s · %s\n역할 %s · %s · %s\n생존 %d / 얼음 %d · XP %d · 코인 %d",
+  C.GameName,round,p:GetAttribute("TimeLeft")or 0,p:GetAttribute("CurrentMap")or"맵 준비",p:GetAttribute("CurrentMapEvent")or"",
+  role,p:GetAttribute("Frozen")==true and"얼음!"or"이동 가능",monsterName(),
   p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0,p:GetAttribute("MonsterXP")or 0,p:GetAttribute("Coins")or 0)
  local running=round=="RUNNING"
  local showSetup=not running and not setupDismissed
@@ -48,7 +49,7 @@ local function render()
   else x.button.Visible=showSetup end
  end
 end
-for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount"})do p:GetAttributeChangedSignal(k):Connect(render)end
+for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent"})do p:GetAttributeChangedSignal(k):Connect(render)end
 render()
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
