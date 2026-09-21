@@ -57,26 +57,60 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         };
       });
     }else if(owner==='SYSTEM_AI'){
-      const set=new Set(ids);
-      systemAi.tasks=systemAi.tasks.map(task=>{
-        if(!set.has(clean(task.id)))return task;
-        if(clean(task.status)==='done')return task;
-        touched++;
-        const running=clean(task.status)==='running';
-        return{
-          ...task,
-          status:running?'running':'queued',
-          priority:'critical',
-          retries:running?task.retries:0,
-          blocker:running?task.blocker:null,
-          reservationId:running?task.reservationId:null,
-          reservedAt:running?task.reservedAt:null,
-          sourceMutationRequired:rec.sourceMutationRequired!==false,
-          sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
-          evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage),'source-mutation-required:YES']),
-          updatedAt:stamp
-        };
-      });
+      const sharedCanary=clean(rec.sourceQueue).toLowerCase()==='system-ai'&&clean(rec.blastRadius).startsWith('shared-worker-contract:');
+      if(sharedCanary){
+        const repairTaskId='recovery-'+clean(rec.id);
+        const set=new Set(ids);
+        systemAi.tasks=systemAi.tasks.map(task=>{
+          if(!set.has(clean(task.id))||clean(task.status)==='done')return task;
+          touched++;
+          return{
+            ...clearReservation(task),
+            status:'queued',
+            priority:'critical',
+            dependencies:uniq([...(task.dependencies||[]),repairTaskId]),
+            blocker:'shared-signature-canary-pending:'+repairTaskId,
+            evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'shared-signature-canary:'+repairTaskId,'shared-signature:'+clean(rec.failureSignature)]),
+            updatedAt:stamp
+          };
+        });
+        if(!systemAi.tasks.some(task=>clean(task.id)===repairTaskId)){
+          systemAi.tasks.push({
+            id:repairTaskId,status:'queued',priority:'critical',department:'recovery',taskType:'bottleneck-repair',
+            gameId:null,
+            goal:clean(rec.goal)||`Repair shared System AI infrastructure failure ${clean(rec.failureSignature)} and release the dependent cohort only after deterministic verification.`,
+            responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
+            sourceMutationRequired:true,sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+            acceptanceCriteria:['repair only assigned System AI infrastructure files','produce a real responsible-source mutation','rerun deterministic System AI worker QA','clear the repeated shared failure signature','release dependent cohort only after repair task is done','no central policy write','no self acceptance'],
+            verificationCommands:uniq(rec.verificationPlan),
+            dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
+            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'shared-signature-canary:YES','shared-signature:'+clean(rec.failureSignature),'cohort-size:'+ids.length,'learning-route:existing-vibe-learning-motor']),
+            supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
+          });
+          touched++;
+        }
+      }else{
+        const set=new Set(ids);
+        systemAi.tasks=systemAi.tasks.map(task=>{
+          if(!set.has(clean(task.id)))return task;
+          if(clean(task.status)==='done')return task;
+          touched++;
+          const running=clean(task.status)==='running';
+          return{
+            ...task,
+            status:running?'running':'queued',
+            priority:'critical',
+            retries:running?task.retries:0,
+            blocker:running?task.blocker:null,
+            reservationId:running?task.reservationId:null,
+            reservedAt:running?task.reservedAt:null,
+            sourceMutationRequired:rec.sourceMutationRequired!==false,
+            sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+            evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage),'source-mutation-required:YES']),
+            updatedAt:stamp
+          };
+        });
+      }
       if(touched===0&&clean(rec.sourceQueue).toLowerCase()==='vibe2'&&uniq(rec.responsibleFiles).length){
         const taskId='recovery-'+clean(rec.id);
         const exists=systemAi.tasks.some(task=>clean(task.id)===taskId);
