@@ -1,6 +1,7 @@
 // 파일명: assets/homepage-enhancements.js
 // 역할: 서버 런타임의 canonical 게임정보를 받아 검증된 웹게임 전체와 제작 상태를 홈페이지에 표시한다.
 const SYNC_INTERVAL_MS=30000;
+const FEATURED_GAME_ID='daechung-rpg';
 let refreshInFlight=false;
 let lastSignature='';
 let portfolioStatus={games:[],counts:{}};
@@ -172,9 +173,10 @@ function installStyles(){document.documentElement.dataset.homeVisualMode='SAMPLE
 function buildFocus(catalog,status){
   const hero=document.getElementById('hero');
   if(!hero)return;
+  const allRows=[...releaseRows(catalog,status),...webPublishedRows(catalog),...developmentRows(catalog,status)];
   const seen=new Set();
-  const rows=[...releaseRows(catalog,status),...webPublishedRows(catalog),...developmentRows(catalog,status)].filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
-  const row=rows[0];
+  const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
+  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
   if(!row)return;
   const game=mergeGame(row),web=game.webPath;
   hero.className='hero homeFocus';
