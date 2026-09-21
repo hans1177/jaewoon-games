@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "        game.enemies.push({ id: Math.random(), health: 50, position: { x: 1, y: 1 } });",
+      "replace": "        game.enemies.push({ id: Math.random(), health: 50, position: { x: 1, y: 1 } });\n        game.saveState = JSON.parse(JSON.stringify(game));"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
