@@ -132,68 +132,68 @@ jobs:
           )
           old='''\tget_file(asma->file);
 
-\t/*
-\t * XXX - Reworked to use shmem_zero_setup() instead of
-\t * shmem_set_file while we're in staging. -jstultz
-\t */
-\tif (vma->vm_flags & VM_SHARED) {
-\t\tret = shmem_zero_setup(vma);
-\t\tif (ret) {
-\t\t\tfput(asma->file);
-\t\t\tgoto out;
-\t\t}
-\t} else {
-\t\tvma_set_anonymous(vma);
-\t}
+          \t/*
+          \t * XXX - Reworked to use shmem_zero_setup() instead of
+          \t * shmem_set_file while we're in staging. -jstultz
+          \t */
+          \tif (vma->vm_flags & VM_SHARED) {
+          \t\tret = shmem_zero_setup(vma);
+          \t\tif (ret) {
+          \t\t\tfput(asma->file);
+          \t\t\tgoto out;
+          \t\t}
+          \t} else {
+          \t\tvma_set_anonymous(vma);
+          \t}
 
-\tif (vma->vm_file)
-\t\tfput(vma->vm_file);
-\tvma->vm_file = asma->file;
-'''
+          \tif (vma->vm_file)
+          \t\tfput(vma->vm_file);
+          \tvma->vm_file = asma->file;
+          '''
           new='''\tif (vma->vm_flags & VM_SHARED) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
-\t\tconst struct file_operations *saved_fops = asma->file->f_op;
+          #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
+          \t\tconst struct file_operations *saved_fops = asma->file->f_op;
 
-\t\tget_file(asma->file);
-\t\tif (vma->vm_file)
-\t\t\tfput(vma->vm_file);
-\t\tvma->vm_file = asma->file;
+          \t\tget_file(asma->file);
+          \t\tif (vma->vm_file)
+          \t\t\tfput(vma->vm_file);
+          \t\tvma->vm_file = asma->file;
 
-\t\t/*
-\t\t * Use the original shmem mmap hook for the initial ashmem-backed
-\t\t * mapping, then restore the guarded fops to block later remaps of
-\t\t * the backing file that would bypass ashmem permission checks.
-\t\t */
-\t\tasma->file->f_op = ashmem_vmfile_orig_fops;
-\t\tret = vfs_mmap(vma->vm_file, vma);
-\t\tasma->file->f_op = saved_fops;
-\t\tif (ret)
-\t\t\tgoto out;
-#else
-\t\tget_file(asma->file);
+          \t\t/*
+          \t\t * Use the original shmem mmap hook for the initial ashmem-backed
+          \t\t * mapping, then restore the guarded fops to block later remaps of
+          \t\t * the backing file that would bypass ashmem permission checks.
+          \t\t */
+          \t\tasma->file->f_op = ashmem_vmfile_orig_fops;
+          \t\tret = vfs_mmap(vma->vm_file, vma);
+          \t\tasma->file->f_op = saved_fops;
+          \t\tif (ret)
+          \t\t\tgoto out;
+          #else
+          \t\tget_file(asma->file);
 
-\t\t/*
-\t\t * XXX - Reworked to use shmem_zero_setup() instead of
-\t\t * shmem_set_file while we're in staging. -jstultz
-\t\t */
-\t\tret = shmem_zero_setup(vma);
-\t\tif (ret) {
-\t\t\tfput(asma->file);
-\t\t\tgoto out;
-\t\t}
+          \t\t/*
+          \t\t * XXX - Reworked to use shmem_zero_setup() instead of
+          \t\t * shmem_set_file while we're in staging. -jstultz
+          \t\t */
+          \t\tret = shmem_zero_setup(vma);
+          \t\tif (ret) {
+          \t\t\tfput(asma->file);
+          \t\t\tgoto out;
+          \t\t}
 
-\t\tif (vma->vm_file)
-\t\t\tfput(vma->vm_file);
-\t\tvma->vm_file = asma->file;
-#endif
-\t} else {
-\t\tget_file(asma->file);
-\t\tvma_set_anonymous(vma);
-\t\tif (vma->vm_file)
-\t\t\tfput(vma->vm_file);
-\t\tvma->vm_file = asma->file;
-\t}
-'''
+          \t\tif (vma->vm_file)
+          \t\t\tfput(vma->vm_file);
+          \t\tvma->vm_file = asma->file;
+          #endif
+          \t} else {
+          \t\tget_file(asma->file);
+          \t\tvma_set_anonymous(vma);
+          \t\tif (vma->vm_file)
+          \t\t\tfput(vma->vm_file);
+          \t\tvma->vm_file = asma->file;
+          \t}
+          '''
           replace_once(old,new,'shared-mmap')
           path.write_text(text,encoding='utf-8')
           PY
