@@ -293,3 +293,12 @@ test('homepage exposes a stable deployment verification marker',()=>{
   assert.match(index,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(index,/data-homepage-build="2026-09-21-sample-exact"/);
 });
+
+test('sample hero and cards stay free of legacy operational badges',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const focus=(runtime.split('function buildFocus(catalog,status){')[1]||'').split('function buildCard(row){')[0]||'';
+  const card=(runtime.split('function buildCard(row){')[1]||'').split('function buildShelf')[0]||'';
+  assert.doesNotMatch(focus,/homeFocusMeta|statusLabel|genreState|playState/);
+  assert.doesNotMatch(card,/foldBadges|foldBadge|statusLabel/);
+  assert.match(card,/<h3>\$\{esc\(game\.name\)\}<\/h3>/);
+});
