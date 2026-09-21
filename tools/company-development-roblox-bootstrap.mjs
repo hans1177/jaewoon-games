@@ -358,7 +358,7 @@ async function main(){
     generationMode:built.generationMode,model,modelUsed:built.modelUsed,modelAttempts:built.attempts,modelContractFailures:built.failures,
     vibe3LearningApplied:built.learning.applied,robloxPlaybookChecklist:built.learning.checklist,recombinationRecipeId:built.learning.recipeId,
     recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
-    platformDesignProfile:built.platformDesign,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
+    platformDesignProfile:built.platformProfile,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
     implementationNotes:built.result.implementationNotes,nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
   };
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
