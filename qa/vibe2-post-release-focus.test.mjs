@@ -16,12 +16,13 @@ function setup(){
   const roadmap={developmentLifecycleMachine:{postReleaseFocusedDevelopment:{enabled:true,priorities:['gameplay-completeness','content-depth','roblox-native-ux']}}};
   const item={gameId:'demo',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:'roblox-games/demo',robloxSourceCommit:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),robloxReleaseClaim:true,robloxFinalReviewPassed:true,robloxRegressionPassed:true,robloxExactRevisionPassed:true,robloxReleaseEvidence:{published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),versionNumber:7}};
   const recombination={recipes:[{id:'r1',sourceProjects:['x','y'],featureBlend:['loop','ux'],transformationOperator:'change-session-structure'}]};
-  return{root,roadmap,item,recombination};
+  const exposure={games:[{gameId:'demo',externalPublicReleaseState:'PUBLIC_RELEASE'}]};
+  return{root,roadmap,item,recombination,exposure};
 }
 
 {
-  const {root,roadmap,item,recombination}=setup();
-  const task=buildPostReleaseFocusTask({item,repoRoot:root,roadmap,recombination,existingTasks:[]});
+  const {root,roadmap,item,recombination,exposure}=setup();
+  const task=buildPostReleaseFocusTask({item,repoRoot:root,roadmap,recombination,existingTasks:[],exposure});
   assert(task);
   assert.equal(task.target,'roblox');
   assert.equal(task.releaseState,'release-confirmed');
@@ -59,21 +60,21 @@ function setup(){
 }
 
 {
-  const {root,roadmap,item,recombination}=setup();
-  const roadmapFile=path.join(root,'roadmap.json'),runtimeFile=path.join(root,'runtime.json'),queueFile=path.join(root,'queue.json'),memoryFile=path.join(root,'recomb.json');
-  fs.writeFileSync(roadmapFile,JSON.stringify(roadmap));fs.writeFileSync(runtimeFile,JSON.stringify({items:[item]}));fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:20,tasks:[]}));fs.writeFileSync(memoryFile,JSON.stringify(recombination));
-  const first=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,repoRoot:root});
+  const {root,roadmap,item,recombination,exposure}=setup();
+  const roadmapFile=path.join(root,'roadmap.json'),runtimeFile=path.join(root,'runtime.json'),queueFile=path.join(root,'queue.json'),memoryFile=path.join(root,'recomb.json'),exposureFile=path.join(root,'exposure.json');
+  fs.writeFileSync(roadmapFile,JSON.stringify(roadmap));fs.writeFileSync(runtimeFile,JSON.stringify({items:[item]}));fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:20,tasks:[]}));fs.writeFileSync(memoryFile,JSON.stringify(recombination));fs.writeFileSync(exposureFile,JSON.stringify(exposure));
+  const first=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
   assert.equal(first.added,true);
   assert.equal(first.queue.tasks.length,1);
-  const second=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,repoRoot:root});
+  const second=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,exposureFile,repoRoot:root});
   assert.equal(second.added,false);
   assert.equal(second.reason,'CARETAKER_ALREADY_ACTIVE_FOR_GAME');
   assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks.length,1);
 }
 
 {
-  const {root,roadmap,item,recombination}=setup();
-  const task=buildPostReleaseFocusTask({item:{...item,robloxReleaseClaim:false},repoRoot:root,roadmap,recombination,existingTasks:[]});
+  const {root,roadmap,item,recombination,exposure}=setup();
+  const task=buildPostReleaseFocusTask({item:{...item,robloxReleaseClaim:false},repoRoot:root,roadmap,recombination,existingTasks:[],exposure});
   assert.equal(task,null);
 }
 
@@ -131,9 +132,9 @@ function setup(){
 }
 
 {
-  const {root,roadmap,item,recombination}=setup();
+  const {root,roadmap,item,recombination,exposure}=setup();
   roadmap.permanentProjectRemoval={ids:['demo'],reentryAllowed:false,automaticRecoveryAllowed:false,automaticMaintenanceAllowed:false};
-  assert.equal(buildPostReleaseFocusTask({item,repoRoot:root,roadmap,recombination,existingTasks:[]}),null);
+  assert.equal(buildPostReleaseFocusTask({item,repoRoot:root,roadmap,recombination,existingTasks:[],exposure}),null);
   const historical={gameId:'demo',sourceRoot:'roblox-games/demo',maintenanceEligible:true,currentReleaseClaim:false,evidence:{actualStudioRuntime:true,postRuntimeIndependentQa:true,regression:true,publicationTargetObserved:true,universeId:'1',placeId:'2'}};
   assert.equal(buildHistoricalPostReleaseFocusTask({entry:historical,repoRoot:root,roadmap,recombination,existingTasks:[]}),null);
 }
