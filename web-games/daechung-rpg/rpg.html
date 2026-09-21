@@ -419,7 +419,16 @@ function joystickDirectDriver(now){
 }
 requestAnimationFrame(joystickDirectDriver);
 
-exitBtn.onclick=()=>{run=false;j.x=0;j.y=0;location.href='../../';};
+exitBtn.onclick=()=>{
+ run=false;j.x=0;j.y=0;
+ try{
+  if(window.top&&window.top!==window){
+   window.top.location.href='../../';
+   return;
+  }
+ }catch{}
+ location.href='../../';
+};
 attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();initAudio();useAction()};soundBtn.onpointerdown=e=>{e.preventDefault();toggleSound()};
 addEventListener('keydown',e=>{initAudio();keys[e.key.toLowerCase()]=true;if(e.key===' ')attackNow();if(e.key.toLowerCase()==='e')useAction()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class="slot"><span><b>${k}</b><br><span class="small">공격 ${WEAPONS[k].damage}${WEAPONS[k].desc?'<br>'+WEAPONS[k].desc:''}</span></span><button data-equip="${k}" ${p.weapon===k?'disabled':''}>${p.weapon===k?'장착중':'장착'}</button></div>`).join('');bagList.innerHTML=`<div class="slot"><span>현재 방어구</span><b>${p.armor||'없음'}</b></div>`+weapons+Object.entries(inv).map(([k,v])=>`<div class="slot"><span>${k}</span><b>×${v}</b></div>`).join('');bagList.querySelectorAll('[data-equip]').forEach(b=>b.onclick=()=>{equipWeapon(b.dataset.equip);renderBag()})}
