@@ -203,6 +203,25 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId=''}={}){
   const tasks=queue.tasks.map(t=>ids.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid};
 }
+export function reserveSystemAiTargets(queueInput,{ids=[],reservationId=''}={}){
+  const queue=normalizeSystemAiQueue(queueInput),active=queue.tasks.filter(t=>t.status==='running');
+  const wanted=unique(ids);
+  if(!wanted.length)throw new Error('SYSTEM_AI_TARGET_IDS_REQUIRED');
+  const byId=new Map(queue.tasks.map(t=>[t.id,t]));
+  const chosen=[];
+  for(const id of wanted){
+    const task=byId.get(id);
+    if(!task)throw new Error('SYSTEM_AI_TARGET_NOT_FOUND:'+id);
+    if(task.status!=='queued')continue;
+    if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_TARGET_DEPENDENCY_NOT_READY:'+id);
+    if([...active,...chosen].some(other=>overlap(task,other)))continue;
+    chosen.push(task);
+  }
+  const chosenIds=new Set(chosen.map(x=>x.id)),stamp=now();
+  const rid=clean(reservationId)||`system-ai-target:${Date.now()}`;
+  const tasks=queue.tasks.map(t=>chosenIds.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid};
+}
 export function applySystemAiResults(queueInput,results=[]){
   let queue=normalizeSystemAiQueue(queueInput);const byResult=new Map((results||[]).map(r=>[clean(r.taskId),r]).filter(([id])=>id));
   const stamp=now();
@@ -263,6 +282,11 @@ export function runSystemAiQueue(args={}){
   }
   if(command==='reserve'){
     const result=reserveSystemAiBatch(queue,{max:Number(args.max||16),reservationId:args.reservation});
+    writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
+    return{command,...result};
+  }
+  if(command==='reserve-targets'){
+    const result=reserveSystemAiTargets(queue,{ids:clean(args.ids).split(',').map(clean).filter(Boolean),reservationId:args.reservation});
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }
