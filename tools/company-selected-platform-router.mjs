@@ -151,8 +151,10 @@ export function targetPlatformDevelopmentEligible(item={}){
   const minimum=item.minimumDesignContract||{};
   if(minimum.pass!==true)return false;
   const profiles=item.platformDesignProfiles||{};
-  const profile=profiles[platform];
-  if(!profile||!clean(profile.source)||!clean(profile.jsonPointer))return false;
+  for(const requiredPlatform of DEFAULT_CONCURRENT_PLATFORMS){
+    const profile=profiles[requiredPlatform];
+    if(!profile||!clean(profile.source)||!clean(profile.jsonPointer))return false;
+  }
   const targets=concurrentTargetPlatforms(item);
   if(!targets.includes('ROBLOX')||!targets.includes('UNITY'))return false;
   return true;
