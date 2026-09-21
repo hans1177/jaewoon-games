@@ -320,3 +320,18 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
 });
+
+test('game cards keep Web fixed and expose all concurrent platform tracks',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const index=fs.readFileSync('index.html','utf8');
+  assert.match(runtime,/function platformLinks\(game\)/);
+  assert.match(runtime,/Web 플레이/);
+  assert.match(runtime,/Roblox.*개발 중/);
+  assert.match(runtime,/Unity.*개발 중/);
+  assert.match(runtime,/UEFN.*개발 중/);
+  assert.match(runtime,/links\.roblox/);
+  assert.match(runtime,/links\.unity/);
+  assert.match(runtime,/links\.uefn/);
+  assert.match(index,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+});
