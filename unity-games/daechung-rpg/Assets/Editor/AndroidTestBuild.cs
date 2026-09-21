@@ -29,7 +29,7 @@ namespace JaewoonGames.DaechungRpg.Editor
             PlayerSettings.companyName = "Jaewoon Games";
             PlayerSettings.productName = "Daechung RPG Test";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, ApplicationId);
-            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel27;
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.Android.forceInternetPermission = true;
 

@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "Assets/Editor/AndroidTestBuild.cs",
+      "find": "PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;",
+      "replace": "PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel27;"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
