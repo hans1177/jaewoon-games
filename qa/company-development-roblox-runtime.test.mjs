@@ -328,7 +328,8 @@ test('Roblox source workflow requires durable Vibe3 learning memory for source g
 test('owner-focused concurrent Roblox source lane preserves canonical selected Unity state',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.ok(workflow.includes('ownerFocusedSecondaryPlatformEligible'));
-  assert.ok(workflow.includes("const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX')"));
+  assert.ok(workflow.includes("const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');"));
+  assert.ok(workflow.includes("const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX')"));
   assert.ok(workflow.includes('secondaryOwnerFocus,'));
   assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_READY'"));
   assert.ok(workflow.includes("ownerFocusRobloxAssetPipelineState:'SOURCE_PROMOTION_PENDING'"));

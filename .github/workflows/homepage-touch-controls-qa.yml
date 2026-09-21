@@ -2,10 +2,26 @@ name: Homepage Touch Controls QA
 on:
   pull_request:
     branches: [main]
-    paths: ['assets/homepage-enhancements.js','_worker.js','web-games/_shared/touch-controls.js','qa/homepage-touch-controls.test.mjs','.github/workflows/homepage-touch-controls-qa.yml']
+    paths:
+      - 'assets/homepage-enhancements.js'
+      - 'index.html'
+      - '_worker.js'
+      - 'web-games/_shared/touch-controls.js'
+      - 'web-games/daechung-rpg/rpg.html'
+      - 'web-games/line-defense/index.html'
+      - 'qa/homepage-touch-controls.test.mjs'
+      - '.github/workflows/homepage-touch-controls-qa.yml'
   push:
     branches: [main]
-    paths: ['assets/homepage-enhancements.js','_worker.js','web-games/_shared/touch-controls.js','qa/homepage-touch-controls.test.mjs','.github/workflows/homepage-touch-controls-qa.yml']
+    paths:
+      - 'assets/homepage-enhancements.js'
+      - 'index.html'
+      - '_worker.js'
+      - 'web-games/_shared/touch-controls.js'
+      - 'web-games/daechung-rpg/rpg.html'
+      - 'web-games/line-defense/index.html'
+      - 'qa/homepage-touch-controls.test.mjs'
+      - '.github/workflows/homepage-touch-controls-qa.yml'
   workflow_dispatch:
 permissions:
   contents: read

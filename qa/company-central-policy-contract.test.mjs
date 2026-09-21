@@ -546,11 +546,14 @@ test('planning department is the canonical combined planning growth monetization
   assert.ok(p.researchDomains.marketingAndGrowth.includes('PLATFORM_ADVERTISING_OPTIONS'));
   assert.ok(p.researchDomains.marketingAndGrowth.includes('LAUNCH_TIMING_AND_UPDATE_TIMING'));
   assert.deepEqual(p.applicationDecisionContract.allowedDecisions,['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT']);
-  assert.equal(p.applicationDecisionContract.decisionAuthority,'VIBE');
-  assert.equal(p.applicationDecisionContract.automaticAcceptanceForbidden,true);
+  assert.equal(p.applicationDecisionContract.decisionAuthority,'PRIMARY_AI_AND_VIBE_JOINT');
+  assert.equal(p.applicationDecisionContract.automaticAcceptanceForbidden,false);
+  assert.equal(p.applicationDecisionContract.jointDecisionRequired,true);
+  assert.equal(p.applicationDecisionContract.ownerApprovalGate,false);
   assert.equal(p.timingPolicy.majorGameChangeUsesPostReleaseMajorPreparationLane,true);
   assert.equal(p.timingPolicy.revenueBlockingBugUsesHotfixLane,true);
-  assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,true);
+  assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,false);
+  assert.equal(p.safeguards.paidCampaignExecutionUnavailableWithoutExplicitFinancialExecutionTool,true);
   assert.equal(p.learningLoop.verifiedOutcomeReturnsToExistingVibeLearning,true);
   const commercial=p.postReleaseCommercializationEngine;
   assert.deepEqual(commercial.executionOrder.slice(0,4),[
@@ -567,6 +570,9 @@ test('planning department is the canonical combined planning growth monetization
   assert.equal(commercial.commercialExperimentRules.scaleOnlyAfterMeasuredDownstreamValue,true);
   assert.equal(commercial.commercialExperimentRules.vibeCanStopOrReverseAnyExperiment,true);
   assert.equal(commercial.trendRadar.directTrendCopyForbidden,true);
+  assert.equal(p.executionAuthority.mode,'PRIMARY_AI_AND_VIBE_JOINT_AUTONOMOUS_NONFINANCIAL_EXECUTION');
+  assert.equal(p.executionAuthority.jointDecisionRequired,true);
+  assert.equal(p.executionAuthority.paidFinancialExecutionUnavailable,true);
   assert.equal(p.departmentToVibeDecisionBoundary.departmentAuthority,'RESEARCH_ADVISORY_EVIDENCE_ONLY');
   assert.equal(p.departmentToVibeDecisionBoundary.departmentRecommendationNeverEqualsExecutionOrder,true);
   assert.equal(p.departmentToVibeDecisionBoundary.vibeDecisionUsesEvidenceNotDepartmentAuthority,true);

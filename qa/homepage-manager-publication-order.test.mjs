@@ -311,7 +311,7 @@ test('game cards keep Web fixed and expose all concurrent platform tracks',()=>{
   assert.match(runtime,/button\(links\.fortnite,'Fortnite','Fortnite 개발중'/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
-  assert.match(runtime,/links\.uefn/);
+  assert.match(runtime,/links\.fortnite/);
   assert.match(index,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
