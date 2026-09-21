@@ -1,5 +1,5 @@
 {
-  "version": 236,
+  "version": 237,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4905,7 +4905,14 @@
         "runtimeMayOverrideApprovedFrontDoor": false,
         "singleCanonicalDataFetchOwner": "assets/homepage-enhancements.js",
         "legacyInlineInitialRenderDisabled": true,
-        "liveSummaryOwnedByRuntimeRenderer": true
+        "liveSummaryOwnedByRuntimeRenderer": true,
+        "refreshCadenceMs": 30000,
+        "eventRefresh": [
+          "FOCUS",
+          "ONLINE",
+          "VISIBILITY_RETURN"
+        ],
+        "hiddenTabPolling": false
       },
       "secondaryPlacement": {
         "portfolioBoard": "AFTER_DEVELOPMENT_PIPELINE",
