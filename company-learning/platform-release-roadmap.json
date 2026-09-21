@@ -1,5 +1,5 @@
 {
-  "version": 249,
+  "version": 250,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4843,7 +4843,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-21T12:55:16.129Z",
+  "updatedAt": "2026-09-21T13:46:40.951Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -12614,7 +12614,7 @@
       "runtimeGameplayValidator": "tools/company-unity-web-gameplay-validation.mjs"
     },
     "runtimeQaContract": {
-      "version": 1,
+      "version": 2,
       "queryMode": "qa=1",
       "controls": {
         "startOrEnterGameplay": "Digit1",
@@ -12638,7 +12638,27 @@
       "realGameFunctionsOnly": true,
       "fakeStateMutationForbidden": true,
       "browserValidator": "tools/company-unity-web-gameplay-validation.mjs",
-      "initialGameplayQaIsFinalCoreFunPass": false
+      "initialGameplayQaIsFinalCoreFunPass": false,
+      "mobileTargetMarker": "MOBILE_TARGET",
+      "mobileInputMarker": "MOBILE_INPUT",
+      "coreFunMarker": "CORE_FUN",
+      "actualBrowserTouchRequired": true,
+      "keyboardQaCannotSatisfyMobilePass": true,
+      "mobileTargetMustReferenceRealGameControl": true,
+      "mobileInputMustComeFromRealGameTouchHandler": true,
+      "genreSpecificCoreFunMarkerRequired": true,
+      "coreFunMarkerMayOnlyFollowRealStateProgression": true,
+      "automatedGateRequires": [
+        "BOOT",
+        "STATE",
+        "START_OR_REGION",
+        "ACTION_OR_ATTACK",
+        "PROGRESS_OR_REWARD",
+        "MOBILE_TARGET",
+        "MOBILE_INPUT",
+        "CORE_FUN"
+      ],
+      "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     }
   }
 }
