@@ -3929,6 +3929,133 @@
         "ordinaryGameReviewFeedback": "VIBE_ACCEPT_PARTIAL_DEFER_OR_REJECT",
         "securityReleaseBlockersCannotBeBypassedByOrdinaryFeedbackDecision": true
       }
+    },
+    "testerDebugIntake": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "scope": [
+        "WEB_DEVELOPMENT_IN_PROGRESS",
+        "WEB_GATE_REVALIDATION",
+        "UNITY_NATIVE_RUNTIME",
+        "ROBLOX_NATIVE_RUNTIME",
+        "POST_RELEASE_PLAYTEST",
+        "POST_RELEASE_HOTFIX"
+      ],
+      "objective": "NORMALIZE_PLAYTEST_RUNTIME_AND_VALIDATION_FAILURES_INTO_REPRODUCIBLE_BUG_TICKETS_THEN_ROUTE_TO_FOCUSED_REPAIR_OR_RECOVERY_AND_RERUN_EXACT_FAILED_STAGE",
+      "sources": {
+        "webDevelopment": [
+          "development-queue.json:routingBlockers",
+          "development-queue.json:vibeWebImplementationReason",
+          "web-gameplay-validation.json:blockers"
+        ],
+        "unity": [
+          "executionEvidence.failureStage",
+          "executionEvidence.failureSignature",
+          "unity-technical-validation.json",
+          "unity-regression-validation.json"
+        ],
+        "roblox": [
+          "robloxRuntimeEvidence",
+          "robloxRegressionEvidence",
+          "robloxPostRuntimeQaEvidence"
+        ],
+        "postRelease": [
+          "POST_RELEASE_FOCUSED_DEVELOPMENT_PLAYTEST",
+          "REPRODUCIBLE_BUGS_ERRORS_PROGRESS_BLOCKERS"
+        ]
+      },
+      "ticketSchema": [
+        "id",
+        "gameId",
+        "surface",
+        "phase",
+        "severity",
+        "category",
+        "signature",
+        "reproduction",
+        "responsibleFiles",
+        "evidence",
+        "exactFailedStage",
+        "route",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "categories": [
+        "STARTUP",
+        "INPUT",
+        "PROGRESSION_BLOCK",
+        "SAVE",
+        "MULTIPLAYER",
+        "RUNTIME_ERROR",
+        "PERFORMANCE",
+        "UI_UX",
+        "PRESENTATION",
+        "AUDIO",
+        "PLATFORM",
+        "REGRESSION",
+        "GAMEPLAY_IMPLEMENTATION",
+        "UNKNOWN"
+      ],
+      "severityRules": {
+        "CRITICAL": [
+          "CRASH_OR_START_FAILURE",
+          "SAVE_CORRUPTION",
+          "MULTIPLAYER_STATE_CORRUPTION",
+          "RELEASE_BLOCKING_PLATFORM_ERROR"
+        ],
+        "HIGH": [
+          "PROGRESSION_BLOCK",
+          "INPUT_UNUSABLE",
+          "FATAL_RUNTIME_BUG",
+          "REGRESSION"
+        ],
+        "MEDIUM": [
+          "IMPLEMENTATION_GAP",
+          "UI_UX",
+          "AUDIO",
+          "PRESENTATION"
+        ],
+        "LOW": [
+          "NON_BLOCKING_POLISH"
+        ]
+      },
+      "routing": {
+        "criticalOrHigh": "FOCUSED_REPAIR_AND_RECOVERY",
+        "repeatedSignature": "RECOVERY_QUEUE",
+        "scopedResponsibleFiles": "VIBE_OR_SUPERVISED_SYSTEM_AI_COLLABORATION",
+        "exactFailedStageRerunRequired": true,
+        "regressionAfterRepairRequired": true
+      },
+      "webDevelopmentBehavior": {
+        "enabled": true,
+        "testerMayRunBeforeWebGatePass": true,
+        "bugTicketMayPreemptGenericImplementation": true,
+        "sameFailureTicketDeduplicated": true,
+        "fixedTicketMustRevalidateExactWebFailure": true
+      },
+      "platformBehavior": {
+        "immutableArtifactEvidenceRequired": true,
+        "runtimeFailureCreatesTicket": true,
+        "independentQaFailureCreatesTicket": true,
+        "regressionFailureCreatesTicket": true,
+        "hotfixMayPreemptMinorAndMajor": true
+      },
+      "safeguards": {
+        "gameplayBalanceChangesNotImpliedByBugTicket": true,
+        "unsupportedTesterOpinionNotAutoImplemented": true,
+        "reproducibleEvidencePreferred": true,
+        "noRuntimeEvidenceFabrication": true,
+        "noDirectMainWriteByExternalAi": true,
+        "noWorkerSelfAcceptance": true
+      },
+      "implementation": {
+        "intakeTool": "tools/company-tester-debug-intake.mjs",
+        "queue": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json",
+        "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json",
+        "scheduler": ".github/workflows/vibe2-24h-runner.yml"
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
