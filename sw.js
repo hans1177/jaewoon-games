@@ -1,7 +1,7 @@
 // 파일명: sw.js
 // 역할: 재운컴퍼니 PWA 앱 셸과 비상 AI를 캐시하고 연결 차단 시에도 개발 대화를 이어간다.
 
-const CACHE_NAME='jaewoon-pwa-v22';
+const CACHE_NAME='jaewoon-pwa-v23';
 const APP_SHELL=['/command.html','/emergency-ai.js','/install.html','/offline.html','/manifest.webmanifest','/assets/pwa-icon.svg','/assets/pwa-icon-192.png','/assets/pwa-icon-512.png'];
 const NETWORK_ONLY=/\/web-games\/_shared\/touch-controls\.js(?:\?|$)|\/(?:game-catalog|company-status|public-game-health|game-artbooks|public-release-baselines)\.json(?:\?|$)/;
 
@@ -44,7 +44,7 @@ self.addEventListener('fetch',event=>{
   const url=new URL(request.url);if(url.origin!==self.location.origin)return;
   if(url.pathname==='/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
   if(NETWORK_ONLY.test(url.pathname+url.search)){event.respondWith(fetch(request,{cache:'no-store'}));return;}
-  if(request.mode==='navigate'){
+  if(url.pathname.startsWith('/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}\n  if(request.mode==='navigate'){
     const isWebGame=url.pathname.startsWith('/web-games/');
     event.respondWith(fetch(request,isWebGame?{cache:'default'}:{cache:'no-store'}).catch(async()=>await caches.match(request)||await caches.match('/offline.html')||Response.error()));return;
   }
