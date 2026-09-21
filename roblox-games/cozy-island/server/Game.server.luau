@@ -85,20 +85,20 @@ local H={
  [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady") and "원정지원 ON" or "원정지원 OFF")end,
 }
 Players.PlayerAdded:Connect(load);for _,p in ipairs(Players:GetPlayers())do task.defer(load,p)end
-remote.OnServerEvent:Connect(function(p,a)if typeof(a)~="string" or not H[a] then return end;local t=os.clock();if t-(last[p]or 0)<C.RateLimitSeconds then return end;last[p]=t;H[a](p)end)
-task.spawn(function()while true do task.wait(C.AutomationTickSeconds);for _,p in ipairs(Players:GetPlayers())do local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0);if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end;if f>0 then s(p,"Food",n(p,"Food",0)+f)end;if w+f>0 and not battling[p] then msg(p,string.format("주민 자동생산 나무+%d 식량+%d",w,f))end end end end)
-Players.PlayerRemoving:Connect(function(p)save(p);last[p]=nil;battling[p]=nil;BattleVisual.cleanup(p)end)
-game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
-
 local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers()
  local sharedObjective=0
- for _,participant in ipairs(participants)do
-  sharedObjective+=(participant:GetAttribute("CapturedBases")or 0)
- end
+ for _,participant in ipairs(participants)do sharedObjective+=(participant:GetAttribute("CapturedBases")or 0)end
  for _,participant in ipairs(participants)do participant:SetAttribute("SharedObjective",sharedObjective)end
  remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,SharedObjective=sharedObjective})
 end
-remote.OnServerEvent:Connect(function(player,action)
- if typeof(action)=="string" then broadcastMultiplayerSync(player) end
+remote.OnServerEvent:Connect(function(p,a)
+ if typeof(a)~="string"or not H[a]then return end
+ local t=os.clock();if t-(last[p]or 0)<C.RateLimitSeconds then return end
+ last[p]=t
+ H[a](p)
+ broadcastMultiplayerSync(p)
 end)
+task.spawn(function()while true do task.wait(C.AutomationTickSeconds);for _,p in ipairs(Players:GetPlayers())do local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0);if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end;if f>0 then s(p,"Food",n(p,"Food",0)+f)end;if w+f>0 and not battling[p] then msg(p,string.format("주민 자동생산 나무+%d 식량+%d",w,f))end end end end)
+Players.PlayerRemoving:Connect(function(p)save(p);last[p]=nil;battling[p]=nil;BattleVisual.cleanup(p)end)
+game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
