@@ -236,7 +236,18 @@
       "realGameFunctionsOnly": true,
       "fakeStateMutationForbidden": true,
       "browserValidator": "tools/company-unity-web-gameplay-validation.mjs",
-      "initialGameplayQaIsFinalCoreFunPass": false
+      "initialGameplayQaIsFinalCoreFunPass": false,
+      "version": 2,
+      "mobileTargetMarker": "MOBILE_TARGET",
+      "mobileInputMarker": "MOBILE_INPUT",
+      "coreFunMarker": "CORE_FUN",
+      "actualBrowserTouchRequired": true,
+      "keyboardQaCannotSatisfyMobilePass": true,
+      "mobileTargetMustReferenceRealGameControl": true,
+      "mobileInputMustComeFromRealGameTouchHandler": true,
+      "genreSpecificCoreFunMarkerRequired": true,
+      "coreFunMarkerMayOnlyFollowRealStateProgression": true,
+      "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     }
   }
 }
