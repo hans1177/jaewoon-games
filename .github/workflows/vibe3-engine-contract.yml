@@ -45,7 +45,9 @@ jobs:
           if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox adapter compatibility contract changed');
           const uw=c.unityWebFirstStage;
           if(uw?.enabled!==true||uw?.scope!=='FIRST_WEB_GAME_STAGE_ONLY'||uw?.canonicalSourceRoot!=='unity-games/<gameId>/'||uw?.buildOutputRoot!=='web-games/<gameId>/') throw new Error('Unity Web first-stage contract missing');
+          if(uw?.centralSyncDocument!=='company-learning/UNITY_WEB_FIRST_STAGE.md'||uw?.cloudflareBuildOutputRequired!==true||uw?.mobileBrowserQaRequired!==true||uw?.failureState!=='REPAIR_REQUIRED'||uw?.retryLimit!==null) throw new Error('Unity Web first-stage sync/QA contract missing');
           if(uw?.postGatePlatformPipelineUnchanged!==true||uw?.unityTargetSameProjectContinuation!==true||uw?.robloxAndUefnRemainNative!==true) throw new Error('Unity Web first-stage scope leaked into native platform flow');
+          if(!fs.existsSync(uw.centralSyncDocument)) throw new Error('Unity Web central sync document missing');
           if(c.portableWebLearning?.sourceEngine!=='UNITY_WEB'||c.portableWebLearning?.directHtmlCanvasAuthoringDefault!==false) throw new Error('Vibe3 portable Web learning is not bound to Unity Web');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
           console.log('PASS Vibe3 Pump machine contract with portable Web context and native Roblox isolation');
@@ -63,6 +65,11 @@ jobs:
           if(r.platformPriorityInvariant?.robloxMustReceiveFirstEligibleDevelopmentSlot!==false) throw new Error('Roblox-first slot requirement must remain disabled');
           if(r.parallelLearningPipelineAllowed!==false) throw new Error('parallel platform learning pipeline forbidden');
           if(r.phases?.[1]?.unityExistingPathPreserved!==true||r.phases?.[1]?.unityDeletedOrReplacedByRoblox!==false) throw new Error('Unity preservation contract changed');
+          const uw=r.unityWebFirstStage;
+          if(uw?.status!=='OWNER_DIRECT_LOCKED'||uw?.scope!=='FIRST_WEB_GAME_STAGE_ONLY'||uw?.replacesFirstStageWebAuthoringOnly!==true||uw?.postUnityWebGatePipelineUnchanged!==true) throw new Error('Unity Web must change first Web stage only');
+          if(uw?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||uw?.publicWebBuildRoot!=='web-games/<gameId>/'||uw?.directHtmlCssJavascriptCanvasGameAuthoringForNewFirstStage!==false||uw?.playCanvasFirstStageAuthoringForNewFirstStage!==false) throw new Error('Unity Web canonical source/build boundary changed');
+          if(uw?.centralSyncDocument!=='company-learning/UNITY_WEB_FIRST_STAGE.md'||!fs.existsSync(uw.centralSyncDocument)) throw new Error('Unity Web central synchronization binding missing');
+          if(r.webCompanion?.engine!=='UNITY_WEB'||r.webCompanion?.unityProjectIsCanonicalSource!==true||r.webCompanion?.webGamesIsBuildOutput!==true||r.webCompanion?.postGatePipelineUnchanged!==true) throw new Error('Web companion is not synchronized to Unity Web');
           console.log('PASS platform release roadmap contract');
           NODE
 
