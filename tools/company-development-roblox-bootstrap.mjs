@@ -77,8 +77,16 @@ export function requiresPersistentSave(baseline={}){
 }
 
 export function robloxBuildProfileFromBaseline(baseline={}){
-  const profile=baselineContent(baseline)?.robloxBuildProfile;
-  if(!profile||Array.isArray(profile)||typeof profile!=='object')throw new Error('ROBLOX_BUILD_PROFILE_REQUIRED');
+  const content=baselineContent(baseline);
+  let profile=content?.robloxBuildProfile;
+  if(!profile||Array.isArray(profile)||typeof profile!=='object'){
+    robloxPlatformDesignFromBaseline(baseline);
+    const playMode=clean(content?.multiplayerMode||'SINGLE').toUpperCase();
+    const source=clean(baseline?.gameCategory||content?.identity||'Adventure');
+    const genre=/puzzle|퍼즐/i.test(source)?'Puzzle':/defen|strategy|디펜스|전략/i.test(source)?'Strategy':/surviv|생존|horror|공포/i.test(source)?'Survival':/rpg|role|역할/i.test(source)?'RPG':/sim|tycoon|시뮬|타이쿤/i.test(source)?'Simulation':/action|combat|fight|액션|전투/i.test(source)?'Action':'Adventure';
+    const multiplayerRequired=playMode!=='SINGLE';
+    profile={version:2,targetPlatform:'ROBLOX',taxonomy:'DIRECT_NATIVE_DESIGN_PROFILE',declaredGameCategory:clean(baseline?.gameCategory)||null,genre,subgenre:null,playMode,multiplayerRequired,coopImplementationRequired:playMode==='COOP'||playMode==='HYBRID',competitiveImplementationRequired:playMode==='COMPETITIVE'||playMode==='HYBRID',networkingRequired:multiplayerRequired,multiplayerQaRequired:multiplayerRequired,minimumParticipantsForRequiredQa:multiplayerRequired?2:1,displayLabelKo:genre};
+  }
   const playMode=clean(profile.playMode).toUpperCase();
   const genre=clean(profile.genre);
   const subgenre=clean(profile.subgenre);
@@ -95,23 +103,13 @@ export function robloxBuildProfileFromBaseline(baseline={}){
   if(profile.competitiveImplementationRequired!==competitiveRequired)throw new Error('ROBLOX_BUILD_PROFILE_COMPETITIVE_MISMATCH');
   if(Number(profile.minimumParticipantsForRequiredQa)!==(multiplayerRequired?2:1))throw new Error('ROBLOX_BUILD_PROFILE_PARTICIPANT_MISMATCH');
   return Object.freeze({
-    version:Number(profile.version||1),
-    targetPlatform:'ROBLOX',
-    taxonomy:clean(profile.taxonomy)||null,
-    declaredGameCategory:clean(profile.declaredGameCategory)||null,
-    genre,
-    subgenre:subgenre||null,
-    playMode,
-    multiplayerRequired,
-    coopImplementationRequired:coopRequired,
-    competitiveImplementationRequired:competitiveRequired,
-    networkingRequired:multiplayerRequired,
-    multiplayerQaRequired:multiplayerRequired,
-    minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
+    version:Number(profile.version||1),targetPlatform:'ROBLOX',taxonomy:clean(profile.taxonomy)||null,
+    declaredGameCategory:clean(profile.declaredGameCategory)||null,genre,subgenre:subgenre||null,playMode,
+    multiplayerRequired,coopImplementationRequired:coopRequired,competitiveImplementationRequired:competitiveRequired,
+    networkingRequired:multiplayerRequired,multiplayerQaRequired:multiplayerRequired,minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
     displayLabelKo:clean(profile.displayLabelKo)||[genre,subgenre,playMode].filter(Boolean).join(' · '),
   });
 }
-
 function genreCoreKind(profile){
   const genre=profile.genre;
   const sub=profile.subgenre||'';
