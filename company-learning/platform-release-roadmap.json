@@ -1,5 +1,5 @@
 {
-  "version": 232,
+  "version": 233,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4944,7 +4944,13 @@
       "deterministicQaPreserved": true,
       "directUnsupervisedPublicWriteForbidden": true,
       "systemAiRole": "COMMON_BOTTLENECK_RECOVERY_ASSISTANT",
-      "systemAiHomepageExecutionOwner": false
+      "systemAiHomepageExecutionOwner": false,
+      "directorScope": {
+        "exactCandidateVerify": true,
+        "fixedPwaChatRegressionRecheck": true,
+        "rerunFullHomepageManagerContract": false,
+        "reason": "Manager Self-QA already owns the full homepage contract; Director verifies the exact candidate and owner-fixed critical regression surface only."
+      }
     }
   },
   "longHorizonVision": {
