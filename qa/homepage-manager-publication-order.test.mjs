@@ -302,3 +302,11 @@ test('sample hero and cards stay free of legacy operational badges',()=>{
   assert.doesNotMatch(card,/foldBadges|foldBadge|statusLabel/);
   assert.match(card,/<h3>\$\{esc\(game\.name\)\}<\/h3>/);
 });
+
+test('homepage workflow validates the exact sample deployment contract',()=>{
+  const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.match(workflow,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
+  assert.match(workflow,/data-homepage-build="2026-09-21-sample-exact"/);
+  assert.match(workflow,/https:\/\/chatgpt\.com\//);
+  assert.match(workflow,/SYNC_INTERVAL_MS=30000/);
+});
