@@ -232,6 +232,14 @@
       "freshQaStillAuthoritative": true,
       "selfAcceptance": false,
       "rawModelOutputReuse": false
+    },
+    "leadModelExecutionEfficiency": {
+      "centralContract": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency",
+      "distinctLeadModelsRequired": false,
+      "minimumDistinctLeadModels": 1,
+      "roleReviewPreserved": true,
+      "deterministicQaPreserved": true,
+      "executionGoal": "NO_ARTIFICIAL_MULTI_MODEL_SERIALIZATION"
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
