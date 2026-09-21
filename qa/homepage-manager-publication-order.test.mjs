@@ -214,3 +214,12 @@ test('Director does not rerun the full Homepage Manager contract',()=>{
   assert.match(director,/Recheck owner-fixed PWA and chat contract/);
   assert.match(director,/DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND/);
 });
+
+test('runtime homepage renderer preserves approved simple front door',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.doesNotMatch(runtime,/document\.querySelector\('\.opsBar'\)\?\.remove\(\)/);
+  assert.doesNotMatch(runtime,/\.opsBar[^\n]*display:none!important/);
+  assert.match(runtime,/gameShelfGrid\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(runtime,/scroll-snap-type:x mandatory/);
+  assert.match(runtime,/foldGameCard\{flex:0 0 78vw/);
+});
