@@ -2179,5 +2179,56 @@
     "independentRuntimeEvidence": true,
     "onePlatformFailureDoesNotCancelOther": true,
     "uefn": "OWNER_HOLD"
+  },
+  "releaseExposureLifecycle": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate",
+    "sequence": [
+      "WEB_FIRST_GATE",
+      "ROBLOX_UNITY_FAST_NATIVE_IMPLEMENTATION",
+      "INTERNAL_PLATFORM_RELEASE",
+      "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "PLATFORM_SPECIFIC_REBUILD",
+      "SECOND_PLATFORM_ADAPTATION_GATE",
+      "PUBLIC_RELEASE_READY",
+      "PUBLIC_RELEASE",
+      "POST_PUBLIC_HOTFIX_MINOR_MAJOR_OPERATIONS"
+    ],
+    "internalPlatformRelease": {
+      "externalExposure": false,
+      "homepage": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
+      "roblox": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+      "unity": "GOOGLE_PLAY_INTERNAL_OR_CLOSED_TEST_WHEN_CREDENTIALS_EXIST"
+    },
+    "secondPlatformGate": {
+      "blocks": "EXTERNAL_PUBLIC_RELEASE_ONLY",
+      "doesNotBlock": [
+        "NATIVE_DEVELOPMENT",
+        "INTERNAL_PLATFORM_RELEASE",
+        "INTERNAL_PLAYTEST"
+      ],
+      "requires": [
+        "PLATFORM_SPECIFIC_REBUILD",
+        "NATIVE_RUNTIME",
+        "INDEPENDENT_QA",
+        "REGRESSION",
+        "NO_OPEN_CRITICAL_OR_HIGH_TESTER_BUG",
+        "PLATFORM_ADAPTATION_RUNTIME_EVIDENCE"
+      ]
+    },
+    "postPublicUpdateGates": {
+      "activation": "PUBLIC_RELEASE_ONLY",
+      "HOTFIX": "FAST_REPRODUCIBLE_BUG_LANE",
+      "MINOR": "FAST_VERIFIED_SMALL_UPDATE_LANE",
+      "MAJOR": "ISOLATED_CANDIDATE_FULL_GATE_LANE",
+      "majorKeepsCurrentPublicVersionLive": true
+    },
+    "controls": {
+      "exposure": "tools/company-platform-exposure-control.mjs",
+      "postRelease": "tools/vibe2-post-release-focus.mjs",
+      "testerDebug": "tools/company-tester-debug-intake.mjs",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "homepageSnapshot": "homepage-platform-exposure.json"
+    }
   }
 }
