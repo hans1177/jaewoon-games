@@ -22,7 +22,7 @@ test('System AI supervision is reserve then implementation then verification the
   assert.match(workflow,/id: verify[\s\S]{0,180}if: steps\.implement\.outcome == 'success'/);
   assert.match(workflow,/id: publish[\s\S]{0,220}if: steps\.implement\.outcome == 'success' && steps\.verify\.outcome == 'success'/);
   assert.match(workflow,/gh pr create --base main --head "\$SYSTEM_AI_BRANCH"/);
-  assert.match(workflow,/primary AI review still required/);
+  assert.match(workflow,/primary-ai-review-required:YES/);
   assert.match(workflow,/--command=fan-in/);
 });
 
@@ -87,7 +87,7 @@ test('verification-only System AI tasks run deterministic contracts before any m
   const implement=workflow.indexOf('- name: Execute external AI assignment');
   const currentMain=workflow.indexOf('- name: Verify no-change assignment against current main');
   assert.ok(preverify>=0&&implement>preverify&&currentMain>implement);
-  assert.match(workflow,/if: startsWith\(matrix\.taskId, 'sys-verify-'\)/);
+  assert.match(workflow,/if: startsWith\(matrix\.taskId, 'sys-verify-'\) && env\.SOURCE_MUTATION_REQUIRED != 'true'/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_PREVERIFY_SATISFIED=YES/);
   assert.match(workflow,/if: steps\.preverify\.outcome != 'success'/);
   assert.match(workflow,/const preverified=process\.env\.PREVERIFY_OUTCOME==='success'/);
