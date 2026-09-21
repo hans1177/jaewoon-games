@@ -10480,10 +10480,11 @@
       "researchAndProposalAllowed": true,
       "vibeDecidesAcceptPartialDeferReject": true,
       "implementationRequiresAcceptedScope": true,
-      "paidExternalSpendRequiresOwnerAuthorizedFinancialAction": true,
+      "paidExternalSpendRequiresOwnerAuthorizedFinancialAction": false,
       "autonomousFinancialTransactionAuthority": false,
       "autonomousAdSpendAuthority": false,
-      "gameBalanceOrCoreIdentityMayNotBeSilentlyChanged": true
+      "gameBalanceOrCoreIdentityMayNotBeSilentlyChanged": true,
+      "financialExecutionMode": "NO_AUTOMATIC_FINANCIAL_TRANSACTION_CAPABILITY"
     },
     "researchDomains": {
       "productAndGamePlanning": [
@@ -10543,7 +10544,7 @@
         "VERIFY_STORE_AND_DISCOVERY_PRESENTATION",
         "VERIFY_MONETIZATION_CONFIGURATION_AND_PURCHASE_FLOW",
         "ESTABLISH_BASELINE_METRICS",
-        "EXECUTE_ONLY_OWNER_AUTHORIZED_PAID_SPEND",
+        "SKIP_UNAVAILABLE_PAID_SPEND_AND_CONTINUE_NONFINANCIAL_MARKETING",
         "CAPTURE_LAUNCH_RESULTS"
       ],
       "postRelease": [
@@ -10608,7 +10609,8 @@
       "deceptiveOrHiddenPurchaseMechanicsForbidden": true,
       "unverifiedRevenueClaimsForbidden": true,
       "missingAnalyticsMustBeMarkedUnverified": true,
-      "paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction": true
+      "paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction": false,
+      "paidCampaignExecutionUnavailableWithoutExplicitFinancialExecutionTool": true
     },
     "learningLoop": {
       "everyAppliedExperimentCreatesEvidence": true,
@@ -10736,7 +10738,8 @@
         "costPerAcquiredPlayerMustBeMeasuredWhenSpendExists": true,
         "downstreamRetentionMustBeMeasured": true,
         "paidSpendWithoutMeasurementPlanForbidden": true,
-        "ownerAuthorizedFinancialActionRequired": true
+        "ownerAuthorizedFinancialActionRequired": false,
+        "automaticPaidSpendUnavailable": true
       }
     },
     "growthExperimentFramework": {
@@ -11035,7 +11038,8 @@
         "exactChangeAndDateTrackingRequired": true,
         "vibeCanStopOrReverseAnyExperiment": true
       }
-    }
+    },
+    "noOwnerApprovalGate": true
   },
   "recordsGovernance": {
     "version": 1,
