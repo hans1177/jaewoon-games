@@ -31,6 +31,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:12",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "system-steward:failure-signature:source-candidate-generation-failed",
         "recovery-route:VIBE2_VIBE3",
@@ -74,6 +76,8 @@
       "failureSignature": "repeated-system-ai-implementation-failed",
       "blastRadius": "portfolio:5",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "actions-run:35424046606",
         "actions-run:35424229113",
@@ -148,6 +152,8 @@
       "failureSignature": "system-ai-supervision-loop-implementation-failed",
       "blastRadius": "system-supervision",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "actions-run:35424229113",
         "primary-ai-escalation:supervision-loop-failure",
@@ -185,6 +191,8 @@
       "failureSignature": "security-quarantine-HIGH",
       "blastRadius": "affected-change",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "security-run:35425571672",
         "security-report:artifact-35425571672",
@@ -266,6 +274,8 @@
       "failureSignature": "failure-signature:source-candidate-generation-failed",
       "blastRadius": "portfolio:39",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "actions-run-34277408665",
         "actions-run-34282338339",
@@ -322,6 +332,8 @@
       "failureSignature": "system-ai-implementation-failed",
       "blastRadius": "single-task",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "primary-ai-priority:portfolio-wide-common-web-blocker",
         "company-runtime:19-of-19-web-gameplay-music",
@@ -396,6 +408,8 @@
       "failureSignature": "production-authority-inactive:DESIGN_ONLY",
       "blastRadius": "single-task",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "actions-run-34277017158",
         "actions-run-34281727541",
@@ -444,6 +458,8 @@
       "failureSignature": "security-quarantine-HIGH",
       "blastRadius": "affected-change",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "security-run:35425799273",
         "security-report:artifact-35425799273",
@@ -498,6 +514,8 @@
       "failureSignature": "failure-signature:source-candidate-generation-failed",
       "blastRadius": "portfolio:12",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -645,6 +663,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:13",
       "checkpoint": "2026-09-19T07:05:21Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-19T07:05:21Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -828,6 +848,8 @@
       "failureSignature": "FAIL",
       "blastRadius": "portfolio:5",
       "checkpoint": "2026-09-19T06:26:26.368Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-19T06:26:26.368Z",
       "evidence": [
         "primary-ai-priority:portfolio-wide-common-web-blocker",
         "company-runtime:19-of-19-web-gameplay-music",
@@ -898,6 +920,8 @@
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "single-task",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1132,6 +1156,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:12",
       "checkpoint": "2026-09-20T00:50:25Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T00:50:25Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1767,6 +1793,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:12",
       "checkpoint": "2026-09-19T15:35:24Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-19T15:35:24Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -2167,6 +2195,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:15",
       "checkpoint": "2026-09-19T14:29:53Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-19T14:29:53Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -2508,6 +2538,8 @@
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-19T09:50:06Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-19T09:50:06Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -2692,6 +2724,8 @@
       "failureSignature": "security-quarantine-HIGH",
       "blastRadius": "affected-change",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "security-run:35435328190",
         "security-report:artifact-35435328190",
@@ -2746,6 +2780,8 @@
       "failureSignature": "security-quarantine-HIGH",
       "blastRadius": "affected-change",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "security-run:35435490393",
         "security-report:artifact-35435490393",
@@ -2812,6 +2848,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:11",
       "checkpoint": "2026-09-19T15:48:43Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-19T15:48:43Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -3187,6 +3225,8 @@
       "failureSignature": "performance-sanity-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T04:54:33Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T04:54:33Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -3868,6 +3908,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:6",
       "checkpoint": "2026-09-20T01:43:11Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T01:43:11Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -4432,6 +4474,8 @@
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "portfolio:6",
       "checkpoint": "2026-09-20T02:36:45Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T02:36:45Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5176,6 +5220,8 @@
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T01:03:45Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T01:03:45Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -5438,6 +5484,8 @@
       "failureSignature": "system-ai-implementation-failed",
       "blastRadius": "single-task",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -5489,6 +5537,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T03:40:27Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T03:40:27Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -6163,6 +6213,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T06:30:06Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T06:30:06Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -7152,6 +7204,8 @@
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "portfolio:7",
       "checkpoint": "2026-09-21T04:38:54Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-21T04:38:54Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -10288,7 +10342,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-21T04:39:32.634Z"
+      "updatedAt": "2026-09-21T04:41:13.514Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -10305,6 +10359,8 @@
       "failureSignature": "incremental-qa-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T21:43:30Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T21:43:30Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -13323,6 +13379,8 @@
       "failureSignature": "incremental-qa-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-21T04:31:39Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-21T04:31:39Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -16082,7 +16140,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-21T04:39:32.642Z"
+      "updatedAt": "2026-09-21T04:41:13.522Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -16099,6 +16157,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T11:29:28Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T11:29:28Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -17866,6 +17926,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "single-task",
       "checkpoint": "2026-09-20T10:53:49Z",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2026-09-20T10:53:49Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -18262,6 +18324,8 @@
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:14",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "actions-run-34277408665",
         "actions-run-34282338339",
@@ -18299,7 +18363,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T11:33:07.849Z",
-      "updatedAt": "2026-09-21T04:39:32.630Z"
+      "updatedAt": "2026-09-21T04:41:13.510Z"
     },
     {
       "id": "recovery-2620c437645bba6eaa8c",
@@ -18318,6 +18382,8 @@
       "failureSignature": "RESTORED_BY_CENTRAL_PRODUCTION_AUTHORITY",
       "blastRadius": "single-task",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "actions-run-34277017158",
         "actions-run-34281727541",
@@ -18354,7 +18420,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-20T11:33:07.853Z",
-      "updatedAt": "2026-09-21T04:39:32.639Z"
+      "updatedAt": "2026-09-21T04:41:13.519Z"
     },
     {
       "id": "recovery-804b2acf67074bfd8b28",
@@ -18371,6 +18437,8 @@
       "failureSignature": "system-ai-implementation-failed",
       "blastRadius": "single-task",
       "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
