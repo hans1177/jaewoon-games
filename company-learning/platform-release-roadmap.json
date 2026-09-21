@@ -1,5 +1,5 @@
 {
-  "version": 240,
+  "version": 241,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4891,14 +4891,16 @@
           "DEVELOPMENT",
           "CHATGPT"
         ],
-        "chatgptUrl": "https://chatgpt.com/",
+        "chatgptUrl": "/command.html?from=chatgpt-shortcut",
         "appInstallVisible": true
       },
       "hero": {
         "oneFeaturedGame": true,
         "primaryAction": "PLAY_NOW",
         "carouselForbidden": true,
-        "operationalBadgesLimited": true
+        "operationalBadgesLimited": true,
+        "featuredGameId": "daechung-rpg",
+        "selectionMode": "EXPLICIT_FEATURED_GAME_ID_WITH_FIRST_ELIGIBLE_FALLBACK"
       },
       "metrics": {
         "count": 3,
@@ -4947,7 +4949,7 @@
           "DEVELOPMENT",
           "CHATGPT"
         ],
-        "chatgptUrl": "https://chatgpt.com/",
+        "chatgptUrl": "/command.html?from=chatgpt-shortcut",
         "horizontalGameCards": true,
         "horizontalDevelopmentSteps": true
       },
@@ -4972,6 +4974,13 @@
         "requireBuildMarker": true,
         "requireChatgptShortcut": true,
         "requireRuntimeRefreshCadenceMs": 30000
+      },
+      "chatgptLaunch": {
+        "android": "APP_FIRST",
+        "androidPackage": "com.openai.chatgpt",
+        "fallback": "/command.html?from=chatgpt-shortcut",
+        "finalWeb": "https://chatgpt.com/",
+        "safetyBypassForbidden": true
       }
     }
   },
