@@ -294,3 +294,5 @@ When local capability becomes available, the accumulated verified trajectories/s
 - Roblox/UEFN 대상 게임은 Unity Web을 1차 검증 표면으로 사용한 뒤 기존 native 구현/런타임/독립 QA/회귀 플로우를 그대로 사용한다. Unity Web PASS는 native PASS를 대체하지 않는다.
 - 모바일 입력은 Unity 프로젝트 내부 Input System/On-Screen Control/Touch로 구현한다. `_worker.js` 공통 조이스틱 주입은 장기 기본 입력 경로가 아니다.
 - 1차 Web 화면도 실제 에셋·전투·AI·UI·맵·장르 핵심 시스템·모바일 조작을 요구한다. primitive 중심 가짜 플레이어블은 학습 성공 근거가 아니다.
+- 자동 QA 키 입력은 실제 게임 함수를 구동하는 보조 수단일 뿐 모바일 조작 성공으로 학습하지 않는다. 실제 Unity 화면 컨트롤의 `MOBILE_TARGET` 위치에 브라우저 Touch를 전달한 뒤 `MOBILE_INPUT`이 발생해야 모바일 입력 성공 증거다.
+- 장르 핵심 루프가 실제 상태 진행/보상까지 완료된 시점의 `CORE_FUN status=PASS`만 Core Fun 성공 증거로 학습한다. 단순 화면 표시, 버튼 클릭, QA 전용 상태 변경은 성공 trajectory로 저장하지 않는다.
