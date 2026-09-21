@@ -1,5 +1,5 @@
 {
-  "version": 252,
+  "version": 253,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4120,10 +4120,11 @@
       "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
-      "objective": "ALLOW_FAST_NATIVE_INTERNAL_RELEASE_AND_REAL_PLATFORM_TESTING_BEFORE PUBLIC EXPOSURE; REQUIRE PLATFORM-SPECIFIC REBUILD AND SECOND-GATE PASS BEFORE FULL PUBLIC RELEASE",
+      "objective": "ALLOW_FAST_NATIVE_INTERNAL_RELEASE_AND_REAL_PLATFORM_TESTING_BEFORE PUBLIC EXPOSURE; REQUIRE PLATFORM-SPECIFIC QA/REGRESSION AND ADAPTATION PASS BEFORE FULL PUBLIC RELEASE",
       "stages": [
-        "WEB_FIRST_GATE",
-        "ROBLOX_UNITY_FAST_NATIVE_IMPLEMENTATION",
+        "MINIMUM_DESIGN_CONTRACT_READY",
+        "ROBLOX_UNITY_NATIVE_DEVELOPMENT_CONCURRENT",
+        "PLATFORM_RUNTIME_QA_REGRESSION",
         "INTERNAL_PLATFORM_RELEASE",
         "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "PLATFORM_SPECIFIC_REBUILD",
@@ -4698,7 +4699,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-21T14:18:34.249Z",
+  "updatedAt": "2026-09-21T14:42:26.743Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -4729,11 +4730,11 @@
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "webGameShelf": {
-      "enabled": true,
-      "source": "CANONICAL_CATALOG_WEB_PUBLISHED",
+      "enabled": false,
+      "source": "LEGACY_ARCHIVE_ONLY",
       "visibleLimit": null,
       "unbounded": true,
-      "mustExposeAllEligible": true,
+      "mustExposeAllEligible": false,
       "eligibility": [
         "ACTIVE_OR_REBUILD",
         "WEB_PLAYABLE_TRUE",
@@ -4751,7 +4752,9 @@
         "missingEntryFileIsGateFailure": true,
         "mismatchedPathIsGateFailure": true,
         "directCardLaunchMustUseCanonicalHref": true
-      }
+      },
+      "legacyArchiveOnly": true,
+      "frontDoorVisible": false
     },
     "top30Shelf": {
       "enabled": false,
@@ -4803,8 +4806,7 @@
       "shelves": [
         {
           "id": "PLATFORM_AVAILABLE",
-          "source": "VERIFIED_INTERNAL_PLATFORM_RELEASE",
-          "webAction": "FIXED_ON_CARD"
+          "source": "VERIFIED_INTERNAL_PLATFORM_RELEASE"
         },
         {
           "id": "IN_DEVELOPMENT",
@@ -4863,25 +4865,22 @@
         "safetyBypassForbidden": true
       },
       "gameCardPlatforms": {
-        "web": "ALWAYS_FIXED_VISIBLE",
+        "web": "DISABLED_FOR_NEW_DEVELOPMENT",
         "concurrent": [
           "ROBLOX",
-          "UNITY",
-          "FORTNITE_UEFN"
+          "UNITY"
         ],
-        "visibility": "ALL_TRACKS_SIMULTANEOUS",
+        "visibility": "ROBLOX_UNITY_ONLY",
         "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
         "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
         "selectedPlatformDoesNotHideOtherTracks": true
       },
       "gameCardActions": {
         "order": [
-          "WEB",
           "ROBLOX",
-          "UNITY",
-          "FORTNITE_UEFN"
+          "UNITY"
         ],
-        "webAlwaysVisible": true,
+        "webAlwaysVisible": false,
         "concurrentPlatformSlotsVisible": true,
         "verifiedReleaseLinksActivateAutomatically": true,
         "platformAvailableShelfRequiresInternalRelease": true,
@@ -4905,8 +4904,11 @@
     "serverRuntimeBranch": "company-runtime",
     "publicSourceBranch": "main",
     "runtimeInputs": [
+      "development-queue.json",
+      "game-seed-state.json",
       "game-catalog.json",
-      "company-status.json"
+      "company-status.json",
+      "homepage-platform-exposure.json"
     ],
     "homepageManagerWorkflow": ".github/workflows/homepage-manager.yml",
     "homepageManagerTool": "tools/homepage-manager.mjs",
