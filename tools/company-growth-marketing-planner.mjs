@@ -27,7 +27,7 @@ function taskFor(game={},roadmap={},stamp=''){
   const contexts=['company-learning/platform-release-roadmap.json','game-catalog.json'];
   if(web)contexts.push(`${web}/index.html`);
   return{
-    id:`marketing-${safe(id)}-${p.toLowerCase()}-v1`,
+    id:`marketing-${safe(id)}-${p.toLowerCase().replaceAll('_','-')}-v1`,
     status:'queued',
     priority:p==='POST_RELEASE'?'high':'normal',
     department:'planning-growth-marketing',
