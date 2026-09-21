@@ -241,7 +241,7 @@ test('Roblox package completion auto-dispatches preflight only while Studio rema
   assert.ok(continuation.includes('workflow_dispatch:'));
   assert.ok(!continuation.includes('workflow_run:'));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert.ok(continuation.includes('Roblox five-lead preflight'));
+  assert.ok(continuation.includes('Roblox Vibe shared-model preflight'));
   assert.ok(continuation.includes('Roblox Studio runtime'));
   assert.ok(continuation.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'));
   assert.ok(continuation.includes('ROBLOX_FAKE_RUNTIME_PASS=FORBIDDEN'));
