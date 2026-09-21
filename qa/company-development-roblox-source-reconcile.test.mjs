@@ -69,6 +69,12 @@ test('minimum-design Roblox SOURCE_BIND items are eligible for source reconcilia
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),false);
 });
 
+test('validated Roblox item is revalidated when its game source changed in the current push',()=>{
+  const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:'a'.repeat(40)};
+  assert.equal(eligibleForRobloxSourceReconciliation(item,{changedGameIds:new Set([gameId])}),true);
+  assert.equal(eligibleForRobloxSourceReconciliation(item,{changedGameIds:new Set(['other-game'])}),false);
+});
+
 test('verified Vibe2 Studio handoff remains readable but does not replace minimum-design admission',()=>{
   const item=verifiedHandoffItem();
   assert.equal(hasVerifiedVibe2SourceHandoff(item),true);
@@ -128,6 +134,28 @@ test('verified Vibe2 handoff accepts only the exact pinned Roblox source tree wi
     assert.equal(fail[0].pass,false);
     assert.equal(fail[0].failure,'verified-vibe2-source-handoff-mismatch');
     assert.ok(fail[0].blockers.includes('VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('source drift reconciliation marks the reason without reusing prior release evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-reconcile-drift-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:'a'.repeat(40)};
+    const results=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:'e'.repeat(40),
+      changedGameIds:[gameId],
+      loadBaseline:()=>baseline,
+    });
+    assert.equal(results.length,1);
+    assert.equal(results[0].pass,true,results[0].blockers.join(','));
+    assert.equal(results[0].reconciliationReason,'source-drift');
+    assert.equal(results[0].sourceRevision,'e'.repeat(40));
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
