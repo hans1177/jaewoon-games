@@ -1,6 +1,12 @@
 local Config={
- Platform="ROBLOX",GameId="horror-escape-room",GameName="심야 술래잡기",MobileFirst=true,SaveEnabled=true,
- PlayMode="SINGLE_OR_ASYMMETRIC_MULTIPLAYER",SoloPlayable=true,MultiplayerRequired=true,CompetitiveRequired=true,MinimumParticipants=2,
+ PolicySource = "company-learning/platform-release-roadmap.json",
+ Platform = "ROBLOX",
+ MobileFirst = true,
+ GameId="horror-escape-room",GameName="심야 술래잡기",SaveEnabled=true,
+ Genre = "Survival",
+ PlayMode = "COMPETITIVE",
+ MultiplayerRequired = true,
+ SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=2,
  TargetPopulation=6,RoundSeconds=120,IntermissionSeconds=8,TagDistance=5.5,RescueDistance=8,RemoteName="GameAction",
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  MonsterForms={

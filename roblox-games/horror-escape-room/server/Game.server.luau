@@ -275,3 +275,13 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
 end)
+
+local function broadcastMultiplayerSync(actor)
+ local participants=Players:GetPlayers()
+ local nextRoundScore=(actor:GetAttribute("RoundScore")or 0)+1
+ actor:SetAttribute("RoundScore",nextRoundScore)
+ remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,RoundScore=nextRoundScore})
+end
+remote.OnServerEvent:Connect(function(player,action)
+ if typeof(action)=="string" then broadcastMultiplayerSync(player) end
+end)

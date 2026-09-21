@@ -1,5 +1,7 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
+local UserInputService=game:GetService("UserInputService")
+local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local remote=RS:WaitForChild(C.RemoteName)
@@ -37,3 +39,9 @@ local function render()
 end
 for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount"})do p:GetAttributeChangedSignal(k):Connect(render)end
 render()
+
+remote.OnClientEvent:Connect(function(kind,snapshot)
+ if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
+ p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedRoundScore",tonumber(snapshot.RoundScore)or 0)
+end)
