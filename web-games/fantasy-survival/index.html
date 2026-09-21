@@ -917,6 +917,10 @@ const BESTIARY_INFO={
  gorilla:{cat:'neutral',desc:'밀림의 4티어 고릴라. 평소 중립이지만 아나콘다에게는 적대적이며 지면강타와 잡아치기를 사용한다.'},
  anaconda:{cat:'aggressive',desc:'작은 호수 근처에 나타나는 4티어 아나콘다. 동족을 제외한 모든 몬스터에게 적대적이며 4초 감싸기를 사용한다.'},
  mudwalker:{cat:'aggressive',desc:'밀림의 3티어 머드 워커. 독 공격과 3초 유도 진흙 포격을 사용한다.'},
+ jungletiger:{cat:'aggressive',desc:'밀림의 4티어 호랑이. 처치하면 신전 제단에 바칠 호랑이 제물을 떨어뜨린다.'},
+ primitiveSpearman:{cat:'aggressive',desc:'밀림 신전 위층의 3티어 창병. 창 3개를 빠르게 던진 뒤 3초 동안 공격하지 못한다.'},
+ primitiveArcher:{cat:'aggressive',desc:'밀림 신전 위층의 3티어 원거리 원시인. 2초마다 독화살을 발사한다.'},
+ jungleGuardian:{cat:'aggressive',desc:'밀림 신전 지하의 4티어 수호자. 찢고 뜯기로 플레이어를 붙잡고 체력을 회복한다.'},
  lakecroc:{cat:'aggressive',desc:'거대 호수의 4티어 포식자. 끌고 뒤집기와 수중 데스롤을 사용한다.'},
  lakebuffalo:{cat:'neutral',desc:'거대 호숫가를 돌아다니는 중립 물소. 먼저 공격하지 않으면 조용하다.'},
  crystaldeer:{cat:'neutral',desc:'호수의 마력을 받아 수정이 돋은 중립 사슴. 수정 사슴고기를 얻을 수 있다.'},
@@ -1860,7 +1864,7 @@ function updateTempleEnemySpecial(e,p,now,playerD){
  if(e.type.templeGuardian){
   if(playerD>(e.type.detect||950))return null;
   if(!e.nextTempleSpecialAt)e.nextTempleSpecialAt=now+3000;
-  if(now>=e.nextTempleSpecialAt){e.nextTempleSpecialAt=now+3000;if(playerD<e.type.r+48&&Math.random()<.20){e.attackAt=now;enemyDamageTarget(e,70,true);applyEnemyEffectTarget(e,p,'attackblock',2000);e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.30);if(e.playerTargetId===multiplayer.playerId)showNotice('밀림 수호자 · 찢고 뜯기 · 70 피해 · 체력 30% 회복');return{vx:0,vy:0}}}
+  if(now>=e.nextTempleSpecialAt){e.nextTempleSpecialAt=now+3000;if(playerD<e.type.r+48&&Math.random()<.20){e.attackAt=now;enemyDamageTarget(e,70,true);applyEnemyEffectTarget(e,p,'grab',2000);applyEnemyEffectTarget(e,p,'attackblock',2000);e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.30);if(e.playerTargetId===multiplayer.playerId)showNotice('밀림 수호자 · 찢고 뜯기 · 70 피해 · 체력 30% 회복');return{vx:0,vy:0}}}
   const melee=e.type.r+30;if(playerD>melee)return{vx:(p.x-e.x)/(playerD||1)*e.type.speed,vy:(p.y-e.y)/(playerD||1)*e.type.speed};
   if(now>=(e.nextAttackAt||0)){e.attackAt=now;e.nextAttackAt=now+1800;enemyDamageTarget(e,70,false)}
   return{vx:0,vy:0}
@@ -3158,7 +3162,7 @@ function drawCreature(e,cx,cy){
  ctx.restore();
  drawEnemyCombatVfx(e,x,y,now);
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
- ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':e.type.name,x,y+e.type.r+18)
+ ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.id==='jungletiger')?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
 }
 function drawProjectiles(cx,cy){
  for(const q of state.projectiles){
