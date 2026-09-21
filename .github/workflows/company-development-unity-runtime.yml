@@ -505,6 +505,31 @@ jobs:
           regression_json="$(find /tmp/unity-regression -type f -name evidence.json | head -n1 || true)"; [[ -n "$regression_json" ]] && cp "$regression_json" "$BASE/unity-regression-validation.json"
           echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"; echo "qa_run=$qa_run" >> "$GITHUB_OUTPUT"; echo "regression_run=$regression_run" >> "$GITHUB_OUTPUT"
 
+      - name: Register verified Unity runtime homepage media
+        if: steps.regressionstate.outputs.passed == 'true'
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.artifact.outputs.identity }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="$(find /tmp/unity-independent -type f -name 'screen.png' -size +0c | head -n1 || true)"
+          video="$(find /tmp/unity-independent -type f -name 'runtime-preview.mp4' -size +0c | head -n1 || true)"
+          [[ -n "$image" ]] || { echo 'verified Unity runtime screenshot missing' >&2; exit 16; }
+          args=(
+            "--repo-root=runtime-persist"
+            "--game-id=$GAME_ID"
+            "--platform=UNITY"
+            "--image=$image"
+            "--source-revision=$SOURCE_REVISION"
+            "--artifact-identity=$ARTIFACT_IDENTITY"
+            "--runtime-verification=TARGET_PLATFORM_RUNTIME+INDEPENDENT_QA+REGRESSION_PASS"
+          )
+          [[ -n "$video" ]] && args+=("--video=$video")
+          node tools/company-runtime-media-register.mjs "${args[@]}"
+          echo "UNITY_HOMEPAGE_RUNTIME_MEDIA=VERIFIED"
+
       - name: Prepare free models only after technical stages pass
         if: steps.regressionstate.outputs.passed == 'true'
         uses: ./.github/actions/prepare-ollama
@@ -657,6 +682,9 @@ jobs:
           [[ -n "$checkpoint_root" ]] || { echo 'checkpoint queue directory missing after artifact extraction' >&2; find /tmp/development-unity-runtime -maxdepth 3 -type d -print; exit 15; }
           export CHECKPOINT_ROOT="$checkpoint_root"
           if [[ -d "$checkpoint_root/design" ]]; then cp -R "$checkpoint_root/design/." design/; fi
+          mkdir -p assets/runtime-evidence company-records/runtime-media
+          if [[ -d "$checkpoint_root/assets/runtime-evidence" ]]; then cp -R "$checkpoint_root/assets/runtime-evidence/." assets/runtime-evidence/; fi
+          if [[ -d "$checkpoint_root/company-records/runtime-media" ]]; then cp -R "$checkpoint_root/company-records/runtime-media/." company-records/runtime-media/; fi
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
@@ -674,7 +702,7 @@ jobs:
           NODE
           git config user.name 'jaewoon-development-unity-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add design development-queue.json
+          git add design development-queue.json assets/runtime-evidence company-records/runtime-media
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: persist Unity exact-stage checkpoints [skip ci]'

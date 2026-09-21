@@ -161,6 +161,21 @@ jobs:
           sleep 4
           for xy in '540 1500' '540 1320' '540 1500' '540 1320'; do adb shell input tap $xy; sleep 0.15; done
 
+          preview_remote=/sdcard/jaewoon-runtime-preview.mp4
+          adb shell rm -f "$preview_remote" >/dev/null 2>&1 || true
+          adb shell screenrecord --time-limit 5 --bit-rate 4000000 "$preview_remote" >/tmp/jaewoon-screenrecord.log 2>&1 &
+          preview_pid=$!
+          sleep 0.6
+          adb shell input swipe 820 1500 240 1500 260 || true
+          adb shell input tap 540 1320 || true
+          sleep 0.5
+          adb shell input tap 540 1500 || true
+          wait "$preview_pid" || true
+          if adb shell test -s "$preview_remote" >/dev/null 2>&1; then
+            adb pull "$preview_remote" qa-artifacts/unity-independent-qa/runtime-preview.mp4 >/tmp/jaewoon-preview-pull.log 2>&1 || true
+          fi
+          adb shell rm -f "$preview_remote" >/dev/null 2>&1 || true
+
           pid_after="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
           [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 15; }
           adb exec-out screencap -p > qa-artifacts/unity-independent-qa/screen.png
@@ -172,6 +187,7 @@ jobs:
 
           python3 - <<'PY'
           import json, os
+          preview_path='qa-artifacts/unity-independent-qa/runtime-preview.mp4'
           evidence = {
               'version': 2,
               'state': 'PASS',
@@ -191,7 +207,8 @@ jobs:
                   'backgroundResume': 'PASS',
                   'processAliveAfterStress': 'PASS',
                   'fatalCrashScan': 'PASS',
-                  'screenshotCaptured': 'PASS'
+                  'screenshotCaptured': 'PASS',
+                  'runtimeVideoCaptured': 'PASS' if os.path.exists(preview_path) and os.path.getsize(preview_path)>0 else 'NOT_AVAILABLE'
               }
           }
           with open('qa-artifacts/unity-independent-qa/evidence.json','w',encoding='utf-8') as f:
