@@ -287,8 +287,8 @@ function buildDevelopmentPipeline(catalog,status,testManifest={}){
 }
 function buildPortfolioBoard(){
   document.getElementById('homePortfolioBoard')?.remove();
-  const hub=document.getElementById('gameHub');
-  if(!hub)return;
+  const pipeline=document.getElementById('developmentPipeline');
+  if(!pipeline)return;
   const counts=portfolioStatus?.counts||{};
   const labels=[
     ['ACCELERATE','우선개발'],['CONTINUE','정상개발'],['FOCUSED_REPAIR','집중수리'],
@@ -298,7 +298,7 @@ function buildPortfolioBoard(){
   section.id='homePortfolioBoard';
   section.className='portfolioBoard';
   section.innerHTML=`<div class="portfolioBoardHead"><h2>개발 운영</h2><span>부서 증거 · Primary AI + Vibe</span></div><div class="portfolioBoardGrid">${labels.map(([key,label])=>`<div class="portfolioMetric"><b>${Number(counts[key]||0)}</b><span>${esc(label)}</span></div>`).join('')}</div>`;
-  hub.parentNode?.insertBefore(section,hub);
+  pipeline.parentNode?.insertBefore(section,pipeline.nextSibling);
   document.documentElement.dataset.homePortfolioAuthority=String(portfolioStatus?.authority||'pending');
 }
 
