@@ -18,7 +18,18 @@ function sourceTreeSha(root){const h=crypto.createHash('sha256');for(const row o
 function responsibleFiles(root,sourceRoot){const files=listSourceFiles(root).map(row=>row.relative);const preferred=['server/Game.server.luau','client/Game.client.luau','shared/GameConfig.luau','server/Main.server.luau','client/Main.client.luau','shared/Config.luau'];const selected=[];for(const name of preferred)if(files.includes(name)&&selected.length<3)selected.push(posix(sourceRoot+'/'+name));for(const name of files)if(selected.length<3&&!selected.includes(posix(sourceRoot+'/'+name)))selected.push(posix(sourceRoot+'/'+name));return selected;}
 function releasedRobloxItem(item={}){const evidence=item.robloxReleaseEvidence||{},sourceRevision=clean(item.robloxSourceCommit),artifactIdentity=clean(item.robloxBuildArtifactIdentity);return upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX'&&item.robloxReleaseClaim===true&&evidence.published===true&&clean(evidence.sourceRevision)===sourceRevision&&clean(evidence.artifactIdentity)===artifactIdentity&&Number(evidence.versionNumber||0)>0&&item.robloxFinalReviewPassed===true&&item.robloxRegressionPassed===true&&item.robloxExactRevisionPassed===true&&/^sha256:[a-f0-9]{64}$/i.test(artifactIdentity)&&/^[a-f0-9]{40}$/i.test(sourceRevision);}
 function publicReleaseState(exposure={},gameId=''){const row=(exposure.games||[]).find(x=>clean(x.gameId)===clean(gameId));return upper(row?.externalPublicReleaseState);}
-function postReleaseEligible(item={},exposure={}){if(publicReleaseState(exposure,item.gameId)==='PUBLIC_RELEASE')return releasedRobloxItem(item);const legacy=releasedRobloxItem(item)&&item.robloxReleaseEvidence?.published===true;return legacy;}
+function legacyPublicReleaseBeforeGate(item={},roadmap={}){
+  if(!releasedRobloxItem(item))return false;
+  if(item.preexistingPublicReleaseBeforeExposureGate===true)return true;
+  const activation=Date.parse(clean(roadmap?.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.activatedAt)||'2026-09-21T00:00:00Z');
+  const e=item.robloxReleaseEvidence||{};
+  const publishedAt=Date.parse(clean(e.publishedAt||e.releasedAt||e.observedAt||item.robloxReleasedAt||item.releaseConfirmedAt));
+  return Number.isFinite(activation)&&Number.isFinite(publishedAt)&&publishedAt<activation;
+}
+function postReleaseEligible(item={},exposure={},roadmap={}){
+  if(publicReleaseState(exposure,item.gameId)==='PUBLIC_RELEASE')return releasedRobloxItem(item);
+  return legacyPublicReleaseBeforeGate(item,roadmap);
+}
 function selectRecipe(recombination={},gameId='',treeSha=''){const recipes=Array.isArray(recombination.recipes)?recombination.recipes.filter(r=>Array.isArray(r.sourceProjects)&&new Set(r.sourceProjects.map(clean).filter(Boolean)).size>=2):[];if(!recipes.length)return null;const preferred=recipes.filter(r=>!r.sourceProjects.map(clean).includes(clean(gameId))),pool=preferred.length?preferred:recipes,n=parseInt(treeSha.slice(0,8),16);return pool[Number.isFinite(n)?n%pool.length:0]||null;}
 function activeFocusGameIds(queue={}){return new Set((queue.tasks||[]).filter(t=>t.postReleaseFocused===true&&['queued','running'].includes(clean(t.status).toLowerCase())).map(t=>clean(t.gameId)).filter(Boolean));}
 function historicalMaintenanceItem(entry={}){const e=entry.evidence||{};return entry.maintenanceEligible===true&&entry.currentReleaseClaim===false&&clean(entry.gameId)&&posix(entry.sourceRoot)==='roblox-games/'+clean(entry.gameId)&&e.actualStudioRuntime===true&&e.postRuntimeIndependentQa===true&&e.regression===true&&e.publicationTargetObserved===true&&clean(e.universeId)&&clean(e.placeId);}
@@ -37,7 +48,7 @@ export function buildHistoricalPostReleaseFocusTask({entry,repoRoot='.',roadmap=
   return{id,gameId,target:'roblox',department:'development',type:'implementation',goal,responsibleFiles:files,dependencies:[],priority:'critical',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot,estimatedRisk:'medium',speculativeEligible:false,evidence,postReleaseFocused:true,historicalDeploymentRecovery:true,feedbackAdvisoryOnly:true,feedbackDecisionAuthority:'VIBE',feedbackDecisionRequired:true,allowedFeedbackDecisions:['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT'],updateScaleDecisionAuthority:'VIBE',updateScale:'UNCLASSIFIED',allowedUpdateScales:['HOTFIX','MINOR','MAJOR'],bugEmergencyLane:true,hotfixPreemptsOtherUpdateWork:true,majorUpdatePrepareAhead:true,fastRedeployEligibleScales:['HOTFIX','MINOR'],unverifiedPublicReplacementForbidden:true,verifiedResultLearningRequired:true,securityStewardRequired:true,securityPolicy:'company-learning/security-immune-system.json',securityReviewScopes:['SERVER_AUTHORITY','REMOTE_INPUT_VALIDATION','RATE_LIMIT','SAVE_INTEGRITY','ECONOMY_REWARD_INTEGRITY','DAMAGE_COOLDOWN_AUTHORITY','MULTIPLAYER_SYNC_ABUSE','BACKDOOR_UNTRUSTED_MODULE'],securityConfirmedBugRoute:'HOTFIX',securityHotfixPreemptsOtherUpdateWork:true,securityRescanBeforeRedeploy:true,platformAntiCheatDuplicated:false,packageLongWorkProtected:true,packageRole:'implementation-owner',taskWorkUnits:6,packageWorkUnits:6,packageGoal:'HISTORICAL_ROBLOX_SUSTAINED_MAINTENANCE',authority:'MACHINE_EXECUTION_CONTRACT'};
 }
 export function buildPostReleaseFocusTask({item,repoRoot='.',roadmap={},recombination={},existingTasks=[],exposure={}}={}){
-  if(!postReleaseEligible(item,exposure)||permanentlyRemoved(roadmap,item?.gameId))return null;
+  if(!postReleaseEligible(item,exposure,roadmap)||permanentlyRemoved(roadmap,item?.gameId))return null;
   const policy=roadmap?.developmentLifecycleMachine?.postReleaseFocusedDevelopment||{};if(policy.enabled!==true)return null;
   const gameId=clean(item.gameId);if(!gameId)return null;
   const sourceRoot=posix(item.robloxProjectPath||item.targetSourcePath||('roblox-games/'+gameId));if(sourceRoot!=='roblox-games/'+gameId)return null;
@@ -53,7 +64,7 @@ export function buildPostReleaseFocusTask({item,repoRoot='.',roadmap={},recombin
 export function feedPostReleaseFocus({roadmapFile='company-learning/platform-release-roadmap.json',companyRuntimeQueueFile='',historicalRegistryFile='',queueFile='.vibe2/queue.json',recombinationFile='',exposureFile='',repoRoot='.'}={}){
   const roadmap=readJson(roadmapFile,{}),runtimeQueue=readJson(companyRuntimeQueueFile,{items:[]}),historicalRegistry=readJson(historicalRegistryFile,{assets:[]}),queue=readJson(queueFile,{tasks:[]}),recombination=readJson(recombinationFile,{recipes:[]}),exposure=readJson(exposureFile,{games:[]});
   const activeGames=activeFocusGameIds(queue);
-  const candidates=(runtimeQueue.items||[]).filter(item=>postReleaseEligible(item,exposure)&&!permanentlyRemoved(roadmap,item.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
+  const candidates=(runtimeQueue.items||[]).filter(item=>postReleaseEligible(item,exposure,roadmap)&&!permanentlyRemoved(roadmap,item.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
   let task=null,sawActiveCaretaker=false;
   for(const item of candidates){
     if(activeGames.has(clean(item.gameId))){sawActiveCaretaker=true;continue;}
