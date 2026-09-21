@@ -274,12 +274,23 @@ jobs:
             test -f .vibe2/security-incidents.json || printf '%s\n' '{"version":1,"kind":"company-security-incidents","policy":"QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL","incidents":[]}' > .vibe2/security-incidents.json
 
             node --check /tmp/vibe2-main/tools/company-growth-marketing-planner.mjs
+            node --check /tmp/vibe2-main/tools/company-growth-marketing-decision.mjs
+            node --check /tmp/vibe2-main/tools/company-growth-marketing-qa.mjs
             git show origin/company-runtime:game-catalog.json > /tmp/vibe2-marketing-catalog.json
             node /tmp/vibe2-main/tools/company-growth-marketing-planner.mjs \
               --catalog=/tmp/vibe2-marketing-catalog.json \
               --queue=.vibe2/system-ai-queue.json \
               --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
               --output=/tmp/vibe2-marketing-plan.json | tee /tmp/vibe2-marketing-plan.log
+
+            mkdir -p /tmp/vibe2-marketing-decisions
+            : > /tmp/vibe2-marketing-decision.log
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              game_id="$(node -p "require('$file').gameId")"
+              node /tmp/vibe2-main/tools/company-growth-marketing-decision.mjs --file="$file" --output="$file" | tee -a /tmp/vibe2-marketing-decision.log
+              node /tmp/vibe2-main/tools/company-growth-marketing-qa.mjs --file="$file" --game-id="$game_id"
+            done < <(find /tmp/vibe2-main/company-learning/marketing -mindepth 2 -maxdepth 2 -name latest.json -type f 2>/dev/null | sort)
 
             node /tmp/vibe2-main/tools/company-recovery-escalation.mjs \
               --queue=.vibe2/queue.json \
