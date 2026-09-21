@@ -172,7 +172,7 @@ function platformLinks(game){
 function internalReleaseLinks(game){
   const links=platformLinks(game);
   const exposure=exposureOf(gameIdOf(game));
-  if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return links;
+  if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return {roblox:'',unity:'',fortnite:''};
   const ready=new Set(exposure.platforms.filter(p=>p?.internalReleaseReady===true).map(p=>normalizePlatform(p?.platform)));
   return {
     roblox:ready.has('ROBLOX')?links.roblox:'',
