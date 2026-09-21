@@ -1440,7 +1440,8 @@
       "coding_1j7i2ib",
       "coding_12kgvg8",
       "coding_6gu1dt",
-      "coding_1xw688i"
+      "coding_1xw688i",
+      "coding_rv2xre"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3264,9 +3265,9 @@
         "lastUpdatedAt": "2026-09-21T02:30:16.576Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 94,
+        "verifiedApplications": 95,
         "firstCandidatePasses": 18,
-        "totalGenerationAttempts": 185,
+        "totalGenerationAttempts": 187,
         "verifiedFailures": 320,
         "games": {
           "territory-war": 11,
@@ -3282,10 +3283,10 @@
           "monster-adventure": 1,
           "daechung-rpg": 35,
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
-          "fantasy-survival": 13
+          "fantasy-survival": 14
         },
         "targets": {
-          "web": 85,
+          "web": 86,
           "unity": 9
         },
         "contextModes": {
@@ -3320,14 +3321,14 @@
             "lastUpdatedAt": "2026-09-21T02:15:19.136Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 23,
+            "verifiedApplications": 24,
             "verifiedFailures": 12,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 48,
-            "totalContextBytes": 608436,
-            "lastEvidence": "coding_zzl95c",
+            "totalGenerationAttempts": 50,
+            "totalContextBytes": 651874,
+            "lastEvidence": "coding_rv2xre",
             "lastFailureEvidence": "coding_negative_z9t9na",
-            "lastUpdatedAt": "2026-09-21T02:16:20.047Z"
+            "lastUpdatedAt": "2026-09-21T02:38:06.414Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -4288,22 +4289,22 @@
             "lastUpdatedAt": "2026-09-20T17:51:41.818Z"
           },
           "web|TIMEOUT|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|STORYTELLING|UI_STATE|WEB_RUNTIME": {
-            "verifiedApplications": 12,
+            "verifiedApplications": 13,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 24,
+            "totalGenerationAttempts": 26,
             "verifiedFailures": 0,
             "games": {
-              "fantasy-survival": 12
+              "fantasy-survival": 13
             },
             "targets": {
-              "web": 12
+              "web": 13
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_60udmj",
+            "lastEvidence": "coding_rv2xre",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-21T01:43:30.093Z"
+            "lastUpdatedAt": "2026-09-21T02:38:06.414Z"
           },
           "web|INVALID_PATH|MALFORMED_OUTPUT|TIMEOUT": {
             "verifiedApplications": 0,
@@ -4348,9 +4349,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_zzl95c",
+        "lastEvidence": "coding_rv2xre",
         "lastFailureEvidence": "coding_negative_l7jec6",
-        "lastUpdatedAt": "2026-09-21T02:30:16.576Z"
+        "lastUpdatedAt": "2026-09-21T02:38:06.415Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 451,
@@ -7906,7 +7907,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-21T02:37:19.083Z",
+    "lastBuiltAt": "2026-09-21T02:38:06.459Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10664,5 +10665,5 @@
       "knowledge_1axre5g"
     ]
   },
-  "updatedAt": "2026-09-21T02:37:19.083Z"
+  "updatedAt": "2026-09-21T02:38:06.459Z"
 }
