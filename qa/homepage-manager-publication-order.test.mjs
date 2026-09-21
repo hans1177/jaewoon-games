@@ -297,36 +297,22 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   assert.match(index,/function openChatGpt\(\)/);
 });
 
-test('game cards keep Web fixed and expose all concurrent platform tracks',()=>{
+test('game cards expose exactly the Roblox and Unity app tracks',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
-  assert.match(runtime,/Web 플레이/);
-  assert.match(runtime,/button\(links\.roblox,'Roblox','Roblox 개발중'/);
-  assert.match(runtime,/button\(links\.unity,'Unity','Unity 개발중'/);
-  assert.match(runtime,/button\(links\.fortnite,'Fortnite','Fortnite 개발중'/);
+  assert.match(runtime,/robloxAction/);
+  assert.match(runtime,/unityAction/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
-  assert.match(runtime,/links\.uefn/);
-  assert.match(index,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(runtime,/Web 플레이|button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
-
-test('game cards keep Web fixed and expose concurrent platform slots',()=>{
+test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const index=fs.readFileSync('index.html','utf8');
-  assert.match(runtime,/function platformLinks\(game\)/);
-  assert.match(runtime,/button\(web,'Web 플레이','Web 준비중'/);
-  assert.match(runtime,/button\(links\.roblox,'Roblox','Roblox 개발중'/);
-  assert.match(runtime,/button\(links\.unity,'Unity','Unity 개발중'/);
-  assert.match(runtime,/button\(links\.fortnite,'Fortnite','Fortnite 개발중'/);
-  assert.match(runtime,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(index,/foldGameActions\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
-});
-
-test('verified test builds do not become platform-available without explicit internal release evidence',()=>{
-  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(runtime,/if\(!exposure\|\|!Array\.isArray\(exposure\.platforms\)\|\|!exposure\.platforms\.length\)return \{roblox:'',unity:'',fortnite:''\};/);
-  assert.match(runtime,/internalReleaseReady===true/);
-  assert.match(runtime,/function latestVerifiedUnityBuilds\(status\)/);
+  assert.match(runtime,/internalReleaseReady===true\|\|roblox\.publicRelease===true/);
+  assert.match(runtime,/internalReleaseReady===true\|\|unity\.publicRelease===true/);
+  assert.match(runtime,/exposureAuthority/);
+  assert.match(runtime,/supportedPlatforms/);
+  assert.doesNotMatch(runtime,/fortniteAction|Web 플레이/);
 });
