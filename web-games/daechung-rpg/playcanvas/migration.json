@@ -6,8 +6,8 @@
   "strategy": "PARALLEL_MIGRATION_THEN_CUTOVER",
   "legacyEntry": "../index.html",
   "previewEntry": "./index.html",
-  "phase": 3,
-  "phaseName": "NPC_QUEST_SHOPS_EQUIPMENT",
+  "phase": 4,
+  "phaseName": "AI_PARTY_CONTRIBUTION_HUNT",
   "preserveSystems": [
     "quests",
     "shops",
@@ -46,6 +46,14 @@
     "inventory equipment UI",
     "equipment visual state",
     "walk motion",
-    "attack motion"
+    "attack motion",
+    "10 AI users",
+    "AI role distribution",
+    "double-click party invite/remove",
+    "party hunting 15-kill goal",
+    "AI healer behavior",
+    "AI warrior and archer combat",
+    "contribution-based party rewards",
+    "AI basic weapon purchase"
   ]
 }
