@@ -15,6 +15,7 @@ import {
   selectRepresentativeCanary,
   selectTargetPlatformDevelopmentWindow,
   targetPlatformDevelopmentEligible,
+  firstWebGatePlatformDevelopmentEligible,
   verifiedOwnerReleaseHandoffEligible,
   ownerFocusedSecondaryPlatformEligible,
   canonicalTargetStep,
@@ -108,6 +109,18 @@ test('global development window never expands beyond the owner twenty-game maxim
     webStrictScore:100,strictImplementationHardFailures:[],webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,webPromotionRevalidationPassed:true,
   }));
   assert.equal(selectTargetPlatformDevelopmentWindow(rows,999).length,20);
+});
+
+test('owner first Web gate admits platform development while second Web gate remains pending',()=>{
+  const item={
+    gameId:'fantasy-survival',selectedPlatform:'UNITY',targetPlatform:'UNITY',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    webFirstGatePassed:true,webSecondGateRequired:true,webSecondGateCriteriaAuthority:'OWNER_DIRECTIVE',
+    webValidationPassedAt:null,musicValidationPassed:false,formalImplementationPassed:false,formalImplementationVerdict:'REVISE',
+  };
+  assert.equal(firstWebGatePlatformDevelopmentEligible(item),true);
+  assert.equal(targetPlatformDevelopmentEligible(item),true);
+  assert.equal(targetPlatformDevelopmentEligible({...item,webFirstGatePassed:false}),false);
 });
 
 test('stale Web schema evidence cannot enter selected-platform development',()=>{
