@@ -12115,6 +12115,15 @@
         "centralPolicyWriteForbidden": true,
         "preApplyScopeValidationRequired": true,
         "rawExternalOutputStored": false
+      },
+      "staleReservationRecovery": {
+        "implemented": true,
+        "leaseMinutes": 30,
+        "missingReservationIdIsImmediatelyStale": true,
+        "expiredRunningTaskAction": "REQUEUE_WITHOUT_RETRY_OR_LEARNING_PENALTY",
+        "retryBudgetConsumed": false,
+        "learningPenalty": false,
+        "executor": "tools/company-system-ai-queue.mjs::reclaimStaleSystemAiReservations"
       }
     }
   },
