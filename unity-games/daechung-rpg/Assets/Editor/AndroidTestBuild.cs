@@ -70,6 +70,47 @@ namespace JaewoonGames.DaechungRpg.Editor
             }
         }
 
+        public static void BuildWeb()
+        {
+            EnsureTestScene();
+
+            if (!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL))
+            {
+                throw BuildError("WEBGL_TARGET_SWITCH_FAILED", "Failed to switch active build target to WebGL.");
+            }
+
+            PlayerSettings.companyName = "Jaewoon Games";
+            PlayerSettings.productName = "Daechung RPG Web";
+
+            var repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", ".."));
+            var outputDirectory = Path.Combine(repoRoot, "build", "WebGL", "daechung-rpg");
+            Directory.CreateDirectory(outputDirectory);
+
+            var options = new BuildPlayerOptions
+            {
+                scenes = new[] { ScenePath },
+                locationPathName = outputDirectory,
+                target = BuildTarget.WebGL,
+                options = BuildOptions.Development
+            };
+
+            Debug.Log($"[JAEWOON BUILD] Building Unity Web: {outputDirectory}");
+            var report = BuildPipeline.BuildPlayer(options);
+            var summary = report.summary;
+            Debug.Log($"[JAEWOON BUILD] web result={summary.result} size={summary.totalSize} warnings={summary.totalWarnings} errors={summary.totalErrors}");
+
+            if (summary.result != BuildResult.Succeeded)
+            {
+                throw BuildError("WEBGL_BUILD_FAILED", $"Unity BuildPipeline returned {summary.result}; errors={summary.totalErrors}, warnings={summary.totalWarnings}.");
+            }
+
+            var indexPath = Path.Combine(outputDirectory, "index.html");
+            if (!File.Exists(indexPath) || new FileInfo(indexPath).Length <= 0)
+            {
+                throw BuildError("WEBGL_OUTPUT_MISSING", $"Build reported success but WebGL index is missing or empty: {indexPath}");
+            }
+        }
+
         private static int ResolveRunNumber()
         {
             var raw = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
