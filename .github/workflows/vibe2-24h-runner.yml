@@ -44,6 +44,8 @@ on:
       - 'tools/company-recovery-escalation.mjs'
       - 'tools/company-tester-debug-intake.mjs'
       - 'tools/company-platform-suitability.mjs'
+      - 'tools/company-platform-exposure-control.mjs'
+      - 'qa/company-platform-exposure-control.test.mjs'
       - 'qa/company-platform-suitability.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
       - 'tools/company-recovery-dispatch.mjs'
@@ -234,6 +236,7 @@ jobs:
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --queue=.vibe2/queue.json \
               --recombination=/tmp/vibe2-recombination-memory.json \
+              --exposure=.vibe2/platform-exposure-state.json \
               --root=/tmp/vibe2-main | tee /tmp/vibe2-post-release-focus.log
 
             node /tmp/vibe2-main/tools/vibe2-authorized-source-memory.mjs \
@@ -277,6 +280,8 @@ jobs:
 
             test -f .vibe2/recovery-queue.json || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > .vibe2/recovery-queue.json
             test -f .vibe2/tester-debug-tickets.json || printf '%s\n' '{"version":1,"kind":"tester-debug-tickets","policy":"UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE","tickets":[]}' > .vibe2/tester-debug-tickets.json
+            test -f .vibe2/platform-exposure-state.json || printf '%s\n' '{"version":1,"kind":"platform-exposure-state","games":[]}' > .vibe2/platform-exposure-state.json
+            test -f .vibe2/homepage-platform-exposure.json || printf '%s\n' '{"version":1,"publicSafe":true,"internalCompanySurface":true,"games":[]}' > .vibe2/homepage-platform-exposure.json
             test -f .vibe2/system-ai-queue.json || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > .vibe2/system-ai-queue.json
             test -f .vibe2/security-incidents.json || printf '%s\n' '{"version":1,"kind":"company-security-incidents","policy":"QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL","incidents":[]}' > .vibe2/security-incidents.json
 
@@ -405,6 +410,19 @@ jobs:
               --root=/tmp/vibe2-main \
               --output="$control_root/.vibe2/platform-suitability.json" | tee /tmp/vibe2-platform-suitability.log
 
+            node --check /tmp/vibe2-main/tools/company-platform-exposure-control.mjs
+            (
+              cd /tmp/vibe2-main
+              node --test qa/company-platform-exposure-control.test.mjs
+            )
+            node /tmp/vibe2-main/tools/company-platform-exposure-control.mjs \
+              --development-queue=/tmp/vibe2-company-runtime-queue.json \
+              --tickets="$control_root/.vibe2/tester-debug-tickets.json" \
+              --suitability="$control_root/.vibe2/platform-suitability.json" \
+              --queue="$control_root/.vibe2/queue.json" \
+              --output="$control_root/.vibe2/platform-exposure-state.json" \
+              --homepage-output="$control_root/.vibe2/homepage-platform-exposure.json" | tee /tmp/vibe2-platform-exposure.log
+
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import { createVibeContinuousQueue } from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js';
@@ -436,7 +454,7 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json .vibe2/tester-debug-tickets.json .vibe2/platform-suitability.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json .vibe2/tester-debug-tickets.json .vibe2/platform-suitability.json .vibe2/platform-exposure-state.json .vibe2/homepage-platform-exposure.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
