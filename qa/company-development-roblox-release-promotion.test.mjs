@@ -68,7 +68,7 @@ test('development final release evidence fails closed on final review, peer or a
   assert.equal(assembleRobloxDevelopmentReleaseEvidence(artifactMismatch).exactRevision,false);
 });
 
-test('release workflow publishes only retained exact artifact, uses the owner-pinned test target only as a fail-closed fallback, and keeps transient Roblox busy recovery manual',()=>{
+test('internal release workflow publishes only retained exact artifact to restricted intent and never claims public release',()=>{
   assert.match(workflow,/robloxFinalReviewPassed===true/);
   assert.match(workflow,/ROBLOX_RELEASE_PROMOTION_PENDING/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
@@ -116,9 +116,19 @@ test('release workflow publishes only retained exact artifact, uses the owner-pi
   assert.match(workflow,/BUSY_MANUAL_RETRY_REQUIRED/);
   assert.match(workflow,/deferred=true/);
   assert.match(workflow,/steps\.publish\.outputs\.deferred != 'true'/);
-  assert.match(workflow,/ROBLOX_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY/);
-  assert.match(workflow,/item\.robloxReleaseClaim=true/);
+  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY/);
+  assert.match(workflow,/item\.robloxInternalReleaseReady=true/);
+  assert.match(workflow,/item\.robloxReleaseClaim=false/);
+  assert.match(workflow,/item\.robloxPublicRelease=false/);
+  assert.match(workflow,/visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'/);
+  assert.match(workflow,/publicDiscoveryAllowed:false/);
+  assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+  assert.match(workflow,/item\.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+  assert.match(workflow,/ROBLOX_PUBLIC_RELEASE=NO/);
+  assert.doesNotMatch(workflow,/item\.currentStep='POST_RELEASE_FOCUSED_DEVELOPMENT'/);
   assert.match(workflow,/steps\.publish\.outcome == 'success'/);
+  assert.match(workflow,/company-homepage-platform-exposure-sync\.mjs/);
+  assert.match(workflow,/homepage-platform-exposure\.json/);
   assert.match(workflow,/ROBLOX_RUNTIME_RERUN=NO/);
   assert.match(workflow,/ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
   assert.match(workflow,/ROBLOX_REGRESSION_RERUN=NO/);
