@@ -491,6 +491,8 @@ jobs:
               ...(preverified?['model-call-skipped:deterministic-verifier-already-satisfied']:[]),
               ...(currentMainSatisfied?['no-candidate-required:current-main-already-satisfies-task']:[]),
               ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
+              clean(worker.model)&&`external-ai-model:${clean(worker.model)}`,
+              clean(worker.rawModelOutputSha256)&&`external-ai-raw-output-sha256:${clean(worker.rawModelOutputSha256)}`,
               ...(worker.learningKnowledgeIds||[]).map(x=>`learning-knowledge-id:${x}`),
               ...(candidateOk&&mutationRequired&&process.env.CANDIDATE_SHA?[`source-mutation-sha:${process.env.CANDIDATE_SHA}`]:[]),
               ...(mutationRequired?['source-mutation-required:YES']:[]),
