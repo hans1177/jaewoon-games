@@ -322,8 +322,11 @@ async function refresh(){
   try{
     const [catalog,status,testManifest,portfolio,exposure]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/test-game-candidates.json'),getJson('/homepage-portfolio-status.json'),getJson('/homepage-platform-exposure.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
+    const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
+    const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
+    if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
-    platformExposure=exposure&&Array.isArray(exposure.games)?exposure:{games:[]};
+    platformExposure=exposure;
     const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure]);
     if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildGameCenter(catalog,status);buildRecentUpdates(catalog);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
