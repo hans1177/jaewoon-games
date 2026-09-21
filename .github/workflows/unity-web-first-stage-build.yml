@@ -47,7 +47,11 @@ jobs:
           set -euo pipefail
           request_file='${{ inputs.request_file }}'
           if [[ -z "$request_file" ]]; then
-            mapfile -t changed < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json
+            mapfile -t changed < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json$' || true)
+            [[ "${#changed[@]}" -eq 1 ]] || { echo "expected exactly one Unity Web request in push, found ${#changed[@]}" >&2; exit 2; }
+            request_file="${changed[0]}"
+          fi
+          python3 - "$request_file" "$GITHUB_OUTPUT" <<'PY'
           import json, pathlib, re, sys
           request_file, output = sys.argv[1], sys.argv[2]
           if not re.fullmatch(r'\.build-requests/unity-web/[A-Za-z0-9._-]+\.json', request_file):
