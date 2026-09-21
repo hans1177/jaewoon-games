@@ -1,36 +1,88 @@
-# 플랫폼 출시 로드맵
+# 플랫폼 출시 로드맵 / 1차 Web 동기화 아키텍처
 
-> 정책 원본은 `COMPANY_FLOW.md`다. 이 문서는 실행 이해용 미러이며 새 정책을 만들지 않는다.
+> 기계 정책 원본은 `company-learning/platform-release-roadmap.json`이다. 이 문서는 실행 이해용 미러이며 새 정책을 만들지 않는다.
 
-## 현재 기본 우선순위
+## 1차 Web 단계
 
-1. Roblox
-2. Unity
-3. Fortnite UEFN
+앞으로 모든 게임의 1차 Web 제작/검증 엔진은 **Unity Web**이다.
 
-이 순서는 기본 집중/경험 축적 우선순위다. 다른 플랫폼 개발을 잠그는 단계 게이트가 아니다.
+```text
+설계 PASS
+→ unity-games/<game-id>/ Unity 프로젝트
+→ Unity Web 자동 빌드
+→ web-games/<game-id>/
+→ 모바일/PC 브라우저 실제 플레이 검증
+→ Unity Web 관문 PASS
+```
 
-## 개발 동시성
+여기까지만 이번 전환 범위다.
 
-- `DEVELOPMENT_CONFIRMED`의 실제 선택 플랫폼 게임 구현은 전체 실행기 합산 **동시 6게임**을 목표/최대로 사용한다.
-- 이 6게임 WIP는 Web 검증 병렬 수와 별도다. Web 검증 병렬 정책은 이번 변경에서 건드리지 않는다.
-- 공통 장애가 감지되어 대표 canary가 필요하거나 실제 런타임 runner가 부족한 경우 해당 검증 단계는 일시적으로 직렬/축소될 수 있다. 품질·근거 게이트는 낮추지 않는다.
+## 이후 플로우
 
-## 현재 집중 상태
+Unity Web 관문 이후 기존 플랫폼 플로우는 변경하지 않는다.
 
-- 기본 집중: `ROBLOX_FAST_RELEASE_STABILIZATION`
-- Roblox 원본: `roblox-games/`
-- Roblox 실행 어댑터: `tools/vibe3-roblox-platform.mjs`
-- 기본 게시 모드: Dry Run
-- 실제 게시: 명시적 실행 + Open Cloud 인증 + 런타임/독립 QA/회귀/정확 리비전 근거 필요
+```text
+Unity Web PASS
+→ 선택 플랫폼 후속 개발
+→ 런타임
+→ 독립 QA
+→ 회귀검증
+→ 내부 배포
+→ 공개 배포
+→ 사후검증
+```
 
-## 기존 경로 보존
+- Unity 대상: 같은 `unity-games/<game-id>/` 프로젝트를 Android APK/AAB로 계속 빌드한다.
+- Roblox 대상: 기존 `roblox-games/` 구현/검증 플로우를 유지한다.
+- Fortnite UEFN 대상: 기존 UEFN 구현/검증 플로우를 유지한다.
+- Unity Web 성공 근거는 Roblox/UEFN native 성공 근거를 대체하지 않는다.
 
-- 기존 Unity 개발은 계속 허용한다.
-- Roblox 우선순위가 기존 Unity 프로젝트를 삭제하거나 교체하지 않는다.
-- 기존 Web 공개판은 검증/보존 목적의 경로로 유지할 수 있다.
-- 플랫폼별 성공 근거는 다른 플랫폼 성공으로 자동 이전하지 않는다.
+## 원본/빌드 동기화
 
-## 학습 체인
+- Canonical Source: `unity-games/<game-id>/`
+- Web Build Output: `web-games/<game-id>/`
+- 홈페이지 Web Play: `/web-games/<game-id>/`
+- `web-games/`에서 신규 HTML/JS/Canvas 게임을 직접 만드는 방식은 기본 경로가 아니다.
+- 기존 Web 구현은 Unity Web 전환이 검증될 때까지 참고/비교/비상 폴백으로 보존한다.
 
-Roblox/Unity/UEFN 모두 기존 V3/Vibe2 학습·검증 체인을 재사용한다. 플랫폼별 별도 증류 cron, shadow dataset, 별도 trainer를 만들지 않는다.
+## Vibe Maker 동기화
+
+Vibe의 1차 게임 제작/학습 기본 스택도 Unity 중심으로 맞춘다.
+
+- C# / Scene / Prefab / MonoBehaviour / ScriptableObject
+- Animator / Material / Particle System
+- Unity UI / Input System / Touch
+- Physics / AI / Audio / Lighting / Camera
+- 실제 에셋과 라이선스 추적
+- Unity Web 빌드/브라우저 QA/모바일 성능 최적화
+
+학습 성공 근거는 실제 Unity Web 실행 + QA 근거를 사용한다. 기존 canonical distillation/RAG/trajectory 체인은 그대로 재사용한다.
+
+## Unity Web 관문
+
+최소 조건:
+
+```text
+Boot PASS
++ Input PASS
++ Gameplay PASS
++ Core Fun PASS
++ Mobile PASS
++ Performance PASS
++ No Critical Runtime Error
+```
+
+실패 상태는 `REPAIR_REQUIRED`이며 재시도 횟수 제한은 두지 않는다.
+
+## 대충 RPG
+
+- 원본: `unity-games/daechung-rpg/`
+- 공개 1차 Web 테스트 빌드: `web-games/daechung-rpg/`
+- 기존 PlayCanvas/Web 구현: 참고/비교/비상 폴백
+- Unity Web PASS 후 같은 Unity 프로젝트에서 Android 빌드로 이어간다.
+
+## 범위 잠금
+
+이번 변경은 **1차 Web 게임 제작/검증 방식만 Unity Web으로 전환**한다.
+
+Roblox, Unity Android, Fortnite UEFN의 후속 개발/런타임/QA/릴리스 구조를 Unity Web으로 교체하지 않는다.
