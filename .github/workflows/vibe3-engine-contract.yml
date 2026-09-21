@@ -50,7 +50,7 @@ jobs:
           if(uw?.enabled!==false||uw?.scope!=='DISABLED'||uw?.status!=='DISABLED_BY_OWNER_DIRECTIVE'||uw?.developmentAdmissionAuthority!==false) throw new Error('Unity Web must remain disabled');
           if(c.portableWebLearning?.enabled!==false||c.portableWebLearning?.sourceEngine!=='DISABLED') throw new Error('portable Web learning must remain disabled');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
-          console.log('PASS Vibe3 Pump machine contract with portable Web context and native Roblox isolation');
+          console.log('PASS Vibe3 Pump machine contract with direct Roblox Unity native pairing');
           NODE
 
       - name: Validate platform roadmap machine contract
@@ -99,8 +99,8 @@ jobs:
       - name: Run Roblox Phase 1 adapter tests
         run: node qa/vibe3-roblox-platform.test.mjs
 
-      - name: Run Unity Web first-stage contract tests
-        run: node --test qa/company-unity-web-first-stage.test.mjs
+      - name: Run direct native router tests
+        run: node --test qa/company-selected-platform-router.test.mjs
 
       - name: Check trainer syntax
         run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py
