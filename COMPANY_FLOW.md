@@ -150,6 +150,7 @@ ownerCurrentProductionContract:
     firstWebStageCanonicalSourceRoot: unity-games/<gameId>/
     firstWebStageBuildOutputRoot: web-games/<gameId>/
     postWebPlatformPipelineUnchanged: true
+    centralSyncDocument: company-learning/UNITY_WEB_FIRST_STAGE.md
   webToTargetPlatformContinuity:
     mode: UNITY_WEB_FIRST_STAGE_THEN_NATIVE_CONTINUATION
     webPhaseIsDisposablePrototype: false
@@ -2228,7 +2229,7 @@ platformPresentationAndWeather:
       joinInProgressReceivesCurrentWeatherState: true
       localPerformanceMayReduceDensityNotMeaning: true
     platformImplementation:
-      WEB: CANVAS_DOM_CSS_WEB_AUDIO_OR_EXISTING_RENDER_PIPELINE
+      WEB: UNITY_WEB_NATIVE_PARTICLES_FOG_LIGHTING_MATERIALS_AUDIO
       UNITY: UNITY_NATIVE_PARTICLES_FOG_LIGHTING_MATERIALS_AUDIO
       ROBLOX: ROBLOX_NATIVE_PARTICLEEMITTER_ATMOSPHERE_LIGHTING_COLORCORRECTION_SOUND
     mobilePerformance:
