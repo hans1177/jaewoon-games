@@ -341,7 +341,7 @@
     "minDistinctModelsPerDepartment": 1,
     "departmentReviewModelCount": 1,
     "minDistinctLeadModelsAcrossDepartments": 5,
-    "departmentLeadModelsMustBeDistinct": true,
+    "departmentLeadModelsMustBeDistinct": false,
     "departmentLeadAssignmentRemappable": true,
     "assistantModelsMayOverlapAcrossDepartments": true,
     "departmentRepresentativeAuthoredByLead": false,
@@ -358,7 +358,8 @@
       "graphics": "gemini-3.7-flash",
       "development": "gemini-3.6-flash",
       "qa": "gemini-3.5-flash",
-      "balance": "gemini-3.5-flash-lite"
+      "balance": "gemini-3.5-flash-lite",
+      "audio": "gemini-3.7-flash"
     },
     "gameDesigner": {
       "authorsInitialDetailedDesign": true,
@@ -402,7 +403,8 @@
       "graphics",
       "development",
       "qa",
-      "balance"
+      "balance",
+      "audio"
     ],
     "departmentModeByClass": {
       "DESIGN_ONLY": "DETERMINISTIC_EVIDENCE_NO_AI_VERDICT",
@@ -472,12 +474,33 @@
     "ollamaProviderAllowed": true,
     "localModelFallbackAllowed": true,
     "nonVibeDevelopmentAssistant": {
-      "role": "TEACH_REVIEW_DIAGNOSE_UNBLOCK_VALIDATE",
+      "role": "ASSIGNED_FULL_PROCESS_COLLABORATOR",
       "gameDevelopmentOwner": false,
-      "mayWriteGameSource": false,
-      "mayCreateGameplayFeatureCommits": false,
+      "mayWriteGameSource": true,
+      "mayCreateGameplayFeatureCommits": true,
       "mayModifyOrchestrationCiContractsWhenNeeded": true,
-      "ownerExplicitInstructionRequiredForAnyException": true
+      "ownerExplicitInstructionRequiredForAnyException": false,
+      "gameSourceWriteMode": "EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY",
+      "gameplayFeatureCommitMode": "CANDIDATE_BRANCH_ONLY_NO_DIRECT_MAIN",
+      "workerSelfAcceptance": false
+    },
+    "audioDepartment": {
+      "enabled": true,
+      "role": "MUSIC_SFX_AMBIENCE_AUDIO_FEEL_IMPLEMENTATION_AND_REVIEW",
+      "startsAtClass": "DEVELOPMENT_CONFIRMED",
+      "collaborationWith": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ],
+      "implementationFeedsVibeLearning": true,
+      "targetPlatforms": [
+        "WEB",
+        "UNITY",
+        "ROBLOX"
+      ],
+      "directGameplayBalanceMutationForbidden": true
     }
   },
   "classes": {
