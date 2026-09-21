@@ -130,6 +130,7 @@
     ],
     "supervisoryOverlay": [
       "PRIMARY_AI_OBSERVE_PORTFOLIO_AND_RUNTIME",
+      "PRIMARY_AI_COLLABORATES_WITH_ALL_REGISTERED_VIBE_INTERNAL_AI_ON_ESCALATED_CAUSAL_REPAIR_REVIEW_AND_SYNCHRONIZATION",
       "PRIMARY_AI_IDENTIFY_HIGHEST_IMPACT_BOTTLENECK",
       "PRIMARY_AI_DECOMPOSE_AND_ENQUEUE_SYSTEM_AI_ASSIGNMENTS",
       "FREE_EXTERNAL_AI_WORKERS_EXECUTE_DISJOINT_TASKS_IN_PARALLEL",
@@ -2370,5 +2371,29 @@
     "rawOutputBoundary": "SHA256_ONLY",
     "verifiedOnly": true,
     "advisoryOnly": true
+  },
+  "primaryAiInternalVibeCollaboration": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.primaryAiOrchestration.internalVibeAiCollaboration",
+    "coverage": "ALL_REGISTERED_VIBE_INTERNAL_AI_AND_AUTONOMOUS_SUBSYSTEMS",
+    "registrationSource": "company-learning/company-architecture-map.json#neuralWorkGraphTopology",
+    "mode": "NON_BLOCKING_COPILOT_OVERLAY",
+    "autonomyPreserved": true,
+    "deterministicQaAuthorityPreserved": true,
+    "workerAuthorityExpansionForbidden": true,
+    "centralPolicyMutationNotGranted": true,
+    "collaborationRoutes": {
+      "repeatedFailure": "RECOVERY_QUEUE_AND_PRIMARY_AI_CAUSAL_REVIEW",
+      "sharedBottleneck": "PRIMARY_AI_DEDUPLICATION_PLUS_REPRESENTATIVE_CANARY",
+      "crossSystemAmbiguity": "PRIMARY_AI_CROSS_SYSTEM_CAUSAL_SYNTHESIS",
+      "securityBoundary": "SECURITY_IMMUNE_SYSTEM_PLUS_PRIMARY_AI_REVIEW",
+      "verifiedSuccess": "EXISTING_FAN_IN_AND_VERIFIED_LEARNING"
+    },
+    "requiredEvidencePrefixes": [
+      "primary-ai-collaboration:",
+      "primary-ai-collaboration-reason:",
+      "primary-ai-collaboration-task:"
+    ],
+    "runtimeRule": "PRIMARY_AI_ABSENCE_NEVER_BLOCKS_24H_INTERNAL_AI_EXECUTION"
   }
 }
