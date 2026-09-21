@@ -67,10 +67,126 @@ jobs:
           [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ARM64_RUNNER_REQUIRED] regression requires ARM64 host.' >&2; exit 6; }
           [[ "$(getconf PAGESIZE)" == "4096" ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ARM64_PAGE_SIZE] verified Redroid path requires 4K page size.' >&2; exit 6; }
           sudo apt-get update -y
-          sudo apt-get install -y adb aapt
+          sudo apt-get install -y adb aapt git make gcc "linux-headers-$(uname -r)"
           sudo apt-get install -y "linux-modules-extra-$(uname -r)" || true
           sudo systemctl start docker || sudo service docker start || true
           docker version >/tmp/jaewoon-regression-redroid-docker.txt 2>&1 || { cat /tmp/jaewoon-regression-redroid-docker.txt >&2; exit 7; }
+          # Kernel 6.17 hosted ARM64 runners need the verified ashmem follow-up
+          # on top of redroid-modules PR #21 for Android 16 to reach boot_completed.
+          redroid_modules_sha='86f0a99f00388122aa2fdfaddf5fd507c58aac66'
+          redroid_modules="$RUNNER_TEMP/jaewoon-redroid-modules"
+          rm -rf "$redroid_modules"
+          git init -q "$redroid_modules"
+          git -C "$redroid_modules" remote add origin https://github.com/remote-android/redroid-modules.git
+          git -C "$redroid_modules" fetch -q --depth=1 origin refs/pull/21/head
+          git -C "$redroid_modules" checkout -q --detach FETCH_HEAD
+          [[ "$(git -C "$redroid_modules" rev-parse HEAD)" == "$redroid_modules_sha" ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_REDROID_MODULE_SOURCE_MISMATCH] pinned redroid module source mismatch.' >&2; exit 9; }
+
+          python3 - "$redroid_modules/ashmem/ashmem.c" <<'PY'
+          import pathlib, sys
+          path=pathlib.Path(sys.argv[1])
+          text=path.read_text(encoding='utf-8')
+
+          def replace_once(old,new,label):
+              global text
+              if text.count(old)!=1:
+                  raise SystemExit(f'ashmem 6.17 patch anchor mismatch: {label}')
+              text=text.replace(old,new,1)
+
+          replace_once(
+              '#include <linux/shmem_fs.h>\n',
+              '#include <linux/shmem_fs.h>\n#include <linux/sched/mm.h>\n',
+              'sched-mm-include'
+          )
+          replace_once(
+              'static unsigned long\nashmem_vmfile_get_unmapped_area',
+              'static const struct file_operations *ashmem_vmfile_orig_fops;\n\nstatic unsigned long\nashmem_vmfile_get_unmapped_area',
+              'orig-fops'
+          )
+          replace_once(
+              '\treturn current->mm->get_unmapped_area(file, addr, len, pgoff, flags);',
+              '#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)\n\treturn mm_get_unmapped_area(current->mm, file, addr, len, pgoff,\n\t\t\t\t    flags);\n#else\n\treturn current->mm->get_unmapped_area(file, addr, len, pgoff, flags);\n#endif',
+              'get-unmapped-area'
+          )
+          replace_once(
+              '\t\t\tvmfile_fops = *vmfile->f_op;',
+              '\t\t\tashmem_vmfile_orig_fops = vmfile->f_op;\n\t\t\tvmfile_fops = *ashmem_vmfile_orig_fops;',
+              'vmfile-fops'
+          )
+          old='''\tget_file(asma->file);
+
+\t/*
+\t * XXX - Reworked to use shmem_zero_setup() instead of
+\t * shmem_set_file while we're in staging. -jstultz
+\t */
+\tif (vma->vm_flags & VM_SHARED) {
+\t\tret = shmem_zero_setup(vma);
+\t\tif (ret) {
+\t\t\tfput(asma->file);
+\t\t\tgoto out;
+\t\t}
+\t} else {
+\t\tvma_set_anonymous(vma);
+\t}
+
+\tif (vma->vm_file)
+\t\tfput(vma->vm_file);
+\tvma->vm_file = asma->file;
+'''
+          new='''\tif (vma->vm_flags & VM_SHARED) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
+\t\tconst struct file_operations *saved_fops = asma->file->f_op;
+
+\t\tget_file(asma->file);
+\t\tif (vma->vm_file)
+\t\t\tfput(vma->vm_file);
+\t\tvma->vm_file = asma->file;
+
+\t\t/*
+\t\t * Use the original shmem mmap hook for the initial ashmem-backed
+\t\t * mapping, then restore the guarded fops to block later remaps of
+\t\t * the backing file that would bypass ashmem permission checks.
+\t\t */
+\t\tasma->file->f_op = ashmem_vmfile_orig_fops;
+\t\tret = vfs_mmap(vma->vm_file, vma);
+\t\tasma->file->f_op = saved_fops;
+\t\tif (ret)
+\t\t\tgoto out;
+#else
+\t\tget_file(asma->file);
+
+\t\t/*
+\t\t * XXX - Reworked to use shmem_zero_setup() instead of
+\t\t * shmem_set_file while we're in staging. -jstultz
+\t\t */
+\t\tret = shmem_zero_setup(vma);
+\t\tif (ret) {
+\t\t\tfput(asma->file);
+\t\t\tgoto out;
+\t\t}
+
+\t\tif (vma->vm_file)
+\t\t\tfput(vma->vm_file);
+\t\tvma->vm_file = asma->file;
+#endif
+\t} else {
+\t\tget_file(asma->file);
+\t\tvma_set_anonymous(vma);
+\t\tif (vma->vm_file)
+\t\t\tfput(vma->vm_file);
+\t\tvma->vm_file = asma->file;
+\t}
+'''
+          replace_once(old,new,'shared-mmap')
+          path.write_text(text,encoding='utf-8')
+          PY
+
+          make -C "$redroid_modules/ashmem" >"/tmp/jaewoon-regression-redroid-ashmem-build.log" 2>&1 || { cat "/tmp/jaewoon-regression-redroid-ashmem-build.log" >&2; echo '[JAEWOON_BUILD_ERROR:REGRESSION_ASHMEM_BUILD_FAILED] kernel 6.17 compatible ashmem build failed.' >&2; exit 9; }
+          sudo rmmod ashmem_linux >/dev/null 2>&1 || true
+          sudo insmod "$redroid_modules/ashmem/ashmem_linux.ko" || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ASHMEM_LOAD_FAILED] compatible ashmem module could not be loaded.' >&2; exit 9; }
+          grep -Eq '^[[:space:]]*[0-9]+[[:space:]]+ashmem$' /proc/misc || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ASHMEM_DEVICE_MISSING] ashmem misc device missing after module load.' >&2; exit 9; }
+          echo 'UNITY_ANDROID_ASHMEM_6_17_COMPAT=READY'
+
           sudo modprobe binder_linux devices="binder,hwbinder,vndbinder" || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_BINDER_MODULE_UNAVAILABLE] binder_linux unavailable.' >&2; exit 8; }
           sudo mkdir -p /dev/binderfs
           if ! mountpoint -q /dev/binderfs; then sudo mount -t binder binder /dev/binderfs; fi
@@ -159,5 +275,6 @@ jobs:
             /tmp/jaewoon-regression-redroid-device.txt
             /tmp/jaewoon-regression-redroid-docker.txt
             /tmp/jaewoon-regression-redroid-adb-connect.txt
+            /tmp/jaewoon-regression-redroid-ashmem-build.log
           if-no-files-found: warn
           retention-days: 14
