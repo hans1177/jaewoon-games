@@ -346,8 +346,8 @@
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/daechung-rpg",
-      "currentStep": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
-      "canonicalState": "FAST_MVP_RUNTIME_QA",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -374,6 +374,7 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
+        "roblox-build-package-pending",
         "roblox-runtime-evidence-pending",
         "roblox-mobile-qa-pending",
         "roblox-multiplayer-qa-pending",
@@ -381,7 +382,7 @@
         "regression-evidence-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-22T02:46:00+09:00",
+      "updatedAt": "2026-09-22T02:55:00+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -513,7 +514,10 @@
       "releaseStrategy": "FAST_MVP",
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
-      "newFeatureExpansionFrozen": true
+      "newFeatureExpansionFrozen": true,
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING_FAST_MVP",
+      "fastLaunchPriority": true
     },
     {
       "gameId": "monster-adventure",
@@ -2382,8 +2386,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
-      "canonicalState": "FAST_MVP_RUNTIME_QA",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -2392,7 +2396,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T02:46:00+09:00",
+      "updatedAt": "2026-09-22T02:55:00+09:00",
       "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2400,6 +2404,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
+        "roblox-build-package-pending",
         "roblox-runtime-evidence-pending",
         "roblox-mobile-qa-pending",
         "roblox-multiplayer-qa-pending",
@@ -2447,8 +2452,8 @@
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING_FAST_MVP",
       "multiplayerSupported": true,
       "soloPlayable": true,
       "multiplayerMode": "COOP",
@@ -2483,7 +2488,8 @@
       "releaseStrategy": "FAST_MVP",
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
-      "newFeatureExpansionFrozen": true
+      "newFeatureExpansionFrozen": true,
+      "fastLaunchPriority": true
     },
     {
       "gameId": "territory-war",
@@ -2664,13 +2670,14 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
-      "canonicalState": "FAST_MVP_RUNTIME_QA",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
+        "roblox-build-package-pending",
         "roblox-runtime-evidence-pending",
         "roblox-mobile-qa-pending",
         "roblox-multiplayer-qa-pending",
@@ -2678,7 +2685,7 @@
         "regression-evidence-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T02:46:00+09:00",
+      "updatedAt": "2026-09-22T02:55:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
@@ -2687,7 +2694,10 @@
       "releaseStrategy": "FAST_MVP",
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
-      "newFeatureExpansionFrozen": true
+      "newFeatureExpansionFrozen": true,
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING_FAST_MVP",
+      "fastLaunchPriority": true
     }
   ],
   "updatedAt": "2026-09-22T01:22:00+09:00",
@@ -2741,6 +2751,7 @@
       "PRIVATE_RELEASE_CANDIDATE"
     ],
     "sourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
-    "updatedAt": "2026-09-22T02:46:00+09:00"
+    "updatedAt": "2026-09-22T02:55:00+09:00",
+    "standardPipelineCompatibility": "TARGET_PLATFORM_TECHNICAL_VALIDATION + TARGET_PLATFORM_REPAIR_REQUIRED"
   }
 }
