@@ -13,14 +13,12 @@ const policy = fs.readFileSync('COMPANY_FLOW.md', 'utf8');
 const expectedDesignOnlyFlow = [
   'GAME_SEED',
   'GAME_DESIGNER_DRAFT',
-  'FIVE_DISTINCT_DEPARTMENT_LEADS',
-  'DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW',
-  'DEPARTMENT_LEAD_INTERNAL_CONSENSUS',
-  'CROSS_DEPARTMENT_LEAD_MEETING',
-  'ONE_LEAD_REBUTTAL_ROUND',
-  'GAME_DESIGNER_REVISION',
-  'DESIGN_BASELINE_GATE',
-  'ARTBOOK_EDITOR_CORE_STRATEGY'
+  'DETERMINISTIC_PRE_GATE',
+  'FAILED_AXIS_DESIGNER_REPAIR_MAX_2',
+  'DETERMINISTIC_DEPARTMENT_EVIDENCE',
+  'DETERMINISTIC_REVALIDATION',
+  'STRICT_DESIGN_REVIEW',
+  'DESIGN_BASELINE_GATE'
 ];
 
 const expectedBaselineRequirements = [
@@ -29,16 +27,18 @@ const expectedBaselineRequirements = [
   'CORE_FUN_CLEAR',
   'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD',
   'MARKET_TARGET_DIRECTION_RECORDED',
-  'MOBILE_UX_DIRECTION_DEFINED',
-  'STEAM_EXPANSION_DECISION_RECORDED',
-  'MULTIPLAYER_EXPANSION_DECISION_RECORDED',
-  'FIVE_DISTINCT_LEAD_MODELS',
-  'PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS',
-  'NO_HIDDEN_FATAL_CONFLICT'
+  'TARGET_PLATFORM_UX_DIRECTION_DEFINED',
+  'PLATFORM_SELECTION_RECORDED',
+  'MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED',
+  'APPROVED_SCOPE_INVENTORY_RECORDED',
+  'DETERMINISTIC_DESIGN_PRE_GATE_PASS',
+  'DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED',
+  'STRICT_DESIGN_SCORE_AT_LEAST_80',
+  'STRICT_DESIGN_HARD_FAILURES_EMPTY'
 ];
 
 test('DESIGN_ONLY machine flow follows COMPANY_FLOW exactly at the stage level', () => {
-  assert.equal(directive.policyDocument, 'COMPANY_FLOW.md');
+  assert.equal(directive.policyDocument, 'company-learning/platform-release-roadmap.json');
   assert.deepEqual(directive.classes.DESIGN_ONLY.requiredFlow, expectedDesignOnlyFlow);
   assert.deepEqual(directive.classes.DESIGN_ONLY.baselineReadyRequires, expectedBaselineRequirements);
   assert.equal(directive.classes.DESIGN_ONLY.readyState, 'DESIGN_BASELINE_READY');
@@ -51,8 +51,8 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is inactive in DESIGN_ONLY', () 
   assert.equal(directive.ai.vibe2.startsAtClass, 'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive, false);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass, 'DESIGN_ONLY'), false);
-  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED, 'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
-  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED, 'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED, 'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED, 'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.match(policy, /Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
