@@ -181,16 +181,32 @@ const ZONES={
 
 let portals=[],enemies=[],returnPortal=null,npcs=[];
 function addTree(x,z,material=M.grass){
-  const trunk=primitive('TreeTrunk','cylinder',[x,1.4,z],[.7,2.8,.7],M.wood,zoneRoot);
-  primitive('TreeTop','sphere',[0,2.8,0],[3.2,3.2,3.2],material,trunk);
+  const trunk=primitive('TreeTrunk','cylinder',[x,1.55,z],[.62,3.1,.62],M.wood,zoneRoot);
+  trunk.setLocalEulerAngles(0,(x*17+z*11)%360,3);
+  primitive('TreeCrownLow','sphere',[0,2.15,0],[2.8,2.15,2.8],material,trunk);
+  primitive('TreeCrownMid','sphere',[-.7,3.15,.25],[2.15,1.75,2.15],material,trunk);
+  primitive('TreeCrownHigh','sphere',[.8,3.55,-.2],[1.75,1.45,1.75],material,trunk);
 }
 function addHouse(x,z){
   const h=new pc.Entity('House');zoneRoot.addChild(h);h.setLocalPosition(x,0,z);
-  primitive('Body','box',[0,2,0],[7,4,6],M.wood,h);primitive('Roof','box',[0,4.5,0],[8,1.2,7],M.roof,h);primitive('Door','box',[0,1,-3.05],[1.3,2.2,.18],M.stone,h);
+  primitive('StoneBase','box',[0,.55,0],[7.5,1.1,6.5],M.stone,h);
+  primitive('PlasterBody','box',[0,2.35,0],[7,3.6,6],M.wood,h);
+  const roofL=primitive('RoofL','box',[-1.75,4.55,0],[4.7,.55,7.2],M.roof,h);roofL.setLocalEulerAngles(0,0,28);
+  const roofR=primitive('RoofR','box',[1.75,4.55,0],[4.7,.55,7.2],M.roof,h);roofR.setLocalEulerAngles(0,0,-28);
+  primitive('Door','box',[0,1.2,-3.08],[1.35,2.35,.22],M.stone,h);
+  primitive('BeamTop','box',[0,3.5,-3.09],[6.3,.22,.18],M.stone,h);
+  primitive('BeamL','box',[-2.55,2.25,-3.1],[.2,2.35,.18],M.stone,h);
+  primitive('BeamR','box',[2.55,2.25,-3.1],[.2,2.35,.18],M.stone,h);
+  const w1=primitive('WindowL','box',[-1.85,2.35,-3.13],[1.15,1.05,.12],M.gold,h);
+  const w2=primitive('WindowR','box',[1.85,2.35,-3.13],[1.15,1.05,.12],M.gold,h);
+  w1.model.castShadows=false;w2.model.castShadows=false;
+  primitive('Chimney','box',[2.2,5.2,1.2],[.8,2.1,.8],M.stone,h);
 }
 function addPortal(x,z,id,material,label){
   const base=primitive('Portal-'+label,'cylinder',[x,.22,z],[2.2,.22,2.2],material,zoneRoot);
-  primitive('PortalGlow-'+label,'cylinder',[x,1.7,z],[1.35,3.2,1.35],material,zoneRoot);
+  const glow=primitive('PortalGlow-'+label,'cylinder',[x,1.7,z],[1.35,3.2,1.35],material,zoneRoot);
+  glow.model.castShadows=false;
+  const light=new pc.Entity('PortalLight-'+label);light.addComponent('light',{type:'point',color:material.diffuse||new pc.Color(.4,.65,1),intensity:.65,range:7,castShadows:false});light.setLocalPosition(x,2.1,z);zoneRoot.addChild(light);
   base.portalId=id;base.label=label;return base;
 }
 function addNpc(name,role,x,z,material){
@@ -218,6 +234,8 @@ function placeAiForZone(){
 function buildTown(){
   destroyChildren(zoneRoot);portals=[];enemies=[];returnPortal=null;npcs=[];
   primitive('Ground','box',[0,-.5,0],[72,1,72],M.grass,zoneRoot);
+  for(let z=-20;z<=20;z+=4)primitive('TownPath','box',[0,.03,z],[5.4,.08,3.3],M.stone,zoneRoot);
+  for(let x=-20;x<=20;x+=4)primitive('TownCrossPath','box',[x,.035,1.5],[3.3,.08,5.2],M.stone,zoneRoot);
   for(const [x,z] of [[-14,-12],[14,-12],[-14,12],[14,12],[-24,0],[24,0]])addHouse(x,z);
   for(let i=0;i<18;i++){const a=i/18*Math.PI*2,r=29+(i%3);addTree(Math.cos(a)*r,Math.sin(a)*r)}
   addNpc('촌장','chief',-4,7,M.chief);addNpc('무기상인','weapon',7,10,M.merchant);addNpc('방어구상인','armor',11,5,M.armor);addNpc('전사 전직관','trainer-warrior',-10,8,M.redwolf);
