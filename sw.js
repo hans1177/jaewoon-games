@@ -44,7 +44,8 @@ self.addEventListener('fetch',event=>{
   const url=new URL(request.url);if(url.origin!==self.location.origin)return;
   if(url.pathname==='/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
   if(NETWORK_ONLY.test(url.pathname+url.search)){event.respondWith(fetch(request,{cache:'no-store'}));return;}
-  if(url.pathname.startsWith('/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}\n  if(request.mode==='navigate'){
+  if(url.pathname.startsWith('/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}
+  if(request.mode==='navigate'){
     const isWebGame=url.pathname.startsWith('/web-games/');
     event.respondWith(fetch(request,isWebGame?{cache:'default'}:{cache:'no-store'}).catch(async()=>await caches.match(request)||await caches.match('/offline.html')||Response.error()));return;
   }
