@@ -469,7 +469,7 @@ function renderInfo(){
 }
 
 var trash=[],trashSeq=1;
-function addTrash(pathKey){
+var candidates=state.buildings.filter(function(b){return (d.kind==='ride'||d.kind==='food'||d.kind==='toilet')&&buildingConnected(b)&&getEntryKeys(b).length;});
   if(state.buildings.some(function(b){return b.type==="bin"&&buildingConnected(b);}))return;
   if(!pathKey||!paths[pathKey])return;
   var a=pathKey.split(",").map(Number),p=worldPos(a[0],a[1]),m=new THREE.Group();
