@@ -20,6 +20,8 @@ test('repeated failure is escalated into recovery queue',()=>{
   const row=result.queue.tasks[0];
   assert.equal(row.blastRadius,'portfolio:3');
   assert.equal(row.recoveryOwner,'SYSTEM_AI');
+  assert.ok(row.evidence.includes('primary-ai-collaboration:REQUESTED'));
+  assert.ok(row.evidence.some(x=>x.startsWith('primary-ai-collaboration-reason:')));
   assert.match(row.recoveryStrategy,/ASSIGN_SCOPED_IMPLEMENTATION_REPAIR/);
   assert.deepEqual(row.responsibleFiles,['web-games/g1/index.html']);
 });
@@ -45,6 +47,7 @@ test('repeated System-AI infrastructure failure creates one repair canary and ga
   assert.ok(repairTask);
   assert.equal(repairTask.status,'queued');
   assert.equal(repairTask.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.ok(repairTask.evidence.includes('primary-ai-collaboration:REQUESTED'));
   for(const id of ['sys-a','sys-b']){
     const task=dispatched.systemAi.tasks.find(x=>x.id===id);
     assert.equal(task.status,'queued');
