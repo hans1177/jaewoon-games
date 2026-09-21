@@ -95,15 +95,15 @@ test('DESIGN_ONLY flow and baseline mirror current central requirements',()=>{
   assert.match(flow,/STRICT_DESIGN_SCORE_AT_LEAST_80/);
 });
 
-test('development and release keep distinct leads while DESIGN_ONLY review is deterministic',()=>{
-  assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
+test('development and release preserve direct lead review without forcing distinct lead models',()=>{
+  assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,false);
   assert.equal(directive.ai.departmentLeadAssignmentRemappable,true);
   const leadModels=roles.map(role=>directive.ai.departmentLeadModels?.[role]);
-  assert.equal(new Set(leadModels).size,5);
   assert.ok(leadModels.every(model=>directive.ai.modelPool.includes(model)));
   assert.equal(directive.ai.minDistinctModelsPerDepartment,1);
+  assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,1);
   assert.equal(directive.ai.departmentReviewModelCount,1);
-  assert.match(flow,/fiveDistinctLeadModelIdsRequiredPerCycle: true/);
+  assert.equal(directive.ai.leadDistinctnessPolicy,'NOT_REQUIRED_FOR_EXECUTION');
   assert.match(flow,/designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT/);
   assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: false/);
   assert.match(cycle,/deterministic_department_evidence/);
@@ -124,13 +124,18 @@ test('DESIGN_ONLY uses deterministic evidence without AI meeting or rebuttal lay
   assert.doesNotMatch(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
 });
 
-test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary in RELEASE_CONFIRMED',()=>{
+test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned external AI collaborates under Vibe supervision',()=>{
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.implementationOwner,true);
   assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,true);
-  assert.equal(machinePolicy.developmentLifecycleMachine?.gameDevelopmentAuthority?.implementationOwner,'VIBE2_VIBE3');
+  const authority=machinePolicy.developmentLifecycleMachine?.gameDevelopmentAuthority||{};
+  assert.equal(authority.implementationOwner,'VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS');
+  assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
+  assert.equal(authority.nonVibeAiGameSourceWriteMode,'EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY');
+  assert.equal(authority.externalAiSelfAcceptance,false);
+  assert.equal(authority.externalAiDirectMainWrite,false);
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
