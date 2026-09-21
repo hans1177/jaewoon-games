@@ -53,24 +53,39 @@ async function resolveRootPlaceId(universeId,{fetchImpl=globalThis.fetch}={}){
 export async function createRobloxDedicatedExperience({
   templatePlaceId=DEFAULT_TEMPLATE_PLACE_ID,
   cookie=process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE,
+  apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
   fetchImpl=globalThis.fetch,
 }={}){
   const template=clean(templatePlaceId);
   if(!validId(template))throw new Error('template place id invalid');
   const endpoint='https://apis.roblox.com/universes/v1/universes/create';
+  const c=cookieHeader(cookie),key=clean(apiKey);
+  if(!c&&!key)throw new Error('Roblox experience create requires ROBLOX_ROBLOSECURITY or ROBLOX_OPEN_CLOUD_API_KEY');
   const tryBody=async body=>{
-    const response=await csrfFetch({
-      url:endpoint,method:'POST',cookie,fetchImpl,
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify(body),
-    });
+    let response;
+    if(c){
+      response=await csrfFetch({
+        url:endpoint,method:'POST',cookie,fetchImpl,
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify(body),
+      });
+    }else{
+      response=await fetchImpl(endpoint,{
+        method:'POST',
+        headers:{'content-type':'application/json','x-api-key':key},
+        body:JSON.stringify(body),
+      });
+    }
     return {response,...await parseResponse(response)};
   };
   let result=await tryBody({templatePlaceId:Number(template)});
   if(!result.response.ok&&result.response.status===400){
     result=await tryBody({templatePlaceIdToUse:Number(template)});
   }
-  if(!result.response.ok)throw new Error(`Roblox experience create failed HTTP ${result.response.status}: ${errText(result.payload)}`);
+  if(!result.response.ok){
+    const authHint=!c&&(result.response.status===401||result.response.status===403)?':OPEN_CLOUD_CREATE_NOT_AUTHORIZED':'';
+    throw new Error(`Roblox experience create failed HTTP ${result.response.status}${authHint}: ${errText(result.payload)}`);
+  }
   const ids=pickIds(result.payload||{});
   if(!validId(ids.universeId))throw new Error(`Roblox experience create response missing universe id: ${errText(result.payload)}`);
   const placeId=validId(ids.placeId)?ids.placeId:await resolveRootPlaceId(ids.universeId,{fetchImpl});
@@ -80,19 +95,36 @@ export async function createRobloxDedicatedExperience({
 export async function configureRobloxExperience({
   universeId,name,description='',
   cookie=process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE,
+  apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,
   fetchImpl=globalThis.fetch,
 }={}){
   if(!validId(universeId))throw new Error('universe id invalid');
   if(!clean(name))throw new Error('experience name required');
-  const endpoint=`https://develop.roblox.com/v2/universes/${universeId}/configuration`;
-  const response=await csrfFetch({
-    url:endpoint,method:'PATCH',cookie,fetchImpl,
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({name:clean(name),description:String(description||'')}),
-  });
+  const c=cookieHeader(cookie),key=clean(apiKey);
+  let response;
+  if(c){
+    const endpoint=`https://develop.roblox.com/v2/universes/${universeId}/configuration`;
+    response=await csrfFetch({
+      url:endpoint,method:'PATCH',cookie,fetchImpl,
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({name:clean(name),description:String(description||'')}),
+    });
+  }else{
+    if(!key)throw new Error('Roblox experience configure requires ROBLOX_ROBLOSECURITY or ROBLOX_OPEN_CLOUD_API_KEY');
+    const endpoint=`https://apis.roblox.com/cloud/v2/universes/${universeId}?updateMask=displayName,description,visibility`;
+    response=await fetchImpl(endpoint,{
+      method:'PATCH',
+      headers:{'content-type':'application/json','x-api-key':key},
+      body:JSON.stringify({
+        displayName:clean(name),
+        description:String(description||''),
+        visibility:'PRIVATE',
+      }),
+    });
+  }
   const {payload}=await parseResponse(response);
   if(!response.ok)throw new Error(`Roblox experience configure failed HTTP ${response.status}: ${errText(payload)}`);
-  return Object.freeze({configured:true});
+  return Object.freeze({configured:true,privateRequested:true});
 }
 
 export async function ensureRobloxExperiencePrivate({
