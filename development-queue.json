@@ -2372,7 +2372,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-21T15:48:25.054Z",
+      "updatedAt": "2026-09-22T01:05:00+09:00",
       "robloxSourceCommit": "957db34d959c4525db5e9e948cb076e7e2f1a034",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2380,7 +2380,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-preflight-pending"
+        "roblox-multiplayer-source-refresh-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -2424,7 +2424,12 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "multiplayerMode": "COOP",
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2
     },
     {
       "gameId": "territory-war",
@@ -2491,7 +2496,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-21T15:48:25.054Z",
+      "updatedAt": "2026-09-22T01:05:00+09:00",
       "robloxSourceCommit": "957db34d959c4525db5e9e948cb076e7e2f1a034",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2499,7 +2504,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-preflight-pending"
+        "roblox-multiplayer-source-refresh-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -2543,10 +2548,80 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "multiplayerMode": "COMPETITIVE",
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2
+    },
+    {
+      "gameId": "horror-escape-room",
+      "seedId": "OWNER-DIRECT-HORROR-ESCAPE-ROOM-20260922",
+      "gameName": "심야 방탈출",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "unityProjectPath": "unity-games/horror-escape-room",
+      "targetSourcePath": "roblox-games/horror-escape-room",
+      "sourcePath": "roblox-games/horror-escape-room",
+      "webSourcePath": null,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
+      "webPlatformHandoff": null,
+      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+      "designDate": "2026-09-22",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "multiplayerMode": "COOP",
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2,
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "routingBlockers": [
+        "roblox-source-refresh-pending"
+      ],
+      "enqueuedAt": "2026-09-22T01:05:00+09:00",
+      "updatedAt": "2026-09-22T01:05:00+09:00"
     }
   ],
-  "updatedAt": "2026-09-21T15:48:25.054Z",
+  "updatedAt": "2026-09-22T01:05:00+09:00",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",

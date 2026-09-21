@@ -1,6 +1,6 @@
 {
   "version": 29,
-  "updatedAt": "2026-09-21T15:45:01.809Z",
+  "updatedAt": "2026-09-22T01:05:00+09:00",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -2826,7 +2826,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox/Unity 앱 네이티브 개발 동시 착수",
+      "homepageRecentWork": "멀티 협동 + 병영 + 자동전투 개발 반영",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -2844,8 +2844,8 @@
         ],
         "genreLabel": "힐링 · 생활 · 낚시",
         "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
+        "playMode": "SINGLE_OR_MULTI",
+        "playModeLabel": "싱글 · 멀티",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-20",
         "status": "ACTIVE",
@@ -2960,7 +2960,13 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-21T15:45:01.809Z"
+      "updatedAt": "2026-09-22T01:05:00+09:00",
+      "playModes": [
+        "SINGLE",
+        "COOP"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true
     },
     {
       "id": "egg-heist",
@@ -3589,7 +3595,7 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox/Unity 앱 네이티브 개발 동시 착수",
+      "homepageRecentWork": "솔로 AI전 + PvP 영토전 개발 반영",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
@@ -3606,8 +3612,8 @@
         ],
         "genreLabel": "전략 · 영토",
         "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
+        "playMode": "SINGLE_OR_MULTI",
+        "playModeLabel": "싱글 · 멀티",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-20",
         "status": "ACTIVE",
@@ -3727,7 +3733,13 @@
         "UNITY": "unity-games/territory-war"
       },
       "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-21T15:45:01.809Z"
+      "updatedAt": "2026-09-22T01:05:00+09:00",
+      "playModes": [
+        "SINGLE",
+        "COMPETITIVE"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true
     },
     {
       "id": "zombie-survival",
@@ -3878,6 +3890,50 @@
       },
       "catalogOrder": 25,
       "selectedPlatform": "UNITY"
+    },
+    {
+      "id": "horror-escape-room",
+      "name": "심야 방탈출",
+      "description": "혼자 또는 친구와 퍼즐을 풀고 괴물을 피해 탈출하는 공포 방탈출",
+      "genre": [
+        "공포",
+        "방탈출",
+        "협동"
+      ],
+      "image": "assets/page-bg-v4.webp",
+      "webPath": null,
+      "hasWebArchive": false,
+      "featured": false,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "싱글 가능 · 2~4인 협동 공포 방탈출 개발 착수",
+      "selectedPlatform": "ROBLOX",
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "playModes": [
+        "SINGLE",
+        "COOP"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "ownerDirectDevelopment": true,
+      "catalogOrder": 26,
+      "updatedAt": "2026-09-22T01:05:00+09:00"
     }
   ],
   "runtimeAuthority": "company-runtime",

@@ -4421,7 +4421,7 @@
       "TARGET_AUDIENCE": "낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어",
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
-      "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
+      "INITIAL_PLAY_MODE": "SINGLE_OR_COOP",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
       "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
@@ -4455,9 +4455,9 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "COOP_WITH_SOLO",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
-      "MULTIPLAYER_QA_REQUIRED": false,
+      "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -4533,7 +4533,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-09-21T15:45:01.809Z",
+      "updatedAt": "2026-09-22T01:05:00+09:00",
       "promotion": {
         "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
@@ -7335,7 +7335,7 @@
       "TARGET_AUDIENCE": "짧은 전략 세션과 영토 확장 판단을 선호하는 플레이어",
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
-      "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
+      "INITIAL_PLAY_MODE": "SINGLE_OR_COMPETITIVE",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
@@ -7351,9 +7351,9 @@
         }
       ],
       "TARGET_SESSION_MINUTES": 30,
-      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "COMPETITIVE_WITH_SOLO_AI",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
-      "MULTIPLAYER_QA_REQUIRED": false,
+      "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -7429,7 +7429,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-09-21T15:45:01.809Z",
+      "updatedAt": "2026-09-22T01:05:00+09:00",
       "promotion": {
         "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
@@ -14453,6 +14453,67 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       }
+    },
+    {
+      "version": 3,
+      "seedId": "OWNER-DIRECT-HORROR-ESCAPE-ROOM-20260922",
+      "gameId": "horror-escape-room",
+      "gameName": "심야 방탈출",
+      "status": "ACTIVE",
+      "generation": "OWNER_DIRECT_DEVELOPMENT",
+      "GAME_CATEGORY": "PUZZLE",
+      "REFERENCE_GAMES": [],
+      "CORE_FUN_TO_LEARN": [
+        "cooperative escape-room communication",
+        "horror pursuit pressure",
+        "solo-compatible linked puzzles"
+      ],
+      "CORE_LOOP": [
+        "어두운 방을 탐색해 단서·열쇠·스위치를 찾는다.",
+        "괴물의 위협을 피하면서 현재 퍼즐 단계를 해결하고 다음 방을 연다.",
+        "붙잡힌 동료가 있으면 구조하고, 마지막 탈출 조건을 채워 출구로 빠져나간다."
+      ],
+      "DISTINCT_IDENTITY": "폐쇄된 심야 시설에서 단서와 열쇠를 찾고, 괴물을 피하면서 방의 연동 퍼즐을 풀어 탈출하는 공포 방탈출. 혼자 완주 가능하고 2~4인에서는 역할 분담과 구조가 강화된다.",
+      "TARGET_AUDIENCE": "공포·퍼즐·친구 협동을 좋아하는 Roblox 플레이어",
+      "TARGET_SESSION_DIRECTION": "한 판 안에 탐색-퍼즐-위협-탈출이 완결되며 1인과 2~4인 모두 막히지 않는다.",
+      "INITIAL_TARGET_PLATFORM": "ROBLOX",
+      "INITIAL_PLAY_MODE": "SINGLE_OR_COOP",
+      "MULTIPLAYER_DESIGN_MODE": "COOP_WITH_SOLO",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": true,
+      "MOBILE_FIRST": true,
+      "TRANSFORMATION_MODE": "NEW_ORIGINAL_IMPLEMENTATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "ownerDirectDevelopment": true,
+      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
+      "ownerDirectDevelopmentRequestedAt": "2026-09-22T01:05:00+09:00",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-09-22T01:05:00+09:00"
     }
   ],
   "seedMaterials": [
@@ -19558,7 +19619,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-09-21T15:45:01.878Z",
+  "updatedAt": "2026-09-22T01:05:00+09:00",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",

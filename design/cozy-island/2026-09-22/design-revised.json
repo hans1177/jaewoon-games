@@ -6,13 +6,13 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T00:45:00+09:00",
-  "updatedAt": "2026-09-22T00:45:00+09:00",
+  "updatedAt": "2026-09-22T01:05:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
   "content": {
-    "identity": "작은 섬에서 낚시, 채집, 생활 활동으로 자원을 모으고 섬을 눈에 보이게 성장시키는 모바일 우선 Roblox 생활 게임.",
-    "coreFun": "짧은 탐험에서 물고기와 재료를 얻고, 수집 결과를 섬 시설과 활동 해금에 투자해 다음 생활 루프를 넓히는 재미.",
+    "identity": "작은 섬에서 낚시, 채집, 생활 활동으로 자원을 모으고 섬을 눈에 보이게 성장시키는 모바일 우선 Roblox 생활 게임. 병영을 성장시키고 병사를 모집해 자동전투로 섬의 위협을 밀어내는 생활+자동전투 구조를 포함한다.",
+    "coreFun": "낚시·채집으로 생활 자원을 얻고 병영을 강화해 병사를 모집한 뒤, 솔로 또는 서버 동료와 합산된 전투력으로 자동전투를 진행해 섬을 확장하는 재미.",
     "coreLoop": [
       "섬을 이동하며 낚시터와 채집 지점을 고른다.",
       "낚시와 채집으로 물고기·나무·조개 등 생활 자원을 얻는다.",
@@ -30,6 +30,18 @@
       {
         "name": "생활 수집",
         "purpose": "채집 결과를 누적해 짧은 세션마다 명확한 성장 흔적을 남긴다."
+      },
+      {
+        "name": "병영",
+        "purpose": "나무와 코인을 투자해 병영 레벨을 올리고 병사 모집 한도와 전투 보너스를 높인다."
+      },
+      {
+        "name": "자동전투",
+        "purpose": "서버가 일정 주기로 현재 참가자의 병력과 병영 보너스를 합산해 적 웨이브와 자동전투를 처리한다."
+      },
+      {
+        "name": "협동 섬 방어",
+        "purpose": "여러 플레이어가 같은 서버에 있으면 병력이 합산되어 같은 적 웨이브를 상대하고 모두 보상을 받는다."
       }
     ],
     "progressionDirection": "섬 레벨이 오를수록 낚시터와 채집 지점, 꾸미기 슬롯과 생활 목표가 순차적으로 열리며 저장 데이터로 유지된다.",
@@ -40,7 +52,7 @@
       ],
       "retryDirection": "실패 원인을 즉시 보여주고 같은 핵심 루프로 빠르게 재시도한다."
     },
-    "multiplayerMode": "SINGLE",
+    "multiplayerMode": "COOP",
     "technicalAssumptions": [
       "Roblox 모바일 터치 조작을 기본으로 하며 PC 입력은 같은 행동을 보조한다.",
       "진행 데이터는 DataStore에 저장하고 서버가 보상과 성장 상태를 authoritative하게 관리한다."
@@ -53,33 +65,33 @@
       "declaredGameCategory": "CASUAL",
       "genre": "Simulation",
       "subgenre": "Life Simulation",
-      "playMode": "SINGLE",
-      "multiplayerRequired": false,
-      "coopImplementationRequired": false,
+      "playMode": "COOP",
+      "multiplayerRequired": true,
+      "coopImplementationRequired": true,
       "competitiveImplementationRequired": false,
-      "networkingRequired": false,
-      "multiplayerQaRequired": false,
-      "minimumParticipantsForRequiredQa": 1,
+      "networkingRequired": true,
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2,
       "displayLabelKo": "Simulation · Life Simulation"
     },
     "platformProfiles": {
       "ROBLOX": {
         "platform": "ROBLOX",
         "inputModel": "모바일 큰 버튼과 터치 상호작용을 우선하고 키보드와 게임패드를 같은 행동에 매핑한다.",
-        "sessionModel": "개인 섬 세션에서 즉시 낚시·채집을 시작하고 재접속 시 저장된 섬 성장 상태를 복원한다.",
-        "multiplayerRuntime": "초기 개발은 SINGLE이며 서버가 모든 보상과 저장을 권한 처리하고 이후 소셜 방문 확장을 분리한다.",
+        "sessionModel": "솔로 플레이를 허용하고 2명 이상에서는 멀티 기능이 활성화되는 Roblox 세션.",
+        "multiplayerRuntime": "서버 권한으로 참가자별 병사와 병영 보너스를 집계해 공동 적 웨이브와 자동전투를 처리하고 RemoteEvent로 모든 참가자에게 결과를 동기화한다.",
         "performanceBudget": "모바일 Roblox에서 낮은 파트 수와 제한된 이펙트, 짧은 네트워크 이벤트를 유지한다.",
         "uiUx": "하단 생활 행동 버튼과 상단 자원·섬 레벨 HUD를 안전영역 안에 배치한다.",
         "saveAndNetwork": "DataStore로 생활 자원과 섬 레벨을 저장하며 RemoteEvent 입력은 서버에서 검증하고 제한한다.",
         "platformContentAdaptation": "Roblox 아바타 이동과 3D 섬 공간, 터치 중심 ScreenGui로 웹 컨셉을 네이티브하게 재구성한다.",
         "internalReleaseTarget": "Owner가 플레이 가능한 비공개 또는 제한 Roblox 테스트 경험을 첫 내부 출시 대상으로 한다.",
-        "validationEvidence": "실제 Roblox 런타임, 모바일 조작, 저장 재접속, 독립 QA와 회귀검증을 같은 소스 리비전에서 확인한다."
+        "validationEvidence": "1인 플레이와 2명 이상 멀티를 모두 실제 Roblox 서버에서 검증하고 서버 권한 상태 동기화·모바일 조작·저장·회귀검증을 확인한다."
       },
       "UNITY": {
         "platform": "UNITY",
         "inputModel": "Android 터치 이동과 큰 상호작용 버튼을 우선하고 에디터 키보드 입력을 보조로 둔다.",
-        "sessionModel": "로컬 또는 내부 테스트 세션에서 섬 생활 루프를 즉시 시작하고 저장 상태를 복원한다.",
-        "multiplayerRuntime": "초기 Unity 앱은 SINGLE 기준이며 소셜 기능은 별도 네트워크 검증 후 추가한다.",
+        "sessionModel": "솔로 플레이를 허용하고 멀티 테스트 빌드에서 동일한 게임 규칙을 검증한다.",
+        "multiplayerRuntime": "초기 내부 빌드도 솔로 자동전투를 지원하며 멀티에서는 참가자 병력을 authoritative 세션 상태로 합산한다.",
         "performanceBudget": "중급 Android 기기에서 안정 프레임을 목표로 오브젝트와 이펙트 수를 제한한다.",
         "uiUx": "모바일 안전영역 기반 HUD와 큰 터치 행동 버튼을 사용한다.",
         "saveAndNetwork": "로컬 버전 저장을 기본으로 하고 온라인 기능 추가 전 저장 마이그레이션 계약을 유지한다.",

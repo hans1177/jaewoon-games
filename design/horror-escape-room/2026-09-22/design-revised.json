@@ -1,0 +1,92 @@
+{
+  "version": 3,
+  "gameId": "horror-escape-room",
+  "gameName": "심야 방탈출",
+  "gameCategory": "PUZZLE",
+  "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+  "authority": "OWNER_DIRECTIVE_2026-09-22",
+  "createdAt": "2026-09-22T01:05:00+09:00",
+  "updatedAt": "2026-09-22T01:05:00+09:00",
+  "ownerDirectDevelopment": true,
+  "strictDesignReviewRequiredForAdmission": false,
+  "strictDesignReviewContinuesInParallel": true,
+  "content": {
+    "identity": "폐쇄된 심야 시설에서 단서와 열쇠를 찾고, 괴물을 피하면서 방의 연동 퍼즐을 풀어 탈출하는 공포 방탈출. 혼자 완주 가능하고 2~4인에서는 역할 분담과 구조가 강화된다.",
+    "coreFun": "탐색으로 단서를 찾고 퍼즐 장치를 조작하며 괴물의 위협을 버틴 뒤, 솔로 또는 팀이 마지막 문을 열고 탈출하는 긴장감.",
+    "coreLoop": [
+      "어두운 방을 탐색해 단서·열쇠·스위치를 찾는다.",
+      "괴물의 위협을 피하면서 현재 퍼즐 단계를 해결하고 다음 방을 연다.",
+      "붙잡힌 동료가 있으면 구조하고, 마지막 탈출 조건을 채워 출구로 빠져나간다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "연동 퍼즐",
+        "purpose": "멀티에서는 서로 다른 방의 스위치를 역할 분담해 풀 수 있고, 솔로에서는 순차 입력으로 동일 퍼즐을 해결할 수 있다."
+      },
+      {
+        "name": "괴물 위협",
+        "purpose": "시간이 지날수록 위험도가 올라가 탐색과 퍼즐 속도에 압박을 준다."
+      },
+      {
+        "name": "동료 구조",
+        "purpose": "멀티에서 붙잡힌 플레이어를 다른 플레이어가 구조할 수 있다."
+      }
+    ],
+    "progressionDirection": "탈출 성공 횟수와 발견한 단서를 저장해 다음 플레이에서 추가 방·변형 퍼즐·코스메틱 목표를 연다.",
+    "failureRetryRisk": {
+      "failureStates": [
+        "괴물에게 붙잡혀 일시 행동 불가",
+        "위험도가 최대가 되어 팀이 탈출 실패"
+      ],
+      "retryDirection": "체크포인트 또는 새 라운드에서 빠르게 재도전한다."
+    },
+    "multiplayerMode": "COOP",
+    "technicalAssumptions": [
+      "1인 완주가 가능하고 2~4인에서는 협동 상호작용과 구조가 추가된다.",
+      "서버가 퍼즐 단계, 열쇠, 위험도, 붙잡힘, 탈출 판정을 authoritative하게 관리한다."
+    ],
+    "mobileUx": "이동 외 핵심 상호작용은 큰 탐색·퍼즐·구조·탈출 버튼으로 제공하고 공포 정보가 모바일 화면에서 가려지지 않게 한다.",
+    "robloxBuildProfile": {
+      "version": 2,
+      "targetPlatform": "ROBLOX",
+      "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+      "declaredGameCategory": "PUZZLE",
+      "genre": "Puzzle",
+      "subgenre": "Horror Escape Room",
+      "playMode": "COOP",
+      "multiplayerRequired": true,
+      "coopImplementationRequired": true,
+      "competitiveImplementationRequired": false,
+      "networkingRequired": true,
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2,
+      "displayLabelKo": "공포 · 방탈출 · 협동"
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "모바일 이동과 큰 상호작용 버튼, PC 키보드·게임패드 보조 입력을 사용한다.",
+        "sessionModel": "1인 완주 가능, 2~4인 협동 권장 세션으로 퍼즐과 위협 상태를 서버가 공유한다.",
+        "multiplayerRuntime": "서버가 PuzzleStage, TeamKeys, Danger, Captured 상태를 관리하고 모든 참가자에게 RemoteEvent로 동기화한다.",
+        "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
+        "uiUx": "현재 퍼즐 단계·열쇠·위험도·팀 상태를 상단에, 탐색·해결·구조·탈출 버튼을 하단에 배치한다.",
+        "saveAndNetwork": "탈출 횟수만 DataStore에 저장하고 라운드 퍼즐 상태는 서버 세션 권한으로 유지한다.",
+        "platformContentAdaptation": "Roblox 3D 복도와 방, Proximity/버튼 상호작용, 캐릭터 추격 피드백으로 공포 방탈출을 구성한다.",
+        "internalReleaseTarget": "Owner가 플레이 가능한 비공개 또는 제한 Roblox 테스트 경험.",
+        "validationEvidence": "1인 완주, 2인 이상 협동 퍼즐, 구조, 위험도 동기화, 모바일 조작, 저장과 회귀검증을 실제 Roblox 서버에서 확인한다."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Android 터치 이동과 상호작용 버튼을 사용하고 에디터 입력을 보조한다.",
+        "sessionModel": "1인 완주와 2~4인 협동 테스트 세션을 동일한 퍼즐 규칙으로 지원한다.",
+        "multiplayerRuntime": "호스트/서버 권한으로 퍼즐·위협·구조·탈출 상태를 동기화한다.",
+        "performanceBudget": "모바일 조명과 후처리 예산을 제한하고 방 단위 오브젝트 활성화를 사용한다.",
+        "uiUx": "모바일 안전영역에 목표·위험·팀 상태와 큰 상호작용 버튼을 배치한다.",
+        "saveAndNetwork": "탈출 기록은 버전 저장하고 라운드 상태는 세션 authoritative 상태로 유지한다.",
+        "platformContentAdaptation": "Unity 3D 공포 복도와 방, 모바일 카메라, 공간 음향으로 같은 핵심 루프를 구현한다.",
+        "internalReleaseTarget": "내부 Android 테스트 빌드.",
+        "validationEvidence": "실기기 1인/협동, 퍼즐 동기화, 구조, 성능과 회귀검증을 같은 빌드에서 확인한다."
+      }
+    }
+  }
+}
