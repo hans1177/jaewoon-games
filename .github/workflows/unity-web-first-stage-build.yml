@@ -234,6 +234,20 @@ jobs:
           console.log('UNITY_WEB_BOOT_SMOKE=PASS');
           NODE
 
+      - name: Run Unity Web real gameplay QA
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          cd /tmp/unity-web
+          node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+            --game-id="$GAME_ID" \
+            --source="web-games/$GAME_ID" \
+            --port=4187 \
+            --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-gameplay-validation.json" \
+            --screenshot="/tmp/unity-web/gameplay-mobile.png"
+
       - name: Write build evidence
         shell: bash
         env:
@@ -253,6 +267,7 @@ jobs:
             sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
             buildTreeSha256:process.env.TREE_SHA,
             bootSmoke:'PASS',
+            initialRealGameplayQa:'PASS',
             fullGameplayGate:'NOT_ASSERTED',
             postGatePlatformPipelineChanged:false,
             generatedAt:new Date().toISOString()
