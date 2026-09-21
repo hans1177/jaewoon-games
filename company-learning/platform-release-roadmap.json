@@ -12038,6 +12038,19 @@
     "explicitRetrievalIneligibleMustBeExcluded": true,
     "contextBudgeted": true,
     "exactKnowledgeTraceRequired": true,
-    "objective": "USE_DIVERSE_VERIFIED_LEARNING_AT_THE_RIGHT_TASK_WITHOUT_CONTEXT_POLLUTION"
+    "objective": "USE_DIVERSE_VERIFIED_LEARNING_AT_THE_RIGHT_TASK_WITHOUT_CONTEXT_POLLUTION",
+    "domainClassification": {
+      "version": 1,
+      "mode": "PRIMARY_SECONDARY_IRRELEVANT",
+      "causalEvidenceWeight": 5,
+      "goalWeight": 3,
+      "scopeWeight": 2,
+      "engineHintWeight": 1,
+      "primaryDomainGetsHighestPatternPriority": true,
+      "secondaryDomainGetsReducedPriority": true,
+      "irrelevantDomainSuppression": true,
+      "sameGameMayOverrideSuppressionWhenSemanticallyRelevant": true,
+      "outputTraceRequired": true
+    }
   }
 }
