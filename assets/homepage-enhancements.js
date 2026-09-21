@@ -160,13 +160,20 @@ function mergeGame(row){
   const webPath=allowWeb?canonicalWebHref(row):'';
   return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
-function platformHref(game){
-  const p=normalizePlatform(displayPlatform(game));
+function platformLinks(game){
   const canonical=publicationOf(game).roblox||{};
   const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
   const placeId=String(target?.placeId||'').trim();
-  if(p==='ROBLOX'&&/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true))return `https://www.roblox.com/games/${placeId}`;
-  return String(game?.homepagePlatformPath||game?.homepagePlatformUrl||game?.platformGamePath||game?.platformUrl||game?.platformGameUrl||game?.robloxGameUrl||game?.robloxUrl||game?.unityBuildUrl||game?.uefnUrl||'').trim();
+  const roblox=/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true)
+    ?`https://www.roblox.com/games/${placeId}`
+    :String(game?.robloxGameUrl||game?.robloxUrl||'').trim();
+  const unity=String(game?.unityBuildUrl||game?.unityUrl||'').trim();
+  const uefn=String(game?.uefnUrl||game?.fortniteUrl||game?.fortniteUefnUrl||'').trim();
+  return {roblox,unity,uefn};
+}
+function platformHref(game){
+  const links=platformLinks(game);
+  return links.roblox||links.unity||links.uefn||String(game?.homepagePlatformPath||game?.homepagePlatformUrl||game?.platformGamePath||game?.platformUrl||game?.platformGameUrl||'').trim();
 }
 
 function installStyles(){document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';}
@@ -184,9 +191,17 @@ function buildFocus(catalog,status){
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${web?`<a class="homeFocusBtn" href="${esc(web)}">지금 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
-  const game=mergeGame(row),web=game.webPath,platform=platformHref(game);
-  const primary=web?`<a class="foldGameBtn" href="${esc(web)}">플레이</a>`:platform?`<a class="foldGameBtn platformAction" href="${esc(platform)}">열기</a>`:'<span class="foldGameBtn off">준비 중</span>';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameActions">${primary}</div></div></article>`;
+  const game=mergeGame(row),web=game.webPath,links=platformLinks(game);
+  const button=(label,href,kind='')=>href
+    ?`<a class="foldGameBtn ${kind}" href="${esc(href)}">${esc(label)} 열기</a>`
+    :`<span class="foldGameBtn off">${esc(label)} 개발 중</span>`;
+  const actions=[
+    web?`<a class="foldGameBtn webAction" href="${esc(web)}">Web 플레이</a>`:'<span class="foldGameBtn off">Web 준비 중</span>',
+    button('Roblox',links.roblox,'robloxAction'),
+    button('Unity',links.unity,'unityAction'),
+    button('UEFN',links.uefn,'uefnAction')
+  ].join('');
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
