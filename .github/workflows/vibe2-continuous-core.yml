@@ -1146,6 +1146,8 @@ jobs:
             clean(baseCodingMethod?.patchRecipeMode)&&`coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}`,
             Number(baseCodingMethod?.verifiedFailureLocalMemoryCount||0)>0&&`coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}`,
             Array.isArray(workOrder?.knowledgeApplicationContract?.exactInjectedKnowledgeIds)&&workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.length>0&&`learning-knowledge-ids:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.slice(0,40)))}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.primaryDomains)&&workOrder.knowledgeApplicationContract.primaryDomains.length>0&&`learning-primary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.primaryDomains.slice(0,8)))}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.secondaryDomains)&&workOrder.knowledgeApplicationContract.secondaryDomains.length>0&&`learning-secondary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.secondaryDomains.slice(0,12)))}`,
             Array.isArray(workOrder?.unifiedLearning?.externalAiDistilled)&&workOrder.unifiedLearning.externalAiDistilled.length>0&&`learning-external-ai-distilled-count:${workOrder.unifiedLearning.externalAiDistilled.length}`,
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
