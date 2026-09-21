@@ -8,6 +8,7 @@ on:
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
       - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
@@ -92,7 +93,8 @@ jobs:
               Boolean(item.executionEvidence?.failureStage);
           }).map(item=>({
             gameId:item.gameId,gameName:item.gameName,designBaselineSource:item.designBaselineSource,
-            sourcePath:item.targetSourcePath||item.sourcePath,
+            sourcePath:item.unityProjectPath||item.targetSourcePaths?.UNITY||`unity-games/${item.gameId}`,
+            platformDesignProfile:item.platformDesignProfiles?.UNITY||null,
             selectedPlatform:'UNITY',
             unityCandidateBranch:item.unityCandidateBranch||null,
             unitySourceCommit:item.unitySourceCommit||null,
@@ -109,13 +111,15 @@ jobs:
           const migrationCanary=Number(q.executionContractVersion||0)<1;
           const canaryRequired=rows.length>0&&(migrationCanary||repeated);
           const canary=canaryRequired?selectRepresentativeCanary(rows):null;
-          const selected=canary?[canary]:rows.slice(0,DEVELOPMENT_GAME_WIP_MAX);
-          const parallel=Math.max(1,Math.min(DEVELOPMENT_GAME_WIP_MAX,selected.length||1));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const batchMax=Math.max(1,Math.min(256,Number(roadmap?.developmentSpeedExecution?.externalMatrixBatchMax||256)));
+          const selected=canary?[canary]:rows.slice(0,batchMax);
+          const parallel=Math.max(1,Math.min(batchMax,selected.length||1));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${selected.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(selected)}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`parallel=${parallel}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`canary=${canary?'true':'false'}\n`);
-          console.log(`DEVELOPMENT_GAME_WIP_MAX=${DEVELOPMENT_GAME_WIP_MAX}`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`UNITY_TARGET_N=${rows.length}`);
           console.log(`UNITY_SELECTED_N=${selected.length}`);
@@ -163,8 +167,8 @@ jobs:
           mkdir -p "$base"
           git show "origin/company-runtime:$DESIGN_SOURCE" > "$DESIGN_SOURCE"
           git show origin/company-runtime:game-catalog.json > game-catalog.json
+          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const p=d?.content?.platformProfiles?.UNITY;if(!p||p.platform!=='UNITY')process.exit(2);for(const k of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'])if(String(p[k]||'').trim().length<8)process.exit(3);console.log('UNITY_PLATFORM_PROFILE_INPUT=READY')" "$DESIGN_SOURCE"
           if git cat-file -e "origin/company-runtime:$base/cycle-status.json" 2>/dev/null; then git show "origin/company-runtime:$base/cycle-status.json" > "$base/cycle-status.json"; fi
-          if git cat-file -e "origin/company-runtime:$base/web-gameplay-validation.json" 2>/dev/null; then git show "origin/company-runtime:$base/web-gameplay-validation.json" > "$base/web-gameplay-validation.json"; fi
           {
             echo "base=$base"
             echo "date=$date"
@@ -671,12 +675,12 @@ jobs:
           let anyPassed=false,anyFailed=false;
           for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);if(update.contractCanaryPassed)queue.executionContractVersion=1;if(update.executionEvidence?.failureStage)anyFailed=true;else anyPassed=true;}
           queue.executionContract='CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT';
-          queue.developmentGameWipMax=6;
+          queue.developmentGameWipMax=null;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           fs.writeFileSync('/tmp/persist-result.json',JSON.stringify({count:updates.length,anyPassed,anyFailed}));
           console.log(`DEVELOPMENT_UNITY_PERSIST_COUNT=${updates.length}`);
-          console.log('DEVELOPMENT_GAME_WIP_MAX=6');
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
           git config user.name 'jaewoon-development-unity-runtime'
           git config user.email 'actions@users.noreply.github.com'
@@ -703,9 +707,9 @@ jobs:
       - name: Unity runtime summary
         if: always()
         run: |
-          echo 'DEVELOPMENT_GAME_WIP_MAX=6'
-          echo 'DEVELOPMENT_GAME_WIP_SCOPE=GLOBAL_SELECTED_PLATFORM_DEVELOPMENT'
-          echo 'WEB_VALIDATION_PARALLELISM_CHANGED=NO'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_SCOPE=UNBOUNDED_CAPACITY_BATCHED'
+          echo 'UNITY_WEB_VALIDATION=DISABLED'
           echo 'CHANGE_DETECTION=ENABLED'
           echo 'CHEAP_PRECHECK=ENABLED'
           echo 'REPRESENTATIVE_CANARY=ENABLED'
