@@ -6,6 +6,7 @@ const upper=value=>clean(value).toUpperCase();
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY','FORTNITE_UEFN']);
+export const DEFAULT_CONCURRENT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
 export const DEVELOPMENT_GAME_WIP_MAX=20;
 export const SPEED_EXECUTION_STAGES=Object.freeze([
   'CHANGE_DETECTION',
@@ -89,6 +90,23 @@ export function resolveSelectedPlatform(...sources){
   return null;
 }
 
+export function concurrentTargetPlatforms(item={}){
+  const explicit=(Array.isArray(item.concurrentTargetPlatforms)?item.concurrentTargetPlatforms:[])
+    .map(normalizeSelectedPlatform).filter(Boolean);
+  if(explicit.length)return Object.freeze([...new Set(explicit)]);
+  const production=upper(item.productionClass);
+  if(['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(production))return DEFAULT_CONCURRENT_PLATFORMS;
+  const selected=resolveSelectedPlatform(item);
+  return Object.freeze(selected?[selected]:[]);
+}
+
+export function platformDevelopmentEligible(item={},platform=''){
+  const requested=normalizeSelectedPlatform(platform);
+  if(!requested||requested==='FORTNITE_UEFN')return false;
+  if(!concurrentTargetPlatforms(item).includes(requested))return false;
+  return targetPlatformDevelopmentEligible({...item,selectedPlatform:requested,targetPlatform:requested});
+}
+
 export function adapterForPlatform(value){
   const platform=normalizeSelectedPlatform(value);
   if(!platform)return null;
@@ -165,13 +183,9 @@ export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platfor
 export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
   const limit=Math.max(0,Math.min(DEVELOPMENT_GAME_WIP_MAX,Number(max)||0));
   return Object.freeze(items
-    .filter(targetPlatformDevelopmentEligible)
-    .map(item=>({...item,selectedPlatform:resolveSelectedPlatform(item)}))
+    .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
+    .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_UNITY_CONCURRENT'}))
     .sort((a,b)=>{
-      const priority={ROBLOX:0,UNITY:0,FORTNITE_UEFN:2};
-      const ap=priority[resolveSelectedPlatform(a)]??99;
-      const bp=priority[resolveSelectedPlatform(b)]??99;
-      if(ap!==bp)return ap-bp;
       const at=Date.parse(a.enqueuedAt||'')||0;
       const bt=Date.parse(b.enqueuedAt||'')||0;
       if(at!==bt)return at-bt;
