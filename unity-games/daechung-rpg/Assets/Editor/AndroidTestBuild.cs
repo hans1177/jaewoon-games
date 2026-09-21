@@ -21,6 +21,7 @@ namespace JaewoonGames.DaechungRpg.Editor
             EnsureTestScene();
 
             if (!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android))
+        throw BuildError("ANDROID_TARGET_SWITCH_FAILED", "Failed to switch active build target to Android.");
             {
                 throw BuildError("ANDROID_TARGET_SWITCH_FAILED", "Failed to switch active build target to Android.");
             }
