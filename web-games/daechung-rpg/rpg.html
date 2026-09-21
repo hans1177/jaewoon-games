@@ -20,7 +20,7 @@ canvas{display:block;width:100vw;height:100vh}
 #attack{right:20px;bottom:28px;width:92px;height:92px;background:#c73434e8;font-size:18px}
 #talk{right:112px;bottom:106px;width:67px;height:67px;background:#d28b22e8}
 #bagBtn{right:18px;top:18px;width:58px;height:58px;background:#405d9de8}
-#soundBtn{right:18px;top:84px;width:48px;height:48px;background:#2f6d64e8;font-size:20px}
+#soundBtn{right:18px;top:84px;width:48px;height:48px;background:#2f6d64e8;font-size:20px}#exitBtn{right:18px;top:140px;width:64px;height:42px;border-radius:12px;background:#7a2630e8;font-size:12px}
 #actionBtn{right:112px;bottom:28px;width:90px;height:60px;border-radius:18px;background:#5d7bd9e8;display:none}
 .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;background:#000d;z-index:10}
 .panel{width:min(92vw,430px);max-height:84vh;overflow:auto;background:#211c18;border:3px solid #e2b56d;border-radius:14px;padding:15px}
@@ -38,7 +38,7 @@ canvas{display:block;width:100vw;height:100vh}
  <div id="quest">퀘스트: 촌장에게 말을 걸어라.</div><div id="hiddenQuest"></div><div id="area">현재 지역: 마을</div>
 </div>
 <div id="joy"><div id="knob"></div></div>
-<button id="attack" class="btn">공격</button><button id="talk" class="btn">대화</button><button id="bagBtn" class="btn">가방</button><button id="soundBtn" class="btn">🔊</button><button id="actionBtn" class="btn"></button>
+<button id="attack" class="btn">공격</button><button id="talk" class="btn">대화</button><button id="bagBtn" class="btn">가방</button><button id="soundBtn" class="btn">🔊</button><button id="exitBtn" class="btn">게임 종료</button><button id="actionBtn" class="btn"></button>
 <div id="speech"></div><div id="toast"></div>
 <div id="start" class="overlay"><div class="panel" style="text-align:center"><h1>⚔️ 대충 용사 RPG</h1><p>7개의 포탈과 동굴, 숨겨진 기사 퀘스트를 탐험해라.<br><span class="small">BGM + 전투 BGM + 효과음 50종</span></p><button id="startBtn" class="main">게임 시작</button></div></div>
 <div id="bag" class="overlay"><div class="panel"><h2>가방</h2><div id="bagList"></div><button id="closeBag" class="main dark">닫기</button></div></div>
@@ -367,33 +367,41 @@ function drawCaveObjects(){if(!chestOpened){pixelRect(CAVE.chest.x-30,CAVE.chest
 function draw(){ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);if(zone==='cave'){ctx.fillStyle='#25282f';ctx.fillRect(0,0,WORLD.w,WORLD.h);ctx.fillStyle='#333842';for(let yy=0;yy<WORLD.h;yy+=80)for(let xx=0;xx<WORLD.w;xx+=80)if((xx+yy)%160===0)ctx.fillRect(xx,yy,52,12);drawCaveObjects()}else{ctx.fillStyle=zone==='town'?'#5eaa54':F[zone].bg;ctx.fillRect(0,0,WORLD.w,WORLD.h);drawDecor(zone);if(zone==='f7'){ctx.fillStyle='#07120a55';ctx.fillRect(0,0,WORLD.w,WORLD.h)}if(zone==='town'){ctx.fillStyle='#ccb079';ctx.fillRect(250,500,1120,390);for(const n of npcs)drawNPC(n);for(const a of P)portal(a[1],a[2],a[3],a[4])}else{portal(135,600,'귀환 포탈','마을로 이동',true);ctx.fillStyle='#fff';ctx.font='bold 22px sans-serif';ctx.fillText(`${F[zone].n} · 권장 ${F[zone].l}`,270,85);if(zone==='f2')drawCaveEntrance();if(zone==='f5')drawTomb()}}for(const d of drops){ctx.fillStyle='#ffe27a';ctx.beginPath();ctx.arc(d.x,d.y,9,0,Math.PI*2);ctx.fill()}for(const m of mons)if(!m.dead||m.deathAge<=3)drawMonster(m);for(const a of arrows)drawArrow(a);drawPlayer();for(const f of fx){ctx.strokeStyle='#fff9';ctx.lineWidth=9;ctx.beginPath();ctx.arc(f.x,f.y,36,f.d>0?-.9:2.25,f.d>0?.9:4.05);ctx.stroke()}ctx.restore();if(flash>0){ctx.fillStyle='#f223';ctx.fillRect(0,0,W,H)}}
 function loop(t){requestAnimationFrame(loop);if(!run){draw();return}const dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw()}
 
-const joyEl=document.getElementById('joy'),joyKnob=document.getElementById('knob');
-let jid=null,center={x:0,y:0};
-function beginJoy(e){
- e.preventDefault();initAudio();jid=e.pointerId;
- const r=joyEl.getBoundingClientRect();center={x:r.left+r.width/2,y:r.top+r.height/2};
- try{joyEl.setPointerCapture(jid)}catch{}
- moveJoy(e);
-}
-function moveJoy(e){
- if(jid===null||e.pointerId!==jid)return;
- e.preventDefault();
- let dx=e.clientX-center.x,dy=e.clientY-center.y,l=Math.hypot(dx,dy),m=42;
+const joyEl=document.getElementById('joy'),joyKnob=document.getElementById('knob'),exitBtn=document.getElementById('exitBtn');
+let jid=null,center={x:0,y:0},touchJoy=false;
+function refreshJoyCenter(){const r=joyEl.getBoundingClientRect();center={x:r.left+r.width/2,y:r.top+r.height/2}}
+function applyJoyPoint(clientX,clientY){
+ let dx=clientX-center.x,dy=clientY-center.y,l=Math.hypot(dx,dy),m=42;
  if(l>m){dx=dx/l*m;dy=dy/l*m}
- j.x=dx/m;j.y=dy/m;
+ j.x=Math.max(-1,Math.min(1,dx/m));j.y=Math.max(-1,Math.min(1,dy/m));
  joyKnob.style.transform=`translate(${dx}px,${dy}px)`;
 }
+function beginJoy(e){
+ e.preventDefault();initAudio();jid=e.pointerId;touchJoy=false;refreshJoyCenter();
+ try{joyEl.setPointerCapture(jid)}catch{}
+ applyJoyPoint(e.clientX,e.clientY);
+}
+function moveJoy(e){if(jid===null||e.pointerId!==jid||touchJoy)return;e.preventDefault();applyJoyPoint(e.clientX,e.clientY)}
 function endJoy(e){
  if(e&&jid!==null&&e.pointerId!==jid)return;
  if(e)e.preventDefault();
  try{if(jid!==null&&joyEl.hasPointerCapture?.(jid))joyEl.releasePointerCapture(jid)}catch{}
- jid=null;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';
+ jid=null;touchJoy=false;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';
 }
 joyEl.addEventListener('pointerdown',beginJoy,{passive:false});
 addEventListener('pointermove',moveJoy,{passive:false});
 addEventListener('pointerup',endJoy,{passive:false});
 addEventListener('pointercancel',endJoy,{passive:false});
+joyEl.addEventListener('touchstart',e=>{
+ const t=e.changedTouches?.[0];if(!t)return;e.preventDefault();initAudio();touchJoy=true;jid=-1;refreshJoyCenter();applyJoyPoint(t.clientX,t.clientY);
+},{passive:false});
+joyEl.addEventListener('touchmove',e=>{
+ if(!touchJoy)return;const t=e.changedTouches?.[0]||e.touches?.[0];if(!t)return;e.preventDefault();applyJoyPoint(t.clientX,t.clientY);
+},{passive:false});
+addEventListener('touchend',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
+addEventListener('touchcancel',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
 addEventListener('blur',()=>endJoy());
+exitBtn.onclick=()=>{run=false;j.x=0;j.y=0;location.href='../../';};
 attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();initAudio();useAction()};soundBtn.onpointerdown=e=>{e.preventDefault();toggleSound()};
 addEventListener('keydown',e=>{initAudio();keys[e.key.toLowerCase()]=true;if(e.key===' ')attackNow();if(e.key.toLowerCase()==='e')useAction()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class="slot"><span><b>${k}</b><br><span class="small">공격 ${WEAPONS[k].damage}${WEAPONS[k].desc?'<br>'+WEAPONS[k].desc:''}</span></span><button data-equip="${k}" ${p.weapon===k?'disabled':''}>${p.weapon===k?'장착중':'장착'}</button></div>`).join('');bagList.innerHTML=`<div class="slot"><span>현재 방어구</span><b>${p.armor||'없음'}</b></div>`+weapons+Object.entries(inv).map(([k,v])=>`<div class="slot"><span>${k}</span><b>×${v}</b></div>`).join('');bagList.querySelectorAll('[data-equip]').forEach(b=>b.onclick=()=>{equipWeapon(b.dataset.equip);renderBag()})}
