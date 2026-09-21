@@ -65,6 +65,16 @@ namespace JaewoonGames.DaechungRpg
 
         private void Update()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            var qaMode = Application.absoluteURL.Contains("qa=1");
+            if (qaMode)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1)) MoveTo("field-1");
+                if (Input.GetKeyDown(KeyCode.Space)) AttackEnemy();
+                if (Input.GetKeyDown(KeyCode.R)) MoveTo("town");
+            }
+#endif
+
             if (_core == null || Time.unscaledTime < _qaHeartbeatAt) return;
             _qaHeartbeatAt = Time.unscaledTime + 2f;
             var player = _core.Player;
