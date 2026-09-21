@@ -159,11 +159,12 @@ test('semantic production classes are canonical and fixed numeric quotas are not
   assert.match(flow,/fixedPortfolioSize: false/);
 });
 
-test('DESIGN_ONLY retains model policy metadata while deterministic department evidence replaces AI lead review',()=>{
+test('DESIGN_ONLY keeps deterministic evidence while lead-model distinctness is not an execution gate',()=>{
   assert.equal(directive.ai.minDistinctModelsPerDepartment,1);
-  assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,5);
-  assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
-  assert.equal(new Set(Object.values(directive.ai.departmentLeadModels)).size,5);
+  assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,1);
+  assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,false);
+  assert.equal(directive.ai.departmentLeadAssignmentRemappable,true);
+  assert.equal(directive.ai.leadDistinctnessPolicy,'NOT_REQUIRED_FOR_EXECUTION');
   assert.equal(directive.ai.gameDesigner.authorsInitialDetailedDesign,true);
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle,true);
   assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterLeadReview,false);
