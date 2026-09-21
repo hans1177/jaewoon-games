@@ -191,9 +191,11 @@ namespace JaewoonGames.DungeonCompany
 
         private static Material Mat(Color color)
         {
-            var shader = Shader.Find("Standard");
-            var m = new Material(shader);
+            var probe = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var source = probe.GetComponent<Renderer>().sharedMaterial;
+            var m = new Material(source);
             m.color = color;
+            Object.Destroy(probe);
             return m;
         }
 
