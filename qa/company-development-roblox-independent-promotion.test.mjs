@@ -38,8 +38,10 @@ test('five distinct leads remain a per-game evidence stage, not a game-count quo
 
 test('already-preflighted retryable runtime work dispatches the existing continuation',()=>{
   assert.ok(workflow.includes('let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;'));
-  assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
-  assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
+  assert.ok(workflow.includes("runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion"));
+  assert.ok(workflow.includes("['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure)"));
+  assert.ok(workflow.includes('if(securityBlocked)externalBlocked++;'));
+  assert.ok(workflow.includes('else runtimeReady++;'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT=$runtime_ready'));
   assert.match(workflow,/package_pending.*preflight_ready.*runtime_ready/);
   assert.match(workflow,/\$runtime_ready.*\^\[1-9\]\[0-9\]\*\$/);
