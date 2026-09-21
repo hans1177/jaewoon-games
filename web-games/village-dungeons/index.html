@@ -309,7 +309,12 @@ function clearWorld(){
   currentInteract=null;
 }
 
-function buildTown(){
+  var g=new THREE.Group();
+  var b=new THREE.Mesh(new THREE.CylinderGeometry(.42*scale,.52*scale,1.2*scale,7),mat(color));
+  b.position.y=.75*scale;
+  var h=new THREE.Mesh(new THREE.SphereGeometry(.36*scale,8,6),mat(0xf0c59c));
+  h.position.y=1.55*scale;
+  g.add(b,h);g.position.set(x,0,z);world.add(g);return g;
   clearWorld();
   scene.background.set(0x8fc8e4);scene.fog.color.set(0x8fc8e4);scene.fog.near=28;scene.fog.far=72;
   addGround(0x6c9849);
