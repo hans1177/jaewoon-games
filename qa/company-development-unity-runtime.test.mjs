@@ -25,7 +25,18 @@ const cases=[
 function fixtures(root, pass=true){
   const baseline=path.join(root,'baseline.json');
   const web=path.join(root,'web.json');
-  fs.writeFileSync(baseline,JSON.stringify({content:{identity:'Distinct test identity',coreLoop:['act','feedback','choice','reward']}}));
+  fs.writeFileSync(baseline,JSON.stringify({content:{identity:'Distinct test identity',coreLoop:['act','feedback','choice','reward'],platformProfiles:{UNITY:{
+    platform:'UNITY',
+    inputModel:'Unity Input System touch-first controls with gamepad and keyboard fallback',
+    sessionModel:'Unity Android app session lifecycle with local app state and restart behavior',
+    multiplayerRuntime:'Unity native networking contract when multiplayer is required by game design',
+    performanceBudget:'Android mobile frame memory thermal draw-call and battery budget',
+    uiUx:'Unity UI touch-first layout with mobile safe areas and scalable controls',
+    saveAndNetwork:'Unity app local persistence and validated networking boundaries when required',
+    platformContentAdaptation:'Unity-native scenes prefabs materials animation camera audio and mobile UI',
+    internalReleaseTarget:'Internal or closed Unity Android app test build for owner playtest',
+    validationEvidence:'Exact APK install launch runtime independent QA and regression evidence'
+  }}}}));
   fs.writeFileSync(web,JSON.stringify({gameId:'fixture',pass,validated:pass,state:pass?'PASS':'FAIL',realEvidenceExists:pass}));
   return {baseline,web};
 }
@@ -89,14 +100,13 @@ test('optional Web evidence must be a real PASS when supplied',()=>{
   assert.match(run.stderr,/OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED/);
 });
 
-test('Unity executor implements six-game WIP canary and exact-stage resume sequence',()=>{
-  assert.match(workflowSource,/DEVELOPMENT_GAME_WIP_MAX/);
+test('Unity executor uses unbounded eligibility with capacity batching, canary and exact-stage resume sequence',()=>{
   assert.match(workflowSource,/selectTargetPlatformDevelopmentWindow/);
   assert.match(workflowSource,/selectRepresentativeCanary/);
-  assert.match(workflowSource,/Math\.min\(DEVELOPMENT_GAME_WIP_MAX,selected\.length\|\|1\)/);
-  assert.match(workflowSource,/DEVELOPMENT_GAME_WIP_MAX=6/);
-  assert.match(workflowSource,/DEVELOPMENT_GAME_WIP_SCOPE=GLOBAL_SELECTED_PLATFORM_DEVELOPMENT/);
-  assert.match(workflowSource,/WEB_VALIDATION_PARALLELISM_CHANGED=NO/);
+  assert.match(workflowSource,/const EXECUTION_BATCH_MAX=256/);
+  assert.match(workflowSource,/Math\.min\(EXECUTION_BATCH_MAX,selected\.length\|\|1\)/);
+  assert.match(workflowSource,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
+  assert.match(workflowSource,/UNITY_EXECUTION_BATCH_CAPACITY=/);
   assert.match(workflowSource,/REPRESENTATIVE_CANARY=/);
   assert.match(workflowSource,/COMMON_FAILURE_DETECTED=/);
   assert.match(workflowSource,/CHANGE_DETECTION=/);
