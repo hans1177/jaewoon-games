@@ -59,7 +59,7 @@ jobs:
         id: target
         working-directory: main
         env:
-          REQUESTED_GAME_ID: ${{ inputs.game_id || 'daechung-rpg' }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           OWNER_SECRET_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
           OWNER_SECRET_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
         shell: bash
@@ -70,7 +70,18 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
-          const gameId=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const pending=(q.items||[]).find(row=>
+            row.releaseStrategy==='FAST_MVP'
+            &&row.robloxValidationMode==='HEADLESS_FAST_MVP'
+            &&row.robloxHeadlessFastMvpPassed===true
+            &&row.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
+            &&row.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING'
+            &&!(row.robloxInternalReleaseEvidence?.published===true
+              &&row.robloxInternalReleaseEvidence?.sourceRevision===row.robloxSourceCommit
+              &&row.robloxInternalReleaseEvidence?.artifactIdentity===row.robloxBuildArtifactIdentity)
+          );
+          const gameId=requestedGameId||String(pending?.gameId||'').trim();
           const item=(q.items||[]).find(row=>row.gameId===gameId);
           if(!item)throw new Error(`ROBLOX_RELEASE_TARGET_NOT_FOUND:${gameId}`);
           const put=(key,value)=>fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${String(value??'')}\n`);
@@ -408,8 +419,8 @@ jobs:
           const targetSource=String(process.env.PUBLICATION_TARGET_SOURCE||'').trim();
           if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('release source revision changed before persist');
           if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('release artifact identity changed before persist');
-          const finalGate=item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFinalReviewPassed===true:item.robloxFinalReviewPassed===true;
-          if(!finalGate)throw new Error('final review no longer passed before release persist');
+          const finalGate=item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFastMvpPassed===true:item.robloxFinalReviewPassed===true;
+          if(!finalGate)throw new Error('release gate no longer passed before release persist');
           if(!Number.isInteger(version)||version<=0)throw new Error('published Roblox version missing');
           if(!/^[1-9][0-9]*$/.test(universeId)||!/^[1-9][0-9]*$/.test(placeId))throw new Error('published Roblox target IDs missing');
           const existingTarget=item.robloxPublicationTarget||{};
@@ -506,14 +517,9 @@ jobs:
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           NODE
-          git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs 2>/dev/null || true
-          if [[ -f tools/company-homepage-platform-exposure-sync.mjs && -f game-catalog.json ]]; then
-            node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
-          fi
-          git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json homepage-platform-exposure.json 2>/dev/null || git add development-queue.json
+          git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: persist proven Roblox internal release [skip ci]'
