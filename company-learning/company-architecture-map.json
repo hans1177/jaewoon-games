@@ -252,6 +252,14 @@
       "infrastructureFailureLearningAuthority": "NONE",
       "resumeRule": "REPAIR_REQUIRED_THEN_EXACT_FAILED_STAGE_REVALIDATION",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
+    },
+    "staleReservationRecovery": {
+      "executor": "tools/company-system-ai-queue.mjs::reclaimStaleSystemAiReservations",
+      "leaseMinutes": 30,
+      "missingReservationIdReclaimed": true,
+      "requeueOnly": true,
+      "retryBudgetConsumed": false,
+      "learningAuthority": "NONE"
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
