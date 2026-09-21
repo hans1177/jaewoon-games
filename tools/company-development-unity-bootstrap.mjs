@@ -45,6 +45,7 @@ fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
 fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),`m_EditorVersion: ${UNITY_EDITOR_VERSION}\nm_EditorVersionWithRevision: ${UNITY_EDITOR_VERSION} (${UNITY_EDITOR_REVISION})\n`);
+fs.writeFileSync(path.join(output,'Assets/link.xml'),`<linker>\n  <assembly fullname="UnityEngine.ContentLoadModule">\n    <type fullname="Unity.Loading.ContentLoadingSystem" preserve="all" />\n  </assembly>\n</linker>\n`);
 
 const runtime=`using System;
 using UnityEngine;
