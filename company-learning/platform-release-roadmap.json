@@ -3551,7 +3551,7 @@
       }
     },
     "primaryAiOrchestration": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-19",
       "orchestrator": "CHATGPT_PRIMARY_AI",
       "role": "PRIMARY_AI_NON_BLOCKING_SUPERVISOR",
@@ -3580,7 +3580,8 @@
         "SYNC_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_AFTER_ACCEPTED_SYSTEM_CHANGES",
         "DIRECTLY_REVIEW_SYSTEM_AND_RECOVERY_CANDIDATE_DIFFS_AND_EVIDENCE",
         "ROUTE_REPEATED_FAILURES_AND_COMMON_BOTTLENECKS_TO_RECOVERY_QUEUE",
-        "PROMOTE_ONLY_VERIFIED_RECOVERY_PATTERNS_TO_CANONICAL_LEARNING"
+        "PROMOTE_ONLY_VERIFIED_RECOVERY_PATTERNS_TO_CANONICAL_LEARNING",
+        "COLLABORATE_WITH_ALL_REGISTERED_VIBE_INTERNAL_AI_WITHOUT_BLOCKING_24H_AUTONOMY"
       ],
       "gameSourceAuthoring": false,
       "gameImplementationOwner": [
@@ -3737,6 +3738,51 @@
           "CI_QUEUE_QA_INFRASTRUCTURE_BLOCKER"
         ],
         "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
+      },
+      "internalVibeAiCollaboration": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-21",
+        "scope": "ALL_VIBE_INTERNAL_AI_AUTONOMOUS_WORKERS_NEURAL_DIAGNOSIS_CRITIC_ROOT_CAUSE_RECOVERY_PLANNER_IMPLEMENTATION_QA_RELEASE_SECURITY_AND_LEARNING_SYSTEMS",
+        "collaborationMode": "PRIMARY_AI_NON_BLOCKING_COPILOT_OVERLAY",
+        "autonomous24hExecutionContinuesWithoutPrimaryAi": true,
+        "primaryAiPresenceIsRuntimeGate": false,
+        "appliesToExistingAndFutureRegisteredInternalAi": true,
+        "defaultBehavior": [
+          "INTERNAL_AI_EXECUTES_OWN_ASSIGNED_OR_CANONICAL_SCOPE",
+          "PRIMARY_AI_MAY_SUPPLY_CAUSAL_ANALYSIS_DECOMPOSITION_REPAIR_REVIEW_AND_CROSS_SYSTEM_CONTEXT",
+          "DETERMINISTIC_QA_REMAINS_PASS_FAIL_AUTHORITY",
+          "PRIMARY_AI_COLLABORATION_MUST_NOT_EXPAND_WORKER_AUTHORITY",
+          "VERIFIED_RESULT_RETURNS_TO_EXISTING_FAN_IN_AND_LEARNING_PATH"
+        ],
+        "mandatoryEscalationTriggers": [
+          "REPEATED_FAILURE_SIGNATURE",
+          "COMMON_OR_PORTFOLIO_WIDE_BOTTLENECK",
+          "CENTRAL_CONTRACT_OR_ARCHITECTURE_IMPACT",
+          "SECURITY_OR_AUTHORITY_BOUNDARY",
+          "CROSS_SYSTEM_CAUSAL_AMBIGUITY",
+          "RECOVERY_CANARY_FAILURE",
+          "VERIFIED_LEARNING_CONFLICT_OR_POLLUTION_RISK"
+        ],
+        "primaryAiAssistance": [
+          "ROOT_CAUSE_SYNTHESIS",
+          "CROSS_WORKER_FAILURE_DEDUPLICATION",
+          "RESPONSIBLE_SCOPE_REVIEW",
+          "SCOPED_REPAIR_OR_REWORK_DIRECTIVE",
+          "CANARY_STRATEGY",
+          "QA_SECURITY_AND_REGRESSION_REVIEW",
+          "LEARNING_ELIGIBILITY_REVIEW",
+          "CENTRAL_DOCUMENT_SYNCHRONIZATION"
+        ],
+        "evidenceMarkers": [
+          "primary-ai-collaboration:REQUESTED|APPLIED|NOT_REQUIRED",
+          "primary-ai-collaboration-reason:*",
+          "primary-ai-collaboration-task:*"
+        ],
+        "learningRule": "COLLABORATION_OUTPUT_IS_CANDIDATE_ONLY_UNTIL_DETERMINISTIC_VERIFICATION",
+        "rawPrivateReasoningRequired": false,
+        "directMainWriteGrantedByCollaboration": false,
+        "policyMutationAuthorityGrantedByCollaboration": false,
+        "selfAcceptanceGrantedByCollaboration": false
       }
     },
     "freeAiExecution": {
