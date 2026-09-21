@@ -287,3 +287,9 @@ test('sample front door keeps operational metadata data-only',()=>{
   assert.match(homepage,/getJson\('\/homepage-platform-exposure\.json'\)/);
   assert.doesNotMatch(index,/strictScore|server-score|portfolio|exposure/i);
 });
+
+test('homepage exposes a stable deployment verification marker',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  assert.match(index,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
+  assert.match(index,/data-homepage-build="2026-09-21-sample-exact"/);
+});
