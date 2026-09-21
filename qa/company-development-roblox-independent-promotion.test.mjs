@@ -8,7 +8,7 @@ const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-devel
 test('Roblox promotion is per-game while technical evidence remains required',()=>{
   assert.ok(workflow.includes('ROBLOX_PER_GAME_PROMOTION=YES'));
   assert.ok(workflow.includes('ROBLOX_PROMOTION_COUNT_GATE=NONE'));
-  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=6'));
+  assert.ok(workflow.includes('ROBLOX_RUNNER_PARALLEL_CAPACITY=6'));
   assert.ok(workflow.includes('technical-plan:'));
   assert.ok(workflow.includes('technical-worker:'));
   assert.ok(workflow.includes('technical-persist:'));
@@ -37,7 +37,7 @@ test('five distinct leads remain a per-game evidence stage, not a game-count quo
 });
 
 test('already-preflighted retryable runtime work dispatches the existing continuation',()=>{
-  assert.ok(workflow.includes('let packagePending=0,preflightReady=0,runtimeReady=0;'));
+  assert.ok(workflow.includes('let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;'));
   assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
   assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT=$runtime_ready'));
@@ -46,9 +46,12 @@ test('already-preflighted retryable runtime work dispatches the existing continu
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml'));
 });
 
-test('merged Roblox source re-enters the existing canonical selected-platform router',()=>{
-  assert.ok(parentWorkflow.includes("- 'roblox-games/**'"));
-  assert.ok(parentWorkflow.includes('PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'));
-  assert.ok(parentWorkflow.includes('gh workflow run company-development-roblox-runtime.yml'));
-  assert.ok(!workflow.includes("on:\n  push:"));
+test('merged Roblox source stays in the Roblox lane while the central orchestrator dispatches both native lanes',()=>{
+  assert.ok(parentWorkflow.includes('company-development-roblox-runtime.yml'));
+  assert.ok(parentWorkflow.includes('company-development-unity-runtime.yml'));
+  assert.ok(parentWorkflow.includes('BIDIRECTIONAL_AUTO_PAIR=YES'));
+  assert.ok(parentWorkflow.includes('UNITY_WEB_RUNTIME_DISPATCH=NO'));
+  assert.ok(workflow.includes('persist Roblox source-bind results'));
+  assert.ok(workflow.includes('technical-plan:'));
+  assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
 });
