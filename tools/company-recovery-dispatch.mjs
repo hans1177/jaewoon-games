@@ -85,7 +85,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
             acceptanceCriteria:['repair only assigned responsible files','rerun exact failed stage','preserve verified checkpoint and gameplay semantics','no central policy write','no self acceptance'],
             verificationCommands:uniq(rec.verificationPlan),
-            dependencies:[],retries:0,maxRetries:3,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
+            dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
             evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-exact-stage:'+clean(rec.failureStage),'system-ai-scoped-game-repair:'+(gameSourceWrite?'YES':'NO'),'learning-route:existing-vibe-learning-motor']),
             supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
           });
