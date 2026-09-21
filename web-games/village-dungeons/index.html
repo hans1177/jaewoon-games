@@ -309,7 +309,15 @@ function clearWorld(){
   currentInteract=null;
 }
 
-function buildTown(){
+  addNpc("mayor","이장",-4,-3,0xc9a326,"quest");
+  addNpc("healer","치료사",4,-3,0xcf6f8d,"quest");
+  addNpc("hunter","사냥꾼",-7,8,0x4e7f45,"quest");
+  addNpc("resident","주민 대표",0,9,0x8c7152,"quest");
+  addNpc("guard","경비대장",7,8,0x6d778e,"quest");
+  addNpc("weapon","무기 상인",-8,-9,0x3f6fa8,"weapon");
+  addNpc("armor","방어구 상인",8,-9,0x7d5899,"armor");
+  var gate=addBox(0,1.5,-17,7,3,.8,0x665b4e);
+  addBox(-3.1,3,-17,.8,6,.8,0x665b4e);addBox(3.1,3,-17,.8,6,.8,0x665b4e);
   clearWorld();
   scene.background.set(0x8fc8e4);scene.fog.color.set(0x8fc8e4);scene.fog.near=28;scene.fog.far=72;
   addGround(0x6c9849);
