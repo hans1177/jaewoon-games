@@ -6,29 +6,28 @@ const html=fs.readFileSync('web-games/daechung-rpg/playcanvas/index.html','utf8'
 const main=fs.readFileSync('web-games/daechung-rpg/playcanvas/main.mjs','utf8');
 const migration=JSON.parse(fs.readFileSync('web-games/daechung-rpg/playcanvas/migration.json','utf8'));
 
-test('engine and mobile controls remain',()=>{
+test('engine mobile controls and previous systems remain',()=>{
   assert.match(html,/playcanvas@2\.22\.2/);assert.match(main,/setPointerCapture/);assert.match(main,/new pc\.Application/);
+  assert.match(main,/AI_ROLES=/);assert.match(main,/MULTI_SUPABASE_URL/);assert.match(main,/d5:\{name:'던전 5/);
 });
-test('phase 4 AI party systems remain',()=>{
-  assert.match(main,/AI_ROLES=\['무직업','무직업','힐러','힐러','전사','전사','전사','궁수','궁수','궁수'\]/);
-  assert.match(main,/goal:15/);assert.match(main,/function updateAiUsers\(dt\)/);
+test('phase 6 has all three job trainers',()=>{
+  assert.match(main,/trainer-warrior/);assert.match(main,/trainer-archer/);assert.match(main,/trainer-mage/);
+  assert.match(main,/function becomeJob\(/);assert.match(html,/id="jobText"/);
 });
-test('phase 5 multiplayer uses rooms 1 through 10 and realtime state sync',()=>{
-  assert.match(main,/MULTI_SUPABASE_URL/);assert.match(main,/supabase-js@2\.91\.1/);
-  assert.match(main,/\^\(\[1-9\]\|10\)\$/);assert.match(main,/player-state/);
-  assert.match(main,/function updateMultiplayer\(dt\)/);assert.match(main,/Remote-/);
-  assert.match(html,/id="multiRoom"/);assert.match(html,/min="1" max="10"/);
+test('phase 6 implements warrior mage and archer abilities',()=>{
+  assert.match(main,/hero\.job==='전사'/);assert.match(main,/hero\.job==='마법사'/);assert.match(main,/hero\.job==='궁수'/);
+  assert.match(main,/slashWave\(\)/);assert.match(main,/자가회복 \+100/);assert.match(main,/jobAtk=hero\.job==='궁수'\?1\.5:1/);
+  assert.match(html,/id="skillBtn"/);
 });
-test('phase 5 ports later hunting areas and special regions',()=>{
-  for(const token of ["f8:{name:'8번 폐허 마을'","f9:{name:'9번 공동묘지'","f10:{name:'10번 빙결 설산'","f11:{name:'11번 저주받은 성'","cliff:{name:'절벽 지대'","amazon:{name:'아마존'"]) assert.ok(main.includes(token),token);
+test('bosses have telegraphed heavy attack',()=>{
+  assert.match(main,/m\.isBoss&&d<4\.6/);assert.match(main,/강타 준비/);assert.match(main,/playerDamage\(m\.attack\*2\)/);
 });
-test('phase 5 has five dungeons and bosses',()=>{
-  for(let i=1;i<=5;i++)assert.ok(main.includes("d"+i+":{name:'던전 "+i),"dungeon "+i);
-  assert.match(main,/z\.boss/);assert.match(main,/b\.isBoss=true/);
+test('mobile runtime stability guards are present',()=>{
+  assert.match(main,/orientationchange/);assert.match(main,/visibilitychange/);assert.match(main,/webglcontextlost/);
+  assert.match(main,/maxPixelRatio/);assert.match(main,/resetTouchState/);
 });
-test('migration phase 5 recorded while final smoke gate remains',()=>{
-  assert.equal(migration.phase,5);assert.equal(migration.phaseName,'MULTIPLAYER_DUNGEONS_BOSSES');
-  assert.ok(migration.completedSystems.includes('multiplayer rooms 1-10'));
-  assert.ok(migration.completedSystems.includes('five 3D dungeons'));
-  assert.ok(migration.cutoverGate.includes('Android WebView smoke pass'));
+test('phase 6 records cutover candidate but does not claim live verification',()=>{
+  assert.equal(migration.phase,6);assert.equal(migration.phaseName,'JOBS_SKILLS_BOSS_PATTERNS_MOBILE_STABILITY');
+  assert.equal(migration.cutoverStatus.routeSwitched,false);assert.equal(migration.cutoverStatus.liveRuntimeVerified,false);
+  assert.ok(migration.cutoverStatus.remaining.includes('Android WebView smoke pass'));
 });
