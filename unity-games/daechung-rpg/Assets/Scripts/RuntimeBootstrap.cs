@@ -14,6 +14,7 @@ namespace JaewoonGames.DaechungRpg
         private string _message = "Select a hunting field to begin.";
         private Vector2 _scroll;
         private PrototypeAnimatedVisuals _visuals;
+        private float _qaHeartbeatAt;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoStart()
@@ -42,6 +43,7 @@ namespace JaewoonGames.DaechungRpg
 
         private void Start()
         {
+            Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=daechung-rpg status=PASS");
             if (_core == null)
             {
                 _core = Object.FindFirstObjectByType<GameCore>();
@@ -59,6 +61,14 @@ namespace JaewoonGames.DaechungRpg
             {
                 _visuals.ShowTown();
             }
+        }
+
+        private void Update()
+        {
+            if (_core == null || Time.unscaledTime < _qaHeartbeatAt) return;
+            _qaHeartbeatAt = Time.unscaledTime + 2f;
+            var player = _core.Player;
+            Debug.Log($"JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region={player.currentRegionId} level={player.level} hp={player.currentHp} maxHp={_core.GetMaxHp()} exp={player.experience} gold={player.gold} enemy={(_enemy != null ? _enemy.id : "none")} enemyHp={_enemyHp}");
         }
 
         private void OnGUI()
@@ -224,6 +234,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _core.SetRegion(regionId);
+            Debug.Log($"JAEWOON_UNITY_WEB_QA REGION game=daechung-rpg region={regionId}");
             _enemy = null;
             _enemyHp = 0;
 
@@ -275,6 +286,7 @@ namespace JaewoonGames.DaechungRpg
 
             var damage = _core.GetAttackPower();
             _enemyHp = Mathf.Max(0, _enemyHp - damage);
+            Debug.Log($"JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage={damage} enemy={_enemy.id} enemyHp={_enemyHp}");
 
             if (_enemyHp <= 0)
             {
@@ -322,6 +334,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _core.Save();
+            Debug.Log($"JAEWOON_UNITY_WEB_QA REWARD game=daechung-rpg enemy={defeated.id} exp={defeated.experienceReward} gold={defeated.goldReward} level={player.level}");
             _message = levelsGained > 0
                 ? $"Victory: +{defeated.experienceReward} EXP +{defeated.goldReward}G · LEVEL UP x{levelsGained}."
                 : $"Victory: +{defeated.experienceReward} EXP +{defeated.goldReward}G.";
