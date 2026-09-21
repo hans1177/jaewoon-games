@@ -173,33 +173,40 @@ ownerCurrentProductionContract:
       preserveExistingSourceBeforeAnyRegeneration: true
       firstContinuationGoal: REAL_GAMEPLAY_IMPLEMENTATION_AND_VALIDATION_READINESS
       catalogLifecycleRemainsCanonicalAuthority: true
+  directNativeDesignStructure:
+    commonCoreRequired: true
+    platformProfilesRequired: [ROBLOX, UNITY]
+    identicalPlatformProfileReuseForbidden: true
+    minimumDesignContractStartsDevelopment: true
+    strictDesignReviewRunsInParallel: true
+    requestEitherPlatformStartsBoth: true
+    unityWeb: DISABLED
+    internalReleaseFirst: true
+    externalReleasePerPlatformIndependent: true
+    totalGameDevelopmentCap: null
   categoryAndPlatform:
     legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true
     fixedSixCategoryProductionQuotaForbidden: true
     categorySelectionMayRoundRobin: true
     selectedPlatformMustDriveImplementationAndScoring: true
     webIsNotNativeDevelopmentSubstitute: true
-    firstWebStageEngine: UNITY_WEB
-    firstWebStageScopeOnly: true
-    firstWebStageCanonicalSourceRoot: unity-games/<gameId>/
-    firstWebStageBuildOutputRoot: web-games/<gameId>/
-    firstWebStageActualBrowserTouchRequired: true
-    firstWebStageKeyboardQaCannotSatisfyMobilePass: true
-    firstWebStageGenreCoreFunMarkerRequired: true
-    firstWebStageQaMarkers:
-      - MOBILE_TARGET
-      - MOBILE_INPUT
-      - CORE_FUN
-    postWebPlatformPipelineUnchanged: true
-    centralSyncDocument: company-learning/UNITY_WEB_FIRST_STAGE.md
+    firstWebStageEngine: DISABLED
+    firstWebStageScopeOnly: false
+    firstWebStageCanonicalSourceRoot: null
+    firstWebStageBuildOutputRoot: null
+    unityWebDevelopmentAdmissionAuthority: false
+    nativeAdmissionGate: MINIMUM_DESIGN_CONTRACT_READY
+    concurrentNativeTargets: [ROBLOX, UNITY]
+    bidirectionalAutoPair: true
+    centralSyncDocument: company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md
   webToTargetPlatformContinuity:
-    mode: UNITY_WEB_FIRST_STAGE_THEN_NATIVE_CONTINUATION
+    mode: LEGACY_DISABLED_DIRECT_NATIVE_REPLACEMENT
     webPhaseIsDisposablePrototype: false
     webPhasePurpose:
       - REAL_PLAYABLE_VALIDATION
       - PORTABLE_GAMEPLAY_BASE_IMPLEMENTATION
       - SYSTEM_CONTRACT_STABILIZATION
-    portableBaseRequiredBeforeTargetPlatformDispatch: true
+    portableBaseRequiredBeforeTargetPlatformDispatch: false
     portableBaseMustCover:
       - CORE_LOOP_RULES
       - GAME_STATE_MODEL
@@ -212,7 +219,7 @@ ownerCurrentProductionContract:
       - UI_STATE_CONTRACT
       - FAILURE_RETRY_AND_SESSION_FLOW
     platformHandoff:
-      source: CURRENT_VALIDATED_UNITY_WEB_BUILD_PLUS_APPROVED_DESIGN_BASELINE
+      source: MINIMUM_COMMON_CORE_PLUS_PLATFORM_SPECIFIC_DESIGN_PROFILE
       target: PROJECT_SELECTED_PLATFORM
       preserveValidatedGameplaySemantics: true
       silentCoreSystemReimplementationDriftForbidden: true
@@ -277,8 +284,8 @@ ownerCurrentProductionContract:
     externalProviderBoundary: 256
     globalAcrossConfiguredSelectedPlatformExecutors: true
     parallelExecutionDefault: true
-    webValidationParallelismTarget: 20
-    webValidationParallelismMax: 20
+    webValidationParallelismTarget: 0
+    webValidationParallelismMax: 0
     adaptiveExpansionSteps: [20, 32, 64, 128, 256]
     independentGamesMustRunInParallelWhenCapacityExists: true
     sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true
@@ -793,14 +800,14 @@ ownerCurrentProductionContract:
     officialCardRegistrationRequiresStrictPassAndPromotion: true
     reviseCandidateReturnsToSameCompactTestShelfAfterFix: true
   productionThroughput:
-    totalWebTestCandidateCountCap: null
+    totalWebTestCandidateCountCap: 0
     totalGameProductionCountCap: null
     concurrentGameWipMax: null
     concurrentGameWipScope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
     externalProviderBoundary: 256
-    webValidationParallelismTarget: 20
-    webValidationParallelismMax: 20
-    webValidationParallelFirst: true
+    webValidationParallelismTarget: 0
+    webValidationParallelismMax: 0
+    webValidationParallelFirst: false
     runtimeCapacityMayReduceActualConcurrency: true
     idleAutonomousProduction:
       enabled: true
@@ -975,8 +982,8 @@ portfolioGovernance:
       max: 6
       scope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
       parallelExecutionDefault: true
-      webValidationParallelismTarget: 6
-      webValidationParallelismMax: 6
+      webValidationParallelismTarget: 0
+      webValidationParallelismMax: 0
     UNITY:
       preserveExistingHistoricalSix: true
       robloxSetMustNotConsumeOrRewriteUnitySet: true
@@ -2270,7 +2277,7 @@ platformPresentationAndWeather:
       joinInProgressReceivesCurrentWeatherState: true
       localPerformanceMayReduceDensityNotMeaning: true
     platformImplementation:
-      WEB: UNITY_WEB_NATIVE_PARTICLES_FOG_LIGHTING_MATERIALS_AUDIO
+      WEB: LEGACY_ARCHIVE_ONLY_NOT_A_DEVELOPMENT_TARGET
       UNITY: UNITY_NATIVE_PARTICLES_FOG_LIGHTING_MATERIALS_AUDIO
       ROBLOX: ROBLOX_NATIVE_PARTICLEEMITTER_ATMOSPHERE_LIGHTING_COLORCORRECTION_SOUND
     mobilePerformance:
@@ -2292,6 +2299,8 @@ platformPresentationAndWeather:
 
 webValidationContractAdapter:
   version: 1
+  status: LEGACY_DISABLED
+  developmentAdmissionAuthority: false
   authority: OWNER_DIRECTIVE_2026-09-20
   centralContract: company-learning/platform-release-roadmap.json#webValidationBottleneckAdapterContract
   deterministicFirst: true
