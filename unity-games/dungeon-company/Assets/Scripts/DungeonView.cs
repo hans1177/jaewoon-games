@@ -192,9 +192,14 @@ namespace JaewoonGames.DungeonCompany
         private static Material Mat(Color color)
         {
             var probe = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            var source = probe.GetComponent<Renderer>().sharedMaterial;
-            var m = new Material(source);
-            m.color = color;
+            var renderer = probe.GetComponent<Renderer>();
+            var source = renderer != null ? renderer.sharedMaterial : null;
+            Material m = null;
+            if (source != null && source.shader != null)
+            {
+                m = new Material(source);
+                m.color = color;
+            }
             Object.Destroy(probe);
             return m;
         }
@@ -203,7 +208,7 @@ namespace JaewoonGames.DungeonCompany
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = name; go.transform.SetParent(parent, false); go.transform.localPosition = pos; go.transform.localScale = scale;
-            go.GetComponent<Renderer>().sharedMaterial = mat;
+            var renderer = go.GetComponent<Renderer>(); if (renderer != null && mat != null) renderer.sharedMaterial = mat;
             var col = go.GetComponent<Collider>(); if (col != null) Object.Destroy(col);
             return go;
         }
