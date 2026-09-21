@@ -122,6 +122,39 @@ function robloxBuildProfile(out,seed,mode){
     displayLabelKo:classified.displayLabelKo
   };
 }
+function dualPlatformProfiles(out,seed,mode){
+  const session=firstText(seed?.TARGET_SESSION_DIRECTION,seed?.TARGET_SESSION_MINUTES&&`${seed.TARGET_SESSION_MINUTES} minute target session`,'repeatable sessions');
+  const audience=firstText(seed?.TARGET_AUDIENCE,'general players');
+  const commonCore=firstText(out?.coreFun,out?.identity,'approved core gameplay');
+  const multiplayer=mode==='SINGLE'?'single-player authoritative local/session state':`${mode} multiplayer with authoritative server or validated network state`;
+  return {
+    ROBLOX:{
+      platform:'ROBLOX',
+      inputModel:'Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.',
+      sessionModel:`Roblox social session model: ${session}; fast join/rejoin and avatar-safe spawn flow for ${audience}.`,
+      multiplayerRuntime:mode==='SINGLE'?'Roblox server still validates gameplay remotes; no false multiplayer claim.':`Roblox server-authoritative ${mode} replication with join/leave sync and RemoteEvent validation.`,
+      performanceBudget:'Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.',
+      uiUx:'Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.',
+      saveAndNetwork:'Roblox DataStore-backed versioned save meaning plus server-validated remotes and rate limits when persistence/networking is required.',
+      platformContentAdaptation:`Preserve ${commonCore}; adapt pacing, avatar scale, social discovery and short-session Roblox conventions without changing core rules.`,
+      internalReleaseTarget:'Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.',
+      validationEvidence:'Roblox publish identity + exact source revision + real runtime + independent QA + regression + private-play evidence.'
+    },
+    UNITY:{
+      platform:'UNITY',
+      inputModel:'Unity Input System with touch-first controls, safe-area UI, gamepad/keyboard fallback and app lifecycle-safe input recovery.',
+      sessionModel:`Unity Android app session model: ${session}; suspend/resume, background/foreground recovery and offline/online transitions for ${audience}.`,
+      multiplayerRuntime:mode==='SINGLE'?'Unity local authoritative gameplay state with no false networking claim.':`Unity app ${mode} networking using validated transport/session ownership, reconnect and join/leave synchronization.`,
+      performanceBudget:'Android mobile budget covering memory, GPU, thermal load, battery, loading, texture/compression, pooling and GC pressure.',
+      uiUx:'Responsive Unity UI with device safe areas, touch targets, orientation/readability rules and native-app pause/resume behavior.',
+      saveAndNetwork:'Versioned local save plus validated backend/cloud synchronization only when required by the approved multiplayer/persistence design.',
+      platformContentAdaptation:`Preserve ${commonCore}; adapt scenes, prefabs, camera, mobile pacing and app lifecycle without copying Roblox-only assumptions.`,
+      internalReleaseTarget:'Internal or closed Android test build installable by the owner/testers before public store release.',
+      validationEvidence:'Exact APK/AAB/source revision + install/launch + real runtime + independent QA + regression + internal-test evidence.'
+    }
+  };
+}
+
 export function validateRobloxBuildProfile(profile,mode){
   const blockers=[];
   const expectedMode=clean(mode).toUpperCase();
@@ -167,10 +200,19 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   }
   if(MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
   setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED_OR_LEGACY_MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
-  const requireRobloxBuildProfile=clean(targetPlatform).toUpperCase()==='ROBLOX'&&['PRE_REVIEW','REVIEW_FEEDBACK'].includes(clean(phase).toUpperCase());
+  const requireRobloxBuildProfile=['PRE_REVIEW','REVIEW_FEEDBACK'].includes(clean(phase).toUpperCase());
   if(requireRobloxBuildProfile&&MODES.has(mode)){
     const profile=robloxBuildProfile(out,seed,mode);
     if(JSON.stringify(out.robloxBuildProfile||null)!==JSON.stringify(profile)){out.robloxBuildProfile=profile;repairs.push({field:'robloxBuildProfile',source:'GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY'});}
+  }
+  if(MODES.has(mode)){
+    const profiles=dualPlatformProfiles(out,seed,mode);
+    const current=out.platformProfiles&&typeof out.platformProfiles==='object'&&!Array.isArray(out.platformProfiles)?out.platformProfiles:{};
+    const next={
+      ROBLOX:{...profiles.ROBLOX,...(current.ROBLOX&&typeof current.ROBLOX==='object'?current.ROBLOX:{}),platform:'ROBLOX'},
+      UNITY:{...profiles.UNITY,...(current.UNITY&&typeof current.UNITY==='object'?current.UNITY:{}),platform:'UNITY'}
+    };
+    if(JSON.stringify(current)!==JSON.stringify(next)){out.platformProfiles=next;repairs.push({field:'platformProfiles',source:'DUAL_NATIVE_PLATFORM_ENVIRONMENT_DEFAULTS+DESIGN'});}
   }
   setMissingArray(out,'technicalAssumptions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
