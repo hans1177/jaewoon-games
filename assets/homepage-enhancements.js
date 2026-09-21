@@ -205,7 +205,7 @@ function buildCard(row){
     button(web,'Web 플레이','Web 준비중','webAction'),
     button(links.roblox,'Roblox','Roblox 개발중','robloxAction'),
     button(links.unity,'Unity','Unity 개발중','unityAction'),
-    button(links.fortnite,'Fortnite','Fortnite 개발중','fortniteAction')
+    button(links.fortnite,'Fortnite','Fortnite 개발중','uefnAction')
   ].join('');
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameActions">${actions}</div></div></article>`;
 }
