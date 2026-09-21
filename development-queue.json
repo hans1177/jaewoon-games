@@ -2131,7 +2131,7 @@
         "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T00:29:52.485Z",
-      "updatedAt": "2026-09-21T15:12:40.715Z",
+      "updatedAt": "2026-09-21T15:20:20.827Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -2166,8 +2166,8 @@
       "unityCandidateBranch": "development/unity-tech-fantasy-survival-35615745306",
       "unitySourceCommit": "2f8da267b03b36cf96c423353c6219cb56703f50",
       "unityBuildRunId": 35615822042,
-      "unityRuntimeSmokeRunId": 35617163820,
-      "unityIndependentQaRunId": null,
+      "unityRuntimeSmokeRunId": 35617839730,
+      "unityIndependentQaRunId": 35618056853,
       "unityRegressionRunId": null,
       "executionEvidence": {
         "version": 1,
@@ -2176,15 +2176,15 @@
         "sourceFingerprint": "bfd140bf994935e2ebed2534a014baf30389045fb4e5342063a5ee1a9f4a2069",
         "buildOrPackagePassed": true,
         "artifactIdentity": "sha256:28ba21928fb0ed339165249446b77cd80f340612c2d80c4d6d1cd6de372c8951",
-        "runtimePassed": false,
+        "runtimePassed": true,
         "independentQaPassed": false,
         "regressionPassed": false,
         "exactRevision": true,
-        "lastSuccessfulStage": "IMMUTABLE_ARTIFACT_BIND",
-        "failureStage": "TARGET_PLATFORM_RUNTIME",
-        "failureSignature": "121c30201e00f91a81c62501b4c7336c69d5da448424d4227edc60f33ee6bf7e"
+        "lastSuccessfulStage": "TARGET_PLATFORM_RUNTIME",
+        "failureStage": "INDEPENDENT_QA",
+        "failureSignature": "74d5f694d165da730a1529e59e3c594416c43a749629a81f87e734e7cb4cea42"
       },
-      "resumeStage": "TARGET_PLATFORM_RUNTIME",
+      "resumeStage": "INDEPENDENT_QA",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "ownerWebEditPropagation": {
@@ -2303,7 +2303,7 @@
       "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     }
   ],
-  "updatedAt": "2026-09-21T15:20:32.046Z",
+  "updatedAt": "2026-09-21T15:20:45.141Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
