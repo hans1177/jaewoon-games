@@ -1,4 +1,5 @@
 import * as pc from 'playcanvas';
+import {SLIME_GLB_BASE64} from './assets/slime-data.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('app');
@@ -7,8 +8,8 @@ app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
 app.setCanvasResolution(pc.RESOLUTION_AUTO);
 app.start();
 
-app.scene.ambientLight=new pc.Color(.34,.38,.44);
-app.scene.exposure=1.12;
+app.scene.ambientLight=new pc.Color(.22,.24,.30);
+app.scene.exposure=1.18;
 app.scene.gammaCorrection=pc.GAMMA_SRGB;
 
 const mat=(r,g,b,metal=0,gloss=.35)=>{
@@ -23,7 +24,6 @@ const M={
  chief:mat(.72,.48,.18,0,.28),merchant:mat(.58,.28,.12,0,.32),armor:mat(.55,.58,.64,.45,.58),cloth:mat(.18,.48,.62,0,.22),gold:mat(.92,.65,.18,.35,.7)
 };
 const portalMats=[mat(.24,.60,1,.18,.72),mat(.55,.30,1,.18,.72),mat(.15,.85,.66,.18,.72),mat(1,.48,.22,.18,.72),mat(.92,.25,.64,.18,.72),mat(.66,.75,.95,.18,.72),mat(.32,.95,.35,.18,.72)];
-
 function primitive(name,type,pos,scale,material,parent=app.root){
   const e=new pc.Entity(name);e.addComponent('model',{type});
   parent.addChild(e);e.setLocalPosition(...pos);e.setLocalScale(...scale);
@@ -33,11 +33,77 @@ function primitive(name,type,pos,scale,material,parent=app.root){
 function destroyChildren(root){while(root.children.length)root.children[0].destroy()}
 
 const sun=new pc.Entity('Sun');
-sun.addComponent('light',{type:'directional',color:new pc.Color(1,.93,.82),intensity:1.4,castShadows:true,shadowBias:.18,shadowDistance:70});
-sun.setEulerAngles(48,-35,0);app.root.addChild(sun);
+sun.addComponent('light',{type:'directional',color:new pc.Color(1,.78,.62),intensity:1.55,castShadows:true,shadowBias:.16,shadowDistance:70});
+sun.setEulerAngles(52,-38,0);app.root.addChild(sun);
+const fill=new pc.Entity('MoonFill');
+fill.addComponent('light',{type:'directional',color:new pc.Color(.28,.42,.65),intensity:.42,castShadows:false});
+fill.setEulerAngles(35,145,0);app.root.addChild(fill);
 
 const zoneRoot=new pc.Entity('ZoneRoot');app.root.addChild(zoneRoot);
 const actorRoot=new pc.Entity('ActorRoot');app.root.addChild(actorRoot);
+
+const CARTOON={
+  warrior:null,ranger:null,wizard:null,slime:null,ready:false,slimeUrl:null
+};
+const cartoonAssetPromises=new Map();
+function base64BlobUrl(base64,type='model/gltf-binary'){
+  const raw=atob(base64),bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  return URL.createObjectURL(new Blob([bytes],{type}));
+}
+function loadContainer(url,filename){
+  if(cartoonAssetPromises.has(url))return cartoonAssetPromises.get(url);
+  const pending=new Promise(resolve=>app.assets.loadFromUrlAndFilename(url,filename,'container',(err,asset)=>{
+    if(err){console.warn('cartoon asset fallback',filename,err);resolve(null);return}
+    resolve(asset);
+  }));
+  cartoonAssetPromises.set(url,pending);return pending;
+}
+function mountAsset(parent,asset,key,{scale=1,y=0,rotY=180}={}){
+  if(!asset?.resource?.instantiateRenderEntity||parent.__cartoonVisual)return null;
+  const visual=asset.resource.instantiateRenderEntity();
+  visual.name='CartoonVisual-'+key;parent.addChild(visual);
+  visual.setLocalPosition(0,y,0);visual.setLocalEulerAngles(0,rotY,0);visual.setLocalScale(scale,scale,scale);
+  parent.__cartoonVisual=visual;if(parent.model)parent.model.enabled=false;
+  if(Array.isArray(parent.__fallbackVisual))parent.__fallbackVisual.forEach(v=>{if(v)v.enabled=false});
+  visual.findComponents?.('render').forEach(r=>{r.castShadows=true;r.receiveShadows=true});
+  return visual;
+}
+function applyNpcAsset(n){
+  const asset=n.role==='trainer-archer'?CARTOON.ranger:n.role==='trainer-mage'?CARTOON.wizard:CARTOON.warrior;
+  return mountAsset(n,asset,n.role,{scale:.72,y:0,rotY:180});
+}
+function applyEnemyAsset(e){
+  const name=e.enemyName||'';
+  let asset=null,scale=.72,y=-.85,key='enemy';
+  if(/슬라임/.test(name)){asset=CARTOON.slime;scale=.82;key='slime'}
+  else if(/마법|악마|망령|심연|주술|마물/.test(name)){asset=CARTOON.wizard;scale=e.isBoss?1.05:.72;key='dark-mage'}
+  else if(/오크|기사|해골|고블린|수호|병사|추종자|대장|군주|왕/.test(name)){asset=CARTOON.warrior;scale=e.isBoss?1.12:.74;key='fighter'}
+  if(!asset)return null;
+  return mountAsset(e,asset,key,{scale,y,rotY:180});
+}
+function applyAiAsset(a){
+  const asset=a.role==='궁수'?CARTOON.ranger:a.role==='힐러'?CARTOON.wizard:CARTOON.warrior;
+  return mountAsset(a,asset,'ai-'+a.role,{scale:.68,y:-1.1,rotY:180});
+}
+function applyCartoonVisuals(){
+  const pv=mountAsset(player,CARTOON.warrior,'player',{scale:.72,y:-1.1,rotY:180});
+  if(pv){if(sword.model)sword.model.enabled=false;if(armorPlate.model)armorPlate.model.enabled=false;if(helmet.model)helmet.model.enabled=false}
+  npcs.forEach(applyNpcAsset);enemies.forEach(applyEnemyAsset);aiUsers.forEach(applyAiAsset);
+}
+async function loadCartoonAssets(){
+  CARTOON.slimeUrl=base64BlobUrl(SLIME_GLB_BASE64);
+  const [warrior,ranger,wizard,slime]=await Promise.all([
+    loadContainer('./assets/Warrior.gltf','Warrior.gltf'),
+    loadContainer('./assets/Ranger.gltf','Ranger.gltf'),
+    loadContainer('./assets/Wizard.gltf','Wizard.gltf'),
+    loadContainer(CARTOON.slimeUrl,'Slime.glb')
+  ]);
+  CARTOON.warrior=warrior;CARTOON.ranger=ranger;CARTOON.wizard=wizard;CARTOON.slime=slime;
+  CARTOON.ready=Boolean(warrior||ranger||wizard||slime);
+  applyCartoonVisuals();
+  if(CARTOON.ready)toast('카툰 RPG 에셋 적용 완료');
+}
 
 const player=primitive('Player','capsule',[0,1.1,8],[1.05,1.05,1.05],M.hero,actorRoot);
 const sword=primitive('Sword','box',[.75,1.15,0],[.12,1.2,.18],M.stone,player);sword.setLocalEulerAngles(0,0,-18);
@@ -65,7 +131,7 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('daechung-rpg-multi-id',multiplayer.playerId);
 
 
-const camera=new pc.Entity('Camera');camera.addComponent('camera',{clearColor:new pc.Color(.10,.18,.25),fov:58});app.root.addChild(camera);
+const camera=new pc.Entity('Camera');camera.addComponent('camera',{clearColor:new pc.Color(.055,.065,.085),fov:52});app.root.addChild(camera);
 
 const ZONES={
   f1:{name:'1번 사냥터',ground:M.grass,reward:[6,3],enemy:['초록 슬라임',35,4,2.9,M.slime,5]},
@@ -90,30 +156,46 @@ const ZONES={
 
 let portals=[],enemies=[],returnPortal=null,npcs=[];
 function addTree(x,z,material=M.grass){
-  const trunk=primitive('TreeTrunk','cylinder',[x,1.4,z],[.7,2.8,.7],M.wood,zoneRoot);
-  primitive('TreeTop','sphere',[0,2.8,0],[3.2,3.2,3.2],material,trunk);
+  const trunk=primitive('TreeTrunk','cylinder',[x,1.55,z],[.62,3.1,.62],M.wood,zoneRoot);
+  trunk.setLocalEulerAngles(0,(x*17+z*11)%360,3);
+  primitive('TreeCrownLow','sphere',[0,2.15,0],[2.8,2.15,2.8],material,trunk);
+  primitive('TreeCrownMid','sphere',[-.7,3.15,.25],[2.15,1.75,2.15],material,trunk);
+  primitive('TreeCrownHigh','sphere',[.8,3.55,-.2],[1.75,1.45,1.75],material,trunk);
 }
 function addHouse(x,z){
   const h=new pc.Entity('House');zoneRoot.addChild(h);h.setLocalPosition(x,0,z);
-  primitive('Body','box',[0,2,0],[7,4,6],M.wood,h);primitive('Roof','box',[0,4.5,0],[8,1.2,7],M.roof,h);primitive('Door','box',[0,1,-3.05],[1.3,2.2,.18],M.stone,h);
+  primitive('StoneBase','box',[0,.55,0],[7.5,1.1,6.5],M.stone,h);
+  primitive('PlasterBody','box',[0,2.35,0],[7,3.6,6],M.wood,h);
+  const roofL=primitive('RoofL','box',[-1.75,4.55,0],[4.7,.55,7.2],M.roof,h);roofL.setLocalEulerAngles(0,0,28);
+  const roofR=primitive('RoofR','box',[1.75,4.55,0],[4.7,.55,7.2],M.roof,h);roofR.setLocalEulerAngles(0,0,-28);
+  primitive('Door','box',[0,1.2,-3.08],[1.35,2.35,.22],M.stone,h);
+  primitive('BeamTop','box',[0,3.5,-3.09],[6.3,.22,.18],M.stone,h);
+  primitive('BeamL','box',[-2.55,2.25,-3.1],[.2,2.35,.18],M.stone,h);
+  primitive('BeamR','box',[2.55,2.25,-3.1],[.2,2.35,.18],M.stone,h);
+  const w1=primitive('WindowL','box',[-1.85,2.35,-3.13],[1.15,1.05,.12],M.gold,h);
+  const w2=primitive('WindowR','box',[1.85,2.35,-3.13],[1.15,1.05,.12],M.gold,h);
+  w1.model.castShadows=false;w2.model.castShadows=false;
+  primitive('Chimney','box',[2.2,5.2,1.2],[.8,2.1,.8],M.stone,h);
 }
 function addPortal(x,z,id,material,label){
   const base=primitive('Portal-'+label,'cylinder',[x,.22,z],[2.2,.22,2.2],material,zoneRoot);
-  primitive('PortalGlow-'+label,'cylinder',[x,1.7,z],[1.35,3.2,1.35],material,zoneRoot);
+  const glow=primitive('PortalGlow-'+label,'cylinder',[x,1.7,z],[1.35,3.2,1.35],material,zoneRoot);
+  glow.model.castShadows=false;
+  const light=new pc.Entity('PortalLight-'+label);light.addComponent('light',{type:'point',color:material.diffuse||new pc.Color(.4,.65,1),intensity:.65,range:7,castShadows:false});light.setLocalPosition(x,2.1,z);zoneRoot.addChild(light);
   base.portalId=id;base.label=label;return base;
 }
 function addNpc(name,role,x,z,material){
   const root=new pc.Entity('NPC-'+name);zoneRoot.addChild(root);root.setLocalPosition(x,0,z);
-  primitive('Body','capsule',[0,1.15,0],[.9,1,.9],material,root);
-  primitive('Head','sphere',[0,2.15,0],[.65,.65,.65],M.wood,root);
-  root.npcName=name;root.role=role;npcs.push(root);return root;
+  const body=primitive('Body','capsule',[0,1.15,0],[.9,1,.9],material,root);
+  const head=primitive('Head','sphere',[0,2.15,0],[.65,.65,.65],M.wood,root);
+  root.__fallbackVisual=[body,head];root.npcName=name;root.role=role;npcs.push(root);if(CARTOON.ready)applyNpcAsset(root);return root;
 }
 function ensureAiUsers(){
   if(aiUsers.length)return;
   AI_ROLES.forEach((role,i)=>{
     const e=primitive('AI-'+(i+1),'capsule',[0,1.1,0],[.92,.92,.92],role==='힐러'?M.cloth:role==='전사'?M.armor:role==='궁수'?M.merchant:M.chief,actorRoot);
     e.aiId='ai'+(i+1);e.aiName='유저 AI '+(i+1);e.role=role;e.hp=100;e.maxHp=100;e.attack=role==='전사'?18:role==='궁수'?14:10;e.range=role==='궁수'?8:2.2;e.cool=0;e.zone='town';e.weapon='맨손';e.gold=100+i*20;e.xp=0;e.contrib=0;
-    aiUsers.push(e);party.contrib[e.aiId]=0;
+    aiUsers.push(e);party.contrib[e.aiId]=0;if(CARTOON.ready)applyAiAsset(e);
   });
 }
 function placeAiForZone(){
@@ -127,6 +209,8 @@ function placeAiForZone(){
 function buildTown(){
   destroyChildren(zoneRoot);portals=[];enemies=[];returnPortal=null;npcs=[];
   primitive('Ground','box',[0,-.5,0],[72,1,72],M.grass,zoneRoot);
+  for(let z=-20;z<=20;z+=4)primitive('TownPath','box',[0,.03,z],[5.4,.08,3.3],M.stone,zoneRoot);
+  for(let x=-20;x<=20;x+=4)primitive('TownCrossPath','box',[x,.035,1.5],[3.3,.08,5.2],M.stone,zoneRoot);
   for(const [x,z] of [[-14,-12],[14,-12],[-14,12],[14,12],[-24,0],[24,0]])addHouse(x,z);
   for(let i=0;i<18;i++){const a=i/18*Math.PI*2,r=29+(i%3);addTree(Math.cos(a)*r,Math.sin(a)*r)}
   addNpc('촌장','chief',-4,7,M.chief);addNpc('무기상인','weapon',7,10,M.merchant);addNpc('방어구상인','armor',11,5,M.armor);addNpc('전사 전직관','trainer-warrior',-10,8,M.redwolf);
@@ -142,7 +226,7 @@ function spawnEnemy(i,spec){
   const angle=(i/7)*Math.PI*2+.4,r=10+(i%3)*4;
   const e=primitive(name+'-'+i,'sphere',[Math.cos(angle)*r,.85,Math.sin(angle)*r-8],[1.3,.85,1.3],material,zoneRoot);
   e.enemyName=name;e.hp=hp;e.maxHp=hp;e.attack=atk;e.speed=speed;e.alive=true;e.hitCd=.2+Math.random()*.5;
-  enemies.push(e);
+  enemies.push(e);if(CARTOON.ready)applyEnemyAsset(e);
 }
 function buildHunt(id){
   destroyChildren(zoneRoot);portals=[];enemies=[];returnPortal=null;npcs=[];
@@ -156,7 +240,7 @@ function buildHunt(id){
   if(z.boss){
     const [bn,bhp,batk,bmat]=z.boss;
     const b=primitive('Boss-'+bn,'capsule',[0,1.5,-14],[2.3,2.3,2.3],bmat,zoneRoot);
-    b.enemyName=bn;b.hp=bhp;b.maxHp=bhp;b.attack=batk;b.speed=2.4;b.alive=true;b.hitCd=.5;b.isBoss=true;enemies.push(b);
+    b.enemyName=bn;b.hp=bhp;b.maxHp=bhp;b.attack=batk;b.speed=2.4;b.alive=true;b.hitCd=.5;b.isBoss=true;enemies.push(b);if(CARTOON.ready)applyEnemyAsset(b);
   }
   player.setPosition(0,1.1,13);state.zone=key;state.portalCd=1;placeAiForZone();
   toast(z.name+' 입장');
@@ -304,6 +388,7 @@ function ensureRemoteEntity(id){
   const old=multiplayer.remote.get(id);if(old?.entity)return old.entity;
   const e=primitive('Remote-'+id,'capsule',[0,1.1,0],[1,1,1],M.gold,actorRoot);
   primitive('RemoteHead-'+id,'sphere',[0,1.15,0],[.62,.62,.62],M.cloth,e);
+  if(CARTOON.ready)mountAsset(e,CARTOON.warrior,'remote',{scale:.68,y:-1.1,rotY:180});
   return e;
 }
 function remotePlayerState(payload){
@@ -434,7 +519,7 @@ function clampPlayer(){
   const p=player.getPosition();player.setPosition(Math.max(-34,Math.min(34,p.x)),1.1,Math.max(-34,Math.min(34,p.z)));
 }
 
-buildTown();recalcStats();refreshHud();
+buildTown();recalcStats();refreshHud();loadCartoonAssets().catch(()=>{});
 
 app.on('update',dt=>{
   state.attackCd=Math.max(0,state.attackCd-dt);state.damageCd=Math.max(0,state.damageCd-dt);state.portalCd=Math.max(0,state.portalCd-dt);state.stunT=Math.max(0,state.stunT-dt);hero.skillCd=Math.max(0,hero.skillCd-dt);
@@ -450,7 +535,7 @@ app.on('update',dt=>{
   }
   for(const p of portals)p.rotate(0,55*dt,0);if(returnPortal)returnPortal.rotate(0,55*dt,0);
   if(hero.skillCd>0)$('skillBtn').textContent=skillLabel();
-  const pp=player.getPosition(),desired=new pc.Vec3(pp.x,10,pp.z+14);
+  const pp=player.getPosition(),desired=new pc.Vec3(pp.x,11.5,pp.z+13.2);
   camera.setPosition(camera.getPosition().lerp(camera.getPosition(),desired,Math.min(1,dt*6)));camera.lookAt(pp.x,1.2,pp.z-1.2);
 });
 function resetTouchState(){stopJoy()}
