@@ -235,22 +235,20 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
   assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
 
-test('Roblox package completion auto-dispatches preflight only while Studio remains human-approved',()=>{
+test('Roblox package completion auto-dispatches headless FAST_MVP and internal release without inventing evidence',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const continuation=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   assert.ok(continuation.includes('workflow_dispatch:'));
   assert.ok(!continuation.includes('workflow_run:'));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert.ok(continuation.includes('Roblox Vibe shared-model preflight'));
-  assert.ok(continuation.includes('Roblox Studio runtime'));
-  assert.ok(continuation.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'));
-  assert.ok(continuation.includes('ROBLOX_FAKE_RUNTIME_PASS=FORBIDDEN'));
-  assert.ok(continuation.includes('studio_run_approved:'));
-  assert.ok(continuation.includes('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN'));
-  assert.ok(continuation.includes("process.env.GITHUB_EVENT_NAME==='workflow_dispatch'"));
-  assert.ok(continuation.includes("String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]'"));
-  assert.ok(!continuation.includes('company-development-roblox-bootstrap.mjs'));
-  assert.ok(!continuation.includes('company-development-roblox-package.mjs'));
+  assert.ok(continuation.includes('Company DEVELOPMENT_CONFIRMED Roblox Headless FAST_MVP'));
+  assert.ok(continuation.includes('company-development-roblox-headless-fast-mvp.mjs'));
+  assert.ok(continuation.includes('HEADLESS_FAST_MVP'));
+  assert.ok(continuation.includes('robloxHeadlessFastMvpPassed=exact'));
+  assert.ok(continuation.includes("item.currentStep='INTERNAL_PLATFORM_RELEASE'"));
+  assert.ok(continuation.includes('Dispatch Open Cloud internal release'));
+  assert.ok(continuation.includes('company-development-roblox-release-promotion.yml'));
+  assert.ok(!continuation.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
 });
 
 test('new Roblox package identity clears every downstream preflight runtime and QA checkpoint',()=>{
