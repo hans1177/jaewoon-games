@@ -39,12 +39,14 @@ on:
       - 'tools/company-system-ai-queue.mjs'
       - 'tools/company-system-ai-learning.mjs'
       - 'tools/company-system-ai-learning-context.mjs'
+      - 'tools/company-system-ai-external-learning-feed.mjs'
       - 'tools/company-recovery-dispatch.mjs'
       - 'tools/company-recovery-escalation.mjs'
       - 'tools/company-recovery-queue.mjs'
       - 'qa/company-recovery-learning.test.mjs'
       - 'qa/company-system-ai-worker.test.mjs'
       - 'qa/company-system-ai-learning.test.mjs'
+      - 'qa/company-system-ai-external-learning-feed.test.mjs'
       - 'qa/company-system-ai-supervision-loop.test.mjs'
       - 'qa/company-security-recovery-e2e.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -87,11 +89,12 @@ jobs:
           set -euo pipefail
           node --check tools/company-system-ai-worker.mjs
           node --check tools/company-system-ai-learning-context.mjs
+          node --check tools/company-system-ai-external-learning-feed.mjs
           node --check tools/company-system-ai-queue.mjs
           node --check tools/company-recovery-dispatch.mjs
           node --check tools/company-recovery-escalation.mjs
           node --check tools/company-recovery-queue.mjs
-          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-learning.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs qa/company-recovery-learning.test.mjs
+          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-learning.test.mjs qa/company-system-ai-external-learning-feed.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs qa/company-recovery-learning.test.mjs qa/vibe2-external-ai-distillation.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/system-ai-shared-context.json
 
       - name: Reserve disjoint supervised assignments
