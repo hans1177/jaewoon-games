@@ -137,7 +137,6 @@ jobs:
           const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
           const seedState=JSON.parse(fs.readFileSync('/tmp/game-seed-state.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerResetIds=new Set(Array.isArray(seedState?.ownerAllGamesDesignReset?.gameIds)?seedState.ownerAllGamesDesignReset.gameIds.map(String):[]);
           const ownerResetAt=Date.parse(seedState?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetPassIds=new Set((seedState.seeds||[]).filter(seed=>{
@@ -173,6 +172,7 @@ jobs:
           const stale=(q.items||[]).filter(item=>{
             if(!canonicalGameIds.has(String(item.gameId||'').trim()))return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
+            if(item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE')return false;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')return false;
             if(state.endsWith('_REPAIR_REQUIRED'))return true;
