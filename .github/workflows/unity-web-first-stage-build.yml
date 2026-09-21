@@ -1,6 +1,13 @@
 name: Unity Web First Stage Build
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.build-requests/unity-web/**'
+      - '.github/workflows/unity-web-first-stage-build.yml'
+      - 'tools/company-unity-web-first-stage.mjs'
+      - 'unity-games/**'
   workflow_dispatch:
     inputs:
       request_file:
