@@ -59,6 +59,10 @@ const inventory={weapons:new Set(),armors:new Set()};
 const AI_ROLES=['무직업','무직업','힐러','힐러','전사','전사','전사','궁수','궁수','궁수'];
 const aiUsers=[];
 const party={members:new Set(),active:false,contrib:{player:0},goal:15};
+const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
+const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
+const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('daechung-rpg-multi-id')||('r'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),remote:new Map(),presenceIds:new Set(),sendAt:0};
+sessionStorage.setItem('daechung-rpg-multi-id',multiplayer.playerId);
 
 
 const camera=new pc.Entity('Camera');camera.addComponent('camera',{clearColor:new pc.Color(.10,.18,.25),fov:58});app.root.addChild(camera);
@@ -70,7 +74,18 @@ const ZONES={
   f4:{name:'4번 사냥터',ground:M.sand,reward:[24,14],enemy:['오크',200,15,2.8,M.orc,6]},
   f5:{name:'5번 사냥터',ground:M.stone,reward:[42,25],enemy:['균열 기사',380,24,3.0,M.knight,6]},
   f6:{name:'6번 사냥터',ground:M.stone,reward:[65,38],enemy:['해골 전사',650,32,3.1,M.knight,7]},
-  f7:{name:'7번 정글',ground:M.jungle,reward:[125,72],enemy:['정글 호랑이',1250,48,3.8,M.redwolf,7]}
+  f7:{name:'7번 정글',ground:M.jungle,reward:[125,72],enemy:['정글 호랑이',1250,48,3.8,M.redwolf,7]},
+  f8:{name:'8번 폐허 마을',ground:M.stone,reward:[180,45],enemy:['폐허 기사',1250,28,3.0,M.knight,7]},
+  f9:{name:'9번 공동묘지',ground:M.stone,reward:[220,60],enemy:['망령',1500,34,3.1,M.demon,7]},
+  f10:{name:'10번 빙결 설산',ground:M.snow,reward:[260,120],enemy:['빙설 늑대',2800,72,3.7,M.wolf,7]},
+  f11:{name:'11번 저주받은 성',ground:M.stone,reward:[430,210],enemy:['저주받은 기사',4300,92,3.2,M.knight,7]},
+  cliff:{name:'절벽 지대',ground:M.sand,reward:[140,72],enemy:['절벽 늑대',950,38,3.8,M.wolf,7]},
+  amazon:{name:'아마존',ground:M.jungle,reward:[150,80],enemy:['늪 악어',1000,40,3.2,M.jungle,7]},
+  d1:{name:'던전 1 · 고블린 동굴',ground:M.stone,reward:[80,35],enemy:['동굴 고블린',500,20,3.1,M.orc,7],boss:['고블린 대장',1800,45,M.orc]},
+  d2:{name:'던전 2 · 검은 광산',ground:M.stone,reward:[130,60],enemy:['광산 수호병',900,32,3.0,M.knight,7],boss:['철갑 수호자',2800,65,M.armor]},
+  d3:{name:'던전 3 · 붉은 제단',ground:M.sand,reward:[210,100],enemy:['붉은 마물',1400,48,3.3,M.demon,7],boss:['붉은 제단주',4200,90,M.redwolf]},
+  d4:{name:'던전 4 · 빙결 성채',ground:M.snow,reward:[320,160],enemy:['빙결 병사',2200,70,3.1,M.knight,7],boss:['빙결 군주',6800,120,M.snow]},
+  d5:{name:'던전 5 · 심연의 문',ground:M.stone,reward:[520,260],enemy:['심연 추종자',3600,95,3.2,M.demon,7],boss:['심연의 왕',11000,170,M.demon]}
 };
 
 let portals=[],enemies=[],returnPortal=null,npcs=[];
@@ -116,7 +131,10 @@ function buildTown(){
   for(let i=0;i<18;i++){const a=i/18*Math.PI*2,r=29+(i%3);addTree(Math.cos(a)*r,Math.sin(a)*r)}
   addNpc('촌장','chief',-4,7,M.chief);addNpc('무기상인','weapon',7,10,M.merchant);addNpc('방어구상인','armor',11,5,M.armor);
   const spots=[[-18,-5],[-12,-5],[-6,-5],[0,-5],[6,-5],[12,-5],[18,-5]];
-  portals=spots.map((p,i)=>addPortal(p[0],p[1],i+1,portalMats[i],String(i+1)));
+  portals=spots.map((p,i)=>addPortal(p[0],p[1],'f'+(i+1),portalMats[i],String(i+1)));
+  const extra=[['f8',-15,-12,'8'],['f9',-9,-12,'9'],['f10',-3,-12,'10'],['f11',3,-12,'11'],['cliff',9,-12,'절벽'],['amazon',15,-12,'아마존'],
+    ['d1',-12,18,'D1'],['d2',-6,18,'D2'],['d3',0,18,'D3'],['d4',6,18,'D4'],['d5',12,18,'D5']];
+  for(const [id,x,z,label] of extra)portals.push(addPortal(x,z,id,M.gold,label));
   player.setPosition(0,1.1,8);state.zone='town';state.portalCd=.8;placeAiForZone();
 }
 function spawnEnemy(i,spec){
@@ -128,16 +146,22 @@ function spawnEnemy(i,spec){
 }
 function buildHunt(id){
   destroyChildren(zoneRoot);portals=[];enemies=[];returnPortal=null;npcs=[];
-  const z=ZONES['f'+id];primitive('Ground','box',[0,-.5,0],[76,1,76],z.ground,zoneRoot);
+  const key=String(id).startsWith('f')||String(id).startsWith('d')||id==='cliff'||id==='amazon'?String(id):'f'+id;
+  const z=ZONES[key];primitive('Ground','box',[0,-.5,0],[76,1,76],z.ground,zoneRoot);
   for(let i=0;i<24;i++){const a=i/24*Math.PI*2,r=26+(i%4)*2; if(id===7)addTree(Math.cos(a)*r,Math.sin(a)*r,M.jungle); else primitive('Rock','box',[Math.cos(a)*r,.5,Math.sin(a)*r],[1.8,.9,1.5],M.stone,zoneRoot)}
   returnPortal=addPortal(0,8,'town',portalMats[0],'귀환');
   for(let i=0;i<z.enemy[5];i++)spawnEnemy(i,z.enemy);
-  player.setPosition(0,1.1,13);state.zone='f'+id;state.portalCd=1;placeAiForZone();
+  if(z.boss){
+    const [bn,bhp,batk,bmat]=z.boss;
+    const b=primitive('Boss-'+bn,'capsule',[0,1.5,-14],[2.3,2.3,2.3],bmat,zoneRoot);
+    b.enemyName=bn;b.hp=bhp;b.maxHp=bhp;b.attack=batk;b.speed=2.4;b.alive=true;b.hitCd=.5;b.isBoss=true;enemies.push(b);
+  }
+  player.setPosition(0,1.1,13);state.zone=key;state.portalCd=1;placeAiForZone();
   toast(z.name+' 입장');
 }
 function enterZone(target){
   if(target==='town'){party.active=false;state.partyKills=0;buildTown();updatePartyHud();toast('마을로 귀환');return}
-  buildHunt(Number(String(target).replace('f','')));
+  buildHunt(target);
   if(party.members.size){party.active=true;state.partyKills=0;for(const k of Object.keys(party.contrib))party.contrib[k]=0;updatePartyHud();toast('파티 사냥 시작 · 몬스터 15마리')}
 }
 
@@ -269,7 +293,7 @@ function updatePortals(){
   if(state.portalCd>0)return;
   const pp=player.getPosition();
   if(state.zone==='town'){
-    for(const p of portals)if(p.getPosition().distance(pp)<2.6){enterZone('f'+p.portalId);return}
+    for(const p of portals)if(p.getPosition().distance(pp)<2.6){enterZone(p.portalId);return}
   }else if(returnPortal&&returnPortal.getPosition().distance(pp)<2.6){enterZone('town')}
 }
 function updateEnemies(dt){
