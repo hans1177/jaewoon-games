@@ -376,7 +376,7 @@ test('Roblox Web handoff requires ready commercial presentation contract',()=>{
 test('development router carries presentation contract without changing canonical target sequence',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/presentationReady=evidenceGate\.presentationContract\?\.ready===true/);
-  assert.match(workflow,/presentationContract:evidenceGate\.presentationContract/);
+  assert.match(workflow,/presentationContract:firstGatePass\?null:evidenceGate\.presentationContract/);
   assert.match(workflow,/['"]presentation-contract['"]/);
   assert.match(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });

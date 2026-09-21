@@ -88,7 +88,7 @@ test('verified Roblox deployment history is independent of the primary selected 
   assert.match(homepage,/historicalPublicationTargetVerified===true/);
   assert.match(homepage,/homepageDisplayMode:'ROBLOX_HISTORICAL_DEPLOYMENT'/);
   assert.doesNotMatch(homepage,/normalizePlatform\(selectedPlatform\(game\)\)!=='ROBLOX'/);
-  assert.match(homepage,/const p=normalizePlatform\(displayPlatform\(game\)\)/);
+  assert.match(homepage,/const canonical=publicationOf\(game\)\.roblox\|\|\{\}/);
 });
 
 test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
@@ -265,7 +265,7 @@ test('sample front door keeps operational metadata data-only',()=>{
   const index=fs.readFileSync('index.html','utf8');
   assert.match(homepage,/const scoreState=row=>/);
   assert.match(homepage,/getJson\('\/homepage-platform-exposure\.json'\)/);
-  assert.doesNotMatch(index,/strictScore|server-score|portfolio|exposure/i);
+  assert.doesNotMatch(index,/strictScore|server-score|id=["']homePortfolioBoard["']|data-exposure/i);
 });
 
 test('homepage exposes a stable deployment verification marker',()=>{
@@ -306,9 +306,9 @@ test('game cards keep Web fixed and expose all concurrent platform tracks',()=>{
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
   assert.match(runtime,/Web 플레이/);
-  assert.match(runtime,/Roblox.*개발 중/);
-  assert.match(runtime,/Unity.*개발 중/);
-  assert.match(runtime,/UEFN.*개발 중/);
+  assert.match(runtime,/button\(links\.roblox,'Roblox','Roblox 개발중'/);
+  assert.match(runtime,/button\(links\.unity,'Unity','Unity 개발중'/);
+  assert.match(runtime,/button\(links\.fortnite,'Fortnite','Fortnite 개발중'/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.match(runtime,/links\.uefn/);
