@@ -285,6 +285,23 @@ function buildDevelopmentPipeline(catalog,status,testManifest={}){
   section.dataset.releaseCount=String(released.length);
   section.dataset.focusRunnerActive=runnerActive?'true':'false';
 }
+function updateLiveSummary(catalog,status){
+  const games=Array.isArray(catalog?.games)?catalog.games:[];
+  const platformOf=game=>normalizePlatform(displayPlatform(game));
+  const counts={
+    all:games.length,
+    roblox:games.filter(game=>platformOf(game)==='ROBLOX').length,
+    unity:games.filter(game=>platformOf(game)==='UNITY').length,
+    fortnite:games.filter(game=>platformOf(game)==='FORTNITE_UEFN').length,
+    web:games.filter(game=>game?.homepageWebPlayable===true&&String(game?.webPath||'').trim()).length
+  };
+  const values={metricAll:counts.all,metricRoblox:counts.roblox,metricUnity:counts.unity,metricFortnite:counts.fortnite,metricWeb:counts.web};
+  for(const [id,value] of Object.entries(values)){const node=document.getElementById(id);if(node)node.textContent=String(value);}
+  const opsStatus=document.getElementById('opsStatus');
+  const opsUpdated=document.getElementById('opsUpdated');
+  if(opsStatus)opsStatus.textContent='● 게임 운영 상태 연결됨';
+  if(opsUpdated)opsUpdated.textContent=`company-runtime · 상태 기준 ${status?.updatedAt||'정보 없음'}`;
+}
 function buildPortfolioBoard(){
   document.getElementById('homePortfolioBoard')?.remove();
   const pipeline=document.getElementById('developmentPipeline');
@@ -364,7 +381,7 @@ async function refresh(){
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure&&Array.isArray(exposure.games)?exposure:{games:[]};
     const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure]);
-    if(sig!==lastSignature){buildFocus(catalog,status);buildDevelopmentPipeline(catalog,status,testManifest||{});buildPortfolioBoard();buildGameCenter(catalog,status);lastSignature=sig;}
+    if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildDevelopmentPipeline(catalog,status,testManifest||{});buildPortfolioBoard();buildGameCenter(catalog,status);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
   }finally{refreshInFlight=false;}
