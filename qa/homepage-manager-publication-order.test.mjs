@@ -223,3 +223,11 @@ test('runtime homepage renderer preserves approved simple front door',()=>{
   assert.match(runtime,/scroll-snap-type:x mandatory/);
   assert.match(runtime,/foldGameCard\{flex:0 0 78vw/);
 });
+
+test('runtime portfolio board stays after the core game and pipeline flow',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const block=(runtime.split('function buildPortfolioBoard(){')[1]||'').split('function buildGameCenter')[0]||'';
+  assert.match(block,/getElementById\('developmentPipeline'\)/);
+  assert.match(block,/insertBefore\(section,pipeline\.nextSibling\)/);
+  assert.doesNotMatch(block,/insertBefore\(section,hub\)/);
+});
