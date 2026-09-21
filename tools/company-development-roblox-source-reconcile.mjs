@@ -5,7 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {validateRobloxBootstrap,validateWebPlatformHandoff} from './company-development-roblox-bootstrap.mjs';
+import {validateRobloxBootstrap} from './company-development-roblox-bootstrap.mjs';
+import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 
 const clean=value=>String(value??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
@@ -26,14 +27,9 @@ export function hasVerifiedVibe2SourceHandoff(item={}){
 }
 
 export function eligibleForRobloxSourceReconciliation(item={}){
-  if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
-  if(clean(item.selectedPlatform||item.targetPlatform).toUpperCase()!=='ROBLOX')return false;
-  const ordinaryWebGate=Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true;
-  const verifiedVibe2Handoff=hasVerifiedVibe2SourceHandoff(item);
-  if(!(ordinaryWebGate||verifiedVibe2Handoff))return false;
+  if(!clean(item.gameId))return false;
   if(clean(item.currentStep).toUpperCase()!=='TARGET_PLATFORM_SOURCE_BIND')return false;
-  if(clean(item.canonicalState).toUpperCase()==='DEVELOPMENT_BLOCKED')return false;
-  return Boolean(clean(item.gameId));
+  return platformDevelopmentEligible(item,'ROBLOX');
 }
 
 export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
@@ -73,7 +69,7 @@ function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   }
 }
 
-export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,roadmap={}}={}){
+export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
   const results=[];
   for(const item of queue.items||[]){
@@ -81,21 +77,6 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const sourcePath=`roblox-games/${item.gameId}`;
     const root=path.join(repoRoot,sourcePath);
     if(!fs.existsSync(root))continue;
-    if(roadmap?.developmentLifecycleMachine?.webToPlatformHandoff?.required===true){
-      const webHandoffVerdict=validateWebPlatformHandoff({handoff:item.webPlatformHandoff||{},roadmap,gameId:item.gameId});
-      if(!webHandoffVerdict.pass){
-        results.push({
-          gameId:item.gameId,
-          pass:false,
-          sourcePath,
-          sourceRevision:clean(sourceRevision),
-          saveRequired:false,
-          blockers:webHandoffVerdict.blockers,
-          failure:'web-platform-handoff-invalid',
-        });
-        continue;
-      }
-    }
     const handoffVerified=hasVerifiedVibe2SourceHandoff(item);
     if(handoffVerified){
       const expectedTree=clean(item.robloxVibe2VerifiedHandoff.sourceTreeSha);
@@ -158,15 +139,12 @@ function runCli(){
   const repoRoot=arg('repo-root','.');
   const sourceRevision=arg('source-revision');
   const resultsFile=arg('results','/tmp/roblox-source-reconciliation.json');
-  const roadmapFile=arg('roadmap','company-learning/platform-release-roadmap.json');
-  if(!queueFile||!runtimeRef||!sourceRevision||!roadmapFile)throw new Error('required: --queue, --runtime-ref, --source-revision, --roadmap');
+  if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
   const queue=readJson(queueFile);
-  const roadmap=readJson(roadmapFile);
   const results=evaluateExistingRobloxSources({
     queue,
     repoRoot,
     sourceRevision,
-    roadmap,
     loadBaseline:item=>{
       const baselinePath=clean(item.designBaselineSource);
       if(!baselinePath)throw new Error(`designBaselineSource missing: ${item.gameId}`);
