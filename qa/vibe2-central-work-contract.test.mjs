@@ -35,6 +35,18 @@ function writePolicy(root,version=196,overrides={}){
         staleContextMayNotCompleteWork:true,
         syncMode:'ROADMAP_FIRST_FAIL_CLOSED',
         mismatchAction:'BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE'
+      },
+      primaryAiOrchestration:{
+        internalVibeAiCollaboration:{
+          scope:'ALL_VIBE_INTERNAL_AI_AUTONOMOUS_WORKERS_NEURAL_DIAGNOSIS_CRITIC_ROOT_CAUSE_RECOVERY_PLANNER_IMPLEMENTATION_QA_RELEASE_SECURITY_AND_LEARNING_SYSTEMS',
+          collaborationMode:'PRIMARY_AI_NON_BLOCKING_COPILOT_OVERLAY',
+          autonomous24hExecutionContinuesWithoutPrimaryAi:true,
+          primaryAiPresenceIsRuntimeGate:false,
+          appliesToExistingAndFutureRegisteredInternalAi:true,
+          directMainWriteGrantedByCollaboration:false,
+          policyMutationAuthorityGrantedByCollaboration:false,
+          selfAcceptanceGrantedByCollaboration:false
+        }
       }
     },
     assistantRoadmapOrchestration:{
@@ -232,4 +244,19 @@ test('source worker rejects stale compiled policy before model generation',async
     runVibe2SourceWorker({cwd:root,responseFile:path.join(root,'unused-model-output.json')}),
     /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/
   );
+});
+
+
+test('Primary AI collaboration semantics are part of the Vibe execution fingerprint',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.developmentLifecycleMachine.primaryAiOrchestration.internalVibeAiCollaboration.appliesToExistingAndFutureRegisteredInternalAi=false;
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,false);
+  assert.ok(after.errors.includes('PRIMARY_AI_INTERNAL_VIBE_COVERAGE'));
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
 });
