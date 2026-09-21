@@ -12026,5 +12026,18 @@
     "artificialDistinctModelGateForbidden": true,
     "objective": "MINIMIZE_MODEL_SERIALIZATION_AND_LATENCY_WHILE_PRESERVING_ROLE_LEVEL_REVIEW_AND_DETERMINISTIC_QA",
     "qualityGateWeakeningForbidden": true
+  },
+  "learningRetrievalRouting": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "verifiedOnly": true,
+    "semanticRelevanceRequired": true,
+    "sameEngineAloneInsufficient": true,
+    "sameGameAndSameFailureHighestPriority": true,
+    "taskDomainAndResponsibleSourceTargetInferenceRequired": true,
+    "explicitRetrievalIneligibleMustBeExcluded": true,
+    "contextBudgeted": true,
+    "exactKnowledgeTraceRequired": true,
+    "objective": "USE_DIVERSE_VERIFIED_LEARNING_AT_THE_RIGHT_TASK_WITHOUT_CONTEXT_POLLUTION"
   }
 }
