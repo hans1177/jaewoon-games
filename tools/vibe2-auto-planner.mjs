@@ -136,7 +136,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
   if(clean(item?.status).toUpperCase()!=='ACTIVE'||stateFromCatalog(game)!=='development-confirmed')continue;
   const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
-  const unityWebFirstStage=firstStagePolicy?.enabled===true&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY';
+  const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'&&firstStagePolicy?.appliesToAllGames===true;
   if(unityWebFirstStage){
     const root=`unity-games/${id}`;
     const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
