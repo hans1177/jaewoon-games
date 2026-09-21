@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -833,7 +833,7 @@
     },
     {
       "id": "game-fantasy-survival-web-second-gate-collab-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "goal": "Collaborate with Vibe on fantasy-survival using only the already approved gameplay scope. Inspect the existing Web game and repair second-gate gaps that are already documented in company runtime: complete playable cycle evidence, at least two real world areas, approved visible gameplay scope coverage, and real interaction results. Preserve all owner-authored rules, balance, save semantics, multiplayer semantics, and the first-gate platform admission. Do not invent new gameplay scope or tune numbers. Make only necessary edits to the assigned Web game source.",
       "responsibleFiles": [
@@ -867,14 +867,14 @@
         "node --test qa/company-web-real-game-regression.test.mjs"
       ],
       "dependencies": [],
-      "retries": 1,
+      "retries": 2,
       "maxRetries": 3,
-      "reservationId": "system-ai:35555905973:1",
-      "reservedAt": "2026-09-21T03:01:59.987Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -887,19 +887,17 @@
         "pre-model-verification:skipped",
         "current-main-verification:failure",
         "worker-self-acceptance:NO",
-        "primary-ai-review-required:YES"
+        "primary-ai-review-required:YES",
+        "actions-run:35555905973"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-21T03:01:59.987Z"
+      "updatedAt": "2026-09-21T03:10:43.877Z"
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "ant-simulator",
       "goal": "Create the current non-financial growth and marketing execution package for 개미 시뮬레이터. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/ant-simulator/latest.json"
@@ -938,7 +936,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -946,9 +943,6 @@
       "id": "marketing-amusement-tycoon-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "amusement-tycoon",
       "goal": "Create the current non-financial growth and marketing execution package for 놀이공원 타이쿤. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/amusement-tycoon/latest.json"
@@ -987,7 +981,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -995,9 +988,6 @@
       "id": "marketing-bug-defense-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "bug-defense",
       "goal": "Create the current non-financial growth and marketing execution package for 곤충 디펜스. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/bug-defense/latest.json"
@@ -1036,7 +1026,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1044,9 +1033,6 @@
       "id": "marketing-daechung-rpg-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "daechung-rpg",
       "goal": "Create the current non-financial growth and marketing execution package for 대충 RPG. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/daechung-rpg/latest.json"
@@ -1085,7 +1071,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1093,9 +1078,6 @@
       "id": "marketing-line-defense-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "line-defense",
       "goal": "Create the current non-financial growth and marketing execution package for 골목 군단 대전. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/line-defense/latest.json"
@@ -1134,7 +1116,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1142,9 +1123,6 @@
       "id": "marketing-village-dungeons-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "village-dungeons",
       "goal": "Create the current non-financial growth and marketing execution package for 마을 던전 RPG. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/village-dungeons/latest.json"
@@ -1183,7 +1161,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1191,9 +1168,6 @@
       "id": "marketing-fantasy-survival-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "fantasy-survival",
       "goal": "Create the current non-financial growth and marketing execution package for 마력숲 생존기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/fantasy-survival/latest.json"
@@ -1232,7 +1206,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1240,9 +1213,6 @@
       "id": "marketing-monster-adventure-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "monster-adventure",
       "goal": "Create the current non-financial growth and marketing execution package for 몬스터 어드벤처. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/monster-adventure/latest.json"
@@ -1281,7 +1251,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1289,9 +1258,6 @@
       "id": "marketing-seed-action-survival-rogu-echoes-of-the-lost-star-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "goal": "Create the current non-financial growth and marketing execution package for 잃어버린 별의 메아리. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-action-survival-rogu-echoes-of-the-lost-star/latest.json"
@@ -1330,7 +1296,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1338,9 +1303,6 @@
       "id": "marketing-seed-casual-realm-weaver-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "seed-casual-realm-weaver",
       "goal": "Create the current non-financial growth and marketing execution package for 세계의 직조자. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-casual-realm-weaver/latest.json"
@@ -1379,7 +1341,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1387,9 +1348,6 @@
       "id": "marketing-seed-idle-growth-rpg-crystal-bloom-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
       "goal": "Create the current non-financial growth and marketing execution package for 수정의 개화. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-idle-growth-rpg-crystal-bloom/latest.json"
@@ -1428,7 +1386,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1436,9 +1393,6 @@
       "id": "marketing-seed-puzzle-chromatic-cascade-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "seed-puzzle-chromatic-cascade",
       "goal": "Create the current non-financial growth and marketing execution package for 색채의 연쇄. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-puzzle-chromatic-cascade/latest.json"
@@ -1477,7 +1431,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1485,9 +1438,6 @@
       "id": "marketing-seed-single-defense-strat-celestial-bastion-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
       "goal": "Create the current non-financial growth and marketing execution package for 천상의 보루. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-single-defense-strat-celestial-bastion/latest.json"
@@ -1526,7 +1476,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1534,9 +1483,6 @@
       "id": "marketing-seed-story-complete-rpg-chronicles-of-eldoria-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
       "goal": "Create the current non-financial growth and marketing execution package for 엘도리아 연대기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-story-complete-rpg-chronicles-of-eldoria/latest.json"
@@ -1575,7 +1521,6 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     },
@@ -1583,9 +1528,6 @@
       "id": "marketing-survival-pre-release-v1",
       "status": "queued",
       "priority": "normal",
-      "department": "planning-growth-marketing",
-      "taskType": "marketing",
-      "gameId": "survival",
       "goal": "Create the current non-financial growth and marketing execution package for 나의 생존기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/survival/latest.json"
@@ -1624,10 +1566,8 @@
         "learning-route:existing-vibe-learning-motor"
       ],
       "supervisorReviewRequired": true,
-      "jointDecisionRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
       "updatedAt": "2026-09-21T02:59:00.000Z"
     }
-  ],
-  "updatedAt": "2026-09-21T03:09:58.368Z"
+  ]
 }
