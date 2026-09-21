@@ -226,6 +226,17 @@
     "cloudflareBuildOutputRequired": true,
     "mobileBrowserQaRequired": true,
     "failureState": "REPAIR_REQUIRED",
-    "retryLimit": null
+    "retryLimit": null,
+    "runtimeQaContract": {
+      "queryMode": "qa=1",
+      "startOrEnterGameplayKey": "Digit1",
+      "coreActionKey": "Space",
+      "safeReturnOrResetKey": "KeyR",
+      "evidencePrefix": "JAEWOON_UNITY_WEB_QA",
+      "realGameFunctionsOnly": true,
+      "fakeStateMutationForbidden": true,
+      "browserValidator": "tools/company-unity-web-gameplay-validation.mjs",
+      "initialGameplayQaIsFinalCoreFunPass": false
+    }
   }
 }
