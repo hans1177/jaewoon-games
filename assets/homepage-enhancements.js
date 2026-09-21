@@ -228,12 +228,6 @@ function buildFocus(catalog,status){
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${native?`<a class="homeFocusBtn" href="${esc(native)}">내부 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">개발 상태 보기</a>'}</div>`;
 }
-function homepageArtbookPath(game){
-  const explicit=String(game?.homepageArtbookPath||'').trim();
-  if(explicit)return explicit;
-  const id=gameIdOf(game);
-  return id?`/artbook-viewer.html?game=${encodeURIComponent(id)}`:'';
-}
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
   const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return platformReleaseLabel(p);};
@@ -242,11 +236,9 @@ function buildCard(row){
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'robloxAction'),
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'unityAction')
   ].join('');
-  const artbook=homepageArtbookPath(game);
-  const artbookBtn=artbook?`<a class="foldGameArtbookBtn" href="${esc(artbook)}">아트북 보기</a>`:'';
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
   const direct=links.roblox||links.unity||'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div>${artbookBtn}</div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
