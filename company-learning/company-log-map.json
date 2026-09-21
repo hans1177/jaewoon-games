@@ -101,7 +101,22 @@
     "workerMustNotInventPolicy": true,
     "workerMayCompleteCanonicalTaskWhenDeterministicGatePasses": true,
     "reworkDirectiveMustReferenceTaskOrPriorEvidence": true,
-    "supervisorAbsenceIsNotAWorkerBlocker": true
+    "supervisorAbsenceIsNotAWorkerBlocker": true,
+    "internalVibeAiCollaboration": {
+      "version": 1,
+      "requiredWhenEscalated": true,
+      "markers": [
+        "PRIMARY_AI_COLLABORATION=REQUESTED|APPLIED|NOT_REQUIRED",
+        "PRIMARY_AI_COLLABORATION_REASON",
+        "PRIMARY_AI_COLLABORATION_TASK",
+        "FAILURE_STAGE",
+        "FAILURE_SIGNATURE",
+        "VERIFICATION_EVIDENCE"
+      ],
+      "rawPrivateReasoningLogged": false,
+      "autonomousCompletionStillAllowed": true,
+      "deterministicQaStillAuthoritative": true
+    }
   },
   "systemAiWorkerLogContract": {
     "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
