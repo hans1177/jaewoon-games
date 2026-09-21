@@ -2,6 +2,8 @@
 // 역할: 총괄 감독 상태와 의미 기반 제작 분류/선택 플랫폼 상태를 최신 상태로 동기화한다.
 // 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 승인된 설계 전체 분량의 Web 동반 게임 검증 후 선택 플랫폼으로 진행한다.
 import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
 import {
@@ -95,10 +97,52 @@ const developmentHomepageScore=row=>{
 };
 const homepageLatestWork=(game,queue)=>clean(queue?.homepageRecentWork||game?.homepageRecentWork||queue?.currentStep||queue?.resumeStage||queue?.canonicalState)||'개발 작업 정보 없음';
 
+export function loadVerifiedHomepageRuntimeMedia({filesystem=fs,root='company-records/runtime-media'}={}){
+  const out=new Map();
+  if(!filesystem?.existsSync?.(root))return out;
+  const policy=optionalJson(filesystem,centralPolicyPath,{})?.homepagePresentation?.runtimeMedia||{};
+  const expectedRoot=clean(policy.manifestRoot||root).replace(/\\/g,'/');
+  const assetRoot=clean(policy.assetRoot||'assets/runtime-evidence').replace(/^\/+|\/+$/g,'');
+  if(expectedRoot&&clean(root).replace(/\\/g,'/')!==expectedRoot)throw new Error('RUNTIME_MEDIA_MANIFEST_ROOT_MISMATCH');
+  const files=[];
+  const walk=dir=>{for(const name of filesystem.readdirSync(dir)){const full=path.join(dir,name),stat=filesystem.statSync(full);if(stat.isDirectory())walk(full);else if(stat.isFile()&&name.endsWith('.json'))files.push(full);}};
+  walk(root);
+  const runtimeVerified=value=>value===true||/(?:^|_)(?:PASS|VERIFIED)(?:_|$)/i.test(clean(value));
+  const normalizedAssetPath=value=>clean(value).replace(/^\/+/, '').replace(/\\/g,'/');
+  for(const manifestPath of files){
+    const record=optionalJson(filesystem,manifestPath,null);
+    if(!record||clean(record.domain).toLowerCase()!=='runtime-media'||clean(record.status).toUpperCase()!=='VERIFIED')continue;
+    const gameId=clean(record?.scope?.gameId||record?.scope?.id),platform=normalizeSelectedPlatform(record?.scope?.platform);
+    if(!gameId||!platform)continue;
+    const media=Array.isArray(record?.data?.media)?record.data.media:[];
+    const valid=[];
+    for(const row of media){
+      const kind=clean(row?.kind).toUpperCase(),mime=clean(row?.mime).toLowerCase(),rel=normalizedAssetPath(row?.path),sha256=clean(row?.sha256).toLowerCase(),captureAt=clean(row?.captureAt),sourceRevision=clean(row?.sourceRevision||record?.provenance?.sourceRevision),artifactIdentity=clean(row?.artifactIdentity||record?.provenance?.artifactIdentity);
+      if(!['IMAGE','VIDEO'].includes(kind)||!rel.startsWith(assetRoot+'/')||!/^([a-f0-9]{64})$/.test(sha256)||!captureAt||!sourceRevision||!artifactIdentity||!runtimeVerified(row?.runtimeVerification))continue;
+      if(kind==='IMAGE'&&!/^image\/(?:png|jpeg|webp)$/i.test(mime))continue;
+      if(kind==='VIDEO'&&!/^video\/(?:webm|mp4)$/i.test(mime))continue;
+      if(!filesystem.existsSync(rel)||!filesystem.statSync(rel).isFile())continue;
+      const actual=crypto.createHash('sha256').update(filesystem.readFileSync(rel)).digest('hex');
+      if(actual!==sha256)continue;
+      valid.push({kind,path:'/'+rel,mime,sha256,captureAt,sourceRevision,artifactIdentity,runtimeVerification:'VERIFIED',representative:row?.representative===true});
+    }
+    const images=valid.filter(row=>row.kind==='IMAGE').sort((a,b)=>Date.parse(b.captureAt)-Date.parse(a.captureAt));
+    const videos=valid.filter(row=>row.kind==='VIDEO').sort((a,b)=>Date.parse(b.captureAt)-Date.parse(a.captureAt));
+    const representative=images.find(row=>row.representative)||images[0]||null;
+    const preview=representative?(videos.find(row=>row.representative)||videos[0]||null):null;
+    if(!representative&&!preview)continue;
+    const basis=preview||representative,key=`${gameId}|${platform}`,candidate={verified:true,platform,manifestPath:manifestPath.replace(/\\/g,'/'),captureAt:basis.captureAt,sourceRevision:basis.sourceRevision,artifactIdentity:basis.artifactIdentity,representative,preview};
+    const old=out.get(key);
+    if(!old||Date.parse(candidate.captureAt)>Date.parse(old.captureAt))out.set(key,candidate);
+  }
+  return out;
+}
+
 export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={}}={}){
   if(!catalog||!Array.isArray(catalog.games))return catalog;
   const queueById=latestById(developmentQueue?.items,'gameId');
   const seedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
+  const runtimeMediaByKey=loadVerifiedHomepageRuntimeMedia({filesystem:fs});
   catalog.runtimeAuthority='company-runtime';
   catalog.runtimeInfoAuthority='company-runtime';
   catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
@@ -106,6 +150,8 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
     const id=clean(game?.id);if(!id)continue;
     const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
     const platform=normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
+    const runtimeMedia=platform?runtimeMediaByKey.get(`${id}|${platform}`)||null:null;
+    if(runtimeMedia)game.homepageRuntimeMedia=runtimeMedia;else delete game.homepageRuntimeMedia;
     const score=developmentHomepageScore(queue);
     const baseGenres=Array.isArray(game?.genre)?game.genre:[];
     const robloxGenre=clean(seed?.ROBLOX_GENRE_LABEL_KO||seed?.ROBLOX_GENRE||queue?.ROBLOX_GENRE_LABEL_KO||queue?.ROBLOX_GENRE);
@@ -129,7 +175,8 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       latestWork:homepageLatestWork(game,queue),
       updatedAt:queue?.updatedAt||queue?.webValidationLastAttemptAt||seed?.ROBLOX_GENRE_REVIEWED_AT||seed?.updatedAt||catalog.updatedAt||null,
       status:clean(queue?.canonicalState||queue?.status||seed?.status||game?.lifecycleState)||'ACTIVE',
-      productionClass:clean(game?.productionClass||'DESIGN_ONLY').toUpperCase()
+      productionClass:clean(game?.productionClass||'DESIGN_ONLY').toUpperCase(),
+      runtimeMedia:runtimeMedia||null
     };
   }
   catalog.runtimeCounts={...(catalog.runtimeCounts||{}),canonicalGames:catalog.games.length,homepageInfo:catalog.games.filter(game=>game.homepageInfo?.authority==='company-runtime').length};
