@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "gameId": "daechung-rpg",
+  "gameName": "대충 RPG",
+  "releaseStrategy": "FAST_MVP",
+  "releasePrimaryPlatform": "ROBLOX",
+  "unityParallelNotBlockingRobloxMvp": true,
+  "scopeFreeze": true,
+  "launchCore": [
+    "four fixed party slots",
+    "player plus AI companions",
+    "story NPC recruitment",
+    "four player classes",
+    "equipment/AI-style tuning",
+    "one field boss",
+    "boss and hidden companion paths"
+  ],
+  "deferredUntilAfterMvp": [
+    "multiple regions",
+    "rival-party seasons",
+    "large companion roster expansion",
+    "party-specific endings",
+    "advanced relationship quest chains"
+  ],
+  "releaseGates": [
+    "solo 1+3 party",
+    "2+ player replaces AI slots",
+    "mobile combat",
+    "companion unlock persistence",
+    "save/rejoin",
+    "boss progression regression"
+  ],
+  "evidencePolicy": {
+    "runtimePassRequired": true,
+    "mobilePassRequired": true,
+    "multiplayerPassRequired": true,
+    "saveRejoinPassRequired": true,
+    "regressionPassRequired": true,
+    "aiMayInventPass": false
+  },
+  "updatedAt": "2026-09-22T02:43:00+09:00"
+}

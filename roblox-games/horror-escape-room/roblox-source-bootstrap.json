@@ -3,7 +3,7 @@
   "gameId": "horror-escape-room",
   "gameName": "심야 술래잡기",
   "platform": "ROBLOX",
-  "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+  "stage": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
   "authority": "OWNER_DIRECT_DEVELOPMENT",
   "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
   "sourcePath": "roblox-games/horror-escape-room",
@@ -19,9 +19,23 @@
     "shared/VisualStyle.luau",
     "server/Game.server.luau",
     "client/Game.client.luau",
-    "default.project.json"
+    "default.project.json",
+    "launch-mvp.json"
   ],
-  "nextRequiredStage": "ROBLOX_RUNTIME_AND_MULTIPLAYER_QA",
-  "updatedAt": "2026-09-22T02:12:00+09:00",
-  "visualArtPass": "STYLIZED_ROBLOX_V1"
+  "nextRequiredStage": "ROBLOX_MVP_RELEASE_CANDIDATE",
+  "updatedAt": "2026-09-22T02:43:00+09:00",
+  "visualArtPass": "STYLIZED_ROBLOX_V1",
+  "releaseStrategy": "FAST_MVP",
+  "releasePrimaryPlatform": "ROBLOX",
+  "unityParallelNotBlockingRobloxMvp": true,
+  "newFeatureExpansionFrozenUntilRobloxMvp": true,
+  "robloxMvpMustPass": [
+    "1-player AI fill",
+    "2+ player real monster assignment",
+    "freeze/rescue sync",
+    "monster abilities",
+    "mobile controls",
+    "save/rejoin",
+    "round restart regression"
+  ]
 }

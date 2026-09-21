@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "gameId": "cozy-island",
+  "gameName": "포근섬",
+  "releaseStrategy": "FAST_MVP",
+  "releasePrimaryPlatform": "ROBLOX",
+  "unityParallelNotBlockingRobloxMvp": true,
+  "scopeFreeze": true,
+  "launchCore": [
+    "manual wood/food gathering",
+    "resident hiring and automation",
+    "barracks and troop recruitment",
+    "visible automatic base battles",
+    "five resource bases and island conquest"
+  ],
+  "deferredUntilAfterMvp": [
+    "new troop classes",
+    "naval warfare",
+    "alliances",
+    "unrest",
+    "world events",
+    "rare islands",
+    "additional biomes"
+  ],
+  "releaseGates": [
+    "solo core loop",
+    "2+ player support semantics",
+    "mobile controls",
+    "save/rejoin",
+    "no fishing remnants",
+    "five-base completion regression"
+  ],
+  "evidencePolicy": {
+    "runtimePassRequired": true,
+    "mobilePassRequired": true,
+    "multiplayerPassRequired": true,
+    "saveRejoinPassRequired": true,
+    "regressionPassRequired": true,
+    "aiMayInventPass": false
+  },
+  "updatedAt": "2026-09-22T02:43:00+09:00"
+}

@@ -3,7 +3,7 @@
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
   "platform": "ROBLOX",
-  "stage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+  "stage": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
   "authority": "OWNER_DIRECT_DEVELOPMENT",
   "designBaselineSource": "design/daechung-rpg/2026-09-19/design-revised.json",
   "sourcePath": "roblox-games/daechung-rpg",
@@ -19,9 +19,22 @@
     "shared/VisualStyle.luau",
     "server/Game.server.luau",
     "client/Game.client.luau",
-    "default.project.json"
+    "default.project.json",
+    "launch-mvp.json"
   ],
-  "nextRequiredStage": "ROBLOX_RUNTIME_AND_MULTIPLAYER_QA",
-  "updatedAt": "2026-09-22T02:12:00+09:00",
-  "visualArtPass": "STYLIZED_ROBLOX_V1"
+  "nextRequiredStage": "ROBLOX_MVP_RELEASE_CANDIDATE",
+  "updatedAt": "2026-09-22T02:43:00+09:00",
+  "visualArtPass": "STYLIZED_ROBLOX_V1",
+  "releaseStrategy": "FAST_MVP",
+  "releasePrimaryPlatform": "ROBLOX",
+  "unityParallelNotBlockingRobloxMvp": true,
+  "newFeatureExpansionFrozenUntilRobloxMvp": true,
+  "robloxMvpMustPass": [
+    "solo 1+3 party",
+    "2+ player replaces AI slots",
+    "mobile combat",
+    "companion unlock persistence",
+    "save/rejoin",
+    "boss progression regression"
+  ]
 }
