@@ -6,8 +6,8 @@
   "strategy": "PARALLEL_MIGRATION_THEN_CUTOVER",
   "legacyEntry": "../index.html",
   "previewEntry": "./index.html",
-  "phase": 1,
-  "phaseName": "3D_FOUNDATION",
+  "phase": 2,
+  "phaseName": "PORTAL_HUNTING_COMBAT_LOOP",
   "preserveSystems": [
     "quests",
     "shops",
@@ -27,5 +27,17 @@
     "party AI parity",
     "multiplayer parity",
     "Android WebView smoke pass"
+  ],
+  "completedSystems": [
+    "3D village foundation",
+    "mobile joystick",
+    "7 town portals",
+    "real portal zone traversal",
+    "return portal",
+    "zone-specific enemies",
+    "enemy chase and contact damage",
+    "melee attack and kill",
+    "XP gold level progression",
+    "death and village respawn"
   ]
 }
