@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/company-development-roblox-runtime.yml'
       - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-selected-platform-router.test.mjs'
@@ -103,8 +104,6 @@ jobs:
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(!concurrentDefault&&!secondaryOwnerFocus)continue;
-            const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
-            if(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             const candidateReady=secondaryOwnerFocus
@@ -119,7 +118,7 @@ jobs:
               gameName:item.gameName||item.gameId,
               baseline:item.designBaselineSource,
               artbook:item.artbookSource||`artbook-submissions/${item.gameId}/current.json`,
-              webHandoff:item.webPlatformHandoff||null,
+              designProfile:item.platformDesignProfiles?.ROBLOX||null,
               target,
               secondaryOwnerFocus,
             });
@@ -127,13 +126,13 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
-          console.log(`DEVELOPMENT_GAME_WIP_MAX=${DEVELOPMENT_GAME_WIP_MAX}`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=6');
           NODE
 
   source-worker:
@@ -172,7 +171,6 @@ jobs:
           GAME_NAME: ${{ matrix.gameName }}
           BASELINE_SOURCE: ${{ matrix.baseline }}
           ARTBOOK_SOURCE: ${{ matrix.artbook }}
-          WEB_HANDOFF_JSON: ${{ toJSON(matrix.webHandoff) }}
           TARGET_SOURCE: ${{ matrix.target }}
         shell: bash
         run: |
@@ -182,17 +180,15 @@ jobs:
           mkdir -p "$root" /tmp/roblox-worker/results
           baseline="$root/baseline.json"
           artbook="$root/artbook.json"
-          web_handoff="$root/web-platform-handoff.json"
           git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
           if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" 2>/dev/null; then
             git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
             echo 'ROBLOX_ARTBOOK_INPUT=BOUND'
           else
-            printf '{"version":1,"gameId":"%s","nativeDevelopmentNonBlocking":true,"source":"MISSING_POST_WEB_ARTBOOK_FALLBACK"}\n' "$GAME_ID" > "$artbook"
+            printf '{"version":1,"gameId":"%s","nativeDevelopmentNonBlocking":true,"source":"MISSING_PARALLEL_ARTBOOK_FALLBACK"}\n' "$GAME_ID" > "$artbook"
             echo 'ROBLOX_ARTBOOK_INPUT=NONBLOCKING_FALLBACK'
           fi
-          printf '%s\n' "$WEB_HANDOFF_JSON" > "$web_handoff"
-          node -e "const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const first=h?.firstGatePassed===true&&h?.secondGateRequired===true&&String(h?.secondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';if(!h||h.stage!=='WEB_DEVELOPMENT_BASELINE_READY'||(!first&&h.promotionRevalidationPassed!==true))process.exit(2);console.log(first?'ROBLOX_WEB_HANDOFF_INPUT=FIRST_GATE_READY':'ROBLOX_WEB_HANDOFF_INPUT=PROMOTION_READY')" "$web_handoff"
+          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const p=d?.content?.platformProfiles?.ROBLOX;if(!p||p.platform!=='ROBLOX')process.exit(2);console.log('ROBLOX_PLATFORM_PROFILE_INPUT=READY')" "$baseline"
           branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           evidence="/tmp/roblox-source-bootstrap-${safe}.json"
           git config user.name 'jaewoon-roblox-development'
@@ -205,7 +201,6 @@ jobs:
             --artbook="$artbook" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
-            --web-handoff="$web_handoff" \
             --roadmap=company-learning/platform-release-roadmap.json \
             --output-root="$TARGET_SOURCE" \
             --evidence="$evidence"
@@ -434,7 +429,7 @@ jobs:
             }
           }
           queue.robloxSourceParallelism=6;
-          queue.developmentGameWipMax=6;
+          queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
@@ -443,7 +438,7 @@ jobs:
           console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
           console.log(`ROBLOX_OWNER_FOCUS_SECONDARY_COUNT=${expected.filter(x=>x.secondaryOwnerFocus===true).length}`);
-          console.log('DEVELOPMENT_GAME_WIP_MAX=6');
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
@@ -486,8 +481,6 @@ jobs:
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(!platformDevelopmentEligible(item,'ROBLOX'))continue;
-            const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
-            if(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
@@ -512,8 +505,8 @@ jobs:
         run: |
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
           echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
-          echo 'DEVELOPMENT_GAME_WIP_MAX=6'
-          echo 'ROBLOX_EXECUTION_WIP_MAX=6'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=6'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -583,13 +576,13 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
-          console.log(`DEVELOPMENT_GAME_WIP_MAX=${DEVELOPMENT_GAME_WIP_MAX}`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=6');
           NODE
 
   technical-worker:
@@ -816,12 +809,12 @@ jobs:
             }
           }
           queue.robloxTechnicalParallelism=6;
-          queue.developmentGameWipMax=6;
+          queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
-          console.log('DEVELOPMENT_GAME_WIP_MAX=6');
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
@@ -896,8 +889,8 @@ jobs:
         if: needs.technical-plan.outputs.count == '0'
         run: |
           echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
-          echo 'DEVELOPMENT_GAME_WIP_MAX=6'
-          echo 'ROBLOX_EXECUTION_WIP_MAX=6'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=6'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
