@@ -63,7 +63,7 @@ test('24H learning cycle persists verified experience and external AI distilled 
   assert.match(workflow,/--experience=\.vibe2\/experience\.json/);
   assert.match(workflow,/--external-ai-distilled=\.vibe2\/external-ai-distilled-knowledge\.json/);
   assert.match(workflow,/git add \.vibe2\/queue\.json[\s\S]*\.vibe2\/experience\.json[\s\S]*\.vibe2\/external-ai-distilled-knowledge\.json/);
-  assert.match(workflow,/VIBE2_WEB_EXTERNAL_AI_DISTILLED_ACCEPTED/);
+  assert.match(workflow,/VIBE2_EXTERNAL_AI_ACCEPTED/);
 });
 
 test('human-readable roadmap mirror is not part of the learning closed-loop mutation contract',()=>{
