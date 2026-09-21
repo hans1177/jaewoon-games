@@ -56,8 +56,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_HEADLESS_FAST_MVP_VALIDATION",
+      "canonicalState": "HEADLESS_FAST_MVP_PENDING",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -66,7 +66,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-21T17:44:43.973Z",
+      "updatedAt": "2026-09-22T04:18:00+09:00",
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -74,7 +74,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-pending"
+        "roblox-headless-fast-mvp-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -202,7 +202,12 @@
       "fastLaunchPriority": true,
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaPassed": false,
-      "robloxInternalReleaseReady": false
+      "robloxInternalReleaseReady": false,
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "robloxStudioEvidenceRequired": false,
+      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpEvidence": null
     },
     {
       "gameId": "daechung-rpg",
@@ -213,7 +218,7 @@
       "targetPlatform": "ROBLOX",
       "targetSourcePath": "roblox-games/daechung-rpg",
       "webSourcePath": null,
-      "designBaselineSource": "design/daechung-rpg/2026-09-19/design-revised.json",
+      "designBaselineSource": "design/daechung-rpg/2026-09-22/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/daechung-rpg/current.json",
       "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
@@ -229,8 +234,8 @@
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/daechung-rpg",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_HEADLESS_FAST_MVP_VALIDATION",
+      "canonicalState": "HEADLESS_FAST_MVP_PENDING",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -257,10 +262,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-pending"
+        "roblox-headless-fast-mvp-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-21T17:44:43.973Z",
+      "updatedAt": "2026-09-22T04:18:00+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -468,7 +473,12 @@
       "robloxInternalReleaseReady": false,
       "robloxBuildPassedAt": "2026-09-21T17:43:43.430Z",
       "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "gameNameEnglish": "Whatever RPG"
+      "gameNameEnglish": "Whatever RPG",
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "robloxStudioEvidenceRequired": false,
+      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpEvidence": null
     },
     {
       "gameId": "horror-escape-room",
@@ -523,17 +533,17 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "ROBLOX_HEADLESS_FAST_MVP_VALIDATION",
+      "canonicalState": "HEADLESS_FAST_MVP_PENDING",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-runtime-pending"
+        "roblox-headless-fast-mvp-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-21T17:44:43.973Z",
+      "updatedAt": "2026-09-22T04:18:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -618,7 +628,12 @@
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseReady": false,
       "robloxBuildPassedAt": "2026-09-21T17:43:43.430Z",
-      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT"
+      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "robloxStudioEvidenceRequired": false,
+      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpEvidence": null
     },
     {
       "gameId": "bug-defense",
@@ -3129,7 +3144,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-21T18:04:20.716Z",
+  "updatedAt": "2026-09-22T04:18:00+09:00",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -3172,34 +3187,27 @@
     "newFeatureExpansionFrozen": true,
     "unityParallelNotBlockingRobloxMvp": true,
     "releaseGateOrder": [
-      "ROBLOX_RUNTIME",
-      "MOBILE_CONTROLS",
-      "MULTIPLAYER",
-      "SAVE_REJOIN",
-      "REGRESSION",
-      "PRIVATE_RELEASE_CANDIDATE"
+      "EXACT_SOURCE_STATIC_VALIDATION",
+      "ROJO_PACKAGE",
+      "VIBE_SHARED_MODEL_PREFLIGHT",
+      "SERVER_CLIENT_AUTHORITY",
+      "REMOTE_SECURITY",
+      "MOBILE_INPUT_UI",
+      "SAVE_REJOIN_WHEN_APPLICABLE",
+      "MULTIPLAYER_SYNC_WHEN_APPLICABLE",
+      "HEADLESS_REGRESSION",
+      "OPEN_CLOUD_PRIVATE_RELEASE"
     ],
     "sourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
-    "updatedAt": "2026-09-22T02:42:00+09:00",
+    "updatedAt": "2026-09-22T04:18:00+09:00",
     "standardPipelineCompatibility": "TARGET_PLATFORM_TECHNICAL_VALIDATION + TARGET_PLATFORM_REPAIR_REQUIRED",
     "queuePriority": [
       "cozy-island",
       "daechung-rpg",
       "horror-escape-room"
     ],
-    "robloxStudioHumanApproval": {
-      "approved": true,
-      "gameIds": [
-        "cozy-island",
-        "daechung-rpg",
-        "horror-escape-room"
-      ],
-      "approvalSource": "OWNER_CHAT_EXPLICIT_PROCEED_AND_RELEASE",
-      "approvedAt": "2026-09-22T02:38:00+09:00",
-      "singleSessionOnly": true,
-      "maxParallel": 1,
-      "actualStudioEvidenceRequired": true,
-      "securityChallengeAutoRetry": false
-    }
+    "validationMode": "HEADLESS_FAST_MVP",
+    "robloxStudioExecutionAllowed": false,
+    "robloxStudioEvidenceRequired": false
   }
 }
