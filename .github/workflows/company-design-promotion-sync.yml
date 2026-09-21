@@ -61,65 +61,45 @@ jobs:
       - name: Validate promotion contract
         run: |
           node --check tools/design-only-promotion-sync.mjs
+          node --check tools/company-minimum-design-contract.mjs
+          node --test qa/company-minimum-design-contract.test.mjs
           node --test qa/design-only-promotion-sync.test.mjs qa/design-promotion-workflow-contract.test.mjs
 
-      - name: Promote 80-point strict-ready design baselines directly to Web gate
+      - name: Promote minimum dual-platform design directly to native development
         run: node tools/design-only-promotion-sync.mjs
 
-      - name: Verify confirmed-seed queue invariant and strict promotion evidence
+      - name: Verify confirmed-seed dual-native queue invariant
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import path from 'node:path';
+          import fs from 'node:fs';
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
-          const latestStrict=(gameId)=>{
-            const root=path.join('design',gameId);if(!fs.existsSync(root))return {pass:false,review:null,file:null};
-            const dates=fs.readdirSync(root,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
-            for(const date of dates){
-              const file=path.join(root,date,'strict-design-review.json'),statusFile=path.join(root,date,'cycle-status.json');
-              if(!fs.existsSync(file)||!fs.existsSync(statusFile))continue;
-              const review=JSON.parse(fs.readFileSync(file,'utf8')),status=JSON.parse(fs.readFileSync(statusFile,'utf8'));
-              const blockers=Array.isArray(status?.baselineGate?.blockers)?status.baselineGate.blockers:[];
-              const currentReady=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
-              const legacyDirectLeadReady=status?.status==='COMPLETE'&&status?.productionClass==='DESIGN_ONLY'&&blockers.length===1&&blockers[0]==='post-revision-five-department-review-required'&&status?.disposition?.fiveDepartmentLeadReviewCompleted===true&&status?.meeting?.required===false&&Number(status?.baselineGate?.meeting?.conflictCount||0)===0&&Number(status?.baselineGate?.meeting?.holdCount||0)===0;
-              const ready=currentReady||legacyDirectLeadReady;
-              return {pass:ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0,review,file};
-            }
-            return {pass:false,review:null,file:null};
-          };
-          const queueByGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));let strictReadyCount=0;let confirmedSeedCount=0;
+          const byGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));
+          let confirmed=0;
           for(const seed of state.seeds||[]){
             if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
-            const productionClass=String(seed.productionClass||'').toUpperCase();
-            const item=queueByGame.get(seed.gameId);
-            if(productionClass==='DEVELOPMENT_CONFIRMED'){
-              confirmedSeedCount++;
-              if(!item||item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`development-confirmed seed queue missing: ${seed.gameId}`);
-              if(item.webValidationRequired!==true||item.musicValidationRequired!==true)throw new Error(`development-confirmed Web validation contract missing: ${seed.gameId}`);
-              if(String(item.canonicalState||'')==='WAITING_POST_PROMOTION_ARTBOOK')throw new Error(`legacy pre-Web artbook wait remains: ${seed.gameId}`);
-            }
-            if(seed.productionClassSource!=='DESIGN_BASELINE_READY_STRICT_PASS')continue;
-            const strict=latestStrict(seed.gameId);
-            if(!strict.pass)throw new Error(`non-strict design promoted: ${seed.gameId}`);
-            strictReadyCount++;
-            if(Number(seed.strictDesignReview?.totalScore||0)<80||seed.strictDesignReview?.verdict!=='PASS')throw new Error(`strict evidence not bound to seed: ${seed.gameId}`);
-            if(!item||item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`strict-ready queue handoff missing: ${seed.gameId}`);
-            if(item.postPromotionArtbookRequired===true)throw new Error(`pre-Web artbook still required: ${seed.gameId}`);
-            if(item.postWebArtbookRequired!==true)throw new Error(`post-Web artbook contract missing: ${seed.gameId}`);
-            const project=(portfolio.projects||[]).find(x=>x.slug===seed.gameId);if(project?.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`portfolio promotion missing: ${seed.gameId}`);
+            if(String(seed.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            confirmed++;
+            const item=byGame.get(seed.gameId);
+            if(!item)throw new Error(`development queue missing: ${seed.gameId}`);
+            if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design contract missing: ${seed.gameId}`);
+            const targets=new Set(item.concurrentTargetPlatforms||[]);
+            if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual native target pair missing: ${seed.gameId}`);
+            if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
+            if(item.platformDesignProfiles?.UNITY?.jsonPointer!=='/content/platformProfiles/UNITY')throw new Error(`Unity platform profile missing: ${seed.gameId}`);
+            if(item.webValidationRequired!==false||item.musicValidationRequired!==false)throw new Error(`legacy Web gate still active: ${seed.gameId}`);
+            if(String(item.currentStep||'')!=='TARGET_PLATFORM_SOURCE_BIND')throw new Error(`native source bind not active: ${seed.gameId}`);
+            const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
+            if(project?.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
           }
-          console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmedSeedCount}`);
-          console.log(`STRICT_DESIGN_READY_COUNT=${strictReadyCount}`);
-          console.log(`DEVELOPMENT_HANDOFF_COUNT=${(queue.items||[]).length}`);
-          console.log('DESIGN_PASS_THRESHOLD=80');
-          console.log('HOMEPAGE_WEB_THRESHOLD=80');
-          console.log('FORMAL_IMPLEMENTATION_THRESHOLD=90');
-          console.log('PRE_WEB_ARTBOOK_REQUIRED=NO');
-          console.log('DEVELOPMENT_CONFIRMED_QUEUE_INVARIANT=PASS');
-          console.log('DESIGN_ONLY_PROMOTION_CONTRACT=PASS');
+          console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmed}`);
+          console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+          console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
+          console.log('UNITY_WEB_GATE=DISABLED');
+          console.log('DUAL_NATIVE_QUEUE_INVARIANT=PASS');
           NODE
 
       - name: Persist promoted state to company runtime branch
@@ -145,8 +125,8 @@ jobs:
             # Re-run the canonical promotion calculation against the newest runtime state.
             # Canonical machine policy must be overlaid from main too; otherwise the runtime branch can revive legacy AI-review blockers.
             # Only runtime JSON files are staged; engine/policy files remain main-owned and are never persisted here.
-            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
-            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
+            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
+            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
             node tools/design-only-promotion-sync.mjs
 
             git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json
@@ -170,7 +150,18 @@ jobs:
           fi
           echo 'PUBLIC_MAIN_WRITE=NO'
 
-      - name: Stop after DEVELOPMENT_CONFIRMED queue while Web development is owner-paused
+      - name: Dispatch Roblox and Unity native development together
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY'
+          echo 'UNITY_WEB_DISPATCH=NO'
+          echo 'ONE_PLATFORM_REQUEST_STARTS_BOTH=YES'
+
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
