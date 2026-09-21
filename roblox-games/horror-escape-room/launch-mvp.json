@@ -34,7 +34,8 @@
     "remote action allowlist and spam rejection",
     "teleport/speed/out-of-bounds abuse rejection",
     "save/rejoin",
-    "round restart regression"
+    "round restart regression",
+    "Creator Store BGM and gameplay SFX"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -44,7 +45,10 @@
     "regressionPassRequired": true,
     "aiMayInventPass": false,
     "abuseResistancePassRequired": true,
-    "startUiRegressionPassRequired": true
+    "startUiRegressionPassRequired": true,
+    "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-22T07:22:00+09:00"
+  "updatedAt": "2026-09-22T08:12:00+09:00",
+  "externalReleaseCandidate": true,
+  "candidateScopeVersion": 3
 }
