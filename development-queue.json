@@ -677,15 +677,17 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-source-drift:SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COMPETITIVE_SCORE_REQUIRED"
+      ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-21T21:49:42.328Z",
+      "updatedAt": "2026-09-21T23:04:38.348Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -695,8 +697,8 @@
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
+      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -768,13 +770,13 @@
       "robloxBuildArtifactIdentity": "sha256:6a1bf5177557e0a5f79003674a32c707ad0c44d35ff0ce2596cbf94eedd0fc0a",
       "robloxExactRevisionPassed": true,
       "robloxMultiplayerQaPassed": false,
-      "robloxInternalReleaseReady": true,
+      "robloxInternalReleaseReady": false,
       "robloxBuildPassedAt": "2026-09-21T17:43:43.430Z",
       "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 1,
         "gameId": "horror-escape-room",
@@ -906,7 +908,8 @@
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-21T21:49:42.328Z",
       "robloxFastMvpPublished": true,
-      "robloxFastMvpPublishedAt": "2026-09-21T21:49:42.328Z"
+      "robloxFastMvpPublishedAt": "2026-09-21T21:49:42.328Z",
+      "robloxSourceBootstrapFailedAt": "2026-09-21T23:04:38.348Z"
     },
     {
       "gameId": "bug-defense",
@@ -3167,7 +3170,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-21T23:03:19.961Z",
+  "updatedAt": "2026-09-21T23:04:38.348Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
