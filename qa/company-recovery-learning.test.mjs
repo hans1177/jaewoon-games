@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { enqueueRecovery, reviewRecovery, settleRecovery } from '../tools/company-recovery-queue.mjs';
+import { applySystemAiResults, normalizeSystemAiQueue } from '../tools/company-system-ai-queue.mjs';
 import { escalateRecoveryCandidates } from '../tools/company-recovery-escalation.mjs';
 import { promoteVerifiedRecoveryLearning } from '../tools/company-recovery-learning.mjs';
 import { distillRecoveryCodePatterns } from '../tools/company-recovery-code-distillation.mjs';
@@ -194,5 +195,31 @@ test('scoped recovery-created System-AI task inherits unlimited causal repair',a
   assert.ok(task);
   assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.equal(task.maxRetries,null);
+});
+
+test('System-AI normalization preserves unlimited causal repair only when explicitly requested',()=>{
+  const q=normalizeSystemAiQueue({tasks:[
+    {id:'recovery-task',status:'queued',retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null},
+    {id:'ordinary-task',status:'queued',maxRetries:2}
+  ]});
+  const recovery=q.tasks.find(x=>x.id==='recovery-task');
+  const ordinary=q.tasks.find(x=>x.id==='ordinary-task');
+  assert.equal(recovery.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(recovery.maxRetries,null);
+  assert.equal(ordinary.retryPolicy,'BOUNDED_RETRY');
+  assert.equal(ordinary.maxRetries,2);
+});
+
+test('System-AI recovery failure requeues beyond ordinary retry limits',()=>{
+  let q=normalizeSystemAiQueue({tasks:[{
+    id:'recovery-task',status:'running',retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,retries:20
+  }]});
+  q=applySystemAiResults(q,[{taskId:'recovery-task',outcome:'FAIL',blocker:'same-cause',evidence:['exact-stage:FAIL']}]);
+  const row=q.tasks[0];
+  assert.equal(row.status,'queued');
+  assert.equal(row.retries,21);
+  assert.equal(row.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(row.maxRetries,null);
+  assert.ok(row.evidence.includes('system-ai-retry:UNLIMITED_CAUSAL_REPAIR'));
 });
 
