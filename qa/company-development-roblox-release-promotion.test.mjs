@@ -70,7 +70,7 @@ test('development final release evidence fails closed on final review, peer or a
 
 test('internal release workflow publishes only retained exact artifact to restricted intent and never claims public release',()=>{
   assert.match(workflow,/robloxFinalReviewPassed===true/);
-  assert.match(workflow,/ROBLOX_RELEASE_PROMOTION_PENDING/);
+  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PENDING/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
   assert.match(workflow,/gh run download "\$ARTIFACT_RUN_ID" --repo "\$GITHUB_REPOSITORY"/);
   assert.match(workflow,/sha256sum "\$place"/);
