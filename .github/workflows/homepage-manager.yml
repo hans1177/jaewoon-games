@@ -224,7 +224,7 @@ jobs:
           node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
-          grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
+          grep -Fq 'const SYNC_INTERVAL_MS=30000;' assets/homepage-enhancements.js
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "getJson('/homepage-portfolio-status.json')" assets/homepage-enhancements.js
