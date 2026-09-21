@@ -65,6 +65,7 @@ function mountAsset(parent,asset,key,{scale=1,y=0,rotY=180}={}){
   visual.name='CartoonVisual-'+key;parent.addChild(visual);
   visual.setLocalPosition(0,y,0);visual.setLocalEulerAngles(0,rotY,0);visual.setLocalScale(scale,scale,scale);
   parent.__cartoonVisual=visual;if(parent.model)parent.model.enabled=false;
+  if(Array.isArray(parent.__fallbackVisual))parent.__fallbackVisual.forEach(v=>{if(v)v.enabled=false});
   visual.findComponents?.('render').forEach(r=>{r.castShadows=true;r.receiveShadows=true});
   return visual;
 }
@@ -185,9 +186,9 @@ function addPortal(x,z,id,material,label){
 }
 function addNpc(name,role,x,z,material){
   const root=new pc.Entity('NPC-'+name);zoneRoot.addChild(root);root.setLocalPosition(x,0,z);
-  primitive('Body','capsule',[0,1.15,0],[.9,1,.9],material,root);
-  primitive('Head','sphere',[0,2.15,0],[.65,.65,.65],M.wood,root);
-  root.npcName=name;root.role=role;npcs.push(root);if(CARTOON.ready)applyNpcAsset(root);return root;
+  const body=primitive('Body','capsule',[0,1.15,0],[.9,1,.9],material,root);
+  const head=primitive('Head','sphere',[0,2.15,0],[.65,.65,.65],M.wood,root);
+  root.__fallbackVisual=[body,head];root.npcName=name;root.role=role;npcs.push(root);if(CARTOON.ready)applyNpcAsset(root);return root;
 }
 function ensureAiUsers(){
   if(aiUsers.length)return;
