@@ -1362,8 +1362,8 @@
       }
     },
     "gameDevelopmentAuthority": {
-      "authority": "VIBE_IMPLEMENTATION_OWNER",
-      "implementationOwner": "VIBE2_VIBE3",
+      "authority": "VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION",
+      "implementationOwner": "VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS",
       "appliesFromStage": "WEB_BASE_IMPLEMENTATION",
       "appliesToStages": [
         "WEB_BASE_IMPLEMENTATION",
@@ -1377,12 +1377,12 @@
       "ownsWebFirstImplementation": true,
       "ownsSelectedPlatformImplementation": true,
       "ownsPostReleaseGameSourceDevelopment": true,
-      "nonVibeAiRole": "TEACH_REVIEW_DIAGNOSE_UNBLOCK_VALIDATE",
+      "nonVibeAiRole": "ASSIGNED_COLLABORATOR_ACROSS_IMPLEMENTATION_REPAIR_QA_PLATFORM_AND_POST_RELEASE",
       "nonVibeAiIsGameDevelopmentOwner": false,
-      "nonVibeAiMayWriteGameSource": false,
-      "nonVibeAiMayCreateGameplayFeatureCommits": false,
+      "nonVibeAiMayWriteGameSource": true,
+      "nonVibeAiMayCreateGameplayFeatureCommits": true,
       "nonVibeAiMayModifyOrchestrationCiContractsWhenNeeded": true,
-      "ownerExplicitInstructionRequiredForAnyException": true,
+      "ownerExplicitInstructionRequiredForAnyException": false,
       "designAuthorityUnaffected": true,
       "designProviderPolicyUnaffected": true,
       "existingWebAssessment": {
@@ -1417,7 +1417,14 @@
           "fullRewriteAllowedOnlyWhen": "strategy=FULL_REBUILD",
           "implementationWorker": "tools/vibe2-source-worker.mjs"
         }
-      }
+      },
+      "nonVibeAiGameSourceWriteMode": "EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY",
+      "nonVibeAiGameplayFeatureCommitMode": "CANDIDATE_BRANCH_ONLY_NO_DIRECT_MAIN",
+      "vibeMustLearnDuringCollaborativeWork": true,
+      "everyCollaborativeCodingResultLearningCandidate": true,
+      "verifiedResultsReturnToExistingLearningMotor": true,
+      "externalAiSelfAcceptance": false,
+      "externalAiDirectMainWrite": false
     },
     "learningMotor": {
       "authority": "VERIFIED_LEARNING_MOTOR",
