@@ -243,6 +243,8 @@ ownerCurrentProductionContract:
     atomicNeuronIngressLightweight: true
     pendingVariantCallbackRunsHeavyReserve: false
     taskMicroFanInDispatchesSingleRefill: true
+    taskMicroFinalizerBeforeCohortAudit: true
+    contractRegressionEvidenceReusableByPinnedMainSha: true
     vibe2RuntimeStatePersistedByOptimisticAtomicCommit: true
     validationTiers:
       - MICRO_TARGETED_CHECK
