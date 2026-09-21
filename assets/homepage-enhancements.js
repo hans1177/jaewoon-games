@@ -251,6 +251,7 @@ function buildGameCenter(catalog,status){
   document.documentElement.dataset.homeWebGameCount=String(playable.length);
   document.documentElement.dataset.homeDevelopmentCount=String(development.length);
   document.documentElement.dataset.homeServerAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
+  document.documentElement.dataset.homeSupportedPlatforms=(catalog?.runtimeSupportedPlatforms||[]).join(',');
   markDirectPlayCards();
 }
 function directPlayTarget(card){
