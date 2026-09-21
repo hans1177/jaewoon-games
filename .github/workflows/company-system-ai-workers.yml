@@ -5,6 +5,16 @@
 name: Company System AI Workers
 
 on:
+  workflow_call:
+    inputs:
+      security_recovery_task_id:
+        required: false
+        type: string
+        default: ''
+      marketing_task_ids:
+        required: false
+        type: string
+        default: ''
   workflow_dispatch:
     inputs:
       security_recovery_task_id:
