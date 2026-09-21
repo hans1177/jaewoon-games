@@ -948,8 +948,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/fantasy-survival",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "webValidationQueuedAt": "2026-09-19T16:51:19.541Z",
       "webInitialCyclePassed": false,
       "webInitialCyclePassedAt": "",
@@ -974,7 +974,7 @@
       "sourceRootBootstrapRequired": false,
       "routingBlockers": [],
       "webValidationLastAttemptAt": "2026-09-21T00:29:52.485Z",
-      "updatedAt": "2026-09-21T02:02:00.000Z",
+      "updatedAt": "2026-09-21T02:35:22.204Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -1036,10 +1036,35 @@
       "platformExecutionRequested": [
         "UNITY",
         "ROBLOX"
-      ]
+      ],
+      "unityProjectPath": "unity-games/fantasy-survival",
+      "unityCandidateBranch": "development/unity-tech-fantasy-survival-35553818479",
+      "unitySourceCommit": "08c7a493a119f8c0831213ee9ab6cbabc256d597",
+      "unityBuildRunId": 35553902318,
+      "unityRuntimeSmokeRunId": null,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "executionEvidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "08c7a493a119f8c0831213ee9ab6cbabc256d597",
+        "sourceFingerprint": "4ed0cee612f40ba5cdc7b30f02c87183e9c1d95c72eb382466fd071c76896975",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:716ddb97e8e51472671216c9adfb33d0f91f20352a2dd498e618f4dd8a5f1c39",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "regressionPassed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "IMMUTABLE_ARTIFACT_BIND",
+        "failureStage": "TARGET_PLATFORM_RUNTIME",
+        "failureSignature": "121c30201e00f91a81c62501b4c7336c69d5da448424d4227edc60f33ee6bf7e"
+      },
+      "resumeStage": "TARGET_PLATFORM_RUNTIME",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-21T02:31:24.819Z",
+  "updatedAt": "2026-09-21T02:35:34.464Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -1054,6 +1079,6 @@
   "formalImplementationMinimum": 90,
   "webValidationEvidenceSchemaMinimum": 15,
   "webPromotionRevalidationRequired": true,
-  "developmentGameWipMax": 30,
+  "developmentGameWipMax": 6,
   "reconciliationPolicy": "CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE"
 }
