@@ -205,7 +205,20 @@
     "gameSourceWriteMode": "EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY",
     "gameplayFeatureCandidateAllowed": true,
     "learningCandidateRoute": "EXISTING_VIBE_LEARNING_MOTOR",
-    "fullProcessCollaboration": true
+    "fullProcessCollaboration": true,
+    "verifiedLearningFanIn": {
+      "promoter": "tools/company-system-ai-learning.mjs",
+      "sequence": [
+        "SYSTEM_AI_EXECUTE",
+        "DETERMINISTIC_VERIFY",
+        "SUPERVISOR_OR_JOINT_ACCEPT",
+        "DISTILL_VERIFIED_EXPERIENCE",
+        "DISTILL_VERIFIED_PATTERN",
+        "RERUN_VIBE_LEARNING_MOTOR"
+      ],
+      "rawModelOutputStored": false,
+      "verifiedOnly": true
+    }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerSynchronization": {
