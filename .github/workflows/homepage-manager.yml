@@ -41,6 +41,7 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/homepage-manager-publication-order.test.mjs'
+      - 'qa/company-homepage-runtime-propagation.test.mjs'
       - '.github/workflows/homepage-manager.yml'
   pull_request:
     branches: [main]
@@ -171,7 +172,7 @@ jobs:
           set -euo pipefail
           git fetch origin "$COMPANY_RUNTIME_BRANCH" main --quiet
           valid_runtime_exposure=false
-          if git show "origin/$COMPANY_RUNTIME_BRANCH:homepage-platform-exposure.json" > homepage-platform-exposure.json 2>/dev/null; then
+          if [[ "${{ github.event_name }}" == 'pull_request' ]] && git show "origin/$COMPANY_RUNTIME_BRANCH:homepage-platform-exposure.json" > homepage-platform-exposure.json 2>/dev/null; then
             if node -e "const x=require('./homepage-platform-exposure.json');process.exit(x.version===2&&x.authority==='company-runtime'&&x.internalCompanySurface===true&&JSON.stringify(x.supportedPlatforms)===JSON.stringify(['ROBLOX','UNITY'])&&Array.isArray(x.games)?0:1)"; then
               valid_runtime_exposure=true
               echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME'
@@ -185,7 +186,11 @@ jobs:
             git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
             node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json
             git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
-            echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED'
+            if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+              echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED'
+            else
+              echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED_FRESH'
+            fi
           fi
           node -e "const x=require('./homepage-platform-exposure.json');if(x.version!==2||x.authority!=='company-runtime'||x.internalCompanySurface!==true||JSON.stringify(x.supportedPlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(x.games))process.exit(1)"
 
@@ -268,6 +273,7 @@ jobs:
           node --check tools/company-status-sync.mjs
           node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
+          node --test qa/company-homepage-runtime-propagation.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' index.html
           grep -Fq 'data-homepage-build="2026-09-21-sample-exact"' index.html
