@@ -14,6 +14,7 @@ on:
       - Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA
       - Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation
       - Company DEVELOPMENT_CONFIRMED Roblox Release Promotion
+      - Owner Roblox Dedicated Private Experiences
     types: [completed]
   push:
     branches: [main]
@@ -25,6 +26,7 @@ on:
       - 'qa/production-diversity.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/autonomous-24h-work-planner.test.mjs'
+      - 'qa/company-homepage-runtime-propagation.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-shared-context.test.mjs'
       - 'tools/company-shared-context.mjs'
@@ -82,6 +84,13 @@ jobs:
             rm -f /tmp/company-runtime-development-queue.json
             echo 'COMPANY_RUNTIME_DEVELOPMENT_QUEUE_OVERLAY=NO'
           fi
+          if git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/company-runtime-game-catalog.json 2>/dev/null; then
+            echo 'COMPANY_RUNTIME_GAME_CATALOG_OVERLAY=YES'
+            echo 'COMPANY_RUNTIME_GAME_CATALOG_PATH=/tmp/company-runtime-game-catalog.json' >> "$GITHUB_ENV"
+          else
+            rm -f /tmp/company-runtime-game-catalog.json
+            echo 'COMPANY_RUNTIME_GAME_CATALOG_OVERLAY=NO'
+          fi
           if git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/company-runtime-game-seed-state.json 2>/dev/null; then
             echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=YES'
             echo 'COMPANY_SEED_STATE_PATH=/tmp/company-runtime-game-seed-state.json' >> "$GITHUB_ENV"
@@ -121,6 +130,7 @@ jobs:
           node --check tools/autonomous-24h-work-planner.mjs
           node --test qa/production-diversity.test.mjs
           node --test qa/autonomous-24h-work-planner.test.mjs
+          node --test qa/company-homepage-runtime-propagation.test.mjs
           node tools/company-status-sync.mjs
           node qa/game-catalog-normalization.test.mjs
 
