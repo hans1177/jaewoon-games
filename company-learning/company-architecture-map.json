@@ -2347,5 +2347,17 @@
         "RETIRED"
       ]
     }
+  },
+  "externalAiLearningPipeline": {
+    "centralContract": "company-learning/platform-release-roadmap.json#externalAiLearningPipeline",
+    "feeder": "tools/company-system-ai-external-learning-feed.mjs",
+    "distiller": "tools/vibe2-external-ai-distillation.mjs",
+    "store": "vibe2-unreal-core:.vibe2/external-ai-distilled-knowledge.json",
+    "collector": "tools/vibe2-multisource-learning-collector.mjs",
+    "retriever": "tools/vibe2-learning-motor.mjs",
+    "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+    "rawOutputBoundary": "SHA256_ONLY",
+    "verifiedOnly": true,
+    "advisoryOnly": true
   }
 }
