@@ -34,3 +34,21 @@ test('migration records route switch without claiming live verification',()=>{
   assert.equal(migration.cutoverStatus.liveRuntimeVerified,false);
   assert.equal(migration.cutoverStatus.legacyFallback,'/web-games/daechung-rpg/?legacy=1');
 });
+
+
+test('cartoon RPG assets are wired with local fallback',()=>{
+  assert.match(main,/SLIME_GLB_BASE64/);
+  assert.match(main,/loadFromUrlAndFilename/);
+  assert.match(main,/instantiateRenderEntity/);
+  assert.match(main,/attachCharacterAsset\(player,'warrior'\)/);
+  assert.match(main,/trainer-archer'\?'ranger'/);
+  assert.match(main,/trainer-mage'\?'wizard'/);
+  assert.match(main,/name\.includes\('슬라임'\)/);
+  assert.match(main,/asset fallback/);
+});
+test('dark soft-cartoon lighting and isometric camera tuning are present',()=>{
+  assert.match(main,/ambientLight=new pc\.Color\(\.20,\.23,\.30\)/);
+  assert.match(main,/new pc\.Color\(1,\.82,\.64\)/);
+  assert.match(main,/clearColor:new pc\.Color\(\.055,\.065,\.085\),fov:52/);
+  assert.match(main,/new pc\.Vec3\(pp\.x,11\.5,pp\.z\+13\.2\)/);
+});
