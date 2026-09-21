@@ -499,6 +499,94 @@ function findWebAssessmentTask(project,repoRoot,queue){
   const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
   const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','existing-web-assessment-required','strategy-decision:EXPLORATION','prototype-marker-alone-cannot-force-rebuild']);out.ownerDirective=true;out.speculativeEligible=false;return out;
 }
+function findUnityWebFirstStageTask(project,repoRoot,queue){
+  if(project.firstStageUnityWeb!==true||project.releaseState!=='development-confirmed')return null;
+  const root=posix(project.projectPath);
+  if(root!==`unity-games/${project.gameId}`)return null;
+  const coreRel=`${root}/Assets/Scripts/GameCore.cs`;
+  const runtimeRel=`${root}/Assets/Scripts/RuntimeBootstrap.cs`;
+  const projectVersionRel=`${root}/ProjectSettings/ProjectVersion.txt`;
+  const manifestRel=`${root}/Packages/manifest.json`;
+  const projectReady=fs.existsSync(sourceFile(repoRoot,projectVersionRel))
+    &&fs.existsSync(sourceFile(repoRoot,manifestRel))
+    &&fs.existsSync(sourceFile(repoRoot,coreRel))
+    &&fs.existsSync(sourceFile(repoRoot,runtimeRel));
+  const runtime=readText(sourceFile(repoRoot,runtimeRel));
+  let buildWebReady=false;
+  const editorRoot=sourceFile(repoRoot,`${root}/Assets/Editor`);
+  if(fs.existsSync(editorRoot)){
+    const stack=[editorRoot];
+    while(stack.length&&!buildWebReady){
+      const current=stack.pop();
+      for(const entry of fs.readdirSync(current,{withFileTypes:true})){
+        const full=path.join(current,entry.name);
+        if(entry.isDirectory()){stack.push(full);continue;}
+        if(entry.isFile()&&entry.name.endsWith('.cs')&&/\bBuildWeb\s*\(/.test(readText(full))){buildWebReady=true;break;}
+      }
+    }
+  }
+  const qaReady=/JAEWOON_UNITY_WEB_QA\s+BOOT/.test(runtime)
+    &&/JAEWOON_UNITY_WEB_QA\s+STATE/.test(runtime)
+    &&/Application\.absoluteURL\.Contains\("qa=1"\)/.test(runtime);
+  const repairState=clean(project.queueCanonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'
+    ||clean(project.queueCurrentStep).toUpperCase()==='VIBE_WEB_REPAIR';
+
+  if(!projectReady){
+    const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-base-implementation`);if(!id)return null;
+    const goal=`[UNITY_WEB_BASE_IMPLEMENTATION] UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED
+게임: ${project.name||project.gameId}
+1차 Web 게임 원본을 unity-games/${project.gameId}/ Unity 프로젝트로 제작한다. HTML/Canvas/PlayCanvas 신규 게임을 만들지 않는다.
+승인 설계의 핵심 게임 규칙·수치·맵·전투·퀘스트·아이템·멀티 규칙·저장 의미를 보존하고 실제 Unity C# 게임으로 구현한다.
+GameCore.cs에는 게임 상태/데이터/규칙 책임을 두고 RuntimeBootstrap.cs에는 실제 실행/입력/UI/씬 연결 책임을 둔다. 한 파일에 모든 책임을 몰아넣지 않는다.
+Unity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit1=실제 첫 플레이 진입, Space=실제 핵심 행동, KeyR=실제 안전 복귀/리셋을 기존 게임 함수에 연결한다. QA 전용 가짜 보상/승리/상태 덮어쓰기는 금지한다.
+JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 또는 ATTACK, PROGRESS 또는 REWARD 실제 런타임 증거를 남긴다.
+실제 게임 화면은 placeholder primitive 중심으로 완료 처리하지 않고 기존 저장소 에셋과 권리 명확한 에셋을 우선 사용한다.
+시스템이 생성하는 Packages/ProjectSettings/WebBuild.cs는 빌드 뼈대일 뿐 게임 구현이 아니다. 게임플레이 소스는 Vibe가 직접 구현한다.
+Unity Web에서 모바일 브라우저 실행 가능한 완전한 첫 플레이 사이클을 만든 뒤에만 검증으로 넘긴다.`;
+    const out=task(id,{...project,engine:'unity',target:'unity'},goal,[coreRel,runtimeRel],'owner-immediate','high',[
+      'owner-directive:webgame-first',
+      'web-stage:WEB_BASE_IMPLEMENTATION',
+      'unity-web-first-stage',
+      'source-root-bootstrap-required',
+      'unity-web-source-root-bootstrap-required',
+      'canonical-source:unity-games',
+      'web-build-output:web-games',
+      'post-web-platform-pipeline:unchanged'
+    ]);
+    out.ownerDirective=true;
+    out.speculativeEligible=false;
+    out.workUnits=6;
+    return out;
+  }
+
+  if(repairState||!buildWebReady||!qaReady){
+    const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-repair`);if(!id)return null;
+    const reasons=[
+      repairState?'company-runtime:WEB_VIBE_REPAIR_REQUIRED':'',
+      !buildWebReady?'BUILD_WEB_METHOD_MISSING':'',
+      !qaReady?'UNITY_WEB_QA_CONTRACT_MISSING':''
+    ].filter(Boolean).join('|');
+    const goal=`[UNITY_WEB_REPAIR] 게임: ${project.name||project.gameId}
+기존 unity-games/${project.gameId}/ 프로젝트를 직접 읽고 1차 Unity Web 실패 원인만 수정한다. 기존 게임 규칙·수치·저장·핵심 루프를 임의로 바꾸지 않는다.
+필수 수리 근거: ${reasons||'runtime-validation-repair'}.
+RuntimeBootstrap의 실제 입력/게임 함수와 JAEWOON_UNITY_WEB_QA 증거를 일치시키고 Web Build가 실제 프로젝트를 빌드하도록 유지한다.
+QA 마커만 추가하고 화면/상태가 변하지 않는 가짜 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const files=[coreRel,runtimeRel].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+    if(!files.length)return null;
+    const out=task(id,{...project,engine:'unity',target:'unity'},goal,files,'owner-immediate','medium',[
+      'owner-directive:webgame-first',
+      'web-stage:WEB_REPAIR',
+      'unity-web-first-stage',
+      'company-runtime-state:'+clean(project.queueCanonicalState||'UNKNOWN'),
+      'preserve-existing-game'
+    ]);
+    out.ownerDirective=true;
+    out.speculativeEligible=false;
+    return out;
+  }
+  return null;
+}
+
 function findUnityTask(project,repoRoot,queue){const projectPath=posix(project.projectPath),runtimeRel=`${projectPath}/Assets/Scripts/RuntimeBootstrap.cs`,coreRel=`${projectPath}/Assets/Scripts/GameCore.cs`,motionRel=`${projectPath}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,runtime=readText(sourceFile(repoRoot,runtimeRel)),core=readText(sourceFile(repoRoot,coreRel)),motion=readText(sourceFile(repoRoot,motionRel));if(runtime&&core&&core.includes('["field-4"]')&&!runtime.includes('FIELD 4')&&!hasTask(queue,`${project.gameId}-region-controls-4-7`))return task(`${project.gameId}-region-controls-4-7`,project,'GameCatalog에 이미 존재하는 field-4, field-5, field-6, jungle 지역을 RuntimeBootstrap 이동 UI에 연결한다. 기존 RegionDefinition.recommendedLevelMin을 사용하고 전투 수치·보상·세이브·지역 데이터는 변경하지 않는다.',[runtimeRel],'high');if(core&&core.includes('public List<string> ownedWeapons')&&!core.includes('Player.ownedWeapons ??=')&&!hasTask(queue,`${project.gameId}-save-null-guards`))return task(`${project.gameId}-save-null-guards`,project,'GameCore.Load 직후 오래되거나 불완전한 JSON 세이브에서 ownedWeapons, ownedArmors, completedHiddenQuests가 null이면 빈 목록으로 복구한다. SaveKey, 데이터 버전, 수치와 소유 의미는 변경하지 않는다.',[coreRel]);if(motion&&motion.includes('public void PlayTravelToBattle()')&&!/PlayTravelToBattle\(\)[\s\S]{0,500}StopCoroutine\(_combatRoutine\)/.test(motion)&&!hasTask(queue,`${project.gameId}-motion-routine-safety`))return task(`${project.gameId}-motion-routine-safety`,project,'PrototypeAnimatedVisuals에서 전투 코루틴 중 새 이동 모션을 시작할 때 이전 combat routine을 안전하게 중지해 애니메이션 상태 덮어쓰기를 막는다. 전투 판정 타이밍·데미지·보상·에셋은 변경하지 않는다.',[motionRel]);return null;}
 function diagnosticKey(issue,micro){return`${clean(issue?.type)||'UNKNOWN'}:${posix(micro?.file)||'unknown'}`;}
 function diagnosticSeen(queue,key){return queue.tasks.some(item=>(item.evidence||[]).some(e=>clean(e)===`diagnostic-key:${key}`));}
@@ -751,6 +839,14 @@ function findSafeTasks(project,repoRoot,queue){
     scanExplicitMarkerTask(project,repoRoot,queue)
   ]);
   if(project.engine==='unity'){
+    if(project.firstStageUnityWeb===true){
+      const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
+      if(firstStage)return[firstStage];
+      return uniqueTaskCandidates([
+        findPresentationQualityTask(project,repoRoot,queue),
+        scanExplicitMarkerTask(project,repoRoot,queue)
+      ]);
+    }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
       findPresentationQualityTask(project,repoRoot,queue),
       scanExplicitMarkerTask(project,repoRoot,queue)
