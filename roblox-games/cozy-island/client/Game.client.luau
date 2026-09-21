@@ -1,5 +1,7 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
+local UserInputService=game:GetService("UserInputService")
+local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer;local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"));local remote=RS:WaitForChild(C.RemoteName)
 local gui=Instance.new("ScreenGui");gui.Name="CozyConquest";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui")
 local root=Instance.new("Frame");root.AnchorPoint=Vector2.new(.5,1);root.Position=UDim2.fromScale(.5,.98);root.Size=UDim2.new(1,-18,0,420);root.Parent=gui
@@ -15,3 +17,9 @@ local function render()
  note.Text=(p:GetAttribute("LastActivity")or"READY")..(p:GetAttribute("InBattle")==true and(" · 전투 "..(p:GetAttribute("BattleProgress")or 0).."%")or"")
 end
 for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do p:GetAttributeChangedSignal(k):Connect(render)end;render()
+
+remote.OnClientEvent:Connect(function(kind,snapshot)
+ if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
+ p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
+end)
