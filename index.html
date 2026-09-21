@@ -56,6 +56,9 @@ button,a{font:inherit}
 .pipelineGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.pipelineStep{position:relative;padding:13px;border-radius:12px;background:#f7f9fb}.pipelineStep b{display:block;font-size:11px}.pipelineStep span{display:block;margin-top:4px;color:#718096;font-size:9px;line-height:1.4}.pipelineStep strong{display:inline-block;margin-top:8px;font-size:8px;color:#1677ff}
 .portfolioBoard{display:none!important}
 
+.recentUpdates{margin-top:32px;padding:22px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.recentUpdatesHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}.recentUpdatesHead h2{margin:0;font-size:24px}.recentUpdatesHead span{font-size:11px;color:var(--muted)}
+.recentUpdateList{display:grid;gap:8px}.recentUpdateItem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:12px;background:#f7f9fb}.recentUpdateItem div{min-width:0}.recentUpdateItem b{display:block;font-size:12px}.recentUpdateItem span{display:block;margin-top:4px;color:#5f7182;font-size:10px;line-height:1.45}.recentUpdateItem small{flex:0 0 auto;color:#75879a;font-size:9px;font-weight:850}.recentUpdateEmpty{padding:18px;text-align:center;color:#8090a0;font-size:10px}
 .footer{margin:38px 0 8px;text-align:center;color:#8492a0;font-size:10px}
 .mobileDock{display:none}
 
@@ -66,7 +69,7 @@ button,a{font:inherit}
   .stats{gap:7px;margin:10px 0 24px}.stat{min-height:72px;padding:11px 5px}.stat b{font-size:23px}.stat span{font-size:9px}
   .gameShelfHead h2{font-size:21px}.gameShelfHead p{font-size:10px}
   .gameShelfGrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 1px 4px}.gameShelfGrid::-webkit-scrollbar{display:none}.foldGameCard{flex:0 0 78vw;max-width:320px;scroll-snap-align:start}.foldGameArt{height:170px}.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .pipeline{padding:16px 12px}.pipelineTop h2{font-size:21px}.pipelineTop span{display:none}.pipelineGrid{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.pipelineGrid::-webkit-scrollbar{display:none}.pipelineStep{flex:0 0 68vw;scroll-snap-align:start}
+  .recentUpdates{padding:16px 12px}.recentUpdatesHead h2{font-size:21px}.recentUpdatesHead span{display:none}.recentUpdateItem{align-items:flex-start;flex-direction:column}.recentUpdateItem small{align-self:flex-end}
   .mobileDock{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:50;display:grid;grid-template-columns:repeat(4,1fr);padding:6px;border:1px solid #e2e8ee;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(20,35,50,.16);backdrop-filter:blur(12px)}
   .mobileDock a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px;border-radius:10px;color:#718096;text-decoration:none;font-size:9px;font-weight:900}.mobileDock a:first-child{background:#edf5ff;color:#1677ff}.mobileDock b{font-size:17px}
 }
@@ -76,7 +79,7 @@ button,a{font:inherit}
 <main class="shell">
 <header class="topbar">
   <a class="brand" href="#top" id="top">JAEWOON <span>GAMES</span></a>
-  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#developmentPipeline">개발 현황</a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch>ChatGPT</a></nav>
+  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#recentUpdates">최근 수정</a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch>ChatGPT</a></nav>
   <div id="appInstallBar"><button class="installMini" id="appInstallBtn" type="button">앱 설치</button><span class="installState" id="appInstallState"></span></div>
 </header>
 
@@ -85,29 +88,22 @@ button,a{font:inherit}
 </section>
 
 <section class="stats opsBar" aria-label="게임 요약">
-  <div class="stat"><b id="metricPlayable">-</b><span>플레이 가능</span></div>
+  <div class="stat"><b id="metricPlayable">-</b><span>게임 가능</span></div>
   <div class="stat"><b id="metricDevelopment">-</b><span>개발 중</span></div>
-  <div class="stat"><b id="metricReleased">-</b><span>출시</span></div>
+  <div class="stat"><b id="metricRecent">-</b><span>최근 수정</span></div>
 </section>
 
 <section class="section" id="gameHub" aria-label="게임">
   <div id="gameGrid"></div>
 </section>
 
-<section class="pipeline" id="developmentPipeline" aria-label="개발 흐름">
-  <div class="pipelineTop"><h2>개발 흐름</h2><span>Web → 플랫폼 → 검증 → 출시</span></div>
-  <div class="pipelineLead" id="pipelineLead"><b>현재 진행</b><br>개발 상태를 불러오는 중</div>
-  <div class="pipelineGrid">
-    <div class="pipelineStep"><b>1. Web 제작</b><span>핵심 플레이 구현</span><strong>ACTIVE</strong></div>
-    <div class="pipelineStep"><b>2. Web 검증</b><span>게임성·회귀 QA</span><strong>WEB</strong></div>
-    <div class="pipelineStep"><b>3. 플랫폼</b><span>Roblox · Unity · UEFN</span><strong>PLATFORM</strong></div>
-    <div class="pipelineStep"><b>4. 플랫폼 검증</b><span>실행·회귀 검증</span><strong>QA</strong></div>
-    <div class="pipelineStep"><b>5. 출시</b><span>출시 후 집중개발</span><strong>RELEASE</strong></div>
-  </div>
+<section class="recentUpdates" id="recentUpdates" aria-label="최근 수정 반영">
+  <div class="recentUpdatesHead"><h2>최근 수정 반영</h2><span>최근 지시가 게임에 반영됐는지 간단히 확인</span></div>
+  <div class="recentUpdateList" id="recentUpdateList"><div class="recentUpdateEmpty">최근 수정 기록을 불러오는 중</div></div>
 </section>
 
 <footer class="footer">© 2026 JAEWOON GAMES</footer>
-<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="#developmentPipeline"><b>▥</b><span>개발</span></a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch><b>GPT</b><span>ChatGPT</span></a></nav>
+<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="#recentUpdates"><b>▥</b><span>개발</span></a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch><b>GPT</b><span>ChatGPT</span></a></nav>
 </main>
 
 <script>
