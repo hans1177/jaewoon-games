@@ -271,7 +271,6 @@ export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
     if(evidence.exactRevision!==true)blocked.push('exact-revision-unproven');
     return Object.freeze({pass:blocked.length===0,sourceRevision:revision,blockedReasons:Object.freeze(blocked),browserQa:'NOT_APPLICABLE',authority:'roblox-headless-release-evidence-gate'});
   }
-  const revision=clean(sourceRevision||evidence.sourceRevision);
   if(!SHA.test(revision))blocked.push('source-revision-invalid');
   if(clean(evidence.sourceRevision)!==revision)blocked.push('exact-source-revision-mismatch');
   if(evidence.buildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
