@@ -127,7 +127,7 @@ function domainsForKnowledgeRow(row={}){
   return uniq(inferDomains([
     row.id,row.system,row.problem,row.pattern,row.failureCause,
     ...(row.tags||[]),...(row.reusablePatterns||[]),...(row.avoidPatterns||[])
-  ].filter(Boolean).join(' '),row.engine));
+  ].filter(Boolean).join(' '),''));
 }
 
 function nativeDomainsForEngine(engine=''){
@@ -1053,10 +1053,12 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
       const lifecycle=knowledgeStateFor(mastery,'CODE_PATTERN',row?.id);
       score+=knowledgeEffectAdjustment(mastery,'CODE_PATTERN',row?.id);
       if(lifecycle==='DEMOTED')score-=8;
-      return {...row,relevance:score,knowledgeDomains,primaryDomainMatches:primaryMatches,secondaryDomainMatches:secondaryMatches,knowledgeLifecycle:lifecycle};
+      const retrievalTier=primaryMatches.length?3:secondaryMatches.length?2:(sameGame||overlap>0)?1:0;
+      if(retrievalTier===0)score=0;
+      return {...row,relevance:score,retrievalTier,knowledgeDomains,primaryDomainMatches:primaryMatches,secondaryDomainMatches:secondaryMatches,knowledgeLifecycle:lifecycle};
     })
     .filter(x=>x.verified===true&&x.relevance>0)
-    .sort((a,b)=>b.relevance-a.relevance)
+    .sort((a,b)=>b.retrievalTier-a.retrievalTier||b.relevance-a.relevance||clean(a.id).localeCompare(clean(b.id)))
     .slice(0,6);
 
   const taskType=lower(task.taskType||task.type||'coding');
