@@ -95,10 +95,11 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
+          const EXECUTION_BATCH_MAX=256;
           const rows=[];
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
-            if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(rows.length>=EXECUTION_BATCH_MAX)break;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
@@ -127,6 +128,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
+          console.log(`ROBLOX_EXECUTION_BATCH_CAPACITY=${EXECUTION_BATCH_MAX}`);
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
