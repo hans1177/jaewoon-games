@@ -17,6 +17,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1720;fon
 .actionBtn{position:fixed;border:2px solid #fff9;color:#fff;font-weight:900;z-index:12}
 #talk{right:124px;bottom:38px;width:76px;height:64px;border-radius:18px;background:#d28b22e8}
 #bagBtn{right:22px;top:62px;width:64px;height:46px;border-radius:14px;background:#405d9de8}
+#multiBtn{right:94px;top:62px;width:64px;height:46px;border-radius:14px;background:#345d8fe8}
 #quest{position:fixed;left:12px;top:54px;z-index:10;max-width:min(72vw,430px);padding:8px 10px;border-radius:10px;background:#07101ccc;border:1px solid #ffffff44;color:#fff;font-size:12px;font-weight:800;text-shadow:0 2px 5px #000}
 .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#000b;z-index:40;padding:18px}
 .panel{width:min(92vw,430px);max-height:82vh;overflow:auto;border:2px solid #dcb36e;border-radius:14px;background:#1a1817;color:#fff;padding:14px}
@@ -36,13 +37,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1720;fon
 <body>
 <canvas id="app"></canvas>
 <div id="hud"><span class="pill" id="area">마을</span><span class="pill" id="lv">Lv.1</span><span class="pill" id="hp">HP 100/100</span><span class="pill" id="atk">공격 10</span><span class="pill" id="gold">0 G</span><span class="pill" id="xp">EXP 0/100</span></div><div id="quest">퀘스트: 촌장에게 말을 걸어라.</div>
-<div id="badge">PLAYCANVAS 3D · PHASE 4</div><div id="toast"></div><div id="partyHud"></div>
+<div id="badge">PLAYCANVAS 3D · PHASE 5</div><div id="toast"></div><div id="partyHud"></div>
 <div id="joy"><div id="knob"></div></div>
-<button id="attack">공격</button><button id="talk" class="actionBtn">대화</button><button id="bagBtn" class="actionBtn">가방</button>
-<div id="start"><div><h1>대충 RPG 3D</h1><p>PlayCanvas 이전 4단계 · AI 파티/기여도 사냥</p><button id="startBtn">3D 테스트 시작</button></div></div>
+<button id="attack">공격</button><button id="talk" class="actionBtn">대화</button><button id="bagBtn" class="actionBtn">가방</button><button id="multiBtn" class="actionBtn">멀티</button>
+<div id="start"><div><h1>대충 RPG 3D</h1><p>PlayCanvas 이전 5단계 · 멀티/던전/보스</p><button id="startBtn">3D 테스트 시작</button></div></div>
 <div id="dialog" class="overlay"><div class="panel"><h2 id="dialogTitle">대화</h2><div id="dialogText"></div><button id="dialogClose" class="close">닫기</button></div></div>
 <div id="shop" class="overlay"><div class="panel"><h2 id="shopTitle">상점</h2><div id="shopList"></div><button id="shopClose" class="close">닫기</button></div></div>
 <div id="bag" class="overlay"><div class="panel"><h2>가방 / 장비</h2><div id="bagList"></div><button id="bagClose" class="close">닫기</button></div></div>
+<div id="multi" class="overlay"><div class="panel"><h2>멀티플레이</h2><div id="multiStatus">오프라인</div><input id="multiRoom" type="number" min="1" max="10" inputmode="numeric" placeholder="방 번호 1~10" style="width:100%;height:44px;margin:10px 0;border-radius:9px;border:1px solid #ffffff33;background:#0d1420;color:#fff;padding:0 10px;font-weight:900"><div style="display:flex;gap:8px"><button id="multiCreate" style="flex:1">방 만들기</button><button id="multiJoin" style="flex:1">방 참가</button></div><button id="multiLeave" class="close">방 나가기</button><button id="multiClose" class="close">닫기</button><div style="font-size:11px;opacity:.7;margin-top:8px">방 코드는 1~10 중 숫자 하나</div></div></div>
 <script type="module" src="./main.mjs"></script>
 </body>
 </html>
