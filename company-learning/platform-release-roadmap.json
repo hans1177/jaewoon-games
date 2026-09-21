@@ -1,5 +1,5 @@
 {
-  "version": 239,
+  "version": 240,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4966,6 +4966,12 @@
         "versionMarker": "SAMPLE_FRONT_DOOR_V1",
         "buildMarker": "2026-09-21-sample-exact",
         "markerLocation": "html[data-homepage-version][data-homepage-build]"
+      },
+      "workflowValidation": {
+        "requireVersionMarker": true,
+        "requireBuildMarker": true,
+        "requireChatgptShortcut": true,
+        "requireRuntimeRefreshCadenceMs": 30000
       }
     }
   },
