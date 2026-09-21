@@ -33,13 +33,19 @@ test('planner and source worker preserve candidate-only missing-source bootstrap
   assert.match(planner,/WEB_VIBE_REPAIR_REQUIRED/);
   assert.match(planner,/source-root-bootstrap-required/);
   assert.match(planner,/FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(planner,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(planner,/unity-web-source-root-bootstrap-required/);
   assert.match(runner,/sourceRootBootstrapAllowed/);
   assert.match(runner,/source-root-bootstrap-required/);
   assert.match(runner,/responsibleFiles\.length===1/);
+  assert.match(runner,/responsibleFiles\.length===2/);
   assert.match(worker,/function sourceRootBootstrapAllowed/);
-  assert.match(worker,/order\?\.workerPolicy\?\.sourceRootBootstrapAllowed===true/);
+  assert.match(worker,/workerPolicy\?\.sourceRootBootstrapAllowed!==true/);
   assert.match(worker,/evidence\.has\('source-root-bootstrap-required'\)/);
+  assert.match(worker,/evidence\.has\('unity-web-source-root-bootstrap-required'\)/);
   assert.match(worker,/responsibleFiles\[0\]==='index\.html'/);
+  assert.match(worker,/files\.has\('Assets\/Scripts\/GameCore\.cs'\)/);
+  assert.match(worker,/files\.has\('Assets\/Scripts\/RuntimeBootstrap\.cs'\)/);
   assert.match(worker,/if\(!sourceRootExists&&!bootstrap\)throw new Error/);
 });
 
