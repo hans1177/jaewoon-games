@@ -63,6 +63,15 @@ function robloxPlatformProfileFromBaseline(baseline={}){
   for(const field of required)if(clean(profile[field]).length<8)throw new Error('ROBLOX_PLATFORM_PROFILE_FIELD_REQUIRED:'+field);
   return Object.freeze({...profile,platform:'ROBLOX'});
 }
+export function robloxPlatformDesignFromBaseline(baseline={}){
+  const profile=baselineContent(baseline)?.platformProfiles?.ROBLOX;
+  if(!profile||Array.isArray(profile)||typeof profile!=='object')throw new Error('ROBLOX_PLATFORM_DESIGN_PROFILE_REQUIRED');
+  const required=['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'];
+  if(clean(profile.platform).toUpperCase()!=='ROBLOX')throw new Error('ROBLOX_PLATFORM_DESIGN_TARGET_MISMATCH');
+  for(const field of required)if(clean(profile[field]).length<8)throw new Error('ROBLOX_PLATFORM_DESIGN_FIELD_REQUIRED:'+field);
+  return Object.freeze({...profile,platform:'ROBLOX'});
+}
+
 export function requiresPersistentSave(baseline={}){
   return /(persistent|persistence|save|long-term progression|long term progression|영구|저장)/i.test(baselineText(baseline));
 }
@@ -351,7 +360,7 @@ async function main(){
     generationMode:built.generationMode,model,modelUsed:built.modelUsed,modelAttempts:built.attempts,modelContractFailures:built.failures,
     vibe3LearningApplied:built.learning.applied,robloxPlaybookChecklist:built.learning.checklist,recombinationRecipeId:built.learning.recipeId,
     recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
-    webPlatformHandoff:built.webHandoff,webPlatformHandoffPassed:built.handoffValidation.pass,webCarryForward:built.handoffValidation.carryForward,
+    platformDesignProfile:built.platformDesign,webPlatformHandoffLegacy:built.webHandoff,webPlatformHandoffRequired:false,
     implementationNotes:built.result.implementationNotes,nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
   };
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
@@ -369,7 +378,8 @@ async function main(){
   console.log(`ROBLOX_VIBE3_LEARNING_APPLIED=${built.learning.applied?'YES':'NO'}`);
   console.log(`ROBLOX_VIBE3_RECIPE=${built.learning.recipeId||'NONE'}`);
   console.log(`ROBLOX_VIBE3_FEATURES=${built.learning.featureBlend.join(',')||'NONE'}`);
-  console.log('ROBLOX_WEB_HANDOFF=PASS');
+  console.log('ROBLOX_WEB_HANDOFF=LEGACY_DISABLED');
+  console.log('ROBLOX_PLATFORM_DESIGN=PASS');
   console.log(`ROBLOX_WEB_HANDOFF_CARRY=${built.handoffValidation.carryForward.join(',')}`);
   console.log('MODEL_USED=NO');
   console.log('ROBLOX_RUNTIME_PASS=NO');
