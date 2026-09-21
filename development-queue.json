@@ -374,10 +374,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-build-package-failed"
+        "roblox-build-package-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-21T17:13:38.778Z",
+      "updatedAt": "2026-09-22T03:15:00+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -503,7 +503,7 @@
       "minimumParticipantsForRequiredQa": 2,
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
+      "robloxSourceCommit": "c4f4aee4fd88502a46dd8e7092bd73978bd621eb",
       "visualArtPass": "STYLIZED_ROBLOX_V1",
       "directImplementationState": "PLAYABLE_STORY_NPC_COMPANION_RECRUITMENT_4_MEMBER_PARTY_COMBAT_BOSS_HIDDEN_COMPANIONS",
       "releaseStrategy": "FAST_MVP",
@@ -511,10 +511,10 @@
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-build-package-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING_FAST_MVP",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
+      "robloxBuildSourceRevision": null,
       "robloxBuildFailedAt": "2026-09-21T17:13:38.778Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
@@ -533,7 +533,11 @@
       "robloxRegressionPassedAt": null,
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
-      "robloxPostRuntimeQaEvidence": null
+      "robloxPostRuntimeQaEvidence": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxExactRevisionPassed": false,
+      "robloxMultiplayerQaPassed": false,
+      "robloxInternalReleaseReady": false
     },
     {
       "gameId": "monster-adventure",
@@ -2412,15 +2416,15 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-21T17:13:38.778Z",
-      "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
+      "updatedAt": "2026-09-22T03:15:00+09:00",
+      "robloxSourceCommit": "c4f4aee4fd88502a46dd8e7092bd73978bd621eb",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-build-package-failed"
+        "roblox-build-package-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -2440,8 +2444,8 @@
       "postWebArtbookRequired": false,
       "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
-      "robloxBuildArtifactIdentity": "sha256:a08a2246992d0ffd019b3d04822b27f5573eabd34bf06b10efaaa8827d2a2ba1",
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": "2026-09-21T15:48:25.054Z",
       "robloxBuildFailedAt": "2026-09-21T17:13:38.778Z",
       "robloxBuildPreflightPassed": false,
@@ -2464,7 +2468,7 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-build-package-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING_FAST_MVP",
       "multiplayerSupported": true,
       "soloPlayable": true,
       "multiplayerMode": "COOP",
@@ -2500,7 +2504,10 @@
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
-      "fastLaunchPriority": true
+      "fastLaunchPriority": true,
+      "robloxExactRevisionPassed": false,
+      "robloxMultiplayerQaPassed": false,
+      "robloxInternalReleaseReady": false
     },
     {
       "gameId": "territory-war",
@@ -2688,13 +2695,13 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-build-package:roblox-build-package-failed"
+        "roblox-build-package-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-21T17:13:38.778Z",
+      "updatedAt": "2026-09-22T03:15:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
-      "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
+      "robloxSourceCommit": "c4f4aee4fd88502a46dd8e7092bd73978bd621eb",
       "visualArtPass": "STYLIZED_ROBLOX_V1",
       "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
       "releaseStrategy": "FAST_MVP",
@@ -2702,10 +2709,10 @@
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-build-package-failed",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING_FAST_MVP",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
+      "robloxBuildSourceRevision": null,
       "robloxBuildFailedAt": "2026-09-21T17:13:38.778Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
@@ -2725,7 +2732,11 @@
       "robloxRegressionPassedAt": null,
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
-      "robloxPostRuntimeQaEvidence": null
+      "robloxPostRuntimeQaEvidence": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxExactRevisionPassed": false,
+      "robloxMultiplayerQaPassed": false,
+      "robloxInternalReleaseReady": false
     }
   ],
   "updatedAt": "2026-09-21T17:13:59.165Z",
@@ -2778,8 +2789,8 @@
       "REGRESSION",
       "PRIVATE_RELEASE_CANDIDATE"
     ],
-    "sourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
-    "updatedAt": "2026-09-22T02:55:00+09:00",
+    "sourceCommit": "c4f4aee4fd88502a46dd8e7092bd73978bd621eb",
+    "updatedAt": "2026-09-22T03:15:00+09:00",
     "standardPipelineCompatibility": "TARGET_PLATFORM_TECHNICAL_VALIDATION + TARGET_PLATFORM_REPAIR_REQUIRED"
   }
 }
