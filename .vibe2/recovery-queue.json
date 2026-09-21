@@ -27268,11 +27268,46 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T13:44:17.235Z",
-      "updatedAt": "2026-09-21T13:44:17.404Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-09-21T13:44:17.404Z"
-      ]
+      "updatedAt": "2026-09-21T13:44:17.404Z"
+    },
+    {
+      "id": "recovery-a6dc1a087c18264ec1ed",
+      "status": "queued",
+      "priority": "critical",
+      "sourceQueue": "security",
+      "sourceTaskId": "security-run-35607353599",
+      "gameId": null,
+      "responsibleFiles": [],
+      "contextFiles": [],
+      "goal": null,
+      "relatedTaskIds": [],
+      "failureStage": "SECURITY_IMMUNE_SCAN",
+      "failureSignature": "security-quarantine-HIGH",
+      "blastRadius": "affected-change",
+      "checkpoint": null,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "evidence": [
+        "security-run:35607353599",
+        "security-report:artifact-35607353599",
+        "security-repair-file:.github/workflows/unity-web-first-stage-build.yml"
+      ],
+      "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
+      "verificationPlan": [
+        "RERUN_SECURITY_SCAN",
+        "VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD",
+        "REGRESSION_RESCAN",
+        "PRIMARY_AI_SECURITY_REVIEW"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-09-21T13:45:19.525Z",
+      "updatedAt": "2026-09-21T13:45:19.525Z"
     }
   ]
 }
