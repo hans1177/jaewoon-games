@@ -45,6 +45,7 @@ jobs:
           changed=0
           system_ai_queued=0
           system_ai_recovery_dispatched=0
+          primary_ai_collaboration_requested=0
           vibe_requeued=0
 
           for attempt in 1 2 3; do
@@ -63,6 +64,7 @@ jobs:
 
             system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"
             system_ai_queued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued').length))" "$control/.vibe2/system-ai-queue.json")"
+            primary_ai_collaboration_requested="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>(t.evidence||[]).includes('primary-ai-collaboration:REQUESTED')).length))" "$control/.vibe2/recovery-queue.json")"
             vibe_requeued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued'&&(t.evidence||[]).some(e=>String(e).startsWith('recovery-queue:'))).length))" "$control/.vibe2/queue.json")"
 
             cd "$control"
@@ -94,9 +96,11 @@ jobs:
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           echo "system_ai_queued=$system_ai_queued" >> "$GITHUB_OUTPUT"
           echo "system_ai_recovery_dispatched=$system_ai_recovery_dispatched" >> "$GITHUB_OUTPUT"
+          echo "primary_ai_collaboration_requested=$primary_ai_collaboration_requested" >> "$GITHUB_OUTPUT"
           echo "vibe_requeued=$vibe_requeued" >> "$GITHUB_OUTPUT"
           echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_QUEUED=$system_ai_queued"
           echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_NEW_RECOVERY_DISPATCH=$system_ai_recovery_dispatched"
+          echo "VIBE2_RECOVERY_FAST_PRIMARY_AI_COLLABORATION_REQUESTED=$primary_ai_collaboration_requested"
           echo "VIBE2_RECOVERY_FAST_GAME_REQUEUED=$vibe_requeued"
           echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'
 
