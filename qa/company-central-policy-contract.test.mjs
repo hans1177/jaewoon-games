@@ -172,26 +172,27 @@ test('DESIGN_ONLY keeps deterministic evidence while lead-model distinctness is 
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
-test('Vibe2/Vibe3 are the machine-locked game implementation owner from Web-first onward',()=>{
+test('Vibe2/Vibe3 remain primary integration and learning owner while assigned external AI may collaborate in isolated candidate scope',()=>{
   const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
-  assert.equal(authority.authority,'VIBE_IMPLEMENTATION_OWNER');
-  assert.equal(authority.implementationOwner,'VIBE2_VIBE3');
+  assert.equal(authority.authority,'VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION');
+  assert.equal(authority.implementationOwner,'VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS');
   assert.equal(authority.appliesFromStage,'WEB_BASE_IMPLEMENTATION');
   assert.equal(authority.ownsWebFirstImplementation,true);
   assert.equal(authority.ownsSelectedPlatformImplementation,true);
   assert.equal(authority.ownsPostReleaseGameSourceDevelopment,true);
   assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
-  assert.equal(authority.nonVibeAiMayWriteGameSource,false);
-  assert.equal(authority.nonVibeAiMayCreateGameplayFeatureCommits,false);
+  assert.equal(authority.nonVibeAiMayWriteGameSource,true);
+  assert.equal(authority.nonVibeAiMayCreateGameplayFeatureCommits,true);
+  assert.equal(authority.nonVibeAiGameSourceWriteMode,'EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY');
+  assert.equal(authority.nonVibeAiGameplayFeatureCommitMode,'CANDIDATE_BRANCH_ONLY_NO_DIRECT_MAIN');
   assert.equal(authority.nonVibeAiMayModifyOrchestrationCiContractsWhenNeeded,true);
-  assert.equal(authority.ownerExplicitInstructionRequiredForAnyException,true);
+  assert.equal(authority.externalAiSelfAcceptance,false);
+  assert.equal(authority.externalAiDirectMainWrite,false);
+  assert.equal(authority.vibeMustLearnDuringCollaborativeWork,true);
+  assert.equal(authority.verifiedResultsReturnToExistingLearningMotor,true);
   assert.equal(directive.ai.vibe2.implementationOwner,true);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
-  assert.equal(directive.ai.nonVibeDevelopmentAssistant.role,'TEACH_REVIEW_DIAGNOSE_UNBLOCK_VALIDATE');
-  assert.equal(directive.ai.nonVibeDevelopmentAssistant.gameDevelopmentOwner,false);
-  assert.equal(directive.ai.nonVibeDevelopmentAssistant.mayWriteGameSource,false);
-  assert.equal(directive.ai.nonVibeDevelopmentAssistant.mayCreateGameplayFeatureCommits,false);
 });
 
 test('every game requires a full approved-scope Web companion before selected target platform validation',()=>{
