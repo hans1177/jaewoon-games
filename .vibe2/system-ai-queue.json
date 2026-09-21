@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
+  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
@@ -892,6 +892,742 @@
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
       "updatedAt": "2026-09-21T03:01:59.987Z"
+    },
+    {
+      "id": "marketing-ant-simulator-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "ant-simulator",
+      "goal": "Create the current non-financial growth and marketing execution package for 개미 시뮬레이터. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/ant-simulator/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/ant-simulator/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/ant-simulator/latest.json --game-id=ant-simulator"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-amusement-tycoon-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "amusement-tycoon",
+      "goal": "Create the current non-financial growth and marketing execution package for 놀이공원 타이쿤. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/amusement-tycoon/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/amusement-tycoon/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/amusement-tycoon/latest.json --game-id=amusement-tycoon"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-bug-defense-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "bug-defense",
+      "goal": "Create the current non-financial growth and marketing execution package for 곤충 디펜스. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/bug-defense/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/bug-defense/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/bug-defense/latest.json --game-id=bug-defense"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-daechung-rpg-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "daechung-rpg",
+      "goal": "Create the current non-financial growth and marketing execution package for 대충 RPG. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/daechung-rpg/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/daechung-rpg/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/daechung-rpg/latest.json --game-id=daechung-rpg"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-line-defense-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "line-defense",
+      "goal": "Create the current non-financial growth and marketing execution package for 골목 군단 대전. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/line-defense/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/line-defense/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/line-defense/latest.json --game-id=line-defense"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-village-dungeons-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "village-dungeons",
+      "goal": "Create the current non-financial growth and marketing execution package for 마을 던전 RPG. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/village-dungeons/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/village-dungeons/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/village-dungeons/latest.json --game-id=village-dungeons"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-fantasy-survival-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "fantasy-survival",
+      "goal": "Create the current non-financial growth and marketing execution package for 마력숲 생존기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/fantasy-survival/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/fantasy-survival/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/fantasy-survival/latest.json --game-id=fantasy-survival"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-monster-adventure-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "monster-adventure",
+      "goal": "Create the current non-financial growth and marketing execution package for 몬스터 어드벤처. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/monster-adventure/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/monster-adventure/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/monster-adventure/latest.json --game-id=monster-adventure"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-seed-action-survival-rogu-echoes-of-the-lost-star-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "goal": "Create the current non-financial growth and marketing execution package for 잃어버린 별의 메아리. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-action-survival-rogu-echoes-of-the-lost-star/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-action-survival-rogu-echoes-of-the-lost-star/latest.json --game-id=seed-action-survival-rogu-echoes-of-the-lost-star"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-seed-casual-realm-weaver-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-casual-realm-weaver",
+      "goal": "Create the current non-financial growth and marketing execution package for 세계의 직조자. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-casual-realm-weaver/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/seed-casual-realm-weaver/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-casual-realm-weaver/latest.json --game-id=seed-casual-realm-weaver"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-seed-idle-growth-rpg-crystal-bloom-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "goal": "Create the current non-financial growth and marketing execution package for 수정의 개화. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-idle-growth-rpg-crystal-bloom/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-idle-growth-rpg-crystal-bloom/latest.json --game-id=seed-idle-growth-rpg-crystal-bloom"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-seed-puzzle-chromatic-cascade-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "goal": "Create the current non-financial growth and marketing execution package for 색채의 연쇄. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-puzzle-chromatic-cascade/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/seed-puzzle-chromatic-cascade/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-puzzle-chromatic-cascade/latest.json --game-id=seed-puzzle-chromatic-cascade"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-seed-single-defense-strat-celestial-bastion-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "goal": "Create the current non-financial growth and marketing execution package for 천상의 보루. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-single-defense-strat-celestial-bastion/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/seed-single-defense-strat-celestial-bastion/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-single-defense-strat-celestial-bastion/latest.json --game-id=seed-single-defense-strat-celestial-bastion"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-seed-story-complete-rpg-chronicles-of-eldoria-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "goal": "Create the current non-financial growth and marketing execution package for 엘도리아 연대기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-story-complete-rpg-chronicles-of-eldoria/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-story-complete-rpg-chronicles-of-eldoria/latest.json --game-id=seed-story-complete-rpg-chronicles-of-eldoria"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
+    },
+    {
+      "id": "marketing-survival-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "survival",
+      "goal": "Create the current non-financial growth and marketing execution package for 나의 생존기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
+      "responsibleFiles": [
+        "company-learning/marketing/survival/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/survival/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "marketing artifact contains facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, decision",
+        "current capability claims grounded in repository context",
+        "no owner approval gate",
+        "no paid financial execution",
+        "Primary AI and Vibe joint decision starts pending",
+        "verified result returns to existing Vibe learning motor"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/survival/latest.json --game-id=survival"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:pre-release",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-21T02:59:00.000Z",
+      "updatedAt": "2026-09-21T02:59:00.000Z"
     }
-  ]
+  ],
+  "updatedAt": "2026-09-21T02:59:00.000Z"
 }
