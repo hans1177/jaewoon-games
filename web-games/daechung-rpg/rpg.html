@@ -368,7 +368,7 @@ function draw(){ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);i
 function loop(t){requestAnimationFrame(loop);if(!run){draw();return}const dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw()}
 
 const joyEl=document.getElementById('joy'),joyKnob=document.getElementById('knob'),exitBtn=document.getElementById('exitBtn');
-let jid=null,joyTouchActive=false,center={x:0,y:0};
+let jid=null,joyMode='',center={x:0,y:0};
 function joyCenter(){const r=joyEl.getBoundingClientRect();center.x=r.left+r.width/2;center.y=r.top+r.height/2}
 function joyApply(x,y){
  let dx=x-center.x,dy=y-center.y,l=Math.hypot(dx,dy),m=42;
@@ -378,56 +378,47 @@ function joyApply(x,y){
  const s=document.getElementById('joyState');if(s)s.textContent=`MOVE ${j.x.toFixed(1)},${j.y.toFixed(1)}`;
 }
 function joyStop(){
- jid=null;joyTouchActive=false;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';
+ jid=null;joyMode='';j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';
  const s=document.getElementById('joyState');if(s)s.textContent='MOVE';
 }
-function joyStart(x,y,id){
- initAudio();jid=id;joyCenter();joyApply(x,y);
+function joyStart(x,y,id,mode){
+ initAudio();joyMode=mode;jid=id;joyCenter();joyApply(x,y);
 }
-function activeTouch(list){
- if(typeof jid!=='string'||!jid.startsWith('t'))return null;
- const id=Number(jid.slice(1));
- for(let i=0;i<list.length;i++)if(list[i].identifier===id)return list[i];
- return null;
-}
+function samePointer(e){return joyMode==='pointer'&&jid===e.pointerId}
 
-// Android/WebView/iframe에서는 TouchEvent를 모바일 주 입력으로 사용한다.
-joyEl.addEventListener('touchstart',e=>{
- const t=e.changedTouches[0]||e.touches[0];if(!t)return;
- e.preventDefault();e.stopPropagation();joyTouchActive=true;joyStart(t.clientX,t.clientY,'t'+t.identifier);
-},{passive:false});
-document.addEventListener('touchmove',e=>{
- if(!joyTouchActive)return;
- const t=activeTouch(e.touches);if(!t)return;
- e.preventDefault();joyApply(t.clientX,t.clientY);
-},{passive:false,capture:true});
-document.addEventListener('touchend',e=>{
- if(!joyTouchActive)return;
- const t=activeTouch(e.changedTouches);if(!t)return;
- e.preventDefault();joyStop();
-},{passive:false,capture:true});
-document.addEventListener('touchcancel',e=>{
- if(!joyTouchActive)return;
- const t=activeTouch(e.changedTouches);if(t)joyStop();
-},{capture:true});
-
-// 마우스/펜은 PointerEvent를 사용하고 터치는 위 경로와 중복 처리하지 않는다.
-joyEl.onpointerdown=e=>{
- if(e.pointerType==='touch'||joyTouchActive)return;
- e.preventDefault();e.stopPropagation();joyStart(e.clientX,e.clientY,e.pointerId);
+// Android/Chrome/WebView 포함: 터치·펜·마우스를 PointerEvent 한 경로로 처리한다.
+joyEl.addEventListener('pointerdown',e=>{
+ e.preventDefault();e.stopPropagation();joyStart(e.clientX,e.clientY,e.pointerId,'pointer');
  try{joyEl.setPointerCapture(e.pointerId)}catch{}
-};
-document.addEventListener('pointermove',e=>{
- if(joyTouchActive||typeof jid!=='number'||e.pointerId!==jid)return;
- e.preventDefault();joyApply(e.clientX,e.clientY);
-},{passive:false,capture:true});
-document.addEventListener('pointerup',e=>{
- if(joyTouchActive||typeof jid!=='number'||e.pointerId!==jid)return;
- e.preventDefault();joyStop();
-},{passive:false,capture:true});
-document.addEventListener('pointercancel',e=>{
- if(!joyTouchActive&&typeof jid==='number'&&e.pointerId===jid)joyStop();
-},{capture:true});
+},{passive:false});
+joyEl.addEventListener('pointermove',e=>{
+ if(!samePointer(e))return;e.preventDefault();joyApply(e.clientX,e.clientY);
+},{passive:false});
+joyEl.addEventListener('pointerup',e=>{
+ if(!samePointer(e))return;e.preventDefault();joyStop();
+},{passive:false});
+joyEl.addEventListener('pointercancel',e=>{if(samePointer(e))joyStop()});
+joyEl.addEventListener('lostpointercapture',e=>{if(samePointer(e))joyStop()});
+
+// PointerEvent가 없는 구형 환경에서만 TouchEvent를 fallback으로 사용한다.
+if(!window.PointerEvent){
+ let touchId=null;
+ joyEl.addEventListener('touchstart',e=>{
+  const t=e.changedTouches[0]||e.touches[0];if(!t)return;
+  e.preventDefault();e.stopPropagation();touchId=t.identifier;joyStart(t.clientX,t.clientY,t.identifier,'touch');
+ },{passive:false});
+ joyEl.addEventListener('touchmove',e=>{
+  if(joyMode!=='touch')return;let t=null;
+  for(let i=0;i<e.touches.length;i++)if(e.touches[i].identifier===touchId){t=e.touches[i];break}
+  if(!t)return;e.preventDefault();joyApply(t.clientX,t.clientY);
+ },{passive:false});
+ const touchEnd=e=>{
+  if(joyMode!=='touch')return;
+  for(let i=0;i<e.changedTouches.length;i++)if(e.changedTouches[i].identifier===touchId){e.preventDefault();touchId=null;joyStop();break}
+ };
+ joyEl.addEventListener('touchend',touchEnd,{passive:false});
+ joyEl.addEventListener('touchcancel',touchEnd,{passive:false});
+}
 window.addEventListener('blur',joyStop);
 
 exitBtn.onclick=()=>{
