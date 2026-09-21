@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { promoteVerifiedSystemAiLearning } from '../tools/company-system-ai-learning.mjs';
+import { buildSystemAiLearningContext } from '../tools/company-system-ai-learning-context.mjs';
 
 test('ordinary System AI result promotes only after verified Primary-AI acceptance',()=>{
   const result=promoteVerifiedSystemAiLearning({
@@ -89,3 +90,29 @@ test('24H runner executes System AI learning before verified-learning motor reru
   assert.match(workflow,/SYSTEM_AI_LEARNING_PATTERNS_ADDED/);
   assert.match(workflow,/vibe2-system-ai-learning\.log/);
 });
+
+test('System AI retrieval can reuse verified System AI experience and code pattern from Vibe memory',()=>{
+  const context=buildSystemAiLearningContext({
+    task:{id:'next-system-task',taskType:'system-ai',goal:'repair workflow queue orchestration failure',target:'system'},
+    experienceInput:{records:[{
+      id:'exp-system-ai',verified:true,reusable:true,engine:'system-ai',gameId:null,
+      problem:'workflow queue orchestration failure',goal:'repair workflow queue orchestration',
+      change:'verified changes: tools/router.mjs',outcome:'PASS',failureCause:null,
+      reusablePatterns:['VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION'],
+      avoidPatterns:['SYSTEM_AI_SELF_ACCEPTANCE']
+    }]},
+    codePatternsInput:{patterns:[{
+      id:'pat-system-ai',verified:true,engine:'system-ai',gameId:null,system:'ORCHESTRATION',
+      problem:'workflow queue orchestration',pattern:'VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_CHANGE_VERIFY_REVIEW_REUSE',
+      tags:['system-ai','verified','ORCHESTRATION']
+    }]},
+    masteryInput:{}
+  });
+  assert.ok(context.exactKnowledgeIds.includes('EXPERIENCE:exp-system-ai'));
+  assert.ok(context.exactKnowledgeIds.includes('CODE_PATTERN:pat-system-ai'));
+  assert.match(context.guidance,/exp-system-ai/);
+  assert.match(context.guidance,/pat-system-ai/);
+  assert.equal(context.rawModelOutputIncluded,false);
+  assert.equal(context.authorityExpanded,false);
+});
+
