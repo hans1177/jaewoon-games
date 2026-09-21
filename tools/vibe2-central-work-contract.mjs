@@ -16,6 +16,7 @@ function workerExecutionPolicyProjection(policy={}){
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const live=shared?.liveMainFreshness||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
+  const primaryCollaboration=policy?.developmentLifecycleMachine?.primaryAiOrchestration?.internalVibeAiCollaboration||{};
   const role=orchestration?.assistantRole||{};
   const boundary=orchestration?.executionBoundary||{};
   return{
@@ -44,6 +45,16 @@ function workerExecutionPolicyProjection(policy={}){
         fetchOrValidationFailure:clean(live.fetchOrValidationFailure)||null,
         fingerprintMismatch:clean(live.fingerprintMismatch)||null
       }
+    },
+    primaryAiInternalVibeCollaboration:{
+      scope:clean(primaryCollaboration.scope)||null,
+      collaborationMode:clean(primaryCollaboration.collaborationMode)||null,
+      autonomous24hExecutionContinuesWithoutPrimaryAi:primaryCollaboration.autonomous24hExecutionContinuesWithoutPrimaryAi===true,
+      primaryAiPresenceIsRuntimeGate:primaryCollaboration.primaryAiPresenceIsRuntimeGate===true,
+      appliesToExistingAndFutureRegisteredInternalAi:primaryCollaboration.appliesToExistingAndFutureRegisteredInternalAi===true,
+      directMainWriteGrantedByCollaboration:primaryCollaboration.directMainWriteGrantedByCollaboration===true,
+      policyMutationAuthorityGrantedByCollaboration:primaryCollaboration.policyMutationAuthorityGrantedByCollaboration===true,
+      selfAcceptanceGrantedByCollaboration:primaryCollaboration.selfAcceptanceGrantedByCollaboration===true
     },
     assistantRoadmapOrchestration:{
       sourceOfTruth:clean(orchestration.sourceOfTruth)||null,
@@ -75,6 +86,7 @@ function workerExecutionPolicyFingerprint(policy={}){return sha256(JSON.stringif
 function policyValidationErrors(policy={}){
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
+  const collaboration=policy?.developmentLifecycleMachine?.primaryAiOrchestration?.internalVibeAiCollaboration||{};
   const role=orchestration?.assistantRole||{};
   const boundary=orchestration?.executionBoundary||{};
   const errors=[];
@@ -87,6 +99,11 @@ function policyValidationErrors(policy={}){
   if(shared.staleContextMayNotStartWork!==true)errors.push('STALE_START_BLOCK');
   if(shared.staleContextMayNotCompleteWork!==true)errors.push('STALE_COMPLETION_BLOCK');
   if(clean(shared.syncMode)!=='ROADMAP_FIRST_FAIL_CLOSED')errors.push('SYNC_MODE');
+  if(clean(collaboration.scope)!=='ALL_VIBE_INTERNAL_AI_AUTONOMOUS_WORKERS_NEURAL_DIAGNOSIS_CRITIC_ROOT_CAUSE_RECOVERY_PLANNER_IMPLEMENTATION_QA_RELEASE_SECURITY_AND_LEARNING_SYSTEMS')errors.push('PRIMARY_AI_INTERNAL_VIBE_SCOPE');
+  if(clean(collaboration.collaborationMode)!=='PRIMARY_AI_NON_BLOCKING_COPILOT_OVERLAY')errors.push('PRIMARY_AI_INTERNAL_VIBE_MODE');
+  if(collaboration.autonomous24hExecutionContinuesWithoutPrimaryAi!==true||collaboration.primaryAiPresenceIsRuntimeGate!==false)errors.push('PRIMARY_AI_INTERNAL_VIBE_NONBLOCKING');
+  if(collaboration.appliesToExistingAndFutureRegisteredInternalAi!==true)errors.push('PRIMARY_AI_INTERNAL_VIBE_COVERAGE');
+  if(collaboration.directMainWriteGrantedByCollaboration!==false||collaboration.policyMutationAuthorityGrantedByCollaboration!==false||collaboration.selfAcceptanceGrantedByCollaboration!==false)errors.push('PRIMARY_AI_INTERNAL_VIBE_AUTHORITY');
   if(clean(orchestration.sourceOfTruth)!==CANONICAL_VIBE_POLICY_PATH)errors.push('ASSISTANT_SOURCE_OF_TRUTH');
   if(orchestration.blockerOnly!==false)errors.push('BLOCKER_ONLY');
   if(orchestration?.operatingModel?.dedupeRequired!==true)errors.push('DEDUPE_REQUIRED');
