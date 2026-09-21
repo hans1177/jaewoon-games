@@ -296,3 +296,22 @@ When local capability becomes available, the accumulated verified trajectories/s
 - 1차 Web 화면도 실제 에셋·전투·AI·UI·맵·장르 핵심 시스템·모바일 조작을 요구한다. primitive 중심 가짜 플레이어블은 학습 성공 근거가 아니다.
 - 자동 QA 키 입력은 실제 게임 함수를 구동하는 보조 수단일 뿐 모바일 조작 성공으로 학습하지 않는다. 실제 Unity 화면 컨트롤의 `MOBILE_TARGET` 위치에 브라우저 Touch를 전달한 뒤 `MOBILE_INPUT`이 발생해야 모바일 입력 성공 증거다.
 - 장르 핵심 루프가 실제 상태 진행/보상까지 완료된 시점의 `CORE_FUN status=PASS`만 Core Fun 성공 증거로 학습한다. 단순 화면 표시, 버튼 클릭, QA 전용 상태 변경은 성공 trajectory로 저장하지 않는다.
+
+## Roblox + Unity 앱 직접 동시개발
+
+중앙 정책: `company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment`  
+동기화 문서: `company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md`
+
+Vibe는 게임 하나에 대해 Roblox 또는 Unity 앱 요청이 들어오면 같은 게임 ID의 두 네이티브 구현을 자동으로 함께 계획한다. Unity Web은 신규 제작·개발 입장·검증 관문으로 사용하지 않는다.
+
+설계는 공통 코어와 플랫폼 프로필로 분리한다.
+
+- 공통 코어: 핵심 재미, 루프, 시스템, 성장, 밸런스, 실패/복구, 멀티 의미
+- Roblox 프로필: Roblox 입력, 서버 권한, 세션/멀티, UI, 성능, 저장/네트워크, 비공개 내부출시
+- Unity 앱 프로필: 터치, 씬/프리팹, 세션/멀티, UI, Android 성능/메모리/발열, 저장/네트워크, 내부 테스트 빌드
+
+최소 설계 계약이 준비되면 두 플랫폼 개발을 시작한다. 엄격 설계 검토는 병렬로 계속하며 실제 hard failure가 확인되지 않는 한 이미 시작된 네이티브 개발을 취소하지 않는다.
+
+Roblox와 Unity는 같은 게임 의미를 공유하지만 소스와 런타임 QA 증거는 각각 독립적이다. 한 플랫폼 실패는 다른 플랫폼을 취소하지 않는다. 검증된 결과는 기존 Vibe3 공통 학습 메모리로 환류한다.
+
+1차 출시 목표는 내부 출시이며 Roblox는 Private/Restricted 경험, Unity 앱은 내부/비공개 테스트 빌드를 사용한다. 외부 공개는 각 플랫폼이 자기 검증을 통과하면 서로 기다리지 않고 진행할 수 있다.
