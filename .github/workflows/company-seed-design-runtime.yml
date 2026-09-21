@@ -376,6 +376,8 @@ jobs:
           node --check tools/company-design-cycle.mjs
           node --check tools/company-design-checkpoint-recovery.mjs
           node --check tools/company-baseline-gate.mjs
+          node --check tools/company-minimum-design-contract.mjs
+          node --test qa/company-minimum-design-contract.test.mjs
           echo 'DESIGN_AI_PROVIDER=GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'
           echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
           echo 'GEMINI_API_KEY_REQUIRED_FOR_GATE=NO'
@@ -806,6 +808,59 @@ jobs:
             exit 1
           fi
           echo 'PREPROMOTION_REPAIR_GATE=PASS'
+
+      - name: Persist minimum dual-platform design before strict review
+        id: minimum_design
+        if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+          DESIGN_DATE: ${{ matrix.target.date }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gate="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {evaluateMinimumDesignContract} from './tools/company-minimum-design-contract.mjs';
+          const file=`design/${process.env.GAME_ID}/${process.env.DESIGN_DATE}/design-revised.json`;
+          const design=JSON.parse(fs.readFileSync(file,'utf8'));
+          const gate=evaluateMinimumDesignContract(design);
+          if(!gate.pass)console.error('MINIMUM_DESIGN_BLOCKERS='+gate.blockers.join('|'));
+          process.stdout.write(gate.pass?'PASS':'PENDING');
+          NODE
+          )"
+          echo "gate=$gate" >> "$GITHUB_OUTPUT"
+          if [[ "$gate" != 'PASS' ]]; then
+            echo 'MINIMUM_DESIGN_EARLY_PROMOTION=NO'
+            exit 0
+          fi
+          git config user.name 'jaewoon-minimum-design'
+          git config user.email 'minimum-design@users.noreply.github.com'
+          game_path="design/$GAME_ID"
+          worktree="/tmp/minimum-design-persist-$GAME_ID-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git worktree remove --force "$worktree" 2>/dev/null || true
+            rm -rf "$worktree"
+            git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git -C "$worktree" config user.name 'jaewoon-minimum-design'
+            git -C "$worktree" config user.email 'minimum-design@users.noreply.github.com'
+            git -C "$worktree" checkout "$GITHUB_SHA" -- "$game_path" 2>/dev/null || cp -R "$game_path" "$(dirname "$worktree/$game_path")/"
+            git -C "$worktree" add -- "$game_path"
+            if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
+            git -C "$worktree" commit -m "runtime: minimum dual-platform design $GAME_ID $DESIGN_DATE"
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          git worktree remove --force "$worktree" 2>/dev/null || true
+          git worktree prune
+          test "$pushed" = 1
+          gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'MINIMUM_DESIGN_CONTRACT=PASS'
+          echo 'EARLY_NATIVE_PROMOTION_DISPATCH=YES'
+          echo 'STRICT_REVIEW_CONTINUES_IN_PARALLEL=YES'
+
       - name: Apply strict 30-minute design review
         if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
         env:
