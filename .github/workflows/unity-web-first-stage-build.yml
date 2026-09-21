@@ -14,7 +14,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -266,3 +266,28 @@ jobs:
           path: /tmp/unity-web
           if-no-files-found: error
           retention-days: 7
+
+
+      - name: Publish verified Unity Web build
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout -B main origin/main
+          rm -rf "web-games/$GAME_ID"
+          mkdir -p "web-games/$GAME_ID"
+          cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
+          git add "web-games/$GAME_ID"
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "UNITY_WEB_PUBLICATION=NO_CHANGE"
+            exit 0
+          fi
+          git commit -m "build: publish $GAME_ID Unity Web [skip ci]"
+          git push origin main
+          echo "UNITY_WEB_PUBLICATION=PASS"
