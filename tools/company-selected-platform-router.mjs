@@ -5,9 +5,9 @@ const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
-export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY','FORTNITE_UEFN']);
+export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
 export const DEFAULT_CONCURRENT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
-export const DEVELOPMENT_GAME_WIP_MAX=20;
+export const DEVELOPMENT_GAME_WIP_MAX=Number.POSITIVE_INFINITY;
 export const SPEED_EXECUTION_STAGES=Object.freeze([
   'CHANGE_DETECTION',
   'CHEAP_PRECHECK',
@@ -142,26 +142,20 @@ export function targetPlatformDevelopmentEligible(item={}){
   const status=upper(item.status);
   if(status!=='ACTIVE'&&status!=='PENDING')return false;
   const state=upper(item.canonicalState);
-  if(state==='DEVELOPMENT_BLOCKED'||state==='DEVELOPMENT_BASELINE_READY')return false;
+  if(state==='DEVELOPMENT_BLOCKED')return false;
   const step=upper(item.currentStep);
-  if(!['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_TECHNICAL_VALIDATION','UNITY_ANDROID_TECHNICAL_VALIDATION'].includes(step))return false;
+  if(!['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_TECHNICAL_VALIDATION','UNITY_ANDROID_TECHNICAL_VALIDATION','TARGET_PLATFORM_REPAIR_REQUIRED'].includes(step))return false;
   const platform=resolveSelectedPlatform(item);
   const adapter=adapterForPlatform(platform);
-  if(!adapter?.existingExecutionPath)return false;
-  if(verifiedOwnerReleaseHandoffEligible(item))return true;
-  if(firstWebGatePlatformDevelopmentEligible(item))return true;
-  const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
-  const score=Number(item.webStrictScore??item.strictImplementationScore);
-  return Boolean(
-    item.webValidationPassedAt&&
-    item.musicValidationPassed===true&&
-    item.formalImplementationPassed===true&&
-    upper(item.formalImplementationVerdict)==='PASS'&&
-    Number.isFinite(score)&&score>=90&&
-    hard.length===0&&
-    Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&
-    item.webPromotionRevalidationPassed===true
-  );
+  if(!adapter?.existingExecutionPath||!['ROBLOX','UNITY'].includes(platform))return false;
+  const minimum=item.minimumDesignContract||{};
+  if(minimum.pass!==true)return false;
+  const profiles=item.platformDesignProfiles||{};
+  const profile=profiles[platform];
+  if(!profile||!clean(profile.source)||!clean(profile.jsonPointer))return false;
+  const targets=concurrentTargetPlatforms(item);
+  if(!targets.includes('ROBLOX')||!targets.includes('UNITY'))return false;
+  return true;
 }
 
 export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platform=''){
@@ -181,10 +175,11 @@ export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platfor
 }
 
 export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
-  const limit=Math.max(0,Math.min(DEVELOPMENT_GAME_WIP_MAX,Number(max)||0));
+  const requested=Number(max);
+  const limit=Number.isFinite(requested)&&requested>=0?requested:Number.POSITIVE_INFINITY;
   return Object.freeze(items
     .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
-    .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_UNITY_CONCURRENT'}))
+    .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME'}))
     .sort((a,b)=>{
       const at=Date.parse(a.enqueuedAt||'')||0;
       const bt=Date.parse(b.enqueuedAt||'')||0;
