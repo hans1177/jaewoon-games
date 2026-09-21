@@ -85,10 +85,12 @@ jobs:
         run: |
           set -euo pipefail
           count="$(node -p "require('/tmp/marketing-plan.json').added.length")"
-          if [ "$count" != "0" ]; then
-            gh api repos/"$GITHUB_REPOSITORY"/dispatches               -f event_type='company-system-ai-cycle'               -f client_payload='{"source":"growth-marketing-runtime"}'
+          pending="$(node -e "const q=require('/tmp/marketing-system-ai-queue.json');console.log((q.tasks||[]).filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued').length)")"
+          if [ "$count" != "0" ] || [ "$pending" != "0" ]; then
+            printf '%s\n' '{"event_type":"company-system-ai-cycle","client_payload":{"source":"growth-marketing-runtime"}}' > /tmp/system-ai-dispatch.json
+            gh api repos/"$GITHUB_REPOSITORY"/dispatches --method POST --input /tmp/system-ai-dispatch.json
             gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo "MARKETING_COLLABORATION_WAKE=YES:$count"
+            echo "MARKETING_COLLABORATION_WAKE=YES:added-$count:pending-$pending"
           else
-            echo 'MARKETING_COLLABORATION_WAKE=NO_NEW_TASK'
+            echo 'MARKETING_COLLABORATION_WAKE=NO_PENDING_TASK'
           fi
