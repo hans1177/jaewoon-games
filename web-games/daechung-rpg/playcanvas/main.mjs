@@ -268,6 +268,75 @@ canvas.addEventListener('dblclick',e=>{
   }
   if(best)togglePartyAi(best);
 });
+let supabaseLoadPromise=null;
+function ensureSupabase(){
+  if(window.supabase?.createClient)return Promise.resolve(true);
+  if(supabaseLoadPromise)return supabaseLoadPromise;
+  supabaseLoadPromise=new Promise(resolve=>{
+    const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.1';
+    sc.onload=()=>resolve(!!window.supabase?.createClient);sc.onerror=()=>resolve(false);document.head.appendChild(sc);
+  });
+  return supabaseLoadPromise;
+}
+function validMultiRoom(v){const room=String(v||'').trim();return /^([1-9]|10)$/.test(room)?room:''}
+function updateMultiStatus(extra=''){
+  const count=Math.max(1,multiplayer.presenceIds.size||1);
+  $('multiStatus').textContent=multiplayer.connected?'방 '+multiplayer.room+' · '+count+'명'+(extra?' · '+extra:''):'오프라인';
+  $('multiBtn').textContent=multiplayer.connected?'멀티 '+multiplayer.room:'멀티';
+}
+function syncMultiPresence(){
+  if(!multiplayer.channel)return;
+  const rows=Object.values(multiplayer.channel.presenceState()||{}).flat().filter(Boolean);
+  const ids=new Set(rows.map(x=>x.id).filter(Boolean));ids.add(multiplayer.playerId);multiplayer.presenceIds=ids;
+  for(const [id,r] of multiplayer.remote)if(!ids.has(id)){r.entity?.destroy();multiplayer.remote.delete(id)}
+  updateMultiStatus();
+}
+function multiSend(event,payload){if(multiplayer.connected&&multiplayer.channel)multiplayer.channel.send({type:'broadcast',event,payload}).catch(()=>{})}
+function ensureRemoteEntity(id){
+  const old=multiplayer.remote.get(id);if(old?.entity)return old.entity;
+  const e=primitive('Remote-'+id,'capsule',[0,1.1,0],[1,1,1],M.gold,actorRoot);
+  primitive('RemoteHead-'+id,'sphere',[0,1.15,0],[.62,.62,.62],M.cloth,e);
+  return e;
+}
+function remotePlayerState(payload){
+  if(!payload||payload.id===multiplayer.playerId)return;
+  let r=multiplayer.remote.get(payload.id);
+  if(!r){r={entity:ensureRemoteEntity(payload.id),x:Number(payload.x)||0,z:Number(payload.z)||0};multiplayer.remote.set(payload.id,r)}
+  r.tx=Number(payload.x)||0;r.tz=Number(payload.z)||0;r.zone=String(payload.zone||'town');r.lv=Number(payload.lv)||1;
+  r.hp=Math.max(0,Number(payload.hp)||0);r.maxHp=Math.max(1,Number(payload.maxHp)||100);r.weapon=String(payload.weapon||'맨손');r.seenAt=performance.now();
+}
+async function leaveMultiplayer(){
+  if(multiplayer.channel){try{await multiplayer.channel.untrack()}catch{}try{await multiplayer.channel.unsubscribe()}catch{}}
+  for(const r of multiplayer.remote.values())r.entity?.destroy();
+  multiplayer.channel=null;multiplayer.client=null;multiplayer.connected=false;multiplayer.room='';multiplayer.remote.clear();multiplayer.presenceIds.clear();updateMultiStatus();
+}
+async function connectMultiplayer(rawRoom){
+  const room=validMultiRoom(rawRoom);if(!room){toast('방 번호는 1~10 중 하나만 입력해');return}
+  const ready=await ensureSupabase();if(!ready){toast('멀티 서버 모듈 로딩 실패');return}
+  await leaveMultiplayer();multiplayer.room=room;multiplayer.joinedAt=Date.now();
+  multiplayer.client=window.supabase.createClient(MULTI_SUPABASE_URL,MULTI_SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  multiplayer.channel=multiplayer.client.channel('daechung-rpg:'+room,{config:{broadcast:{self:false,ack:false},presence:{key:multiplayer.playerId}}});
+  multiplayer.channel.on('presence',{event:'sync'},syncMultiPresence).on('broadcast',{event:'player-state'},({payload})=>remotePlayerState(payload)).subscribe(async status=>{
+    if(status==='SUBSCRIBED'){multiplayer.connected=true;$('multiRoom').value=room;await multiplayer.channel.track({id:multiplayer.playerId,joinedAt:multiplayer.joinedAt});syncMultiPresence();updateMultiStatus('연결됨');toast('멀티 방 '+room+' 참가')}
+    else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){updateMultiStatus('연결 오류');toast('멀티 연결 오류')}
+  });
+}
+function createMultiplayerRoom(){const room=String(1+Math.floor(Math.random()*10));$('multiRoom').value=room;connectMultiplayer(room)}
+function updateMultiplayer(dt){
+  const now=performance.now();
+  if(multiplayer.connected&&now>=multiplayer.sendAt){
+    multiplayer.sendAt=now+120;const p=player.getPosition();
+    multiSend('player-state',{id:multiplayer.playerId,x:p.x,z:p.z,zone:state.zone,lv:hero.lv,weapon:hero.weapon,hp:hero.hp,maxHp:hero.maxHp});
+  }
+  for(const [id,r] of multiplayer.remote){
+    if(now-(r.seenAt||0)>5000){r.entity?.destroy();multiplayer.remote.delete(id);continue}
+    const k=Math.min(1,dt*12);r.x+=(r.tx-r.x)*k;r.z+=(r.tz-r.z)*k;
+    if(r.entity){r.entity.enabled=r.zone===state.zone;r.entity.setPosition(r.x,1.1,r.z)}
+  }
+}
+$('multiBtn').onpointerdown=e=>{e.preventDefault();$('multi').style.display='flex'};
+$('multiClose').onclick=()=>closeOverlay('multi');$('multiCreate').onclick=()=>createMultiplayerRoom();$('multiJoin').onclick=()=>connectMultiplayer($('multiRoom').value);$('multiLeave').onclick=()=>leaveMultiplayer();
+
 $('dialogClose').onclick=()=>closeOverlay('dialog');$('shopClose').onclick=()=>closeOverlay('shop');$('bagClose').onclick=()=>closeOverlay('bag');
 $('talk').onpointerdown=e=>{e.preventDefault();interact()};
 $('bagBtn').onpointerdown=e=>{e.preventDefault();renderBag();$('bag').style.display='flex'};
@@ -346,7 +415,7 @@ app.on('update',dt=>{
       player.translate(x*hero.speed*dt,0,z*hero.speed*dt);player.setEulerAngles(0,Math.atan2(x,z)*180/Math.PI,0);
       state.walkT+=dt*10;player.setLocalScale(1.05,1.05+Math.sin(state.walkT)*.035,1.05);
     }else{player.setLocalScale(1.05,1.05,1.05)}
-    clampPlayer();updatePortals();updateEnemies(dt);updateAiUsers(dt);
+    clampPlayer();updatePortals();updateEnemies(dt);updateAiUsers(dt);updateMultiplayer(dt);
   }
   for(const p of portals)p.rotate(0,55*dt,0);if(returnPortal)returnPortal.rotate(0,55*dt,0);
   const pp=player.getPosition(),desired=new pc.Vec3(pp.x,10,pp.z+14);
