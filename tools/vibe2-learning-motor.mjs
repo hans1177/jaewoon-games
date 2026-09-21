@@ -305,7 +305,7 @@ function knowledgeLifecycle(row={}){
   const negative=fails+regressions*1.5+domainMismatches*.5;
   const total=positive+negative,failRate=total?negative/total:0;
   if(regressions>=4&&failRate>=0.65)return'RETIRED';
-  if(negative>=4&&failRate>=0.7)return'RETIRED';
+  if(fails>=4&&negative>=6&&failRate>=0.7)return'RETIRED';
   if(negative>=2&&failRate>0.5)return'DEMOTED';
   if(positive>=6&&games>=2&&failRate<=0.35)return'PREFERRED';
   if(positive>=2)return'VERIFIED';
