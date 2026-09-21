@@ -9,7 +9,7 @@ const write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n
 function robloxState(item={}){
   const pub=item.robloxPublicationTarget||{};
   const rel=item.robloxReleaseEvidence||{};
-  const placeId=clean(rel.placeId||pub.placeId);
+  const placeId=clean(pub.placeId||rel.placeId);
   const published=bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified);
   const explicitPublic=bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC';
   const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass)||bool(item.robloxIndependentQaPassed);

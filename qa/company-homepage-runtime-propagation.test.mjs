@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
+import {buildHomepagePlatformExposure} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
 test('runtime catalog fills only missing active development games',()=>{
   const catalog={games:[
@@ -55,4 +56,22 @@ test('visible game titles stay aligned with Roblox project titles',()=>{
     const game=(catalog.games||[]).find(row=>row.id===id);
     if(game)assert.equal(game.name,title);
   }
+});
+
+
+test('homepage Roblox link prefers the dedicated canonical publication target over stale release evidence',()=>{
+  const snap=buildHomepagePlatformExposure({
+    catalog:{games:[{id:'cozy-island',name:'포근섬'}]},
+    queue:{items:[{
+      gameId:'cozy-island',
+      gameName:'포근섬',
+      robloxProjectPath:'roblox-games/cozy-island',
+      robloxInternalReleaseReady:true,
+      robloxPublicationTarget:{placeId:'116850096561713',verified:true,dedicated:true},
+      robloxReleaseEvidence:{placeId:'112507741861842',published:true,publicRelease:false}
+    }]}
+  });
+  const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
+  assert.equal(roblox.placeId,'116850096561713');
+  assert.equal(roblox.internalUrl,'https://www.roblox.com/games/116850096561713');
 });
