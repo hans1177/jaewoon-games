@@ -1,5 +1,5 @@
 {
-  "version": 74,
+  "version": 75,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2469,7 +2469,11 @@
       "runtimeAuthority": "company-runtime",
       "executionOwner": "HOMEPAGE_MANAGER",
       "supervisor": "DIRECTOR",
-      "systemAiExecutionOwner": false
+      "systemAiExecutionOwner": false,
+      "runtimeRenderer": "assets/homepage-enhancements.js",
+      "runtimeRendererMustPreserveFrontDoor": true,
+      "liveSummary": "VISIBLE",
+      "desktopGameColumns": 4
     },
     "centralSyncTriggers": {
       "roadmap": "company-learning/platform-release-roadmap.json",
