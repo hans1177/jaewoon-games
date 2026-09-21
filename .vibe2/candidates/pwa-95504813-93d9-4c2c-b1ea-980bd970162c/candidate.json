@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "ACTION_SURVIVAL_ROGUELITE",
+      "replace": "ACTION_SURVIVAL_ROGUELITE\n\n<div id=\"joystick\" class=\"joystick\" aria-label=\"이동 조이스틱\"><div id=\"stick\" class=\"stick\"></div></div>\n<div class=\"actions\">\n  <button id=\"dashBtn\" class=\"btn dash\">대시<br><small id=\"dashState\">READY</small></button>\n</div>\n<div class=\"actions\">\n  <button id=\"dashBtn\" class=\"btn dash\">대시<br><small id=\"dashState\">READY</small></button>\n</div>\n<div class=\"tip\">왼쪽 조이스틱 이동 · 자동 공격 · 오른쪽 대시</div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
