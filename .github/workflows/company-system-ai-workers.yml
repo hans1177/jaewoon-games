@@ -372,9 +372,22 @@ jobs:
           test -n "$(git diff --cached --name-only)"
           git commit -m "system-ai: candidate ${TASK_ID}"
           git push origin "HEAD:${SYSTEM_AI_BRANCH}"
-          body="External free-AI/Vibe collaboration candidate.\n\nTask: ${TASK_ID}\n\nStatus: deterministic verification passed. Marketing tasks include a Vibe-side decision when applicable; Primary AI joint review remains required.\n\nDo not merge solely from worker self-assessment."
+          body="External free-AI/Vibe collaboration candidate.\n\nTask: ${TASK_ID}\n\nStatus: deterministic verification passed. Marketing candidates may auto-complete only when Primary AI standing approval and Vibe per-candidate decision both ACCEPT, with security and QA PASS.\n\nNo paid spend or irreversible external action is authorized."
           pr_url="$(gh pr create --base main --head "$SYSTEM_AI_BRANCH" --title "system-ai: ${TASK_ID}" --body "$body" 2>/dev/null || gh pr view "$SYSTEM_AI_BRANCH" --json url -q .url)"
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+          joint_merged=false
+          if [[ "$TASK_ID" == marketing-* ]]; then
+            file="$(node -p "require('/tmp/system-ai-task.json').responsibleFiles[0]")"
+            joint="$(node -p "String(require('./' + process.argv[1]).decision?.joint||'').toUpperCase()" "$file")"
+            if [ "$joint" = "ACCEPT" ]; then
+              gh pr merge "$pr_url" --squash --delete-branch
+              joint_merged=true
+              echo 'MARKETING_PRIMARY_AI_VIBE_JOINT_MERGE=YES'
+            else
+              echo "MARKETING_PRIMARY_AI_VIBE_JOINT_MERGE=NO:$joint"
+            fi
+          fi
+          echo "joint_merged=$joint_merged" >> "$GITHUB_OUTPUT"
           echo "COMPANY_SYSTEM_AI_PR=$pr_url"
 
       - name: Build immutable assignment result
@@ -387,6 +400,7 @@ jobs:
           PREVERIFY_OUTCOME: ${{ steps.preverify.outcome }}
           CURRENT_MAIN_OUTCOME: ${{ steps.current_main.outcome }}
           PR_URL: ${{ steps.publish.outputs.pr_url }}
+          JOINT_MERGED: ${{ steps.publish.outputs.joint_merged }}
         shell: bash
         run: |
           set -euo pipefail
@@ -407,10 +421,11 @@ jobs:
           const preverified=process.env.PREVERIFY_OUTCOME==='success';
           const currentMainSatisfied=preverified||(process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success');
           const candidateOk=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
+          const jointAccepted=process.env.JOINT_MERGED==='true';
           const blocker=currentMainSatisfied||candidateOk?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
           const executionDisposition=security.verdict==='QUARANTINE'?'TERMINATED_QUARANTINED':security.verdict==='REVIEW'?'HELD_FOR_PRIMARY_AI_REVIEW':candidateOk?'VERIFIED_CANDIDATE':'ENDED_WITHOUT_VERIFIED_CANDIDATE';
           const row={
-            version:5,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,
+            version:6,taskId:process.env.TASK_ID,outcome:currentMainSatisfied?'CURRENT_MAIN_SATISFIED':candidateOk?'PASS':'FAIL',blocker,security,jointAccepted,
             ownerRule2:{id:'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',automaticBinding:true,executionDisposition,candidatePublicationAllowed:security.verdict==='PASS',learningCandidate:true,reusableLearning:false,requiresIndependentVerification:true,rawExternalOutputStored:false,verifiedDefensiveAbsorptionOnly:true},
             candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
             evidence:[
@@ -425,7 +440,7 @@ jobs:
               ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
               worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
               'worker-self-acceptance:NO',
-              'primary-ai-review-required:YES'
+              ...(jointAccepted?['primary-ai-vibe-joint-accept:YES','primary-ai-review-required:NO']:['primary-ai-review-required:YES'])
             ].filter(Boolean)
           };
           const safe=String(row.taskId||'task').replace(/[^A-Za-z0-9._-]+/g,'-');
