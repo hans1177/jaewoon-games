@@ -87,6 +87,10 @@ export function validateSharedWorkerContext({
   if(collaboration?.autonomous24hExecutionContinuesWithoutPrimaryAi!==true||collaboration?.primaryAiPresenceIsRuntimeGate!==false)fail('PRIMARY_AI_INTERNAL_VIBE_NONBLOCKING');
   if(collaboration?.appliesToExistingAndFutureRegisteredInternalAi!==true)fail('PRIMARY_AI_INTERNAL_VIBE_COVERAGE');
   if(collaboration?.directMainWriteGrantedByCollaboration!==false||collaboration?.policyMutationAuthorityGrantedByCollaboration!==false||collaboration?.selfAcceptanceGrantedByCollaboration!==false)fail('PRIMARY_AI_INTERNAL_VIBE_AUTHORITY_BOUNDARY');
+  const capabilityLock=collaboration?.capabilityGrowthRoleLock||{};
+  if(clean(capabilityLock?.primaryAiRoleAfterCapabilityGrowth)!=='NON_BLOCKING_ASSISTANT_AND_COLLABORATOR')fail('PRIMARY_AI_CAPABILITY_GROWTH_ROLE_LOCK');
+  if(capabilityLock?.capabilityMayIncrease!==true||capabilityLock?.authorityMayAutoIncrease!==false)fail('VIBE_CAPABILITY_AUTHORITY_SEPARATION');
+  if(capabilityLock?.primaryAiMayBecomeRuntimeOwner!==false||capabilityLock?.primaryAiMayReplaceDeterministicQa!==false||capabilityLock?.primaryAiMayReplaceVibeImplementationOwnership!==false)fail('PRIMARY_AI_ASSISTANT_BOUNDARY_AFTER_CAPABILITY_GROWTH');
   if(orchestration?.deterministicEvidenceCreatesVerifiedCheckpoint!==true)fail('DETERMINISTIC_VERIFIED_CHECKPOINT_AUTHORITY');
   if(orchestration?.verifiedCheckpointDoesNotStopBrain!==true)fail('VERIFIED_CHECKPOINT_MUST_NOT_STOP_BRAIN');
   if(architecture?.workerRoles?.PRIMARY_AI_ORCHESTRATOR!=='NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR')fail('ARCHITECTURE_PRIMARY_AI_ROLE');
@@ -95,6 +99,8 @@ export function validateSharedWorkerContext({
   const archCollaboration=architecture?.primaryAiInternalVibeCollaboration||{};
   if(clean(archCollaboration?.coverage)!=='ALL_REGISTERED_VIBE_INTERNAL_AI_AND_AUTONOMOUS_SUBSYSTEMS')fail('ARCHITECTURE_PRIMARY_AI_INTERNAL_VIBE_COVERAGE');
   if(clean(archCollaboration?.mode)!=='NON_BLOCKING_COPILOT_OVERLAY'||archCollaboration?.autonomyPreserved!==true)fail('ARCHITECTURE_PRIMARY_AI_INTERNAL_VIBE_MODE');
+  const archCapabilityLock=archCollaboration?.capabilityGrowthRoleLock||{};
+  if(clean(archCapabilityLock?.primaryAiRole)!=='NON_BLOCKING_ASSISTANT_AND_COLLABORATOR'||archCapabilityLock?.capabilityExpansionDoesNotChangeAuthority!==true)fail('ARCHITECTURE_PRIMARY_AI_CAPABILITY_ROLE_LOCK');
   if(architecture?.externalAiRules?.finalSystemAcceptanceForbidden!==true)fail('ARCHITECTURE_EXTERNAL_AI_ACCEPTANCE');
   if(logMap?.orchestrationLogContract?.finalAcceptanceRequiresPrimaryAiReview!==false)fail('LOG_PRIMARY_AI_REVIEW_MUST_NOT_BLOCK');
   if(logMap?.orchestrationLogContract?.deterministicMachineGateMayCompleteWithoutPrimaryAi!==true)fail('LOG_DETERMINISTIC_COMPLETION');
