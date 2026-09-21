@@ -1,5 +1,5 @@
 {
-  "version": 79,
+  "version": 80,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2506,7 +2506,8 @@
       },
       "executionOwner": "HOMEPAGE_MANAGER",
       "supervisor": "DIRECTOR",
-      "systemAiExecutionOwner": false
+      "systemAiExecutionOwner": false,
+      "deploymentVerificationMarker": "SAMPLE_FRONT_DOOR_V1 / 2026-09-21-sample-exact"
     },
     "centralSyncTriggers": {
       "roadmap": "company-learning/platform-release-roadmap.json",
