@@ -224,6 +224,9 @@ jobs:
           node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
+          grep -Fq 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' index.html
+          grep -Fq 'data-homepage-build="2026-09-21-sample-exact"' index.html
+          grep -Fq 'https://chatgpt.com/' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=30000;' assets/homepage-enhancements.js
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
