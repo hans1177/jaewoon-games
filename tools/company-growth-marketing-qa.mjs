@@ -16,5 +16,6 @@ const text=JSON.stringify(x);
 if(/owner\s*approval|오너\s*승인/i.test(text))throw new Error('MARKETING_OWNER_APPROVAL_GATE_FORBIDDEN');
 if(/automaticPaidSpend|auto.?charge|auto.?purchase|financialTransaction\s*[:=]\s*true/i.test(text))throw new Error('MARKETING_FINANCIAL_EXECUTION_FORBIDDEN');
 if(clean(x.decision.primaryAi||'PENDING').toUpperCase()!=='PENDING')throw new Error('MARKETING_PRIMARY_AI_DECISION_MUST_START_PENDING');
-if(clean(x.decision.vibe||'PENDING').toUpperCase()!=='PENDING')throw new Error('MARKETING_VIBE_DECISION_MUST_START_PENDING');
+if(!['PENDING','ACCEPT','REVIEW','REJECT','DEFER'].includes(clean(x.decision.vibe||'PENDING').toUpperCase()))throw new Error('MARKETING_VIBE_DECISION_INVALID');
+if(!['PENDING','AWAITING_PRIMARY_AI','REVIEW_REQUIRED','ACCEPT','REJECT','DEFER'].includes(clean(x.decision.joint||'PENDING').toUpperCase()))throw new Error('MARKETING_JOINT_DECISION_INVALID');
 console.log('MARKETING_QA=PASS');
