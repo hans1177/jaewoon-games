@@ -186,3 +186,16 @@ RunService.Heartbeat:Connect(function(dt)
  for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
  if #enemies<7 then spawnEnemy(false)end
 end)
+
+local function broadcastMultiplayerSync(actor)
+ local participants=Players:GetPlayers()
+ local sharedObjective=0
+ for _,participant in ipairs(participants)do
+  sharedObjective+=(participant:GetAttribute("PartyMemory")or 0)
+ end
+ for _,participant in ipairs(participants)do participant:SetAttribute("SharedObjective",sharedObjective)end
+ remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,SharedObjective=sharedObjective})
+end
+remote.OnServerEvent:Connect(function(player,action)
+ if typeof(action)=="string" then broadcastMultiplayerSync(player) end
+end)

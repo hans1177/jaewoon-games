@@ -1,5 +1,7 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
+local UserInputService=game:GetService("UserInputService")
+local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local remote=RS:WaitForChild(C.RemoteName)
@@ -32,3 +34,9 @@ local keys={"ClassId","Level","XP","Gold","WeaponTier","AIStyle","Relic","PartyM
 for _,x in ipairs(C.Companions)do table.insert(keys,"Companion_"..x.Id)end
 for _,k in ipairs(keys)do p:GetAttributeChangedSignal(k):Connect(render)end
 render()
+
+remote.OnClientEvent:Connect(function(kind,snapshot)
+ if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
+ p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
+end)

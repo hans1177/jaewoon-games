@@ -1,6 +1,12 @@
 local Config={
- Platform="ROBLOX",GameId="daechung-rpg",GameName="대충 RPG",MobileFirst=true,SaveEnabled=true,
- PlayMode="SINGLE_OR_COOP",SoloPlayable=true,MultiplayerRequired=true,CoopRequired=true,PartySlots=4,RemoteName="GameAction",
+ PolicySource = "company-learning/platform-release-roadmap.json",
+ Platform = "ROBLOX",
+ MobileFirst = true,
+ GameId="daechung-rpg",GameName="대충 RPG",SaveEnabled=true,
+ Genre = "RPG",
+ PlayMode = "COOP",
+ MultiplayerRequired = true,
+ SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,MinimumParticipants=2,PartySlots=4,RemoteName="GameAction",
  Classes={
   {Id="BREAKER",Name="파쇄기사",Damage=14,Skill=36},
   {Id="SHADOW",Name="그림자추적자",Damage=13,Skill=42},
