@@ -57,6 +57,7 @@ const latestWork=row=>String(runtimeInfo(row).latestWork||'개발 작업 정보 
 const progressState=row=>String(runtimeInfo(row).status||'진행상태 미평가').trim();
 const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selectedPlatform||row?.selectedPlatform||'';
+const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).displayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT'?'ROBLOX':selectedPlatform(row);
 const activeLifecycle=row=>['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase());
 const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
@@ -129,7 +130,7 @@ function webPublishedRows(catalog){
 function verifiedRobloxDeploymentRows(catalog){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>{
-      if(!activeLifecycle(game)||normalizePlatform(selectedPlatform(game))!=='ROBLOX')return false;
+      if(!activeLifecycle(game))return false;
       const canonical=publicationOf(game).roblox||{};
       const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||{});
       const evidence=Object.keys(canonical).length?canonical:(game?.robloxReleaseEvidence||{});
@@ -148,7 +149,7 @@ function mergeGame(row){
   return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformHref(game){
-  const p=normalizePlatform(selectedPlatform(game));
+  const p=normalizePlatform(displayPlatform(game));
   const canonical=publicationOf(game).roblox||{};
   const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
   const placeId=String(target?.placeId||'').trim();
@@ -217,14 +218,14 @@ function buildFocus(catalog,status){
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p><div class="homeFocusMeta"><span>${esc(statusLabel)}</span>${scoreMeta}<span>${esc(platformLabel(selectedPlatform(game)))}</span><span>${esc(genre)}</span><span>${esc(play)}</span></div><small style="margin-top:9px">진행: ${esc(latestWork(row))} · ${esc(progress)}${updated?` · ${esc(updated)}`:''}</small>${web?`<a class="homeFocusBtn" href="${esc(web)}">웹게임 시작</a>`:''}</div>`;
 }
 function buildCard(row){
-  const game=mergeGame(row),released=String(runtimeInfo(row).productionClass||'').toUpperCase()==='RELEASE_CONFIRMED',statusLabel=classState(row),score=scoreState(row),genre=genreState(row),play=playState(row),progress=progressState(row),web=game.webPath,updated=formatDate(updatedAt(row)),artbook=game.homepageArtbookPath||'',platform=platformHref(game),p=normalizePlatform(selectedPlatform(game));
+  const game=mergeGame(row),released=String(runtimeInfo(row).productionClass||'').toUpperCase()==='RELEASE_CONFIRMED',statusLabel=classState(row),score=scoreState(row),genre=genreState(row),play=playState(row),progress=progressState(row),web=game.webPath,updated=formatDate(updatedAt(row)),artbook=game.homepageArtbookPath||'',platform=platformHref(game),p=normalizePlatform(displayPlatform(game));
   const webBtn=web?`<a class="foldGameBtn" href="${esc(web)}">웹게임</a>`:'<span class="foldGameBtn off">웹게임</span>';
   const artbookBtn=artbook?`<a class="foldGameBtn secondary" href="${esc(artbook)}">아트북</a>`:'<span class="foldGameBtn off">아트북</span>';
   const platformBtn=platform?`<a class="foldGameBtn platformAction" href="${esc(platform)}">${p==='UNITY'?'Unity APK':p==='ROBLOX'?'Roblox':p==='FORTNITE_UEFN'?'Fortnite UEFN':'플랫폼게임'}</a>`:'<span class="foldGameBtn off">플랫폼게임</span>';
   const scoreBadge=score.label&&score.label!==statusLabel?`<span class="foldBadge score">${esc(score.label)}</span>`:'';
   const historicalRoblox=String(row?.homepageDisplayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT';
   const recordTag=historicalRoblox?'<span class="releaseTag">배포 기록</span>':released?'<span class="releaseTag">출시</span>':'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}">${recordTag}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}">${recordTag}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(displayPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
