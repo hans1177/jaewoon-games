@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -34,23 +34,26 @@
   ],
   "executionTopology": {
     "design": [
-      "COMPANY_DESIGN_RUNTIME",
-      "DETERMINISTIC_DESIGN_GATE",
-      "BASELINE_PROMOTION"
+      "COMMON_CORE_DESIGN",
+      "ROBLOX_PLATFORM_PROFILE",
+      "UNITY_APP_PLATFORM_PROFILE",
+      "MINIMUM_DESIGN_CONTRACT_GATE",
+      "STRICT_DESIGN_REVIEW_CONTINUES_IN_PARALLEL"
     ],
     "web": [
-      "VIBE2_VIBE3_GAME_IMPLEMENTATION",
-      "WEB_RUNTIME_VALIDATION",
-      "STRICT_REVIEW",
-      "PROMOTION_REVALIDATION"
+      "LEGACY_DISABLED"
     ],
     "selectedPlatform": [
-      "SOURCE_BIND",
+      "ROBLOX_UNITY_AUTO_PAIR",
+      "NATIVE_SOURCE_BIND",
       "BUILD_OR_PACKAGE",
       "TARGET_RUNTIME",
       "INDEPENDENT_QA",
       "REGRESSION",
-      "RELEASE_PROMOTION"
+      "INTERNAL_PLATFORM_RELEASE",
+      "INTERNAL_PLAYTEST",
+      "PUBLIC_RELEASE_READY",
+      "PUBLIC_RELEASE"
     ],
     "sustainedDevelopment": [
       "VIBE_PLANNER",
@@ -109,7 +112,8 @@
     "beforeWork": "LOAD_AND_VALIDATE_ROADMAP_LOG_ARCHITECTURE_SECURITY_POLICY",
     "duringWork": "DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY",
     "afterWork": "REVALIDATE_SHARED_CONTEXT_AND_BIND_OUTPUT_EVIDENCE",
-    "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
+    "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+    "requiredDepartmentPolicy": "ALL_EXISTING_DEPARTMENTS_SUPPORT_COMMON_CORE_PLUS_PLATFORM_PROFILES_WITHOUT_DUPLICATING_SHARED_DEPARTMENTS"
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
@@ -2216,74 +2220,47 @@
     "directPolicyCreationOutsideCentralRoadmap": false
   },
   "concurrentPlatformDevelopment": {
-    "version": 1,
-    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.concurrentRobloxUnityDefault",
+    "version": 2,
+    "centralContract": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
     "defaultTargets": [
       "ROBLOX",
       "UNITY"
     ],
-    "executionMode": "ROBLOX_UNITY_CONCURRENT",
-    "suitabilityRole": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-    "suitabilityState": "vibe2-unreal-core:.vibe2/platform-suitability.json",
-    "router": "tools/company-selected-platform-router.mjs",
-    "planner": "tools/vibe2-auto-planner.mjs",
-    "platformProfiles": {
-      "ROBLOX": "SOCIAL_FAST_SESSION",
-      "UNITY": "DEEP_IMMERSIVE_SESSION"
+    "trigger": "REQUEST_EITHER_PLATFORM_STARTS_BOTH",
+    "executionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+    "designStructure": {
+      "commonCore": "design-revised.json#content",
+      "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
+      "UNITY": "design-revised.json#content.platformProfiles.UNITY"
     },
     "independentRuntimeEvidence": true,
     "onePlatformFailureDoesNotCancelOther": true,
-    "uefn": "OWNER_HOLD"
+    "onePlatformMayReleaseWithoutWaitingForOther": true,
+    "globalGameCountCap": null,
+    "uefn": "OWNER_HOLD",
+    "unityWeb": "DISABLED"
   },
   "releaseExposureLifecycle": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate",
     "sequence": [
-      "WEB_FIRST_GATE",
-      "ROBLOX_UNITY_FAST_NATIVE_IMPLEMENTATION",
+      "MINIMUM_DESIGN_CONTRACT_READY",
+      "ROBLOX_UNITY_NATIVE_DEVELOPMENT_CONCURRENT",
+      "PLATFORM_RUNTIME_QA_REGRESSION",
       "INTERNAL_PLATFORM_RELEASE",
       "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "PLATFORM_SPECIFIC_REBUILD",
-      "SECOND_PLATFORM_ADAPTATION_GATE",
       "PUBLIC_RELEASE_READY",
-      "PUBLIC_RELEASE",
-      "POST_PUBLIC_HOTFIX_MINOR_MAJOR_OPERATIONS"
+      "PUBLIC_RELEASE"
     ],
     "internalPlatformRelease": {
       "externalExposure": false,
       "homepage": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
-      "roblox": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-      "unity": "GOOGLE_PLAY_INTERNAL_OR_CLOSED_TEST_WHEN_CREDENTIALS_EXIST"
+      "roblox": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+      "unity": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
     },
-    "secondPlatformGate": {
-      "blocks": "EXTERNAL_PUBLIC_RELEASE_ONLY",
-      "doesNotBlock": [
-        "NATIVE_DEVELOPMENT",
-        "INTERNAL_PLATFORM_RELEASE",
-        "INTERNAL_PLAYTEST"
-      ],
-      "requires": [
-        "PLATFORM_SPECIFIC_REBUILD",
-        "NATIVE_RUNTIME",
-        "INDEPENDENT_QA",
-        "REGRESSION",
-        "NO_OPEN_CRITICAL_OR_HIGH_TESTER_BUG",
-        "PLATFORM_ADAPTATION_RUNTIME_EVIDENCE"
-      ]
-    },
-    "postPublicUpdateGates": {
-      "activation": "PUBLIC_RELEASE_ONLY",
-      "HOTFIX": "FAST_REPRODUCIBLE_BUG_LANE",
-      "MINOR": "FAST_VERIFIED_SMALL_UPDATE_LANE",
-      "MAJOR": "ISOLATED_CANDIDATE_FULL_GATE_LANE",
-      "majorKeepsCurrentPublicVersionLive": true
-    },
-    "controls": {
-      "exposure": "tools/company-platform-exposure-control.mjs",
-      "postRelease": "tools/vibe2-post-release-focus.mjs",
-      "testerDebug": "tools/company-tester-debug-intake.mjs",
-      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
-      "homepageSnapshot": "homepage-platform-exposure.json"
+    "publicRelease": {
+      "platformIndependent": true,
+      "onePlatformDoesNotWaitForOther": true
     }
   },
   "autonomousBottleneckRecovery": {
@@ -2555,7 +2532,16 @@
       "exactCandidate": "REQUIRED",
       "fixedPwaChatRegression": "REQUIRED",
       "fullHomepageManagerContractRerun": "FORBIDDEN_DUPLICATE"
-    }
+    },
+    "runtimeAuthority": "company-runtime",
+    "platformStateSource": "homepage-platform-exposure.json",
+    "supportedPlatforms": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "webPlaySurfaceDisabled": true,
+    "unityWebDisabled": true,
+    "internalAndPublicReleaseStatesPerPlatform": true
   },
   "developmentPipeline": {
     "focusedCaretakers": {
