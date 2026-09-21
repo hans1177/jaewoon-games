@@ -8,7 +8,7 @@ import {compileRobloxSource,projectJsonForGame} from '../tools/company-developme
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
-const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system'}};
+const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
 
 function writeCompiledTree(root){
   const compiled=compileRobloxSource({gameId,gameName:'Pocket Foundry',baseline,artbook:{}});
@@ -27,10 +27,15 @@ function staleItem(){
     productionClass:'DEVELOPMENT_CONFIRMED',
     selectedPlatform:'ROBLOX',
     targetPlatform:'ROBLOX',
-    webValidationPassedAt:'2026-09-13T00:00:00.000Z',
-    musicValidationPassed:true,
+    status:'ACTIVE',
+    minimumDesignContract:{pass:true,source:`design/${gameId}/2026-09-12/design-revised.json`},
+    platformDesignProfiles:{
+      ROBLOX:{source:`design/${gameId}/2026-09-12/design-revised.json`,jsonPointer:'/content/platformProfiles/ROBLOX'},
+      UNITY:{source:`design/${gameId}/2026-09-12/design-revised.json`,jsonPointer:'/content/platformProfiles/UNITY'}
+    },
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
     currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-    canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+    canonicalState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
     designBaselineSource:`design/${gameId}/2026-09-12/design-revised.json`,
   };
 }
@@ -38,8 +43,6 @@ function staleItem(){
 function verifiedHandoffItem(sourceTreeSha='a'.repeat(40)){
   return {
     ...staleItem(),
-    webValidationPassedAt:null,
-    musicValidationPassed:false,
     robloxVibe2VerifiedHandoff:{
       verified:true,
       gameId,
@@ -59,18 +62,18 @@ function initGitRepo(tmp){
   execFileSync('git',['commit','-m','fixture'],{cwd:tmp,stdio:'ignore'});
 }
 
-test('only stale Web-validated Roblox SOURCE_BIND items are eligible for source reconciliation',()=>{
+test('minimum-design Roblox SOURCE_BIND items are eligible for source reconciliation',()=>{
   assert.equal(eligibleForRobloxSourceReconciliation(staleItem()),true);
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
-  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),selectedPlatform:'UNITY'}),false);
-  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),musicValidationPassed:false}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),minimumDesignContract:{pass:false}}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),false);
 });
 
-test('verified Vibe2 Studio handoff can replace stale Web eligibility without claiming later QA stages',()=>{
+test('verified Vibe2 Studio handoff remains readable but does not replace minimum-design admission',()=>{
   const item=verifiedHandoffItem();
   assert.equal(hasVerifiedVibe2SourceHandoff(item),true);
   assert.equal(eligibleForRobloxSourceReconciliation(item),true);
-  assert.equal(eligibleForRobloxSourceReconciliation({...item,currentStep:'WAITING_WEB_GAMEPLAY_REVALIDATION'}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...item,currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
   assert.equal(hasVerifiedVibe2SourceHandoff({...item,robloxVibe2VerifiedHandoff:{...item.robloxVibe2VerifiedHandoff,qaRunId:0}}),false);
 });
 
