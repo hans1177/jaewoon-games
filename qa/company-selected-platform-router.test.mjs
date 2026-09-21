@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   SELECTED_PLATFORMS,
+  DEFAULT_CONCURRENT_PLATFORMS,
   PLATFORM_EXECUTION_ADAPTERS,
   DEVELOPMENT_GAME_WIP_MAX,
   normalizeSelectedPlatform,
@@ -15,6 +16,8 @@ import {
   selectRepresentativeCanary,
   selectTargetPlatformDevelopmentWindow,
   targetPlatformDevelopmentEligible,
+  concurrentTargetPlatforms,
+  platformDevelopmentEligible,
   firstWebGatePlatformDevelopmentEligible,
   verifiedOwnerReleaseHandoffEligible,
   ownerFocusedSecondaryPlatformEligible,
@@ -28,6 +31,7 @@ import {createRobloxPlatformContract} from '../tools/vibe3-roblox-platform.mjs';
 
 test('one router recognizes all selected platforms and aliases',()=>{
   assert.deepEqual(SELECTED_PLATFORMS,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(DEFAULT_CONCURRENT_PLATFORMS,['ROBLOX','UNITY']);
   assert.equal(DEVELOPMENT_GAME_WIP_MAX,20);
   assert.equal(WEB_VALIDATION_SCHEMA_VERSION,15,'selected-platform admission must stay bound to the current Web schema 15 contract');
   assert.equal(normalizeSelectedPlatform('unity-android'),'UNITY');
@@ -53,7 +57,7 @@ test('all three platforms have one common adapter registry entry without inventi
   assert.equal(PLATFORM_EXECUTION_ADAPTERS.FORTNITE_UEFN.existingExecutionPath,null);
 });
 
-test('global selected-platform development window is deterministic, capped at twenty and excludes stale or unconfigured work',()=>{
+test('global concurrent-platform development window is deterministic, capped at twenty and ignores legacy single-platform selection',()=>{
   const eligible=(gameId,selectedPlatform,enqueuedAt)=>({
     gameId,selectedPlatform,targetPlatform:selectedPlatform,enqueuedAt,
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
@@ -65,10 +69,11 @@ test('global selected-platform development window is deterministic, capped at tw
   const rows=[
     ...Array.from({length:22},(_,i)=>eligible(`g${String(i+1).padStart(2,'0')}`,i%2?'ROBLOX':'UNITY',`2026-09-14T00:${String(i+1).padStart(2,'0')}:00Z`)),
     {...eligible('stale','UNITY','2026-09-13T23:00:00Z'),formalImplementationPassed:false},
-    eligible('uefn-not-configured','FORTNITE_UEFN','2026-09-13T22:00:00Z'),
+    {...eligible('legacy-uefn-selected','FORTNITE_UEFN','2026-09-14T00:59:00Z')},
   ];
   assert.equal(targetPlatformDevelopmentEligible(rows[0]),true);
-  assert.equal(targetPlatformDevelopmentEligible(rows.at(-1)),false);
+  assert.equal(platformDevelopmentEligible(rows.at(-1),'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible(rows.at(-1),'UNITY'),true);
   const window=selectTargetPlatformDevelopmentWindow(rows);
   assert.equal(window.length,20);
   assert.deepEqual(window.map(x=>x.gameId),[
@@ -78,7 +83,7 @@ test('global selected-platform development window is deterministic, capped at tw
   assert.equal(window.filter(x=>x.selectedPlatform==='ROBLOX').length,10);
   assert.equal(window.filter(x=>x.selectedPlatform==='UNITY').length,10);
   assert.equal(window.some(x=>x.gameId==='stale'),false);
-  assert.equal(window.some(x=>x.gameId==='uefn-not-configured'),false);
+  assert.equal(window.some(x=>x.gameId==='legacy-uefn-selected'),false,'twenty older eligible games fill the window first');
 });
 
 test('verified owner Roblox release handoff enters the platform window without weakening downstream gates',()=>{
@@ -210,3 +215,19 @@ test('owner-focused concurrent contract can admit Roblox as a secondary platform
   assert.equal(ownerFocusedSecondaryPlatformEligible({...item,webPromotionRevalidationPassed:false},roadmap,'ROBLOX'),false);
 });
 
+test('development confirmed defaults to Roblox and Unity concurrently and suitability cannot disable either',()=>{
+  const item={
+    gameId:'dual',selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    webValidationPassedAt:'2026-09-20T00:00:00.000Z',musicValidationPassed:true,
+    formalImplementationPassed:true,formalImplementationVerdict:'PASS',
+    webStrictScore:95,strictImplementationHardFailures:[],
+    webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,webPromotionRevalidationPassed:true,
+    platformSuitability:{ROBLOX:{score:40},UNITY:{score:99}}
+  };
+  assert.deepEqual(concurrentTargetPlatforms(item),['ROBLOX','UNITY']);
+  assert.equal(platformDevelopmentEligible(item,'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
+  assert.equal(platformDevelopmentEligible(item,'FORTNITE_UEFN'),false);
+});
