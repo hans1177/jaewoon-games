@@ -218,6 +218,20 @@
       ],
       "rawModelOutputStored": false,
       "verifiedOnly": true
+    },
+    "verifiedLearningReuse": {
+      "retriever": "tools/company-system-ai-learning-context.mjs",
+      "worker": "tools/company-system-ai-worker.mjs",
+      "workflow": ".github/workflows/company-system-ai-workers.yml",
+      "sources": [
+        "vibe2-unreal-core:.vibe2/experience.json",
+        "vibe2-unreal-core:.vibe2/code-pattern-library.json",
+        "vibe2-unreal-core:.vibe2/learning-motor-state.json"
+      ],
+      "evidencePrefix": "learning-knowledge-id:",
+      "freshQaStillAuthoritative": true,
+      "selfAcceptance": false,
+      "rawModelOutputReuse": false
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
