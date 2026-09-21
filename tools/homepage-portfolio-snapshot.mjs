@@ -44,7 +44,7 @@ export function buildHomepagePortfolioSnapshot({portfolio={},catalog={}}={}){
     publicSafe:true,
     authority:'SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT',
     source:'vibe2-unreal-core:.vibe2/portfolio-decisions.json',
-    generatedAt:new Date().toISOString(),
+    generatedAt:clean(portfolio.generatedAt||portfolio.updatedAt||catalog.updatedAt||'PENDING_AUTOMATION'),
     counts,
     games:rows
   };
