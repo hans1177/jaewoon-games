@@ -234,3 +234,30 @@ Unity Web은 Android보다 보수적인 예산을 사용한다.
 - `.github/workflows/vibe3-engine-contract.yml`
 
 충돌 시 `platform-release-roadmap.json`의 기계 계약이 우선한다.
+
+
+## Unity Web 자동 QA 입력 계약
+
+브라우저 자동 QA는 게임 상태를 임의 조작하지 않는다.
+
+`?qa=1`에서 다음 키를 표준 테스트 입력으로 사용한다.
+
+- `Digit1`: 실제 게임의 첫 플레이/첫 전투/첫 핵심 장면 진입
+- `Space`: 실제 게임의 핵심 행동
+- `KeyR`: 실제 게임의 안전 복귀/리셋
+
+각 게임은 위 입력을 자기 기존 게임 함수에 연결한다. QA 전용 가짜 보상, 가짜 승리, 상태 직접 덮어쓰기는 금지한다.
+
+표준 콘솔 증거 접두사는 `JAEWOON_UNITY_WEB_QA`다.
+
+허용 증거:
+
+- 부팅: `BOOT`
+- 상태: `STATE`
+- 플레이 진입: `START` 또는 `REGION`
+- 핵심 행동: `ACTION` 또는 `ATTACK`
+- 진행/보상: `PROGRESS` 또는 `REWARD`
+
+실제 브라우저 검증기는 `tools/company-unity-web-gameplay-validation.mjs`를 사용한다.
+
+이 초기 자동 QA PASS만으로 최종 `Core Fun PASS`를 주장하지 않는다. 최종 Unity Web 관문은 기존의 Boot/Input/Gameplay/Core Fun/Mobile/Performance/No Critical Runtime Error 전체를 만족해야 한다.
