@@ -73,13 +73,17 @@ function platformState(item,tickets,platform){
   const rebuildComplete=adapt.rebuildCompleted===true||adapt.rebuildPassed===true;
   const adaptationPass=adapt.pass===true&&adapt.runtimeEvidencePass===true;
   const secondGatePass=internal&&rebuildComplete&&adaptationPass&&blocking.length===0;
+  const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
+  const legacyPublic=platform==='ROBLOX'&&item.robloxReleaseClaim===true&&item.robloxReleaseEvidence?.published===true&&item.robloxFinalReviewPassed===true&&item.robloxRegressionPassed===true;
+  const publicReleased=legacyPublic||(secondGatePass&&explicitPublic);
   return{
     platform,
     internalReleaseState:internal?'INTERNAL_PLATFORM_RELEASE':'NATIVE_TECHNICAL_IN_PROGRESS',
     internalReleaseReady:internal,
-    externalExposureAllowed:secondGatePass,
-    externalExposureState:secondGatePass?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY',
+    externalExposureAllowed:publicReleased,
+    externalExposureState:publicReleased?'PUBLIC_RELEASE':secondGatePass?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY',
     secondGate:{pass:secondGatePass,rebuildComplete,adaptationRuntimeEvidencePass:adaptationPass,openBlockingTesterTickets:blocking.map(t=>t.id)},
+    publication:{explicitPublicEvidence:explicitPublic,legacyPublicRelease:legacyPublic,publicReleased},
     distribution:platform==='UNITY'
       ?{intendedTrack:'GOOGLE_PLAY_INTERNAL_OR_CLOSED_TEST',productionTrackAllowed:secondGatePass,credentialsRequiredForStoreUpload:true}
       :{intendedVisibility:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',publicDiscoveryAllowed:secondGatePass},
@@ -101,7 +105,8 @@ export function controlPlatformExposure({developmentQueue={},ticketQueue={},suit
       suitability:suitabilityById.get(gameId)||null,
       platforms,
       publicReleaseReady:platforms.every(x=>x.secondGate.pass===true),
-      externalPublicReleaseState:platforms.every(x=>x.secondGate.pass===true)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'
+      publicReleased:platforms.every(x=>x.publication.publicReleased===true),
+      externalPublicReleaseState:platforms.every(x=>x.publication.publicReleased===true)?'PUBLIC_RELEASE':platforms.every(x=>x.secondGate.pass===true)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'
     });
   }
   return{
