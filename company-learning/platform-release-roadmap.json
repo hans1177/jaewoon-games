@@ -1,5 +1,5 @@
 {
-  "version": 247,
+  "version": 248,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4843,7 +4843,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-21T12:31:47.478Z",
+  "updatedAt": "2026-09-21T12:40:19.836Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -12600,6 +12600,17 @@
     "vibeContract": "company-learning/vibe3-engine-contract.json#unityWebFirstStage",
     "vibeHumanSpec": "company-learning/VIBE3_ENGINE.md#unity-web-1차-게임-제작학습-동기화",
     "unitySourceSpec": "unity-games/README.md",
-    "contractValidationWorkflow": ".github/workflows/vibe3-engine-contract.yml"
+    "contractValidationWorkflow": ".github/workflows/vibe3-engine-contract.yml",
+    "executionBindings": {
+      "requestTool": "tools/company-unity-web-first-stage.mjs",
+      "requestRoot": ".build-requests/unity-web/",
+      "buildWorkflow": ".github/workflows/unity-web-first-stage-build.yml",
+      "contractTest": "qa/company-unity-web-first-stage.test.mjs",
+      "cloudflareHeaders": "_headers",
+      "canonicalSourceRoot": "unity-games/<gameId>/",
+      "buildArtifactRoot": "web-games/<gameId>/",
+      "fullGameplayValidationOwner": "company-development-confirmed-runtime",
+      "buildBootSmokeIsFullGate": false
+    }
   }
 }
