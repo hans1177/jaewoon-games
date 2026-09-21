@@ -1,6 +1,7 @@
 // 파일명: qa/company-recovery-learning.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { enqueueRecovery, reviewRecovery, settleRecovery } from '../tools/company-recovery-queue.mjs';
 import { applySystemAiResults, normalizeSystemAiQueue } from '../tools/company-system-ai-queue.mjs';
 import { escalateRecoveryCandidates } from '../tools/company-recovery-escalation.mjs';
@@ -221,5 +222,59 @@ test('System-AI recovery failure requeues beyond ordinary retry limits',()=>{
   assert.equal(row.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.equal(row.maxRetries,null);
   assert.ok(row.evidence.includes('system-ai-retry:UNLIMITED_CAUSAL_REPAIR'));
+});
+
+test('repeated-failure recovery requires responsible source mutation before System-AI revalidation',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const recovery=escalateRecoveryCandidates({
+    gameQueueInput:{tasks:[{
+      id:'mutate-first',gameId:'demo',status:'failed',target:'web',sourceRoot:'web-games/demo',
+      responsibleFiles:['web-games/demo/index.html'],sourceRevision:'baseline-sha',
+      currentStep:'WEB_RUNTIME',blocker:'same-signature',evidence:['failure-cause:same-signature']
+    }]}
+  }).queue;
+  const rec=recovery.tasks[0];
+  assert.equal(rec.sourceMutationRequired,true);
+  assert.equal(rec.sourceMutationBaseline,'baseline-sha');
+  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  const task=dispatched.systemAi.tasks.find(x=>x.id.startsWith('recovery-'));
+  assert.ok(task);
+  assert.equal(task.sourceMutationRequired,true);
+  assert.equal(task.sourceMutationBaseline,'baseline-sha');
+  assert.ok(task.acceptanceCriteria.includes('unchanged-source revalidation is forbidden'));
+});
+
+test('System-AI mutation-required task rejects PASS without changed-file and source-mutation SHA evidence',()=>{
+  let q=normalizeSystemAiQueue({tasks:[{
+    id:'mutation-gate',status:'running',sourceMutationRequired:true,sourceMutationBaseline:'base',
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',retries:4
+  }]});
+  q=applySystemAiResults(q,[{taskId:'mutation-gate',outcome:'PASS',evidence:['verification:success']}]);
+  const row=q.tasks[0];
+  assert.equal(row.status,'queued');
+  assert.equal(row.lastOutcome,'FAIL');
+  assert.equal(row.blocker,'source-mutation-required-before-revalidation');
+  assert.ok(row.evidence.includes('source-mutation-gate:BLOCKED_UNCHANGED_SOURCE_REVALIDATION'));
+});
+
+test('System-AI mutation-required task accepts verified candidate only with mutation evidence',()=>{
+  let q=normalizeSystemAiQueue({tasks:[{
+    id:'mutation-pass',status:'running',sourceMutationRequired:true,sourceMutationBaseline:'base',
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR',retries:1
+  }]});
+  q=applySystemAiResults(q,[{
+    taskId:'mutation-pass',outcome:'PASS',candidateBranch:'system-ai/candidate/x',pullRequestUrl:'https://example.invalid/pr/1',
+    evidence:['changed-file:web-games/demo/index.html','source-mutation-sha:new-sha']
+  }]);
+  assert.equal(q.tasks[0].status,'awaiting-supervisor');
+  assert.equal(q.tasks[0].lastOutcome,'PASS');
+});
+
+test('System-AI workflow disables unchanged-main shortcuts for mutation-required recovery',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(workflow,/SOURCE_MUTATION_REQUIRED/);
+  assert.match(workflow,/SYSTEM_AI_SOURCE_MUTATION_REQUIRED_BEFORE_REVALIDATION/);
+  assert.match(workflow,/source-mutation-sha:/);
+  assert.match(workflow,/env\.SOURCE_MUTATION_REQUIRED != 'true'/);
 });
 
