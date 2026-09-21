@@ -4411,6 +4411,28 @@
         "allowVerificationAfterMutationOnly": true,
         "objective": "STOP_VERIFY_ONLY_LOOPS_AND_FORCE_CAUSAL_IMPLEMENTATION_PROGRESS"
       }
+    },
+    "systemAiVerifiedLearningFanIn": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "enabled": true,
+      "sourceQueue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+      "promoter": "tools/company-system-ai-learning.mjs",
+      "destinations": [
+        ".vibe2/experience.json",
+        ".vibe2/code-pattern-library.json",
+        "tools/vibe2-learning-motor.mjs"
+      ],
+      "eligibleOrdinary": [
+        "PRIMARY_AI_ACCEPTED",
+        "DETERMINISTIC_CURRENT_MAIN_SATISFIED"
+      ],
+      "eligibleMarketing": "PRIMARY_AI_VIBE_JOINT_ACCEPTED",
+      "mutationTasksRequireChangedFileAndRevisionEvidence": true,
+      "rawModelOutputLearningForbidden": true,
+      "selfAcceptanceForbidden": true,
+      "verifiedOnly": true,
+      "immediateLearningMotorRerunOnNewPromotion": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
