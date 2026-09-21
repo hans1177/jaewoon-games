@@ -7,7 +7,7 @@ const VIBE_RUNTIME_BRANCH = 'company-runtime';
 const VIBE_WORKFLOWS = new Set(['Vibe QA','Vibe Integrated Regression']);
 const RUNTIME_SYNC_SECONDS = 30;
 const MIN_DEVELOPMENT_SCORE_SCHEMA = 13;
-const RUNTIME_SUPPORTED_PLATFORMS = ['UNITY','ROBLOX','FORTNITE_UEFN'];
+const RUNTIME_SUPPORTED_PLATFORMS = ['ROBLOX','UNITY'];
 const UNIVERSAL_TOUCH_VERSION='20260918-noab4';
 const UNIVERSAL_TOUCH_PATH='/web-games/_shared/touch-controls.js';
 const UNIVERSAL_TOUCH_SCRIPT=`<script src="${UNIVERSAL_TOUCH_PATH}?v=${UNIVERSAL_TOUCH_VERSION}"></script>`;
@@ -96,13 +96,12 @@ function normalizePlatform(value){
   const raw=String(value??'').trim().toUpperCase().replaceAll('-','_');
   if(raw==='ROBLOX')return 'ROBLOX';
   if(['UNITY','UNITY_ANDROID','ANDROID_MOBILE'].includes(raw))return 'UNITY';
-  if(['FORTNITE_UEFN','UEFN','FORTNITE'].includes(raw))return 'FORTNITE_UEFN';
+  if(['FORTNITE_UEFN','UEFN','FORTNITE'].includes(raw))return 'FORTNITE_UEFN'; // legacy archive only
   return '';
 }
 function targetForPlatform(platform){
   if(platform==='ROBLOX')return 'roblox';
   if(platform==='UNITY')return 'unity-android';
-  if(platform==='FORTNITE_UEFN')return 'fortnite-uefn';
   return 'design-only';
 }
 function categoryMeta(category=''){
@@ -128,14 +127,12 @@ function releaseEvidenceConfirmed(...entities){
     if(entity.robloxPublicationTarget?.published===true&&entity.robloxPublicationTarget?.verified===true)return true;
     if(entity.unityReleaseEvidence?.published===true&&entity.unityReleaseEvidence?.verified!==false)return true;
     if(entity.playStoreReleaseEvidence?.published===true&&entity.playStoreReleaseEvidence?.verified!==false)return true;
-    if(entity.uefnReleaseEvidence?.published===true&&entity.uefnReleaseEvidence?.verified!==false)return true;
-    if(entity.fortniteReleaseEvidence?.published===true&&entity.fortniteReleaseEvidence?.verified!==false)return true;
   }
   return false;
 }
 function stageFor(project,seed,productionClass,platform){
   if(productionClass==='RELEASE_CONFIRMED')return `출시 · ${platform||'플랫폼 선택 필요'}`;
-  if(productionClass==='DEVELOPMENT_CONFIRMED')return `개발확정 · ${platform||'플랫폼 선택 필요'}`;
+  if(productionClass==='DEVELOPMENT_CONFIRMED')return '개발확정 · Roblox + Unity 앱 동시개발';
   const state=String(seed?.lifecycleState||'').replaceAll('_',' ').trim();
   if(state&&state!=='DESIGN ONLY')return `기획 · ${state}`;
   return '기획 · 서버 설계 진행중';
@@ -261,12 +258,16 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
       image:base.image||meta.image,
       webPath,
       hasWebArchive:Boolean(base.hasWebArchive||hasProjectWeb),
-      homepageWebPlayable:Boolean(base.homepageWebPlayable||hasProjectWeb),
+      homepageWebPlayable:false,
       homepageCategory:productionCategory(productionClass),
       productionClass,
       productionClassSource:rawProductionClass==='RELEASE_CONFIRMED'&&!releaseVerified?'SERVER_RELEASE_EVIDENCE_REQUIRED_2026-09-17':(base.productionClassSource||queue?.productionClassSource||project?.productionClassSource||seed?.productionClassSource||'COMPANY_RUNTIME'),
       selectedPlatform:platform||null,
-      productionTarget:productionClass==='DESIGN_ONLY'?'design-only':targetForPlatform(platform),
+      concurrentTargetPlatforms:productionClass==='DEVELOPMENT_CONFIRMED'||productionClass==='RELEASE_CONFIRMED'
+        ?['ROBLOX','UNITY']
+        :(Array.isArray(queue?.concurrentTargetPlatforms)?queue.concurrentTargetPlatforms:[]),
+      platformDesignProfiles:queue?.platformDesignProfiles||seed?.platformDesignProfiles||null,
+      productionTarget:productionClass==='DESIGN_ONLY'?'design-only':'roblox+unity-app',
       homepageStage:stageFor(project,seed,productionClass,platform),
       runtimeManaged:true,
       runtimeStatus:String(base.lifecycleState||'ACTIVE').toUpperCase(),
@@ -325,6 +326,24 @@ async function handleRuntimeCatalog(request,env){
     return new Response(request.method==='HEAD'?null:await fallback.arrayBuffer(),{status:fallback.status,statusText:fallback.statusText,headers});
   }
 }
+async function handleRuntimeExposure(request,env){
+  if(request.method!=='GET'&&request.method!=='HEAD')return aiJson({error:'method_not_allowed'},405);
+  try{
+    const exposure=await fetchRuntimeJson('homepage-platform-exposure.json');
+    exposure.runtimeAuthority='company-runtime';
+    exposure.runtimeSyncSeconds=RUNTIME_SYNC_SECONDS;
+    exposure.supportedPlatforms=['ROBLOX','UNITY'];
+    const headers={...AI_JSON_HEADERS,'Cache-Control':`public, max-age=${RUNTIME_SYNC_SECONDS}`,'X-Jaewoon-Runtime-Authority':'company-runtime'};
+    return new Response(request.method==='HEAD'?null:JSON.stringify(exposure),{status:200,headers});
+  }catch(error){
+    const fallback=await env.ASSETS.fetch(request);
+    const headers=new Headers(fallback.headers);
+    headers.set('X-Jaewoon-Runtime-Authority','main-fallback');
+    headers.set('Cache-Control','no-store');
+    return new Response(request.method==='HEAD'?null:await fallback.arrayBuffer(),{status:fallback.status,statusText:fallback.statusText,headers});
+  }
+}
+
 async function handleRuntimeStatus(request,env){
   if(request.method!=='GET'&&request.method!=='HEAD')return aiJson({error:'method_not_allowed'},405);
   try{
@@ -389,6 +408,7 @@ export default{
     if(url.pathname==='/api/vibe/workflow-observation')return handleVibeWorkflowObservation(request,env,url);
     if(url.pathname==='/game-catalog.json')return handleRuntimeCatalog(request,env);
     if(url.pathname==='/company-status.json')return handleRuntimeStatus(request,env);
+    if(url.pathname==='/homepage-platform-exposure.json')return handleRuntimeExposure(request,env);
     if(url.pathname==='/web-games/egg-heist/'||url.pathname==='/web-games/egg-heist/index.html')return new Response('Not Found',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate'}});
     if(url.pathname==='/web-games/survival2/'||url.pathname==='/web-games/survival2/index.html')return serveSurvival2(request,env);
     const response=await env.ASSETS.fetch(request);
