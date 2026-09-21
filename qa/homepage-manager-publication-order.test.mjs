@@ -273,3 +273,11 @@ test('public homepage matches the approved sample structure without legacy mixin
   assert.doesNotMatch(runtime,/buildShelf\(hub,'homeReleaseGameCenter'/);
   assert.doesNotMatch(runtime,/buildShelf\(hub,'homeRobloxDeploymentCenter'/);
 });
+
+test('sample front door keeps operational metadata data-only',()=>{
+  const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const index=fs.readFileSync('index.html','utf8');
+  assert.match(homepage,/const scoreState=row=>/);
+  assert.match(homepage,/getJson\('\/homepage-platform-exposure\.json'\)/);
+  assert.doesNotMatch(index,/strictScore|server-score|portfolio|exposure/i);
+});
