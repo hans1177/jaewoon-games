@@ -2,7 +2,8 @@ name: Unity Web First Stage Build
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - '.build-requests/unity-web/**'
   workflow_dispatch:
@@ -11,75 +12,66 @@ on:
         description: 'Tracked .build-requests/unity-web/*.json request file'
         required: true
         type: string
-  workflow_call:
-    inputs:
-      request_file:
-        required: true
-        type: string
-    secrets:
-      UNITY_EMAIL:
-        required: true
-      UNITY_PASSWORD:
-        required: true
 
 permissions:
   contents: read
-
-concurrency:
-  group: unity-web-first-stage-${{ github.ref }}-${{ github.event.inputs.request_file || github.sha }}
-  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 75
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Resolve Unity Web request
         id: request
         shell: bash
+        env:
+          REQUEST_INPUT: ${{ github.event.inputs.request_file }}
         run: |
           set -euo pipefail
-          request_file='${{ inputs.request_file }}'
+          request_file="$REQUEST_INPUT"
           if [[ -z "$request_file" ]]; then
-            request_file="$(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json' | sort -u | head -n1 || true)"
-            [[ -n "$request_file" ]] || { echo "Unity Web request file not found in push commit" >&2; exit 2; }
-
+            request_file="$(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json$' | head -n 1 || true)"
           fi
+          [[ -n "$request_file" ]] || { echo 'Unity Web request file not found in this run' >&2; exit 2; }
           python3 - "$request_file" "$GITHUB_OUTPUT" <<'PY'
           import json, pathlib, re, sys
           request_file, output = sys.argv[1], sys.argv[2]
           if not re.fullmatch(r'\.build-requests/unity-web/[A-Za-z0-9._-]+\.json', request_file):
               raise SystemExit('invalid Unity Web request path')
-          path = pathlib.Path(request_file)
-          if not path.is_file():
+          request = pathlib.Path(request_file)
+          if not request.is_file():
               raise SystemExit('Unity Web request missing')
-          data = json.loads(path.read_text(encoding='utf-8'))
+          data = json.loads(request.read_text(encoding='utf-8'))
+          game_id = str(data.get('gameId','')).strip()
+          project = str(data.get('projectPath','')).replace('\\','/').strip('/')
+          method = str(data.get('buildMethod','')).strip()
+          source_commit = str(data.get('sourceCommit','')).strip()
           if data.get('version') != 1:
               raise SystemExit('unsupported Unity Web request version')
-          game_id = str(data.get('gameId',''))
-          project = str(data.get('projectPath','')).replace('\\','/').strip('/')
-          method = str(data.get('buildMethod') or '').strip()
-          source_commit = str(data.get('sourceCommit') or '').strip()
           if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,80}', game_id):
               raise SystemExit('invalid gameId')
-          if project != f'unity-games/{game_id}' or '..' in project:
-              raise SystemExit('Unity Web project path must equal unity-games/<gameId>')
+          if project != f'unity-games/{game_id}':
+              raise SystemExit('projectPath must equal unity-games/<gameId>')
           if not re.fullmatch(r'[A-Za-z0-9_.]+', method):
-              raise SystemExit('invalid Unity Web build method')
-          version_path = pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt'
-          if not version_path.is_file():
-              raise SystemExit('Unity ProjectVersion.txt missing')
-          text = version_path.read_text(encoding='utf-8')
+              raise SystemExit('invalid buildMethod')
+          version_file = pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt'
+          if not version_file.is_file():
+              raise SystemExit('ProjectVersion.txt missing')
+          text = version_file.read_text(encoding='utf-8')
           version = re.search(r'm_EditorVersion:\s*([^\s]+)', text)
           revision = re.search(r'm_EditorVersionWithRevision:\s*[^\s]+\s*\(([A-Za-z0-9]+)\)', text)
           if not version or not revision:
-              raise SystemExit('Unity editor version/revision unresolved')
+              raise SystemExit('Unity editor version unresolved')
           with open(output,'a',encoding='utf-8') as f:
               f.write(f'game_id={game_id}\n')
               f.write(f'project_path={project}\n')
@@ -87,34 +79,41 @@ jobs:
               f.write(f'source_commit={source_commit}\n')
               f.write(f'unity_version={version.group(1)}\n')
               f.write(f'unity_revision={revision.group(1)}\n')
+          print(f'UNITY_WEB_REQUEST={request_file}')
           PY
 
-      - name: Verify first-stage contract
+      - name: Verify Unity Web first-stage contract
+        shell: bash
         run: |
+          set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const c=r.unityWebFirstStage;
-          if(c?.status!=='OWNER_DIRECT_LOCKED'||c?.scope!=='FIRST_WEB_GAME_STAGE_ONLY') throw new Error('Unity Web first-stage policy missing');
-          if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Unity Web source/build boundary changed');
-          if(c?.postUnityWebGatePipelineUnchanged!==true) throw new Error('post-Web pipeline must remain unchanged');
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const c=policy.unityWebFirstStage;
+          if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
+          if(c?.scope!=='FIRST_WEB_GAME_STAGE_ONLY') throw new Error('Unity Web scope changed');
+          if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
+          if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
+          if(c?.postUnityWebGatePipelineUnchanged!==true) throw new Error('post gate pipeline changed');
           console.log('UNITY_WEB_FIRST_STAGE_CONTRACT=PASS');
           NODE
 
-      - name: Cache Unity Library
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.request.outputs.project_path }}/Library
-          key: unity-web-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-${{ hashFiles(format('{0}/Packages/manifest.json', steps.request.outputs.project_path), format('{0}/ProjectSettings/ProjectVersion.txt', steps.request.outputs.project_path)) }}
-          restore-keys: |
-            unity-web-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
+      - name: Verify Unity credentials
+        shell: bash
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          [[ -n "$UNITY_EMAIL" ]] || { echo 'UNITY_EMAIL secret missing' >&2; exit 21; }
+          [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret missing' >&2; exit 22; }
 
       - name: Install Unity Hub and WebGL Editor
-        id: unity_install
+        id: unity
+        shell: bash
         env:
           UNITY_VERSION: ${{ steps.request.outputs.unity_version }}
           UNITY_REVISION: ${{ steps.request.outputs.unity_revision }}
-        shell: bash
         run: |
           set -euo pipefail
           sudo sh -c 'dbus-uuidgen > /etc/machine-id'
@@ -145,16 +144,16 @@ jobs:
           unity-hub install-path --set "$install_root"
           unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m webgl --cm
           editor="$(find "$install_root" -type f -path '*/Editor/Unity' -perm -111 2>/dev/null | head -n1 || true)"
-          [[ -n "$editor" && -x "$editor" ]] || { echo 'Unity Web editor missing' >&2; exit 25; }
-          echo "unity_editor_path=$editor" >> "$GITHUB_OUTPUT"
+          [[ -n "$editor" && -x "$editor" ]] || { echo 'Unity editor missing' >&2; exit 25; }
+          echo "editor=$editor" >> "$GITHUB_OUTPUT"
 
       - name: Activate Unity Personal
-        id: unity_license
+        id: license
         continue-on-error: true
         uses: RageAgainstThePixel/activate-unity-license@v2
         env:
           UNITY_HUB_PATH: /opt/unityhub/unityhub
-          UNITY_EDITOR_PATH: ${{ steps.unity_install.outputs.unity_editor_path }}
+          UNITY_EDITOR_PATH: ${{ steps.unity.outputs.editor }}
         with:
           license: personal
           username: ${{ secrets.UNITY_EMAIL }}
@@ -162,16 +161,18 @@ jobs:
           license-version: 6.x
 
       - name: Enforce Unity activation
-        if: steps.request.outcome == 'success'
+        if: always()
+        shell: bash
         run: |
-          [[ '${{ steps.unity_license.outcome }}' == 'success' ]] || exit 198
+          set -euo pipefail
+          [[ '${{ steps.license.outcome }}' == 'success' ]] || exit 198
 
       - name: Build Unity Web
+        shell: bash
         env:
-          UNITY_EDITOR_PATH: ${{ steps.unity_install.outputs.unity_editor_path }}
+          UNITY_EDITOR_PATH: ${{ steps.unity.outputs.editor }}
           PROJECT_PATH: ${{ steps.request.outputs.project_path }}
           BUILD_METHOD: ${{ steps.request.outputs.build_method }}
-        shell: bash
         run: |
           set -euo pipefail
           "$UNITY_EDITOR_PATH" \
@@ -183,67 +184,66 @@ jobs:
             -executeMethod "$BUILD_METHOD" \
             -logFile /dev/stdout
 
-      - name: Collect and verify Unity Web output
-        id: artifact
+      - name: Collect Unity Web output
+        id: output
         shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
-          game='${{ steps.request.outputs.game_id }}'
-          src="build/WebGL/$game"
+          src="build/WebGL/$GAME_ID"
           test -s "$src/index.html"
-          wasm="$(find "$src" -type f \( -name '*.wasm' -o -name '*.wasm.*' \) -size +0c | head -n1 || true)"
-          data="$(find "$src" -type f -name '*.data*' -size +0c | head -n1 || true)"
-          framework="$(find "$src" -type f -name '*.framework.js*' -size +0c | head -n1 || true)"
-          loader="$(find "$src" -type f -name '*.loader.js' -size +0c | head -n1 || true)"
-          [[ -n "$wasm" && -n "$data" && -n "$framework" && -n "$loader" ]] || exit 41
-          out="/tmp/unity-web-output/web-games/$game"
+          test -n "$(find "$src" -type f \( -name '*.wasm' -o -name '*.wasm.*' \) -size +0c | head -n1)"
+          test -n "$(find "$src" -type f -name '*.data*' -size +0c | head -n1)"
+          test -n "$(find "$src" -type f -name '*.framework.js*' -size +0c | head -n1)"
+          test -n "$(find "$src" -type f -name '*.loader.js' -size +0c | head -n1)"
+          out="/tmp/unity-web/web-games/$GAME_ID"
           mkdir -p "$out"
           cp -R "$src"/. "$out"/
           tree_sha="$(find "$out" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
           echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
 
       - name: Browser boot smoke
+        shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
-        shell: bash
         run: |
           set -euo pipefail
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-          python3 -m http.server 4181 --directory /tmp/unity-web-output >/tmp/unity-web-http.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          python3 -m http.server 4181 --directory /tmp/unity-web >/tmp/unity-web-http.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
           node --input-type=module <<'NODE'
           import {chromium} from 'playwright';
           const game=process.env.GAME_ID;
           const browser=await chromium.launch({headless:true});
           const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
           const errors=[];
-          page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
           page.on('pageerror',e=>errors.push(e.message));
+          page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); });
           await page.goto(`http://127.0.0.1:4181/web-games/${game}/`,{waitUntil:'domcontentloaded',timeout:60000});
           await page.waitForSelector('canvas',{state:'visible',timeout:60000});
           await page.waitForTimeout(3000);
-          const canvas=await page.locator('canvas').first().boundingBox();
-          if(!canvas||canvas.width<1||canvas.height<1) throw new Error('Unity canvas not rendered');
-          if(errors.some(x=>/wasm|abort|out of memory|failed to fetch|build error/i.test(x))) throw new Error(errors.join(' | '));
-          await page.screenshot({path:'/tmp/unity-web-output/boot-mobile.png',fullPage:true});
+          const box=await page.locator('canvas').first().boundingBox();
+          if(!box||box.width<1||box.height<1) throw new Error('Unity canvas not rendered');
+          const fatal=errors.filter(x=>/wasm|abort|out of memory|failed to fetch|build error/i.test(x));
+          if(fatal.length) throw new Error(fatal.join(' | '));
+          await page.screenshot({path:'/tmp/unity-web/boot-mobile.png',fullPage:true});
           await browser.close();
           console.log('UNITY_WEB_BOOT_SMOKE=PASS');
           NODE
 
       - name: Write build evidence
+        shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
-          TREE_SHA: ${{ steps.artifact.outputs.tree_sha }}
-        shell: bash
+          TREE_SHA: ${{ steps.output.outputs.tree_sha }}
         run: |
-          set -euo pipefail
-          out="/tmp/unity-web-output/web-games/$GAME_ID"
-          node - "$out/unity-web-build.json" <<'NODE'
-          const fs=require('fs');
-          const file=process.argv[2];
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file=`/tmp/unity-web/web-games/${process.env.GAME_ID}/unity-web-build.json`;
           fs.writeFileSync(file,JSON.stringify({
             version:1,
             engine:'UNITY_WEB',
@@ -259,10 +259,10 @@ jobs:
           },null,2)+'\n');
           NODE
 
-      - name: Upload Unity Web build
+      - name: Upload Unity Web artifact
         uses: actions/upload-artifact@v4
         with:
           name: unity-web-${{ steps.request.outputs.game_id }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/unity-web-output
+          path: /tmp/unity-web
           if-no-files-found: error
           retention-days: 7
