@@ -935,6 +935,7 @@
         "ROBLOX"
       ],
       "entryRequires": [
+        "PUBLIC_RELEASE_STATE",
         "published-release-evidence",
         "exact-release-source-revision",
         "release-claim-pass"
@@ -1256,7 +1257,11 @@
         "securityHotfixPreemptsOtherUpdateWork": true,
         "securityRescanBeforeRedeploy": true,
         "verifiedSecurityResultReturnsToSecurityLearning": true
-      }
+      },
+      "activationBoundary": "AFTER_INITIAL_SECOND_PLATFORM_ADAPTATION_GATE_AND_PUBLIC_RELEASE",
+      "internalPlatformReleaseDoesNotActivatePostReleaseUpdateEngine": true,
+      "initialPlatformRebuildHandledBy": "developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate",
+      "updateGatesMovedAfterPublicRelease": true
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -4217,7 +4222,8 @@
         "PLATFORM_SPECIFIC_REBUILD",
         "SECOND_PLATFORM_ADAPTATION_GATE",
         "PUBLIC_RELEASE_READY",
-        "PUBLIC_RELEASE"
+        "PUBLIC_RELEASE",
+        "POST_PUBLIC_HOTFIX_MINOR_MAJOR_OPERATIONS"
       ],
       "internalRelease": {
         "defaultAfterNativeTechnicalEvidence": true,
@@ -4313,6 +4319,16 @@
         "suitability": "vibe2-unreal-core:.vibe2/platform-suitability.json",
         "scheduler": ".github/workflows/vibe2-24h-runner.yml",
         "homepageSnapshot": "homepage-platform-exposure.json"
+      },
+      "postPublicOperations": {
+        "startsOnlyAfter": "PUBLIC_RELEASE",
+        "engine": "developmentLifecycleMachine.postReleaseFocusedDevelopment",
+        "HOTFIX": "IMMEDIATE_REPRODUCIBLE_BUG_LANE",
+        "MINOR": "FAST_VERIFIED_SMALL_UPDATE_LANE",
+        "MAJOR": "ISOLATED_CANDIDATE_FULL_GATE_LANE",
+        "currentPublicVersionRemainsLiveDuringMajorPreparation": true,
+        "initialSecondGateNotRepeatedAsGenericUpdateGate": true,
+        "platformSpecificRequirementsRemainApplicableToChangedAreas": true
       }
     }
   },
