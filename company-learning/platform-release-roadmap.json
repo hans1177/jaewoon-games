@@ -4396,7 +4396,21 @@
       "supervisedSystemAiWorkflow": ".github/workflows/company-system-ai-workers.yml",
       "learningFeedback": "tools/company-recovery-learning.mjs",
       "codeDistillation": "tools/company-recovery-code-distillation.mjs",
-      "completionAuthority": "DETERMINISTIC_EVIDENCE_AND_CANONICAL_GATES"
+      "completionAuthority": "DETERMINISTIC_EVIDENCE_AND_CANONICAL_GATES",
+      "repeatedFailureMutationGate": {
+        "version": 1,
+        "rule": "SAME_FAILURE_SIGNATURE_REQUIRES_SOURCE_MUTATION_BEFORE_REVALIDATION",
+        "sourceMutationRequired": true,
+        "baselineRevisionRequired": true,
+        "unchangedSourceRevalidationForbidden": true,
+        "currentMainSatisfiedShortcutForbiddenWhileMutationRequired": true,
+        "requiredEvidence": [
+          "SOURCE_MUTATION_REVISION_CHANGED",
+          "RESPONSIBLE_FILE_CHANGED"
+        ],
+        "allowVerificationAfterMutationOnly": true,
+        "objective": "STOP_VERIFY_ONLY_LOOPS_AND_FORCE_CAUSAL_IMPLEMENTATION_PROGRESS"
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
