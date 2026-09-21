@@ -3064,7 +3064,7 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "REFERENCE_INPUTS": [
         {
@@ -3145,7 +3145,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/bug-defense",
         "webSourcePath": "web-games/bug-defense",
@@ -3159,10 +3159,39 @@
         "strictDesignReviewSource": "design/bug-defense/2026-09-19/strict-design-review.json",
         "strictDesignScore": 94.6,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/bug-defense/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/bug-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/bug-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-09-21T14:58:12.032Z"
     },
     {
       "version": 2,
@@ -3926,7 +3955,7 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "REFERENCE_INPUTS": [
         {
@@ -4000,7 +4029,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/survival",
         "webSourcePath": "web-games/survival",
@@ -4014,10 +4043,39 @@
         "strictDesignReviewSource": "design/survival/2026-09-19/strict-design-review.json",
         "strictDesignScore": 94.6,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/survival/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/survival/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/survival/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-09-21T14:58:12.032Z"
     },
     {
       "version": 2,
@@ -7657,9 +7715,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7741,7 +7799,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/daechung-rpg",
         "webSourcePath": "web-games/daechung-rpg",
@@ -7755,10 +7813,38 @@
         "strictDesignReviewSource": "design/daechung-rpg/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/daechung-rpg/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -8102,9 +8188,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -8177,7 +8263,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "webSourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -8191,10 +8277,38 @@
         "strictDesignReviewSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:52:58.067Z"
+        "promotedAt": "2026-09-19T03:52:58.067Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -8538,9 +8652,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -8622,7 +8736,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
         "webSourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
@@ -8636,10 +8750,38 @@
         "strictDesignReviewSource": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:52:58.067Z"
+        "promotedAt": "2026-09-19T03:52:58.067Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -9007,9 +9149,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9082,7 +9224,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/seed-puzzle-chromatic-cascade",
         "webSourcePath": "web-games/seed-puzzle-chromatic-cascade",
@@ -9096,10 +9238,38 @@
         "strictDesignReviewSource": "design/seed-puzzle-chromatic-cascade/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:52:58.067Z"
+        "promotedAt": "2026-09-19T03:52:58.067Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -9459,9 +9629,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9534,7 +9704,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/seed-casual-realm-weaver",
         "webSourcePath": "web-games/seed-casual-realm-weaver",
@@ -9548,10 +9718,38 @@
         "strictDesignReviewSource": "design/seed-casual-realm-weaver/2026-09-19/strict-design-review.json",
         "strictDesignScore": 94.6,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:52:58.067Z"
+        "promotedAt": "2026-09-19T03:52:58.067Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -9895,9 +10093,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9978,7 +10176,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
         "webSourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
@@ -9992,11 +10190,39 @@
         "strictDesignReviewSource": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:53:25.997Z"
+        "promotedAt": "2026-09-19T03:53:25.997Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:56:36.514Z",
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -10340,9 +10566,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10415,7 +10641,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "webSourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
@@ -10429,10 +10655,38 @@
         "strictDesignReviewSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:52:58.067Z"
+        "promotedAt": "2026-09-19T03:52:58.067Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -10792,9 +11046,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10876,7 +11130,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/monster-adventure",
         "webSourcePath": "web-games/monster-adventure",
@@ -10890,10 +11144,38 @@
         "strictDesignReviewSource": "design/monster-adventure/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/monster-adventure/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/monster-adventure/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/monster-adventure/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -11253,9 +11535,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -11337,7 +11619,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/village-dungeons",
         "webSourcePath": "web-games/village-dungeons",
@@ -11351,10 +11633,38 @@
         "strictDesignReviewSource": "design/village-dungeons/2026-09-19/strict-design-review.json",
         "strictDesignScore": 94.6,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/village-dungeons/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/village-dungeons/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/village-dungeons/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -11714,9 +12024,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.479Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -11798,7 +12108,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/amusement-tycoon",
         "webSourcePath": "web-games/amusement-tycoon",
@@ -11812,10 +12122,38 @@
         "strictDesignReviewSource": "design/amusement-tycoon/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/amusement-tycoon/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/amusement-tycoon/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/amusement-tycoon/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -12159,9 +12497,9 @@
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-18T19:27:39.480Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -12234,7 +12572,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/line-defense",
         "webSourcePath": "web-games/line-defense",
@@ -12248,10 +12586,38 @@
         "strictDesignReviewSource": "design/line-defense/2026-09-19/strict-design-review.json",
         "strictDesignScore": 91.80000000000001,
         "excellentDesign": true,
-        "promotedAt": "2026-09-19T03:42:37.352Z"
+        "promotedAt": "2026-09-19T03:42:37.352Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-19T03:57:11.154Z"
+      "pausedAt": "2026-09-19T03:57:11.154Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/line-defense/2026-09-19/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/line-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/line-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -13507,10 +13873,10 @@
         "zero blocking runtime console or save regression errors"
       ],
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "createdAt": "2026-09-19T16:17:06.466Z",
-      "updatedAt": "2026-09-19T16:17:06.466Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -13542,7 +13908,7 @@
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "selectedPlatform": "UNITY",
         "targetSourcePath": "unity-games/fantasy-survival",
         "webSourcePath": "web-games/fantasy-survival",
@@ -13556,10 +13922,38 @@
         "strictDesignReviewSource": "design/fantasy-survival/2026-09-20/strict-design-review.json",
         "strictDesignScore": 80,
         "excellentDesign": false,
-        "promotedAt": "2026-09-19T16:51:19.541Z"
+        "promotedAt": "2026-09-19T16:51:19.541Z",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "migratedAt": "2026-09-21T14:58:12.032Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
-      "pausedAt": "2026-09-20T02:10:41.102Z"
+      "pausedAt": "2026-09-20T02:10:41.102Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/fantasy-survival/2026-09-20/design-revised.json"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fantasy-survival/2026-09-20/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/fantasy-survival/2026-09-20/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 2,
@@ -19070,7 +19464,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-09-21T14:49:29.510Z",
+  "updatedAt": "2026-09-21T14:58:12.113Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",

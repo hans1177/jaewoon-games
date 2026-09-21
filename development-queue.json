@@ -9,7 +9,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/bug-defense",
-      "webSourcePath": "web-games/bug-defense",
+      "webSourcePath": null,
       "designBaselineSource": "design/bug-defense/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/bug-defense/current.json",
@@ -19,15 +19,15 @@
       "strictDesignScore": 94.6,
       "enqueuedAt": "2026-09-19T03:51:21.331Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/bug-defense",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -57,7 +57,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:36.039Z",
-      "updatedAt": "2026-09-21T13:53:36.039Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -68,16 +68,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "4cda40d05b562f1e39eb8158717703ba343bd76a4b74db6ce35f7c90e3374cd5"
+      "unityWebFirstStageDesignBaselineSha256": "4cda40d05b562f1e39eb8158717703ba343bd76a4b74db6ce35f7c90e3374cd5",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/bug-defense",
+        "UNITY": "unity-games/bug-defense"
+      },
+      "robloxProjectPath": "roblox-games/bug-defense",
+      "unityProjectPath": "unity-games/bug-defense",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/bug-defense/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/bug-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/bug-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/bug-defense",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "survival",
@@ -87,7 +137,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/survival",
-      "webSourcePath": "web-games/survival",
+      "webSourcePath": null,
       "designBaselineSource": "design/survival/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/survival/current.json",
@@ -97,15 +147,15 @@
       "strictDesignScore": 94.6,
       "enqueuedAt": "2026-09-19T03:51:21.331Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/survival",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -135,7 +185,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:20.726Z",
-      "updatedAt": "2026-09-21T13:53:20.726Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -146,16 +196,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "3e71609330c3f8d743c91bf7d96047753a0534bfd2dc92f9ae30a64e4b01056e"
+      "unityWebFirstStageDesignBaselineSha256": "3e71609330c3f8d743c91bf7d96047753a0534bfd2dc92f9ae30a64e4b01056e",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/survival",
+        "UNITY": "unity-games/survival"
+      },
+      "robloxProjectPath": "roblox-games/survival",
+      "unityProjectPath": "unity-games/survival",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/survival/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/survival/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/survival/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/survival",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "daechung-rpg",
@@ -165,7 +265,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/daechung-rpg",
-      "webSourcePath": "web-games/daechung-rpg",
+      "webSourcePath": null,
       "designBaselineSource": "design/daechung-rpg/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/daechung-rpg/current.json",
@@ -175,15 +275,15 @@
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:51:21.331Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
       "sourcePath": "unity-games/daechung-rpg",
-      "currentStep": "VIBE_WEB_REPAIR",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -213,7 +313,7 @@
         "unity-web-first-stage:UNITY_WEB_CHILD_BUILD_failure"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-21T14:19:07.831Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -224,9 +324,9 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_REPAIR",
-      "vibeWebImplementationReason": "UNITY_WEB_CHILD_BUILD_failure",
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
       "sourceRootBootstrapRequired": false,
       "ownerWebEditPropagation": {
         "version": 1,
@@ -275,7 +375,57 @@
         "performance": true,
         "noCriticalRuntimeError": true,
         "pass": true
-      }
+      },
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/daechung-rpg",
+        "UNITY": "unity-games/daechung-rpg"
+      },
+      "robloxProjectPath": "roblox-games/daechung-rpg",
+      "unityProjectPath": "unity-games/daechung-rpg",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/daechung-rpg",
+        "currentStep": "VIBE_WEB_REPAIR",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "monster-adventure",
@@ -285,7 +435,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/monster-adventure",
-      "webSourcePath": "web-games/monster-adventure",
+      "webSourcePath": null,
       "designBaselineSource": "design/monster-adventure/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/monster-adventure/current.json",
@@ -295,15 +445,15 @@
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:51:21.331Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/monster-adventure",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -333,7 +483,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:29.091Z",
-      "updatedAt": "2026-09-21T13:53:29.091Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -344,16 +494,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "e5a3150951152ec41212da122561dc637d3fe5e990f505900c8c89898cdc19ff"
+      "unityWebFirstStageDesignBaselineSha256": "e5a3150951152ec41212da122561dc637d3fe5e990f505900c8c89898cdc19ff",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/monster-adventure",
+        "UNITY": "unity-games/monster-adventure"
+      },
+      "robloxProjectPath": "roblox-games/monster-adventure",
+      "unityProjectPath": "unity-games/monster-adventure",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/monster-adventure/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/monster-adventure/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/monster-adventure/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/monster-adventure",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -363,7 +563,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-      "webSourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "webSourcePath": null,
       "designBaselineSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/current.json",
@@ -372,15 +572,15 @@
       "postWebArtbookRequired": true,
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -410,7 +610,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:23.173Z",
-      "updatedAt": "2026-09-21T13:53:23.173Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -421,16 +621,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "f6e18a64f04f098fd22a0cd386c5c514a11f33d878d3a60b55d9692b566a1e4c"
+      "unityWebFirstStageDesignBaselineSha256": "f6e18a64f04f098fd22a0cd386c5c514a11f33d878d3a60b55d9692b566a1e4c",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "UNITY": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
+      },
+      "robloxProjectPath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "unityProjectPath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -440,7 +690,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
-      "webSourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
+      "webSourcePath": null,
       "designBaselineSource": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/seed-single-defense-strat-celestial-bastion/current.json",
@@ -449,15 +699,15 @@
       "postWebArtbookRequired": true,
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -487,7 +737,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:20.399Z",
-      "updatedAt": "2026-09-21T13:53:20.399Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -498,16 +748,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "df662b90c73942640462fd2249640fc388703547251066d084692a3d879b5aa6"
+      "unityWebFirstStageDesignBaselineSha256": "df662b90c73942640462fd2249640fc388703547251066d084692a3d879b5aa6",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
+        "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
+      },
+      "robloxProjectPath": "roblox-games/seed-single-defense-strat-celestial-bastion",
+      "unityProjectPath": "unity-games/seed-single-defense-strat-celestial-bastion",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -517,7 +817,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/seed-puzzle-chromatic-cascade",
-      "webSourcePath": "web-games/seed-puzzle-chromatic-cascade",
+      "webSourcePath": null,
       "designBaselineSource": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/seed-puzzle-chromatic-cascade/current.json",
@@ -526,15 +826,15 @@
       "postWebArtbookRequired": true,
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/seed-puzzle-chromatic-cascade",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -564,7 +864,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:19.110Z",
-      "updatedAt": "2026-09-21T13:53:19.110Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -575,16 +875,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "62078c31d548af46c17b50e0e37603fe6d4c2eed68af7ffad2002bcc7e5ac14f"
+      "unityWebFirstStageDesignBaselineSha256": "62078c31d548af46c17b50e0e37603fe6d4c2eed68af7ffad2002bcc7e5ac14f",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-puzzle-chromatic-cascade",
+        "UNITY": "unity-games/seed-puzzle-chromatic-cascade"
+      },
+      "robloxProjectPath": "roblox-games/seed-puzzle-chromatic-cascade",
+      "unityProjectPath": "unity-games/seed-puzzle-chromatic-cascade",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/seed-puzzle-chromatic-cascade",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -594,7 +944,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/seed-casual-realm-weaver",
-      "webSourcePath": "web-games/seed-casual-realm-weaver",
+      "webSourcePath": null,
       "designBaselineSource": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/seed-casual-realm-weaver/current.json",
@@ -603,15 +953,15 @@
       "postWebArtbookRequired": true,
       "strictDesignScore": 94.6,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/seed-casual-realm-weaver",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -641,7 +991,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:23.275Z",
-      "updatedAt": "2026-09-21T13:53:23.275Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -652,16 +1002,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "9e7ed1387fa8d9cc031e4d498707407b613ceca503b4b9d4e57779402032bddc"
+      "unityWebFirstStageDesignBaselineSha256": "9e7ed1387fa8d9cc031e4d498707407b613ceca503b4b9d4e57779402032bddc",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-casual-realm-weaver",
+        "UNITY": "unity-games/seed-casual-realm-weaver"
+      },
+      "robloxProjectPath": "roblox-games/seed-casual-realm-weaver",
+      "unityProjectPath": "unity-games/seed-casual-realm-weaver",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/seed-casual-realm-weaver",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -671,7 +1071,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
-      "webSourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+      "webSourcePath": null,
       "designBaselineSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/current.json",
@@ -680,15 +1080,15 @@
       "postWebArtbookRequired": true,
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -718,7 +1118,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:23.644Z",
-      "updatedAt": "2026-09-21T13:53:23.644Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -729,16 +1129,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "6bebd5b04b7a3d161c8c2179b2c53c5af258f6d34bf07d640676feedb330782a"
+      "unityWebFirstStageDesignBaselineSha256": "6bebd5b04b7a3d161c8c2179b2c53c5af258f6d34bf07d640676feedb330782a",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
+      },
+      "robloxProjectPath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+      "unityProjectPath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "village-dungeons",
@@ -748,7 +1198,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/village-dungeons",
-      "webSourcePath": "web-games/village-dungeons",
+      "webSourcePath": null,
       "designBaselineSource": "design/village-dungeons/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/village-dungeons/current.json",
@@ -758,15 +1208,15 @@
       "strictDesignScore": 94.6,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/village-dungeons",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "webInitialCyclePassed": false,
@@ -790,7 +1240,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:18.671Z",
-      "updatedAt": "2026-09-21T13:53:18.671Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -804,16 +1254,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "68a05e88ac1b64593a800b4ea0702b9276f79f12dd811a72714072c4cfb29060"
+      "unityWebFirstStageDesignBaselineSha256": "68a05e88ac1b64593a800b4ea0702b9276f79f12dd811a72714072c4cfb29060",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/village-dungeons",
+        "UNITY": "unity-games/village-dungeons"
+      },
+      "robloxProjectPath": "roblox-games/village-dungeons",
+      "unityProjectPath": "unity-games/village-dungeons",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/village-dungeons/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/village-dungeons/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/village-dungeons/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/village-dungeons",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "amusement-tycoon",
@@ -823,7 +1323,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/amusement-tycoon",
-      "webSourcePath": "web-games/amusement-tycoon",
+      "webSourcePath": null,
       "designBaselineSource": "design/amusement-tycoon/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/amusement-tycoon/current.json",
@@ -833,15 +1333,15 @@
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/amusement-tycoon",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "webInitialCyclePassed": false,
@@ -865,7 +1365,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:20.624Z",
-      "updatedAt": "2026-09-21T13:53:20.624Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -879,16 +1379,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "e0d43069b56ec90658bc1ab9e63383d10a4223570ec61694486fdb92222b9abe"
+      "unityWebFirstStageDesignBaselineSha256": "e0d43069b56ec90658bc1ab9e63383d10a4223570ec61694486fdb92222b9abe",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/amusement-tycoon",
+        "UNITY": "unity-games/amusement-tycoon"
+      },
+      "robloxProjectPath": "roblox-games/amusement-tycoon",
+      "unityProjectPath": "unity-games/amusement-tycoon",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/amusement-tycoon/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/amusement-tycoon/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/amusement-tycoon/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/amusement-tycoon",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "line-defense",
@@ -898,7 +1448,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/line-defense",
-      "webSourcePath": "web-games/line-defense",
+      "webSourcePath": null,
       "designBaselineSource": "design/line-defense/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/line-defense/current.json",
@@ -908,15 +1458,15 @@
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:52:58.067Z",
       "queueSource": "ACTIVE_DEVELOPMENT_CONFIRMED_SEED",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/line-defense",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "webInitialCyclePassed": false,
@@ -940,7 +1490,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:28.859Z",
-      "updatedAt": "2026-09-21T13:53:28.859Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -954,10 +1504,10 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "ownerWebEditPropagation": {
         "version": 1,
         "authority": "OWNER_DIRECTIVE",
@@ -988,7 +1538,57 @@
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "b218c305fcbe5ba8d1ef885336ca5ebb1005f374eda2fead098781eb0f442322"
+      "unityWebFirstStageDesignBaselineSha256": "b218c305fcbe5ba8d1ef885336ca5ebb1005f374eda2fead098781eb0f442322",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/line-defense",
+        "UNITY": "unity-games/line-defense"
+      },
+      "robloxProjectPath": "roblox-games/line-defense",
+      "unityProjectPath": "unity-games/line-defense",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/line-defense/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/line-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/line-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/line-defense",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -998,7 +1598,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
-      "webSourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
+      "webSourcePath": null,
       "designBaselineSource": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "artbookSource": "artbook-submissions/seed-idle-growth-rpg-crystal-bloom/current.json",
@@ -1007,15 +1607,15 @@
       "postWebArtbookRequired": true,
       "strictDesignScore": 91.80000000000001,
       "enqueuedAt": "2026-09-19T03:53:25.997Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
-      "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
-      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T03:53:25.997Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -1045,7 +1645,7 @@
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:35.562Z",
-      "updatedAt": "2026-09-21T13:53:35.562Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1056,16 +1656,66 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": true,
-      "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
-      "vibeWebImplementationReason": "UNITY_WEB_CANONICAL_SOURCE_MISSING",
-      "sourceRootBootstrapRequired": true,
+      "vibeWebImplementationRequired": false,
+      "vibeWebRequestedStage": null,
+      "vibeWebImplementationReason": null,
+      "sourceRootBootstrapRequired": false,
       "unityWebFirstStagePassed": false,
       "unityWebFirstStagePassedAt": null,
       "unityWebFirstStageEvidencePath": null,
       "unityWebFirstStageBuildRunId": null,
       "unityWebFirstStageSourceTreeSha": null,
-      "unityWebFirstStageDesignBaselineSha256": "2647907f3bc5f77df131d6d1e81882fc8ea4a769cc77eaf53c65003e16704bc0"
+      "unityWebFirstStageDesignBaselineSha256": "2647907f3bc5f77df131d6d1e81882fc8ea4a769cc77eaf53c65003e16704bc0",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
+        "UNITY": "unity-games/seed-idle-growth-rpg-crystal-bloom"
+      },
+      "robloxProjectPath": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
+      "unityProjectPath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webPlatformHandoff": null,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
+        "currentStep": "VIBE_WEB_BASE_IMPLEMENTATION",
+        "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "gameId": "fantasy-survival",
@@ -1075,7 +1725,7 @@
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "targetSourcePath": "unity-games/fantasy-survival",
-      "webSourcePath": "web-games/fantasy-survival",
+      "webSourcePath": null,
       "designBaselineSource": "design/fantasy-survival/2026-09-20/design-revised.json",
       "designDate": "2026-09-20",
       "artbookSource": "artbook-submissions/fantasy-survival/current.json",
@@ -1086,15 +1736,15 @@
       "enqueuedAt": "2026-09-19T16:51:19.541Z",
       "ownerPreservationPresentationUpgrade": true,
       "presentationFirstPass": "ASSET_ADAPTATION",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
+      "webValidationRequired": false,
+      "musicValidationRequired": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "unity-games/fantasy-survival",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
       "webValidationQueuedAt": "2026-09-19T16:51:19.541Z",
       "webInitialCyclePassed": false,
       "webInitialCyclePassedAt": "",
@@ -1119,7 +1769,7 @@
       "sourceRootBootstrapRequired": false,
       "routingBlockers": [],
       "webValidationLastAttemptAt": "2026-09-21T00:29:52.485Z",
-      "updatedAt": "2026-09-21T14:23:26.126Z",
+      "updatedAt": "2026-09-21T14:58:12.032Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -1144,39 +1794,7 @@
         "ROBLOX"
       ],
       "ownerFocusConcurrentPlatformDevelopment": true,
-      "webPlatformHandoff": {
-        "version": 1,
-        "stage": "WEB_DEVELOPMENT_BASELINE_READY",
-        "producer": "OWNER_FIRST_GATE_DIRECT_RUNTIME_BIND",
-        "gameId": "fantasy-survival",
-        "sourcePath": "web-games/fantasy-survival",
-        "evidencePath": "",
-        "baselineSource": "design/fantasy-survival/2026-09-20/design-revised.json",
-        "sourceIndexSha256": "ded73caccd7b5c42dd87fc9d3cd49236f45deddf3f4b6e1143c5b1a454e0142b",
-        "designBaselineSha256": "c7f0520132cf7ae848daf3646f87e36687490d5b6e224a29d6c6db945f9fda66",
-        "validationSchemaVersion": 15,
-        "strictScore": 0,
-        "promotionRevalidationPassed": false,
-        "validationPassedAt": "2026-09-21T01:53:00.000Z",
-        "firstGatePassed": true,
-        "secondGateRequired": true,
-        "secondGateCriteriaAuthority": "OWNER_DIRECTIVE",
-        "carryForward": [
-          "core-loop",
-          "gameplay-state-model",
-          "progression-model",
-          "input-intent",
-          "ui-flow",
-          "save-meaning",
-          "content-structure",
-          "balance-intent",
-          "verified-learning-context",
-          "presentation-contract"
-        ],
-        "presentationContract": null,
-        "nativeRuntimePassTransferred": false,
-        "authority": "OWNER_DIRECTIVE_2026-09-21"
-      },
+      "webPlatformHandoff": null,
       "platformExecutionRequestedAt": "2026-09-21T02:02:00.000Z",
       "platformExecutionRequested": [
         "UNITY",
@@ -1239,10 +1857,59 @@
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-21T06:11:59.294Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-21T06:11:59.294Z",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": true,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/fantasy-survival",
+        "UNITY": "unity-games/fantasy-survival"
+      },
+      "robloxProjectPath": "roblox-games/fantasy-survival",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/fantasy-survival/2026-09-20/design-revised.json",
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        },
+        "migratedFromLegacy": true
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fantasy-survival/2026-09-20/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/fantasy-survival/2026-09-20/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "unityWebFirstStagePassed": false,
+      "legacyWebReference": {
+        "webSourcePath": "web-games/fantasy-survival",
+        "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+        "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+        "webValidationRequired": true,
+        "capturedAt": "2026-09-21T14:58:12.032Z"
+      },
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-09-21T14:49:29.510Z",
+  "updatedAt": "2026-09-21T14:58:12.113Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -1257,7 +1924,7 @@
   "formalImplementationMinimum": 90,
   "webValidationEvidenceSchemaMinimum": 15,
   "webPromotionRevalidationRequired": true,
-  "developmentGameWipMax": 6,
+  "developmentGameWipMax": null,
   "reconciliationPolicy": "CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE",
   "nativeDevelopmentPolicy": "MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT"
 }

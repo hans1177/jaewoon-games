@@ -147,10 +147,10 @@
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
-      "mode": "FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
       "targetEngine": "unity-android",
       "targetPlatformReady": false,
       "unityProjectReady": false,
@@ -178,7 +178,28 @@
       "approvedDesignScopeMustBeFullyImplemented": true,
       "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "musicValidationRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/survival",
+        "UNITY": "unity-games/survival"
+      },
+      "designBaselineSource": "design/survival/2026-09-19/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/survival/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/survival/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webValidationRequired": false,
+      "updatedAt": "2026-09-21T14:58:12.032Z"
     },
     {
       "id": "P0002",
@@ -245,9 +266,9 @@
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
       "targetEngine": "unity-android",
       "targetPlatformReady": false,
       "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
@@ -272,7 +293,28 @@
       "approvedDesignScopeMustBeFullyImplemented": true,
       "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "musicValidationRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/bug-defense",
+        "UNITY": "unity-games/bug-defense"
+      },
+      "designBaselineSource": "design/bug-defense/2026-09-19/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/bug-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/bug-defense/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webValidationRequired": false,
+      "updatedAt": "2026-09-21T14:58:12.032Z"
     },
     {
       "id": "P0005",
@@ -310,10 +352,10 @@
       "sourcePath": "web-games/daechung-rpg",
       "productionSourcePath": "unity-games/daechung-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
-      "mode": "FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
       "targetEngine": "unity-android",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
@@ -341,7 +383,28 @@
       "approvedDesignScopeMustBeFullyImplemented": true,
       "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "musicValidationRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/daechung-rpg",
+        "UNITY": "unity-games/daechung-rpg"
+      },
+      "designBaselineSource": "design/daechung-rpg/2026-09-19/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webValidationRequired": false,
+      "updatedAt": "2026-09-21T14:58:12.032Z"
     },
     {
       "id": "P0007",
@@ -379,9 +442,9 @@
       "name": "몬스터 어드벤처",
       "sourcePath": "web-games/monster-adventure",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
       "targetEngine": "unity-android",
       "targetPlatformReady": false,
       "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
@@ -409,7 +472,28 @@
       "approvedDesignScopeMustBeFullyImplemented": true,
       "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "musicValidationRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/monster-adventure",
+        "UNITY": "unity-games/monster-adventure"
+      },
+      "designBaselineSource": "design/monster-adventure/2026-09-19/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/monster-adventure/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/monster-adventure/2026-09-19/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "webValidationRequired": false,
+      "updatedAt": "2026-09-21T14:58:12.032Z"
     },
     {
       "id": "P0101",
@@ -678,5 +762,6 @@
         "sourceReady": true
       }
     ]
-  }
+  },
+  "updatedAt": "2026-09-21T14:58:12.032Z"
 }

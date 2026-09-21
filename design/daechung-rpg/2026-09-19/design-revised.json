@@ -137,7 +137,41 @@
     "openQuestions": [
       "오프라인 상태에서도 주사위 판정의 무작위성 조작을 방지하기 위해 클라이언트 사이드에서 어떤 보안 검증 로직을 적용할 것인가?",
       "BM 모델로서 캐릭터 스킨 외에 주사위 스킨 및 이펙트 판매가 유저들의 구매 욕구를 충분히 자극할 수 있을 것인가?"
-    ]
+    ],
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox touch controls first, with keyboard and gamepad parity through ContextActionService and Activated-based UI actions.",
+        "sessionModel": "Fast Roblox experience sessions with spawn, respawn, join-in-progress, and social re-entry semantics matched to the common game loop.",
+        "multiplayerRuntime": "single-player server boundary with local presentation; no fake multiplayer claims",
+        "performanceBudget": "Roblox mobile-first budget: bounded parts and effects, pooled transient objects, limited expensive per-frame work, and stable low-end frame pacing.",
+        "uiUx": "Roblox ScreenGui touch-safe layout with readable mobile controls, controller focus support, observable state feedback, and platform-native social affordances.",
+        "saveAndNetwork": "Server-validated RemoteEvents plus DataStore-backed persistent state only for approved save meaning; clients never own authoritative rewards or progression.",
+        "platformContentAdaptation": "Adapt \"대충 RPG는 한 손 조작 기반의 초고속 탐험과 자동 전투, 그리고 실시간 위험 회피가 결합된 캐주얼 로그라이트 RPG입니다. 플레이어는 매 순간 전진할지 후퇴할지 결정해야 하며, 이 선택은 시그니처 시스템인 '대충 주사위 판정'과 '위험도 가속기'를 통해 즉각적인 보상과 치명적인 패널티로 이어집니다. 기존의 복잡한 RPG 시스템을 걷어내고, 오직 타이밍과 확률적 선택에만 집중하여 매 세션마다 고유한 상태 변화를 만들어냅니다.\" and its loop \"입력 및 선택: 플레이어가 화면을 터치하여 캐릭터를 전진시키고, 무작위로 등장하는 인카운터(전투, 상자, 함정)에 직면합니다. → 상태 변화: 캐릭터의 체력과 던전 위험도가 실시간으로 변동하며, 주사위 굴림을 통해 전투의 승패와 획득 보상이 결정됩니다. → 보상 및 다음 선택: 획득한 골드로 능력치를 즉시 강화하거나, 더 높은 난이도의 던전으로 진입할지 아니면 안전하게 복귀할지 결정합니다.\" to Roblox avatar scale, server/client authority, social sessions, and Roblox-native interaction without changing common gameplay meaning.",
+        "internalReleaseTarget": "Private or restricted Roblox experience published to Roblox servers so the owner and explicitly allowed testers can play before public release.",
+        "validationEvidence": "Exact published Roblox place and source revision, real Roblox runtime play, mobile controls, server/client boundary, save/rejoin when required, independent QA, and regression evidence."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System with touch-first on-screen controls, safe-area handling, keyboard and gamepad parity, and app pause/resume input recovery.",
+        "sessionModel": "Native mobile app sessions with cold start, suspend/resume, background/foreground transitions, process restart, and deterministic save restoration.",
+        "multiplayerRuntime": "single-player app session with local gameplay authority; networking remains disabled until design requires it",
+        "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, draw calls, shaders, particles, audio, pooling, GC pressure, and low-end frame pacing.",
+        "uiUx": "Unity UI safe-area responsive layout with touch targets, scalable HUD, controller navigation where relevant, and app-native loading/error/recovery states.",
+        "saveAndNetwork": "Versioned local save with explicit migration plus validated backend synchronization only when required; app lifecycle cannot silently corrupt progress.",
+        "platformContentAdaptation": "Adapt \"대충 RPG는 한 손 조작 기반의 초고속 탐험과 자동 전투, 그리고 실시간 위험 회피가 결합된 캐주얼 로그라이트 RPG입니다. 플레이어는 매 순간 전진할지 후퇴할지 결정해야 하며, 이 선택은 시그니처 시스템인 '대충 주사위 판정'과 '위험도 가속기'를 통해 즉각적인 보상과 치명적인 패널티로 이어집니다. 기존의 복잡한 RPG 시스템을 걷어내고, 오직 타이밍과 확률적 선택에만 집중하여 매 세션마다 고유한 상태 변화를 만들어냅니다.\" and its loop \"입력 및 선택: 플레이어가 화면을 터치하여 캐릭터를 전진시키고, 무작위로 등장하는 인카운터(전투, 상자, 함정)에 직면합니다. → 상태 변화: 캐릭터의 체력과 던전 위험도가 실시간으로 변동하며, 주사위 굴림을 통해 전투의 승패와 획득 보상이 결정됩니다. → 보상 및 다음 선택: 획득한 골드로 능력치를 즉시 강화하거나, 더 높은 난이도의 던전으로 진입할지 아니면 안전하게 복귀할지 결정합니다.\" to Unity scenes, prefabs, mobile app lifecycle, touch UX, and Android packaging without changing common gameplay meaning.",
+        "internalReleaseTarget": "Internal or closed Android test build that can be installed and launched by the owner/testers before any public store release.",
+        "validationEvidence": "Exact APK/AAB source revision, install and launch, real touch gameplay, pause/resume, save/restore, performance, independent QA, regression, and package identity evidence."
+      }
+    },
+    "platformProfileMigration": {
+      "version": 1,
+      "mode": "COMMON_CORE_PRESERVED_PLATFORM_PROFILES_ADDED",
+      "commonCoreRewritten": false,
+      "profilesDistinctByPlatformEnvironment": true,
+      "strictReviewRefreshRequired": true,
+      "migratedAt": "2026-09-21T14:58:12.035Z"
+    }
   },
   "recovery": {
     "source": "design-checkpoint.json",
