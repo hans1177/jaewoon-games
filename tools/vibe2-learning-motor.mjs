@@ -124,8 +124,10 @@ export function classifyLearningDomains(task={}){
 }
 
 function domainsForKnowledgeRow(row={}){
+  const explicitSystem=upper(row.system);
+  if(MASTERY_DOMAINS.includes(explicitSystem))return[explicitSystem];
   return uniq(inferDomains([
-    row.id,row.system,row.problem,row.pattern,row.failureCause,
+    row.id,row.problem,row.pattern,row.failureCause,
     ...(row.tags||[]),...(row.reusablePatterns||[]),...(row.avoidPatterns||[])
   ].filter(Boolean).join(' '),''));
 }
