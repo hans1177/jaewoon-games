@@ -209266,13 +209266,743 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_e212125c313dbe7f9141019b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "primary",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "advance",
+          "ensureAudio"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 1,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": true,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35546211419-1",
+        "candidateSha": "7387f8b4134fe7b48db631d58ca523569e81f154"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "EXECUTED_PASS",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 43504,
+        "candidateMs": 3121,
+        "qaMs": 73
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "incremental-qa-hash:820133b839998c68cd1d94293a55bec300ce0adfdf04b06907d6f399f9e0aafb"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_8bdaaff9baa587312964bf00",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "speculative-1",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "advance",
+          "ensureAudio"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 1,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": true,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-speculative-1-35546211419-1",
+        "candidateSha": "b7a026d45b6ca739444fee03fef4389dd7e1b964"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_PASS",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 52680,
+        "candidateMs": 1568,
+        "qaMs": 50
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "incremental-qa-hash:820133b839998c68cd1d94293a55bec300ce0adfdf04b06907d6f399f9e0aafb"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_d9c2c7e9e4e90ebcc77ecba7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "bug-defense",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "speculative-2",
+        "goal": "[SUPERVISED_WEB_COAUTHORING]\n[WEB_BASE_IMPLEMENTATION]\n게임: 곤충 디펜스\n승인 설계: company-runtime design/bug-defense/2026-09-19/design-revised.json (strict 94.6)\n\n직전 후보는 main과 동일한 소스를 제출해 REVISE됐다. 검증용 scope/session 버튼으로 게임을 대체하지 말고 실제 디펜스 게임을 구현한다.\n\n필수 구현:\n- 실제 웨이브 미리보기: 적 유형/경로/위협을 플레이 전에 읽을 수 있어야 한다.\n- 실제 pointer/touch 좌표 기반 배치: 잎/줄기/꽃 서식지 위치를 선택해 포식자 곤충을 배치한다.\n- 실제 상성 전투: 최소 3개 포식자 역할과 갑각/비행/군집 적 속성을 damage/slow/range/cooldown 계산에 연결한다.\n- 적은 실제 x/y 공간 상태로 경로를 이동하고 포식자는 실제 엔티티를 타게팅한다.\n- 전투 중 스킬 또는 배치/진화 조정 수단을 실제 자원/쿨다운과 연결한다.\n- 꽃가루 보상 → 업그레이드/진화 → 다음 웨이브 준비 루프를 구현한다.\n- ready/playing/win/loss 상태와 실제 승리/패배/재도전 흐름을 구현한다.\n- versioned localStorage를 사용해 허용된 진행/설정 의미를 보존하고 임의 초기화하지 않는다.\n- 모바일 한 손 조작, 배치"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "advance",
+          "ensureAudio"
+        ],
+        "primarySystems": [
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "INTERACTION",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 7976,
+        "failureFingerprint": "web|DIAGNOSTIC_POSTCONDITION|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 1,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": true,
+        "candidateBranch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-speculative-2-35546211419-1",
+        "candidateSha": "ec1ff8232ecf0253c960a9b061074d234c2180dc"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "EXECUTED_PASS",
+        "causalReplayExecuted": true,
+        "causalReplayPrepatchReproduced": true
+      },
+      "metrics": {
+        "workerTotalMs": 49257,
+        "candidateMs": 1353,
+        "qaMs": 59
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "incremental-qa-hash:820133b839998c68cd1d94293a55bec300ce0adfdf04b06907d6f399f9e0aafb"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_8339ca760223dc197bb1d25a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "primary",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 지시에 따라 현재 진행 중인 게임 개발 및 수정 작업을 전체적으로 수행하고 완료 상태로 맞춘다.\n\n추가 지시:\n- 어 너가 다 만들어 다 하고 말해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "INVALID_PATH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 520614,
+        "candidateMs": 481262,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "source-generation-failure:INVALID_PATH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_46b9c016038e12897c99cb80",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "speculative-1",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 지시에 따라 현재 진행 중인 게임 개발 및 수정 작업을 전체적으로 수행하고 완료 상태로 맞춘다.\n\n추가 지시:\n- 어 너가 다 만들어 다 하고 말해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "INVALID_PATH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 504567,
+        "candidateMs": 465895,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "source-generation-failure:INVALID_PATH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_bce530461d46109159f189da",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+        "workKey": null,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "speculative-2",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자 지시에 따라 현재 진행 중인 게임 개발 및 수정 작업을 전체적으로 수행하고 완료 상태로 맞춘다.\n\n추가 지시:\n- 어 너가 다 만들어 다 하고 말해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "web|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "INVALID_PATH",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 531334,
+        "candidateMs": 481568,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "source-generation-failure:INVALID_PATH"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_07585b4ce6eac93b646a2b14",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+        "workKey": null,
+        "gameId": "daechung-rpg",
+        "target": "unity",
+        "roadmapVersion": null,
+        "baseMainSha": "6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+        "variant": "primary",
+        "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG의 3D 애니메이션 모션을 부드럽게 개선하고 전환 블렌딩을 최적화한다.\n\n추가 지시:\n- 안녕\n- 앙녕\n- 뭐하냐\n- 뭐해\n- 뭐해\n- 야\n- 뭐해\n- 안녕하세요\n- 안녕\n- 연결해 제미나이\n- 좋아 그냥 얘기좀 가진도 올릴수 잇어?\n- 대답안해?\n- 야\n- 젛아\n- 오늘 뭐햇어?\n- 왜\n- 추천해줘\n- 게임개발 하자고?\n- 우이 개발중인거\n- 대충 알피지\n- 게임이름이 대충 알피지야\n- 게임 개발\n- 니가 가능해?\n- 우리 게임 개발중인거 뭐야\n- 야..빨리\n- 추천\n- 모르겟어\n- UI 그리고 지금 어플 다운 가능해? 빌드 배포 성공?\n- 오늘 넌 뭐햇냐?\n- 대충 알피지 그래픽좀 신경써 애니 모션 부드럽게 드리고 3디애?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다."
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "LOW",
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "TIMEOUT",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 578614,
+        "candidateMs": 542792,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:35546211419",
+        "reservation-id:35546211419:1",
+        "source-generation-failure:TIMEOUT"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 6,
+    "added": 7,
     "refreshed": 0,
-    "total": 1805,
-    "verified": 324,
-    "failures": 1044
+    "total": 1812,
+    "verified": 325,
+    "failures": 1048
   }
 }
