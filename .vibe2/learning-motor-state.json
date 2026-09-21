@@ -1494,7 +1494,8 @@
       "coding_1vw4oqz",
       "coding_wkge6z",
       "coding_1ilsnl5",
-      "coding_1emv23l"
+      "coding_1emv23l",
+      "coding_2wiyqx"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -5156,30 +5157,30 @@
         "lastUpdatedAt": "2026-09-21T04:53:21.566Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
-        "verifiedApplications": 111,
+        "verifiedApplications": 112,
         "firstCandidatePasses": 26,
-        "totalGenerationAttempts": 227,
+        "totalGenerationAttempts": 230,
         "verifiedFailures": 28,
         "games": {
           "seed-puzzle-chromatic-cascade": 51,
           "fantasy-survival": 1,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 26,
           "seed-casual-realm-weaver": 2,
-          "village-dungeons": 31
+          "village-dungeons": 32
         },
         "targets": {
-          "web": 111
+          "web": 112
         },
         "contextModes": {
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 108,
+            "verifiedApplications": 109,
             "verifiedFailures": 10,
             "firstCandidatePasses": 26,
-            "totalGenerationAttempts": 221,
-            "totalContextBytes": 2312253,
-            "lastEvidence": "coding_a2muk9",
+            "totalGenerationAttempts": 224,
+            "totalContextBytes": 2335332,
+            "lastEvidence": "coding_2wiyqx",
             "lastFailureEvidence": "coding_negative_1frs9h2",
-            "lastUpdatedAt": "2026-09-21T04:39:52.152Z"
+            "lastUpdatedAt": "2026-09-21T05:09:17.772Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 3,
@@ -5234,23 +5235,23 @@
             "lastUpdatedAt": "2026-09-20T07:24:22.900Z"
           },
           "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 82,
+            "verifiedApplications": 83,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 195,
+            "totalGenerationAttempts": 198,
             "verifiedFailures": 0,
             "games": {
               "seed-puzzle-chromatic-cascade": 51,
-              "village-dungeons": 31
+              "village-dungeons": 32
             },
             "targets": {
-              "web": 82
+              "web": 83
             },
             "failureGames": {},
             "failureTargets": {},
             "failureClasses": {},
-            "lastEvidence": "coding_a2muk9",
+            "lastEvidence": "coding_2wiyqx",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-21T04:39:52.152Z"
+            "lastUpdatedAt": "2026-09-21T05:09:17.772Z"
           },
           "web|OTHER": {
             "verifiedApplications": 1,
@@ -5444,9 +5445,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_a2muk9",
+        "lastEvidence": "coding_2wiyqx",
         "lastFailureEvidence": "coding_negative_1frs9h2",
-        "lastUpdatedAt": "2026-09-21T04:39:52.152Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.772Z"
       }
     }
   },
@@ -7984,7 +7985,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-21T05:01:21.107Z",
+    "lastBuiltAt": "2026-09-21T05:09:17.826Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -7992,13 +7993,13 @@
     "version": 1,
     "domains": {
       "CORE_LOOP": {
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "daechung-rpg": 14,
@@ -8011,17 +8012,17 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.886Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.821Z"
       },
       "STATE_MACHINE": {
-        "verifiedApplications": 138,
+        "verifiedApplications": 139,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "fantasy-survival": 9,
@@ -8035,17 +8036,17 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.886Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.821Z"
       },
       "COMBAT": {
-        "verifiedApplications": 114,
+        "verifiedApplications": 115,
         "verifiedFailures": 0,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 18,
           "amusement-tycoon": 16,
           "bug-defense": 11,
-          "village-dungeons": 10,
+          "village-dungeons": 11,
           "monster-adventure": 9,
           "daechung-rpg": 14,
           "line-defense": 12,
@@ -8057,8 +8058,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.886Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "AI": {
         "verifiedApplications": 54,
@@ -8078,13 +8079,13 @@
         "lastUpdatedAt": "2026-09-21T04:58:29.887Z"
       },
       "PROGRESSION": {
-        "verifiedApplications": 118,
+        "verifiedApplications": 119,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "daechung-rpg": 14,
           "line-defense": 12,
@@ -8096,8 +8097,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.887Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "ECONOMY": {
         "verifiedApplications": 0,
@@ -8154,13 +8155,13 @@
         "lastUpdatedAt": "2026-09-21T04:27:37.065Z"
       },
       "DEBUGGING": {
-        "verifiedApplications": 149,
+        "verifiedApplications": 150,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8175,8 +8176,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.887Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "RECOVERY": {
         "verifiedApplications": 0,
@@ -8188,15 +8189,15 @@
         "lastUpdatedAt": null
       },
       "SECURITY": {
-        "verifiedApplications": 10,
+        "verifiedApplications": 11,
         "verifiedFailures": 0,
         "games": {
-          "village-dungeons": 10
+          "village-dungeons": 11
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_h0ghqp",
-        "lastUpdatedAt": "2026-09-21T01:54:24.976Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "PERFORMANCE": {
         "verifiedApplications": 0,
@@ -8259,11 +8260,11 @@
         "lastUpdatedAt": null
       },
       "AUDIO_FEEL": {
-        "verifiedApplications": 80,
+        "verifiedApplications": 81,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "fantasy-survival": 9,
           "daechung-rpg": 14,
@@ -8272,8 +8273,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1cpjq16",
-        "lastUpdatedAt": "2026-09-21T04:27:37.065Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "CAMERA_LANGUAGE": {
         "verifiedApplications": 0,
@@ -8303,13 +8304,13 @@
         "lastUpdatedAt": null
       },
       "QUEST_DESIGN": {
-        "verifiedApplications": 127,
+        "verifiedApplications": 128,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "fantasy-survival": 9,
           "daechung-rpg": 14,
@@ -8322,8 +8323,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.887Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "CHARACTER_ARC": {
         "verifiedApplications": 0,
@@ -8344,14 +8345,14 @@
         "lastUpdatedAt": null
       },
       "WEB_RUNTIME": {
-        "verifiedApplications": 161,
+        "verifiedApplications": 162,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8365,8 +8366,8 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_1wpreck",
-        "lastUpdatedAt": "2026-09-21T04:58:29.887Z"
+        "lastEvidence": "knowledge_18wz855",
+        "lastUpdatedAt": "2026-09-21T05:09:17.822Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 0,
@@ -8479,14 +8480,14 @@
     "entries": {
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 170,
+        "verifiedApplications": 171,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8499,24 +8500,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 161,
+          "web": 162,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 170,
+        "verifiedApplications": 171,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8529,24 +8530,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 161,
+          "web": 162,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 170,
+        "verifiedApplications": 171,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8559,24 +8560,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 161,
+          "web": 162,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 170,
+        "verifiedApplications": 171,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8589,24 +8590,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 161,
+          "web": 162,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 170,
+        "verifiedApplications": 171,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8619,24 +8620,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 161,
+          "web": 162,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 170,
+        "verifiedApplications": 171,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8649,24 +8650,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 161,
+          "web": 162,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 169,
+        "verifiedApplications": 170,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 33,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8679,24 +8680,24 @@
           "survival": 3
         },
         "targets": {
-          "web": 160,
+          "web": 161,
           "unity": 9
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "EXPERIENCE:exp_security_28453669955c43a85d166c5c": {
         "source": "EXPERIENCE",
-        "verifiedApplications": 155,
+        "verifiedApplications": 156,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "bug-defense": 11,
           "ant-simulator": 11,
@@ -8709,23 +8710,23 @@
           "survival": 3
         },
         "targets": {
-          "web": 155
+          "web": 156
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 11,
           "line-defense": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -8735,23 +8736,23 @@
           "survival": 3
         },
         "targets": {
-          "web": 129
+          "web": 130
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_1avbmmv": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 11,
           "line-defense": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -8761,23 +8762,23 @@
           "survival": 3
         },
         "targets": {
-          "web": 129
+          "web": 130
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_1vgfuno": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 11,
           "line-defense": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -8787,23 +8788,23 @@
           "survival": 3
         },
         "targets": {
-          "web": 129
+          "web": 130
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_3f780w": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 11,
           "line-defense": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -8813,23 +8814,23 @@
           "survival": 3
         },
         "targets": {
-          "web": 129
+          "web": 130
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_9pwgix": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 11,
           "line-defense": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -8839,23 +8840,23 @@
           "survival": 3
         },
         "targets": {
-          "web": 129
+          "web": 130
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_m3ipio": {
         "source": "CODE_PATTERN",
-        "verifiedApplications": 129,
+        "verifiedApplications": 130,
         "verifiedFailures": 0,
         "games": {
           "daechung-rpg": 24,
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 11,
           "line-defense": 12,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
@@ -8865,12 +8866,12 @@
           "survival": 3
         },
         "targets": {
-          "web": 129
+          "web": 130
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "PRACTICE_DISTILLED:practice-distilled:73a2ceb29bb96077cecf": {
         "source": "PRACTICE_DISTILLED",
@@ -8899,13 +8900,13 @@
       },
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
-        "verifiedApplications": 118,
+        "verifiedApplications": 119,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 17,
           "seed-puzzle-chromatic-cascade": 12,
           "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "monster-adventure": 10,
           "daechung-rpg": 14,
           "line-defense": 12,
@@ -8916,12 +8917,12 @@
           "survival": 3
         },
         "targets": {
-          "web": 118
+          "web": 119
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_1wpreck",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T04:58:29.885Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -9010,11 +9011,11 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_dd1edc1a11a1e7a360dfda28": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 73,
+        "verifiedApplications": 74,
         "verifiedFailures": 0,
         "games": {
           "amusement-tycoon": 11,
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 9,
           "ant-simulator": 8,
           "fantasy-survival": 1,
@@ -9026,12 +9027,12 @@
           "survival": 3
         },
         "targets": {
-          "web": 73
+          "web": 74
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_h0ghqp",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T01:54:24.973Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_4046e195870c0ad506bb6c96": {
         "source": "VERIFIED_CAPABILITY",
@@ -9185,34 +9186,34 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_2fa9b22629238db4c1902074": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 13,
+        "verifiedApplications": 14,
         "verifiedFailures": 0,
         "games": {
-          "village-dungeons": 11,
+          "village-dungeons": 12,
           "bug-defense": 2
         },
         "targets": {
-          "web": 13
+          "web": 14
         },
         "state": "PREFERRED",
-        "lastEvidence": "knowledge_h0ghqp",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T01:54:24.973Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_e985c0d214b8307f1572e929": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 11,
+        "verifiedApplications": 12,
         "verifiedFailures": 0,
         "games": {
-          "village-dungeons": 11
+          "village-dungeons": 12
         },
         "targets": {
-          "web": 11
+          "web": 12
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_h0ghqp",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T01:54:24.973Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "CODE_PATTERN:pat_104gf8i": {
         "source": "CODE_PATTERN",
@@ -10352,18 +10353,18 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_adb1ce10908e499845334f28": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 5,
+        "verifiedApplications": 6,
         "verifiedFailures": 0,
         "games": {
-          "village-dungeons": 5
+          "village-dungeons": 6
         },
         "targets": {
-          "web": 5
+          "web": 6
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_h0ghqp",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T01:54:24.973Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_1f1be9a0c88f2a521e3fb20f": {
         "source": "VERIFIED_CAPABILITY",
@@ -10397,18 +10398,18 @@
       },
       "VERIFIED_CAPABILITY:capability_ctrace_768f8bbfda545b8cb89751b2": {
         "source": "VERIFIED_CAPABILITY",
-        "verifiedApplications": 4,
+        "verifiedApplications": 5,
         "verifiedFailures": 0,
         "games": {
-          "village-dungeons": 4
+          "village-dungeons": 5
         },
         "targets": {
-          "web": 4
+          "web": 5
         },
         "state": "VERIFIED",
-        "lastEvidence": "knowledge_h0ghqp",
+        "lastEvidence": "knowledge_18wz855",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-21T01:54:24.973Z"
+        "lastUpdatedAt": "2026-09-21T05:09:17.818Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_c77e9012adc1458e5f026af9": {
         "source": "VERIFIED_CAPABILITY",
@@ -10792,8 +10793,9 @@
       "knowledge_17q1vec",
       "knowledge_1ve79b6",
       "knowledge_1cpjq16",
-      "knowledge_1wpreck"
+      "knowledge_1wpreck",
+      "knowledge_18wz855"
     ]
   },
-  "updatedAt": "2026-09-21T05:01:21.108Z"
+  "updatedAt": "2026-09-21T05:09:17.826Z"
 }
