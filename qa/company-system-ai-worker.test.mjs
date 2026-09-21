@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runSystemAiWorker } from '../tools/company-system-ai-worker.mjs';
-import { normalizeSystemAiQueue,reserveSystemAiBatch,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask } from '../tools/company-system-ai-queue.mjs';
+import { normalizeSystemAiQueue,reserveSystemAiBatch,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask } from '../tools/company-system-ai-queue.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
 function write(file,text){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,'utf8');}
@@ -161,3 +161,35 @@ test('System AI consumes only verified Vibe learning context and records exact k
   assert.match(workflow,/learning-knowledge-id:/);
 });
 
+
+
+test('stale System AI running reservations are reclaimed without retry or learning penalty',()=>{
+  const at=Date.parse('2026-09-21T06:10:00.000Z');
+  const queue=normalizeSystemAiQueue({tasks:[
+    {id:'missing-reservation',status:'running',responsibleFiles:['tools/a.mjs'],reservedAt:'2026-09-21T06:09:00.000Z',retries:2,evidence:[]},
+    {id:'expired-reservation',status:'running',responsibleFiles:['tools/b.mjs'],reservationId:'old',reservedAt:'2026-09-21T05:30:00.000Z',retries:1,evidence:[]},
+    {id:'fresh-reservation',status:'running',responsibleFiles:['tools/c.mjs'],reservationId:'fresh',reservedAt:'2026-09-21T06:00:00.000Z',retries:0,evidence:[]}
+  ]});
+  const reclaimed=reclaimStaleSystemAiReservations(queue,{leaseMinutes:30,at});
+  assert.equal(reclaimed.reclaimed,2);
+  const missing=reclaimed.queue.tasks.find(x=>x.id==='missing-reservation');
+  const expired=reclaimed.queue.tasks.find(x=>x.id==='expired-reservation');
+  const fresh=reclaimed.queue.tasks.find(x=>x.id==='fresh-reservation');
+  assert.equal(missing.status,'queued');
+  assert.equal(expired.status,'queued');
+  assert.equal(fresh.status,'running');
+  assert.equal(missing.retries,2);
+  assert.equal(expired.retries,1);
+  assert.ok(missing.evidence.includes('retry-budget-consumed:NO'));
+  assert.ok(expired.evidence.includes('learning-penalty:NO'));
+});
+
+test('batch reservation reclaims stale running tasks before selecting work',()=>{
+  const at=Date.parse('2026-09-21T06:10:00.000Z');
+  const result=reserveSystemAiBatch({tasks:[
+    {id:'stale',status:'running',responsibleFiles:['tools/a.mjs'],reservedAt:'2026-09-21T05:30:00.000Z'},
+    {id:'queued',status:'queued',priority:'critical',responsibleFiles:['tools/b.mjs']}
+  ]},{max:8,reservationId:'new',leaseMinutes:30,at});
+  assert.equal(result.reclaimed,1);
+  assert.deepEqual(result.reserved.map(x=>x.id).sort(),['queued','stale']);
+});
