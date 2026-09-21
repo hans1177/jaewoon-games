@@ -257,7 +257,14 @@ Unity Web은 Android보다 보수적인 예산을 사용한다.
 - 플레이 진입: `START` 또는 `REGION`
 - 핵심 행동: `ACTION` 또는 `ATTACK`
 - 진행/보상: `PROGRESS` 또는 `REWARD`
+- 실제 모바일 컨트롤 위치: `MOBILE_TARGET role=action x=<0..1> y=<0..1>`
+- 실제 Pointer/Touch가 그 컨트롤을 작동시킨 결과: `MOBILE_INPUT role=action status=PASS`
+- 장르 핵심 루프가 실제 상태 진행까지 완료된 결과: `CORE_FUN status=PASS loop=<genre-specific-loop>`
+
+`Digit1 / Space / KeyR`는 자동화가 기존 게임 함수를 호출하기 위한 QA 입력일 뿐이다. 이 키 입력만으로 `Mobile PASS` 또는 `Core Fun PASS`를 만들 수 없다.
+
+브라우저 검증기는 실제 Chromium touch event를 `MOBILE_TARGET`이 가리키는 실제 Unity 화면 컨트롤에 전달하고, 그 뒤 실제 게임이 `MOBILE_INPUT`을 기록했는지 확인한다. `CORE_FUN`은 시작 버튼이나 단순 액션 호출이 아니라 장르 핵심 루프의 실제 완료/진행/보상 상태에서만 기록한다.
 
 실제 브라우저 검증기는 `tools/company-unity-web-gameplay-validation.mjs`를 사용한다.
 
-이 초기 자동 QA PASS만으로 최종 `Core Fun PASS`를 주장하지 않는다. 최종 Unity Web 관문은 기존의 Boot/Input/Gameplay/Core Fun/Mobile/Performance/No Critical Runtime Error 전체를 만족해야 한다.
+초기 키보드 자동화만으로 최종 `Core Fun PASS`를 주장하지 않는다. 실제 터치 증거 + 실제 진행 증거 + 장르별 `CORE_FUN` 증거가 함께 있을 때만 자동 관문의 Core Fun/Mobile 항목을 만족할 수 있다. 최종 Unity Web 관문은 Boot/Input/Gameplay/Core Fun/Mobile/Performance/No Critical Runtime Error 전체를 만족해야 한다.
