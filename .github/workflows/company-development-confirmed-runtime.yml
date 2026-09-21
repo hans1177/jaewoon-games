@@ -165,7 +165,7 @@ jobs:
           const runtimeRef=`origin/${process.env.COMPANY_RUNTIME_BRANCH}`;
           const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
           const showJson=file=>JSON.parse(showText(file));
-          const unityWebFirstStage=roadmap?.unityWebFirstStage?.enabled===true&&String(roadmap?.unityWebFirstStage?.scope||'').toUpperCase()==='FIRST_WEB_GAME_STAGE_ONLY';
+          const unityWebFirstStage=String(roadmap?.unityWebFirstStage?.status||'').toUpperCase()==='OWNER_DIRECT_LOCKED'&&String(roadmap?.unityWebFirstStage?.scope||'').toUpperCase()==='FIRST_WEB_GAME_STAGE_ONLY'&&roadmap?.unityWebFirstStage?.appliesToAllGames===true;
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`first_stage_engine=${unityWebFirstStage?'UNITY_WEB':'LEGACY_WEB'}\n`);
           const currentUnityTree=gameId=>{
             try{return execFileSync('git',['rev-parse',`HEAD:unity-games/${gameId}`],{encoding:'utf8'}).trim();}catch{return'';}
