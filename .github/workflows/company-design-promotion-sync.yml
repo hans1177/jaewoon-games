@@ -161,30 +161,3 @@ jobs:
           echo 'DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY'
           echo 'UNITY_WEB_DISPATCH=NO'
           echo 'ONE_PLATFORM_REQUEST_STARTS_BOTH=YES'
-
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          pause="$(node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const p=d?.executionPause||{};
-          const paused=p.webDevelopmentPaused===true&&p.developmentRuntimeDispatchAllowed===false;
-          process.stdout.write(paused?'YES':'NO');
-          NODE
-          )"
-          if [ "$pause" = "YES" ]; then
-            echo 'DEVELOPMENT_CONFIRMED_QUEUE=ALLOWED'
-            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=NO'
-            echo 'OWNER_WEB_DEVELOPMENT_PAUSED=true'
-            echo 'STOP_AFTER_STAGE=DEVELOPMENT_CONFIRMED_QUEUE'
-            exit 0
-          fi
-          if gh workflow view company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=YES'
-          else
-            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=NO_WORKFLOW_YET'
-          fi
