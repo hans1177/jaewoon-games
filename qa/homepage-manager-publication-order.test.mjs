@@ -54,49 +54,32 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
 });
 
-test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 shelf',()=>{
+test('homepage keeps Web as a card action and shows only platform-ready games in the available shelf',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
   assert.match(homepage,/getJson\('\/company-status\.json'\)/);
-  assert.match(homepage,/getJson\('\/test-game-candidates\.json'\)/);
-  assert.match(homepage,/runtimeInfoAuthority!=='company-runtime'/);
-  assert.match(homepage,/runtimeAuthority!=='company-runtime'/);
-  assert.match(homepage,/function releaseRows\(catalog,status\)/);
-  assert.match(homepage,/function developmentRows\(catalog,status\)/);
   assert.match(homepage,/function webPublishedRows\(catalog\)/);
   assert.match(homepage,/function canonicalWebHref\(row\)/);
-  assert.match(homepage,/function buildFocus\(catalog,status\)/);
-  assert.match(homepage,/function buildGameCenter\(catalog,status\)/);
-  assert.doesNotMatch(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
-  assert.match(homepage,/buildShelf\(hub,'homeWebGameCenter','지금 플레이'/);
-  assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter','개발 중'/);
-  assert.doesNotMatch(homepage,/document\.getElementById\('homeDevelopmentGameCenter'\)\?\.remove\(\)/);
+  assert.match(homepage,/function internalReleaseRows\(catalog,status\)/);
+  assert.match(homepage,/function internalReleaseLinks\(game\)/);
+  assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','게임 가능'/);
+  assert.match(homepage,/button\(web,'Web 플레이','Web 준비중'/);
+  assert.match(homepage,/dataset\.homePlatformAvailableCount/);
   assert.doesNotMatch(homepage,/homeTop30GameCenter/);
   assert.doesNotMatch(homepage,/const TOP_LIMIT=/);
-  assert.match(homepage,/dataset\.homeWebGameCount/);
-  assert.match(homepage,/homeServerAuthority/);
-  assert.match(homepage,/homeSupportedPlatforms/);
-  assert.match(homepage,/homeProgressAuthority='company-runtime'/);
-  assert.equal(roadmap.homepagePresentation?.webGameShelf?.unbounded,true);
-  assert.equal(roadmap.homepagePresentation?.top30Shelf?.enabled,false);
 });
 
-test('homepage exposes current Web to selected-platform to live-focus development flow',()=>{
+test('homepage shows recent modification reflection instead of the old development flow',()=>{
   const index=fs.readFileSync('index.html','utf8');
-  assert.match(index,/id="developmentPipeline"/);
-  assert.match(index,/Web 제작/);
-  assert.match(index,/Roblox · Unity · UEFN/);
-  assert.match(index,/출시 후 집중개발/);
-  assert.match(index,/data-platform="roblox"/);
-  assert.match(index,/data-platform="unity"/);
-  assert.match(index,/data-platform="fortnite_uefn"/);
-  assert.doesNotMatch(index,/신규 개발 Unity Android 중심/);
-  assert.match(homepage,/function buildDevelopmentPipeline\(catalog,status,testManifest=\{\}\)/);
-  assert.match(homepage,/dataset\.runtimeAuthority/);
-  assert.match(homepage,/dataset\.selectedPlatformCount/);
-  assert.match(homepage,/dataset\.focusRunnerActive/);
-  assert.match(homepage,/buildDevelopmentPipeline\(catalog,status,testManifest\|\|\{\}\)/);
+  assert.match(index,/id="recentUpdates"/);
+  assert.match(index,/최근 수정 반영/);
+  assert.match(index,/id="recentUpdateList"/);
+  assert.doesNotMatch(index,/id="developmentPipeline"/);
+  assert.match(homepage,/function recentModificationRows\(catalog\)/);
+  assert.match(homepage,/function buildRecentUpdates\(catalog\)/);
+  assert.match(homepage,/최신 지시 반영 상태를 확인 중/);
+  assert.match(homepage,/buildRecentUpdates\(catalog\)/);
 });
 
 test('verified Roblox deployment history is independent of the primary selected platform',()=>{
@@ -116,10 +99,11 @@ test('homepage platform and touch launch paths stay bound to verified runtime da
   assert.match(homepage,/function latestVerifiedUnityBuilds\(status\)/);
   assert.match(homepage,/signatureVerified!==true/);
   assert.match(homepage,/runtimePassed/);
-  assert.match(homepage,/function platformHref\(game\)/);
-  assert.match(homepage,/p==='ROBLOX'/);
-  assert.match(homepage,/p==='FORTNITE_UEFN'/);
-  assert.match(homepage,/unityBuildUrl/);
+  assert.match(homepage,/function platformLinks\(game\)/);
+  assert.match(homepage,/function internalReleaseLinks\(game\)/);
+  assert.match(homepage,/internalReleaseReady===true/);
+  assert.match(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+  assert.match(homepage,/unityBuildVerified===true/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
   assert.match(homepage,/data-direct-play|dataset\.directPlay/);
   assert.match(homepage,/dataset\.touchLaunch='true'/);
@@ -188,20 +172,19 @@ test('homepage front door matches approved sample on desktop and mobile',()=>{
   const front=roadmap.homepagePresentation?.frontDoor||{};
   assert.equal(front.mode,'SAMPLE_FRONT_DOOR_V1');
   assert.equal(front.legacyMixingForbidden,true);
-  assert.deepEqual(front.order,['HEADER','FEATURED_GAME','THREE_METRICS','PLAY_NOW','IN_DEVELOPMENT','DEVELOPMENT_FLOW','FOOTER']);
-  assert.deepEqual(front.mobile?.navItems,['HOME','GAME','DEVELOPMENT','CHATGPT']);
+  assert.deepEqual(front.order,['HEADER','FEATURED_GAME','THREE_METRICS','PLATFORM_AVAILABLE','IN_DEVELOPMENT','RECENT_UPDATES','FOOTER']);
+  assert.deepEqual(front.mobile?.navItems,['HOME','GAME','RECENT_UPDATES','CHATGPT']);
   assert.equal(front.mobile?.fixedBottomNavigation,true);
   assert.equal(front.mobile?.horizontalGameCards,true);
-  assert.equal(front.mobile?.horizontalDevelopmentSteps,true);
   assert.match(index,/JAEWOON <span>GAMES<\/span>/);
   assert.match(index,/class="mainNav"/);
   assert.match(index,/class="mobileDock"/);
-  assert.match(index,/https:\/\/chatgpt\.com\//);
   assert.match(index,/id="metricPlayable"/);
   assert.match(index,/id="metricDevelopment"/);
-  assert.match(index,/id="metricReleased"/);
+  assert.match(index,/id="metricRecent"/);
+  assert.match(index,/id="recentUpdates"/);
   assert.ok(index.indexOf('id="hero"')<index.indexOf('class="stats opsBar"'));
-  assert.ok(index.indexOf('id="gameHub"')<index.indexOf('id="developmentPipeline"'));
+  assert.ok(index.indexOf('id="gameHub"')<index.indexOf('id="recentUpdates"'));
   assert.doesNotMatch(index,/class="reviews"|class="music"|id="developerProfile"|platformFilters|stateFilters|gameSearch|gameSort/);
 });
 
@@ -266,18 +249,15 @@ test('public homepage matches the approved sample structure without legacy mixin
   assert.match(index,/id="hero"/);
   assert.match(index,/id="metricPlayable"/);
   assert.match(index,/id="metricDevelopment"/);
-  assert.match(index,/id="metricReleased"/);
+  assert.match(index,/id="metricRecent"/);
   assert.match(index,/id="gameHub"/);
-  assert.match(index,/id="developmentPipeline"/);
-  assert.match(index,/https:\/\/chatgpt\.com\//);
-  assert.doesNotMatch(index,/게임평 한마디/);
-  assert.doesNotMatch(index,/Developer 한재운/);
-  assert.doesNotMatch(index,/게임 & 지브리 음악/);
-  assert.doesNotMatch(index,/platformFilters|stateFilters|gameSearch|gameSort/);
-  assert.match(runtime,/buildShelf\(hub,'homeWebGameCenter','지금 플레이'/);
+  assert.match(index,/id="recentUpdates"/);
+  assert.doesNotMatch(index,/게임평 한마디|Developer 한재운|게임 & 지브리 음악|platformFilters|stateFilters|gameSearch|gameSort/);
+  assert.match(runtime,/buildShelf\(hub,'homePlatformAvailableGameCenter','게임 가능'/);
   assert.match(runtime,/buildShelf\(hub,'homeDevelopmentGameCenter','개발 중'/);
+  assert.match(runtime,/function buildRecentUpdates\(catalog\)/);
+  assert.doesNotMatch(runtime,/buildShelf\(hub,'homeWebGameCenter'/);
   assert.doesNotMatch(runtime,/buildShelf\(hub,'homeReleaseGameCenter'/);
-  assert.doesNotMatch(runtime,/buildShelf\(hub,'homeRobloxDeploymentCenter'/);
 });
 
 test('sample front door keeps operational metadata data-only',()=>{
