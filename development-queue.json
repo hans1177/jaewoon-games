@@ -215,7 +215,31 @@
       "vibeWebImplementationRequired": true,
       "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
       "vibeWebImplementationReason": "REAL_GAME_FOOTPRINT_TOO_SMALL:1932:12000|REAL_GAME_LOGIC_TOO_SMALL:1003:6000|REAL_GAME_MECHANIC_COUNT_TOO_LOW:0:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-corefun-43bf31c5e2|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-50e57f1683|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-777fe3d29d|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-9ac70d15af|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-9ceb185555|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:0:4|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - UNMAPPED scope-corefun-43bf31c5e2 | CORE/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-coreloop-0-50e57f1683 | COMBAT/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-coreloop-1-777fe3d29d | PROGRESSION/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-coreloop-2-9ac70d15af | PROGRESSION/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. - UNMAPPED scope-mobileux-9ceb185555 | OBJECTIVE/STATE_CHANGE | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. EXTERNAL_AI_ADVISORY=AMBIGUOUS_ONLY; 외부 AI는 제안만 하며 실제 소스/런타임 QA가 최종 확인한다.",
-      "sourceRootBootstrapRequired": false
+      "sourceRootBootstrapRequired": false,
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "daechung-rpg",
+        "sourcePath": "web-games/daechung-rpg",
+        "sourceBefore": "40a67a0de07d28d02d7198154464f29667a86377",
+        "sourceAfter": "a04c0c14118cb35018a27a551c0c18c129744195",
+        "semanticIntentFingerprint": "3b69a916297b9f096ca161137cb80fdf86bcd8fd8116ba2cbe0cc2325a422129",
+        "affectedSystems": [
+          "MOVEMENT",
+          "SAVE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-21T08:11:29.829Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-21T08:11:29.829Z"
     },
     {
       "gameId": "monster-adventure",
@@ -1097,7 +1121,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-21T06:11:59.294Z"
     }
   ],
-  "updatedAt": "2026-09-21T08:08:59.267Z",
+  "updatedAt": "2026-09-21T08:11:29.829Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
