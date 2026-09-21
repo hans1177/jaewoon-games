@@ -2,20 +2,44 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
-local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local Lighting=game:GetService("Lighting")
+local Shared=RS:WaitForChild("Shared")
+local C=require(Shared:WaitForChild("GameConfig"))
+local Style=require(Shared:WaitForChild("VisualStyle"))
 local store=DSS:GetDataStore("daechung-rpg-party-v1")
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent");remote.Name=C.RemoteName;remote.Parent=RS
 local world,enemies={},{};local companionParts={}
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function class(p)local id=p:GetAttribute("ClassId")or C.Classes[1].Id;for _,x in ipairs(C.Classes)do if x.Id==id then return x end end;return C.Classes[1]end
+local function ppart(name,size,pos,color,material)
+ local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=world;return x
+end
+local function nameplate(target,text,color)
+ local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(170,36);g.StudsOffset=Vector3.new(0,5,0);g.AlwaysOnTop=true;g.Parent=target
+ local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.45;t.Parent=g
+end
 local function makeWorld()
  local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end;world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
- local f=Instance.new("Part");f.Anchored=true;f.Size=Vector3.new(180,1,180);f.Position=Vector3.new(0,0,0);f.Parent=world
+ for k,v in pairs(Style.Lighting)do Lighting[k]=v end
+ ppart("Field",Vector3.new(190,1,190),Vector3.new(0,0,0),Style.Ground,Enum.Material.Grass)
+ ppart("VillagePlaza",Vector3.new(56,2,56),Vector3.new(0,1,0),Style.Stone,Enum.Material.Slate)
+ for i=1,8 do
+   local a=i/8*math.pi*2;local pos=Vector3.new(math.cos(a)*31,3,math.sin(a)*31)
+   local pillar=ppart("RunePillar",Vector3.new(3,8,3),pos,Style.Stone,Enum.Material.Slate)
+   local crystal=ppart("RuneCrystal",Vector3.new(2,4,2),pos+Vector3.new(0,6,0),Style.Crystal,Enum.Material.Neon);crystal.Orientation=Vector3.new(0,i*23,45)
+ end
+ local gateL=ppart("GateL",Vector3.new(6,18,6),Vector3.new(-10,9,-34),Style.Stone,Enum.Material.Slate)
+ local gateR=ppart("GateR",Vector3.new(6,18,6),Vector3.new(10,9,-34),Style.Stone,Enum.Material.Slate)
+ ppart("GateTop",Vector3.new(26,5,6),Vector3.new(0,18,-34),Style.Stone,Enum.Material.Slate)
+ nameplate(gateL,"마을 · 4인 파티 거점",Style.Gold)
+ workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_V1")
 end
 local function unit(name,pos,hp,boss)
- local p=Instance.new("Part");p.Name=name;p.Anchored=true;p.Size=boss and Vector3.new(7,9,7)or Vector3.new(4,6,4);p.Position=pos;p.Parent=world
- local e={part=p,hp=hp,max=hp,boss=boss};table.insert(enemies,e);return e
+ local p=Instance.new("Part");p.Name=name;p.Anchored=true;p.Size=boss and Vector3.new(8,11,8)or Vector3.new(4,6,4);p.Position=pos;p.Color=boss and Style.Boss or Style.Enemy;p.Material=boss and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
+ if boss then local l=Instance.new("PointLight");l.Color=Style.Crystal;l.Range=22;l.Brightness=2;l.Parent=p end
+ nameplate(p,name,boss and Style.Gold or Color3.new(1,1,1))
+ local e={part=p,hp=hp,max=hp,boss=boss};p:SetAttribute("HP",hp);table.insert(enemies,e);return e
 end
 local function spawnEnemy(boss)local a=math.random()*6.28;local r=boss and 62 or math.random(32,75);return unit(boss and"지역보스"or"몬스터",Vector3.new(math.cos(a)*r,3,math.sin(a)*r),boss and 260 or 60,boss)end
 local function load(p)
@@ -44,7 +68,7 @@ Players.PlayerAdded:Connect(load);for _,p in ipairs(Players:GetPlayers())do load
 local function rebuildCompanions()
  for _,x in ipairs(companionParts)do if x then x:Destroy()end end;companionParts={}
  local humans=Players:GetPlayers();local needed=math.max(0,C.PartySlots-#humans)
- for i=1,needed do local def=C.StarterCompanions[((i-1)%#C.StarterCompanions)+1];local p=Instance.new("Part");p.Name="AI동료_"..def.Name;p.Anchored=true;p.Size=Vector3.new(3,5,3);p.Parent=world;table.insert(companionParts,p)end
+ for i=1,needed do local def=C.StarterCompanions[((i-1)%#C.StarterCompanions)+1];local p=Instance.new("Part");p.Name="AI동료_"..def.Name;p.Anchored=true;p.Size=Vector3.new(3,5,3);p.Color=Style.CompanionColors[def.Id] or Style.Gold;p.Material=Enum.Material.SmoothPlastic;p.Parent=world;nameplate(p,def.Name.." · "..def.Class,Style.Gold);table.insert(companionParts,p)end
 end
 Players.PlayerAdded:Connect(function()task.defer(rebuildCompanions)end);Players.PlayerRemoving:Connect(function()task.defer(rebuildCompanions)end);rebuildCompanions()
 RunService.Heartbeat:Connect(function(dt)

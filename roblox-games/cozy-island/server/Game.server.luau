@@ -1,11 +1,42 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
-local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local Lighting=game:GetService("Lighting")
+local Shared=RS:WaitForChild("Shared")
+local C=require(Shared:WaitForChild("GameConfig"))
+local Style=require(Shared:WaitForChild("VisualStyle"))
 local store=DSS:GetDataStore("cozy-island-conquest-v2")
 local remote=RS:FindFirstChild(C.RemoteName) or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
 local last,battling={},{}
+local function part(parent,name,size,pos,color,material)
+  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=parent;return x
+end
+local function label(target,text)
+  local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(180,42);g.StudsOffset=Vector3.new(0,7,0);g.AlwaysOnTop=true;g.Parent=target
+  local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=.25;t.TextScaled=true;t.Text=text;t.TextColor3=Color3.new(1,1,1);t.Parent=g
+end
+local function buildWorld()
+  local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
+  local f=Instance.new("Folder");f.Name="CozyConquestWorld";f.Parent=workspace
+  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
+  local water=part(f,"Sea",Vector3.new(360,2,360),Vector3.new(0,-5,0),Style.Water,Enum.Material.Glass);water.Transparency=.22
+  for index,r in ipairs(Style.Regions)do
+    local island=part(f,r.Name,r.Size,r.Pos,r.Color,r.Material);island.Shape=Enum.PartType.Block;label(island,r.Name)
+    local base=part(f,"Base_"..index,Vector3.new(15,8,15),r.Pos+Vector3.new(0,r.Size.Y/2+4,0),r.Accent,Enum.Material.Brick)
+    local roof=part(f,"Roof_"..index,Vector3.new(18,2,18),base.Position+Vector3.new(0,5,0),Style.Banner,Enum.Material.WoodPlanks)
+    if index==1 then
+      for i=1,8 do
+        local a=i/8*math.pi*2;local trunk=part(f,"TreeTrunk",Vector3.new(2,7,2),r.Pos+Vector3.new(math.cos(a)*24,6,math.sin(a)*24),Color3.fromRGB(113,79,55),Enum.Material.Wood)
+        local crown=part(f,"TreeCrown",Vector3.new(7,7,7),trunk.Position+Vector3.new(0,5,0),Color3.fromRGB(82,145,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
+      end
+    else
+      local marker=part(f,"ResourceMarker_"..index,Vector3.new(6,10,6),base.Position+Vector3.new(13,1,0),r.Accent,Enum.Material.Neon);marker.Transparency=.15
+    end
+  end
+  workspace:SetAttribute("WorldArtPass","STYLIZED_DIORAMA_V1")
+end
+buildWorld()
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number" and v or d end
 local function s(p,k,v)p:SetAttribute(k,math.max(0,math.floor(v)))end
 local function msg(p,t)p:SetAttribute("LastActivity",t)end

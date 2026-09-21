@@ -2,7 +2,10 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
-local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local Lighting=game:GetService("Lighting")
+local Shared=RS:WaitForChild("Shared")
+local C=require(Shared:WaitForChild("GameConfig"))
+local Style=require(Shared:WaitForChild("VisualStyle"))
 local store=DSS:GetDataStore("midnight-tag-v2")
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent");remote.Name=C.RemoteName;remote.Parent=RS
 local state="WAITING";local timeLeft=0;local monster=nil;local monsterBot=nil;local forced=false;local lastMonster=0;local bots={};local cooldown={}
@@ -17,11 +20,27 @@ local function load(p)
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end);if ok and typeof(d)=="table"then for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"})do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end;if typeof(d.MonsterForm)=="string"then p:SetAttribute("MonsterForm",d.MonsterForm)end end
 end
 local function save(p)pcall(function()store:SetAsync("p:"..p.UserId,{MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRAK"})end)end
+local function arenaPart(f,name,size,pos,color,material)
+ local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=f;return x
+end
 local function makeArena()
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
- local floor=Instance.new("Part");floor.Anchored=true;floor.Size=Vector3.new(150,1,150);floor.Position=Vector3.new(0,0,0);floor.Parent=f
- for i=1,12 do local o=Instance.new("Part");o.Name="Obstacle"..i;o.Anchored=true;o.Size=Vector3.new(8+(i%3)*3,8,8);o.Position=Vector3.new(-55+(i%4)*35,4,-45+math.floor((i-1)/4)*45);o.Parent=f end
+ for k,v in pairs(Style.Lighting)do Lighting[k]=v end
+ arenaPart(f,"SchoolFloor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete)
+ for _,x in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(2,18,160),Vector3.new(x,9,0),Style.Wall,Enum.Material.Concrete)end
+ for _,z in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(160,18,2),Vector3.new(0,9,z),Style.Wall,Enum.Material.Concrete)end
+ for row=-1,1 do
+  local z=row*42
+  arenaPart(f,"HallWallL",Vector3.new(48,12,3),Vector3.new(-45,6,z),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"HallWallR",Vector3.new(48,12,3),Vector3.new(45,6,z),Style.Wall,Enum.Material.Concrete)
+  for col=-2,2 do
+   local locker=arenaPart(f,"Locker",Vector3.new(5,8,3),Vector3.new(col*13,4,z+8),Style.Locker,Enum.Material.Metal)
+   if (col+row)%2==0 then local lamp=arenaPart(f,"CeilingLight",Vector3.new(8,.5,2),Vector3.new(col*13,10,z-8),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.1 end
+  end
+ end
+ for i=1,8 do arenaPart(f,"Bench",Vector3.new(11,2,3),Vector3.new(-52+(i%4)*35,1.5,-50+math.floor((i-1)/4)*100),Color3.fromRGB(113,84,68),Enum.Material.WoodPlanks)end
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_SCHOOL_V1")
  return f
 end
 local arena=nil
@@ -37,13 +56,28 @@ local function choose(h)
  local pool=#v>0 and v or h;local f={};for _,p in ipairs(pool)do if p.UserId~=lastMonster then table.insert(f,p)end end;if #f>0 then pool=f end
  return weightPick(pool),#v==0
 end
-local function setRole(p,r)p:SetAttribute("Role",r);p:SetAttribute("Frozen",false);speed(p,r=="MONSTER"and 19 or 16)end
+local function clearRoleVisual(p)
+ local c=p.Character;if not c then return end;local old=c:FindFirstChild("RoleVisual");if old then old:Destroy()end
+ local oldH=c:FindFirstChild("RoleHighlight");if oldH then oldH:Destroy()end
+end
+local function applyRoleVisual(p,r)
+ clearRoleVisual(p);local c=p.Character;if not c then return end
+ local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.68;hi.OutlineTransparency=.05;hi.Parent=c
+ if r=="MONSTER" then
+   local mf=Style.Monsters[(form(p).Id)] or Style.Monsters.DRAK;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
+   local head=c:FindFirstChild("Head")or root(p);if head then
+    local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
+    local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=mf.Label;t.TextColor3=mf.Accent;t.TextStrokeTransparency=.25;t.Parent=g
+   end
+ else hi.FillColor=Style.Survivor;hi.OutlineColor=Color3.new(1,1,1) end
+end
+local function setRole(p,r)p:SetAttribute("Role",r);p:SetAttribute("Frozen",false);speed(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)end
 local function active()
  local a={};for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then table.insert(a,{p=p})end end
  for _,b in ipairs(bots)do if b.role=="SURVIVOR"and not b.frozen then table.insert(a,{b=b})end end;return a
 end
-local function freezePlayer(p)if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then p:SetAttribute("Frozen",true);speed(p,0)end end
-local function thawPlayer(p)if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then p:SetAttribute("Frozen",false);speed(p,16)end end
+local function freezePlayer(p)if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then p:SetAttribute("Frozen",true);speed(p,0);local c=p.Character;if c then local h=c:FindFirstChild("RoleHighlight");if h then h.FillColor=Style.Frozen;h.OutlineColor=Color3.fromRGB(220,248,255)end end end end
+local function thawPlayer(p)if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then p:SetAttribute("Frozen",false);speed(p,16);applyRoleVisual(p,"SURVIVOR")end end
 local function monsterPos()if monster then local r=root(monster);return r and r.Position end;if monsterBot then return monsterBot.part.Position end end
 local function configure(h)
  clearBots();local need=math.max(0,C.TargetPopulation-#h)
