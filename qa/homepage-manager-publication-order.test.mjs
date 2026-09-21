@@ -327,3 +327,10 @@ test('game cards keep Web fixed and expose concurrent platform slots',()=>{
   assert.match(runtime,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
   assert.match(index,/foldGameActions\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
 });
+
+test('verified test builds do not become platform-available without explicit internal release evidence',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(runtime,/if\(!exposure\|\|!Array\.isArray\(exposure\.platforms\)\|\|!exposure\.platforms\.length\)return \{roblox:'',unity:'',fortnite:''\};/);
+  assert.match(runtime,/internalReleaseReady===true/);
+  assert.match(runtime,/function latestVerifiedUnityBuilds\(status\)/);
+});
