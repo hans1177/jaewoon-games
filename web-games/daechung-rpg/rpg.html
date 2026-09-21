@@ -368,63 +368,41 @@ function draw(){ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);i
 function loop(t){requestAnimationFrame(loop);if(!run){draw();return}const dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw()}
 
 const joyEl=document.getElementById('joy'),joyKnob=document.getElementById('knob'),exitBtn=document.getElementById('exitBtn');
-let jid=null,center={x:0,y:0},touchJoy=false;
-function refreshJoyCenter(){const r=joyEl.getBoundingClientRect();center={x:r.left+r.width/2,y:r.top+r.height/2}}
-function applyJoyPoint(clientX,clientY){
- let dx=clientX-center.x,dy=clientY-center.y,l=Math.hypot(dx,dy),m=42;
+let jid=null,center={x:0,y:0};
+function joyCenter(){const r=joyEl.getBoundingClientRect();center.x=r.left+r.width/2;center.y=r.top+r.height/2}
+function joyApply(x,y){
+ let dx=x-center.x,dy=y-center.y,l=Math.hypot(dx,dy),m=42;
  if(l>m){dx=dx/l*m;dy=dy/l*m}
- j.x=Math.max(-1,Math.min(1,dx/m));j.y=Math.max(-1,Math.min(1,dy/m));
- joyKnob.style.transform=`translate(${dx}px,${dy}px)`;const s=document.getElementById('joyState');if(s)s.textContent=`MOVE ${j.x.toFixed(1)},${j.y.toFixed(1)}`;
+ j.x=dx/m;j.y=dy/m;
+ joyKnob.style.transform=`translate(${dx}px,${dy}px)`;
+ const s=document.getElementById('joyState');if(s)s.textContent=`MOVE ${j.x.toFixed(1)},${j.y.toFixed(1)}`;
 }
-function beginJoy(e){
- e.preventDefault();initAudio();jid=e.pointerId;touchJoy=false;refreshJoyCenter();
+function joyStop(){
+ jid=null;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';
+ const s=document.getElementById('joyState');if(s)s.textContent='MOVE';
+}
+joyEl.onpointerdown=e=>{
+ e.preventDefault();e.stopPropagation();initAudio();
+ jid=e.pointerId;joyCenter();joyApply(e.clientX,e.clientY);
  try{joyEl.setPointerCapture(jid)}catch{}
- applyJoyPoint(e.clientX,e.clientY);
-}
-function moveJoy(e){if(jid===null||e.pointerId!==jid||touchJoy)return;e.preventDefault();applyJoyPoint(e.clientX,e.clientY)}
-function endJoy(e){
- if(e&&jid!==null&&e.pointerId!==jid)return;
- if(e)e.preventDefault();
- try{if(jid!==null&&joyEl.hasPointerCapture?.(jid))joyEl.releasePointerCapture(jid)}catch{}
- jid=null;touchJoy=false;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';const s=document.getElementById('joyState');if(s)s.textContent='MOVE';
-}
-joyEl.addEventListener('pointerdown',beginJoy,{passive:false});
-addEventListener('pointermove',moveJoy,{passive:false});
-addEventListener('pointerup',endJoy,{passive:false});
-addEventListener('pointercancel',endJoy,{passive:false});
-joyEl.addEventListener('touchstart',e=>{
- const t=e.changedTouches?.[0];if(!t)return;e.preventDefault();initAudio();touchJoy=true;jid=-1;refreshJoyCenter();applyJoyPoint(t.clientX,t.clientY);
-},{passive:false});
-joyEl.addEventListener('touchmove',e=>{
- if(!touchJoy)return;const t=e.changedTouches?.[0]||e.touches?.[0];if(!t)return;e.preventDefault();applyJoyPoint(t.clientX,t.clientY);
-},{passive:false});
-addEventListener('touchend',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
-addEventListener('touchcancel',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
-document.body.addEventListener('touchstart',e=>{
- if(touchJoy||jid!==null)return;
- const t=e.changedTouches?.[0];if(!t)return;
- const r=joyEl.getBoundingClientRect();
- if(t.clientX<r.left-24||t.clientX>r.right+24||t.clientY<r.top-24||t.clientY>r.bottom+24)return;
- e.preventDefault();initAudio();touchJoy=true;jid=-1;refreshJoyCenter();applyJoyPoint(t.clientX,t.clientY);
-},{passive:false});
-document.body.addEventListener('touchmove',e=>{
- if(!touchJoy)return;
- const t=e.changedTouches?.[0]||e.touches?.[0];if(!t)return;
- e.preventDefault();applyJoyPoint(t.clientX,t.clientY);
-},{passive:false});
-document.body.addEventListener('touchend',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
-addEventListener('blur',()=>endJoy());
+};
+document.addEventListener('pointermove',e=>{
+ if(jid===null||e.pointerId!==jid)return;
+ e.preventDefault();joyApply(e.clientX,e.clientY);
+},{passive:false,capture:true});
+document.addEventListener('pointerup',e=>{if(jid!==null&&e.pointerId===jid){e.preventDefault();joyStop()}},{passive:false,capture:true});
+document.addEventListener('pointercancel',e=>{if(jid!==null&&e.pointerId===jid)joyStop()},{capture:true});
+window.addEventListener('blur',joyStop);
 
 let joyDriverLast=performance.now();
 function joystickDirectDriver(now){
  const dt=Math.min(.035,Math.max(0,(now-joyDriverLast)/1000));joyDriverLast=now;
  if(run&&p&&jid!==null&&(Math.abs(j.x)>.02||Math.abs(j.y)>.02)){
   let mx=j.x,my=j.y,l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l}
-  const speed=Math.max(80,Number(p.spd)||185);
+  const speed=Math.max(120,Number(p.spd)||185);
   if(Math.abs(mx)>.02)p.dir=mx>0?1:-1;
   p.x=Math.max(55,Math.min(WORLD.w-55,p.x+mx*speed*dt));
   p.y=Math.max(55,Math.min(WORLD.h-55,p.y+my*speed*dt));
-  p.animState='walk';
   cam.x=Math.max(0,Math.min(WORLD.w-W,p.x-W/2));
   cam.y=Math.max(0,Math.min(WORLD.h-H,p.y-H/2));
  }
@@ -433,13 +411,8 @@ function joystickDirectDriver(now){
 requestAnimationFrame(joystickDirectDriver);
 
 exitBtn.onclick=()=>{
- run=false;j.x=0;j.y=0;
- try{
-  if(window.top&&window.top!==window){
-   window.top.location.href='../../';
-   return;
-  }
- }catch{}
+ run=false;joyStop();
+ try{if(window.top&&window.top!==window){window.top.location.href='../../';return}}catch{}
  location.href='../../';
 };
 attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();initAudio();useAction()};soundBtn.onpointerdown=e=>{e.preventDefault();toggleSound()};
