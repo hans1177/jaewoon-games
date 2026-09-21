@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const d=fr.contentDocument;",
+      "replace": "const d=fr.contentDocument; // 로딩 전 상태를 보존하여 책임 영역을 명확히 합니다."
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
