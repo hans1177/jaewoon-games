@@ -196,16 +196,16 @@
       "taskType": "audio",
       "checklist": [
         "reuse-existing-audio-owner",
-        "unlock-web-audio-after-first-user-gesture",
+        "initialize-audio-through-platform-native-lifecycle",
         "preserve-mute-and-volume-controls",
         "bind-impact-sound-to-existing-impact-event",
         "use-smooth-state-transition-or-crossfade",
-        "prevent-background-resume-duplicate-playback",
+        "handle-app-background-resume-without-duplicate-playback",
         "run-mobile-speaker-and-transition-qa"
       ],
       "reuse": [],
       "avoid": [
-        "autoplay-before-user-gesture",
+        "audio-before-platform-runtime-ready",
         "duplicate-music-owner",
         "resume-duplicate-playback",
         "audio-changing-gameplay-state"
@@ -218,5 +218,16 @@
     "paidApiRequired": false,
     "benchmarkCountsAsTrainingSample": false,
     "hourlyCanonicalRefresh": true
+  },
+  "directNativePlatformContext": {
+    "version": 1,
+    "commonCoreDesign": "design-revised.json#content",
+    "platformProfiles": {
+      "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
+      "UNITY": "design-revised.json#content.platformProfiles.UNITY"
+    },
+    "requestEitherStartsBoth": true,
+    "platformEvidenceIndependent": true,
+    "unityWeb": "DISABLED"
   }
 }
