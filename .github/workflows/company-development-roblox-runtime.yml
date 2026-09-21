@@ -2,6 +2,15 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox Runtime
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-runtime.yml'
+      - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'qa/company-selected-platform-router.test.mjs'
+      - 'qa/company-development-roblox-runtime.test.mjs'
   workflow_dispatch:
 
 permissions:
