@@ -302,6 +302,7 @@ export function compareCatalogGames(a={},b={},policy=normalizationPolicy()){
 
 export function canonicalizeGameRecord(game={}){
   const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  const runtimeMedia=game.homepageRuntimeMedia&&typeof game.homepageRuntimeMedia==='object'?game.homepageRuntimeMedia:(runtime.runtimeMedia&&typeof runtime.runtimeMedia==='object'?runtime.runtimeMedia:{});
   const selectedPlatform=selectedPlatformOf(game);
   const robloxTarget=game.robloxPublicationTarget&&typeof game.robloxPublicationTarget==='object'?game.robloxPublicationTarget:{};
   const robloxEvidence=game.robloxReleaseEvidence&&typeof game.robloxReleaseEvidence==='object'?game.robloxReleaseEvidence:{};
@@ -376,6 +377,28 @@ export function canonicalizeGameRecord(game={}){
       artbookPath:clean(game.homepageArtbookPath),
       stage:clean(game.homepageStage),
       recentWork:clean(game.homepageRecentWork),
+      runtimeMedia:{
+        verified:bool(runtimeMedia.verified),
+        platform:normalizePlatform(runtimeMedia.platform),
+        manifestPath:clean(runtimeMedia.manifestPath),
+        captureAt:runtimeMedia.captureAt||null,
+        sourceRevision:clean(runtimeMedia.sourceRevision),
+        artifactIdentity:clean(runtimeMedia.artifactIdentity),
+        representative:runtimeMedia.representative&&typeof runtimeMedia.representative==='object'?{
+          kind:clean(runtimeMedia.representative.kind).toUpperCase(),
+          path:clean(runtimeMedia.representative.path),
+          mime:clean(runtimeMedia.representative.mime),
+          sha256:clean(runtimeMedia.representative.sha256),
+          captureAt:runtimeMedia.representative.captureAt||null
+        }:null,
+        preview:runtimeMedia.preview&&typeof runtimeMedia.preview==='object'?{
+          kind:clean(runtimeMedia.preview.kind).toUpperCase(),
+          path:clean(runtimeMedia.preview.path),
+          mime:clean(runtimeMedia.preview.mime),
+          sha256:clean(runtimeMedia.preview.sha256),
+          captureAt:runtimeMedia.preview.captureAt||null
+        }:null
+      },
       runtime:{
         authority:clean(runtime.authority)||'company-runtime',
         platform:selectedPlatform,
