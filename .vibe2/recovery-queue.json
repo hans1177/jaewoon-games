@@ -10001,7 +10001,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T02:43:47.738Z",
-      "updatedAt": "2026-09-21T03:08:58.257Z"
+      "updatedAt": "2026-09-21T03:10:54.892Z"
     },
     {
       "id": "recovery-97334f4e13a46797faa3",
@@ -15728,7 +15728,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T03:50:42.125Z",
-      "updatedAt": "2026-09-21T03:08:58.265Z"
+      "updatedAt": "2026-09-21T03:10:54.900Z"
     },
     {
       "id": "recovery-e4930ee11f82b66a871f",
@@ -17927,7 +17927,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T11:33:07.849Z",
-      "updatedAt": "2026-09-21T03:08:58.253Z"
+      "updatedAt": "2026-09-21T03:10:54.888Z"
     },
     {
       "id": "recovery-2620c437645bba6eaa8c",
@@ -17974,7 +17974,55 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-20T11:33:07.853Z",
-      "updatedAt": "2026-09-21T03:08:58.259Z"
+      "updatedAt": "2026-09-21T03:10:54.894Z"
+    },
+    {
+      "id": "recovery-804b2acf67074bfd8b28",
+      "status": "dispatched",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "game-fantasy-survival-web-second-gate-collab-v1",
+      "relatedTaskIds": [],
+      "failureStage": "system-ai-implementation-failed",
+      "failureSignature": "system-ai-implementation-failed",
+      "blastRadius": "single-task",
+      "checkpoint": null,
+      "evidence": [
+        "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
+        "game:fantasy-survival",
+        "scope:owner-approved-existing-gameplay-only",
+        "learning-route:existing-vibe-learning-motor",
+        "actions-run:35555396490",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "actions-run:35555905973",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "maxRetries": 5,
+      "createdAt": "2026-09-21T03:10:54.902Z",
+      "updatedAt": "2026-09-21T03:10:55.022Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-21T03:10:55.022Z"
+      ]
     }
   ]
 }
