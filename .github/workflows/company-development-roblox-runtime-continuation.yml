@@ -330,6 +330,7 @@ jobs:
             fs.appendFileSync(process.env.GITHUB_OUTPUT,'count=0\n');
             fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:[]})}\n`);
             fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json=[]\n');
+            console.log('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN');
             console.log('ROBLOX_STUDIO_OWNER_APPROVAL_REQUIRED=YES');
             console.log(`ROBLOX_STUDIO_APPROVAL_PRESENT=${humanApproved?'YES':'NO'}`);
             console.log(`ROBLOX_STUDIO_EXACT_GAME_ID_PRESENT=${manualGameId?'YES':'NO'}`);
