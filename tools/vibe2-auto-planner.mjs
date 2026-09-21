@@ -135,6 +135,47 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
   if(clean(item?.status).toUpperCase()!=='ACTIVE'||stateFromCatalog(game)!=='development-confirmed')continue;
+  const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
+  const unityWebFirstStage=firstStagePolicy?.enabled===true&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY';
+  if(unityWebFirstStage){
+    const root=`unity-games/${id}`;
+    const existingUnity=rows.find(r=>r.gameId===id&&r.engine==='unity');
+    const queuePatch={
+      queueCurrentStep:clean(item?.currentStep),
+      queueCanonicalState:clean(item?.canonicalState),
+      queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4),
+      queueVibeWebRequestedStage:clean(item?.vibeWebRequestedStage),
+      queueVibeWebImplementationReason:clean(item?.vibeWebImplementationReason),
+      queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,6),
+      queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt),
+      queueWebFinalContentDepthLastAttemptAt:clean(item?.webFinalContentDepthLastAttemptAt),
+      firstStageUnityWeb:true,
+      firstStageEngine:'UNITY_WEB',
+      postWebSelectedPlatform:clean(item?.selectedPlatform||item?.targetPlatform),
+      companyDevelopmentQueueSource:true
+    };
+    if(existingUnity){
+      Object.assign(existingUnity,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
+      continue;
+    }
+    rows.push({
+      gameId:id,
+      name:clean(item?.gameName||game?.name||id),
+      engine:'unity',
+      target:'unity',
+      projectPath:root,
+      lifecycleState:gameLifecycleState(game),
+      existing:fs.existsSync(path.join(repoRoot,root,'ProjectSettings','ProjectVersion.txt')),
+      releaseState:'development-confirmed',
+      progress:Number(item?.progress||0),
+      source:'company-development-queue-unity-web-first-stage',
+      developmentBaseline:null,
+      developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
+      ...queuePatch
+    });
+    continue;
+  }
+
   const existingWeb=rows.find(r=>r.gameId===id&&r.engine==='web');
   if(existingWeb){
     existingWeb.queueCurrentStep=clean(item?.currentStep);
@@ -142,9 +183,9 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     existingWeb.queueRoutingBlockers=(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4);
     existingWeb.queueVibeWebRequestedStage=clean(item?.vibeWebRequestedStage);
     existingWeb.queueVibeWebImplementationReason=clean(item?.vibeWebImplementationReason);
-    existingWeb.queueStrictImplementationHardFailures=(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,4);
-    existingWeb.queueWebValidationLastAttemptAt=clean(item?.webValidationLastAttemptAt||item?.webFinalContentDepthLastAttemptAt);
-    existingWeb.saveNormalizationRequired=item?.saveNormalizationRequired===true;
+    existingWeb.queueStrictImplementationHardFailures=(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,6);
+    existingWeb.queueWebValidationLastAttemptAt=clean(item?.webValidationLastAttemptAt);
+    existingWeb.queueWebFinalContentDepthLastAttemptAt=clean(item?.webFinalContentDepthLastAttemptAt);
     existingWeb.ownerPreservationPresentationUpgrade=item?.ownerPreservationPresentationUpgrade===true;
     existingWeb.presentationFirstPass=clean(item?.presentationFirstPass);
     existingWeb.companyDevelopmentQueueSource=true;
@@ -170,9 +211,9 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4),
     queueVibeWebRequestedStage:clean(item?.vibeWebRequestedStage),
     queueVibeWebImplementationReason:clean(item?.vibeWebImplementationReason),
-    queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,4),
-    queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt||item?.webFinalContentDepthLastAttemptAt),
-    saveNormalizationRequired:item?.saveNormalizationRequired===true,
+    queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,6),
+    queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt),
+    queueWebFinalContentDepthLastAttemptAt:clean(item?.webFinalContentDepthLastAttemptAt),
     ownerPreservationPresentationUpgrade:item?.ownerPreservationPresentationUpgrade===true,
     presentationFirstPass:clean(item?.presentationFirstPass)
   });
@@ -216,6 +257,7 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
+    if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
     if(project.releaseState==='development-confirmed')return project.source==='company-status'&&assetProductionEnabled(repoRoot);
     return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
   }
@@ -301,7 +343,7 @@ function platformAdaptationInstruction(engine=''){
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
   const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];
   const supervised=supervisedWebBuildRequired(project,goal);
-  const adaptation=platformAdaptationInstruction(project.engine);
+  const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
   const focused=project.ownerFocusedCaretaker===true;
   const plannedTask={
