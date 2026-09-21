@@ -559,11 +559,20 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
   const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
-  const sourceRootBootstrapAllowed=plan.target==='web'
-    &&(task.evidence||[]).includes('source-root-bootstrap-required')
+  const taskEvidence=new Set((task.evidence||[]).map(clean));
+  const webSourceRootBootstrapAllowed=plan.target==='web'
+    &&taskEvidence.has('source-root-bootstrap-required')
     &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
     &&responsibleFiles.length===1
     &&/\/index\.html$/i.test(clean(responsibleFiles[0]));
+  const unityWebSourceRootBootstrapAllowed=plan.target==='unity'
+    &&taskEvidence.has('source-root-bootstrap-required')
+    &&taskEvidence.has('unity-web-source-root-bootstrap-required')
+    &&/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
+    &&responsibleFiles.length===2
+    &&responsibleFiles.some(file=>/\/Assets\/Scripts\/GameCore\.cs$/i.test(clean(file)))
+    &&responsibleFiles.some(file=>/\/Assets\/Scripts\/RuntimeBootstrap\.cs$/i.test(clean(file)));
+  const sourceRootBootstrapAllowed=webSourceRootBootstrapAllowed||unityWebSourceRootBootstrapAllowed;
   const qa = freezeList([
     ...(plan.qa || []),
     'design-intelligence-contract',
