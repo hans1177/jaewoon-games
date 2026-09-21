@@ -4908,1248 +4908,16 @@
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45%7C35568994457%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45%7C35568994457%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventId%22%3A%22pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45%7C35568994457%3A1%7Cspeculative-2%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A15%2C%22edgeCount%22%3A13%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A4%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A2%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22PRODUCTION_AUTHORITY_INACTIVE%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "retry-failure-signature:source-candidate-generation-failed",
-        "retry-policy:UNLIMITED_OR_WITHIN_BOUND"
+        "retry-policy:UNLIMITED_OR_WITHIN_BOUND",
+        "system-steward:stale-running-reservation-recovered"
       ],
-      "lastOutcome": "FAIL",
-      "reservationId": "35569486287:1",
-      "reservationRunId": "35569486287",
+      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "reservationId": "35570912073:1",
+      "reservationRunId": "35570912073",
       "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-21T07:19:44Z",
+      "reservedAt": "2026-09-21T08:07:33Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [
-        {
-          "version": 13,
-          "taskId": "pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45",
-          "reservationId": "35569486287:1",
-          "variant": "speculative-1",
-          "outcome": "FAIL",
-          "blocker": "source-candidate-generation-failed",
-          "candidateBranch": null,
-          "baseMainSha": "e7433c983849bc50f87ce53b05d430253d7cc9aa",
-          "candidateIdentity": null,
-          "candidateFailure": {
-            "class": "NO_OP",
-            "message": "변경 없는 edit: index.html"
-          },
-          "evidence": [
-            "base-main:e7433c983849bc50f87ce53b05d430253d7cc9aa",
-            "role-result:exploration:PASS",
-            "role-result:implementation:FAIL",
-            "role-result:test:FAIL",
-            "role-result:performance:FAIL",
-            "role-result:regression:WAITING_FAN_IN",
-            "role-result:review:WAITING_FAN_IN",
-            "source-generation-failure:NO_OP",
-            "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
-            "coding-responsibility-confidence:LOW",
-            "coding-candidate-first-attempt:NO",
-            "coding-failure-fingerprint:web|TIMEOUT",
-            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
-            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_2a4c47fee23c59a5f61f39f2%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_adb845324f03973dc74788df%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_86f8df5250966b9b8184e439%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_12dba6009c4fe760e1a6434c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7be1cd8142cd777790f2e0ed%22%5D",
-            "learning-primary-domains:%5B%22WEB_RUNTIME%22%2C%22AI%22%2C%22ANIMATION_FEEL%22%5D",
-            "learning-secondary-domains:%5B%22ASSET_PRODUCTION%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%2C%22PERFORMANCE%22%2C%22PROGRESSION%22%2C%22QUEST_DESIGN%22%5D",
-            "actions-run:35569486287",
-            "reservation-id:35569486287:1",
-            "variant:speculative-1",
-            "shared-context-sync:MISSING"
-          ],
-          "exploration": {
-            "version": 1,
-            "role": "exploration",
-            "sourceWrite": false,
-            "reused": false,
-            "taskId": "pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45",
-            "packageId": null,
-            "target": "web",
-            "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-            "baseMainSha": "e7433c983849bc50f87ce53b05d430253d7cc9aa",
-            "responsibleFiles": [],
-            "impactFiles": [],
-            "contextFiles": [],
-            "relatedFiles": [],
-            "testTargets": [],
-            "protectedScopeSignals": [],
-            "diagnosticEvidence": [],
-            "existingWebAssessment": {
-              "version": 1,
-              "strategy": "KEEP_AND_CONTINUE",
-              "confidence": "HIGH",
-              "reasons": [
-                "STRONG_EXISTING_GAMEPLAY",
-                "APPROVED_SCOPE_MOSTLY_REPRESENTED",
-                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
-              ],
-              "preserveExistingSource": true,
-              "fullRewriteAllowed": false,
-              "evidence": {
-                "sourceBytes": 20315,
-                "sourceSha256": "79064276e865eaf126ceda72175b13968ce662cbe81a95c1880563250f9b9833",
-                "validationScore": 0,
-                "approvedDesign": false,
-                "gameplaySignalCount": 9,
-                "gameplaySignals": {
-                  "input": true,
-                  "runtimeLoop": true,
-                  "mutableState": true,
-                  "gameplayOutcome": true,
-                  "progression": true,
-                  "combat": true,
-                  "spatial": true,
-                  "persistence": false,
-                  "mobile": true,
-                  "audio": true
-                },
-                "prototypeMarkerCount": 0,
-                "approvedScopeRequiredCount": 0,
-                "approvedScopeBoundCount": 0,
-                "approvedScopeSemanticCount": 0,
-                "approvedScopeCoveragePct": 100
-              },
-              "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-              "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-              "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-              "designBaselinePath": null
-            },
-            "fileDigests": [],
-            "editContract": {
-              "version": 1,
-              "mode": "COMPILED_EDIT_CONTRACT",
-              "strategyHint": "ARCHITECTURE_FIRST_GREENFIELD",
-              "responsibilityConfidence": "LOW",
-              "rawResponsibilityConfidence": "LOW",
-              "responsibilityCalibration": {
-                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
-                "applied": false,
-                "extraReadOnlyExploration": true,
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "regressionHotspotRisk": {
-                "riskLevel": "HIGH",
-                "matched": [],
-                "focusedChecksAdded": [],
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "primaryTargets": [],
-              "allowedResponsibleFiles": [],
-              "allowedDependentSymbolsOrSystems": [],
-              "primarySystems": [],
-              "dependentSystems": [],
-              "directDependentSystems": [],
-              "readOnlyImpactSystems": [],
-              "ownedState": [],
-              "readState": [],
-              "preserveSemantics": [
-                "EXISTING_WORKING_BEHAVIOR",
-                "APPROVED_GAMEPLAY_VALUES",
-                "SAVE_MEANING"
-              ],
-              "failureOrRequirementCausalChain": [
-                "FAILURE_EVIDENCE",
-                "RESPONSIBILITY_NOT_RESOLVED"
-              ],
-              "requiredObservableResult": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자의 즉각적인 개발 및 제작 지시에 따라 현재 선택된 게임 '잃어버린 별의 메아리' 및 주요 프로젝트의 추가 기능 구현과 제작 작업을 즉시 진행함.\n\n추가 지시:\n- 너가 래\n- 없으니까 빨리 헤\n- 빨리 만들라고\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
-              "semanticDiffBudget": {
-                "allowedSystems": [],
-                "preferredPrimarySymbols": [],
-                "maxSystemCount": 1,
-                "readOnlyImpactSystems": [],
-                "impactPredictionDoesNotGrantWriteAuthority": true,
-                "unrelatedSystemMutationForbidden": true,
-                "saveKeysMustRemainCompatible": []
-              },
-              "requiredFocusedChecks": [],
-              "causalReplay": {
-                "version": 2,
-                "required": true,
-                "prePatchReproduced": false,
-                "nodeTestTargets": [],
-                "executable": false,
-                "mode": "PLAN_ONLY",
-                "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-                "diagnosticType": null,
-                "diagnosticFile": null,
-                "diagnosticLine": null,
-                "diagnosticNeedle": null,
-                "diagnosticMicroTask": null,
-                "verifiedResponsibleSystem": null,
-                "diagnosticVerifier": null,
-                "identicalOrEquivalentInputStateRequired": true,
-                "canonicalQaStillRequired": true,
-                "sourceWrite": false,
-                "authorityExpanded": false
-              },
-              "patchRecipe": {
-                "version": 1,
-                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
-                "failureFingerprint": "web|TIMEOUT",
-                "verifiedMemoryIds": [],
-                "verifiedMemoryCount": 0,
-                "reusePatterns": [],
-                "avoidPatterns": [],
-                "steps": [
-                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
-                  "IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE",
-                  "DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES",
-                  "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
-                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
-                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
-                  "VERIFY_PRESERVE_SEMANTICS",
-                  "RUN_TASK_LOCAL_INCREMENTAL_QA"
-                ],
-                "primaryTargets": [],
-                "dependentSymbolsOrSystems": [],
-                "ownedState": [],
-                "focusedChecks": [],
-                "protectedSemantics": [
-                  "EXISTING_WORKING_BEHAVIOR",
-                  "APPROVED_GAMEPLAY_VALUES",
-                  "SAVE_MEANING"
-                ],
-                "verifiedMemoryOnly": true,
-                "scopeExpansionAllowed": false,
-                "qaBypassAllowed": false,
-                "authorityExpanded": false
-              },
-              "codingArchitecture": {
-                "developmentMode": "GREENFIELD",
-                "stateOwnershipSystems": [
-                  "CORE_STATE",
-                  "INPUT",
-                  "PRESENTATION",
-                  "WORLD",
-                  "PLAYER",
-                  "COMBAT",
-                  "AI",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "PLACEMENT",
-                  "GOAL_STATE"
-                ],
-                "apiNames": [
-                  "transitionRunState(next,reason)",
-                  "submitPlayerIntent(intent)",
-                  "queryWorld(position,action)",
-                  "applyPlayerDelta(delta,reason)",
-                  "resolveCombatAction(action)",
-                  "advanceAgentIntent(agentId,context)",
-                  "resolveInteraction(targetId,action)",
-                  "applyTransaction(transaction)",
-                  "advanceObjective(event)",
-                  "placeEntity(request)",
-                  "evaluateGoalState(context)",
-                  "renderFromState(snapshot)"
-                ],
-                "invariantIds": [
-                  "STATE_OWNER_ONLY_WRITE",
-                  "NO_DUPLICATE_CAUSAL_REWARD",
-                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
-                  "GOAL_STATE_EXCLUSIVE",
-                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
-                  "INPUT_TO_STATE_CAUSALITY",
-                  "SAVE_SCHEMA_VERSIONED",
-                  "PLAYER_VITAL_BOUNDS",
-                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
-                  "PLACEMENT_OCCUPANCY_CONSISTENT",
-                  "PROGRESSION_REWARD_IDEMPOTENT"
-                ],
-                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
-              },
-              "architectureSnapshot": {
-                "version": 1,
-                "nodeCount": 0,
-                "edgeCount": 0,
-                "maxFunctionBodyBytes": 0,
-                "maxCallsPerFunction": 0,
-                "maxCalledByPerFunction": 0,
-                "maxStateWritesPerFunction": 0,
-                "maxSystemsPerFunction": 0,
-                "multiWriterStateCount": 0,
-                "stateWriterLinkCount": 0,
-                "multiOwnerStorageKeyCount": 0,
-                "storageOwnerLinkCount": 0,
-                "timerFunctionCount": 0,
-                "eventBindingCount": 0,
-                "largeFunctionCount": 0,
-                "broadSystemFunctionCount": 0
-              },
-              "responsibilityGraph": {
-                "nodeCount": 0,
-                "relevantNodes": [],
-                "relevantEdges": []
-              },
-              "behaviorChains": [
-                {
-                  "id": "CORE_ACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "REAL_INPUT",
-                    "RESPONSIBLE_FUNCTION",
-                    "OWNED_STATE_CHANGE",
-                    "OBSERVABLE_GAME_RESULT"
-                  ]
-                },
-                {
-                  "id": "PLACEMENT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "POSITION_SELECTION",
-                    "COST_OR_VALIDATION",
-                    "ENTITY_MATERIALIZED_AT_POSITION",
-                    "WORLD_OR_COMBAT_EFFECT"
-                  ]
-                },
-                {
-                  "id": "INTERACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "TARGET_SELECTION_OR_APPROACH",
-                    "REAL_INPUT",
-                    "TARGET_STATE_CHANGE",
-                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "COMBAT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "ATTACK_INTENT",
-                    "HIT_OR_REJECT_RESULT",
-                    "HP_OR_COMBAT_STATE_CHANGE",
-                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "PROGRESSION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "OBJECTIVE_EVENT",
-                    "PROGRESS_DELTA",
-                    "REWARD_OR_UNLOCK",
-                    "NEXT_GAMEPLAY_OPTION_CHANGED"
-                  ]
-                },
-                {
-                  "id": "STRATEGY_DIVERGENCE_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "CHOICE_A_AND_CHOICE_B",
-                    "SAME_OR_EQUIVALENT_START_STATE",
-                    "DIFFERENT_STATE_TRANSITIONS",
-                    "DIFFERENT_OBSERVED_OUTCOME"
-                  ]
-                }
-              ],
-              "seniorReview": {
-                "score": 100,
-                "hardBlockers": [],
-                "issues": []
-              },
-              "failureEvidence": [
-                "FAIL",
-                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
-                "system-steward:failure-signature:source-candidate-generation-failed",
-                "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
-                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
-                "recovery-exact-stage:UNKNOWN_STAGE",
-                "learning-motor-candidate-tournament:repeated-verified-failure",
-                "role-result:implementation:FAIL",
-                "role-result:test:FAIL",
-                "role-result:performance:FAIL",
-                "source-generation-failure:TIMEOUT",
-                "coding-failure-fingerprint:web|SAVE_RESTORE|PLACEMENT|STATE_FLOW|RELEASE|ANIMATION_FEEL|CORE_LOOP|PROGRESSION|SAVE|STATE_MACHINE|WEB_RUNTIME",
-                "learning-knowledge-ids:%5B%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_2a4c47fee23c59a5f61f39f2%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_adb845324f03973dc74788df%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_86f8df5250966b9b8184e439%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_12dba6009c4fe760e1a6434c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7be1cd8142cd777790f2e0ed%22%5D",
-                "learning-primary-domains:%5B%22WEB_RUNTIME%22%2C%22ANIMATION_FEEL%22%2C%22CORE_LOOP%22%5D",
-                "learning-secondary-domains:%5B%22DEBUGGING%22%2C%22PROGRESSION%22%2C%22RECOVERY%22%2C%22SAVE%22%2C%22STATE_MACHINE%22%5D",
-                "shared-context-sync:MISSING"
-              ],
-              "writableScopeExpansionAllowed": false,
-              "learningAuthorityExpanded": false
-            },
-            "reuseKey": "8b3ae13400dcee407758451c",
-            "generatedAt": "2026-09-21T07:23:55.256Z"
-          },
-          "codingMethod": {
-            "version": 2,
-            "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
-            "candidateVariant": "speculative-1",
-            "responsibilityConfidence": "LOW",
-            "primaryTargets": [],
-            "primarySystems": [],
-            "dependentSystems": [],
-            "ownedState": [],
-            "semanticDiffBudget": {
-              "allowedSystems": [],
-              "preferredPrimarySymbols": [],
-              "maxSystemCount": 1,
-              "readOnlyImpactSystems": [],
-              "impactPredictionDoesNotGrantWriteAuthority": true,
-              "unrelatedSystemMutationForbidden": true,
-              "saveKeysMustRemainCompatible": []
-            },
-            "semanticDiffEnforcement": null,
-            "causalReplay": {
-              "version": 2,
-              "required": true,
-              "prePatchReproduced": false,
-              "nodeTestTargets": [],
-              "executable": false,
-              "mode": "PLAN_ONLY",
-              "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-              "diagnosticType": null,
-              "diagnosticFile": null,
-              "diagnosticLine": null,
-              "diagnosticNeedle": null,
-              "diagnosticMicroTask": null,
-              "verifiedResponsibleSystem": null,
-              "diagnosticVerifier": null,
-              "identicalOrEquivalentInputStateRequired": true,
-              "canonicalQaStillRequired": true,
-              "sourceWrite": false,
-              "authorityExpanded": false
-            },
-            "failureFingerprint": "web|TIMEOUT",
-            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-            "verifiedFailureLocalMemoryCount": 0,
-            "verifiedFailureLocalMemoryIds": [],
-            "generationAttempts": 0,
-            "candidateProducedFirstAttempt": false,
-            "writableScopeExpansionAllowed": false,
-            "learningAuthorityExpanded": false,
-            "implementationPass": false,
-            "incrementalQaPass": false,
-            "performanceSanityPass": false,
-            "firstCandidatePass": false,
-            "fullRegressionVerified": false,
-            "reviewVerified": false,
-            "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-            "causalReplayExecuted": false,
-            "architectureDrift": {
-              "status": "NOT_AVAILABLE",
-              "riskLevel": "LOW",
-              "score": 0,
-              "signals": [],
-              "hardReject": false,
-              "focusedReviewRequired": false
-            },
-            "telemetrySource": "WORK_ORDER_FALLBACK"
-          },
-          "presentationQuality": null,
-          "roleResults": {
-            "exploration": "PASS",
-            "implementation": "FAIL",
-            "test": "FAIL",
-            "performance": "FAIL",
-            "regression": "WAITING_FAN_IN",
-            "review": "WAITING_FAN_IN"
-          },
-          "practiceDistillation": null,
-          "practiceArtifact": null,
-          "neuralDiagnosis": {
-            "version": 2,
-            "mode": "PHASE1_SHADOW_ADVISORY",
-            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
-            "facts": [
-              {
-                "id": "fact-1",
-                "value": "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-2",
-                "value": "release-state:development-confirmed",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-3",
-                "value": "recovery-exact-stage:UNKNOWN_STAGE",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              }
-            ],
-            "hypotheses": [
-              {
-                "id": "save-compatibility",
-                "system": "SAVE_SYSTEM",
-                "confidence": 0.9,
-                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
-              },
-              {
-                "id": "source-generation-path",
-                "system": "SOURCE_GENERATION",
-                "confidence": 0.86,
-                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
-              }
-            ],
-            "causalEdges": [
-              {
-                "from": "save-compatibility",
-                "to": "UNKNOWN_STAGE",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.9,
-                "verified": false,
-                "rank": 1
-              },
-              {
-                "from": "source-generation-path",
-                "to": "UNKNOWN_STAGE",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.86,
-                "verified": false,
-                "rank": 2
-              }
-            ],
-            "responsibility": {
-              "system": "SAVE_SYSTEM",
-              "confidence": 0.5113636363636364,
-              "alternatives": [
-                {
-                  "system": "SOURCE_GENERATION",
-                  "confidence": 0.48863636363636365
-                }
-              ],
-              "basis": "WEIGHTED_SHADOW_HYPOTHESES",
-              "verified": false
-            },
-            "pipelinePrediction": {
-              "nextBlockingSystem": "SOURCE_GENERATION",
-              "confidence": 0.98,
-              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
-              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
-              "advisoryOnly": true
-            },
-            "bottleneck": {
-              "score": 100,
-              "components": {
-                "downstreamDepth": 6,
-                "recurrence": 2,
-                "sharedScope": 2,
-                "priority": 1,
-                "evidenceConfidence": 0.9
-              },
-              "advisoryOnly": true,
-              "mayReorderWave": false
-            },
-            "inhibitors": [
-              "PRODUCTION_AUTHORITY_INACTIVE",
-              "SECURITY_POLICY_BLOCK"
-            ],
-            "actionRecommendation": {
-              "mode": "EXACT_FAILURE_STAGE_REPAIR",
-              "failureStage": "UNKNOWN_STAGE",
-              "responsibleSystem": "SAVE_SYSTEM",
-              "preserveAlreadyPassedStages": true,
-              "restartFromBeginning": false,
-              "automaticScopeExpansion": false,
-              "blocked": true,
-              "blocker": "PRODUCTION_AUTHORITY_INACTIVE"
-            },
-            "learning": {
-              "eligible": false,
-              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
-            },
-            "waveControl": {
-              "currentWaveSchedulerRemainsAuthoritative": true,
-              "mayReorderWave": false,
-              "mayCreateWorker": false
-            }
-          },
-          "capabilityApplication": {
-            "version": 1,
-            "layer": "verifiedCapabilityMemory",
-            "injected": true,
-            "exactInjectedCapabilityIds": [
-              "capability_ctrace_2a4c47fee23c59a5f61f39f2",
-              "capability_ctrace_adb845324f03973dc74788df",
-              "capability_ctrace_86f8df5250966b9b8184e439",
-              "capability_ctrace_12dba6009c4fe760e1a6434c",
-              "capability_ctrace_7be1cd8142cd777790f2e0ed"
-            ],
-            "coAppliedCapabilityIds": [
-              "capability_ctrace_2a4c47fee23c59a5f61f39f2",
-              "capability_ctrace_adb845324f03973dc74788df",
-              "capability_ctrace_86f8df5250966b9b8184e439",
-              "capability_ctrace_12dba6009c4fe760e1a6434c",
-              "capability_ctrace_7be1cd8142cd777790f2e0ed"
-            ],
-            "workKey": null,
-            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
-            "onlyActuallyInjectedCapabilitiesEligible": true,
-            "freshTaskQaRequired": true,
-            "rawCodeStored": false,
-            "rawModelOutputStored": false,
-            "hiddenChainOfThoughtStored": false,
-            "authorityExpanded": false
-          },
-          "phase4BenchmarkVerification": null,
-          "durationMs": 486436,
-          "knowledgeApplication": {
-            "version": 1,
-            "exactInjectedKnowledgeIds": [
-              "EXPERIENCE:exp_pg739o",
-              "EXPERIENCE:exp_1oonbi8",
-              "EXPERIENCE:exp_4odofx",
-              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
-              "EXPERIENCE:exp_rg6lvy",
-              "EXPERIENCE:exp_i00mwv",
-              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
-              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
-              "CODE_PATTERN:pat_14v79w7",
-              "CODE_PATTERN:pat_15k9k0m",
-              "CODE_PATTERN:pat_1dj8rdx",
-              "CODE_PATTERN:pat_1e917b8",
-              "CODE_PATTERN:pat_1gglxo2",
-              "CODE_PATTERN:pat_1lx9uhh",
-              "VERIFIED_CAPABILITY:capability_ctrace_2a4c47fee23c59a5f61f39f2",
-              "VERIFIED_CAPABILITY:capability_ctrace_adb845324f03973dc74788df",
-              "VERIFIED_CAPABILITY:capability_ctrace_86f8df5250966b9b8184e439",
-              "VERIFIED_CAPABILITY:capability_ctrace_12dba6009c4fe760e1a6434c",
-              "VERIFIED_CAPABILITY:capability_ctrace_7be1cd8142cd777790f2e0ed"
-            ],
-            "freshIndependentQaRequired": true,
-            "infrastructureFailurePenalizesKnowledge": false,
-            "authorityExpanded": false
-          },
-          "metrics": {
-            "requestedMax": 20,
-            "effectiveMax": 20,
-            "reservationId": "35569486287:1",
-            "reservedAt": "2026-09-21T07:19:44Z",
-            "workerStartedAt": 1789975390044,
-            "workerFinishedAt": 1789975876480,
-            "checkoutMs": 4517,
-            "modelPrepMs": 7899,
-            "candidateMs": 440454,
-            "qaMs": 0,
-            "workerTotalMs": 486436,
-            "changedFileCount": 0,
-            "addedLineCount": 0,
-            "deletedLineCount": 0,
-            "ollamaCacheHit": true,
-            "ollamaRuntimeSource": "CACHE"
-          }
-        },
-        {
-          "version": 13,
-          "taskId": "pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45",
-          "reservationId": "35569486287:1",
-          "variant": "speculative-2",
-          "outcome": "FAIL",
-          "blocker": "source-candidate-generation-failed",
-          "candidateBranch": null,
-          "baseMainSha": "e7433c983849bc50f87ce53b05d430253d7cc9aa",
-          "candidateIdentity": null,
-          "candidateFailure": {
-            "class": "INVALID_PATH",
-            "message": "텍스트 worker 허용 확장자 아님: body > div.hud > div.top > div.pill"
-          },
-          "evidence": [
-            "base-main:e7433c983849bc50f87ce53b05d430253d7cc9aa",
-            "role-result:exploration:PASS",
-            "role-result:implementation:FAIL",
-            "role-result:test:FAIL",
-            "role-result:performance:FAIL",
-            "role-result:regression:WAITING_FAN_IN",
-            "role-result:review:WAITING_FAN_IN",
-            "source-generation-failure:INVALID_PATH",
-            "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
-            "coding-responsibility-confidence:LOW",
-            "coding-candidate-first-attempt:NO",
-            "coding-failure-fingerprint:web|TIMEOUT",
-            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
-            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_2a4c47fee23c59a5f61f39f2%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_adb845324f03973dc74788df%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_86f8df5250966b9b8184e439%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_12dba6009c4fe760e1a6434c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7be1cd8142cd777790f2e0ed%22%5D",
-            "learning-primary-domains:%5B%22WEB_RUNTIME%22%2C%22AI%22%2C%22ANIMATION_FEEL%22%5D",
-            "learning-secondary-domains:%5B%22ASSET_PRODUCTION%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%2C%22PERFORMANCE%22%2C%22PROGRESSION%22%2C%22QUEST_DESIGN%22%5D",
-            "actions-run:35569486287",
-            "reservation-id:35569486287:1",
-            "variant:speculative-2",
-            "shared-context-sync:MISSING"
-          ],
-          "exploration": {
-            "version": 1,
-            "role": "exploration",
-            "sourceWrite": false,
-            "reused": false,
-            "taskId": "pwa-02f09cd2-04c7-4d9f-9b6f-a083a8e2cf45",
-            "packageId": null,
-            "target": "web",
-            "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-            "baseMainSha": "e7433c983849bc50f87ce53b05d430253d7cc9aa",
-            "responsibleFiles": [],
-            "impactFiles": [],
-            "contextFiles": [],
-            "relatedFiles": [],
-            "testTargets": [],
-            "protectedScopeSignals": [],
-            "diagnosticEvidence": [],
-            "existingWebAssessment": {
-              "version": 1,
-              "strategy": "KEEP_AND_CONTINUE",
-              "confidence": "HIGH",
-              "reasons": [
-                "STRONG_EXISTING_GAMEPLAY",
-                "APPROVED_SCOPE_MOSTLY_REPRESENTED",
-                "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
-              ],
-              "preserveExistingSource": true,
-              "fullRewriteAllowed": false,
-              "evidence": {
-                "sourceBytes": 20315,
-                "sourceSha256": "79064276e865eaf126ceda72175b13968ce662cbe81a95c1880563250f9b9833",
-                "validationScore": 0,
-                "approvedDesign": false,
-                "gameplaySignalCount": 9,
-                "gameplaySignals": {
-                  "input": true,
-                  "runtimeLoop": true,
-                  "mutableState": true,
-                  "gameplayOutcome": true,
-                  "progression": true,
-                  "combat": true,
-                  "spatial": true,
-                  "persistence": false,
-                  "mobile": true,
-                  "audio": true
-                },
-                "prototypeMarkerCount": 0,
-                "approvedScopeRequiredCount": 0,
-                "approvedScopeBoundCount": 0,
-                "approvedScopeSemanticCount": 0,
-                "approvedScopeCoveragePct": 100
-              },
-              "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-              "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-              "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
-              "designBaselinePath": null
-            },
-            "fileDigests": [],
-            "editContract": {
-              "version": 1,
-              "mode": "COMPILED_EDIT_CONTRACT",
-              "strategyHint": "ARCHITECTURE_FIRST_GREENFIELD",
-              "responsibilityConfidence": "LOW",
-              "rawResponsibilityConfidence": "LOW",
-              "responsibilityCalibration": {
-                "recommendation": "DOWNGRADE_HIGH_TO_MEDIUM",
-                "applied": false,
-                "extraReadOnlyExploration": true,
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "regressionHotspotRisk": {
-                "riskLevel": "HIGH",
-                "matched": [],
-                "focusedChecksAdded": [],
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "primaryTargets": [],
-              "allowedResponsibleFiles": [],
-              "allowedDependentSymbolsOrSystems": [],
-              "primarySystems": [],
-              "dependentSystems": [],
-              "directDependentSystems": [],
-              "readOnlyImpactSystems": [],
-              "ownedState": [],
-              "readState": [],
-              "preserveSemantics": [
-                "EXISTING_WORKING_BEHAVIOR",
-                "APPROVED_GAMEPLAY_VALUES",
-                "SAVE_MEANING"
-              ],
-              "failureOrRequirementCausalChain": [
-                "FAILURE_EVIDENCE",
-                "RESPONSIBILITY_NOT_RESOLVED"
-              ],
-              "requiredObservableResult": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 사용자의 즉각적인 개발 및 제작 지시에 따라 현재 선택된 게임 '잃어버린 별의 메아리' 및 주요 프로젝트의 추가 기능 구현과 제작 작업을 즉시 진행함.\n\n추가 지시:\n- 너가 래\n- 없으니까 빨리 헤\n- 빨리 만들라고\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
-              "semanticDiffBudget": {
-                "allowedSystems": [],
-                "preferredPrimarySymbols": [],
-                "maxSystemCount": 1,
-                "readOnlyImpactSystems": [],
-                "impactPredictionDoesNotGrantWriteAuthority": true,
-                "unrelatedSystemMutationForbidden": true,
-                "saveKeysMustRemainCompatible": []
-              },
-              "requiredFocusedChecks": [],
-              "causalReplay": {
-                "version": 2,
-                "required": true,
-                "prePatchReproduced": false,
-                "nodeTestTargets": [],
-                "executable": false,
-                "mode": "PLAN_ONLY",
-                "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-                "diagnosticType": null,
-                "diagnosticFile": null,
-                "diagnosticLine": null,
-                "diagnosticNeedle": null,
-                "diagnosticMicroTask": null,
-                "verifiedResponsibleSystem": null,
-                "diagnosticVerifier": null,
-                "identicalOrEquivalentInputStateRequired": true,
-                "canonicalQaStillRequired": true,
-                "sourceWrite": false,
-                "authorityExpanded": false
-              },
-              "patchRecipe": {
-                "version": 1,
-                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
-                "failureFingerprint": "web|TIMEOUT",
-                "verifiedMemoryIds": [],
-                "verifiedMemoryCount": 0,
-                "reusePatterns": [],
-                "avoidPatterns": [],
-                "steps": [
-                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
-                  "IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE",
-                  "DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES",
-                  "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
-                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
-                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
-                  "VERIFY_PRESERVE_SEMANTICS",
-                  "RUN_TASK_LOCAL_INCREMENTAL_QA"
-                ],
-                "primaryTargets": [],
-                "dependentSymbolsOrSystems": [],
-                "ownedState": [],
-                "focusedChecks": [],
-                "protectedSemantics": [
-                  "EXISTING_WORKING_BEHAVIOR",
-                  "APPROVED_GAMEPLAY_VALUES",
-                  "SAVE_MEANING"
-                ],
-                "verifiedMemoryOnly": true,
-                "scopeExpansionAllowed": false,
-                "qaBypassAllowed": false,
-                "authorityExpanded": false
-              },
-              "codingArchitecture": {
-                "developmentMode": "GREENFIELD",
-                "stateOwnershipSystems": [
-                  "CORE_STATE",
-                  "INPUT",
-                  "PRESENTATION",
-                  "WORLD",
-                  "PLAYER",
-                  "COMBAT",
-                  "AI",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "PLACEMENT",
-                  "GOAL_STATE"
-                ],
-                "apiNames": [
-                  "transitionRunState(next,reason)",
-                  "submitPlayerIntent(intent)",
-                  "queryWorld(position,action)",
-                  "applyPlayerDelta(delta,reason)",
-                  "resolveCombatAction(action)",
-                  "advanceAgentIntent(agentId,context)",
-                  "resolveInteraction(targetId,action)",
-                  "applyTransaction(transaction)",
-                  "advanceObjective(event)",
-                  "placeEntity(request)",
-                  "evaluateGoalState(context)",
-                  "renderFromState(snapshot)"
-                ],
-                "invariantIds": [
-                  "STATE_OWNER_ONLY_WRITE",
-                  "NO_DUPLICATE_CAUSAL_REWARD",
-                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
-                  "GOAL_STATE_EXCLUSIVE",
-                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
-                  "INPUT_TO_STATE_CAUSALITY",
-                  "SAVE_SCHEMA_VERSIONED",
-                  "PLAYER_VITAL_BOUNDS",
-                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
-                  "PLACEMENT_OCCUPANCY_CONSISTENT",
-                  "PROGRESSION_REWARD_IDEMPOTENT"
-                ],
-                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
-              },
-              "architectureSnapshot": {
-                "version": 1,
-                "nodeCount": 0,
-                "edgeCount": 0,
-                "maxFunctionBodyBytes": 0,
-                "maxCallsPerFunction": 0,
-                "maxCalledByPerFunction": 0,
-                "maxStateWritesPerFunction": 0,
-                "maxSystemsPerFunction": 0,
-                "multiWriterStateCount": 0,
-                "stateWriterLinkCount": 0,
-                "multiOwnerStorageKeyCount": 0,
-                "storageOwnerLinkCount": 0,
-                "timerFunctionCount": 0,
-                "eventBindingCount": 0,
-                "largeFunctionCount": 0,
-                "broadSystemFunctionCount": 0
-              },
-              "responsibilityGraph": {
-                "nodeCount": 0,
-                "relevantNodes": [],
-                "relevantEdges": []
-              },
-              "behaviorChains": [
-                {
-                  "id": "CORE_ACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "REAL_INPUT",
-                    "RESPONSIBLE_FUNCTION",
-                    "OWNED_STATE_CHANGE",
-                    "OBSERVABLE_GAME_RESULT"
-                  ]
-                },
-                {
-                  "id": "PLACEMENT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "POSITION_SELECTION",
-                    "COST_OR_VALIDATION",
-                    "ENTITY_MATERIALIZED_AT_POSITION",
-                    "WORLD_OR_COMBAT_EFFECT"
-                  ]
-                },
-                {
-                  "id": "INTERACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "TARGET_SELECTION_OR_APPROACH",
-                    "REAL_INPUT",
-                    "TARGET_STATE_CHANGE",
-                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "COMBAT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "ATTACK_INTENT",
-                    "HIT_OR_REJECT_RESULT",
-                    "HP_OR_COMBAT_STATE_CHANGE",
-                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "PROGRESSION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "OBJECTIVE_EVENT",
-                    "PROGRESS_DELTA",
-                    "REWARD_OR_UNLOCK",
-                    "NEXT_GAMEPLAY_OPTION_CHANGED"
-                  ]
-                },
-                {
-                  "id": "STRATEGY_DIVERGENCE_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "CHOICE_A_AND_CHOICE_B",
-                    "SAME_OR_EQUIVALENT_START_STATE",
-                    "DIFFERENT_STATE_TRANSITIONS",
-                    "DIFFERENT_OBSERVED_OUTCOME"
-                  ]
-                }
-              ],
-              "seniorReview": {
-                "score": 100,
-                "hardBlockers": [],
-                "issues": []
-              },
-              "failureEvidence": [
-                "FAIL",
-                "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
-                "system-steward:failure-signature:source-candidate-generation-failed",
-                "recovery-queue:recovery-fe6fbc8167d6a6e222eb",
-                "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
-                "recovery-exact-stage:UNKNOWN_STAGE",
-                "learning-motor-candidate-tournament:repeated-verified-failure",
-                "role-result:implementation:FAIL",
-                "role-result:test:FAIL",
-                "role-result:performance:FAIL",
-                "source-generation-failure:TIMEOUT",
-                "coding-failure-fingerprint:web|SAVE_RESTORE|PLACEMENT|STATE_FLOW|RELEASE|ANIMATION_FEEL|CORE_LOOP|PROGRESSION|SAVE|STATE_MACHINE|WEB_RUNTIME",
-                "learning-knowledge-ids:%5B%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Aexp_recovery_0283345dd9580a246abbf745%22%2C%22EXPERIENCE%3Aexp_security_28453669955c43a85d166c5c%22%2C%22EXPERIENCE%3Aexp_i00mwv%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_2a4c47fee23c59a5f61f39f2%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_adb845324f03973dc74788df%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_86f8df5250966b9b8184e439%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_12dba6009c4fe760e1a6434c%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_7be1cd8142cd777790f2e0ed%22%5D",
-                "learning-primary-domains:%5B%22WEB_RUNTIME%22%2C%22ANIMATION_FEEL%22%2C%22CORE_LOOP%22%5D",
-                "learning-secondary-domains:%5B%22DEBUGGING%22%2C%22PROGRESSION%22%2C%22RECOVERY%22%2C%22SAVE%22%2C%22STATE_MACHINE%22%5D",
-                "shared-context-sync:MISSING"
-              ],
-              "writableScopeExpansionAllowed": false,
-              "learningAuthorityExpanded": false
-            },
-            "reuseKey": "8b3ae13400dcee407758451c",
-            "generatedAt": "2026-09-21T07:23:26.795Z"
-          },
-          "codingMethod": {
-            "version": 2,
-            "strategy": "CAUSAL_TRACE_CROSSCHECK",
-            "candidateVariant": "speculative-2",
-            "responsibilityConfidence": "LOW",
-            "primaryTargets": [],
-            "primarySystems": [],
-            "dependentSystems": [],
-            "ownedState": [],
-            "semanticDiffBudget": {
-              "allowedSystems": [],
-              "preferredPrimarySymbols": [],
-              "maxSystemCount": 1,
-              "readOnlyImpactSystems": [],
-              "impactPredictionDoesNotGrantWriteAuthority": true,
-              "unrelatedSystemMutationForbidden": true,
-              "saveKeysMustRemainCompatible": []
-            },
-            "semanticDiffEnforcement": null,
-            "causalReplay": {
-              "version": 2,
-              "required": true,
-              "prePatchReproduced": false,
-              "nodeTestTargets": [],
-              "executable": false,
-              "mode": "PLAN_ONLY",
-              "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-              "diagnosticType": null,
-              "diagnosticFile": null,
-              "diagnosticLine": null,
-              "diagnosticNeedle": null,
-              "diagnosticMicroTask": null,
-              "verifiedResponsibleSystem": null,
-              "diagnosticVerifier": null,
-              "identicalOrEquivalentInputStateRequired": true,
-              "canonicalQaStillRequired": true,
-              "sourceWrite": false,
-              "authorityExpanded": false
-            },
-            "failureFingerprint": "web|TIMEOUT",
-            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-            "verifiedFailureLocalMemoryCount": 0,
-            "verifiedFailureLocalMemoryIds": [],
-            "generationAttempts": 0,
-            "candidateProducedFirstAttempt": false,
-            "writableScopeExpansionAllowed": false,
-            "learningAuthorityExpanded": false,
-            "implementationPass": false,
-            "incrementalQaPass": false,
-            "performanceSanityPass": false,
-            "firstCandidatePass": false,
-            "fullRegressionVerified": false,
-            "reviewVerified": false,
-            "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-            "causalReplayExecuted": false,
-            "architectureDrift": {
-              "status": "NOT_AVAILABLE",
-              "riskLevel": "LOW",
-              "score": 0,
-              "signals": [],
-              "hardReject": false,
-              "focusedReviewRequired": false
-            },
-            "telemetrySource": "WORK_ORDER_FALLBACK"
-          },
-          "presentationQuality": null,
-          "roleResults": {
-            "exploration": "PASS",
-            "implementation": "FAIL",
-            "test": "FAIL",
-            "performance": "FAIL",
-            "regression": "WAITING_FAN_IN",
-            "review": "WAITING_FAN_IN"
-          },
-          "practiceDistillation": null,
-          "practiceArtifact": null,
-          "neuralDiagnosis": {
-            "version": 2,
-            "mode": "PHASE1_SHADOW_ADVISORY",
-            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
-            "facts": [
-              {
-                "id": "fact-1",
-                "value": "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-2",
-                "value": "release-state:development-confirmed",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-3",
-                "value": "recovery-exact-stage:UNKNOWN_STAGE",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              }
-            ],
-            "hypotheses": [
-              {
-                "id": "save-compatibility",
-                "system": "SAVE_SYSTEM",
-                "confidence": 0.9,
-                "reason": "저장키·저장 의미·복구 경로 호환성 문제 가능성"
-              },
-              {
-                "id": "source-generation-path",
-                "system": "SOURCE_GENERATION",
-                "confidence": 0.86,
-                "reason": "모델 출력 형식·anchor·generation·postcondition 경로 문제 가능성"
-              }
-            ],
-            "causalEdges": [
-              {
-                "from": "save-compatibility",
-                "to": "UNKNOWN_STAGE",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.9,
-                "verified": false,
-                "rank": 1
-              },
-              {
-                "from": "source-generation-path",
-                "to": "UNKNOWN_STAGE",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.86,
-                "verified": false,
-                "rank": 2
-              }
-            ],
-            "responsibility": {
-              "system": "SAVE_SYSTEM",
-              "confidence": 0.5113636363636364,
-              "alternatives": [
-                {
-                  "system": "SOURCE_GENERATION",
-                  "confidence": 0.48863636363636365
-                }
-              ],
-              "basis": "WEIGHTED_SHADOW_HYPOTHESES",
-              "verified": false
-            },
-            "pipelinePrediction": {
-              "nextBlockingSystem": "SOURCE_GENERATION",
-              "confidence": 0.98,
-              "basis": "OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY",
-              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
-              "advisoryOnly": true
-            },
-            "bottleneck": {
-              "score": 100,
-              "components": {
-                "downstreamDepth": 6,
-                "recurrence": 2,
-                "sharedScope": 2,
-                "priority": 1,
-                "evidenceConfidence": 0.9
-              },
-              "advisoryOnly": true,
-              "mayReorderWave": false
-            },
-            "inhibitors": [
-              "PRODUCTION_AUTHORITY_INACTIVE",
-              "SECURITY_POLICY_BLOCK"
-            ],
-            "actionRecommendation": {
-              "mode": "EXACT_FAILURE_STAGE_REPAIR",
-              "failureStage": "UNKNOWN_STAGE",
-              "responsibleSystem": "SAVE_SYSTEM",
-              "preserveAlreadyPassedStages": true,
-              "restartFromBeginning": false,
-              "automaticScopeExpansion": false,
-              "blocked": true,
-              "blocker": "PRODUCTION_AUTHORITY_INACTIVE"
-            },
-            "learning": {
-              "eligible": false,
-              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
-            },
-            "waveControl": {
-              "currentWaveSchedulerRemainsAuthoritative": true,
-              "mayReorderWave": false,
-              "mayCreateWorker": false
-            }
-          },
-          "capabilityApplication": {
-            "version": 1,
-            "layer": "verifiedCapabilityMemory",
-            "injected": true,
-            "exactInjectedCapabilityIds": [
-              "capability_ctrace_2a4c47fee23c59a5f61f39f2",
-              "capability_ctrace_adb845324f03973dc74788df",
-              "capability_ctrace_86f8df5250966b9b8184e439",
-              "capability_ctrace_12dba6009c4fe760e1a6434c",
-              "capability_ctrace_7be1cd8142cd777790f2e0ed"
-            ],
-            "coAppliedCapabilityIds": [
-              "capability_ctrace_2a4c47fee23c59a5f61f39f2",
-              "capability_ctrace_adb845324f03973dc74788df",
-              "capability_ctrace_86f8df5250966b9b8184e439",
-              "capability_ctrace_12dba6009c4fe760e1a6434c",
-              "capability_ctrace_7be1cd8142cd777790f2e0ed"
-            ],
-            "workKey": null,
-            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
-            "onlyActuallyInjectedCapabilitiesEligible": true,
-            "freshTaskQaRequired": true,
-            "rawCodeStored": false,
-            "rawModelOutputStored": false,
-            "hiddenChainOfThoughtStored": false,
-            "authorityExpanded": false
-          },
-          "phase4BenchmarkVerification": null,
-          "durationMs": 512036,
-          "knowledgeApplication": {
-            "version": 1,
-            "exactInjectedKnowledgeIds": [
-              "EXPERIENCE:exp_pg739o",
-              "EXPERIENCE:exp_1oonbi8",
-              "EXPERIENCE:exp_4odofx",
-              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
-              "EXPERIENCE:exp_rg6lvy",
-              "EXPERIENCE:exp_i00mwv",
-              "EXPERIENCE:exp_security_28453669955c43a85d166c5c",
-              "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745",
-              "CODE_PATTERN:pat_14v79w7",
-              "CODE_PATTERN:pat_15k9k0m",
-              "CODE_PATTERN:pat_1dj8rdx",
-              "CODE_PATTERN:pat_1e917b8",
-              "CODE_PATTERN:pat_1gglxo2",
-              "CODE_PATTERN:pat_1lx9uhh",
-              "VERIFIED_CAPABILITY:capability_ctrace_2a4c47fee23c59a5f61f39f2",
-              "VERIFIED_CAPABILITY:capability_ctrace_adb845324f03973dc74788df",
-              "VERIFIED_CAPABILITY:capability_ctrace_86f8df5250966b9b8184e439",
-              "VERIFIED_CAPABILITY:capability_ctrace_12dba6009c4fe760e1a6434c",
-              "VERIFIED_CAPABILITY:capability_ctrace_7be1cd8142cd777790f2e0ed"
-            ],
-            "freshIndependentQaRequired": true,
-            "infrastructureFailurePenalizesKnowledge": false,
-            "authorityExpanded": false
-          },
-          "metrics": {
-            "requestedMax": 20,
-            "effectiveMax": 20,
-            "reservationId": "35569486287:1",
-            "reservedAt": "2026-09-21T07:19:44Z",
-            "workerStartedAt": 1789975376938,
-            "workerFinishedAt": 1789975888974,
-            "checkoutMs": 3730,
-            "modelPrepMs": 3096,
-            "candidateMs": 481848,
-            "qaMs": 0,
-            "workerTotalMs": 512036,
-            "changedFileCount": 0,
-            "addedLineCount": 0,
-            "deletedLineCount": 0,
-            "ollamaCacheHit": true,
-            "ollamaRuntimeSource": "CACHE"
-          }
-        }
-      ],
+      "neuronResults": [],
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
@@ -25470,14 +24238,14 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 골목 군단 대전\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:1:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-86bde7efe9|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-b347a6bd0a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-c614cb6a4b|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-53f9059bd3|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:1:4|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-27c99c0f63 -> #game | mechanic=core-game | family=CORE | confidence=HIGH | evidence=existing-scope-binding,core-gameplay-surface,existing-mechanic,gameplay-action - scope-coreloop-1-b347a6bd0a -> #cannon | mechanic=combat-cannon | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT - scope-coreloop-2-c614cb6a4b -> #game | mechanic=core-game | family=PROGRESSION | confidence=LOW | evidence=direct-gameplay-progression-control,existing-mechanic,gameplay-action - scope-mobileux-53f9059bd3 -> #cannon | mechanic=combat-cannon | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT - UNMAPPED scope-coreloop-0-86bde7efe9 | MOVEMENT/SPATIAL_WORLD | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. EXTERNAL_AI_ADVISORY=AMB\nlast-validation-at=2026-09-21T07:43:55.133Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 골목 군단 대전\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:1:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-86bde7efe9|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-b347a6bd0a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-c614cb6a4b|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-53f9059bd3|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:1:4|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-27c99c0f63 -> #game | mechanic=core-game | family=CORE | confidence=HIGH | evidence=existing-scope-binding,core-gameplay-surface,existing-mechanic,gameplay-action - scope-coreloop-1-b347a6bd0a -> #cannon | mechanic=combat-cannon | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT - scope-coreloop-2-c614cb6a4b -> #game | mechanic=core-game | family=PROGRESSION | confidence=LOW | evidence=direct-gameplay-progression-control,existing-mechanic,gameplay-action - scope-mobileux-53f9059bd3 -> #cannon | mechanic=combat-cannon | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT - UNMAPPED scope-coreloop-0-86bde7efe9 | MOVEMENT/SPATIAL_WORLD | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. EXTERNAL_AI_ADVISORY=AMB\nlast-validation-at=2026-09-21T08:03:53.917Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/line-defense/index.html"
       ],
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 48,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -27220,11 +25988,11 @@
         "actions-run-35575352103"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "35570912073:1",
+      "reservationRunId": "35570912073",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-21T08:07:33Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/line-defense",
@@ -41760,7 +40528,7 @@
       "department": "development",
       "type": "implementation",
       "executionLane": "GAME_PRIMARY",
-      "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-029d85a01a -> #game | mechanic=core-game | family=CORE | confidence=HIGH | evidence=existing-scope-binding,core-gameplay-surface,existing-mechanic,gameplay-action - scope-coreloop-0-ba1530d55b -> #attackBtn | mechanic=combat-attackbtn | family=GATHER | confidence=LOW | evidence=shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-1-14e5fec9e4 -> #attackBtn | mechanic=combat-attackbtn | family=COMBAT | confidence=HIGH | evidence=existing-scope-binding,direct-family:COMBAT,shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-2-21cda65cb7 -> #questBtn | mechanic=progression-questbtn | family=PROGRESSION | confidence=HIGH | evidence=existing-scope-binding,direct-family:PROGRESSION,direct-gameplay-progress\nlast-validation-at=2026-09-21T07:59:23.874Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
+      "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-029d85a01a -> #game | mechanic=core-game | family=CORE | confidence=HIGH | evidence=existing-scope-binding,core-gameplay-surface,existing-mechanic,gameplay-action - scope-coreloop-0-ba1530d55b -> #attackBtn | mechanic=combat-attackbtn | family=GATHER | confidence=LOW | evidence=shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-1-14e5fec9e4 -> #attackBtn | mechanic=combat-attackbtn | family=COMBAT | confidence=HIGH | evidence=existing-scope-binding,direct-family:COMBAT,shared:coreloop,existing-mechanic,gameplay-action - scope-coreloop-2-21cda65cb7 -> #questBtn | mechanic=progression-questbtn | family=PROGRESSION | confidence=HIGH | evidence=existing-scope-binding,direct-family:PROGRESSION,direct-gameplay-progress\nlast-validation-at=2026-09-21T08:04:03.442Z\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- 누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.\n- 누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.\n- 실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.\n- 실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.\n- 실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.",
       "responsibleFiles": [
         "web-games/village-dungeons/index.html"
       ],
@@ -54470,7 +53238,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 개미 시뮬레이터\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.",
       "responsibleFiles": [
         "web-games/ant-simulator/index.html"
@@ -54523,7 +53291,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -55854,11 +54622,11 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22ant-simulator-existing-web-assessment-v1%7C35569486287%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fant-simulator-existing-web-assessment-v1-primary-35569486287-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22ant-simulator-existing-web-assessment-v1%7C35569486287%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fant-simulator-existing-web-assessment-v1-primary-35569486287-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A21%2C%22edgeCount%22%3A19%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35569486287:1",
-      "reservationRunId": "35569486287",
+      "reservationId": "35570912073:1",
+      "reservationRunId": "35570912073",
       "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-21T07:19:44Z",
-      "neuronExpectedVariants": 0,
+      "reservedAt": "2026-09-21T08:07:33Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/ant-simulator",
@@ -56065,7 +54833,7 @@
       "target": "web",
       "department": "development",
       "type": "implementation",
-      "executionLane": "RELEASE_WAIT",
+      "executionLane": "GAME_PRIMARY",
       "goal": "[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. 생존 장르는 HP와 실제 설계에 존재하는 허기·체온·위험·자원·제작 정보를 우선하고 채집/제작/생물 생태/날씨 반응 모션을 연결한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미와 학습 흐름이 실제 플레이로 드러나야 하며, 버튼/보상/피격/구매/제작/레벨업/퀘스트 완료 피드백을 실제 이벤트와 연결한다. BGM/SFX/UI/환경음은 역할을 분리하고 mute/volume 및 반복음 변형을 제공한다. 모바일 핵심 조작은 44px 이상과 엄지 도달성을 지키고, 과도한 흔들림·번쩍임·진동은 조절 가능해야 하며 텍스트/상태를 색 하나만으로 구분하지 않는다. 저장이 있는 게임은 업데이트 후 기존 저장 의미를 보존하고 실패 시 전체 데이터 손실을 피한다. 초반/중반/후반 목표와 반복 플레이 이유를 만들고, 수익화가 있으면 일반 게임 UI와 구매/광고 UI를 분리하며 결제 없이는 핵심 루프가 막히지 않게 한다. 이 기준이 실패하면 기존 repair/revalidation으로 되돌린다.",
       "responsibleFiles": [
         "web-games/fantasy-survival/index.html"
@@ -56132,7 +54900,7 @@
         ]
       },
       "supervisionReview": null,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -57159,11 +55927,11 @@
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35569486287%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-primary-35569486287-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22fantasy-survival-presentation-living-motion-v1%7C35569486287%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Ffantasy-survival-presentation-living-motion-v1-primary-35569486287-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A4%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A4%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": "35569486287:1",
-      "reservationRunId": "35569486287",
+      "reservationId": "35570912073:1",
+      "reservationRunId": "35570912073",
       "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-21T07:19:44Z",
-      "neuronExpectedVariants": 0,
+      "reservedAt": "2026-09-21T08:07:33Z",
+      "neuronExpectedVariants": 3,
       "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "web-games/fantasy-survival",
@@ -63626,12 +62394,6 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35547912182%3A1%7Cspeculative-1%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3Anull%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35547912182%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35547912182%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35547912182%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
-        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:sharedContextQaPass",
-        "architecture-neural-expansion-missing:readinessPass",
         "base-main:1d0ac057dbda5703bb355ff5fdbcfeaf784e9ea0",
         "actions-run:35570801651",
         "reservation-id:35570801651:1",
@@ -63655,7 +62417,13 @@
         "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%22%2C%22feedback%22%3A%22UNKNOWN%22%2C%22critic%22%3A%22UNRESOLVED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3Anull%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-a1137738a157-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
+        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
+        "architecture-neural-expansion-readiness:PENDING",
+        "architecture-neural-expansion-allowed:NO",
+        "architecture-neural-expansion-missing:sharedContextQaPass",
+        "architecture-neural-expansion-missing:readinessPass"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -64171,12 +62939,6 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35547912182%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3Anull%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35547912182%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35547912182%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35547912182%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
-        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PENDING",
-        "architecture-neural-expansion-allowed:NO",
-        "architecture-neural-expansion-missing:sharedContextQaPass",
-        "architecture-neural-expansion-missing:readinessPass",
         "base-main:1d0ac057dbda5703bb355ff5fdbcfeaf784e9ea0",
         "actions-run:35570801651",
         "reservation-id:35570801651:1",
@@ -64200,7 +62962,13 @@
         "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%22%2C%22feedback%22%3A%22UNKNOWN%22%2C%22critic%22%3A%22UNRESOLVED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3Anull%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C35570801651%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A6%2C%22edgeCount%22%3A4%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
+        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
+        "architecture-neural-expansion-readiness:PENDING",
+        "architecture-neural-expansion-allowed:NO",
+        "architecture-neural-expansion-missing:sharedContextQaPass",
+        "architecture-neural-expansion-missing:readinessPass"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
