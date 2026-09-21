@@ -12016,5 +12016,15 @@
       "compareDecisionVsObservedProgress": true,
       "noNewShadowTrainer": true
     }
+  },
+  "aiExecutionEfficiency": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "departmentLeadDistinctnessRequired": false,
+    "minimumDistinctLeadModels": 1,
+    "leadAssignmentRemappable": true,
+    "artificialDistinctModelGateForbidden": true,
+    "objective": "MINIMIZE_MODEL_SERIALIZATION_AND_LATENCY_WHILE_PRESERVING_ROLE_LEVEL_REVIEW_AND_DETERMINISTIC_QA",
+    "qualityGateWeakeningForbidden": true
   }
 }
