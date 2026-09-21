@@ -57,7 +57,7 @@ local function choose(h)
  return weightPick(pool),#v==0
 end
 local function clearRoleVisual(p)
- local c=p.Character;if not c then return end;local old=c:FindFirstChild("RoleVisual");if old then old:Destroy()end
+ local c=p.Character;if not c then return end;for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual" then d:Destroy()end end
  local oldH=c:FindFirstChild("RoleHighlight");if oldH then oldH:Destroy()end
 end
 local function applyRoleVisual(p,r)
