@@ -1,6 +1,6 @@
 // 파일명: assets/homepage-enhancements.js
 // 역할: 서버 런타임의 canonical 게임정보를 받아 검증된 웹게임 전체와 제작 상태를 홈페이지에 표시한다.
-const SYNC_INTERVAL_MS=5000;
+const SYNC_INTERVAL_MS=30000;
 let refreshInFlight=false;
 let lastSignature='';
 let portfolioStatus={games:[],counts:{}};
