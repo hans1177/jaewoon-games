@@ -335,7 +335,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node <<'NODE'
           const fs=require('fs');
