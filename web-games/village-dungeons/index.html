@@ -309,7 +309,7 @@ function clearWorld(){
   currentInteract=null;
 }
 
-function buildTown(){
+  var r=new THREE.Mesh(new THREE.DodecahedronGeometry(scale,0),mat(color||0x777b7d));
   clearWorld();
   scene.background.set(0x8fc8e4);scene.fog.color.set(0x8fc8e4);scene.fog.near=28;scene.fog.far=72;
   addGround(0x6c9849);
