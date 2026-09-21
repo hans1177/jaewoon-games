@@ -164,21 +164,45 @@ function platformLinks(game){
   const canonical=publicationOf(game).roblox||{};
   const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
   const placeId=String(target?.placeId||'').trim();
-  const roblox=/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true)
-    ?`https://www.roblox.com/games/${placeId}`
-    :String(game?.robloxGameUrl||game?.robloxUrl||'').trim();
-  const unity=String(game?.unityBuildUrl||game?.unityUrl||'').trim();
-  const uefn=String(game?.uefnUrl||game?.fortniteUrl||game?.fortniteUefnUrl||'').trim();
-  return {roblox,unity,uefn};
-}
-function platformLinks(game){
-  const canonical=publicationOf(game).roblox||{};
-  const target=Object.keys(canonical).length?canonical:(game?.robloxPublicationTarget||game?.robloxReleaseEvidence||{});
-  const placeId=String(target?.placeId||'').trim();
   const roblox=/^[1-9][0-9]*$/.test(placeId)&&(target?.verified===true||target?.published===true||game?.robloxReleaseEvidence?.published===true)?`https://www.roblox.com/games/${placeId}`:'';
   const unity=game?.unityBuildVerified===true?String(game?.unityBuildUrl||'').trim():'';
-  const fortnite=String(game?.uefnUrl||game?.fortniteUrl||game?.fortniteUefnUrl||'').trim();
+  const fortnite=(game?.uefnInternalReleaseReady===true||game?.fortniteInternalReleaseReady===true)?String(game?.uefnUrl||game?.fortniteUrl||game?.fortniteUefnUrl||'').trim():'';
   return {roblox,unity,fortnite};
+}
+function internalReleaseLinks(game){
+  const links=platformLinks(game);
+  const exposure=exposureOf(gameIdOf(game));
+  if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return links;
+  const ready=new Set(exposure.platforms.filter(p=>p?.internalReleaseReady===true).map(p=>normalizePlatform(p?.platform)));
+  return {
+    roblox:ready.has('ROBLOX')?links.roblox:'',
+    unity:ready.has('UNITY')?links.unity:'',
+    fortnite:ready.has('FORTNITE_UEFN')?links.fortnite:''
+  };
+}
+function hasInternalRelease(game){
+  const links=internalReleaseLinks(game);
+  return Boolean(links.roblox||links.unity||links.fortnite);
+}
+function internalReleaseRows(catalog,status){
+  return (Array.isArray(catalog?.games)?catalog.games:[])
+    .filter(activeLifecycle)
+    .map(game=>bindVerifiedUnityBuild(game,status))
+    .filter(hasInternalRelease)
+    .sort(catalogOrderCompare);
+}
+function recentModificationRows(catalog){
+  const generic=/^Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다\.$|^TARGET_PLATFORM_TECHNICAL_VALIDATION$/;
+  return (Array.isArray(catalog?.games)?catalog.games:[])
+    .filter(activeLifecycle)
+    .map(game=>{
+      const work=String(latestWork(game)||'').trim();
+      const updated=String(runtimeInfo(game).updatedAt||homepageOf(game).updatedAt||'').trim();
+      return {game,work,updated,confirmed:Boolean(work&&!generic.test(work))};
+    })
+    .filter(row=>row.work||row.updated)
+    .sort((a,b)=>(Date.parse(b.updated)||0)-(Date.parse(a.updated)||0)||catalogOrderCompare(a.game,b.game))
+    .slice(0,5);
 }
 function platformHref(game){
   const links=platformLinks(game);
@@ -199,7 +223,7 @@ function buildFocus(catalog,status){
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${web?`<a class="homeFocusBtn" href="${esc(web)}">지금 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
-  const game=mergeGame(row),web=game.webPath,links=platformLinks(game);
+  const game=mergeGame(row),web=game.webPath,links=internalReleaseLinks(game);
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
     button(web,'Web 플레이','Web 준비중','webAction'),
@@ -217,47 +241,27 @@ function buildShelf(hub,id,title,description,rows){
   wrapper.innerHTML=`<div class="gameShelfHead"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="gameShelfCount">${rows.length}개</span></div><div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):'<div class="foldGameMeta">표시할 게임이 없어.</div>'}</div>`;
   hub.appendChild(wrapper);
 }
-function buildDevelopmentPipeline(catalog,status,testManifest={}){
-  const section=document.getElementById('developmentPipeline');
-  const lead=document.getElementById('pipelineLead');
-  if(!section||!lead)return;
-  const games=(Array.isArray(catalog?.games)?catalog.games:[]).filter(activeLifecycle);
-  const webReady=games.filter(game=>game?.homepageWebPlayable===true&&String(game?.webPath||'').trim());
-  const selected=games.filter(game=>normalizePlatform(selectedPlatform(game)));
-  const development=games.filter(game=>productionClassOf(game)==='DEVELOPMENT_CONFIRMED');
-  const released=games.filter(game=>productionClassOf(game)==='RELEASE_CONFIRMED');
-  const validated=Array.isArray(testManifest?.candidates)?testManifest.candidates.filter(row=>Number(row?.strictScore??row?.reviewScore??row?.totalScore??row?.score)>=80):[];
-  const focus=[...released,...development,...webReady].sort((a,b)=>classRank(a)-classRank(b)||catalogOrderCompare(a,b))[0]||null;
-  const runnerCount=Number(status?.postReleaseFocusedDevelopment?.runningCount??status?.postReleaseFocusRunner?.runningCount??0);
-  const runnerActive=Number.isFinite(runnerCount)&&runnerCount>0;
-  if(focus){
-    const platform=platformLabel(selectedPlatform(focus));
-    lead.innerHTML=`<b>현재 진행 · ${esc(focus.name||gameIdOf(focus))}</b><br>${esc(classState(focus))} · ${esc(platform)} · ${esc(latestWork(focus))}`;
-  }else{
-    lead.innerHTML='<b>현재 진행 상태</b><br>중앙 runtime에서 표시 가능한 개발 프로젝트를 기다리는 중이야.';
-  }
-  const badges=section.querySelectorAll('.pipelineStep strong');
-  const values=[
-    `ACTIVE ${games.length}`,
-    `WEB ${webReady.length}`,
-    `PASS ${validated.length}`,
-    `PLATFORM ${selected.length}`,
-    runnerActive?`LIVE RUNNER ${runnerCount}`:`RELEASE ${released.length}`
-  ];
-  badges.forEach((node,index)=>{if(values[index])node.textContent=values[index]});
-  section.dataset.runtimeAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
-  section.dataset.selectedPlatformCount=String(selected.length);
-  section.dataset.releaseCount=String(released.length);
-  section.dataset.focusRunnerActive=runnerActive?'true':'false';
+function buildRecentUpdates(catalog){
+  const section=document.getElementById('recentUpdates');
+  const list=document.getElementById('recentUpdateList');
+  if(!section||!list)return;
+  const rows=recentModificationRows(catalog);
+  list.innerHTML=rows.length?rows.map(({game,work,updated,confirmed})=>{
+    const name=identityOf(game).name||game?.name||gameIdOf(game);
+    const summary=confirmed?work:'최신 지시 반영 상태를 확인 중';
+    const date=updated?new Date(updated).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'}):'';
+    return `<article class="recentUpdateItem"><div><b>${esc(name)}</b><span>${esc(summary)}</span></div><small>${confirmed?'반영 기록':'확인 중'}${date?` · ${esc(date)}`:''}</small></article>`;
+  }).join(''):'<div class="recentUpdateEmpty">최근 수정 기록을 불러오는 중</div>';
+  section.dataset.recentUpdateCount=String(rows.length);
 }
 function updateLiveSummary(catalog,status){
-  const games=Array.isArray(catalog?.games)?catalog.games:[];
-  const playable=webPublishedRows(catalog).length;
-  const development=developmentRows(catalog,status).length;
-  const released=releaseRows(catalog,status).length;
-  const values={metricPlayable:playable,metricDevelopment:development,metricReleased:released};
+  const available=internalReleaseRows(catalog,status);
+  const availableIds=new Set(available.map(gameIdOf));
+  const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
+  const recent=recentModificationRows(catalog);
+  const values={metricPlayable:available.length,metricDevelopment:development.length,metricRecent:recent.length};
   for(const [id,value] of Object.entries(values)){const node=document.getElementById(id);if(node)node.textContent=String(value);}
-  document.documentElement.dataset.homeSummary=`playable:${playable};development:${development};released:${released};catalog:${games.length}`;
+  document.documentElement.dataset.homeSummary=`platformAvailable:${available.length};development:${development.length};recent:${recent.length}`;
 }
 function buildPortfolioBoard(){
   document.getElementById('homePortfolioBoard')?.remove();
@@ -266,12 +270,13 @@ function buildPortfolioBoard(){
 function buildGameCenter(catalog,status){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
-  for(const id of ['homeReleaseGameCenter','homeRobloxDeploymentCenter','homeWebGameCenter','homeDevelopmentGameCenter'])document.getElementById(id)?.remove();
-  const playable=webPublishedRows(catalog);
-  const development=developmentRows(catalog,status);
-  buildShelf(hub,'homeWebGameCenter','지금 플레이','바로 실행 가능한 게임',playable);
-  buildShelf(hub,'homeDevelopmentGameCenter','개발 중','현재 제작이 진행 중인 게임',development);
-  document.documentElement.dataset.homeWebGameCount=String(playable.length);
+  for(const id of ['homeReleaseGameCenter','homeRobloxDeploymentCenter','homeWebGameCenter','homePlatformAvailableGameCenter','homeDevelopmentGameCenter'])document.getElementById(id)?.remove();
+  const available=internalReleaseRows(catalog,status);
+  const availableIds=new Set(available.map(gameIdOf));
+  const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
+  buildShelf(hub,'homePlatformAvailableGameCenter','게임 가능','플랫폼 내부 출시가 확인된 게임',available);
+  buildShelf(hub,'homeDevelopmentGameCenter','개발 중','플랫폼 개발이 진행 중인 게임',development);
+  document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
   document.documentElement.dataset.homeDevelopmentCount=String(development.length);
   document.documentElement.dataset.homeServerAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
   document.documentElement.dataset.homeSupportedPlatforms=(catalog?.runtimeSupportedPlatforms||[]).join(',');
@@ -316,7 +321,7 @@ async function refresh(){
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure&&Array.isArray(exposure.games)?exposure:{games:[]};
     const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure]);
-    if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildGameCenter(catalog,status);buildDevelopmentPipeline(catalog,status,testManifest||{});lastSignature=sig;}
+    if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildGameCenter(catalog,status);buildRecentUpdates(catalog);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
   }finally{refreshInFlight=false;}
