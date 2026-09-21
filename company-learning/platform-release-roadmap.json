@@ -4902,6 +4902,21 @@
       "autoRegisterNewWebGameAs": "DESIGN_ONLY_WEB_PUBLISHED",
       "preserveExistingIdentity": true,
       "publishAfterRuntimeSyncAndHomepageQa": true
+    },
+    "executionPipeline": {
+      "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
+      "jobCount": 2,
+      "stages": [
+        "HOMEPAGE_MANAGER_SELF_QA",
+        "DIRECTOR_REVIEW_AND_PUBLICATION"
+      ],
+      "exactCandidateHashBound": true,
+      "separatePublishJobForbidden": true,
+      "duplicateCandidateApplyForbidden": true,
+      "deterministicQaPreserved": true,
+      "directUnsupervisedPublicWriteForbidden": true,
+      "systemAiRole": "COMMON_BOTTLENECK_RECOVERY_ASSISTANT",
+      "systemAiHomepageExecutionOwner": false
     }
   },
   "longHorizonVision": {
