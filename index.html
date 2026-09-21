@@ -131,6 +131,15 @@ function openChatGpt(){
   location.href='https://chatgpt.com/';
 }
 document.querySelectorAll('[data-chatgpt-launch]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openChatGpt();}));
+function prefetchVisibleGames(){
+  const links=[...document.querySelectorAll('a[href^="/web-games/"]')].slice(0,6);
+  for(const link of links){
+    const href=link.getAttribute('href');
+    if(!href||document.head.querySelector(`link[data-game-prefetch="${CSS.escape(href)}"]`))continue;
+    const p=document.createElement('link');p.rel='prefetch';p.href=href;p.as='document';p.dataset.gamePrefetch=href;document.head.appendChild(p);
+  }
+}
+(window.requestIdleCallback||((fn)=>setTimeout(fn,600)))(prefetchVisibleGames);
 registerHomepagePwa();
 </script>
 <script type="module" src="/assets/homepage-enhancements.js"></script>
