@@ -335,17 +335,25 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git checkout -B main origin/main
-          rm -rf "web-games/$GAME_ID"
-          mkdir -p "web-games/$GAME_ID"
-          cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
-          git add "web-games/$GAME_ID"
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo "UNITY_WEB_PUBLICATION=NO_CHANGE"
-            exit 0
-          fi
-          git commit -m "build: publish $GAME_ID Unity Web [skip ci]"
-          git push origin main
-          echo "UNITY_WEB_PUBLICATION=PASS"
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin main
+            git checkout -B unity-web-publish origin/main
+            rm -rf "web-games/$GAME_ID"
+            mkdir -p "web-games/$GAME_ID"
+            cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
+            git add "web-games/$GAME_ID"
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo "UNITY_WEB_PUBLICATION=NO_CHANGE"
+              exit 0
+            fi
+            git commit -m "build: publish $GAME_ID Unity Web [skip ci]"
+            if git push origin HEAD:main; then
+              echo "UNITY_WEB_PUBLICATION=PASS"
+              exit 0
+            fi
+            echo "UNITY_WEB_PUBLICATION_RETRY=$attempt"
+            sleep 2
+          done
+          echo "UNITY_WEB_PUBLICATION=FAILED_AFTER_RETRY"
+          exit 1
