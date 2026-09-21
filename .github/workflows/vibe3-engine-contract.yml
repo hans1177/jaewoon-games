@@ -46,6 +46,7 @@ jobs:
           const uw=c.unityWebFirstStage;
           if(uw?.enabled!==true||uw?.scope!=='FIRST_WEB_GAME_STAGE_ONLY'||uw?.canonicalSourceRoot!=='unity-games/<gameId>/'||uw?.buildOutputRoot!=='web-games/<gameId>/') throw new Error('Unity Web first-stage contract missing');
           if(uw?.centralSyncDocument!=='company-learning/UNITY_WEB_FIRST_STAGE.md'||uw?.cloudflareBuildOutputRequired!==true||uw?.mobileBrowserQaRequired!==true||uw?.failureState!=='REPAIR_REQUIRED'||uw?.retryLimit!==null) throw new Error('Unity Web first-stage sync/QA contract missing');
+          if(!fs.existsSync('.github/workflows/unity-web-first-stage-build.yml')||!fs.existsSync('tools/company-unity-web-first-stage.mjs')||!fs.existsSync('qa/company-unity-web-first-stage.test.mjs')) throw new Error('Unity Web first-stage executable bindings missing');
           if(uw?.postGatePlatformPipelineUnchanged!==true||uw?.unityTargetSameProjectContinuation!==true||uw?.robloxAndUefnRemainNative!==true) throw new Error('Unity Web first-stage scope leaked into native platform flow');
           if(!fs.existsSync(uw.centralSyncDocument)) throw new Error('Unity Web central sync document missing');
           if(c.portableWebLearning?.sourceEngine!=='UNITY_WEB'||c.portableWebLearning?.directHtmlCanvasAuthoringDefault!==false) throw new Error('Vibe3 portable Web learning is not bound to Unity Web');
@@ -82,6 +83,7 @@ jobs:
           node --input-type=module --check < tools/vibe3-model-selection.mjs
           node --input-type=module --check < tools/vibe3-pump-index.mjs
           node --input-type=module --check < tools/vibe3-roblox-platform.mjs
+          node --check tools/company-unity-web-first-stage.mjs
 
       - name: Run Vibe3 engine contract tests
         run: node qa/vibe3-engine.test.mjs
@@ -94,6 +96,9 @@ jobs:
 
       - name: Run Roblox Phase 1 adapter tests
         run: node qa/vibe3-roblox-platform.test.mjs
+
+      - name: Run Unity Web first-stage contract tests
+        run: node --test qa/company-unity-web-first-stage.test.mjs
 
       - name: Check trainer syntax
         run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py
