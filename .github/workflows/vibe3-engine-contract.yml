@@ -52,6 +52,24 @@ jobs:
           console.log('PASS Vibe3 Pump machine contract with direct Roblox Unity native pairing');
           NODE
 
+      - name: Validate canonical dual-native learning contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pipeline=JSON.parse(fs.readFileSync('company-learning/canonical-learning-pipeline.json','utf8'));
+          const web=pipeline.portableWebLearning||{};
+          if(web.enabled!==false||web.status!=='LEGACY_DISABLED'||web.sourceEngine!=='DISABLED'||web.developmentAdmissionAuthority!==false)throw new Error('canonical Unity Web learning must remain disabled');
+          const dual=pipeline.dualNativeLearning||{};
+          if(dual.enabled!==true||JSON.stringify(dual.platforms)!==JSON.stringify(['ROBLOX','UNITY'])||dual.platformEvidenceIndependent!==true||dual.onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate!==true)throw new Error('canonical dual-native learning contract missing');
+          if(dual.verifiedPatternsFeedSharedV3Memory!==true||dual.separatePlatformShadowPipelineForbidden!==true)throw new Error('dual-native canonical memory boundary changed');
+          const playbooks=JSON.parse(fs.readFileSync('company-learning/vibe3-task-playbooks.json','utf8'));
+          const ctx=playbooks.directNativePlatformContext||{};
+          if(ctx.unityWeb!=='DISABLED'||ctx.requestEitherStartsBoth!==true||ctx.platformEvidenceIndependent!==true)throw new Error('department playbooks not synced to dual-native context');
+          const audio=playbooks?.taskTypes?.audio||playbooks?.playbooks?.audio||{};
+          if((audio.checklist||[]).includes('unlock-web-audio-after-first-user-gesture'))throw new Error('legacy Web audio lifecycle remains active');
+          console.log('PASS canonical dual-native learning and department playbooks');
+          NODE
+
       - name: Validate platform roadmap machine contract
         run: |
           node --input-type=module <<'NODE'
