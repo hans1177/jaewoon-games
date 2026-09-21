@@ -115,7 +115,12 @@
       ],
       "rawPrivateReasoningLogged": false,
       "autonomousCompletionStillAllowed": true,
-      "deterministicQaStillAuthoritative": true
+      "deterministicQaStillAuthoritative": true,
+      "capabilityGrowthMarkers": [
+        "VIBE_CAPABILITY_GROWTH",
+        "PRIMARY_AI_ROLE=NON_BLOCKING_ASSISTANT_AND_COLLABORATOR",
+        "AUTHORITY_CHANGE=NONE_UNLESS_EXPLICIT_CENTRAL_POLICY"
+      ]
     }
   },
   "systemAiWorkerLogContract": {
