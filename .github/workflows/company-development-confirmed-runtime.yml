@@ -881,6 +881,50 @@ jobs:
           path: /tmp/web-batch
           merge-multiple: true
 
+      - name: Publish batched Unity Web outputs
+        if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
+        env:
+          FIRST_STAGE_ENGINE: ${{ needs.web-plan.outputs.first_stage_engine }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$FIRST_STAGE_ENGINE" != 'UNITY_WEB' ]]; then
+            echo 'UNITY_WEB_BATCH_PUBLICATION=LEGACY_SKIP'
+            exit 0
+          fi
+          public_root="/tmp/web-batch/public/web-games"
+          if [[ ! -d "$public_root" ]] || [[ -z "$(find "$public_root" -mindepth 1 -maxdepth 1 -type d -print -quit)" ]]; then
+            echo 'UNITY_WEB_BATCH_PUBLICATION=NO_PASSING_OUTPUT'
+            exit 0
+          fi
+          git config user.name 'jaewoon-unity-web-publisher'
+          git config user.email 'actions@users.noreply.github.com'
+          git fetch --no-tags origin main
+          git checkout -B unity-web-public origin/main
+          while IFS= read -r -d '' game_dir; do
+            game="$(basename "$game_dir")"
+            rm -rf "web-games/$game"
+            mkdir -p "web-games/$game"
+            cp -R "$game_dir"/. "web-games/$game"/
+          done < <(find "$public_root" -mindepth 1 -maxdepth 1 -type d -print0)
+          git add web-games
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'UNITY_WEB_BATCH_PUBLICATION=NO_CHANGE'
+          else
+            git commit -m 'build: publish verified Unity Web batch [skip ci]'
+            pushed=false
+            for _ in 1 2 3 4 5; do
+              if git push origin HEAD:main; then pushed=true; break; fi
+              git fetch --no-tags origin main
+              git rebase origin/main
+              sleep 2
+            done
+            [[ "$pushed" == 'true' ]]
+            echo 'UNITY_WEB_BATCH_PUBLICATION=PASS'
+          fi
+          git checkout --detach "$GITHUB_SHA"
+
       - name: Revalidate shared worker context before Web persistence
         run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-web-persist.json
 
