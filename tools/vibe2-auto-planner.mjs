@@ -487,7 +487,12 @@ function presentationStagesForProject(project={}){
     {key:'camera-language',pass:'CAMERA_LANGUAGE',goal:'[PRESENTATION_PASS:CAMERA_LANGUAGE] 일반 행동은 미세한 카메라 반응, 강한 행동은 짧고 강한 반응, 보스/중요 순간은 통제된 hero moment가 되도록 카메라 언어를 정리하고 실제 runtime state에 연결한다. 줌/흔들림/추적은 모바일 가독성과 조작을 해치지 않고 멀미를 유발할 정도로 지속되지 않게 하며 화면 흔들림/번쩍임을 줄일 수 있는 접근성 설정과 충돌하지 않아야 한다.'},
     {key:'polish-mobile',pass:'POLISH_MOBILE',goal:`[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다. 첫 10분의 핵심 재미/학습 흐름, 장르별 UI, 아트 일관성, 애니메이션 연속성, 피드백, 오디오 제어/반복 변형, 모바일 성능, 접근성, 저장/업데이트 안정성, 초중후반 목표/반복 동기, 수익화 UI 분리까지 Commercial Readiness를 확인하고 실제 runtime presentation hard gate를 통과해야 한다. 앞선 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→CAMERA_LANGUAGE 패스가 실제 구현된 상태를 보존한 뒤 ${finalMarker}`}
   ];
-  if(engine==='web')stages.splice(4,0,{key:'audio-feel',pass:'AUDIO_FEEL',goal:'[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다. BGM·전투음·UI음·환경음의 역할을 분리하고 타격음은 기존 impact event와 맞추며 반복음은 pitch/sample/volume 미세 변형 등으로 기계적인 반복감을 줄인다.'});
+  const audioEngineGuidance=engine==='web'
+    ?'Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다.'
+    :engine==='unity'
+      ?'Unity는 기존 AudioSource/AudioMixer 또는 책임 오디오 시스템을 사용해 BGM/SFX/UI/환경 버스를 분리하고, 씬/전투/보스/보상 상태 전환을 실제 게임 이벤트에 연결한다. 중복 AudioSource 생성과 씬 재진입 중복 재생을 막는다.'
+      :'Roblox는 기존 SoundService/Sound 또는 책임 오디오 시스템을 사용해 Music/SFX/UI/Ambient 역할을 분리하고, 전투/보스/보상 상태를 실제 서버·클라이언트 이벤트에 맞춰 전환한다. 중복 Sound 생성과 Respawn/재접속 중복 재생을 막는다.';
+  stages.splice(4,0,{key:'audio-feel',pass:'AUDIO_FEEL',goal:`[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. ${audioEngineGuidance} BGM·전투음·UI음·환경음의 역할을 분리하고 타격음은 기존 authoritative impact event와 맞추며 반복음은 pitch/sample/volume 미세 변형 등으로 기계적인 반복감을 줄인다. 오디오는 표현 계층이며 데미지·쿨다운·드랍·저장·진행 의미를 바꾸면 안 된다.`});
   const genreGuide=genreCommercialGuidance(project),commercialGuide=commercialReadinessGuidance();
   return stages.map(stage=>({...stage,goal:`${stage.goal}\n[GENRE_PRESENTATION_GUIDANCE] ${genreGuide}\n[COMMERCIAL_READINESS_GUIDANCE] ${commercialGuide}`}));
 }
