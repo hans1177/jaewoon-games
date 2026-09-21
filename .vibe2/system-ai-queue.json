@@ -6803,7 +6803,7 @@
     },
     {
       "id": "recovery-recovery-a84ac1939c7d23662341",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -6833,17 +6833,17 @@
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
       "dependencies": [],
-      "retries": 23,
+      "retries": 24,
       "sourceMutationRequired": true,
       "sourceMutationBaseline": "2026-09-21T07:28:07.257Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": "system-ai:35623983367:1",
-      "reservedAt": "2026-09-21T16:12:46.137Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "source-mutation-required-before-revalidation",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -6909,11 +6909,12 @@
         "actions-run:35620255707",
         "actions-run:35621280719",
         "actions-run:35622221881",
-        "actions-run:35622970568"
+        "actions-run:35622970568",
+        "actions-run:35623983367"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T06:56:44.534Z",
-      "updatedAt": "2026-09-21T16:12:46.137Z"
+      "updatedAt": "2026-09-21T16:17:56.786Z"
     },
     {
       "id": "recovery-recovery-5b037d3c85e87819c676",
