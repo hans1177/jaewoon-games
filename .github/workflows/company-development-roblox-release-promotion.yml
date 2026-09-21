@@ -59,7 +59,7 @@ jobs:
         id: target
         working-directory: main
         env:
-          REQUESTED_GAME_ID: ${{ inputs.game_id || 'cozy-island' }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || 'daechung-rpg' }}
           OWNER_SECRET_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
           OWNER_SECRET_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
         shell: bash
