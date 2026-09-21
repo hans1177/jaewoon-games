@@ -77,6 +77,7 @@ jobs:
       matrix: ${{ steps.targets.outputs.matrix }}
       targets_json: ${{ steps.targets.outputs.targets_json }}
       runtime_sha: ${{ steps.targets.outputs.runtime_sha }}
+      first_stage_engine: ${{ steps.targets.outputs.first_stage_engine }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -160,11 +161,33 @@ jobs:
           const runtimeRef=`origin/${process.env.COMPANY_RUNTIME_BRANCH}`;
           const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
           const showJson=file=>JSON.parse(showText(file));
+          const unityWebFirstStage=roadmap?.unityWebFirstStage?.enabled===true&&String(roadmap?.unityWebFirstStage?.scope||'').toUpperCase()==='FIRST_WEB_GAME_STAGE_ONLY';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`first_stage_engine=${unityWebFirstStage?'UNITY_WEB':'LEGACY_WEB'}\n`);
+          const currentUnityTree=gameId=>{
+            try{return execFileSync('git',['rev-parse',`HEAD:unity-games/${gameId}`],{encoding:'utf8'}).trim();}catch{return'';}
+          };
           const freshWeb80=item=>{
+            const baselinePath=String(item.designBaselineSource||'').trim();
+            if(unityWebFirstStage){
+              if(item.unityWebFirstStagePassed!==true||!item.unityWebFirstStagePassedAt)return false;
+              const evidencePath=String(item.unityWebFirstStageEvidencePath||'').trim();
+              const sourceTree=currentUnityTree(item.gameId);
+              if(!evidencePath||!baselinePath||!sourceTree)return false;
+              try{
+                const evidence=showJson(evidencePath);
+                const baselineSha=sha256Text(showText(baselinePath));
+                return evidence?.engine==='UNITY_WEB'
+                  &&evidence?.pass===true
+                  &&evidence?.gate?.pass===true
+                  &&String(item.unityWebFirstStageSourceTreeSha||'')===sourceTree
+                  &&String(evidence?.sourceTreeSha||'')===sourceTree
+                  &&String(item.unityWebFirstStageDesignBaselineSha256||'')===baselineSha
+                  &&String(evidence?.designBaselineSha256||'')===baselineSha;
+              }catch{return false;}
+            }
             if(!item.webValidationPassedAt||item.musicValidationPassed!==true)return false;
             const evidencePath=String(item.webValidationEvidencePath||'').trim();
             const webSourcePath=String(item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`).replace(/^\/+|\/+$/g,'');
-            const baselinePath=String(item.designBaselineSource||'').trim();
             if(!evidencePath||!webSourcePath||!baselinePath)return false;
             try{
               const evidence=showJson(evidencePath);
@@ -206,6 +229,9 @@ jobs:
               designDate:item.designDate||'',
               selectedPlatform:item.selectedPlatform||item.targetPlatform||'ROBLOX',
               targetSourcePath:item.targetSourcePath||item.sourcePath||'',
+              firstStageEngine:unityWebFirstStage?'UNITY_WEB':'LEGACY_WEB',
+              unitySourcePath:`unity-games/${item.gameId}`,
+              unitySourceTreeSha:unityWebFirstStage?currentUnityTree(item.gameId):'',
               webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
               runtimeStage,
               existingWebValidated:Boolean(item.webValidationPassedAt)&&!forceWebRepair,
@@ -234,6 +260,7 @@ jobs:
           console.log(`WEB_EXISTING_REVALIDATION_TARGET_COUNT=${rows.filter(x=>x.existingWebValidated).length}`);
           console.log(`WEB_REPAIR_TARGET_COUNT=${rows.filter(x=>!x.existingWebValidated&&x.webInitialCyclePassed).length}`);
           console.log(`WEB_PILOT_TARGET=${requestedGameId||'NONE'}`);
+          console.log(`WEB_FIRST_STAGE_ENGINE=${unityWebFirstStage?'UNITY_WEB':'LEGACY_WEB'}`);
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
           console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);
           console.log('WEB_STALE_SOURCE_OR_BASELINE_REQUEUED=YES');
