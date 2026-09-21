@@ -206,3 +206,11 @@ test('homepage workflow follows central architecture changes',()=>{
   assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
   assert.match(workflow,/JSON\.parse[\s\S]*company-learning\/company-architecture-map\.json/);
 });
+
+test('Director does not rerun the full Homepage Manager contract',()=>{
+  const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  const director=workflow.split('  director-supervision:')[1]||'';
+  assert.doesNotMatch(director,/node tools\/homepage-manager\.mjs/);
+  assert.match(director,/Recheck owner-fixed PWA and chat contract/);
+  assert.match(director,/DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND/);
+});
