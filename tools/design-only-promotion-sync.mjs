@@ -6,6 +6,7 @@ import {pathToFileURL} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
 import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
+import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
 
 const DESIGN_PASS_THRESHOLD=80;
 const EXCELLENT_THRESHOLD=90;
@@ -189,7 +190,187 @@ function reconcileConfirmedSeedQueue({queue,seed,design,stamp,forceFreshBaseline
   return {item,created:true};
 }
 
+
+function directNativePolicy(root='.'){
+  const roadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{});
+  const contract=roadmap?.directNativeDualPlatformDevelopment||{};
+  return contract?.status==='OWNER_DIRECT_LOCKED'
+    &&contract?.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
+    &&contract?.unityWebEnabled===false
+    &&Array.isArray(contract?.supportedDevelopmentPlatforms)
+    &&contract.supportedDevelopmentPlatforms.includes('ROBLOX')
+    &&contract.supportedDevelopmentPlatforms.includes('UNITY');
+}
+function directNativeSourcePaths(gameId){
+  return {ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`};
+}
+function bindDirectNativeQueueItem(item,{seed,design,stamp}){
+  const gameId=String(seed?.gameId||'').trim();
+  const selectedPlatform=selectedPlatformOf(seed);
+  const paths=directNativeSourcePaths(gameId);
+  item.gameId=gameId;
+  item.seedId=item.seedId||seed.seedId||null;
+  item.gameName=item.gameName||seed.gameName||gameId;
+  item.productionClass='DEVELOPMENT_CONFIRMED';
+  item.productionClassSource='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
+  item.status='ACTIVE';
+  item.selectedPlatform=selectedPlatform;
+  item.targetPlatform=selectedPlatform;
+  item.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+  item.platformExecutionMode='ROBLOX_UNITY_CONCURRENT_SAME_GAME';
+  item.bidirectionalAutoPair=true;
+  item.requestEitherStartsBoth=true;
+  item.targetSourcePaths=paths;
+  item.robloxProjectPath=paths.ROBLOX;
+  item.unityProjectPath=paths.UNITY;
+  item.targetSourcePath=paths[selectedPlatform]||paths.ROBLOX;
+  item.sourcePath=item.targetSourcePath;
+  item.webSourcePath=null;
+  item.webValidationRequired=false;
+  item.musicValidationRequired=false;
+  item.webFirstGatePassed=false;
+  item.webSecondGateRequired=false;
+  item.webPlatformHandoff=null;
+  item.unityWebFirstStagePassed=false;
+  item.designBaselineSource=design.file;
+  item.designDate=design.date;
+  item.minimumDesignContract={
+    version:1,pass:true,source:design.file,date:design.date,
+    commonCoreReady:true,
+    platformProfiles:{ROBLOX:true,UNITY:true,distinct:true}
+  };
+  item.platformDesignProfiles={
+    ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
+    UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
+  };
+  item.currentStep='TARGET_PLATFORM_SOURCE_BIND';
+  item.canonicalState='PENDING_DUAL_NATIVE_SOURCE_BIND';
+  item.vibeWebImplementationRequired=false;
+  item.vibeWebRequestedStage=null;
+  item.vibeWebImplementationReason=null;
+  item.sourceRootBootstrapRequired=false;
+  item.postPromotionArtbookRequired=false;
+  item.postWebArtbookRequired=false;
+  item.artbookTiming='PARALLEL_NATIVE_PRESENTATION_SUPPORT';
+  item.internalReleaseTarget={ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE',UNITY:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'};
+  item.externalReleasePolicy='PLATFORM_INDEPENDENT_AFTER_OWN_QA';
+  item.homepageTestCandidate=false;
+  item.homepageOfficialCard=false;
+  item.enqueuedAt=item.enqueuedAt||stamp;
+  item.updatedAt=stamp;
+  return item;
+}
+function promoteDirectNativeDualDesignSeeds({root='.'}={}){
+  const p=(...parts)=>path.join(root,...parts);
+  const seedPath=p('game-seed-state.json');
+  const portfolioPath=p('autonomous-portfolio.json');
+  const catalogPath=p('game-catalog.json');
+  const queuePath=p('development-queue.json');
+  const state=readJson(seedPath,{version:1,seeds:[]});
+  materializeOwnerDesignResetSeeds(state,{file:p('owner-design-reset-queue.json')});
+  const portfolio=readJson(portfolioPath,{version:1,projects:[]});
+  const catalog=readJson(catalogPath,{version:1,games:[]});
+  const queue=readJson(queuePath,{version:1,items:[]});
+  portfolio.projects ||= [];catalog.games ||= [];queue.items ||= [];
+  const stamp=nowIso(),promoted=[],reconciled=[],skipped=[];
+  const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+  const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+
+  for(const seed of state.seeds||[]){
+    if(String(seed?.status||'').toUpperCase()!=='ACTIVE')continue;
+    const gameId=String(seed?.gameId||'').trim();if(!gameId)continue;
+    if(String(seed?.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED'){skipped.push({gameId,reason:'ALREADY_RELEASED'});continue;}
+    const design=latestMinimumDesign(root,gameId);
+    if(!design){skipped.push({gameId,reason:'MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY'});continue;}
+    if(resetAt&&String(design.date)<=resetDate){skipped.push({gameId,reason:'OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED'});continue;}
+    const selectedPlatform=selectedPlatformOf(seed);
+    const paths=directNativeSourcePaths(gameId);
+    const wasConfirmed=String(seed.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED';
+    seed.productionClass='DEVELOPMENT_CONFIRMED';
+    seed.productionTier=2;
+    seed.productionClassSource='MINIMUM_DUAL_PLATFORM_DESIGN_READY';
+    seed.lifecycleState='DEVELOPMENT_CONFIRMED';
+    seed.selectedPlatform=selectedPlatform;
+    seed.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+    seed.platformExecutionMode='ROBLOX_UNITY_CONCURRENT_SAME_GAME';
+    seed.minimumDesignContract={version:1,pass:true,source:design.file,date:design.date};
+    seed.platformDesignProfiles={
+      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
+      UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
+    };
+    seed.promotion={
+      from:wasConfirmed?'DEVELOPMENT_CONFIRMED':'DESIGN_ONLY',
+      to:'DEVELOPMENT_CONFIRMED',
+      reason:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+      requestedPlatform:selectedPlatform,
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      targetSourcePaths:paths,
+      designBaselineSource:design.file,
+      designDate:design.date,
+      strictDesignReviewRequiredForAdmission:false,
+      strictDesignReviewContinuesInParallel:true,
+      promotedAt:seed?.promotion?.promotedAt||stamp
+    };
+
+    let project=portfolio.projects.find(row=>row?.slug===gameId);
+    if(!project){
+      project={id:`SEED-${seed.seedId||gameId}`,slug:gameId,name:seed.gameName||gameId,protectedValues:['core-loop','design-baseline','save-meaning']};
+      portfolio.projects.push(project);
+    }
+    Object.assign(project,{
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+      profileStatus:'DEVELOPMENT_CONFIRMED',
+      mode:'ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT',
+      productionTier:2,
+      targetEngine:'ROBLOX_UNITY',
+      selectedPlatform,
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      targetSourcePaths:paths,
+      sourcePath:paths[selectedPlatform]||paths.ROBLOX,
+      webValidationRequired:false,
+      designBaselineSource:design.file,
+      platformDesignProfiles:seed.platformDesignProfiles
+    });
+
+    let game=catalog.games.find(row=>row?.id===gameId);
+    if(!game){
+      game={id:gameId,name:seed.gameName||gameId,description:'개발확정 · Roblox + Unity 앱 동시개발',genre:[String(seed.GAME_CATEGORY||'').replaceAll('_',' ')],image:'',featured:false};
+      catalog.games.push(game);
+    }
+    Object.assign(game,{
+      homepageCategory:'development-confirmed',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+      productionTier:2,
+      selectedPlatform,
+      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      productionTarget:'ROBLOX_UNITY',
+      targetSourcePaths:paths,
+      homepageOfficialCard:false,
+      homepageTestCandidate:false,
+      homepageStage:'개발확정 · Roblox + Unity 앱 동시개발',
+      homepageRecentWork:'최소 설계 계약 완료 · Roblox/Unity 앱 네이티브 개발 동시 착수',
+      homepageWebPlayable:false,
+      webPath:null,
+      hasWebArchive:Boolean(game.hasWebArchive)
+    });
+
+    let item=queue.items.find(row=>row?.gameId===gameId);
+    if(!item){item={};queue.items.push(item);}
+    bindDirectNativeQueueItem(item,{seed,design,stamp});
+    if(wasConfirmed)reconciled.push(gameId);else promoted.push(gameId);
+  }
+
+  state.updatedAt=stamp;queue.updatedAt=stamp;
+  queue.webValidationPolicy='DISABLED_DIRECT_NATIVE_DUAL_PLATFORM';
+  queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
+  writeJson(seedPath,state);writeJson(portfolioPath,portfolio);writeJson(catalogPath,catalog);writeJson(queuePath,queue);
+  return {promoted,skipped,reconciledExisting:[],reconciledPromotedSeeds:reconciled,queueCount:queue.items.length,ownerResetSeedsMaterialized:[],baselineGatesRefreshed:[],directNativeDual:true};
+}
+
 export function promoteReadyDesignSeeds({root='.'}={}){
+  if(directNativePolicy(root))return promoteDirectNativeDualDesignSeeds({root});
   const p=(...parts)=>path.join(root,...parts);
   const seedPath=p('game-seed-state.json');
   const portfolioPath=p('autonomous-portfolio.json');
