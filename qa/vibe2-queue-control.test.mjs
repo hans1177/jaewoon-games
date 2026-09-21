@@ -1296,3 +1296,27 @@ test('shared reserve state stays serialized while fan-in uses run-unique pending
   assert.match(fanInHeader,/cancel-in-progress: false/);
   assert.doesNotMatch(fanInHeader,/group: vibe2-control-state-vibe2-unreal-core/);
 });
+
+test('neuron-complete command writes immutable micro fan-in payload only when the task is complete',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-micro-payload-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const inputFile=path.join(dir,'result.json');
+  const outputFile=path.join(dir,'micro.json');
+  const reservation={id:'micro:1',runId:'micro',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
+  const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'micro-task',gameId:'micro',target:'web',department:'development',type:'implementation',goal:'micro',status:'queued',sourceRoot:'web-games/micro',responsibleFiles:['index.html']}
+  ]}),{maxConcurrentTasks:1,lane:'game-primary',reservation});
+  fs.writeFileSync(queueFile,JSON.stringify(reserved.queue,null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
+  fs.writeFileSync(inputFile,JSON.stringify({taskId:'micro-task',variant:'primary',outcome:'PASS',reservationId:'micro:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}},null,2));
+  const result=runQueueCommand({command:'neuron-complete',queue:queueFile,control:controlFile,lane:'game-primary',max:'20',min:'20','expected-variants':'1',input:inputFile,output:outputFile});
+  assert.equal(result.reason,'TASK_MICRO_FANIN_COMPLETE');
+  assert.equal(fs.existsSync(outputFile),true);
+  const payload=JSON.parse(fs.readFileSync(outputFile,'utf8'));
+  assert.equal(payload.microFanIn,true);
+  assert.equal(payload.taskId,'micro-task');
+  assert.equal(payload.results.length,1);
+  assert.equal(payload.results[0].reservationId,'micro:1');
+});
+
