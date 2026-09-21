@@ -3963,7 +3963,6 @@
       "homepageStage": "주력 개발 · Roblox Headless FAST_MVP",
       "homepageRecentWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
       "selectedPlatform": "ROBLOX",
-      "productionTier": 2,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3991,7 +3990,126 @@
       "newFeatureExpansionFrozen": true,
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
-      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json"
+      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "술래잡기",
+          "몬스터",
+          "비대칭 멀티"
+        ],
+        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+        "subgenre": "",
+        "playMode": "COMPETITIVE",
+        "playModeLabel": "경쟁",
+        "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+        "updatedAt": "2026-09-22T04:18:00+09:00",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 26,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "horror-escape-room",
+          "name": "심야 술래잡기",
+          "description": "실제 플레이어 몬스터 1명이 생존자를 얼리고 생존자는 서로 해동하며 버티는 직관형 몬스터 얼음땡",
+          "genres": [
+            "술래잡기",
+            "몬스터",
+            "비대칭 멀티"
+          ],
+          "image": "assets/page-bg-v4.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_DEVELOPMENT",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_DEVELOPMENT",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+          "selectedPlatform": "ROBLOX",
+          "stage": "주력 개발 · Roblox Headless FAST_MVP"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": false,
+            "playable": false,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": "roblox-games/horror-escape-room"
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "주력 개발 · Roblox Headless FAST_MVP",
+          "recentWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "술래잡기",
+              "몬스터",
+              "비대칭 멀티"
+            ],
+            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+            "subgenre": "",
+            "playMode": "COMPETITIVE",
+            "playModeLabel": "경쟁",
+            "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+            "updatedAt": "2026-09-22T04:18:00+09:00",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      }
     }
   ],
   "runtimeAuthority": "company-runtime",
