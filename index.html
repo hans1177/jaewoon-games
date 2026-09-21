@@ -76,7 +76,7 @@ button,a{font:inherit}
 <main class="shell">
 <header class="topbar">
   <a class="brand" href="#top" id="top">JAEWOON <span>GAMES</span></a>
-  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#developmentPipeline">개발 현황</a><a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT</a></nav>
+  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#developmentPipeline">개발 현황</a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch>ChatGPT</a></nav>
   <div id="appInstallBar"><button class="installMini" id="appInstallBtn" type="button">앱 설치</button><span class="installState" id="appInstallState"></span></div>
 </header>
 
@@ -107,7 +107,7 @@ button,a{font:inherit}
 </section>
 
 <footer class="footer">© 2026 JAEWOON GAMES</footer>
-<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="#developmentPipeline"><b>▥</b><span>개발</span></a><a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer"><b>GPT</b><span>ChatGPT</span></a></nav>
+<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="#developmentPipeline"><b>▥</b><span>개발</span></a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch><b>GPT</b><span>ChatGPT</span></a></nav>
 </main>
 
 <script>
@@ -125,6 +125,16 @@ async function requestHomepageInstall(){
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredAppInstall=event;appInstallBtn.disabled=false});
 window.addEventListener('appinstalled',()=>{deferredAppInstall=null;appInstallBtn.disabled=true;appInstallBtn.textContent='설치됨'});
 appInstallBtn.addEventListener('click',requestHomepageInstall);
+function openChatGpt(){
+  const fast='/command.html?from=chatgpt-shortcut';
+  if(/Android/i.test(navigator.userAgent)){
+    const fallback=encodeURIComponent(new URL(fast,location.href).href);
+    location.href='intent://chatgpt.com/#Intent;scheme=https;package=com.openai.chatgpt;S.browser_fallback_url='+fallback+';end';
+    return;
+  }
+  location.href='https://chatgpt.com/';
+}
+document.querySelectorAll('[data-chatgpt-launch]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openChatGpt();}));
 registerHomepagePwa();
 </script>
 <script type="module" src="/assets/homepage-enhancements.js"></script>
