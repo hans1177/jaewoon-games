@@ -1,44 +1,24 @@
 {
   "version": 1,
-  "before": "141a6206b80160ed322812b3d3a67257c0a11bad",
-  "after": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
-  "generatedAt": "2026-09-21T10:03:41.034Z",
+  "before": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+  "after": "f5e275711ebd1c3b8bcf45b4175125f0dbfc353a",
+  "generatedAt": "2026-09-21T10:37:17.546Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "daechung-rpg",
       "sourcePath": "web-games/daechung-rpg",
-      "sourceBefore": "141a6206b80160ed322812b3d3a67257c0a11bad",
-      "sourceAfter": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
-      "semanticIntentFingerprint": "73a415dd151ee85a0dfa32a31e6e6a1d306d6d7ec53490831da7765c41b68c4c",
+      "sourceBefore": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+      "sourceAfter": "f5e275711ebd1c3b8bcf45b4175125f0dbfc353a",
+      "semanticIntentFingerprint": "2edbb800226d661691fc972d6703a86c42eff4f6f60c22ab242c50a64ca24065",
       "affectedSystems": [
         "MOVEMENT",
+        "COMBAT",
+        "WORLD",
+        "PROGRESSION",
         "AUDIO",
-        "UI_UX",
-        "SAVE"
-      ],
-      "platformTargets": [
-        "UNITY"
-      ],
-      "literalWebCodeCrossPlatformCopyForbidden": true,
-      "semanticIntentPropagationRequired": true,
-      "affectedWebQaRequired": true,
-      "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-21T10:03:41.034Z",
-      "state": "PLATFORM_PROPAGATION_REQUIRED"
-    },
-    {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE",
-      "gameId": "line-defense",
-      "sourcePath": "web-games/line-defense",
-      "sourceBefore": "141a6206b80160ed322812b3d3a67257c0a11bad",
-      "sourceAfter": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
-      "semanticIntentFingerprint": "3146c38860623555444f91d3c31d6c8f9d5cc0aeb8163c02ecceaf5aeba6e770",
-      "affectedSystems": [
-        "MOVEMENT",
-        "MULTIPLAYER",
+        "SAVE",
         "BALANCE"
       ],
       "platformTargets": [
@@ -48,7 +28,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-21T10:03:41.034Z",
+      "detectedAt": "2026-09-21T10:37:17.546Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
