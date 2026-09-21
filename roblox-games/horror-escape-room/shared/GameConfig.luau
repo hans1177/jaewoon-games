@@ -12,9 +12,9 @@ local Config={
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=36,ArenaLimit=86,
  Audio={
   Background="rbxassetid://9044889073",
-  Chase="rbxassetid://9043365993",
-  Ui="rbxassetid://282906960",
-  Action="rbxassetid://130113322",
+  Chase="rbxassetid://9042664292",
+  Action="rbxassetid://1837829181",
+  Warning="rbxassetid://9043346574",
  },
  Maps={
   {Id="SCHOOL",Name="학교",Events={
