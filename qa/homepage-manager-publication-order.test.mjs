@@ -199,3 +199,10 @@ test('homepage front door stays simple, game-first and mobile touch-first',()=>{
   assert.ok(index.indexOf('id="hero"')<index.indexOf('aria-label="게임 운영 요약"'));
   assert.ok(index.indexOf('id="gameHub"')<index.indexOf('id="developmentPipeline"'));
 });
+
+test('homepage workflow follows central architecture changes',()=>{
+  const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.match(workflow,/company-learning\/company-architecture-map\.json/);
+  assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
+  assert.match(workflow,/JSON\.parse[\s\S]*company-learning\/company-architecture-map\.json/);
+});
