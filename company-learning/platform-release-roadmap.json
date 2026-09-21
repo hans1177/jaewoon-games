@@ -1,5 +1,5 @@
 {
-  "version": 231,
+  "version": 232,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4869,6 +4869,34 @@
       "mustNotRender": true,
       "testCandidateManifestRetainedForValidationEvidence": true,
       "testCandidateManifestIsHomepageShelf": false
+    },
+    "frontDoor": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "mode": "SIMPLE_GAME_FIRST_RESPONSIVE",
+      "order": [
+        "FEATURED_GAME",
+        "LIVE_SUMMARY",
+        "GAME_CENTER",
+        "DEVELOPMENT_PIPELINE",
+        "SECONDARY_COMMUNITY_AND_COMPANY"
+      ],
+      "desktop": {
+        "featuredHeroFirst": true,
+        "concisePrimaryNavigation": true,
+        "gameGridPreferredColumns": 4
+      },
+      "mobile": {
+        "touchFirst": true,
+        "fixedBottomNavigation": true,
+        "horizontalGameCardBrowse": true,
+        "horizontalDevelopmentStepBrowse": true,
+        "oversizedTextAndLongIntroAvoided": true
+      },
+      "runtimeDataAuthority": "company-runtime",
+      "renderer": "index.html + assets/homepage-enhancements.js",
+      "gameplayAndReleaseSemanticsUnchanged": true,
+      "directPlayPriority": true
     }
   },
   "serverHomepageIntegration": {
