@@ -1,5 +1,5 @@
 {
-  "version": 248,
+  "version": 249,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4843,7 +4843,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-21T12:40:19.836Z",
+  "updatedAt": "2026-09-21T12:55:16.129Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -12610,7 +12610,35 @@
       "canonicalSourceRoot": "unity-games/<gameId>/",
       "buildArtifactRoot": "web-games/<gameId>/",
       "fullGameplayValidationOwner": "company-development-confirmed-runtime",
-      "buildBootSmokeIsFullGate": false
+      "buildBootSmokeIsFullGate": false,
+      "runtimeGameplayValidator": "tools/company-unity-web-gameplay-validation.mjs"
+    },
+    "runtimeQaContract": {
+      "version": 1,
+      "queryMode": "qa=1",
+      "controls": {
+        "startOrEnterGameplay": "Digit1",
+        "coreAction": "Space",
+        "safeReturnOrReset": "KeyR"
+      },
+      "evidencePrefix": "JAEWOON_UNITY_WEB_QA",
+      "acceptedGameplayStartMarkers": [
+        "START",
+        "REGION"
+      ],
+      "acceptedCoreActionMarkers": [
+        "ACTION",
+        "ATTACK"
+      ],
+      "acceptedProgressMarkers": [
+        "PROGRESS",
+        "REWARD"
+      ],
+      "stateMarker": "STATE",
+      "realGameFunctionsOnly": true,
+      "fakeStateMutationForbidden": true,
+      "browserValidator": "tools/company-unity-web-gameplay-validation.mjs",
+      "initialGameplayQaIsFinalCoreFunPass": false
     }
   }
 }
