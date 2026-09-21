@@ -398,3 +398,19 @@ test('owner-focused Roblox package completion dispatches the existing continuati
   assert.match(workflow,/company-development-roblox-runtime-continuation\.yml/);
   assert.match(workflow,/ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES/);
 });
+
+test('Roblox runtime revalidates changed game source and invalidates stale downstream gates',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/Detect Roblox game source changes in this push/);
+  assert.match(workflow,/--changed-game-ids=/);
+  assert.match(workflow,/robloxBuildOrPackagePassed:false/);
+  assert.match(workflow,/robloxBuildArtifactIdentity:null/);
+  assert.match(workflow,/robloxBuildPreflightPassed:false/);
+  assert.match(workflow,/robloxHeadlessFastMvpPassed:false/);
+  assert.match(workflow,/robloxInternalReleaseReady:false/);
+  assert.match(workflow,/robloxPublicRelease:false/);
+  assert.match(workflow,/robloxReleaseClaim:false/);
+  assert.match(workflow,/robloxEvidenceInvalidatedBySourceChange/);
+  assert.match(workflow,/roblox-build-package-revalidation-pending/);
+});
+
