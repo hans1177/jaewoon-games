@@ -369,7 +369,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-system-ai-worker'
           git config user.email 'system-ai-worker@users.noreply.github.com'
-          git add -- tools qa assets .github/workflows company-learning
+          git add -- tools qa assets .github/workflows company-learning web-games roblox-games unity-games unreal-games godot-games
           test -n "$(git diff --cached --name-only)"
           git commit -m "system-ai: candidate ${TASK_ID}"
           git push origin "HEAD:${SYSTEM_AI_BRANCH}"
