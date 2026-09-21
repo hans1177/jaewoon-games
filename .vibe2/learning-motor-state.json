@@ -1580,7 +1580,8 @@
       "coding_k4oggv",
       "coding_166sv35",
       "coding_1unov2f",
-      "coding_1gqwar6"
+      "coding_1gqwar6",
+      "coding_lqjt6c"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -4562,9 +4563,9 @@
         "lastUpdatedAt": "2026-09-21T08:34:41.164Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
-        "verifiedApplications": 513,
-        "firstCandidatePasses": 86,
-        "totalGenerationAttempts": 1146,
+        "verifiedApplications": 514,
+        "firstCandidatePasses": 87,
+        "totalGenerationAttempts": 1147,
         "verifiedFailures": 323,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 80,
@@ -4577,7 +4578,7 @@
           "bug-defense": 44,
           "village-dungeons": 49,
           "survival2": 7,
-          "monster-adventure": 94,
+          "monster-adventure": 95,
           "daechung-rpg": 40,
           "island-village": 1,
           "territory-war": 1,
@@ -4588,7 +4589,7 @@
           "survival": 1
         },
         "targets": {
-          "web": 513
+          "web": 514
         },
         "contextModes": {
           "BOOTSTRAP_SHELL": {
@@ -4602,14 +4603,14 @@
             "lastUpdatedAt": "2026-09-19T17:20:54.705Z"
           },
           "PRIMARY_SYMBOL_WINDOWS": {
-            "verifiedApplications": 467,
+            "verifiedApplications": 468,
             "verifiedFailures": 157,
-            "firstCandidatePasses": 86,
-            "totalGenerationAttempts": 1025,
-            "totalContextBytes": 8547583,
-            "lastEvidence": "coding_166sv35",
+            "firstCandidatePasses": 87,
+            "totalGenerationAttempts": 1026,
+            "totalContextBytes": 8552989,
+            "lastEvidence": "coding_lqjt6c",
             "lastFailureEvidence": "coding_negative_1enni0i",
-            "lastUpdatedAt": "2026-09-21T08:31:37.096Z"
+            "lastUpdatedAt": "2026-09-21T08:46:01.537Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 6,
@@ -5053,16 +5054,16 @@
             "lastUpdatedAt": "2026-09-20T02:28:49.224Z"
           },
           "web|MALFORMED_OUTPUT|OTHER": {
-            "verifiedApplications": 110,
-            "firstCandidatePasses": 53,
-            "totalGenerationAttempts": 220,
+            "verifiedApplications": 111,
+            "firstCandidatePasses": 54,
+            "totalGenerationAttempts": 221,
             "verifiedFailures": 19,
             "games": {
-              "monster-adventure": 77,
+              "monster-adventure": 78,
               "ant-simulator": 33
             },
             "targets": {
-              "web": 110
+              "web": 111
             },
             "failureGames": {
               "ant-simulator": 10,
@@ -5074,9 +5075,9 @@
             "failureClasses": {
               "MALFORMED_OUTPUT": 19
             },
-            "lastEvidence": "coding_xb0r7j",
+            "lastEvidence": "coding_lqjt6c",
             "lastFailureEvidence": "coding_negative_x5bmhr",
-            "lastUpdatedAt": "2026-09-21T08:27:40.614Z"
+            "lastUpdatedAt": "2026-09-21T08:46:01.537Z"
           },
           "web|OTHER": {
             "verifiedApplications": 0,
@@ -5325,9 +5326,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_166sv35",
+        "lastEvidence": "coding_lqjt6c",
         "lastFailureEvidence": "coding_negative_7gvz8y",
-        "lastUpdatedAt": "2026-09-21T08:34:41.165Z"
+        "lastUpdatedAt": "2026-09-21T08:46:01.537Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 124,
@@ -8175,7 +8176,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-21T08:44:22.938Z",
+    "lastBuiltAt": "2026-09-21T08:46:01.566Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -12083,5 +12084,5 @@
       "knowledge_b8l2cn"
     ]
   },
-  "updatedAt": "2026-09-21T08:44:22.938Z"
+  "updatedAt": "2026-09-21T08:46:01.566Z"
 }
