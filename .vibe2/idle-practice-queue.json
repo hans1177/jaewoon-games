@@ -9,7 +9,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 22,
+  "phase4GeneralizationDrills": 20,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -172,44 +172,6 @@
         "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_wu3qnk"
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_0ce73fa4ec23024bd474ad30",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30",
-      "phase4PairId": "phase4-pair-mt948z",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "bug-defense",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-28lqx9",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_0ce73fa4ec23024bd474ad30",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_0ce73fa4ec23024bd474ad30",
-      "phase4PairId": "phase4-pair-mt948z",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "bug-defense",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-28lqx9",
-      "mayPromoteGeneralization": false
     },
     {
       "id": "phase4-generalization-capability_ctrace_7022dd1d29e03580f9fab379-control",
