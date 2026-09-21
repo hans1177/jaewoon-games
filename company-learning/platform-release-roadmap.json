@@ -10576,8 +10576,10 @@
         "DEFER",
         "REJECT"
       ],
-      "decisionAuthority": "VIBE",
-      "automaticAcceptanceForbidden": true
+      "decisionAuthority": "PRIMARY_AI_AND_VIBE_JOINT",
+      "automaticAcceptanceForbidden": false,
+      "jointDecisionRequired": true,
+      "ownerApprovalGate": false
     },
     "timingPolicy": {
       "immediate": [
@@ -10782,7 +10784,7 @@
         "HOLD",
         "ROLLBACK"
       ],
-      "decisionAuthority": "VIBE",
+      "decisionAuthority": "PRIMARY_AI_AND_VIBE_JOINT",
       "requiredReview": [
         "PLAYER_BASE_EVIDENCE",
         "RETENTION_EVIDENCE",
@@ -10791,7 +10793,8 @@
         "SECURITY_AND_PURCHASE_AUTHORITY",
         "PLATFORM_POLICY",
         "MEASUREMENT_AND_ROLLBACK"
-      ]
+      ],
+      "ownerApprovalGate": false
     },
     "researchQuestions": [
       "왜 이 게임을 처음 클릭해야 하는가?",
@@ -10852,7 +10855,21 @@
       ],
       "vibeDecisionUsesEvidenceNotDepartmentAuthority": true,
       "weakEvidenceDefault": "REQUEST_MORE_RESEARCH_OR_DEFER",
-      "departmentRecommendationNeverEqualsExecutionOrder": true
+      "departmentRecommendationNeverEqualsExecutionOrder": true,
+      "primaryAiAuthority": [
+        "ACCEPT",
+        "PARTIAL_ACCEPT",
+        "DEFER",
+        "REJECT",
+        "REQUEST_MORE_RESEARCH",
+        "RUN_LIMITED_EXPERIMENT",
+        "CHOOSE_APPLICATION_SCOPE",
+        "CHOOSE_APPLICATION_TIMING",
+        "CHOOSE_PRIORITY",
+        "RECLASSIFY_HOTFIX_MINOR_OR_MAJOR"
+      ],
+      "jointApplicationDecision": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
     },
     "dataResearchDiscipline": {
       "version": 1,
@@ -11039,7 +11056,15 @@
         "vibeCanStopOrReverseAnyExperiment": true
       }
     },
-    "noOwnerApprovalGate": true
+    "noOwnerApprovalGate": true,
+    "executionAuthority": {
+      "mode": "PRIMARY_AI_AND_VIBE_JOINT_AUTONOMOUS_NONFINANCIAL_EXECUTION",
+      "primaryAiMayApprove": true,
+      "vibeMayApprove": true,
+      "jointDecisionRequired": true,
+      "ownerApprovalGate": false,
+      "paidFinancialExecutionUnavailable": true
+    }
   },
   "recordsGovernance": {
     "version": 1,
