@@ -1,5 +1,5 @@
 {
-  "version": 242,
+  "version": 243,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4993,6 +4993,18 @@
         "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
         "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
         "selectedPlatformDoesNotHideOtherTracks": true
+      },
+      "gameCardActions": {
+        "order": [
+          "WEB",
+          "ROBLOX",
+          "UNITY",
+          "FORTNITE_UEFN"
+        ],
+        "webAlwaysVisible": true,
+        "concurrentPlatformSlotsVisible": true,
+        "verifiedReleaseLinksActivateAutomatically": true,
+        "unavailablePlatformState": "DEVELOPMENT_DISABLED_BUTTON"
       }
     }
   },
