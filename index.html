@@ -29,8 +29,8 @@ button,a{font:inherit}
 .homeFocusInner{min-height:390px;padding:46px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end}
 .homeFocusInner h1{margin:0 0 9px;font-size:48px;line-height:1.03;letter-spacing:-1.8px}
 .homeFocusInner p{max-width:560px;margin:0 0 15px;font-size:15px;line-height:1.55;font-weight:650;color:#f3f7fb}
-.homeFocusMeta{display:flex;gap:7px;flex-wrap:wrap}.homeFocusMeta span{padding:6px 9px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.10);font-size:10px;font-weight:850}
-.homeFocusInner small{margin-top:9px;color:#dbe6ef;font-size:11px}
+
+
 .homeFocusBtn{margin-top:16px;display:inline-flex;min-height:48px;align-items:center;justify-content:center;padding:0 18px;border-radius:11px;background:#fff;color:#122233;text-decoration:none;font-size:13px;font-weight:1000}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 30px}
@@ -46,8 +46,8 @@ button,a{font:inherit}
 .homeGameShelf{margin:0 0 30px}.gameShelfHead{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}.gameShelfHead h2{margin:0;font-size:24px;letter-spacing:-.8px}.gameShelfHead p{margin:4px 0 0;font-size:11px;color:var(--muted);font-weight:750}.gameShelfCount{font-size:11px;color:var(--muted);font-weight:850}
 .gameShelfGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .foldGameCard{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(20,40,60,.05)}
-.foldGameArt{height:145px;position:relative;background:#dce4eb;overflow:hidden}.foldGameArt img{width:100%;height:100%;object-fit:cover}.foldGameArt:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(5,15,24,.78))}.foldGameTitle{position:absolute;z-index:2;left:12px;right:12px;bottom:10px;color:#fff}.foldGameTitle b{font-size:17px}
-.foldGameBody{padding:12px}.foldBadges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}.foldBadge{padding:4px 7px;border-radius:999px;background:#eef4fb;color:#35536c;font-size:8px;font-weight:900}.foldBadge.score{background:#e5f6eb;color:#24623b}
+.foldGameArt{height:145px;position:relative;background:#dce4eb;overflow:hidden}.foldGameArt img{width:100%;height:100%;object-fit:cover}
+.foldGameBody{padding:14px}.foldGameBody h3{margin:0 0 7px;font-size:16px;letter-spacing:-.4px}
 .foldGameBody p{min-height:36px;margin:0 0 8px;font-size:10px;line-height:1.5;color:#576b7d}.foldGameMeta{font-size:9px;line-height:1.5;color:#789}.foldGameActions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px}.foldGameBtn{display:flex;min-height:36px;align-items:center;justify-content:center;border-radius:9px;background:#1677ff;color:white;text-decoration:none;font-size:9px;font-weight:900}.foldGameBtn.secondary{background:#edf5ff;color:#1264c4}.foldGameBtn.platformAction{background:#17202a}.foldGameBtn.off{background:#edf1f4;color:#9aa7b2;pointer-events:none}.releaseTag{display:none}
 
 .pipeline{margin-top:32px;padding:22px;border:1px solid var(--line);border-radius:18px;background:#fff}
@@ -62,7 +62,7 @@ button,a{font:inherit}
 @media(max-width:700px){
   .shell{padding:10px 10px 82px}.topbar{height:54px}.brand{font-size:19px}.mainNav{display:none}.installMini{padding:9px 11px;font-size:10px}
   .hero{min-height:310px;margin-top:4px;border-radius:17px}.hero:before{background:linear-gradient(0deg,rgba(5,14,24,.94),rgba(5,14,24,.55) 70%,rgba(5,14,24,.18)),var(--focus-bg,url('/assets/page-bg-v4.webp')) center/cover no-repeat}
-  .homeFocusInner{min-height:310px;padding:22px 18px}.homeFocusInner h1{font-size:34px}.homeFocusInner p{font-size:13px}.homeFocusMeta span:nth-child(n+4){display:none}.homeFocusBtn{width:100%;min-height:46px}
+  .homeFocusInner{min-height:310px;padding:22px 18px}.homeFocusInner h1{font-size:34px}.homeFocusInner p{font-size:13px}.homeFocusBtn{width:100%;min-height:46px}
   .stats{gap:7px;margin:10px 0 24px}.stat{min-height:72px;padding:11px 5px}.stat b{font-size:23px}.stat span{font-size:9px}
   .gameShelfHead h2{font-size:21px}.gameShelfHead p{font-size:10px}
   .gameShelfGrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 1px 4px}.gameShelfGrid::-webkit-scrollbar{display:none}.foldGameCard{flex:0 0 78vw;max-width:320px;scroll-snap-align:start}.foldGameArt{height:170px}
