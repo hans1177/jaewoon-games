@@ -221,12 +221,11 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "daechung-rpg",
         "sourcePath": "web-games/daechung-rpg",
-        "sourceBefore": "f97b2f9c32f7ac984b67e0ce71b7e8636ddd3ff0",
-        "sourceAfter": "389143a471ab05230433c85902a6e239daeedfc6",
-        "semanticIntentFingerprint": "16f3dc3b8967381da7bc85349278e874cfc110827d68c38420383ba46d7e7676",
+        "sourceBefore": "141a6206b80160ed322812b3d3a67257c0a11bad",
+        "sourceAfter": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+        "semanticIntentFingerprint": "73a415dd151ee85a0dfa32a31e6e6a1d306d6d7ec53490831da7765c41b68c4c",
         "affectedSystems": [
           "MOVEMENT",
-          "PROGRESSION",
           "AUDIO",
           "UI_UX",
           "SAVE"
@@ -238,11 +237,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-09-21T08:54:17.321Z",
+        "detectedAt": "2026-09-21T10:03:41.034Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-21T08:54:17.321Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-21T10:03:41.034Z"
     },
     {
       "gameId": "monster-adventure",
@@ -876,7 +875,32 @@
       "vibeWebImplementationRequired": true,
       "vibeWebRequestedStage": "WEB_BASE_IMPLEMENTATION",
       "vibeWebImplementationReason": "REAL_GAME_MECHANIC_COUNT_TOO_LOW:1:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-86bde7efe9|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-b347a6bd0a|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-c614cb6a4b|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-53f9059bd3|APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:1:4|MUSIC_RUNTIME_REQUIRED|MUSIC_MUTE_CONTROL_REQUIRED|MUSIC_VOLUME_CONTROL_REQUIRED|INLINE_SCRIPT_SYNTAX_INVALID|[WEB_CONTRACT_ADAPTER] 기존 실제 기능을 먼저 재사용한다. 검증용 가짜 기능이나 숨은 버튼을 만들지 않는다. data-scope-id와 data-mechanic-id는 실제 입력 컨트롤 또는 실제 gameplay surface에만 바인딩한다. - scope-corefun-27c99c0f63 -> #game | mechanic=core-game | family=CORE | confidence=HIGH | evidence=existing-scope-binding,core-gameplay-surface,existing-mechanic,gameplay-action - scope-coreloop-1-b347a6bd0a -> #cannon | mechanic=combat-cannon | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT - scope-coreloop-2-c614cb6a4b -> #game | mechanic=core-game | family=PROGRESSION | confidence=LOW | evidence=direct-gameplay-progression-control,existing-mechanic,gameplay-action - scope-mobileux-53f9059bd3 -> #cannon | mechanic=combat-cannon | family=COMBAT | confidence=LOW | evidence=nearby-family:COMBAT - UNMAPPED scope-coreloop-0-86bde7efe9 | MOVEMENT/SPATIAL_WORLD | 실제 기능이 있으면 찾아 바인딩하고, 없을 때만 승인 설계 범위 안에서 구현한다. EXTERNAL_AI_ADVISORY=AMB",
-      "sourceRootBootstrapRequired": false
+      "sourceRootBootstrapRequired": false,
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "line-defense",
+        "sourcePath": "web-games/line-defense",
+        "sourceBefore": "141a6206b80160ed322812b3d3a67257c0a11bad",
+        "sourceAfter": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+        "semanticIntentFingerprint": "3146c38860623555444f91d3c31d6c8f9d5cc0aeb8163c02ecceaf5aeba6e770",
+        "affectedSystems": [
+          "MOVEMENT",
+          "MULTIPLAYER",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-09-21T10:03:41.034Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-09-21T10:03:41.034Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1124,7 +1148,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-21T06:11:59.294Z"
     }
   ],
-  "updatedAt": "2026-09-21T09:51:14.722Z",
+  "updatedAt": "2026-09-21T10:03:41.034Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",

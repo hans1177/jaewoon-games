@@ -1,20 +1,19 @@
 {
   "version": 1,
-  "before": "f97b2f9c32f7ac984b67e0ce71b7e8636ddd3ff0",
-  "after": "389143a471ab05230433c85902a6e239daeedfc6",
-  "generatedAt": "2026-09-21T08:54:17.321Z",
+  "before": "141a6206b80160ed322812b3d3a67257c0a11bad",
+  "after": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+  "generatedAt": "2026-09-21T10:03:41.034Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "daechung-rpg",
       "sourcePath": "web-games/daechung-rpg",
-      "sourceBefore": "f97b2f9c32f7ac984b67e0ce71b7e8636ddd3ff0",
-      "sourceAfter": "389143a471ab05230433c85902a6e239daeedfc6",
-      "semanticIntentFingerprint": "16f3dc3b8967381da7bc85349278e874cfc110827d68c38420383ba46d7e7676",
+      "sourceBefore": "141a6206b80160ed322812b3d3a67257c0a11bad",
+      "sourceAfter": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+      "semanticIntentFingerprint": "73a415dd151ee85a0dfa32a31e6e6a1d306d6d7ec53490831da7765c41b68c4c",
       "affectedSystems": [
         "MOVEMENT",
-        "PROGRESSION",
         "AUDIO",
         "UI_UX",
         "SAVE"
@@ -26,7 +25,30 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-21T08:54:17.321Z",
+      "detectedAt": "2026-09-21T10:03:41.034Z",
+      "state": "PLATFORM_PROPAGATION_REQUIRED"
+    },
+    {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE",
+      "gameId": "line-defense",
+      "sourcePath": "web-games/line-defense",
+      "sourceBefore": "141a6206b80160ed322812b3d3a67257c0a11bad",
+      "sourceAfter": "66f233efd109f97bdcf3489a55c3bddbab1cb1bd",
+      "semanticIntentFingerprint": "3146c38860623555444f91d3c31d6c8f9d5cc0aeb8163c02ecceaf5aeba6e770",
+      "affectedSystems": [
+        "MOVEMENT",
+        "MULTIPLAYER",
+        "BALANCE"
+      ],
+      "platformTargets": [
+        "UNITY"
+      ],
+      "literalWebCodeCrossPlatformCopyForbidden": true,
+      "semanticIntentPropagationRequired": true,
+      "affectedWebQaRequired": true,
+      "affectedPlatformQaRequired": true,
+      "detectedAt": "2026-09-21T10:03:41.034Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
