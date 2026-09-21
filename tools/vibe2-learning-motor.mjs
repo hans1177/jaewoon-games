@@ -999,6 +999,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const engine=lower(task.target);
   const failureFingerprint=failureFingerprintForTask(task);
   const taskFailureCodes=explicitFailureCodes([task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
+  const mastery=createMasteryState(masteryInput);
   const domainClassification=classifyLearningDomains(task);
   const primaryDomains=new Set(domainClassification.primary);
   const secondaryDomains=new Set(domainClassification.secondary);
@@ -1026,7 +1027,6 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     return {record,score:Number(score.toFixed(3)),reasons};
   }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
 
-  const mastery=createMasteryState(masteryInput);
   const patterns=(codePatternsInput?.patterns||[])
     .filter(row=>row?.retrievalEligible!==false&&knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)!=='RETIRED')
     .map(row=>{
