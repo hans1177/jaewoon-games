@@ -103,7 +103,7 @@ test('verification-only System AI tasks run deterministic contracts before any m
   assert.match(workflow,/if: steps\.preflight\.outcome == 'success' && startsWith\(matrix\.taskId, 'sys-verify-'\) && env\.SOURCE_MUTATION_REQUIRED != 'true'/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_PREVERIFY_SATISFIED=YES/);
   assert.match(workflow,/if: steps\.preflight\.outcome == 'success' && steps\.preverify\.outcome != 'success'/);
-  assert.match(workflow,/const preverified=!mutationRequired&&process\.env\.PREVERIFY_OUTCOME==='success'/);
+  assert.match(workflow,/const preverified=!mutationRequired&&!infrastructureFailure&&process\.env\.PREVERIFY_OUTCOME==='success'/);
   assert.match(workflow,/model-call-skipped:deterministic-verifier-already-satisfied/);
 });
 
