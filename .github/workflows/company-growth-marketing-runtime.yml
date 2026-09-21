@@ -1,0 +1,94 @@
+name: Company Growth Marketing Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-growth-marketing-runtime.yml'
+      - 'tools/company-growth-marketing-planner.mjs'
+      - 'tools/company-growth-marketing-qa.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-directive.json'
+      - 'game-catalog.json'
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-growth-marketing-runtime
+  cancel-in-progress: false
+
+env:
+  CONTROL_BRANCH: vibe2-unreal-core
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify marketing runtime
+        run: |
+          set -euo pipefail
+          node --check tools/company-growth-marketing-planner.mjs
+          node --check tools/company-growth-marketing-qa.mjs
+
+      - name: Load current runtime and control queues
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin company-runtime "$CONTROL_BRANCH"
+          git show origin/company-runtime:game-catalog.json > /tmp/marketing-game-catalog.json
+          git show origin/"$CONTROL_BRANCH":.vibe2/system-ai-queue.json > /tmp/marketing-system-ai-queue.json
+
+      - name: Generate marketing work
+        run: |
+          set -euo pipefail
+          node tools/company-growth-marketing-planner.mjs             --catalog=/tmp/marketing-game-catalog.json             --queue=/tmp/marketing-system-ai-queue.json             --roadmap=company-learning/platform-release-roadmap.json             --output=/tmp/marketing-plan.json | tee /tmp/marketing-plan.log
+
+      - name: Persist marketing work to shared execution queue
+        run: |
+          set -euo pipefail
+          git worktree remove --force /tmp/marketing-control 2>/dev/null || true
+          rm -rf /tmp/marketing-control
+          git worktree add --detach /tmp/marketing-control origin/"$CONTROL_BRANCH" >/dev/null
+          cp /tmp/marketing-system-ai-queue.json /tmp/marketing-control/.vibe2/system-ai-queue.json
+          mkdir -p /tmp/marketing-control/.vibe2/marketing
+          cp /tmp/marketing-plan.json /tmp/marketing-control/.vibe2/marketing/latest-plan.json
+          cd /tmp/marketing-control
+          git config user.name 'jaewoon-growth-marketing'
+          git config user.email 'growth-marketing@users.noreply.github.com'
+          git add .vibe2/system-ai-queue.json .vibe2/marketing/latest-plan.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'marketing: queue autonomous growth work [skip ci]'
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$CONTROL_BRANCH"; then exit 0; fi
+              sleep $((attempt*2))
+            done
+            exit 1
+          fi
+
+      - name: Wake external AI and Vibe collaboration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          count="$(node -p "require('/tmp/marketing-plan.json').added.length")"
+          if [ "$count" != "0" ]; then
+            gh api repos/"$GITHUB_REPOSITORY"/dispatches               -f event_type='company-system-ai-cycle'               -f client_payload='{"source":"growth-marketing-runtime"}'
+            gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "MARKETING_COLLABORATION_WAKE=YES:$count"
+          else
+            echo 'MARKETING_COLLABORATION_WAKE=NO_NEW_TASK'
+          fi
