@@ -2174,10 +2174,28 @@
           "primaryAiMayDirect": true,
           "systemStewardMayEnqueue": true,
           "externalSystemAiMayExecuteAssignedRecovery": true,
-          "gameSourceRepairStillVibe2Vibe3Only": true,
+          "gameSourceRepairStillVibe2Vibe3Only": false,
           "directMainWrite": false,
           "candidateIsolationRequired": true,
-          "exactFailedGateRerunRequired": true
+          "exactFailedGateRerunRequired": true,
+          "scopedGameSourceRepairMayUseExternalSystemAi": true,
+          "gameSourceRepairAuthority": "VIBE_PRIMARY_WITH_SCOPED_EXTERNAL_AI_COLLABORATION",
+          "externalGameSourceRepairRequirements": [
+            "EXPLICIT_RESPONSIBLE_FILES",
+            "ISOLATED_CANDIDATE_BRANCH",
+            "NO_CENTRAL_POLICY_WRITE",
+            "NO_DIRECT_MAIN_WRITE",
+            "NO_WORKER_SELF_ACCEPTANCE",
+            "EXACT_FAILED_GATE_RERUN",
+            "DETERMINISTIC_QA_BEFORE_PRIMARY_AI_AND_VIBE_REVIEW"
+          ],
+          "vibe2Vibe3RemainFallbackWhen": [
+            "RESPONSIBLE_FILES_MISSING",
+            "CENTRAL_POLICY_OR_PROTECTED_CHANGE",
+            "OWNER_DECISION_REQUIRED",
+            "PAID_RESOURCE_REQUIRED",
+            "EXTERNAL_AI_SCOPE_NOT_SAFE"
+          ]
         },
         "review": {
           "primaryAiDirectReviewRequiredForSystemRecoveryCandidate": true,
@@ -2219,8 +2237,8 @@
         "activation": "ANY_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK",
         "objective": "RESTORE_REAL_GAME_DEVELOPMENT_THROUGHPUT_BEFORE_NON_CRITICAL_AUXILIARY_WORK",
         "workerRouting": {
-          "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_AND_EXACT_STAGE_RESUME",
-          "SYSTEM_AI": "ORCHESTRATION_CI_QUEUE_PLANNER_AND_COMMON_BOTTLENECK_REPAIR_WITH_CENTRAL_POLICY_WAKE",
+          "VIBE2_VIBE3": "PRIMARY_GAME_SOURCE_IMPLEMENTATION_EXACT_STAGE_RESUME_AND_FALLBACK_FOR_UNSAFE_OR_UNSCOPED_REPAIR",
+          "SYSTEM_AI": "ORCHESTRATION_CI_QUEUE_PLANNER_COMMON_BOTTLENECK_AND_SCOPED_ASSIGNED_GAME_SOURCE_REPAIR_WITH_CANDIDATE_ISOLATION",
           "QA_REVIEW": "VERIFY_CAUSAL_REPAIR_UPDATE_STALE_CONTRACT_TESTS_AND_UNBLOCK_NEXT_DEVELOPMENT_STAGE",
           "DIRECTOR": "KEEP_ALL_ELIGIBLE_WORKERS_ALIGNED_TO_HIGHEST_IMPACT_DEVELOPMENT_BOTTLENECK",
           "LEARNING": "USE_ONLY_IDLE_CAPACITY_WHILE_ACTIONABLE_DEVELOPMENT_BOTTLENECK_EXISTS"
