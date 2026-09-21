@@ -21,7 +21,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-18
+  latestOwnerDirectiveRecordedAt: 2026-09-21
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -30,6 +30,40 @@ priority:
   - LEGACY_COMPANY_FLOW_MIRROR
   - IMPLEMENTATION_TOOL_CONTRACTS
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
+
+currentDirectNativeExecutionMirror:
+  authority: company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment
+  syncDocument: company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md
+  authoritative: false
+  unityWeb: DISABLED
+  webDevelopmentGate: DISABLED
+  supportedNativePlatforms: [ROBLOX, UNITY]
+  requestEitherPlatformStartsBoth: true
+  sameGameAutoPair: true
+  design:
+    commonCoreRequired: true
+    platformProfilesRequired: [ROBLOX, UNITY]
+    identicalPlatformProfileForbidden: true
+    admissionGate: MINIMUM_DESIGN_CONTRACT_READY
+    strictReviewRunsInParallel: true
+  development:
+    globalEligibleGameCap: null
+    executionBatchesAreCapacityOnly: true
+    onePlatformFailureCancelsOther: false
+  release:
+    firstGoal: INTERNAL_PLATFORM_RELEASE
+    robloxInternal: PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE
+    unityInternal: INTERNAL_OR_CLOSED_APP_TEST_BUILD
+    secondGoal: PUBLIC_RELEASE
+    publicReleasePlatformIndependent: true
+  homepage:
+    runtimeAuthority: company-runtime
+    perGamePlatformStates: [ROBLOX, UNITY]
+    unityWebDisplayed: false
+    webPlayDisplayed: false
+  legacyWebSectionsBelow:
+    executionAuthority: NONE
+    purpose: HISTORICAL_COMPATIBILITY_ONLY
 
 ownerCurrentProductionContract:
   recordedAt: 2026-09-15
