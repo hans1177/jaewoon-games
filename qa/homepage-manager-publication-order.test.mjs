@@ -183,20 +183,26 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
   assert.match(manager,/HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1/);
 });
 
-test('homepage front door stays simple, game-first and mobile touch-first',()=>{
+test('homepage front door matches approved sample on desktop and mobile',()=>{
   const index=fs.readFileSync('index.html','utf8');
   const front=roadmap.homepagePresentation?.frontDoor||{};
-  assert.equal(front.mode,'SIMPLE_GAME_FIRST_RESPONSIVE');
-  assert.deepEqual(front.order.slice(0,4),['FEATURED_GAME','LIVE_SUMMARY','GAME_CENTER','DEVELOPMENT_PIPELINE']);
+  assert.equal(front.mode,'SAMPLE_FRONT_DOOR_V1');
+  assert.equal(front.legacyMixingForbidden,true);
+  assert.deepEqual(front.order,['HEADER','FEATURED_GAME','THREE_METRICS','PLAY_NOW','IN_DEVELOPMENT','DEVELOPMENT_FLOW','FOOTER']);
+  assert.deepEqual(front.mobile?.navItems,['HOME','GAME','DEVELOPMENT','CHATGPT']);
   assert.equal(front.mobile?.fixedBottomNavigation,true);
-  assert.equal(front.mobile?.horizontalGameCardBrowse,true);
+  assert.equal(front.mobile?.horizontalGameCards,true);
+  assert.equal(front.mobile?.horizontalDevelopmentSteps,true);
+  assert.match(index,/JAEWOON <span>GAMES<\/span>/);
   assert.match(index,/class="mainNav"/);
   assert.match(index,/class="mobileDock"/);
-  assert.match(index,/href="#gameHub"/);
-  assert.match(index,/href="#developmentPipeline"/);
-  assert.match(index,/HOME_FRONT_DOOR_SIMPLE_V2/);
-  assert.ok(index.indexOf('id="hero"')<index.indexOf('aria-label="게임 운영 요약"'));
+  assert.match(index,/https:\/\/chatgpt\.com\//);
+  assert.match(index,/id="metricPlayable"/);
+  assert.match(index,/id="metricDevelopment"/);
+  assert.match(index,/id="metricReleased"/);
+  assert.ok(index.indexOf('id="hero"')<index.indexOf('class="stats opsBar"'));
   assert.ok(index.indexOf('id="gameHub"')<index.indexOf('id="developmentPipeline"'));
+  assert.doesNotMatch(index,/class="reviews"|class="music"|id="developerProfile"|platformFilters|stateFilters|gameSearch|gameSort/);
 });
 
 test('homepage workflow follows central architecture changes',()=>{
