@@ -40,7 +40,7 @@ function normalize(row={}){
     evidence:uniq(row.evidence),recoveryStrategy:clean(row.recoveryStrategy),verificationPlan:uniq(row.verificationPlan),
     deterministicEvidence:uniq(row.deterministicEvidence),recoveryOwner:clean(row.recoveryOwner)||'SYSTEM_STEWARD_OR_PRIMARY_AI',
     primaryAiReview:clean(row.primaryAiReview)||'PENDING',learningPromotion:clean(row.learningPromotion)||'PENDING',
-    retries:Math.max(0,Number(row.retries||0)),maxRetries:Math.max(0,Number(row.maxRetries??5)),
+    retries:Math.max(0,Number(row.retries||0)),retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,
     createdAt:clean(row.createdAt)||now(),updatedAt:clean(row.updatedAt)||now()
   };
 }
@@ -82,8 +82,8 @@ export function settleRecovery(queueInput,{id,outcome,evidence=[]}={}){
   const tasks=queue.tasks.map(x=>{
     if(x.id!==target)return x;found=true;
     if(result==='PASS')return{...x,status:'awaiting-primary-ai-review',deterministicEvidence:uniq([...(x.deterministicEvidence||[]),...evidence]),primaryAiReview:'PENDING',updatedAt:stamp};
-    const retries=x.retries+1,retry=retries<=x.maxRetries;
-    return{...x,status:retry?'queued':'failed',retries,evidence:uniq([...(x.evidence||[]),...evidence,'recovery-outcome:'+(result||'FAIL')]),updatedAt:stamp};
+    const retries=x.retries+1;
+    return{...x,status:'queued',retries,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,evidence:uniq([...(x.evidence||[]),...evidence,'recovery-outcome:'+(result||'FAIL'),'recovery-retry:UNLIMITED_CAUSAL_REPAIR']),updatedAt:stamp};
   });
   if(!found)throw new Error('RECOVERY_TASK_NOT_FOUND:'+target);return{...queue,tasks};
 }
@@ -142,11 +142,13 @@ export function applySecurityRecoverySystemAiFanIn(queueInput,systemAiQueueInput
     }
     if(outcome==='FAIL'){
       linked++;
-      const retries=rec.retries+1,retry=retries<=rec.maxRetries;
+      const retries=rec.retries+1;
       return{
         ...rec,
-        status:retry?'queued':'failed',
+        status:'queued',
         retries,
+        retryPolicy:'UNLIMITED_CAUSAL_REPAIR',
+        maxRetries:null,
         evidence:uniq([
           ...(rec.evidence||[]),
           'system-ai-fan-in:'+taskId,
