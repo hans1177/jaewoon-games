@@ -47,7 +47,7 @@ jobs:
           set -euo pipefail
           request_file='${{ inputs.request_file }}'
           if [[ -z "$request_file" ]]; then
-            mapfile -t changed < <(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json' || true)
+            mapfile -t changed < <(git show --format= --name-only "$GITHUB_SHA" | grep -E '^\.build-requests/unity-web/[A-Za-z0-9._-]+\.json' | sort -u || true)
             [[ "${#changed[@]}" -eq 1 ]] || { echo "expected exactly one Unity Web request in push, found ${#changed[@]}" >&2; exit 2; }
             request_file="${changed[0]}"
           fi
@@ -162,7 +162,7 @@ jobs:
           license-version: 6.x
 
       - name: Enforce Unity activation
-        if: always()
+        if: steps.request.outcome == 'success'
         run: |
           [[ '${{ steps.unity_license.outcome }}' == 'success' ]] || exit 198
 
