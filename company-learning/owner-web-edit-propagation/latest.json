@@ -1,19 +1,22 @@
 {
   "version": 1,
-  "before": "d42dd6b46f9cf8f9e36117dd18ab65b822b90237",
-  "after": "616dca096b90b9e5aca24ab0933adab4c45b3964",
-  "generatedAt": "2026-09-21T08:47:18.601Z",
+  "before": "f97b2f9c32f7ac984b67e0ce71b7e8636ddd3ff0",
+  "after": "389143a471ab05230433c85902a6e239daeedfc6",
+  "generatedAt": "2026-09-21T08:54:17.321Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "daechung-rpg",
       "sourcePath": "web-games/daechung-rpg",
-      "sourceBefore": "d42dd6b46f9cf8f9e36117dd18ab65b822b90237",
-      "sourceAfter": "616dca096b90b9e5aca24ab0933adab4c45b3964",
-      "semanticIntentFingerprint": "ed4c26290bb78c489178c3296dcd751d621cb72aec6d4e67e2da195d25ed39d1",
+      "sourceBefore": "f97b2f9c32f7ac984b67e0ce71b7e8636ddd3ff0",
+      "sourceAfter": "389143a471ab05230433c85902a6e239daeedfc6",
+      "semanticIntentFingerprint": "16f3dc3b8967381da7bc85349278e874cfc110827d68c38420383ba46d7e7676",
       "affectedSystems": [
         "MOVEMENT",
+        "PROGRESSION",
+        "AUDIO",
+        "UI_UX",
         "SAVE"
       ],
       "platformTargets": [
@@ -23,7 +26,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-21T08:47:18.601Z",
+      "detectedAt": "2026-09-21T08:54:17.321Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
