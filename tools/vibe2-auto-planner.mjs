@@ -178,7 +178,26 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   });
 }
 for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
-function projectSort(a,b){const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
+function focusedCaretakerPolicy(repoRoot=process.cwd()){
+  const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  return{
+    enabled:policy.enabled===true,
+    ownerIds:new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean)),
+    includeAllReleaseConfirmed:policy.includeAllReleaseConfirmed===true
+  };
+}
+function focusedCaretakerProject(project={},repoRoot=process.cwd()){
+  const policy=focusedCaretakerPolicy(repoRoot);
+  if(!policy.enabled)return false;
+  return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
+}
+function projectSort(a,b){
+  const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
+  const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;
+  const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;
+  const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;
+  return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);
+}
 function centralPresentationPolicy(repoRoot=process.cwd()){
   return readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),{});
 }
@@ -284,14 +303,17 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
+  const focused=project.ownerFocusedCaretaker===true;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority,
-    releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
+    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':priority,
+    releaseState:project.releaseState,status:'queued',retries:0,maxRetries:focused?null:2,retryPolicy:focused?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
     supervisionContract:supervised?supervisedWebBuildContract():null,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    packageLongWorkProtected:focused||undefined,packageRole:focused?'implementation-owner':undefined,
+    focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   return plannedTask;
@@ -824,7 +846,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   };
   if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
-  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue),blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
+  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue).map(project=>({...project,ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot)})),blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
   if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   let unityReleaseFocusTaken=releaseUnityFocusBusy(queue);
   const planned=[],packages=[],deferredSmallPackages=[];
