@@ -955,13 +955,23 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
 
   const mastery=createMasteryState(masteryInput);
-  const patterns=(codePatternsInput?.patterns||[]).filter(row=>knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)!=='RETIRED').map(row=>{
-    const pWords=words([row.id,row.system,row.problem,row.pattern,row.tags].flat().filter(Boolean).join(' '));
-    let score=overlapScore(qWords,pWords)*3;
-    if(gameId&&clean(row.gameId)===gameId) score+=30;
-    if(engine&&lower(row.engine)===engine) score+=15;
-    return {...row,relevance:score};
-  }).filter(x=>x.verified===true&&x.relevance>0).sort((a,b)=>b.relevance-a.relevance).slice(0,6);
+  const patterns=(codePatternsInput?.patterns||[])
+    .filter(row=>row?.retrievalEligible!==false&&knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)!=='RETIRED')
+    .map(row=>{
+      const pWords=words([row.id,row.system,row.problem,row.pattern,row.tags].flat().filter(Boolean).join(' '));
+      const overlap=overlapScore(qWords,pWords);
+      const sameGame=Boolean(gameId&&clean(row.gameId)===gameId);
+      const sameEngine=Boolean(engine&&lower(row.engine)===engine);
+      let score=overlap*3;
+      if(sameGame)score+=30;
+      // Engine equality is only a tie-break/boost after semantic or same-game relevance.
+      // It must never inject unrelated knowledge solely because both rows are "system" or "web".
+      if(sameEngine&&(overlap>0||sameGame))score+=6;
+      return {...row,relevance:score};
+    })
+    .filter(x=>x.verified===true&&x.relevance>0)
+    .sort((a,b)=>b.relevance-a.relevance)
+    .slice(0,6);
 
   const taskType=lower(task.taskType||task.type||'coding');
   const playbook=playbooksInput?.taskTypes?.[taskType]||playbooksInput?.taskTypes?.coding||null;
