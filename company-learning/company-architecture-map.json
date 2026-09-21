@@ -617,6 +617,8 @@
         "atomicCompletionIngress": "PERSIST_RESULT_ONLY",
         "pendingVariantCallbackRunsHeavyReserve": false,
         "taskMicroFanInDispatchesSingleRefill": true,
+        "taskMicroFinalizer": ".github/workflows/vibe2-continuous-core.yml::micro_finalize",
+        "contractRegressionReuseKey": "PINNED_MAIN_SHA",
         "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_ONLY",
         "workerDirectControlWrite": false,
         "capacityRefill": "IMMEDIATE_AFTER_TASK_MICRO_FANIN",
