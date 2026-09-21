@@ -18,6 +18,7 @@ on:
       - 'company.html'
       - 'game-catalog.json'
       - 'company-status.json'
+      - 'homepage-portfolio-status.json'
       - 'test-game-candidates.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
@@ -32,6 +33,7 @@ on:
       - 'command.html'
       - '_headers'
       - 'tools/homepage-manager.mjs'
+      - 'tools/homepage-portfolio-snapshot.mjs'
       - 'tools/homepage-test-candidate-sync.mjs'
       - 'tools/game-catalog-normalization.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -50,6 +52,7 @@ on:
       - 'company.html'
       - 'game-catalog.json'
       - 'company-status.json'
+      - 'homepage-portfolio-status.json'
       - 'test-game-candidates.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
@@ -64,6 +67,7 @@ on:
       - 'command.html'
       - '_headers'
       - 'tools/homepage-manager.mjs'
+      - 'tools/homepage-portfolio-snapshot.mjs'
       - 'tools/homepage-test-candidate-sync.mjs'
       - 'tools/game-catalog-normalization.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -84,6 +88,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  CONTROL_BRANCH: vibe2-unreal-core
 
 jobs:
   manage-and-self-qa:
@@ -139,6 +144,24 @@ jobs:
             echo 'HOMEPAGE_RUNTIME_SOURCE=MAIN_FALLBACK'
           fi
 
+      - name: Build sanitized portfolio homepage snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/homepage-control
+          if git fetch origin "$CONTROL_BRANCH" --quiet && git show "origin/$CONTROL_BRANCH:.vibe2/portfolio-decisions.json" > /tmp/homepage-control/portfolio-decisions.json 2>/dev/null; then
+            echo 'HOMEPAGE_PORTFOLIO_SOURCE=CONTROL_BRANCH'
+          else
+            printf '%s\n' '{"version":1,"decisions":[]}' > /tmp/homepage-control/portfolio-decisions.json
+            echo 'HOMEPAGE_PORTFOLIO_SOURCE=PENDING_AUTOMATION'
+          fi
+          node --check tools/homepage-portfolio-snapshot.mjs
+          node tools/homepage-portfolio-snapshot.mjs \
+            --portfolio=/tmp/homepage-control/portfolio-decisions.json \
+            --catalog="$HOMEPAGE_CATALOG_PATH" \
+            --output=homepage-portfolio-status.json
+          node -e "const x=require('./homepage-portfolio-status.json');if(x.publicSafe!==true||!Array.isArray(x.games))process.exit(1)"
+
       - name: Prepare verified runtime status/catalog candidate
         if: env.HOMEPAGE_PUBLIC_STATUS_SYNC == 'YES'
         shell: bash
@@ -170,13 +193,13 @@ jobs:
         run: |
           set -euo pipefail
           for file in \
-            index.html company.html game-catalog.json company-status.json test-game-candidates.json \
+            index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
             assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json _headers; do
             test -f "$file"
           done
-          node -e "for (const file of ['game-catalog.json','company-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
@@ -189,6 +212,8 @@ jobs:
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
+          grep -Fq "getJson('/homepage-portfolio-status.json')" assets/homepage-enhancements.js
+          grep -Fq "function buildPortfolioBoard()" assets/homepage-enhancements.js
           grep -Fq "runtimeInfoAuthority='company-runtime'" tools/company-status-sync.mjs
           node <<'NODE'
           const fs=require('fs');
@@ -264,7 +289,7 @@ jobs:
           candidate_dir='.homepage-candidate'
           rm -rf "$candidate_dir"
           mkdir -p "$candidate_dir"
-          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
           base_sha="$(git rev-parse HEAD)"
           git add -- "${published_paths[@]}"
           git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
@@ -278,7 +303,7 @@ jobs:
             baseSha:process.env.BASE_SHA,
             patchSha256:process.env.PATCH_SHA256,
             changed:process.env.CANDIDATE_CHANGED==='true',
-            paths:['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
+            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
           },null,2)+'\n');
           NODE
           git reset --quiet
@@ -430,7 +455,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-homepage-manager'
           git config user.email 'homepage-manager@users.noreply.github.com'
-          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
           git add -- "${published_paths[@]}"
           if git diff --cached --quiet; then
             echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'
