@@ -50,7 +50,9 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           priority:'critical',
           blocker:running?task.blocker:null,
           retries:running?task.retries:0,
-          evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage)]),
+          sourceMutationRequired:rec.sourceMutationRequired!==false,
+          sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+          evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage),'source-mutation-required:YES']),
           updatedAt:stamp
         };
       });
@@ -83,7 +85,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             gameId:clean(rec.gameId)||null,
             goal:clean(rec.goal)||`Repair exact failed stage ${clean(rec.failureStage)} for recovery ${clean(rec.id)} without expanding scope. Failure signature: ${clean(rec.failureSignature)}.`,
             responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
-            acceptanceCriteria:['repair only assigned responsible files','rerun exact failed stage','preserve verified checkpoint and gameplay semantics','no central policy write','no self acceptance'],
+            sourceMutationRequired:true,sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+            acceptanceCriteria:['repair only assigned responsible files','produce a real responsible-source mutation before rerunning the same failed signature','unchanged-source revalidation is forbidden','rerun exact failed stage only after source mutation','preserve verified checkpoint and gameplay semantics','no central policy write','no self acceptance'],
             verificationCommands:uniq(rec.verificationPlan),
             dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
             evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-exact-stage:'+clean(rec.failureStage),'system-ai-scoped-game-repair:'+(gameSourceWrite?'YES':'NO'),'learning-route:existing-vibe-learning-motor']),
