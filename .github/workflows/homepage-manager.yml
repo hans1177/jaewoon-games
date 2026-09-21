@@ -164,18 +164,17 @@ jobs:
             --output=homepage-portfolio-status.json
           node -e "const x=require('./homepage-portfolio-status.json');if(x.publicSafe!==true||!Array.isArray(x.games))process.exit(1)"
 
-      - name: Build internal platform exposure homepage snapshot
+      - name: Bind company-runtime platform exposure homepage snapshot
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/homepage-control
-          if git fetch origin "$CONTROL_BRANCH" --quiet && git show "origin/$CONTROL_BRANCH:.vibe2/homepage-platform-exposure.json" > homepage-platform-exposure.json 2>/dev/null; then
-            echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=CONTROL_BRANCH'
+          if git fetch origin "$COMPANY_RUNTIME_BRANCH" --quiet && git show "origin/$COMPANY_RUNTIME_BRANCH:homepage-platform-exposure.json" > homepage-platform-exposure.json 2>/dev/null; then
+            echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME'
           else
-            printf '%s\n' '{"version":1,"publicSafe":true,"internalCompanySurface":true,"games":[]}' > homepage-platform-exposure.json
-            echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=EMPTY_FALLBACK'
+            printf '%s\n' '{"version":2,"publicSafe":true,"internalCompanySurface":true,"games":[]}' > homepage-platform-exposure.json
+            echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=EMPTY_RUNTIME_FALLBACK'
           fi
-          node -e "const x=require('./homepage-platform-exposure.json');if(x.internalCompanySurface!==true||!Array.isArray(x.games))process.exit(1)"
+          node -e "const x=require('./homepage-platform-exposure.json');if(x.version!==2||x.internalCompanySurface!==true||!Array.isArray(x.games))process.exit(1)"
 
       - name: Prepare verified runtime status/catalog candidate
         if: env.HOMEPAGE_PUBLIC_STATUS_SYNC == 'YES'
@@ -440,7 +439,7 @@ jobs:
           git switch -c "$branch"
           git commit -m 'homepage: publish Director-approved runtime mirror'
           git push origin "HEAD:refs/heads/$branch"
-          if pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish Director-approved runtime mirror' --body 'Homepage Manager self-QA and Director supervision both passed on the exact same hashed candidate. Publishes verified company-status/game-catalog differences plus Web strict 80+ hard-gate-clear Top30 test-shelf assets. No pre-promotion official cards.' 2>/tmp/homepage-pr-error.log)"; then
+          if pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish Director-approved runtime mirror' --body 'Homepage Manager self-QA and Director supervision both passed on the exact same hashed candidate. Publishes verified company-status/game-catalog differences plus synchronized Roblox/Unity internal and public release state. No pre-promotion official cards.' 2>/tmp/homepage-pr-error.log)"; then
             echo "HOMEPAGE_PUBLICATION_PR=$pr_url"
             gh pr merge "$pr_url" --squash --delete-branch
             echo 'HOMEPAGE_PUBLICATION=PR_VALIDATED_AND_MERGED_AFTER_DIRECTOR'
