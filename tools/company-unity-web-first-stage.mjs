@@ -12,7 +12,7 @@ const gameId=String(args['game-id']||'').trim();
 const sourceRoot=String(args['source-root']||`unity-games/${gameId}`).replaceAll('\\','/').replace(/\/$/,'');
 const requestPath=String(args.request||`.build-requests/unity-web/${gameId}.json`).replaceAll('\\','/');
 const sourceCommit=String(args['source-commit']||process.env.GITHUB_SHA||'').trim();
-const buildMethod=String(args['build-method']||'SeedAndroidBuild.BuildWeb').trim();
+const buildMethod=String(args['build-method']||'JaewoonGames.UnityWeb.Editor.WebBuild.BuildWeb').trim();
 
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
 if(sourceRoot!==`unity-games/${gameId}`)throw new Error(`UNITY_WEB_CANONICAL_SOURCE_REQUIRED:${sourceRoot}`);
