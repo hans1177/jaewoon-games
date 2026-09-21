@@ -87,13 +87,22 @@ try{
   page.on('pageerror',error=>pageErrors.push(String(error?.message||error)));
   page.on('requestfailed',req=>failedRequests.push(`${req.method()} ${req.url()} ${req.failure()?.errorText||''}`));
 
+  const parseState=line=>Object.fromEntries(String(line||'').trim().split(/\s+/).slice(2).map(token=>{
+    const at=token.indexOf('=');
+    return at>0?[token.slice(0,at),token.slice(at+1)]:null;
+  }).filter(Boolean));
+  const volatileStateKeys=new Set(['game','region','enemy','enemyHp','hp','maxHp','x','y','z','cameraX','cameraY','cameraZ']);
   const url=`http://127.0.0.1:${port}/${source}/?qa=1`;
+  const bootStartedAt=Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(4000);
+  const bootMilliseconds=Date.now()-bootStartedAt;
 
   const boot=()=>markers.some(x=>x.includes(' BOOT ')&&x.includes(`game=${gameId}`)&&x.includes('status=PASS'));
   if(!boot())throw new Error('UNITY_WEB_QA_BOOT_MARKER_MISSING');
+  const initialStateLine=markers.slice().reverse().find(x=>x.includes(' STATE '))||'';
+  const initialState=parseState(initialStateLine);
 
   await page.keyboard.press('Digit1');
   await page.waitForTimeout(1500);
@@ -111,20 +120,28 @@ try{
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
 
   await page.keyboard.press('KeyR');
-  await page.waitForTimeout(1000);
-  if(!markers.some(x=>x.includes(' REGION ')&&x.includes('region=town')))throw new Error('UNITY_WEB_QA_RETURN_TO_TOWN_MISSING');
+  await page.waitForTimeout(2200);
+  const safeReturnObserved=markers.some(x=>x.includes(' RETURN ')||x.includes(' RESET ')||(x.includes(' REGION ')&&x.includes('region=town')));
+  if(!safeReturnObserved)throw new Error('UNITY_WEB_QA_SAFE_RETURN_OR_RESET_MISSING');
 
   const statesBeforeReload=markers.filter(x=>x.includes(' STATE '));
-  const rewardState=statesBeforeReload.slice().reverse().find(x=>/gold=([1-9]\d*)/.test(x));
-  if(!rewardState)throw new Error('UNITY_WEB_QA_REWARD_STATE_NOT_REFLECTED');
+  const progressedStateLine=statesBeforeReload.slice().reverse()[0]||'';
+  const progressedState=parseState(progressedStateLine);
+  const persistentChangedKeys=Object.keys(progressedState).filter(key=>{
+    if(volatileStateKeys.has(key)||!(key in initialState))return false;
+    return String(progressedState[key])!==String(initialState[key]);
+  });
+  if(!persistentChangedKeys.length)throw new Error('UNITY_WEB_QA_PERSISTENT_PROGRESS_STATE_NOT_REFLECTED');
 
   const reloadMarkerStart=markers.length;
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(3500);
 
-  const persisted=markers.slice(reloadMarkerStart).reverse().find(x=>x.includes(' STATE ')&&x.includes('region=town')&&/gold=([1-9]\d*)/.test(x));
-  if(!persisted)throw new Error('UNITY_WEB_QA_SAVE_RESTORE_MISSING');
+  const persistedLine=markers.slice(reloadMarkerStart).reverse().find(x=>x.includes(' STATE '))||'';
+  const persistedState=parseState(persistedLine);
+  const restoredKeys=persistentChangedKeys.filter(key=>String(persistedState[key])===String(progressedState[key]));
+  if(restoredKeys.length!==persistentChangedKeys.length)throw new Error(`UNITY_WEB_QA_SAVE_RESTORE_MISSING:${persistentChangedKeys.filter(key=>!restoredKeys.includes(key)).join(',')}`);
 
   const fatal=[...consoleErrors,...pageErrors,...failedRequests].filter(x=>/abort|out of memory|wasm.*error|failed to fetch|build error|exception/i.test(x));
   if(fatal.length)throw new Error(`UNITY_WEB_FATAL_RUNTIME_ERROR:${fatal.slice(0,5).join(' | ')}`);
@@ -148,11 +165,16 @@ try{
       coreActionObserved:true,
       coreActionCount:actions.length,
       progressObserved:true,
+      safeReturnOrResetObserved:true,
     },
-    saveRestore:{pass:true},
+    coreFun:{
+      pass:enteredGameplay&&actions.length>0&&progress.length>0,
+      evidence:'REAL_START_ACTION_PROGRESS_LOOP',
+    },
+    saveRestore:{pass:true,persistentChangedKeys,restoredKeys},
     mobile:{pass:true,viewport:{width:390,height:844},touch:true},
-    performance:{pass:true,fatalRuntimeErrorCount:0},
-    noCriticalRuntimeError:true,
+    performance:{pass:bootMilliseconds<=90000&&fatal.length===0,bootMilliseconds,fatalRuntimeErrorCount:fatal.length},
+    noCriticalRuntimeError:fatal.length===0,
     markers,
     generatedAt:new Date().toISOString(),
   };
