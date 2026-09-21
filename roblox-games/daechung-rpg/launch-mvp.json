@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
   "releaseStrategy": "FAST_MVP",
@@ -28,7 +28,9 @@
     "mobile combat",
     "companion unlock persistence",
     "save/rejoin",
-    "boss progression regression"
+    "boss progression regression",
+    "Creator Store BGM and gameplay SFX",
+    "remote action allowlist and spam rejection"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -36,7 +38,9 @@
     "multiplayerPassRequired": true,
     "saveRejoinPassRequired": true,
     "regressionPassRequired": true,
-    "aiMayInventPass": false
+    "aiMayInventPass": false,
+    "audioFeedbackPassRequired": true,
+    "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-22T02:43:00+09:00"
+  "updatedAt": "2026-09-22T08:05:00+09:00"
 }

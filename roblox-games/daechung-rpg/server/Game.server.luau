@@ -14,6 +14,9 @@ local world=nil
 local enemies={}
 local companionParts={}
 local lastHit={}
+local remoteLast={}
+local allowedActions={}
+for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
@@ -130,7 +133,17 @@ local function cycle(p,key,list)
  for i,v in ipairs(list)do local id=typeof(v)=="table"and v.Id or v;if id==cur then idx=i end end
  local nextv=list[idx%#list+1];p:SetAttribute(key,typeof(nextv)=="table"and nextv.Id or nextv)
 end
+local function broadcastMultiplayerSync(actor)
+ local participants=Players:GetPlayers()
+ local sharedObjective=0
+ for _,participant in ipairs(participants)do sharedObjective+=(participant:GetAttribute("PartyMemory")or 0)end
+ for _,participant in ipairs(participants)do participant:SetAttribute("SharedObjective",sharedObjective)end
+ remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,SharedObjective=sharedObjective})
+end
 remote.OnServerEvent:Connect(function(p,a)
+ if typeof(a)~="string"or allowedActions[a]~=true then return end
+ local now=os.clock();if now-(remoteLast[p]or 0)<C.RemoteMinInterval then return end
+ remoteLast[p]=now
  if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3+n(p,"Level",1),15)
  elseif a==C.Actions.SKILL then local x=class(p);local bonus=p:GetAttribute("Relic")=="FURY"and 10 or 0;hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4+bonus,26)
  elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*48+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
@@ -138,6 +151,7 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.NEXT_AI then cycle(p,"AIStyle",C.AIStyles)
  elseif a==C.Actions.NEXT_RELIC then cycle(p,"Relic",C.Relics)
  elseif a==C.Actions.UPGRADE_WEAPON then local cost=40+n(p,"WeaponTier",1)*30;if n(p,"Gold",0)>=cost then p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",n(p,"WeaponTier",1)+1);p:SetAttribute("LastAction","무기 강화 완료")else p:SetAttribute("LastAction","강화 골드 부족")end end
+ broadcastMultiplayerSync(p)
 end)
 
 makeWorld();for i=1,12 do spawnEnemy(false)end;spawnEnemy(true)
@@ -165,7 +179,7 @@ Players.PlayerAdded:Connect(function(p)
  task.defer(rebuildCompanions)
 end)
 for _,p in ipairs(Players:GetPlayers())do load(p);for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end end
-Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;task.defer(rebuildCompanions)end)
+Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;remoteLast[p]=nil;task.defer(rebuildCompanions)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 RunService.Heartbeat:Connect(function(dt)
@@ -185,17 +199,4 @@ RunService.Heartbeat:Connect(function(dt)
  end
  for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
  if #enemies<7 then spawnEnemy(false)end
-end)
-
-local function broadcastMultiplayerSync(actor)
- local participants=Players:GetPlayers()
- local sharedObjective=0
- for _,participant in ipairs(participants)do
-  sharedObjective+=(participant:GetAttribute("PartyMemory")or 0)
- end
- for _,participant in ipairs(participants)do participant:SetAttribute("SharedObjective",sharedObjective)end
- remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,SharedObjective=sharedObjective})
-end
-remote.OnServerEvent:Connect(function(player,action)
- if typeof(action)=="string" then broadcastMultiplayerSync(player) end
 end)
