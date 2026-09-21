@@ -240,6 +240,17 @@
       "roleReviewPreserved": true,
       "deterministicQaPreserved": true,
       "executionGoal": "NO_ARTIFICIAL_MULTI_MODEL_SERIALIZATION"
+    },
+    "bottleneckResilience": {
+      "centralContract": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiBottleneckResilience",
+      "preflight": "tools/company-system-ai-worker.mjs --preflight=true",
+      "readWriteScopeSeparation": true,
+      "repeatedFailureSignatureRoute": "company-recovery-escalation.mjs -> company-recovery-queue.mjs",
+      "sharedSignatureCanary": true,
+      "infrastructureFailureClass": "INFRASTRUCTURE_CONTRACT_FAILURE",
+      "infrastructureFailureLearningAuthority": "NONE",
+      "resumeRule": "REPAIR_REQUIRED_THEN_EXACT_FAILED_STAGE_REVALIDATION",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR"
     }
   },
   "securityPolicy": "company-learning/security-immune-system.json",
