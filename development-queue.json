@@ -221,13 +221,12 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "daechung-rpg",
         "sourcePath": "web-games/daechung-rpg",
-        "sourceBefore": "74e1df38131171a91bdec6a2fc84ecdc2509cb6f",
-        "sourceAfter": "d42dd6b46f9cf8f9e36117dd18ab65b822b90237",
-        "semanticIntentFingerprint": "9a683523e233e4a2448a826aa93493bd1c94b62d0c25aabf65c2fec277310dec",
+        "sourceBefore": "d42dd6b46f9cf8f9e36117dd18ab65b822b90237",
+        "sourceAfter": "616dca096b90b9e5aca24ab0933adab4c45b3964",
+        "semanticIntentFingerprint": "ed4c26290bb78c489178c3296dcd751d621cb72aec6d4e67e2da195d25ed39d1",
         "affectedSystems": [
           "MOVEMENT",
-          "AUDIO",
-          "UI_UX"
+          "SAVE"
         ],
         "platformTargets": [
           "UNITY"
@@ -236,11 +235,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-09-21T08:45:39.972Z",
+        "detectedAt": "2026-09-21T08:47:18.601Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-21T08:45:39.972Z"
+      "ownerWebEditPropagationUpdatedAt": "2026-09-21T08:47:18.601Z"
     },
     {
       "gameId": "monster-adventure",
@@ -1122,7 +1121,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-21T06:11:59.294Z"
     }
   ],
-  "updatedAt": "2026-09-21T08:45:39.972Z",
+  "updatedAt": "2026-09-21T08:47:18.601Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
