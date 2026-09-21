@@ -1,88 +1,76 @@
-# 플랫폼 출시 로드맵 / 1차 Web 동기화 아키텍처
+# 플랫폼 출시 로드맵 — Roblox + Unity 앱 직접 동시개발
 
-> 기계 정책 원본은 `company-learning/platform-release-roadmap.json`이다. 이 문서는 실행 이해용 미러이며 새 정책을 만들지 않는다.
+> 기계 정책 원본은 `company-learning/platform-release-roadmap.json`이다. 이 문서는 실행 이해용 미러이며 독립 정책 권한을 만들지 않는다.
 
-## 1차 Web 단계
+## 개발 진입
 
-앞으로 모든 게임의 1차 Web 제작/검증 엔진은 **Unity Web**이다.
-
-```text
-설계 PASS
-→ unity-games/<game-id>/ Unity 프로젝트
-→ Unity Web 자동 빌드
-→ web-games/<game-id>/
-→ 모바일/PC 브라우저 실제 플레이 검증
-→ Unity Web 관문 PASS
-```
-
-여기까지만 이번 전환 범위다.
-
-## 이후 플로우
-
-Unity Web 관문 이후 기존 플랫폼 플로우는 변경하지 않는다.
+Roblox 또는 Unity 앱 어느 한쪽 개발 요청이 들어오면 같은 게임의 두 플랫폼 구현을 자동으로 함께 시작한다.
 
 ```text
-Unity Web PASS
-→ 선택 플랫폼 후속 개발
-→ 런타임
-→ 독립 QA
-→ 회귀검증
-→ 내부 배포
-→ 공개 배포
-→ 사후검증
+게임 요청
+→ 공통 핵심 설계
+→ Roblox 전용 설계 + Unity 앱 전용 설계
+→ MINIMUM_DESIGN_CONTRACT_READY
+→ Roblox 네이티브 개발 || Unity 앱 네이티브 개발
 ```
 
-- Unity 대상: 같은 `unity-games/<game-id>/` 프로젝트를 Android APK/AAB로 계속 빌드한다.
-- Roblox 대상: 기존 `roblox-games/` 구현/검증 플로우를 유지한다.
-- Fortnite UEFN 대상: 기존 UEFN 구현/검증 플로우를 유지한다.
-- Unity Web 성공 근거는 Roblox/UEFN native 성공 근거를 대체하지 않는다.
+Unity Web은 신규 제작·검증·개발 입장 관문으로 사용하지 않는다.
 
-## 원본/빌드 동기화
+## 설계
 
-- Canonical Source: `unity-games/<game-id>/`
-- Web Build Output: `web-games/<game-id>/`
-- 홈페이지 Web Play: `/web-games/<game-id>/`
-- `web-games/`에서 신규 HTML/JS/Canvas 게임을 직접 만드는 방식은 기본 경로가 아니다.
-- 기존 Web 구현은 Unity Web 전환이 검증될 때까지 참고/비교/비상 폴백으로 보존한다.
+한 게임은 공통 코어를 공유하지만 플랫폼 환경이 다르므로 플랫폼 설계는 별도다.
 
-## Vibe Maker 동기화
+- Roblox: Roblox 입력, 서버 권한, 세션/멀티, UI, DataStore/네트워크, Roblox 성능, Private/Restricted 내부출시
+- Unity 앱: 터치/Input System, Scene/Prefab, 앱 세션, UI, Android 성능/메모리/발열, 저장/네트워크, 내부/Closed 테스트 빌드
 
-Vibe의 1차 게임 제작/학습 기본 스택도 Unity 중심으로 맞춘다.
+엄격 설계 검토는 품질 향상을 위해 개발과 병렬로 계속할 수 있지만, 개발 시작 자격은 최소 설계 계약으로 판단한다.
 
-- C# / Scene / Prefab / MonoBehaviour / ScriptableObject
-- Animator / Material / Particle System
-- Unity UI / Input System / Touch
-- Physics / AI / Audio / Lighting / Camera
-- 실제 에셋과 라이선스 추적
-- Unity Web 빌드/브라우저 QA/모바일 성능 최적화
+## 네이티브 개발
 
-학습 성공 근거는 실제 Unity Web 실행 + QA 근거를 사용한다. 기존 canonical distillation/RAG/trajectory 체인은 그대로 재사용한다.
+각 게임은:
 
-## Unity Web 관문
+- `roblox-games/<game-id>/`
+- `unity-games/<game-id>/`
 
-최소 조건:
+두 원본을 별도로 가진다.
 
-```text
-Boot PASS
-+ Input PASS
-+ Gameplay PASS
-+ Core Fun PASS
-+ Mobile PASS
-+ Performance PASS
-+ No Critical Runtime Error
-```
+한 플랫폼 실패는 다른 플랫폼 개발을 취소하지 않는다. 게임 개수에는 인위적인 전역 제한을 두지 않으며 실행 시스템 용량에 따라 배치될 수 있다.
 
-실패 상태는 `REPAIR_REQUIRED`이며 재시도 횟수 제한은 두지 않는다.
+## QA
 
-## 대충 RPG
+Roblox와 Unity 앱은 각각 독립적으로:
 
-- 원본: `unity-games/daechung-rpg/`
-- 공개 1차 Web 테스트 빌드: `web-games/daechung-rpg/`
-- 기존 PlayCanvas/Web 구현: 참고/비교/비상 폴백
-- Unity Web PASS 후 같은 Unity 프로젝트에서 Android 빌드로 이어간다.
+1. Native Source Bind
+2. Build/Package
+3. Target Runtime
+4. Independent QA
+5. Regression
 
-## 범위 잠금
+을 통과한다. 한 플랫폼의 PASS는 다른 플랫폼 PASS로 승격되지 않는다.
 
-이번 변경은 **1차 Web 게임 제작/검증 방식만 Unity Web으로 전환**한다.
+## 내부 출시 — 1차 목표
 
-Roblox, Unity Android, Fortnite UEFN의 후속 개발/런타임/QA/릴리스 구조를 Unity Web으로 교체하지 않는다.
+- Roblox: Private/Restricted 경험으로 서버에 게시하고 소유자/허용 테스터가 실제 Roblox 앱에서 플레이
+- Unity 앱: 내부/Closed 테스트 빌드로 실제 기기에 설치하고 플레이
+
+홈페이지는 company-runtime을 권위로 각 플랫폼 내부출시 상태를 따로 표시한다.
+
+## 외부 출시 — 2차 목표
+
+각 플랫폼은 자기 런타임, QA, 회귀검증과 공개 증거가 준비되면 서로 기다리지 않고 공개할 수 있다.
+
+Roblox가 먼저 준비되면 Roblox 먼저 공개하고 Unity 앱은 계속 개발할 수 있으며 반대도 동일하다.
+
+## 홈페이지/서버
+
+권위 상태는 `company-runtime`에 저장한다.
+
+- `development-queue.json`
+- `game-seed-state.json`
+- `game-catalog.json`
+- `company-status.json`
+- `homepage-platform-exposure.json`
+
+홈페이지는 Roblox/Unity 앱의 개발, 내부출시, 공개 준비, 공개 상태를 각각 표시한다. 신규 Unity Web 플레이 버튼은 사용하지 않는다.
+
+중앙 실행 동기화 문서는 `company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md`다.
