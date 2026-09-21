@@ -27,10 +27,11 @@ function findLatestDesign(gameId) {
   }
 }
 
-function hasCurrentPublishedRelease(item) {
-  const evidence = item.robloxReleaseEvidence;
-  return item.robloxReleaseClaim === true
+function hasCurrentInternalRelease(item) {
+  const evidence = item.robloxInternalReleaseEvidence || item.robloxReleaseEvidence;
+  return item.robloxInternalReleaseReady === true
     && evidence?.published === true
+    && evidence?.publicRelease !== true
     && Number.isInteger(Number(evidence?.versionNumber))
     && Number(evidence.versionNumber) > 0
     && String(evidence?.sourceRevision || '') === String(item.robloxSourceCommit || '')
@@ -46,7 +47,8 @@ const releasePendingIds = [];
 
 for (const item of queue.items || []) {
   if (String(item.productionClass || '').toUpperCase() !== 'DEVELOPMENT_CONFIRMED') continue;
-  if (String(item.selectedPlatform || item.targetPlatform || '').toUpperCase() !== 'ROBLOX') continue;
+  const pairedTargets = Array.isArray(item.concurrentTargetPlatforms) ? item.concurrentTargetPlatforms.map(value => String(value || '').toUpperCase()) : [];
+  if (!pairedTargets.includes('ROBLOX') && !item.platformDesignProfiles?.ROBLOX && !item.targetSourcePaths?.ROBLOX) continue;
   if (item.robloxRuntimePassed !== true || item.robloxIndependentQaPassed !== true || item.robloxRegressionPassed !== true) continue;
 
   let designRecord = findLatestDesign(item.gameId);
@@ -79,25 +81,27 @@ for (const item of queue.items || []) {
     && exact
     && saveGate;
   const finalPass = core && multiplayerGate;
-  const publishedRelease = finalPass && hasCurrentPublishedRelease(item);
+  const internalRelease = finalPass && hasCurrentInternalRelease(item);
 
   item.robloxMultiplayerMode = modeDefined ? mode : null;
   item.robloxMultiplayerApplicable = multiplayerApplicable;
   item.robloxFinalReviewPassed = finalPass;
   item.robloxFinalReviewCheckedAt = stamp;
 
-  if (publishedRelease) {
-    item.robloxLastSuccessfulStage = 'RELEASE_PROMOTION';
+  if (internalRelease) {
+    item.robloxLastSuccessfulStage = 'INTERNAL_PLATFORM_RELEASE';
     item.robloxFailureStage = null;
     item.robloxFailureSignature = null;
-    item.routingBlockers = (item.routingBlockers || []).filter(value => value !== 'roblox-release-promotion-pending');
+    item.routingBlockers = (item.routingBlockers || []).filter(value => value !== 'roblox-internal-release-pending' && value !== 'roblox-release-promotion-pending');
+    item.currentStep = 'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+    item.canonicalState = 'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
     ready++;
   } else if (finalPass) {
     item.robloxReleaseClaim = false;
     item.robloxLastSuccessfulStage = 'FINAL_REVIEW';
-    item.robloxFailureStage = 'RELEASE_PROMOTION';
-    item.robloxFailureSignature = 'ROBLOX_RELEASE_PROMOTION_PENDING';
-    item.routingBlockers = ['roblox-release-promotion-pending'];
+    item.robloxFailureStage = 'INTERNAL_PLATFORM_RELEASE';
+    item.robloxFailureSignature = 'ROBLOX_INTERNAL_RELEASE_PENDING';
+    item.routingBlockers = ['roblox-internal-release-pending'];
     releasePendingIds.push(item.gameId);
     ready++;
   } else if (!saveGate) {
@@ -128,9 +132,9 @@ for (const item of queue.items || []) {
   }
 
   if (item.executionEvidence) {
-    item.executionEvidence.lastSuccessfulStage = publishedRelease ? 'RELEASE_PROMOTION' : finalPass ? 'FINAL_REVIEW' : 'REGRESSION';
-    item.executionEvidence.failureStage = publishedRelease ? null : finalPass ? 'RELEASE_PROMOTION' : 'FINAL_REVIEW';
-    item.executionEvidence.failureSignature = publishedRelease ? null : item.robloxFailureSignature;
+    item.executionEvidence.lastSuccessfulStage = internalRelease ? 'INTERNAL_PLATFORM_RELEASE' : finalPass ? 'FINAL_REVIEW' : 'REGRESSION';
+    item.executionEvidence.failureStage = internalRelease ? null : finalPass ? 'INTERNAL_PLATFORM_RELEASE' : 'FINAL_REVIEW';
+    item.executionEvidence.failureSignature = internalRelease ? null : item.robloxFailureSignature;
   }
   item.updatedAt = stamp;
 }
@@ -142,8 +146,8 @@ console.log(`ROBLOX_FINAL_REVIEW_READY_COUNT=${ready}`);
 console.log(`ROBLOX_FINAL_REVIEW_BLOCKED_COUNT=${blocked}`);
 console.log(`ROBLOX_MULTIPLAYER_QA_PENDING_COUNT=${multiplayerPendingIds.length}`);
 console.log(`ROBLOX_MULTIPLAYER_QA_PENDING_IDS=${multiplayerPendingIds.join(',') || 'NONE'}`);
-console.log(`ROBLOX_RELEASE_PROMOTION_PENDING_COUNT=${releasePendingIds.length}`);
-console.log(`ROBLOX_RELEASE_PROMOTION_PENDING_IDS=${releasePendingIds.join(',') || 'NONE'}`);
+console.log(`ROBLOX_INTERNAL_RELEASE_PENDING_COUNT=${releasePendingIds.length}`);
+console.log(`ROBLOX_INTERNAL_RELEASE_PENDING_IDS=${releasePendingIds.join(',') || 'NONE'}`);
 console.log('ROBLOX_FINAL_REVIEW_RELEASE_STATE_FORCING=NO');
 
 if (process.env.GITHUB_OUTPUT) {
