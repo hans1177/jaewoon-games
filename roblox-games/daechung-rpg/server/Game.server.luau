@@ -185,5 +185,4 @@ RunService.Heartbeat:Connect(function(dt)
  end
  for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
  if #enemies<7 then spawnEnemy(false)end
- rebuildCompanions()
 end)
