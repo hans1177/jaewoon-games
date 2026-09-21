@@ -80,7 +80,14 @@
         "mayNotRetroactivelyBlockAlreadyAuthorizedPlatformDevelopment": true,
         "requiredBeforeFinalReleaseDecision": true
       }
-    }
+    },
+    "engine": "UNITY_WEB",
+    "canonicalSourceRoot": "unity-games/<gameId>/",
+    "publicBuildRoot": "web-games/<gameId>/",
+    "directWebAuthoringDefault": false,
+    "unityProjectIsCanonicalSource": true,
+    "webGamesIsBuildOutput": true,
+    "postGatePipelineUnchanged": true
   },
   "livingMotionVisualQualityContract": {
     "version": 2,
@@ -871,7 +878,7 @@
     "webToPlatformHandoff": {
       "required": true,
       "webIsDisposablePrototype": false,
-      "webRole": "PORTABLE_EXECUTABLE_GAMEPLAY_BASELINE",
+      "webRole": "UNITY_WEB_FIRST_STAGE_EXECUTABLE_GAMEPLAY_BASELINE",
       "carryForward": [
         "core-loop",
         "gameplay-state-model",
@@ -913,7 +920,13 @@
       "presentationContractSource": "WEB_VALIDATION_EVIDENCE.webPlatformPresentationHandoff",
       "presentationContractReadyRequired": true,
       "firstGateAdmissionAllowed": true,
-      "secondGateMayRemainPendingDuringPlatformDevelopment": true
+      "secondGateMayRemainPendingDuringPlatformDevelopment": true,
+      "canonicalSourceRoot": "unity-games/<gameId>/",
+      "publicBuildRoot": "web-games/<gameId>/",
+      "unityWebBuildRequired": true,
+      "postGatePipelineUnchanged": true,
+      "unityTargetReusesSameProject": true,
+      "robloxAndUefnRemainNativeFollowupImplementations": true
     },
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
@@ -927,7 +940,10 @@
       "runtimeIndependentQaRegressionRequired": true,
       "firstWebGatePassSufficientForDevelopmentAdmission": true,
       "secondWebGateRunsSeparately": true,
-      "secondWebGateCriteriaAuthority": "OWNER_DIRECTIVE"
+      "secondWebGateCriteriaAuthority": "OWNER_DIRECTIVE",
+      "firstWebStageEngine": "UNITY_WEB",
+      "unityTargetUsesSameCanonicalProject": true,
+      "robloxAndUefnFlowsUnchanged": true
     },
     "postReleaseFocusedDevelopment": {
       "enabled": true,
@@ -4827,7 +4843,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-20T00:00:00.000Z",
+  "updatedAt": "2026-09-21T11:59:29.235Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -12396,5 +12412,187 @@
       "FRESH_TASK_QA",
       "VERIFIED_EFFECTIVENESS_REWEIGHT"
     ]
+  },
+  "unityWebFirstStage": {
+    "version": 1,
+    "status": "OWNER_DIRECT_LOCKED",
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "scope": "FIRST_WEB_GAME_STAGE_ONLY",
+    "appliesToAllGames": true,
+    "replacesFirstStageWebAuthoringOnly": true,
+    "postUnityWebGatePipelineUnchanged": true,
+    "platformPriorityUnchanged": true,
+    "canonicalGameSourceRoot": "unity-games/<gameId>/",
+    "publicWebBuildRoot": "web-games/<gameId>/",
+    "sourceRelationship": "UNITY_PROJECT_IS_CANONICAL_SOURCE_AND_WEB_GAMES_IS_BUILD_OUTPUT",
+    "directHtmlCssJavascriptCanvasGameAuthoringForNewFirstStage": false,
+    "playCanvasFirstStageAuthoringForNewFirstStage": false,
+    "legacyWebPolicy": {
+      "preserveDuringMigration": true,
+      "role": "REFERENCE_COMPARISON_EMERGENCY_FALLBACK",
+      "mayRemainUntilUnityWebReplacementVerified": true,
+      "mayNotBecomeCanonicalSourceAfterReplacementPass": true
+    },
+    "unityProjectCoreReuse": [
+      "SCENES",
+      "PREFABS",
+      "CSHARP",
+      "SCRIPTABLE_OBJECTS",
+      "ANIMATOR",
+      "MATERIALS",
+      "PARTICLES",
+      "UNITY_UI",
+      "INPUT_SYSTEM",
+      "PHYSICS",
+      "AI",
+      "AUDIO",
+      "LIGHTING",
+      "CAMERA",
+      "GAMEPLAY_DATA"
+    ],
+    "requiredProjectStructure": [
+      "Assets/Scenes",
+      "Assets/Scripts",
+      "Assets/Prefabs",
+      "Assets/Art",
+      "Assets/Materials",
+      "Assets/Animations",
+      "Assets/Audio",
+      "Assets/UI",
+      "Assets/Data",
+      "Assets/Editor"
+    ],
+    "graphicsPolicy": {
+      "actualGameAssetsPreferred": true,
+      "primitiveOnlyForDebugCollisionOrTemporaryGap": true,
+      "placeholderDominatedPlayableCannotPass": true,
+      "rightsAndLicenseTraceabilityRequired": true
+    },
+    "mobileInput": {
+      "implementedInsideUnityProject": true,
+      "unityInputSystemPreferred": true,
+      "onScreenStickAndButtonsAllowed": true,
+      "pointerTouchSupported": true,
+      "workerInjectedGenericJoystickIsLongTermForbidden": true
+    },
+    "build": {
+      "target": "UNITY_WEB",
+      "automatedBuildRequired": true,
+      "manualEditorBuildAsPermanentPipelineForbidden": true,
+      "outputRoot": "web-games/<gameId>/",
+      "cloudflareCompatibleArtifacts": [
+        ".wasm",
+        ".data",
+        ".framework.js",
+        ".loader.js",
+        ".json",
+        "StreamingAssets"
+      ],
+      "cloudflareRequirements": [
+        "MIME_TYPE",
+        "CACHE_CONTROL",
+        "CONTENT_ENCODING",
+        "RANGE_REQUEST",
+        "CORS_WHEN_REQUIRED",
+        "SERVICE_WORKER_CACHE_POLICY"
+      ]
+    },
+    "browserValidation": {
+      "installFreeLinkExecutionRequired": true,
+      "androidChromeRequired": true,
+      "iosSafariWhenRequired": true,
+      "desktopBrowserRequired": true,
+      "requiredChecks": [
+        "WEB_BUILD_LOAD",
+        "FIRST_FRAME_RENDER",
+        "START_BUTTON",
+        "MOBILE_INPUT",
+        "PLAYER_MOVE",
+        "CAMERA_TRACK",
+        "ATTACK",
+        "ENEMY_HIT",
+        "ENEMY_DEATH",
+        "HP_XP_GOLD_STATE",
+        "UI_BUTTONS",
+        "QUEST_PROGRESS",
+        "PORTAL_OR_MAP_TRANSITION",
+        "SAVE_LOAD_WHEN_APPLICABLE",
+        "NO_CRITICAL_CONSOLE_ERROR",
+        "NO_WEBASSEMBLY_LOAD_ERROR",
+        "NO_MEMORY_CRASH",
+        "ANDROID_CHROME",
+        "IOS_SAFARI_WHEN_REQUIRED",
+        "REAL_GENRE_CORE_FUN_EVIDENCE"
+      ],
+      "passGate": [
+        "BOOT_PASS",
+        "INPUT_PASS",
+        "GAMEPLAY_PASS",
+        "CORE_FUN_PASS",
+        "MOBILE_PASS",
+        "PERFORMANCE_PASS",
+        "NO_CRITICAL_RUNTIME_ERROR"
+      ],
+      "failureState": "REPAIR_REQUIRED",
+      "retryLimit": null,
+      "screenOnlyPassForbidden": true,
+      "textOrGenreLabelOnlyEvidenceForbidden": true
+    },
+    "multiplayer": {
+      "browserCompatibleTransportRequired": true,
+      "websocketHttpsOrCompatibleRealtimeAllowed": true,
+      "nativeSocketDependencyForCoreWebFlowForbidden": true,
+      "actualTwoOrMorePlayersRequiredWhenMultiplayerDesigned": true,
+      "movementSyncRequired": true,
+      "combatSyncRequired": true,
+      "joinLeaveRequired": true
+    },
+    "performance": {
+      "webBudgetIsStricterThanAndroid": true,
+      "manage": [
+        "TEXTURE_MAX_SIZE",
+        "TEXTURE_COMPRESSION",
+        "MESH_POLY_COUNT",
+        "DRAW_CALLS",
+        "MATERIAL_COUNT",
+        "SHADER_COMPLEXITY",
+        "SHADOW_DISTANCE",
+        "REALTIME_LIGHT_COUNT",
+        "PARTICLE_COUNT",
+        "AUDIO_SIZE",
+        "SCENE_MEMORY",
+        "OBJECT_POOLING",
+        "GARBAGE_ALLOCATION",
+        "ADDRESSABLES_OR_ASSETBUNDLE_WHEN_NEEDED",
+        "WEB_MEMORY"
+      ],
+      "target": "STABLE_MOBILE_WEB_WITH_HIGHER_ANDROID_QUALITY_OPTION"
+    },
+    "postGateContinuation": {
+      "commonRule": "EXISTING_POST_WEB_PIPELINE_UNCHANGED",
+      "UNITY": {
+        "sameUnityProjectContinues": true,
+        "nextBuild": "ANDROID_APK_OR_AAB",
+        "separateWebAndAndroidCodebaseForbidden": true
+      },
+      "ROBLOX": {
+        "unityWebIsValidationSurfaceNotRobloxRuntime": true,
+        "existingRobloxImplementationFlowPreserved": true,
+        "nativeRobloxEvidenceStillRequired": true
+      },
+      "FORTNITE_UEFN": {
+        "unityWebIsValidationSurfaceNotUefnRuntime": true,
+        "existingUefnImplementationFlowPreserved": true,
+        "nativeUefnEvidenceStillRequired": true
+      }
+    },
+    "migration": {
+      "existingWebGamesMigrateSequentially": true,
+      "behaviorAndRulesPreservedByDefault": true,
+      "directEmbeddingLegacyWebCodeIntoUnityForbidden": true,
+      "rebuildAsUnityScenePrefabCsharp": true,
+      "daechungRpgCanonicalSource": "unity-games/daechung-rpg",
+      "daechungRpgLegacyWebPreservedForReferenceAndFallback": true
+    }
   }
 }
