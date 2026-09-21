@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 
 const args = Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
   const i=x.indexOf('=');
@@ -40,6 +41,7 @@ const category=
 const packageId=`com.jaewoongames.${gameId.replace(/[^a-z0-9]/g,'').slice(0,48)}`;
 const csharp=v=>String(v).replaceAll('\\','\\\\').replaceAll('"','\\"').replace(/\r?\n/g,' ');
 const prefix=gameId.replace(/[^a-zA-Z0-9]/g,'_');
+const generatorFingerprint=createHash('sha256').update(fs.readFileSync(new URL(import.meta.url))).digest('hex');
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
@@ -322,6 +324,7 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   version:3,gameId,gameName,category,identity,coreLoop,
   selectedPlatform:'UNITY',
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
+  generatorFingerprint,
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,webEvidence:webEvidencePath||null,
   webEvidenceBound,webEvidenceOptional:true,productionClass:'DEVELOPMENT_CONFIRMED',
@@ -331,6 +334,7 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
 console.log(`UNITY_TECH_PROJECT=${output}`);
 console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
 console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
+console.log(`UNITY_TECH_GENERATOR_FINGERPRINT=${generatorFingerprint}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
 console.log('ANDROID_GRAPHICS_COMPATIBILITY_PROFILE=OPEN_GLES3_ES30_MINIMUM');

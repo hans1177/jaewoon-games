@@ -55,6 +55,7 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
     assert.equal(meta.purpose,'TARGET_PLATFORM_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
     assert.equal(meta.unityEditorRevision,expectedUnityEditorRevision);
+    assert.match(meta.generatorFingerprint,/^[0-9a-f]{64}$/);
     assert.equal(meta.androidGraphicsCompatibilityProfile,'OPEN_GLES3_ES30_MINIMUM');
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
     assert.match(buildScript,/SeedAndroidBuild/);
@@ -99,6 +100,9 @@ test('Unity executor implements six-game WIP canary and exact-stage resume seque
   assert.match(workflowSource,/REPRESENTATIVE_CANARY=/);
   assert.match(workflowSource,/COMMON_FAILURE_DETECTED=/);
   assert.match(workflowSource,/CHANGE_DETECTION=/);
+  assert.match(workflowSource,/GENERATOR_FINGERPRINT_MISMATCH/);
+  assert.match(workflowSource,/prototype-source\.json/);
+  assert.match(workflowSource,/generatorFingerprint/);
   assert.match(workflowSource,/CHEAP_PRECHECK=/);
   assert.match(workflowSource,/SOURCE_FINGERPRINT=/);
   assert.match(workflowSource,/BUILD_REUSE=/);
