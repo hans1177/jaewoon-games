@@ -458,6 +458,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       ...(unifiedLearning?.exactKnowledgeIds||[]),
       ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
     ]),
+    primaryDomains:freezeList(unifiedLearning?.domainClassification?.primary||[]),
+    secondaryDomains:freezeList(unifiedLearning?.domainClassification?.secondary||[]),
     freshIndependentQaRequired:true,
     infrastructureFailurePenalizesKnowledge:false,
     singleSuccessGeneralizationProof:false,
