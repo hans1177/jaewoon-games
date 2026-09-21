@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function addTrash(pathKey){",
+      "replace": "var candidates=state.buildings.filter(function(b){return (d.kind==='ride'||d.kind==='food'||d.kind==='toilet')&&buildingConnected(b)&&getEntryKeys(b).length;});"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
