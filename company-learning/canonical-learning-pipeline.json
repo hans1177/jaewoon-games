@@ -57,8 +57,8 @@
     "canaryFailureAction": "ROLLBACK_TO_BASELINE"
   },
   "portableWebLearning": {
-    "enabled": true,
-    "sourceRequirement": "VERIFIED_CANONICAL_UNITY_WEB_GAME_QA_ONLY",
+    "enabled": false,
+    "sourceRequirement": "NONE",
     "portablePatterns": [
       "TOUCH_INPUT",
       "MOBILE_UI",
@@ -68,20 +68,23 @@
       "REGRESSION_AVOIDANCE",
       "CORE_LOOP_IMPLEMENTATION"
     ],
-    "feedsExistingCanonicalTrainingSamples": true,
-    "feedsSharedV3Memory": true,
-    "robloxMayRetrieveAsContext": true,
+    "feedsExistingCanonicalTrainingSamples": false,
+    "feedsSharedV3Memory": false,
+    "robloxMayRetrieveAsContext": false,
     "webEvidenceCountsAsRobloxVerifiedEvidence": false,
     "webEvidenceMaySatisfyRobloxDatasetGate": false,
     "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
     "robloxSpecificLearningStillRequiresRealVerifiedRobloxEvidence": true,
     "separateCronOrPipelineAllowed": false,
     "thresholdLoweringAllowed": false,
-    "sourceEngine": "UNITY_WEB",
+    "sourceEngine": "DISABLED",
     "canonicalSourceRoot": "unity-games/<gameId>/",
     "buildOutputRoot": "web-games/<gameId>/",
     "legacyHtmlCanvasDirectAuthoringDefault": false,
-    "postGatePlatformPipelineUnchanged": true
+    "postGatePlatformPipelineUnchanged": true,
+    "status": "LEGACY_DISABLED",
+    "legacyCompatibilityOnly": true,
+    "developmentAdmissionAuthority": false
   },
   "externalCommercialBlackBoxPolicy": {
     "allowed": true,
@@ -193,5 +196,51 @@
     "canonicalPumpOutput": "company-learning/vibe3-recombination-memory.json",
     "separatePipelineAllowed": false,
     "countsAsTrainingSample": false
+  },
+  "dualNativeLearning": {
+    "version": 1,
+    "enabled": true,
+    "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
+    "platforms": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "sharedGameIdentityByGameId": true,
+    "sharedCommonDesignContext": true,
+    "platformProfileContextRequired": true,
+    "platformEvidenceIndependent": true,
+    "acceptedSources": [
+      "VERIFIED_ROBLOX_RUNTIME_QA_REGRESSION",
+      "VERIFIED_UNITY_APP_RUNTIME_QA_REGRESSION"
+    ],
+    "commonPortablePatterns": [
+      "CORE_LOOP_IMPLEMENTATION",
+      "GAME_STATE_MODEL",
+      "PROGRESSION_AND_REWARD",
+      "SAVE_MEANING",
+      "FAILURE_RETRY",
+      "CONTENT_STRUCTURE",
+      "BALANCE_INTENT"
+    ],
+    "platformSpecificPatterns": {
+      "ROBLOX": [
+        "ROBLOX_INPUT_AND_MOBILE_UX",
+        "ROBLOX_SERVER_AUTHORITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_DATASTORE",
+        "ROBLOX_PERFORMANCE"
+      ],
+      "UNITY": [
+        "UNITY_INPUT_SYSTEM_AND_TOUCH",
+        "UNITY_SCENE_PREFAB_ARCHITECTURE",
+        "UNITY_APP_LIFECYCLE",
+        "UNITY_ANDROID_PERFORMANCE_MEMORY_THERMAL",
+        "UNITY_SAVE_AND_NETWORK"
+      ]
+    },
+    "onePlatformEvidenceCannotSatisfyOtherPlatformRuntimeGate": true,
+    "verifiedPatternsFeedExistingCanonicalTrainingSamples": true,
+    "verifiedPatternsFeedSharedV3Memory": true,
+    "separatePlatformShadowPipelineForbidden": true
   }
 }
