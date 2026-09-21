@@ -21,26 +21,103 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:760px){.opsBar{grid-template-columns:1fr repeat(5,52px)}.gameGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.staff{grid-template-columns:repeat(2,1fr)}.pipelineGrid{grid-template-columns:1fr}.pipelineStep{min-height:0}.pipelineStep:after{content:'↓';right:12px;top:auto;bottom:-15px}}
 @media(max-width:520px){.brand img{width:min(66vw,330px)}.appInstallBar{align-items:stretch;flex-direction:column}.appInstallBtn{width:100%}.opsBar{grid-template-columns:repeat(5,1fr)}.opsLead{grid-column:1/-1;min-height:50px}.hero,.heroBody{min-height:290px}.hero h1{font-size:31px}.heroBody{padding:23px 20px}.heroArrow{width:36px;height:36px}.tools{grid-template-columns:1fr auto}.gameGrid{grid-template-columns:1fr}.gameCard{display:grid;grid-template-columns:42% 58%}.gameArt{height:100%;min-height:190px;aspect-ratio:auto}.gameInfo{padding:9px}.gameInfo p{min-height:auto}.companySummary{grid-template-columns:1fr}.companyStats{grid-template-columns:repeat(2,1fr)}.reviewForm{grid-template-columns:58px 1fr}.reviewForm button{grid-column:1/-1}.profileTop{grid-template-columns:80px 1fr}.profileItem{grid-template-columns:76px 1fr}.profileActions{grid-template-columns:1fr}}
 @media(max-width:370px){.gameCard{grid-template-columns:38% 62%}.gameArt{min-height:205px}.hero h1{font-size:28px}.opsMetric b{font-size:16px}}
+
+/* 2026-09-21 HOME_FRONT_DOOR_SIMPLE_V2 */
+html,body{background:#f5f7fa;color:#132235}
+.page:before{display:none}.page:after{display:none}
+.shell{width:min(100%,1180px);padding:max(10px,env(safe-area-inset-top)) 16px max(88px,env(safe-area-inset-bottom))}
+.panel,.reviews,.profile,.music{width:100%;border-color:#e3e9ef;border-radius:18px;background:#fff;box-shadow:0 7px 24px rgba(22,38,55,.07)}
+.brandRow{width:100%;min-height:64px;margin:0 0 10px;padding:0 4px;display:flex;align-items:center}
+.brand{flex:1}.brand img{width:min(300px,52vw);max-height:58px}
+.mainNav{display:flex;align-items:center;gap:8px}.mainNav a{display:flex;align-items:center;min-height:40px;padding:0 13px;border-radius:11px;color:#26394d;text-decoration:none;font-size:12px;font-weight:900}.mainNav a:hover{background:#eef5fb;color:#146fc0}
+.appInstallBar{width:100%;margin:0 0 12px;min-height:44px;padding:6px 8px 6px 12px;border-color:#dce7ef;border-radius:12px;background:#fff;box-shadow:none}
+.appInstallState{color:#617487;font-size:10px}.appInstallBtn{min-height:34px;border-radius:9px;background:#101820;font-size:10px}
+.hero{min-height:380px;margin-bottom:10px;border:0;border-radius:20px;box-shadow:0 12px 34px rgba(20,45,68,.18)}
+.heroBody{min-height:380px;padding:38px 42px}.hero h1{font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;font-size:48px;font-weight:1000;letter-spacing:-1.8px}.hero p{font-size:16px;max-width:520px}.heroBtn{min-height:48px;padding:0 18px;border-radius:12px;font-family:inherit;font-size:14px;font-weight:950}
+.heroBadge{font-size:10px}.heroArrow{opacity:.92}
+.dots{margin:6px 0 12px}
+.opsBar{width:100%;margin:0 0 16px;grid-template-columns:minmax(210px,1.5fr) repeat(5,minmax(76px,.65fr));gap:8px}
+.opsLead,.opsMetric{min-height:70px;border-color:#e3e9ef;border-radius:14px;background:#fff;box-shadow:none}
+.opsLead{padding:11px 14px}.opsLead b{font-size:12px;color:#1471bb}.opsLead span{font-size:9px}
+.opsMetric b{font-size:25px;color:#101820}.opsMetric span{font-size:8px}
+.sectionHead{padding:18px 18px 10px;align-items:center}.sectionHead h2{font-family:inherit;font-size:24px;font-weight:1000;letter-spacing:-.8px;color:#152638}.sectionHead span{font-size:9px}
+.catalogIntro{margin:0 18px 12px;background:#f5f8fb;color:#586c7e;font-size:9px}
+.tools{padding:0 18px 8px}.filters{padding:0 18px 8px}.sortRow{padding:0 18px 12px}
+.gameGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:0 18px 18px}
+.gameCard{border-color:#e3e9ef;border-radius:14px;background:#fff;box-shadow:0 4px 13px rgba(22,38,55,.06)}
+.gameInfo{padding:11px}.gameInfo p{font-size:9px}.cardBtn{min-height:36px}
+.pipeline{margin-top:16px}.pipelineLead{margin:0 18px 12px;border-radius:12px;background:#f4f8fb;color:#546a7c}.pipelineLead b{color:#1374c4}
+.pipelineGrid{padding:0 18px 18px}.pipelineStep{background:#fbfcfd;border-color:#e3e9ef}.pipelineStep b{color:#172b3d}
+.reviews,.profile,.music{margin-top:14px}
+.mobileDock{display:none}
+#gameHub{scroll-margin-top:10px}#developmentPipeline{scroll-margin-top:10px}#developerProfile{scroll-margin-top:10px}
+@media(max-width:760px){
+  .shell{padding-left:10px;padding-right:10px}
+  .mainNav{display:none}
+  .hero,.heroBody{min-height:330px}
+  .heroBody{padding:28px 24px}
+  .hero h1{font-size:38px}
+  .opsBar{grid-template-columns:1.4fr repeat(3,1fr)}
+  .opsSecondary{display:none}
+  .gameGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  body{padding-bottom:68px}
+  .shell{padding-left:8px;padding-right:8px}
+  .brandRow{min-height:54px}.brand img{width:min(250px,66vw);max-height:48px}
+  .appInstallBar{margin-bottom:8px}.appInstallState{font-size:9px}
+  .hero{min-height:310px;border-radius:16px}.heroBody{min-height:310px;padding:24px 20px}.hero h1{font-size:34px;letter-spacing:-1px}.hero p{font-size:13px}
+  .heroArrow{display:none}.heroBtn{min-height:46px;width:auto}
+  .opsBar{grid-template-columns:repeat(3,1fr);gap:6px}.opsLead{grid-column:1/-1;min-height:48px}.opsMetric{min-height:64px}.opsMetric b{font-size:23px}.opsSecondary{display:none}
+  .sectionHead{padding:16px 12px 8px}.sectionHead h2{font-size:21px}.sectionHead span{font-size:8px}
+  .catalogIntro{display:none}
+  .tools{padding:0 12px 8px}.filters{padding:0 12px 8px}.sortRow{padding:0 12px 10px}
+  .gameGrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 12px 16px;scrollbar-width:none}
+  .gameGrid::-webkit-scrollbar{display:none}
+  .gameCard{flex:0 0 78vw;max-width:320px;display:block;scroll-snap-align:start}
+  .gameArt{height:auto;min-height:0;aspect-ratio:16/9}
+  .gameInfo{padding:10px}.gameInfo p{min-height:28px}
+  .pipelineGrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 12px 16px;scrollbar-width:none}
+  .pipelineGrid::-webkit-scrollbar{display:none}.pipelineStep{flex:0 0 72vw;min-height:108px;scroll-snap-align:start}.pipelineStep:after{display:none}
+  .pipelineLead{margin:0 12px 10px}
+  .reviews,.profile,.music{border-radius:15px}
+  .mobileDock{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:90;display:grid;grid-template-columns:repeat(4,1fr);min-height:58px;padding:6px;border:1px solid #e0e7ed;border-radius:17px;background:rgba(255,255,255,.96);box-shadow:0 10px 32px rgba(16,30,44,.18);backdrop-filter:blur(12px)}
+  .mobileDock a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:11px;color:#68798a;text-decoration:none;font-size:9px;font-weight:900}.mobileDock a:first-child{color:#1679d3;background:#eef6ff}.mobileDock b{font-size:18px;line-height:1}
+}
+
 </style>
 </head>
 <body>
 <div class="page"><main class="shell">
-<div class="brandRow"><header class="brand"><img src="assets/brand-transparent.png?v=1" alt="재운게임즈"></header></div>
+<div class="brandRow"><header class="brand"><img src="assets/brand-transparent.png?v=1" alt="재운게임즈"></header><nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="#developmentPipeline">개발 현황</a><a href="#developerProfile">회사</a></nav></div>
 <div class="appInstallBar" id="appInstallBar"><button class="appInstallBtn" id="appInstallBtn" type="button">재운컴퍼니 앱 설치</button><span class="appInstallState" id="appInstallState">홈페이지에서 바로 설치할 수 있어.</span></div>
-
-<section class="opsBar" aria-label="게임 운영 요약">
-<div class="opsLead"><b id="opsStatus">게임 목록 정리 중</b><span id="opsUpdated">플랫폼·개발상태·테스트 여부를 불러오는 중</span></div>
-<div class="opsMetric"><b id="metricAll">-</b><span>전체</span></div>
-<div class="opsMetric"><b id="metricRoblox">-</b><span>Roblox</span></div>
-<div class="opsMetric"><b id="metricUnity">-</b><span>Unity</span></div>
-<div class="opsMetric"><b id="metricFortnite">-</b><span>Fortnite</span></div>
-<div class="opsMetric"><b id="metricWeb">-</b><span>Web</span></div>
-</section>
 
 <section class="panel hero" id="hero">
 <button class="heroArrow left" id="heroPrev" type="button" aria-label="이전 추천 게임">‹</button><button class="heroArrow right" id="heroNext" type="button" aria-label="다음 추천 게임">›</button>
 <div class="heroBody"><div class="heroTopline"><span class="heroBadge" id="heroState">대표 게임</span><span class="heroBadge alt" id="heroPlatform">게임</span></div><h1 id="heroTitle">재운게임즈</h1><p id="heroDesc">게임 상태를 불러오는 중</p><div class="heroMeta" id="heroMeta"></div><div class="heroActions" id="heroActions"><a class="heroBtn" href="#gameHub">게임 찾기</a></div></div><div class="heroIndex" id="heroIndex">1 / 1</div>
 </section><div class="dots" id="heroDots"></div>
+
+<section class="opsBar" aria-label="게임 운영 요약">
+<div class="opsLead"><b id="opsStatus">게임 목록 정리 중</b><span id="opsUpdated">검증된 운영 데이터를 불러오는 중</span></div>
+<div class="opsMetric"><b id="metricWeb">-</b><span>Web</span></div>
+<div class="opsMetric"><b id="metricAll">-</b><span>전체 게임</span></div>
+<div class="opsMetric"><b id="metricUnity">-</b><span>Unity</span></div>
+<div class="opsMetric opsSecondary"><b id="metricRoblox">-</b><span>Roblox</span></div>
+<div class="opsMetric opsSecondary"><b id="metricFortnite">-</b><span>Fortnite</span></div>
+</section>
+
+
+<section class="panel" id="gameHub">
+<div class="sectionHead"><h2>게임</h2><span>플레이 · 개발 · 출시 상태를 한 번에 확인</span></div>
+<div class="catalogIntro">바로 플레이하거나, 현재 개발 중인 게임을 빠르게 찾아볼 수 있어.</div>
+<div class="tools"><input class="search" id="gameSearch" type="search" maxlength="40" placeholder="게임 이름이나 장르 검색" aria-label="게임 검색"><button class="smallBtn" id="installHelp" type="button">APK 설치 방법</button></div>
+<div class="filters">
+<div class="filterRow" id="platformFilters" aria-label="플랫폼 필터"><button class="chip on" data-platform="all">전체 (-)</button><button class="chip" data-platform="roblox">Roblox (-)</button><button class="chip" data-platform="unity">Unity (-)</button><button class="chip" data-platform="fortnite_uefn">Fortnite (-)</button><button class="chip" data-platform="web">Web (-)</button></div>
+<div class="filterRow" id="stateFilters" aria-label="상태 필터"><button class="chip on" data-state="all">전체 상태</button><button class="chip" data-state="development">개발중</button><button class="chip" data-state="testing">테스트</button><button class="chip" data-state="released">출시</button><button class="chip" data-state="review">재평가</button><button class="chip" data-state="archive">Web 보관</button><button class="chip" data-state="favorite">★ 즐겨찾기</button></div>
+</div>
+<div class="sortRow"><span id="resultCount">게임 불러오는 중</span><select id="gameSort" aria-label="게임 정렬"><option value="priority">운영 우선순위</option><option value="progress">진행도 높은순</option><option value="name">이름순</option><option value="favorite">즐겨찾기 먼저</option></select></div>
+<div class="gameGrid" id="gameGrid"><div class="empty">게임 목록을 불러오는 중이야.</div></div>
+</section>
 
 <section class="panel pipeline" id="developmentPipeline" aria-label="개발 파이프라인">
 <div class="sectionHead"><h2>개발 파이프라인</h2><span>검증된 Web 베이스에서 선택 플랫폼으로 이어서 개발</span></div>
@@ -54,25 +131,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 </div>
 </section>
 
-<section class="panel" id="gameHub">
-<div class="sectionHead"><h2>게임 센터</h2><span>Web · Roblox · Unity · Fortnite · 개발 · 테스트 · 출시</span></div>
-<div class="catalogIntro">게임이 많아져도 검색과 필터로 바로 찾을 수 있어. <b>Web</b>에서 실제 플레이 가능한 베이스를 만들고 검증한 뒤, 프로젝트가 선택한 <b>Roblox · Unity · Fortnite UEFN</b> 플랫폼으로 이어서 개발해.</div>
-<div class="tools"><input class="search" id="gameSearch" type="search" maxlength="40" placeholder="게임 이름이나 장르 검색" aria-label="게임 검색"><button class="smallBtn" id="installHelp" type="button">APK 설치 방법</button></div>
-<div class="filters">
-<div class="filterRow" id="platformFilters" aria-label="플랫폼 필터"><button class="chip on" data-platform="all">전체 (-)</button><button class="chip" data-platform="roblox">Roblox (-)</button><button class="chip" data-platform="unity">Unity (-)</button><button class="chip" data-platform="fortnite_uefn">Fortnite (-)</button><button class="chip" data-platform="web">Web (-)</button></div>
-<div class="filterRow" id="stateFilters" aria-label="상태 필터"><button class="chip on" data-state="all">전체 상태</button><button class="chip" data-state="development">개발중</button><button class="chip" data-state="testing">테스트</button><button class="chip" data-state="released">출시</button><button class="chip" data-state="review">재평가</button><button class="chip" data-state="archive">Web 보관</button><button class="chip" data-state="favorite">★ 즐겨찾기</button></div>
-</div>
-<div class="sortRow"><span id="resultCount">게임 불러오는 중</span><select id="gameSort" aria-label="게임 정렬"><option value="priority">운영 우선순위</option><option value="progress">진행도 높은순</option><option value="name">이름순</option><option value="favorite">즐겨찾기 먼저</option></select></div>
-<div class="gameGrid" id="gameGrid"><div class="empty">게임 목록을 불러오는 중이야.</div></div>
-</section>
-
 
 
 
 
 <section class="reviews"><div class="reviewHead"><strong>게임평 한마디</strong><span id="reviewIndex">1 / 10</span></div><div class="reviewLine"><div class="reviewAvatar">🎮</div><div class="reviewBubble" id="reviewBubble"></div></div><form class="reviewForm" id="reviewForm"><input id="reviewNameInput" maxlength="8" placeholder="이름" required><input id="reviewTextInput" maxlength="40" placeholder="게임평 한마디" required><button>보내기</button></form><small class="reviewNotice" id="reviewNotice">10개의 한마디가 한 줄씩 돌아가. 새 글을 쓰면 가장 오래된 글 1개가 빠져.</small></section>
 
-<section class="profile"><div class="profileTop"><div class="profilePhoto"><img src="assets/developer-original.jpg" alt="개발자 한재운" loading="lazy"></div><div><h2>Developer 한재운</h2><div class="profileGrid"><div class="profileItem"><strong>생년월</strong><span>2016년 9월 · 원숭이띠</span></div><div class="profileItem"><strong>특기</strong><span>따봉 날리기, 물건 잃어버리기, 맵찔이</span></div><div class="profileItem"><strong>좋아하는 게임</strong><span>마인크래프트, 그라운디드 시리즈</span></div><div class="profileItem"><strong>존경하는 인물</strong><span>아빠, 엄마</span></div></div></div></div><div class="profileActions"><a href="mailto:anyanguy2@naver.com">이메일 문의</a></div></section>
+<section class="profile" id="developerProfile"><div class="profileTop"><div class="profilePhoto"><img src="assets/developer-original.jpg" alt="개발자 한재운" loading="lazy"></div><div><h2>Developer 한재운</h2><div class="profileGrid"><div class="profileItem"><strong>생년월</strong><span>2016년 9월 · 원숭이띠</span></div><div class="profileItem"><strong>특기</strong><span>따봉 날리기, 물건 잃어버리기, 맵찔이</span></div><div class="profileItem"><strong>좋아하는 게임</strong><span>마인크래프트, 그라운디드 시리즈</span></div><div class="profileItem"><strong>존경하는 인물</strong><span>아빠, 엄마</span></div></div></div></div><div class="profileActions"><a href="mailto:anyanguy2@naver.com">이메일 문의</a></div></section>
 <section class="music"><h2>게임 & 지브리 음악</h2><div class="musicNow"><span id="musicNow">Grounded 2 · Growing Pains</span><button id="musicNext" type="button">음악 재생</button></div><iframe id="musicFrame" title="YouTube 음악 플레이어" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe></section>
 <footer class="footer">© 2026 재운게임즈 · Web 검증 베이스 · Roblox / Unity / Fortnite UEFN 선택 개발 · 출시 후 지속 개선</footer>
 </main></div>
