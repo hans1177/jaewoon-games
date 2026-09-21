@@ -1497,10 +1497,10 @@
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-build-package-failed"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:18.671Z",
-      "updatedAt": "2026-09-21T15:14:27.225Z",
+      "updatedAt": "2026-09-21T15:18:49.917Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -1580,11 +1580,11 @@
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
-      "robloxBuildOrPackagePassed": false,
+      "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "c48700f40ccedcf7262a8f01bb47e70036cf0176",
       "robloxBuildArtifactIdentity": "sha256:65c89e31fe88ee48e96b099c9e12f6c9b632489ed60f8d0a7f333e3d616ef4bc",
-      "robloxBuildPassedAt": "2026-09-21T15:07:21.906Z",
-      "robloxBuildFailedAt": "2026-09-21T15:14:27.225Z",
+      "robloxBuildPassedAt": "2026-09-21T15:18:49.917Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -1604,8 +1604,8 @@
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-build-package-failed"
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "amusement-tycoon",
@@ -2303,7 +2303,7 @@
       "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     }
   ],
-  "updatedAt": "2026-09-21T15:14:27.225Z",
+  "updatedAt": "2026-09-21T15:18:49.917Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
