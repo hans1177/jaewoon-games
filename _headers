@@ -27,3 +27,44 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer
+
+# Unity Web first-stage build artifacts
+/web-games/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.data
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.framework.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.loader.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache, must-revalidate
+/web-games/*.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-cache, must-revalidate
+/web-games/*.wasm.br
+  Content-Type: application/wasm
+  Content-Encoding: br
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.data.br
+  Content-Type: application/octet-stream
+  Content-Encoding: br
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.framework.js.br
+  Content-Type: application/javascript; charset=utf-8
+  Content-Encoding: br
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.wasm.gz
+  Content-Type: application/wasm
+  Content-Encoding: gzip
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.data.gz
+  Content-Type: application/octet-stream
+  Content-Encoding: gzip
+  Cache-Control: public, max-age=31536000, immutable
+/web-games/*.framework.js.gz
+  Content-Type: application/javascript; charset=utf-8
+  Content-Encoding: gzip
+  Cache-Control: public, max-age=31536000, immutable
