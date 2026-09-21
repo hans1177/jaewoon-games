@@ -1,87 +1,17 @@
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-
-local player = Players.LocalPlayer
-local Shared = ReplicatedStorage:WaitForChild("Shared")
-local Config = require(Shared:WaitForChild("GameConfig"))
-local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
-
-local gui = Instance.new("ScreenGui")
-gui.Name = "CozyIslandHud"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = false
-gui.Parent = player:WaitForChild("PlayerGui")
-
-local root = Instance.new("Frame")
-root.AnchorPoint = Vector2.new(0.5, 1)
-root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 250)
-root.BackgroundColor3 = Color3.fromRGB(31, 55, 62)
-root.BackgroundTransparency = 0.08
-root.Parent = gui
-
-local status = Instance.new("TextLabel")
-status.Size = UDim2.new(1, -20, 0, 64)
-status.Position = UDim2.fromOffset(10, 8)
-status.BackgroundTransparency = 1
-status.TextColor3 = Color3.fromRGB(245, 250, 244)
-status.TextWrapped = true
-status.TextScaled = true
-status.Parent = root
-
-local message = Instance.new("TextLabel")
-message.Size = UDim2.new(1, -20, 0, 34)
-message.Position = UDim2.fromOffset(10, 70)
-message.BackgroundTransparency = 1
-message.TextColor3 = Color3.fromRGB(220, 238, 223)
-message.TextScaled = true
-message.Parent = root
-
-local actions = {
-  {id = Config.Actions.FISH, text = "낚시"},
-  {id = Config.Actions.GATHER, text = "채집"},
-  {id = Config.Actions.IMPROVE_ISLAND, text = "섬 개선"},
-}
-for index, action in ipairs(actions) do
-  local button = Instance.new("TextButton")
-  button.Name = action.id
-  button.Size = UDim2.new(0.31, 0, 0, 72)
-  button.Position = UDim2.new(0.02 + (index - 1) * 0.325, 0, 0, 118)
-  button.BackgroundColor3 = Color3.fromRGB(236, 244, 221)
-  button.TextColor3 = Color3.fromRGB(31, 45, 42)
-  button.TextScaled = true
-  button.Text = action.text
-  button.Parent = root
-  button.Activated:Connect(function()
-    remote:FireServer(action.id)
-  end)
-end
-
-local touch = UserInputService.TouchEnabled
-local hint = Instance.new("TextLabel")
-hint.Size = UDim2.new(1, -20, 0, 30)
-hint.Position = UDim2.fromOffset(10, 205)
-hint.BackgroundTransparency = 1
-hint.TextColor3 = Color3.fromRGB(190, 218, 202)
-hint.TextScaled = true
-hint.Text = touch and "터치로 생활 활동을 선택해" or "버튼으로 생활 활동을 선택해"
-hint.Parent = root
-
+local Players=game:GetService("Players")
+local RS=game:GetService("ReplicatedStorage")
+local p=Players.LocalPlayer;local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"));local remote=RS:WaitForChild(C.RemoteName)
+local gui=Instance.new("ScreenGui");gui.Name="CozyConquest";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui")
+local root=Instance.new("Frame");root.AnchorPoint=Vector2.new(.5,1);root.Position=UDim2.fromScale(.5,.98);root.Size=UDim2.new(1,-18,0,420);root.Parent=gui
+local status=Instance.new("TextLabel");status.Size=UDim2.new(1,-12,0,120);status.Position=UDim2.fromOffset(6,4);status.BackgroundTransparency=1;status.TextWrapped=true;status.TextScaled=true;status.Parent=root
+local note=Instance.new("TextLabel");note.Size=UDim2.new(1,-12,0,40);note.Position=UDim2.fromOffset(6,122);note.BackgroundTransparency=1;note.TextScaled=true;note.Parent=root
+local A={{C.Actions.CHOP,"벌목"},{C.Actions.FOOD,"식량"},{C.Actions.HIRE,"주민고용"},{C.Actions.WOOD_JOB,"벌목배치"},{C.Actions.FOOD_JOB,"식량배치"},{C.Actions.BARRACKS,"병영강화"},{C.Actions.RECRUIT,"병사모집"},{C.Actions.ATTACK,"기지공격"},{C.Actions.SUPPORT,"원정지원"}}
+for i,a in ipairs(A)do local b=Instance.new("TextButton");local c=(i-1)%3;local r=math.floor((i-1)/3);b.Size=UDim2.new(.31,0,0,70);b.Position=UDim2.new(.02+c*.325,0,0,170+r*80);b.Text=a[2];b.TextScaled=true;b.Parent=root;b.Activated:Connect(function()remote:FireServer(a[1])end)end
 local function render()
-  status.Text = string.format(
-    "섬 Lv.%d  코인 %d  물고기 %d  나무 %d  조개 %d",
-    player:GetAttribute("IslandLevel") or 1,
-    player:GetAttribute("Coins") or 0,
-    player:GetAttribute("Fish") or 0,
-    player:GetAttribute("Wood") or 0,
-    player:GetAttribute("Shells") or 0
-  )
-  local last = player:GetAttribute("LastActivity") or "READY"
-  message.Text = "상태: " .. tostring(last)
+ local idx=p:GetAttribute("NextBaseIndex")or 1;local b=C.Bases[idx];local target=b and (b.Name.." 전력"..b.Strength)or"공개기지 완료"
+ status.Text=string.format("나무%d 식량%d 코인%d | 철%d 말%d 돌%d 금%d 유황%d\n주민%d(벌목%d/식량%d) 병영Lv.%d 병사%d\n점령기지%d 섬%d | %s",
+  p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,p:GetAttribute("Iron")or 0,p:GetAttribute("Horses")or 0,p:GetAttribute("Stone")or 0,p:GetAttribute("Gold")or 0,p:GetAttribute("Sulfur")or 0,
+  p:GetAttribute("Residents")or 0,p:GetAttribute("WoodWorkers")or 0,p:GetAttribute("Farmers")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("Troops")or 0,p:GetAttribute("CapturedBases")or 0,p:GetAttribute("CapturedIslands")or 0,target)
+ note.Text=(p:GetAttribute("LastActivity")or"READY")..(p:GetAttribute("InBattle")==true and(" · 전투 "..(p:GetAttribute("BattleProgress")or 0).."%")or"")
 end
-
-for _, name in ipairs({"IslandLevel","Coins","Fish","Wood","Shells","LastActivity"}) do
-  player:GetAttributeChangedSignal(name):Connect(render)
-end
-render()
+for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do p:GetAttributeChangedSignal(k):Connect(render)end;render()
