@@ -1,10 +1,21 @@
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
+local SoundService=game:GetService("SoundService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local remote=RS:WaitForChild(C.RemoteName)
+
+local function makeSound(name,id,volume,looped)
+ local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
+end
+local bgm=makeSound("MidnightBackground",C.Audio.Background,.18,true)
+local chase=makeSound("MidnightChase",C.Audio.Chase,.22,true)
+local actionSfx=makeSound("MidnightAction",C.Audio.Action,.32,false)
+local warningSfx=makeSound("MidnightWarning",C.Audio.Warning,.26,false)
+local wasFrozen=false
+bgm:Play()
 
 local gui=Instance.new("ScreenGui");gui.Name="MidnightTagHUD";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui")
 local root=Instance.new("Frame");root.AnchorPoint=Vector2.new(.5,1);root.Position=UDim2.fromScale(.5,.98);root.Size=UDim2.new(1,-18,0,330);root.BackgroundTransparency=.08;root.Parent=gui
@@ -22,6 +33,7 @@ for i,a in ipairs(defs)do
  local b=Instance.new("TextButton");local c=(i-1)%4;local r=math.floor((i-1)/4)
  b.Size=UDim2.new(.235,0,0,72);b.Position=UDim2.new(.015+c*.247,0,0,132+r*82);b.Text=a[2];b.TextScaled=true;b.Parent=root
  b.Activated:Connect(function()
+  actionSfx.TimePosition=0;actionSfx:Play()
   remote:FireServer(a[1])
   if a[3]=="PREF"or a[3]=="SOLO"then
    setupDismissed=true
@@ -40,6 +52,16 @@ local function render()
   role,p:GetAttribute("Frozen")==true and"얼음!"or"이동 가능",monsterName(),
   p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0,p:GetAttribute("MonsterXP")or 0,p:GetAttribute("Coins")or 0)
  local running=round=="RUNNING"
+ if running then
+  if bgm.IsPlaying then bgm:Stop()end
+  if not chase.IsPlaying then chase:Play()end
+ else
+  if chase.IsPlaying then chase:Stop()end
+  if not bgm.IsPlaying then bgm:Play()end
+ end
+ local frozen=p:GetAttribute("Frozen")==true
+ if frozen and not wasFrozen then warningSfx.TimePosition=0;warningSfx:Play()end
+ wasFrozen=frozen
  local showSetup=not running and not setupDismissed
  root.Size=UDim2.new(1,-18,0,(running or showSetup)and 330 or 132)
  root.BackgroundTransparency=(running or showSetup)and .08 or .35
