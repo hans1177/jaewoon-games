@@ -81,7 +81,11 @@
     "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
     "robloxLaneRequiresRealVerifiedRobloxEvidence": true,
     "useExistingCanonicalDistillationOnly": true,
-    "separateCronOrPipelineAllowed": false
+    "separateCronOrPipelineAllowed": false,
+    "sourceEngine": "UNITY_WEB",
+    "canonicalSourceRoot": "unity-games/<gameId>/",
+    "buildOutputRoot": "web-games/<gameId>/",
+    "directHtmlCanvasAuthoringDefault": false
   },
   "trajectoryLearning": {
     "root": "company-learning/vibe3-trajectories",
@@ -189,5 +193,34 @@
       "CANARY",
       "PROMOTE_OR_ROLLBACK"
     ]
+  },
+  "unityWebFirstStage": {
+    "enabled": true,
+    "scope": "FIRST_WEB_GAME_STAGE_ONLY",
+    "canonicalSourceRoot": "unity-games/<gameId>/",
+    "buildOutputRoot": "web-games/<gameId>/",
+    "authoringStack": [
+      "CSHARP",
+      "UNITY_SCENE",
+      "PREFAB",
+      "MONOBEHAVIOUR",
+      "SCRIPTABLE_OBJECT",
+      "ANIMATOR",
+      "MATERIAL",
+      "PARTICLE_SYSTEM",
+      "UNITY_UI",
+      "INPUT_SYSTEM",
+      "PHYSICS",
+      "AI",
+      "AUDIO",
+      "LIGHTING",
+      "CAMERA"
+    ],
+    "legacyHtmlCanvasDirectAuthoringDefault": false,
+    "unityWebQaFeedsPortableLearning": true,
+    "postGatePlatformPipelineUnchanged": true,
+    "unityTargetSameProjectContinuation": true,
+    "robloxAndUefnRemainNative": true,
+    "policyAuthority": "company-learning/platform-release-roadmap.json"
   }
 }
