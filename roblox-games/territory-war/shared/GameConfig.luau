@@ -1,0 +1,33 @@
+local Config = {
+  PolicySource = "company-learning/platform-release-roadmap.json",
+  Platform = "ROBLOX",
+  MobileFirst = true,
+  SaveEnabled = true,
+  GameId = "territory-war",
+  GameName = "영토전쟁",
+  Genre = "Strategy",
+  Subgenre = "Territory Strategy",
+  PlayMode = "SINGLE",
+  MultiplayerRequired = false,
+  CoopRequired = false,
+  CompetitiveRequired = false,
+  MinimumParticipants = 1,
+  RemoteName = "GameAction",
+  RateLimitSeconds = 0.18,
+  AttackCost = 6,
+  ReinforceCost = 4,
+  EconomyCost = 8,
+  InitialState = {
+    Resources = 20, Troops = 12, Territories = 1,
+    EconomyLevel = 1, EnemyPressure = 8, CampaignTurn = 1, Progress = 0,
+  },
+  Actions = {
+    SCOUT = "SCOUT",
+    ATTACK = "ATTACK",
+    REINFORCE = "REINFORCE",
+    ECONOMY = "ECONOMY",
+  },
+  InternalReleaseTarget = "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+  OwnerDirectDevelopment = true,
+}
+return table.freeze(Config)

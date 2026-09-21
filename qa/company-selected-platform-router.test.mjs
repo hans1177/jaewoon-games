@@ -64,6 +64,20 @@ test('minimum dual-platform design admits both native implementations without We
   assert.equal(targetPlatformDevelopmentEligible({...item,platformDesignProfiles:{ROBLOX:item.platformDesignProfiles.ROBLOX}}),false);
 });
 
+test('owner direct development starts from an owner basic baseline without waiting for design admission',()=>{
+  const item={...nativeItem('owner-direct','ROBLOX'),
+    minimumDesignContract:{pass:false,source:null},
+    ownerDirectDevelopment:true,
+    ownerDirectDevelopmentAuthority:'OWNER_DIRECTIVE_2026-09-22',
+    designBaselineSource:'design/owner-direct/2026-09-22/design-revised.json'
+  };
+  assert.equal(targetPlatformDevelopmentEligible(item),true);
+  assert.equal(platformDevelopmentEligible(item,'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
+  assert.equal(targetPlatformDevelopmentEligible({...item,designBaselineSource:''}),false);
+  assert.equal(targetPlatformDevelopmentEligible({...item,ownerDirectDevelopmentAuthority:'VIBE'}),false);
+});
+
 test('legacy Web evidence alone cannot admit native development',()=>{
   const item={
     gameId:'legacy-web',selectedPlatform:'UNITY',targetPlatform:'UNITY',

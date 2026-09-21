@@ -148,8 +148,10 @@ export function targetPlatformDevelopmentEligible(item={}){
   const platform=resolveSelectedPlatform(item);
   const adapter=adapterForPlatform(platform);
   if(!adapter?.existingExecutionPath||!['ROBLOX','UNITY'].includes(platform))return false;
+  const ownerDirect=item.ownerDirectDevelopment===true&&upper(item.ownerDirectDevelopmentAuthority).startsWith('OWNER_DIRECTIVE');
   const minimum=item.minimumDesignContract||{};
-  if(minimum.pass!==true)return false;
+  if(!ownerDirect&&minimum.pass!==true)return false;
+  if(ownerDirect&&!clean(item.designBaselineSource))return false;
   const profiles=item.platformDesignProfiles||{};
   for(const requiredPlatform of DEFAULT_CONCURRENT_PLATFORMS){
     const profile=profiles[requiredPlatform];

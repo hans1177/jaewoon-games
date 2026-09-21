@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "gameId": "cozy-island",
+  "gameName": "포근섬",
+  "platform": "ROBLOX",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "stage": "TARGET_PLATFORM_SOURCE_BIND",
+  "authority": "OWNER_DIRECT_DEVELOPMENT",
+  "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+  "sourcePath": "roblox-games/cozy-island",
+  "sourceValidationPassed": true,
+  "runtimePassed": false,
+  "independentQaPassed": false,
+  "regressionPassed": false,
+  "releaseClaim": false,
+  "ownerDirectDevelopment": true,
+  "webPlatformHandoffRequired": false,
+  "generatedFiles": [
+    "shared/GameConfig.luau",
+    "server/Game.server.luau",
+    "client/Game.client.luau",
+    "default.project.json"
+  ],
+  "nextRequiredStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+  "createdAt": "2026-09-22T00:48:00+09:00"
+}

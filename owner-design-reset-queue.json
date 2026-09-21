@@ -337,11 +337,15 @@
         "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
         "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
         "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
-        "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX"
+        "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
+        "OWNER_DIRECT_DEVELOPMENT": true,
+        "OWNER_DIRECT_DEVELOPMENT_AUTHORITY": "OWNER_DIRECTIVE_2026-09-22",
+        "OWNER_DESIGN_ADMISSION_GATE_REQUIRED": false
       },
       "ownerImmediateDevelopmentRequested": true,
       "ownerImmediateDevelopmentRequestedAt": "2026-09-22T00:28:00+09:00",
-      "ownerRequestedPrimaryPlatform": "ROBLOX"
+      "ownerRequestedPrimaryPlatform": "ROBLOX",
+      "ownerDevelopmentStartCondition": "OWNER_DIRECT_IMMEDIATE"
     },
     {
       "revision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
@@ -613,11 +617,15 @@
         "lifecycleState": "DESIGN_ONLY",
         "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
         "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
-        "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX"
+        "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
+        "OWNER_DIRECT_DEVELOPMENT": true,
+        "OWNER_DIRECT_DEVELOPMENT_AUTHORITY": "OWNER_DIRECTIVE_2026-09-22",
+        "OWNER_DESIGN_ADMISSION_GATE_REQUIRED": false
       },
       "ownerImmediateDevelopmentRequested": true,
       "ownerImmediateDevelopmentRequestedAt": "2026-09-22T00:28:00+09:00",
-      "ownerRequestedPrimaryPlatform": "ROBLOX"
+      "ownerRequestedPrimaryPlatform": "ROBLOX",
+      "ownerDevelopmentStartCondition": "OWNER_DIRECT_IMMEDIATE"
     },
     {
       "revision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
@@ -752,8 +760,10 @@
       "territory-war"
     ],
     "requestedPrimaryPlatform": "ROBLOX",
-    "designAuthoring": "VIBE_AUTOFILL_MINIMUM_DESIGN",
-    "developmentStartCondition": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-    "nativeExecution": "ROBLOX_UNITY_AUTO_PAIR"
+    "designAuthoring": "OWNER_BASIC_BASELINE_NOW_VIBE_REFINEMENT_PARALLEL",
+    "developmentStartCondition": "OWNER_DIRECT_IMMEDIATE",
+    "nativeExecution": "ROBLOX_UNITY_AUTO_PAIR",
+    "designAdmissionGateRequired": false,
+    "strictDesignReviewBlocksDevelopment": false
   }
 }
