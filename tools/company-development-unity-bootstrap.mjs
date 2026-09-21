@@ -29,6 +29,12 @@ if(webEvidencePath){
   if(!webEvidenceBound)throw new Error('OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED');
 }
 const design=baseline.content||baseline;
+const platformDesign=design?.platformProfiles?.UNITY;
+if(!platformDesign||typeof platformDesign!=='object'||Array.isArray(platformDesign))throw new Error('UNITY_PLATFORM_DESIGN_PROFILE_REQUIRED');
+if(String(platformDesign.platform||'').trim().toUpperCase()!=='UNITY')throw new Error('UNITY_PLATFORM_DESIGN_TARGET_MISMATCH');
+for(const field of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
+  if(String(platformDesign[field]||'').trim().length<8)throw new Error('UNITY_PLATFORM_DESIGN_FIELD_REQUIRED:'+field);
+}
 const coreLoop=Array.isArray(design.coreLoop)?design.coreLoop.map(v=>String(v).trim()).filter(Boolean).slice(0,5):[];
 const identity=String(design.identity||gameName).replace(/\s+/g,' ').trim();
 const category=
@@ -352,6 +358,7 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   selectedPlatform:'UNITY',
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
   generatorFingerprint,
+  platformDesignProfile:platformDesign,
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,webEvidence:webEvidencePath||null,
   webEvidenceBound,webEvidenceOptional:true,productionClass:'DEVELOPMENT_CONFIRMED',
