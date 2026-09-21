@@ -1,5 +1,5 @@
 {
-  "version": 230,
+  "version": 231,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4344,6 +4344,59 @@
         "legacyPublicReleaseStillUsesPostPublicHotfixMinorMajorOperations": true,
         "newOrRebuiltReleaseAfterActivationMustUseSecondPlatformGate": true
       }
+    },
+    "autonomousBottleneckRecovery": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "enabled": true,
+      "objective": "PIPELINE_OPEN_THEN_VIBE_AUTONOMOUSLY_DETECT_REPAIR_REVERIFY_AND_RESUME_BOTTLENECKS",
+      "canonicalSequence": [
+        "DETECT_FAILURE_OR_STALL",
+        "CAPTURE_EXACT_FAILURE_STAGE_SIGNATURE_AND_CHECKPOINT",
+        "CLASSIFY_SCOPE_AND_AUTHORITY",
+        "ROUTE_TO_VIBE2_VIBE3_OR_SUPERVISED_SYSTEM_AI",
+        "DIRECTLY_REPAIR_RESPONSIBLE_IMPLEMENTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "RUN_APPLICABLE_INDEPENDENT_QA_AND_REGRESSION",
+        "CONFIRM_FAILURE_SIGNATURE_CLEARED",
+        "RESUME_NEXT_CANONICAL_STAGE",
+        "DISTILL_ONLY_VERIFIED_RECOVERY_LEARNING"
+      ],
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "numericRetryCapForbidden": true,
+      "failureMayNotBecomeTerminalBecauseOfRetryCount": true,
+      "exactFailureStageRequired": true,
+      "failureSignatureRequired": true,
+      "verifiedCheckpointPreservationRequired": true,
+      "successfulStageReplayForbiddenUnlessInvalidated": true,
+      "repeatedFailureMustEscalateScopeOrRepairStrategy": true,
+      "sameFailedRepairMustNotLoopWithoutNewCausalEvidence": true,
+      "autonomousRepairAllowedWhen": {
+        "responsibleImplementationFilesKnown": true,
+        "ownerDecisionRequired": false,
+        "paidResourceRequired": false,
+        "protectedPolicyChangeRequired": false
+      },
+      "hardInhibitors": [
+        "OWNER_DECISION_REQUIRED",
+        "PAID_RESOURCE_REQUIRED",
+        "CENTRAL_POLICY_AUTHORITY_CHANGE",
+        "SECURITY_QUARANTINE_OR_CREDENTIAL_BOUNDARY",
+        "EXTERNAL_PLATFORM_CREDENTIAL_OR_SERVICE_UNAVAILABLE"
+      ],
+      "blockedState": "REPAIR_REQUIRED",
+      "waitingStateAsFailureSinkForbidden": true,
+      "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json",
+      "systemAiQueue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+      "detector": "tools/company-recovery-escalation.mjs",
+      "dispatcher": "tools/company-recovery-dispatch.mjs",
+      "recoveryStateMachine": "tools/company-recovery-queue.mjs",
+      "testerDebugIntake": "tools/company-tester-debug-intake.mjs",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "supervisedSystemAiWorkflow": ".github/workflows/company-system-ai-workers.yml",
+      "learningFeedback": "tools/company-recovery-learning.mjs",
+      "codeDistillation": "tools/company-recovery-code-distillation.mjs",
+      "completionAuthority": "DETERMINISTIC_EVIDENCE_AND_CANONICAL_GATES"
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
