@@ -33,7 +33,13 @@ namespace JaewoonGames.DaechungRpg.Editor
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             PlayerSettings.Android.forceInternetPermission = true;
 
-            var runNumber = ResolveRunNumber();
+            var runNumber = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER") ?? 1;
+    var minRun = 1;
+    var maxRun = int.MaxValue - 20000;
+    var adjustedRun = Math.Min(runNumber, maxRun);
+    var report = BuildPipeline.BuildPlayer(options);
+    var summary = report.summary;
+    Debug.Log($
             PlayerSettings.Android.bundleVersionCode = 20000 + runNumber;
             PlayerSettings.bundleVersion = $"0.2.{runNumber}";
 
