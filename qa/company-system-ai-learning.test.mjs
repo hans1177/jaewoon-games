@@ -159,3 +159,50 @@ test('System AI game-source retrieval infers engine from assigned source files',
   assert.ok(unityIndex<0||webIndex<unityIndex);
 });
 
+test('compound task classifies causal primary domain ahead of presentation secondary domains',()=>{
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'roblox-sync-save-ui',
+      target:'roblox',
+      blocker:'runtime-failure:REPLICATION_DESYNC server client ownership state does not synchronize',
+      goal:'fix multiplayer state synchronization, preserve save restore, and show synced state in UI',
+      evidence:['failure-code:REPLICATION_DESYNC','multiplayer sync failed after server update'],
+      responsibleFiles:['roblox-games/demo/src/ServerScriptService/State.server.lua','roblox-games/demo/src/StarterGui/State.client.lua']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[
+      {id:'replication',verified:true,retrievalEligible:true,engine:'roblox',system:'ROBLOX_REPLICATION',problem:'server client replication ownership desync',pattern:'server authoritative replicated state',tags:['roblox','replication','multiplayer']},
+      {id:'ui',verified:true,retrievalEligible:true,engine:'roblox',system:'UI_STATE',problem:'ui state display',pattern:'render state after event',tags:['ui','state']},
+      {id:'audio',verified:true,retrievalEligible:true,engine:'roblox',system:'AUDIO_FEEL',problem:'music transition',pattern:'crossfade audio',tags:['audio']}
+    ]},
+    masteryInput:{}
+  });
+  assert.ok(context.domainClassification.primary.includes('ROBLOX_REPLICATION')||context.domainClassification.primary.includes('ROBLOX_MULTIPLAYER'));
+  assert.ok(context.domainClassification.secondary.includes('UI_STATE')||context.domainClassification.all.includes('UI_STATE'));
+  assert.ok(context.exactKnowledgeIds.includes('CODE_PATTERN:replication'));
+  assert.ok(!context.exactKnowledgeIds.includes('CODE_PATTERN:audio'));
+});
+
+test('primary domain outranks secondary domain even when secondary has similar keyword overlap',()=>{
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'save-ui-runtime',
+      target:'web',
+      blocker:'save restore fails and loses player state',
+      goal:'repair save restore and update UI after load',
+      evidence:['failure-code:SAVE_RESTORE','restore state missing'],
+      responsibleFiles:['web-games/demo/index.html']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[
+      {id:'save',verified:true,retrievalEligible:true,engine:'web',system:'SAVE',problem:'save restore state missing',pattern:'validate persisted schema before restore',tags:['save','restore','state']},
+      {id:'ui',verified:true,retrievalEligible:true,engine:'web',system:'UI_STATE',problem:'update ui state after load',pattern:'render restored state',tags:['ui','state','load']}
+    ]},
+    masteryInput:{}
+  });
+  const save=context.exactKnowledgeIds.indexOf('CODE_PATTERN:save');
+  const ui=context.exactKnowledgeIds.indexOf('CODE_PATTERN:ui');
+  assert.ok(save>=0);
+  assert.ok(ui<0||save<ui);
+});
+
