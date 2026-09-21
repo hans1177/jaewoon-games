@@ -106779,6 +106779,44 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_efbb79e3cbb0f752f1d66b97",
+          "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_4e729cec4540b040a1e80cd6",
+            "capability_ctrace_a6c58e4c188aa3417059b8cb"
+          ],
+          "evidence": [
+            "candidate-sha:27b285a12436c2c00bc2330627aa5785b592e741",
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "incremental-qa-hash:4b5a48307506c141131d2afbf13a6029d4e12a5c36d9f9ff3a5cd4e8e5911e1d",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:c187798c57def05b4901"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -106797,7 +106835,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 26,
+        "applicationCount": 27,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -107726,6 +107764,44 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9b76d6b7fdd7f3eec728cec8",
+          "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_4e729cec4540b040a1e80cd6",
+            "capability_ctrace_a6c58e4c188aa3417059b8cb"
+          ],
+          "evidence": [
+            "candidate-sha:27b285a12436c2c00bc2330627aa5785b592e741",
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "incremental-qa-hash:4b5a48307506c141131d2afbf13a6029d4e12a5c36d9f9ff3a5cd4e8e5911e1d",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:c187798c57def05b4901"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -107744,7 +107820,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 25,
+        "applicationCount": 26,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -107839,107 +107915,6 @@
       "confirmations": 8,
       "confidence": 0.8889,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_9114524d8bf16375a3b6b37e",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "candidate-sha:a00783c97359adaf06f5f8cbea5c8de5626a314b",
-            "base-main:b504d554b1c426ede4badc35269bd39c08fb1648",
-            "causal-replay-status:EXECUTED_FAIL",
-            "actions-run:35534620734",
-            "reservation-id:35534620734:1",
-            "capability-application-sample:3c0cbc14c84608d9e43b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_0013d053c52a3f1d45e37df9",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "base-main:010d3d29ea585a73cdb57f875ceaad4a2e9bf394",
-            "actions-run:35535149733",
-            "reservation-id:35535149733:1",
-            "capability-application-sample:c1b1b2332309664f8d4d"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_33154c7d2692b12174a3ea64",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "base-main:010d3d29ea585a73cdb57f875ceaad4a2e9bf394",
-            "actions-run:35535149733",
-            "reservation-id:35535149733:1",
-            "capability-application-sample:b212668ca878cdced4f6"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_f9061b6b41fddb4c277ccb60",
@@ -109964,6 +109939,105 @@
             "actions-run:35541061280",
             "reservation-id:35541061280:1",
             "capability-application-sample:41e88c1fe758f43e3a9f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_07114936099837beaade02de",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:3f91656f566a2374c55c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_68e6e41d1e0cbc0e75a9d65b",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:00c511d74056b7b101eb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0decf749a231770cbe34ab08",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:d7614611217d306b174a"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -112383,107 +112457,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_6f6c3823b647b633964847c4",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "candidate-sha:a00783c97359adaf06f5f8cbea5c8de5626a314b",
-            "base-main:b504d554b1c426ede4badc35269bd39c08fb1648",
-            "causal-replay-status:EXECUTED_FAIL",
-            "actions-run:35534620734",
-            "reservation-id:35534620734:1",
-            "capability-application-sample:3c0cbc14c84608d9e43b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_d8afe6d677c788d3881aa195",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "base-main:010d3d29ea585a73cdb57f875ceaad4a2e9bf394",
-            "actions-run:35535149733",
-            "reservation-id:35535149733:1",
-            "capability-application-sample:c1b1b2332309664f8d4d"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_20836577200aee6e60fbe78c",
-          "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_75b5fa57def3b59f52b59ebf",
-            "capability_ctrace_c7e0044a2814605c1a0bc7e7",
-            "capability_ctrace_2b0751d16c406d1e9fcc1004",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "base-main:010d3d29ea585a73cdb57f875ceaad4a2e9bf394",
-            "actions-run:35535149733",
-            "reservation-id:35535149733:1",
-            "capability-application-sample:b212668ca878cdced4f6"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_eef622bdf47778082a071f55",
           "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
           "workKey": null,
@@ -114512,6 +114485,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f5ad38c36f04b1d2f6d2eb45",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:3f91656f566a2374c55c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_dca6e1de83b4cc864b55b0d7",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:00c511d74056b7b101eb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0c90ab66b87ede94b43a85b2",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:d7614611217d306b174a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -115440,6 +115512,44 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6ee064c507efd57208c46232",
+          "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_4e729cec4540b040a1e80cd6",
+            "capability_ctrace_a6c58e4c188aa3417059b8cb"
+          ],
+          "evidence": [
+            "candidate-sha:27b285a12436c2c00bc2330627aa5785b592e741",
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "incremental-qa-hash:4b5a48307506c141131d2afbf13a6029d4e12a5c36d9f9ff3a5cd4e8e5911e1d",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:c187798c57def05b4901"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -115458,7 +115568,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 24,
+        "applicationCount": 25,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -115552,39 +115662,6 @@
       "confirmations": 8,
       "confidence": 0.8889,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_775691940e765d17dd7cf014",
-          "taskId": "daechung-rpg-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0c25d3cd8ea64024889cf42f",
-            "capability_ctrace_f81cb2c64243a4d226f7aebf",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_328d0c1d1272087207a460af",
-            "capability_ctrace_7022dd1d29e03580f9fab379"
-          ],
-          "evidence": [
-            "base-main:289ff35c90aedb21154d0fa9cffebb36c446e61c",
-            "actions-run:35529242587",
-            "reservation-id:35529242587:1",
-            "capability-application-sample:c59ecf5093cb60d1f4cb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_1c9275580642533b8c839cce",
@@ -117787,6 +117864,44 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_89fefb728492aac775820f18",
+          "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_4e729cec4540b040a1e80cd6",
+            "capability_ctrace_a6c58e4c188aa3417059b8cb"
+          ],
+          "evidence": [
+            "candidate-sha:27b285a12436c2c00bc2330627aa5785b592e741",
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "incremental-qa-hash:4b5a48307506c141131d2afbf13a6029d4e12a5c36d9f9ff3a5cd4e8e5911e1d",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:c187798c57def05b4901"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -118760,7 +118875,12 @@
         "incremental-qa-hash:53c7b94b5e7a0ae824b9ca45cfe4278a992064214b7e1e9522ff846a5e826c9c",
         "actions-run:35541724647",
         "reservation-id:35541724647:1",
-        "coding-trace:ctrace_17d3578e9f6bbb1983ff50bb"
+        "coding-trace:ctrace_17d3578e9f6bbb1983ff50bb",
+        "candidate-sha:27b285a12436c2c00bc2330627aa5785b592e741",
+        "incremental-qa-hash:4b5a48307506c141131d2afbf13a6029d4e12a5c36d9f9ff3a5cd4e8e5911e1d",
+        "actions-run:35544170917",
+        "reservation-id:35544170917:1",
+        "coding-trace:ctrace_7feba77a9551b49c101d683d"
       ],
       "reusablePatterns": [
         "CAPABILITY:CODING_STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL",
@@ -118780,8 +118900,8 @@
       "avoidPatterns": [],
       "verified": true,
       "reusable": true,
-      "confirmations": 6,
-      "confidence": 0.8571,
+      "confirmations": 7,
+      "confidence": 0.875,
       "capabilityApplications": [
         {
           "version": 1,
@@ -119269,6 +119389,44 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7ed9ae5a4b4730ea1bbc5c6f",
+          "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "FRESH_QA_PASS",
+          "selected": true,
+          "finalReviewPass": true,
+          "freshTaskQaPass": true,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_4e729cec4540b040a1e80cd6",
+            "capability_ctrace_a6c58e4c188aa3417059b8cb"
+          ],
+          "evidence": [
+            "candidate-sha:27b285a12436c2c00bc2330627aa5785b592e741",
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "incremental-qa-hash:4b5a48307506c141131d2afbf13a6029d4e12a5c36d9f9ff3a5cd4e8e5911e1d",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "fan-in-review:PASS",
+            "capability-application-sample:c187798c57def05b4901"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -119287,7 +119445,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 14,
+        "applicationCount": 15,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -140784,6 +140942,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bb4c8cddaf52bc0e732570a7",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:3f91656f566a2374c55c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2d7edbc5119667316564b62c",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:00c511d74056b7b101eb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b6ae6e50e23d77d8dfe84900",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:d7614611217d306b174a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -140802,7 +141059,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "REPEATED_APPLICATION_VERIFIED",
-        "applicationCount": 54,
+        "applicationCount": 57,
         "independentPassCount": 2,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -142304,6 +142561,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_81e5c1ca59620f36702f7b52",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:3f91656f566a2374c55c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5b0cfc124bc17af322d388bd",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:00c511d74056b7b101eb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f4e48a38b83ee925856f1390",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:d7614611217d306b174a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -142322,7 +142678,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "REPEATED_APPLICATION_VERIFIED",
-        "applicationCount": 42,
+        "applicationCount": 45,
         "independentPassCount": 2,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -144220,6 +144576,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0f744048a7700ec8c970c6b5",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:3f91656f566a2374c55c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_506ce558dd09f9824214e3b6",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:00c511d74056b7b101eb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_369be8c70d23ba97d0264cfd",
+          "taskId": "pwa-599a26c9-f3ee-4f67-b52b-02bbd5e2d39a",
+          "workKey": null,
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_12dba6009c4fe760e1a6434c",
+            "capability_ctrace_7be1cd8142cd777790f2e0ed",
+            "capability_ctrace_b1c2d614daba7e9c3d08916a",
+            "capability_ctrace_75b5fa57def3b59f52b59ebf",
+            "capability_ctrace_c7e0044a2814605c1a0bc7e7"
+          ],
+          "evidence": [
+            "base-main:6bd7c16aa17f21e4b39d5e25d04d22b4699b8dd1",
+            "actions-run:35544170917",
+            "reservation-id:35544170917:1",
+            "capability-application-sample:d7614611217d306b174a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -144238,7 +144693,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "REPEATED_APPLICATION_VERIFIED",
-        "applicationCount": 54,
+        "applicationCount": 57,
         "independentPassCount": 2,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -150373,7 +150828,10 @@
         "coding-trace:ctrace_099f95b9f5775c7ff7e0ac35",
         "actions-run:35543341386",
         "reservation-id:35543341386:1",
-        "coding-trace:ctrace_7e0530d5c7f525cb30d5fee5"
+        "coding-trace:ctrace_7e0530d5c7f525cb30d5fee5",
+        "actions-run:35544170917",
+        "reservation-id:35544170917:1",
+        "coding-trace:ctrace_78cbde5c9b8c04402999ecbb"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -150382,8 +150840,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 3,
-      "confidence": 0.75,
+      "confirmations": 4,
+      "confidence": 0.8,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -150465,7 +150923,10 @@
         "coding-trace:ctrace_e73cd0b02b643ce7508f5fab",
         "actions-run:35541061280",
         "reservation-id:35541061280:1",
-        "coding-trace:ctrace_ce0650355c1438d1adea8900"
+        "coding-trace:ctrace_ce0650355c1438d1adea8900",
+        "actions-run:35544170917",
+        "reservation-id:35544170917:1",
+        "coding-trace:ctrace_3b6a331f3ab49d084641adf8"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -150474,8 +150935,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 4,
-      "confidence": 0.8,
+      "confirmations": 5,
+      "confidence": 0.8333,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -151468,7 +151929,10 @@
         "actions-run:35541061280",
         "reservation-id:35541061280:1",
         "coding-trace:ctrace_c705bc778c1e3912294f53e1",
-        "verified-coding-failure:NO_OP"
+        "verified-coding-failure:NO_OP",
+        "actions-run:35544170917",
+        "reservation-id:35544170917:1",
+        "coding-trace:ctrace_50a72749c7ed38b146c6c52c"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -151477,8 +151941,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
