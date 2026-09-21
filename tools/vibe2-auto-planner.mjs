@@ -262,17 +262,36 @@ function supervisedWebBuildContract(){
     completionRequirements:['GENRE_SPECIFIC_UI','GENRE_SPECIFIC_ANIMATION','STYLE_LOCK_CONSISTENCY','MOBILE_ACCESSIBILITY','AUDIO_CONTROLS','SAVE_STABILITY_WHEN_APPLICABLE','COMMERCIAL_READINESS_BEFORE_NATIVE_HANDOFF']
   };
 }
+function platformAdaptationInstruction(engine=''){
+  if(engine==='roblox')return [
+    '',
+    '[PLATFORM_ADAPTATION:ROBLOX:SOCIAL_FAST_SESSION]',
+    '핵심 게임 정체성·밸런스 의미·세이브 의미는 유지한다.',
+    'Roblox 환경에 맞춰 빠른 진입, 모바일 우선 입력/UI, 친구 합류와 소셜/멀티 흐름, 짧고 반복 가능한 목표, 서버 권위 동기화, 저사양 기기 표현 밀도를 우선 최적화한다.',
+    'Unity UI/카메라/렌더 구조를 문자 그대로 복사하지 않고 Roblox 네이티브 서비스와 표현으로 재구성한다.'
+  ].join('\n');
+  if(engine==='unity')return [
+    '',
+    '[PLATFORM_ADAPTATION:UNITY:DEEP_IMMERSIVE_SESSION]',
+    '핵심 게임 정체성·밸런스 의미·세이브 의미는 유지한다.',
+    'Unity 환경에 맞춰 깊은 시스템 표현, 긴 세션 지원, 세밀한 조작, 카메라/연출, 풍부한 그래픽·VFX·공간음향, 기기별 성능 스케일링을 우선 최적화한다.',
+    'Roblox UI/소셜 가정을 문자 그대로 복사하지 않고 Unity 네이티브 입력·렌더·오디오 구조로 재구성한다.'
+  ].join('\n');
+  return'';
+}
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
   const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];
   const supervised=supervisedWebBuildRequired(project,goal);
+  const adaptation=platformAdaptationInstruction(project.engine);
+  const adaptedGoal=adaptation?goal+adaptation:goal;
   const plannedTask={
-    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,
+    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority,
     releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
     supervisionContract:supervised?supervisedWebBuildContract():null,
-    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence,...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
   return plannedTask;
