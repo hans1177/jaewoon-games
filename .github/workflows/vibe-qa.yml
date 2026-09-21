@@ -196,6 +196,9 @@ jobs:
       - name: Validate horror escape room release gates
         run: node --test qa/horror-escape-room-release.test.mjs
 
+      - name: Validate Roblox changed-source revalidation
+        run: node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-runtime.test.mjs
+
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
 
