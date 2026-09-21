@@ -1,13 +1,17 @@
 {
   "version": 1,
   "kind": "company-system-ai-queue",
-  "policy": "FULL_PROCESS_EXTERNAL_AI_VIBE_COLLABORATION_WITH_VIBE_CAUSAL_LEARNING",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
   "worker": "tools/company-system-ai-worker.mjs",
   "tasks": [
     {
       "id": "sys-web-bootstrap-signal-routing-v1",
       "status": "done",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Add a focused contract test that proves SOURCE_MISSING and WEB_REPAIR signals are routed to Vibe work and ordinary unexpected bootstrap failures still fail normally.",
       "responsibleFiles": [
         ".github/workflows/company-development-confirmed-runtime.yml",
@@ -46,6 +50,9 @@
       ],
       "dependencies": [],
       "retries": 2,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -102,6 +109,10 @@
       "id": "sys-vibe-planner-web-repair-routing-v1",
       "status": "done",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Make the Vibe autonomous planner consume company-runtime Web repair/bootstrap states explicitly. When a DEVELOPMENT_CONFIRMED game is WEB_VIBE_REPAIR_REQUIRED or has a missing Web source root that central policy allows to bootstrap, enqueue one deduplicated actionable Vibe task with the correct responsible index.html, source-root-bootstrap-required evidence when applicable, and exact-stage resume semantics. Do not weaken source-root candidate-branch restrictions, QA gates, or direct-main-write prohibitions. Extend existing planner tests for both missing-source and repair-required inputs plus duplicate suppression.",
       "responsibleFiles": [
         "tools/vibe2-auto-planner.mjs",
@@ -139,6 +150,9 @@
       ],
       "dependencies": [],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -192,6 +206,10 @@
       "id": "sys-vibe-web-source-bootstrap-boundary-v1",
       "status": "done",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Audit and harden the Vibe source worker Web source-root bootstrap path so an explicitly authorized WEB_BASE_IMPLEMENTATION task can create only the assigned web-games/<gameId>/index.html on an isolated candidate branch, while ordinary missing roots remain forbidden. Preserve Vibe2/Vibe3 game implementation ownership, direct-main-write=false, Codex game-source-write forbidden, and all existing file/path safety checks. Add or refine tests for authorized bootstrap, unauthorized bootstrap rejection, and repair of an existing Web index.",
       "responsibleFiles": [
         "tools/vibe2-source-worker.mjs",
@@ -228,6 +246,9 @@
       ],
       "dependencies": [],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -279,6 +300,10 @@
       "id": "sys-web-vibe-handoff-e2e-contract-v1",
       "status": "done",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create an independent end-to-end machine contract test for the portfolio Web repair handoff. The test must inspect the current central policy, bootstrap implementation, confirmed-development workflow, Vibe planner, continuous runner, and source worker as text/code contracts and assert: preserve-only bootstrap emits actionable Vibe signals; workflow does not turn those expected signals into a generic terminal web-gameplay-music dead end; planner consumes WEB_VIBE_REPAIR_REQUIRED/missing-source state; authorized bootstrap remains candidate-only; strict runtime/QA/regression gates stay present. This is an independent verifier: do not modify production implementation files.",
       "responsibleFiles": [
         "qa/company-web-vibe-handoff-e2e.test.mjs"
@@ -325,6 +350,9 @@
       ],
       "dependencies": [],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -376,6 +404,10 @@
       "id": "sys-verify-web-bootstrap-signal-v1",
       "status": "done",
       "priority": "high",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Independently verify the Web bootstrap expected-signal contract after the signal-routing implementation is accepted. Add a focused black-box contract test that proves VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING and VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_REPAIR:* remain actionable control signals, while unrelated bootstrap exceptions remain real failures. Do not modify implementation files.",
       "responsibleFiles": [
         "qa/company-web-bootstrap-signal-classifier.test.mjs"
@@ -398,6 +430,9 @@
         "sys-web-bootstrap-signal-routing-v1"
       ],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -427,6 +462,10 @@
       "id": "sys-verify-vibe-planner-repair-fixtures-v1",
       "status": "done",
       "priority": "high",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
       "responsibleFiles": [
         "qa/vibe2-planner-web-repair-fixtures.test.mjs"
@@ -450,6 +489,9 @@
         "sys-vibe-planner-web-repair-routing-v1"
       ],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -482,6 +524,10 @@
       "id": "sys-verify-source-bootstrap-safety-v1",
       "status": "done",
       "priority": "high",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
       "responsibleFiles": [
         "qa/vibe2-web-bootstrap-boundary-contract.test.mjs"
@@ -505,6 +551,9 @@
         "sys-vibe-web-source-bootstrap-boundary-v1"
       ],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -536,6 +585,10 @@
       "id": "sys-verify-web-handoff-e2e-second-opinion-v1",
       "status": "done",
       "priority": "high",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Provide a second independent end-to-end verifier after the first E2E verifier is accepted. Validate bootstrap signal -> workflow routing -> development queue state -> planner task -> candidate-only Vibe source worker -> QA/regression chain. Fail if any stage becomes a generic terminal web-gameplay-music dead end.",
       "responsibleFiles": [
         "qa/company-web-vibe-handoff-second-opinion.test.mjs"
@@ -564,6 +617,9 @@
         "sys-vibe-web-source-bootstrap-boundary-v1"
       ],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -593,6 +649,10 @@
       "id": "sys-verify-web-strict-gate-integrity-v1",
       "status": "done",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
       "responsibleFiles": [
         "qa/company-web-strict-gate-integrity.test.mjs"
@@ -615,6 +675,9 @@
         "sys-web-bootstrap-signal-routing-v1"
       ],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -649,6 +712,10 @@
       "id": "sys-verify-development-queue-transition-v1",
       "status": "done",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
       "responsibleFiles": [
         "qa/company-development-queue-web-transition.test.mjs"
@@ -672,6 +739,9 @@
         "sys-vibe-planner-web-repair-routing-v1"
       ],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -706,6 +776,10 @@
       "id": "sys-verify-web-platform-handoff-v1",
       "status": "done",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
       "responsibleFiles": [
         "qa/company-web-platform-handoff-contract.test.mjs"
@@ -729,6 +803,9 @@
         "sys-web-vibe-handoff-e2e-contract-v1"
       ],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -767,6 +844,10 @@
       "id": "sys-verify-system-ai-supervision-loop-v1",
       "status": "done",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
       "responsibleFiles": [
         "qa/company-system-ai-supervision-loop.test.mjs"
@@ -789,6 +870,9 @@
       ],
       "dependencies": [],
       "retries": 1,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 2,
       "reservationId": null,
       "reservedAt": null,
@@ -833,8 +917,12 @@
     },
     {
       "id": "game-fantasy-survival-web-second-gate-collab-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Collaborate with Vibe on fantasy-survival using only the already approved gameplay scope. Inspect the existing Web game and repair second-gate gaps that are already documented in company runtime: complete playable cycle evidence, at least two real world areas, approved visible gameplay scope coverage, and real interaction results. Preserve all owner-authored rules, balance, save semantics, multiplayer semantics, and the first-gate platform admission. Do not invent new gameplay scope or tune numbers. Make only necessary edits to the assigned Web game source.",
       "responsibleFiles": [
         "web-games/fantasy-survival/index.html"
@@ -868,9 +956,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
@@ -895,12 +986,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-21T03:10:55.022Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 개미 시뮬레이터. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/ant-simulator/latest.json"
@@ -924,9 +1019,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -940,12 +1038,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 놀이공원 타이쿤. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/amusement-tycoon/latest.json"
@@ -969,9 +1071,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -985,12 +1090,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-bug-defense-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 곤충 디펜스. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/bug-defense/latest.json"
@@ -1014,9 +1123,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1030,12 +1142,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-daechung-rpg-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 대충 RPG. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/daechung-rpg/latest.json"
@@ -1059,9 +1175,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1075,12 +1194,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-line-defense-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 골목 군단 대전. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/line-defense/latest.json"
@@ -1104,9 +1227,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1120,12 +1246,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-village-dungeons-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 마을 던전 RPG. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/village-dungeons/latest.json"
@@ -1149,9 +1279,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1165,12 +1298,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-fantasy-survival-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 마력숲 생존기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/fantasy-survival/latest.json"
@@ -1194,9 +1331,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1210,12 +1350,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-monster-adventure-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 몬스터 어드벤처. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/monster-adventure/latest.json"
@@ -1239,9 +1383,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1255,12 +1402,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-seed-action-survival-rogu-echoes-of-the-lost-star-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 잃어버린 별의 메아리. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-action-survival-rogu-echoes-of-the-lost-star/latest.json"
@@ -1284,9 +1435,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1300,12 +1454,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-seed-casual-realm-weaver-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 세계의 직조자. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-casual-realm-weaver/latest.json"
@@ -1329,9 +1487,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1345,12 +1506,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-seed-idle-growth-rpg-crystal-bloom-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 수정의 개화. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-idle-growth-rpg-crystal-bloom/latest.json"
@@ -1374,9 +1539,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1390,12 +1558,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-seed-puzzle-chromatic-cascade-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 색채의 연쇄. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-puzzle-chromatic-cascade/latest.json"
@@ -1419,9 +1591,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1435,12 +1610,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-seed-single-defense-strat-celestial-bastion-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 천상의 보루. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-single-defense-strat-celestial-bastion/latest.json"
@@ -1464,9 +1643,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1480,12 +1662,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-seed-story-complete-rpg-chronicles-of-eldoria-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 엘도리아 연대기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/seed-story-complete-rpg-chronicles-of-eldoria/latest.json"
@@ -1509,9 +1695,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1525,12 +1714,16 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     },
     {
       "id": "marketing-survival-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
+      "department": null,
+      "taskType": null,
+      "gameId": null,
+      "jointDecisionRequired": false,
       "goal": "Create the current non-financial growth and marketing execution package for 나의 생존기. Phase pre-release. Use only current game facts. Produce facts, hypotheses, creative, organicDistribution, crossPromotion, metrics, stopConditions, and decision fields. Generate store/title/short-description options, icon/thumbnail direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation and retention hypotheses. decision must start as {\"primaryAi\":\"PENDING\",\"vibe\":\"PENDING\",\"joint\":\"PENDING\"}. Do not invent player counts, release claims, retention, revenue, popularity, or unsupported features. No paid spend, purchase, financial transaction, account login, social posting, or irreversible external action. Do not modify gameplay or balance.",
       "responsibleFiles": [
         "company-learning/marketing/survival/latest.json"
@@ -1554,9 +1747,12 @@
       ],
       "dependencies": [],
       "retries": 0,
+      "sourceMutationRequired": false,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35565043211:1",
+      "reservedAt": "2026-09-21T05:35:58.951Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
@@ -1570,13 +1766,7 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T02:59:00.000Z"
+      "updatedAt": "2026-09-21T05:35:58.951Z"
     }
-  ],
-  "updatedAt": "2026-09-21T03:20:02.437Z",
-  "startupSignal": {
-    "source": "OWNER_MARKETING_STARTUP",
-    "requestedAt": "2026-09-21T03:25:00.000Z",
-    "queuedMarketingTasks": 15
-  }
+  ]
 }
