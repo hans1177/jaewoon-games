@@ -1,12 +1,12 @@
 {
-  "version": 3,
+  "version": 4,
   "gameId": "cozy-island",
   "gameName": "포근섬",
   "gameCategory": "CASUAL",
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T00:45:00+09:00",
-  "updatedAt": "2026-09-22T03:05:00+09:00",
+  "updatedAt": "2026-09-22T04:12:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
@@ -74,7 +74,7 @@
     ],
     "mobileUx": "모바일 우선 큰 터치 입력과 화면 잘림 없는 안전영역 UI를 사용한다.",
     "robloxBuildProfile": {
-      "version": 3,
+      "version": 4,
       "targetPlatform": "ROBLOX",
       "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
       "declaredGameCategory": "CASUAL",
@@ -94,7 +94,9 @@
         "resource-biome-readability",
         "base-conquest-feedback",
         "army-movement"
-      ]
+      ],
+      "validationMode": "HEADLESS_FAST_MVP",
+      "studioRequired": false
     },
     "platformProfiles": {
       "ROBLOX": {
@@ -106,8 +108,16 @@
         "uiUx": "상단에 기본자원·특수자원·주민·병력·점령 상태를 표시하고 하단에 벌목·식량수급·주민영입·병영·모집·전투 버튼을 모바일 큰 버튼으로 제공한다.",
         "saveAndNetwork": "DataStore에 개인 자원·주민·병영·병사·점령 기지·특수자원 해금을 저장한다. 자동전투와 협동 지원 계산은 서버 권한으로 처리한다.",
         "platformContentAdaptation": "Roblox 3D 섬 지형에서 지역 기지를 선택하고, 서버 권한 자동전투와 점령 상태를 시각적으로 표시한다. 기본섬 노동과 주민 자동화는 실제 성장 상태로 연결한다.",
-        "internalReleaseTarget": "Owner가 플레이 가능한 비공개 또는 제한 Roblox 테스트 경험을 첫 내부 출시 대상으로 한다.",
-        "validationEvidence": "1인 플레이와 2명 이상 멀티를 모두 실제 Roblox 서버에서 검증하고 서버 권한 상태 동기화·모바일 조작·저장·회귀검증을 확인한다."
+        "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "validationEvidence": [
+          "Exact source revision + Rojo artifact SHA256",
+          "Server/client authority + Remote security contract",
+          "Mobile input/UI contract",
+          "Save/rejoin contract when applicable",
+          "Multiplayer state-sync contract when applicable",
+          "Headless exact-artifact regression",
+          "Open Cloud private/restricted publish"
+        ]
       },
       "UNITY": {
         "platform": "UNITY",
@@ -125,6 +135,35 @@
     "visualDirection": "밝고 따뜻한 스타일라이즈드 3D 디오라마. Roblox의 읽기 쉬운 실루엣을 유지하되 장난감처럼 싸보이지 않게 섬 지형·기지·자원 지역을 큰 형태와 재질 차이로 구분한다. 초원·산악·사막·화산·해안이 멀리서도 즉시 구분되고, 주민·병사보다 섬 확장과 군대 이동 장면에 시각 예산을 우선 배분한다.",
     "artAudioDirection": {
       "visualIdentity": "작은 왕국 디오라마 + 밝은 자연광 + 지역별 강한 색/재질 차이. 기본섬은 녹색 생활권, 철광산은 회색 슬레이트, 목장은 연두 초원, 금광은 황금 사막, 화산은 검은 현무암과 주황 발광으로 식별한다."
+    },
+    "playerFantasy": "작은 섬에서 맨손으로 시작해 주민과 군대가 움직이는 왕국으로 키우고, 새로운 섬을 점령할 때마다 전략자원을 손에 넣는 개척자.",
+    "mvpScope": {
+      "launch": [
+        "기본섬",
+        "직접 벌목/식량",
+        "주민 고용/배치",
+        "병영",
+        "병사 모집",
+        "5개 자원 기지",
+        "보이는 자동전투",
+        "점령 보상",
+        "저장",
+        "협동 지원"
+      ],
+      "deferred": [
+        "고급 병종",
+        "해전",
+        "공성",
+        "동맹",
+        "불만/반란",
+        "월드 이벤트",
+        "희귀 섬",
+        "대륙 최종전"
+      ],
+      "forbidden": [
+        "낚시 핵심루프 복귀",
+        "대기만 하는 방치형 진행"
+      ]
     }
   }
 }

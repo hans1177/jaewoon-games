@@ -1,0 +1,262 @@
+{
+  "version": 7,
+  "gameId": "daechung-rpg",
+  "gameName": "대충 RPG",
+  "gameNameEnglish": "Whatever RPG",
+  "date": "2026-09-22",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+  "authority": "OWNER_DIRECTIVE_2026-09-22",
+  "authorRole": "OWNER_DIRECTIVE",
+  "updatedAt": "2026-09-22T04:12:00+09:00",
+  "ownerDirectDevelopment": true,
+  "content": {
+    "identity": "스토리에서 동료를 만나 영입하고, 계속 추가되는 AI 동료 풀에서 정확히 4명의 파티를 구성해 직접 싸우며 장비·AI 성향·관계 조합을 연구하는 3D 파티 액션 RPG.",
+    "internationalTitle": "Whatever RPG",
+    "titleLocalization": {
+      "ko": "대충 RPG",
+      "en": "Whatever RPG"
+    },
+    "playerFantasy": "평범하거나 희귀한 동료를 직접 찾아내고, 남들이 안 쓰는 조합도 장비와 관계를 맞춰 강한 4인 파티로 만드는 파티 리더.",
+    "worldPremise": "세계 곳곳의 던전이 사람들의 기억과 감정을 먹기 시작했고 장기 노출된 존재가 변이한다. 플레이어는 마을 사건을 조사하며 동료들의 잃어버린 기억과 던전의 원인을 추적한다.",
+    "coreFun": "동료 희귀도보다 4인 조합·장비·AI 행동·관계가 더 중요하고, 직접 전투 중 서로 다른 동료가 예상 밖의 연계를 만드는 재미.",
+    "coreLoop": [
+      "마을/지역 스토리에서 사건과 동료 후보 발견",
+      "4인 파티·장비·AI 성향 편성",
+      "필드/던전/보스 직접 액션 전투",
+      "구출·대화·보스 선택·히든 조건으로 동료/관계 해금",
+      "파티 기억과 숙명 관계를 쌓고 다른 조합으로 재도전"
+    ],
+    "startingClasses": [
+      {
+        "id": "BREAKER",
+        "name": "파쇄기사",
+        "identity": "대검·방어파괴",
+        "special": "피격 분노"
+      },
+      {
+        "id": "SHADOW",
+        "name": "그림자추적자",
+        "identity": "단검·회피·배후",
+        "special": "회피 후 배후 보너스"
+      },
+      {
+        "id": "RUNE",
+        "name": "룬술사",
+        "identity": "화염·얼음·번개 룬",
+        "special": "룬 조합으로 스킬 성질 변경"
+      },
+      {
+        "id": "SOUL",
+        "name": "영혼소환사",
+        "identity": "쓰러뜨린 적 영혼 활용",
+        "special": "소환 영혼 역할 보조"
+      }
+    ],
+    "launchCompanions": [
+      {
+        "id": "KYLE",
+        "name": "카일",
+        "route": "폐광 도입 스토리"
+      },
+      {
+        "id": "SERA",
+        "name": "세라",
+        "route": "필드 조건 후 구출"
+      },
+      {
+        "id": "IRIS",
+        "name": "이리스",
+        "route": "지역보스 룬 해제"
+      },
+      {
+        "id": "NOA",
+        "name": "노아",
+        "route": "파티 기억 조건"
+      },
+      {
+        "id": "WARDEN",
+        "name": "심연의 간수",
+        "route": "보스 포섭"
+      },
+      {
+        "id": "NAMELESS",
+        "name": "무명의 동료",
+        "route": "히든 조건"
+      }
+    ],
+    "signatureSystems": [
+      {
+        "name": "4인 파티 고정",
+        "purpose": "싱글은 플레이어1+AI3, 멀티는 실제 플레이어가 AI 슬롯을 대체하며 총 4슬롯 유지."
+      },
+      {
+        "name": "무한 확장 AI 동료",
+        "purpose": "새 지역마다 일반·스토리·히든·보스 동료 추가."
+      },
+      {
+        "name": "숙명 관계",
+        "purpose": "특정 조합의 사건·대사·합동기·행동 변화."
+      },
+      {
+        "name": "파티 기억",
+        "purpose": "같은 4인이 겪은 첫 보스/위기 역전을 대사와 행동에 반영."
+      },
+      {
+        "name": "보스·히든 동료",
+        "purpose": "보스 대표 패턴 하나를 동료화하고 숨은 조건으로 특수 동료 발견."
+      },
+      {
+        "name": "장비가 AI를 바꿈",
+        "purpose": "공격성·보호우선·상태이상·궁극기 보존 우선순위를 장비가 변경."
+      },
+      {
+        "name": "이탈·배신·복귀",
+        "purpose": "스토리 이탈 후 다른 조건으로 관계가 변화해 복귀."
+      },
+      {
+        "name": "숨은 5번째 존재",
+        "purpose": "4슬롯은 유지하고 일부 조합이 일시 지원 영혼을 호출."
+      },
+      {
+        "name": "라이벌 AI 파티",
+        "purpose": "놓친 사건과 기회를 가져가며 성장하는 별도 4인 파티."
+      }
+    ],
+    "balanceContract": {
+      "rarity": "희귀도는 상위호환이 아니라 조건부/기믹형",
+      "mandatoryRole": false,
+      "universalBestInSlot": false,
+      "ordinaryCompanionMetaAllowed": true,
+      "dominanceGuard": "특정 동료/조합이 동급 콘텐츠에서 약 15~20% 이상 지속 압도하거나 상위 조합에 거의 고정되면 재밸런스"
+    },
+    "equipment": {
+      "slots": [
+        "Weapon",
+        "Armor",
+        "Accessory"
+      ],
+      "behaviorChanging": true,
+      "companionSpecificGear": true,
+      "mandatorySetBonus": false
+    },
+    "tacticalCommands": [
+      "집중공격",
+      "후퇴",
+      "궁극기 아끼기",
+      "회복우선"
+    ],
+    "mvpScope": {
+      "launch": [
+        "4인 고정 파티",
+        "4직업",
+        "스토리 NPC 영입",
+        "카일/세라/이리스/노아",
+        "보스동료",
+        "히든동료",
+        "장비 강화",
+        "AI 성향",
+        "필드 몬스터",
+        "지역보스",
+        "저장",
+        "실제 플레이어의 AI 슬롯 대체"
+      ],
+      "deferred": [
+        "대형 지역 다수",
+        "라이벌 시즌",
+        "관계퀘스트 풀체인",
+        "조합별 엔딩",
+        "대규모 동료 도감",
+        "파티 경쟁 시즌"
+      ],
+      "forbidden": [
+        "주사위 중심 게임",
+        "자동전투가 직접 전투 대체",
+        "희귀=무조건 상위호환",
+        "8비트/도트 BGM 중심"
+      ]
+    },
+    "progressionDirection": "첫 동료 → 4인 파티 완성 → 장비/AI 세팅 → 첫 지역보스 → 보스/히든 동료 → 숙명관계·파티기억 → 고난도 조합전투 → 새 지역/동료.",
+    "failureRetryRisk": {
+      "failureStates": [
+        "4인 파티 전멸",
+        "조합/장비가 적 기믹과 불일치",
+        "스토리 이탈"
+      ],
+      "retryFlow": "마을에서 동료·장비·AI 성향을 바꾸고 즉시 재도전",
+      "recoveryRules": "필수 동료는 영구 소실되지 않고 복귀 루트 제공"
+    },
+    "multiplayerMode": "COOP_WITH_AI_FILL",
+    "technicalAssumptions": [
+      "싱글 플레이어1+AI3",
+      "실제 플레이어 입장 시 AI 슬롯 대체",
+      "전투/동료/보상/저장은 서버 authoritative",
+      "Studio 없이 Headless FAST_MVP + Open Cloud 내부출시"
+    ],
+    "visualDirection": "세 주력게임 중 캐릭터·전투 연출 예산을 가장 높인 애니메이션풍 스타일라이즈드 판타지 3D.",
+    "artAudioDirection": {
+      "visualIdentity": "룬 광장·발광 수정·강한 무기 실루엣·동료 고유색·큰 보스 체형",
+      "audioIdentity": "도트/8비트가 아닌 경쾌한 판타지 어드벤처 BGM과 명확한 타격/회피/합동기 사운드"
+    },
+    "mobileUx": "이동·공격·회피·핵심스킬은 큰 버튼, 파티/장비/AI 성향은 전투 밖 카드 UI.",
+    "robloxBuildProfile": {
+      "version": 4,
+      "targetPlatform": "ROBLOX",
+      "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
+      "declaredGameCategory": "STORY_COMPLETE_RPG",
+      "genre": "RPG",
+      "subgenre": "Four-Party Companion Action RPG",
+      "playMode": "COOP",
+      "multiplayerRequired": true,
+      "coopImplementationRequired": true,
+      "competitiveImplementationRequired": false,
+      "networkingRequired": true,
+      "multiplayerQaRequired": true,
+      "minimumParticipantsForRequiredQa": 2,
+      "displayLabelKo": "RPG · 4인 파티 · 동료",
+      "validationMode": "HEADLESS_FAST_MVP",
+      "studioRequired": false,
+      "visualQualityTarget": "STYLIZED_FANTASY_PREMIUM_FOR_ROBLOX",
+      "visualPriority": [
+        "companion-identity",
+        "combat-effects",
+        "boss-silhouette",
+        "equipment-readability"
+      ]
+    },
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "모바일 이동·공격·회피·스킬, 키보드/게임패드 보조",
+        "sessionModel": "마을 편성→지역 전투→보스/영입→귀환. 싱글1+3AI, 멀티는 실제 플레이어가 AI 슬롯 대체",
+        "multiplayerRuntime": "서버가 4슬롯 파티·AI·보상·관계·장비·전투 상태를 authoritative하게 관리",
+        "performanceBudget": "전투구역별 AI/적 수 제한, 경로탐색/스킬평가 주기 분산",
+        "uiUx": "전투 HUD와 파티/장비 화면 분리",
+        "saveAndNetwork": "동료·스토리·장비·관계·파티기억·히든조건 DataStore 저장",
+        "platformContentAdaptation": "Roblox 비율을 유지한 판타지 캐릭터와 읽기 쉬운 스킬 이펙트",
+        "internalReleaseTarget": "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "validationEvidence": [
+          "Exact source revision + Rojo artifact SHA256",
+          "Server/client authority + Remote security contract",
+          "Mobile input/UI contract",
+          "Save/rejoin contract when applicable",
+          "Multiplayer state-sync contract when applicable",
+          "Headless exact-artifact regression",
+          "Open Cloud private/restricted publish"
+        ]
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Android 터치 액션",
+        "sessionModel": "동일 4인 파티/스토리",
+        "multiplayerRuntime": "1+3 AI와 최대4인 혼합",
+        "performanceBudget": "모바일 AI/파티클 제한",
+        "uiUx": "전투/편성 UI 분리",
+        "saveAndNetwork": "동료·장비·스토리·관계·기억 버전 저장",
+        "platformContentAdaptation": "모바일 판타지3D",
+        "internalReleaseTarget": "INTERNAL_OR_CLOSED_APP_TEST_BUILD",
+        "validationEvidence": "실기기 전투·저장·AI·회귀"
+      }
+    }
+  }
+}
