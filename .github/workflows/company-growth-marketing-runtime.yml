@@ -28,6 +28,8 @@ env:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    outputs:
+      marketing_task_ids: ${{ steps.targets.outputs.marketing_task_ids }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -79,19 +81,18 @@ jobs:
             exit 1
           fi
 
-      - name: Start exact queued marketing tasks
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Select exact queued marketing tasks
+        id: targets
         run: |
           set -euo pipefail
-          count="$(node -p "require('/tmp/marketing-plan.json').added.length")"
-          pending="$(node -e "const q=require('/tmp/marketing-system-ai-queue.json');console.log((q.tasks||[]).filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued').length)")"
           ids="$(node -e "const q=require('/tmp/marketing-system-ai-queue.json');console.log((q.tasks||[]).filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued').slice(0,32).map(t=>t.id).join(','))")"
-          if [ "$pending" != "0" ] && [ -n "$ids" ]; then
-            gh workflow run company-system-ai-workers.yml --repo "$GITHUB_REPOSITORY" --ref main -f marketing_task_ids="$ids"
-            gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo "MARKETING_COLLABORATION_START=YES:added-$count:pending-$pending"
-            echo "MARKETING_TARGET_IDS=$ids"
-          else
-            echo 'MARKETING_COLLABORATION_START=NO_PENDING_TASK'
-          fi
+          echo "marketing_task_ids=$ids" >> "$GITHUB_OUTPUT"
+          echo "MARKETING_TARGET_IDS=${ids:-NONE}"
+
+  execute:
+    needs: plan
+    if: needs.plan.outputs.marketing_task_ids != ''
+    uses: ./.github/workflows/company-system-ai-workers.yml
+    with:
+      marketing_task_ids: ${{ needs.plan.outputs.marketing_task_ids }}
+    secrets: inherit
