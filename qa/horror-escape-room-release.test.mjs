@@ -55,6 +55,9 @@ test('검증된 Creator Store 오디오가 실제 런타임에 연결된다',()=
   assert.match(client,/chase:Play\(\)/);
   assert.match(client,/actionSfx:Play\(\)/);
   assert.match(client,/warningSfx:Play\(\)/);
+  assert.ok(launch.releaseGates.includes('Creator Store BGM and gameplay SFX'));
+  assert.equal(launch.evidencePolicy.audioFeedbackPassRequired,true);
+  assert.equal(launch.externalReleaseCandidate,true);
 });
 
 test('기존 출시 핵심 게이트는 유지된다',()=>{
