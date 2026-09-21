@@ -2320,3 +2320,9 @@ learningClosedLoop:
 - 최종 Web/native 이관 전 Commercial Readiness를 검사한다: 첫 10분/온보딩, UI, 아트 일관성, 애니메이션, 피드백, 오디오, 모바일 성능, 접근성, 저장 안정성, 콘텐츠 구조/재방문 동기, 수익화 UI 분리와 플랫폼 정책 호환.
 - Commercial Readiness 실패는 `REPAIR_REQUIRED`로 돌리고 기존 검증 단계에서 즉시 재검증한다. 별도 WAITING/shadow pipeline을 만들지 않는다.
 - 그래픽/표현 변경은 게임 규칙, 밸런스, 세이브 의미를 바꾸지 않는다.
+
+## Department-driven portfolio development control
+
+Canonical machine contract: `company-learning/platform-release-roadmap.json -> departmentDrivenPortfolioDevelopmentControl`.
+
+Departments provide evidence for development priority, focused repair, redesign, pause, and retire review. No single department has veto authority. Primary AI + Vibe make the joint portfolio decision. `PAUSE` and `RETIRE_REVIEW` stop new production scheduling without deleting source, save meaning, verified evidence, learning, or release history. Decisions are reevaluated in the canonical Vibe 24H loop and may automatically resume development when the evidence returns to `ACCELERATE`, `CONTINUE`, `FOCUSED_REPAIR`, or `REDESIGN`.
