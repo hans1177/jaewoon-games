@@ -21,6 +21,8 @@ jobs:
   regression:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
+    env:
+      ANDROID_SERIAL: 127.0.0.1:5555
     steps:
       - name: Checkout regression tools
         uses: actions/checkout@v4

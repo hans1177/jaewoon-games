@@ -25,6 +25,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
+    env:
+      ANDROID_SERIAL: 127.0.0.1:5555
     steps:
       - name: Checkout QA tools
         uses: actions/checkout@v4
