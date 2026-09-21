@@ -69,28 +69,43 @@ function ensureRebuildTask(queue,gameId,platform){
   }]};
 }
 function platformState(item,tickets,platform,roadmap={}){
-  const gameId=clean(item.gameId),internal=internalReady(item,platform),adapt=adaptationEvidence(item,platform),blocking=openBlockingTickets(tickets,gameId,platform);
-  const rebuildComplete=adapt.rebuildCompleted===true||adapt.rebuildPassed===true;
-  const adaptationPass=adapt.pass===true&&adapt.runtimeEvidencePass===true;
-  const secondGatePass=internal&&rebuildComplete&&adaptationPass&&blocking.length===0;
+  void roadmap;
+  const gameId=clean(item.gameId);
+  const technical=internalReady(item,platform);
+  const blocking=openBlockingTickets(tickets,gameId,platform);
+  const lower=platform==='ROBLOX'?'roblox':'unity';
+  const internalPublished=platform==='ROBLOX'
+    ?item.robloxInternalReleasePublished===true||(item.robloxReleaseEvidence?.published===true&&item.robloxExternalPublicReleaseConfirmed!==true)
+    :item.unityInternalReleasePublished===true||item.unityInternalTestBuildPublished===true;
+  const playtestPassed=item[lower+'InternalPlaytestPassed']===true;
   const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
-  const activation=Date.parse(clean(roadmap?.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.activatedAt)||'2026-09-21T00:00:00Z');
-  const releaseEvidence=item.robloxReleaseEvidence||{};
-  const publishedAt=Date.parse(clean(releaseEvidence.publishedAt||releaseEvidence.releasedAt||releaseEvidence.observedAt||item.robloxReleasedAt||item.releaseConfirmedAt));
-  const legacyPublic=platform==='ROBLOX'&&item.robloxReleaseClaim===true&&releaseEvidence.published===true&&item.robloxFinalReviewPassed===true&&item.robloxRegressionPassed===true&&(item.preexistingPublicReleaseBeforeExposureGate===true||(Number.isFinite(publishedAt)&&Number.isFinite(activation)&&publishedAt<activation));
-  const publicReleased=legacyPublic||(secondGatePass&&explicitPublic);
+  const publicReady=technical&&internalPublished&&playtestPassed&&blocking.length===0;
+  const publicReleased=publicReady&&explicitPublic;
+  const state=publicReleased
+    ?'PUBLIC_RELEASE'
+    :publicReady
+      ?'PUBLIC_RELEASE_READY'
+      :internalPublished
+        ?(playtestPassed?'INTERNAL_PLAYTEST_PASS':'INTERNAL_PLAYTEST_AND_DEBUG')
+        :technical
+          ?'INTERNAL_RELEASE_READY'
+          :'NATIVE_DEVELOPMENT';
   return{
     platform,
-    internalReleaseState:internal?'INTERNAL_PLATFORM_RELEASE':'NATIVE_TECHNICAL_IN_PROGRESS',
-    internalReleaseReady:internal,
+    technicalReady:technical,
+    internalReleaseState:state,
+    internalReleaseReady:technical,
+    internalReleasePublished:internalPublished,
+    internalPlaytestPassed:playtestPassed,
     externalExposureAllowed:publicReleased,
-    externalExposureState:publicReleased?'PUBLIC_RELEASE':secondGatePass?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY',
-    secondGate:{pass:secondGatePass,rebuildComplete,adaptationRuntimeEvidencePass:adaptationPass,openBlockingTesterTickets:blocking.map(t=>t.id)},
-    publication:{explicitPublicEvidence:explicitPublic,legacyPublicRelease:legacyPublic,publicReleased},
+    externalExposureState:publicReleased?'PUBLIC_RELEASE':publicReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY',
+    publicReleaseReady:publicReady,
+    testerTickets:{openBlocking:blocking.map(t=>t.id)},
+    publication:{explicitPublicEvidence:explicitPublic,publicReleased},
     distribution:platform==='UNITY'
-      ?{intendedTrack:'GOOGLE_PLAY_INTERNAL_OR_CLOSED_TEST',productionTrackAllowed:secondGatePass,credentialsRequiredForStoreUpload:true}
-      :{intendedVisibility:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',publicDiscoveryAllowed:secondGatePass},
-    rebuildRequired:internal&&!secondGatePass
+      ?{intendedTrack:'INTERNAL_OR_CLOSED_APP_TEST',productionTrackAllowed:publicReady,credentialsRequiredForStoreUpload:true}
+      :{intendedVisibility:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',publicDiscoveryAllowed:publicReady},
+    rebuildRequired:false
   };
 }
 export function controlPlatformExposure({developmentQueue={},ticketQueue={},suitability={},vibeQueue={},roadmap={}}={}){
@@ -101,24 +116,26 @@ export function controlPlatformExposure({developmentQueue={},ticketQueue={},suit
     if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))continue;
     const gameId=clean(item.gameId);if(!gameId)continue;
     const platforms=['ROBLOX','UNITY'].map(platform=>platformState(item,ticketQueue,platform,roadmap));
-    for(const p of platforms)if(p.rebuildRequired)queue=ensureRebuildTask(queue,gameId,p.platform);
+    const anyPublic=platforms.some(x=>x.publication.publicReleased===true);
+    const anyReady=platforms.some(x=>x.publicReleaseReady===true);
     games.push({
-      gameId,gameName:clean(item.gameName||gameId),platformExecutionMode:'ROBLOX_UNITY_CONCURRENT',
+      gameId,gameName:clean(item.gameName||gameId),platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
       homepageVisibility:'INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED',
       suitability:suitabilityById.get(gameId)||null,
       platforms,
-      publicReleaseReady:platforms.every(x=>x.secondGate.pass===true),
+      publicReleaseReady:platforms.every(x=>x.publicReleaseReady===true),
       publicReleased:platforms.every(x=>x.publication.publicReleased===true),
-      externalPublicReleaseState:platforms.every(x=>x.publication.publicReleased===true)?'PUBLIC_RELEASE':platforms.every(x=>x.secondGate.pass===true)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'
+      anyPlatformPublicReleased:anyPublic,
+      externalPublicReleaseState:platforms.every(x=>x.publication.publicReleased===true)?'PUBLIC_RELEASE_ALL':anyPublic?'PUBLIC_RELEASE_PARTIAL':anyReady?'PUBLIC_RELEASE_READY_PARTIAL':'INTERNAL_ONLY'
     });
   }
   return{
-    state:{version:1,kind:'platform-exposure-state',authority:'OWNER_DIRECTIVE_2026-09-21',policy:'INTERNAL_RELEASE_THEN_SECOND_PLATFORM_GATE_BEFORE_PUBLIC',updatedAt:new Date().toISOString(),games},
+    state:{version:2,kind:'platform-exposure-state',authority:'OWNER_DIRECTIVE_2026-09-21',policy:'DIRECT_NATIVE_INTERNAL_RELEASE_PLAYTEST_THEN_PLATFORM_INDEPENDENT_PUBLIC',updatedAt:new Date().toISOString(),games},
     queue
   };
 }
 export function homepageExposureSnapshot(state={}){
-  return{version:1,publicSafe:true,internalCompanySurface:true,updatedAt:state.updatedAt||null,games:(state.games||[]).map(g=>({
+  return{version:2,publicSafe:true,internalCompanySurface:true,updatedAt:state.updatedAt||null,games:(state.games||[]).map(g=>({
     gameId:g.gameId,gameName:g.gameName,platformExecutionMode:g.platformExecutionMode,
     externalPublicReleaseState:g.externalPublicReleaseState,publicReleaseReady:g.publicReleaseReady,
     suitability:g.suitability,platforms:g.platforms
@@ -138,5 +155,5 @@ if(process.argv[1]===new URL(import.meta.url).pathname){
   if(a['homepage-output'])writeJson(a['homepage-output'],homepageExposureSnapshot(result.state));
   console.log('PLATFORM_EXPOSURE_GAMES='+result.state.games.length);
   console.log('PLATFORM_INTERNAL_RELEASES='+result.state.games.flatMap(g=>g.platforms).filter(x=>x.internalReleaseReady).length);
-  console.log('PLATFORM_SECOND_GATE_READY='+result.state.games.flatMap(g=>g.platforms).filter(x=>x.secondGate.pass).length);
+  console.log('PLATFORM_PUBLIC_RELEASE_READY='+result.state.games.flatMap(g=>g.platforms).filter(x=>x.publicReleaseReady).length);
 }
