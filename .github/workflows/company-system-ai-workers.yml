@@ -277,11 +277,13 @@ jobs:
           safe="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           branch="system-ai/candidate/${safe}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "SYSTEM_AI_BRANCH=$branch" >> "$GITHUB_ENV"
+          mutation_required="$(node -p "require('/tmp/system-ai-task.json').sourceMutationRequired === true ? 'true' : 'false'")"
+          echo "SOURCE_MUTATION_REQUIRED=$mutation_required" >> "$GITHUB_ENV"
           git checkout -b "$branch"
 
       - name: Verify existing verifier contract before model
         id: preverify
-        if: startsWith(matrix.taskId, 'sys-verify-')
+        if: startsWith(matrix.taskId, 'sys-verify-') && env.SOURCE_MUTATION_REQUIRED != 'true'
         continue-on-error: true
         shell: bash
         run: |
@@ -312,7 +314,7 @@ jobs:
 
       - name: Verify no-change assignment against current main
         id: current_main
-        if: steps.implement.outcome == 'failure'
+        if: steps.implement.outcome == 'failure' && env.SOURCE_MUTATION_REQUIRED != 'true'
         continue-on-error: true
         shell: bash
         run: |
@@ -347,6 +349,12 @@ jobs:
           node - <<'NODE'
           const fs=require('fs'),cp=require('child_process');
           const result=JSON.parse(fs.readFileSync('/tmp/system-ai-worker-result.json','utf8'));
+          const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
+          const changed=new Set(result.changedFiles||[]);
+          if(task.sourceMutationRequired===true){
+            const responsible=(task.responsibleFiles||[]).filter(Boolean);
+            if(!responsible.some(file=>changed.has(file)))throw new Error('SYSTEM_AI_SOURCE_MUTATION_REQUIRED_BEFORE_REVALIDATION');
+          }
           for(const file of result.changedFiles||[]){
             if(/\.(?:mjs|js|cjs)$/.test(file))cp.execFileSync(process.execPath,['--check',file],{stdio:'inherit'});
             if(/\.json$/.test(file))JSON.parse(fs.readFileSync(file,'utf8'));
@@ -398,6 +406,8 @@ jobs:
           git add -- tools qa assets .github/workflows company-learning web-games roblox-games unity-games unreal-games godot-games
           test -n "$(git diff --cached --name-only)"
           git commit -m "system-ai: candidate ${TASK_ID}"
+          candidate_sha="$(git rev-parse HEAD)"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
           git push origin "HEAD:${SYSTEM_AI_BRANCH}"
           body="External free-AI/Vibe collaboration candidate.\n\nTask: ${TASK_ID}\n\nStatus: deterministic verification passed. Marketing candidates may auto-complete only when Primary AI standing approval and Vibe per-candidate decision both ACCEPT, with security and QA PASS.\n\nNo paid spend or irreversible external action is authorized."
           pr_url="$(gh pr create --base main --head "$SYSTEM_AI_BRANCH" --title "system-ai: ${TASK_ID}" --body "$body" 2>/dev/null || gh pr view "$SYSTEM_AI_BRANCH" --json url -q .url)"
@@ -427,6 +437,7 @@ jobs:
           PREVERIFY_OUTCOME: ${{ steps.preverify.outcome }}
           CURRENT_MAIN_OUTCOME: ${{ steps.current_main.outcome }}
           PR_URL: ${{ steps.publish.outputs.pr_url }}
+          CANDIDATE_SHA: ${{ steps.publish.outputs.candidate_sha }}
           JOINT_MERGED: ${{ steps.publish.outputs.joint_merged }}
         shell: bash
         run: |
@@ -445,8 +456,10 @@ jobs:
               findings:(report.findings||[]).map(x=>({rule:x.rule,severity:x.severity,category:x.category,file:x.file,line:x.line,evidenceSha256:x.evidenceSha256,disposition:x.disposition||'QUARANTINE'}))
             };
           }
-          const preverified=process.env.PREVERIFY_OUTCOME==='success';
-          const currentMainSatisfied=preverified||(process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success');
+          const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
+          const mutationRequired=task.sourceMutationRequired===true;
+          const preverified=!mutationRequired&&process.env.PREVERIFY_OUTCOME==='success';
+          const currentMainSatisfied=!mutationRequired&&(preverified||(process.env.IMPLEMENT_OUTCOME==='failure'&&process.env.CURRENT_MAIN_OUTCOME==='success'));
           const candidateOk=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
           const jointAccepted=process.env.JOINT_MERGED==='true';
           const blocker=currentMainSatisfied||candidateOk?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
@@ -465,6 +478,8 @@ jobs:
               ...(preverified?['model-call-skipped:deterministic-verifier-already-satisfied']:[]),
               ...(currentMainSatisfied?['no-candidate-required:current-main-already-satisfies-task']:[]),
               ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
+              ...(candidateOk&&mutationRequired&&process.env.CANDIDATE_SHA?[`source-mutation-sha:${process.env.CANDIDATE_SHA}`]:[]),
+              ...(mutationRequired?['source-mutation-required:YES']:[]),
               worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
               'worker-self-acceptance:NO',
               ...(jointAccepted?['primary-ai-vibe-joint-accept:YES','primary-ai-review-required:NO']:['primary-ai-review-required:YES'])
