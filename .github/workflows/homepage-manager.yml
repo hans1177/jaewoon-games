@@ -333,7 +333,7 @@ jobs:
           const entry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
           const candidateSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
           const viewer=fs.readFileSync('assets/artbook-viewer.js','utf8');
-          if(!entry.includes("const artbookBtn=artbook?")||!entry.includes('homepageArtbookPath'))failures.push('homepage:artbook-link-contract');
+          if(entry.includes('아트북 보기')||entry.includes('foldGameArtbookBtn')||entry.includes('homepageArtbookPath'))failures.push('homepage:artbook-button-must-be-hidden');
           if(!candidateSync.includes('const limit=30')||!candidateSync.includes('const minimumScore=WEB_HOMEPAGE_MINIMUM')||!candidateSync.includes('STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE'))failures.push('homepage:test-shelf-contract');
           if(!viewer.includes("loadJson('/game-artbooks.json'"))failures.push('viewer:registry-contract');
           if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
