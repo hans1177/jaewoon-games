@@ -75,7 +75,15 @@ const portfolioClassOf=id=>'portfolio-'+String(portfolioDecisionKeyOf(id)).toLow
 const exposureOf=id=>(platformExposure?.games||[]).find(x=>String(x.gameId||'')===String(id||''))||null;
 const exposureStateOf=id=>String(exposureOf(id)?.externalPublicReleaseState||'INTERNAL_ONLY');
 const exposureLabelOf=id=>({INTERNAL_ONLY:'내부전용',PUBLIC_RELEASE_READY:'외부공개 준비',PUBLIC_RELEASE:'외부공개'})[exposureStateOf(id)]||exposureStateOf(id);
-const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).filter(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p.platform))).map(p=>{const state=p.externalExposureState==='PUBLIC_RELEASE'?'공개출시':p.internalReleaseReady===true?'내부출시':'개발중';return `${normalizePlatform(p.platform)} ${state}`;}).join(' / ');};
+const platformReleaseLabel=p=>({
+  NATIVE_DEVELOPMENT:'개발중',
+  INTERNAL_RELEASE_READY:'내부출시 준비',
+  INTERNAL_PLAYTEST_AND_DEBUG:'내부 플레이테스트',
+  INTERNAL_PLAYTEST_PASS:'플레이테스트 PASS',
+  PUBLIC_RELEASE_READY:'공개출시 준비',
+  PUBLIC_RELEASE:'공개출시'
+})[String(p?.internalReleaseState||'')]||(p?.externalExposureState==='PUBLIC_RELEASE'?'공개출시':p?.internalReleaseReady===true?'내부출시 준비':'개발중');
+const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).filter(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p.platform))).map(p=>`${normalizePlatform(p.platform)} ${platformReleaseLabel(p)}`).join(' / ');};
 
 function latestVerifiedUnityBuilds(status){
   const map=new Map();
@@ -171,7 +179,7 @@ function internalReleaseLinks(game){
   const links=platformLinks(game);
   const exposure=exposureOf(gameIdOf(game));
   if(!exposure||!Array.isArray(exposure.platforms)||!exposure.platforms.length)return {roblox:'',unity:''};
-  const ready=new Set(exposure.platforms.filter(p=>p?.internalReleaseReady===true||p?.externalExposureState==='PUBLIC_RELEASE').map(p=>normalizePlatform(p?.platform)));
+  const ready=new Set(exposure.platforms.filter(p=>p?.internalReleasePublished===true||p?.externalExposureState==='PUBLIC_RELEASE').map(p=>normalizePlatform(p?.platform)));
   return {roblox:ready.has('ROBLOX')?links.roblox:'',unity:ready.has('UNITY')?links.unity:''};
 }
 function hasInternalRelease(game){
@@ -218,7 +226,7 @@ function buildFocus(catalog,status){
 }
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
-  const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return p?.externalExposureState==='PUBLIC_RELEASE'?'공개출시':p?.internalReleaseReady===true?'내부출시':'개발중';};
+  const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return platformReleaseLabel(p);};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'robloxAction'),
