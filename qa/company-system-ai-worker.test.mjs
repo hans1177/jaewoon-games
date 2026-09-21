@@ -105,6 +105,20 @@ test('system AI may read central policy as context but cannot write it',async()=
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
+test('system AI may read explicit root metadata but cannot write it',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('game-catalog.json','{}\n');
+    write('task.json',JSON.stringify({id:'read-catalog',status:'running',goal:'read catalog and update tool',responsibleFiles:['tools/demo.mjs'],contextFiles:['game-catalog.json']}));
+    write('response.json',JSON.stringify({summary:'update tool',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:[],risks:[]}));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.equal(result.changedFiles[0],'tools/demo.mjs');
+    write('bad-root-task.json',JSON.stringify({id:'write-catalog',status:'running',goal:'bad',responsibleFiles:['game-catalog.json']}));
+    await assert.rejects(runSystemAiWorker({taskFile:'bad-root-task.json',responseFile:'response.json'}),/SYSTEM_AI_WRITE_PATH_OUTSIDE_ALLOWED_SCOPE/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
 test('system AI workflow persists sanitized security quarantine before PR supervision',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
   assert.match(workflow,/system-ai-security-quarantined/);
