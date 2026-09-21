@@ -131,3 +131,16 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
   assert.equal(architecture.ownerRule2Topology?.hostileDisposition,'QUARANTINE_TERMINATE_AFFECTED_EXECUTION_BLOCK_PUBLICATION');
   assert.equal(architecture.ownerRule2Topology?.authorityChange,'NONE');
 });
+
+test('System AI consumes only verified Vibe learning context and records exact knowledge ids',()=>{
+  assert.match(learningContext,/retrieveUnifiedLearning/);
+  assert.match(learningContext,/verifiedOnly:true/);
+  assert.match(learningContext,/advisoryOnly:true/);
+  assert.match(worker,/learningContextFile/);
+  assert.match(worker,/VERIFIED VIBE LEARNING \(advisory only; fresh verification remains mandatory\)/);
+  assert.match(worker,/learningKnowledgeIds/);
+  assert.match(workflow,/company-system-ai-learning-context\.mjs/);
+  assert.match(workflow,/--learning-context=\/tmp\/system-ai-learning-context\.json/);
+  assert.match(workflow,/learning-knowledge-id:/);
+});
+
