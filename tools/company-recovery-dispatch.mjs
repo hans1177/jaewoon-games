@@ -71,7 +71,9 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           blocker:running?task.blocker:null,
           reservationId:running?task.reservationId:null,
           reservedAt:running?task.reservedAt:null,
-          evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage)]),
+          sourceMutationRequired:rec.sourceMutationRequired!==false,
+          sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+          evidence:uniq([...(task.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-strategy:'+clean(rec.recoveryStrategy),'recovery-exact-stage:'+clean(rec.failureStage),'source-mutation-required:YES']),
           updatedAt:stamp
         };
       });
