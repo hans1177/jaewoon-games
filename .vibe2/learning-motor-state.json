@@ -1492,7 +1492,8 @@
       "coding_a2muk9",
       "coding_16r9ojg",
       "coding_1vw4oqz",
-      "coding_wkge6z"
+      "coding_wkge6z",
+      "coding_1ilsnl5"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -3340,9 +3341,9 @@
         "lastUpdatedAt": "2026-09-21T04:50:36.286Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
-        "verifiedApplications": 104,
+        "verifiedApplications": 105,
         "firstCandidatePasses": 23,
-        "totalGenerationAttempts": 200,
+        "totalGenerationAttempts": 202,
         "verifiedFailures": 328,
         "games": {
           "territory-war": 11,
@@ -3356,13 +3357,13 @@
           "seed-idle-growth-rpg-crystal-bloom": 1,
           "egg-heist": 7,
           "monster-adventure": 1,
-          "daechung-rpg": 42,
+          "daechung-rpg": 43,
           "seed-story-complete-rpg-chronicles-of-eldoria": 2,
           "fantasy-survival": 16
         },
         "targets": {
           "web": 93,
-          "unity": 11
+          "unity": 12
         },
         "contextModes": {
           "UNKNOWN": {
@@ -3396,14 +3397,14 @@
             "lastUpdatedAt": "2026-09-21T04:41:39.291Z"
           },
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 28,
+            "verifiedApplications": 29,
             "verifiedFailures": 12,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 58,
-            "totalContextBytes": 748336,
-            "lastEvidence": "coding_1leq3cg",
+            "totalGenerationAttempts": 60,
+            "totalContextBytes": 753129,
+            "lastEvidence": "coding_1ilsnl5",
             "lastFailureEvidence": "coding_negative_z9t9na",
-            "lastUpdatedAt": "2026-09-21T04:27:37.026Z"
+            "lastUpdatedAt": "2026-09-21T04:53:29.368Z"
           },
           "BOUNDED_FILE_EXCERPT_FALLBACK": {
             "verifiedApplications": 12,
@@ -4321,15 +4322,15 @@
             "lastUpdatedAt": "2026-09-20T14:55:54.769Z"
           },
           "unity|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|TIMEOUT": {
-            "verifiedApplications": 10,
+            "verifiedApplications": 11,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 21,
+            "totalGenerationAttempts": 23,
             "verifiedFailures": 7,
             "games": {
-              "daechung-rpg": 10
+              "daechung-rpg": 11
             },
             "targets": {
-              "unity": 10
+              "unity": 11
             },
             "failureGames": {
               "daechung-rpg": 7
@@ -4341,9 +4342,9 @@
               "INVALID_PATH": 5,
               "NO_OP": 2
             },
-            "lastEvidence": "coding_qlvg3u",
+            "lastEvidence": "coding_1ilsnl5",
             "lastFailureEvidence": "coding_negative_z9t9na",
-            "lastUpdatedAt": "2026-09-21T03:54:19.319Z"
+            "lastUpdatedAt": "2026-09-21T04:53:29.368Z"
           },
           "web|MOBILE_INPUT|SAVE_RESTORE|COMBAT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|COMBAT|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|PROGRESSION|QUEST_DESIGN|SAVE|SECURITY|STATE_MACHINE|UI_STATE|WEB_RUNTIME": {
             "verifiedApplications": 1,
@@ -4424,9 +4425,9 @@
           }
         },
         "state": "VERIFIED",
-        "lastEvidence": "coding_16r9ojg",
+        "lastEvidence": "coding_1ilsnl5",
         "lastFailureEvidence": "coding_negative_i1dc7l",
-        "lastUpdatedAt": "2026-09-21T04:50:36.286Z"
+        "lastUpdatedAt": "2026-09-21T04:53:29.368Z"
       },
       "CAUSAL_TRACE_CROSSCHECK": {
         "verifiedApplications": 476,
@@ -7982,7 +7983,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-21T04:53:21.596Z",
+    "lastBuiltAt": "2026-09-21T04:53:29.433Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -10792,5 +10793,5 @@
       "knowledge_1cpjq16"
     ]
   },
-  "updatedAt": "2026-09-21T04:53:21.596Z"
+  "updatedAt": "2026-09-21T04:53:29.433Z"
 }
