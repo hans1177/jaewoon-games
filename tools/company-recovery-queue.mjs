@@ -33,7 +33,8 @@ function idFor(row){return clean(row.id)||'recovery-'+crypto.createHash('sha256'
 function normalize(row={}){
   return{
     id:idFor(row),status:clean(row.status)||'queued',priority:clean(row.priority)||'high',
-    sourceQueue:clean(row.sourceQueue),sourceTaskId:clean(row.sourceTaskId)||null,
+    sourceQueue:clean(row.sourceQueue),sourceTaskId:clean(row.sourceTaskId)||null,gameId:clean(row.gameId)||null,
+    responsibleFiles:uniq(row.responsibleFiles),contextFiles:uniq(row.contextFiles),goal:clean(row.goal)||null,
     relatedTaskIds:uniq(row.relatedTaskIds),failureStage:clean(row.failureStage),failureSignature:clean(row.failureSignature),
     blastRadius:clean(row.blastRadius)||'single-task',checkpoint:clean(row.checkpoint)||null,
     evidence:uniq(row.evidence),recoveryStrategy:clean(row.recoveryStrategy),verificationPlan:uniq(row.verificationPlan),
@@ -59,7 +60,7 @@ export function enqueueRecovery(queueInput,row={},options={}){
     const reactivated=reactivateDispatched&&target.status==='dispatched';
     const tasks=queue.tasks.map(x=>x.id!==target.id?x:{...x,
       status:reactivated?'queued':x.status,
-      priority:item.priority||x.priority,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
+      priority:item.priority||x.priority,gameId:item.gameId||x.gameId,responsibleFiles:uniq([...(x.responsibleFiles||[]),...(item.responsibleFiles||[])]),contextFiles:uniq([...(x.contextFiles||[]),...(item.contextFiles||[])]),goal:item.goal||x.goal,relatedTaskIds:uniq([...(x.relatedTaskIds||[]),...(item.relatedTaskIds||[])]),
       evidence:uniq([...(x.evidence||[]),...(item.evidence||[]),...(reactivated?['recovery-reactivated-after-source-refailure']:[])]),blastRadius:item.blastRadius||x.blastRadius,
       checkpoint:item.checkpoint||x.checkpoint,recoveryStrategy:item.recoveryStrategy||x.recoveryStrategy,
       verificationPlan:uniq([...(x.verificationPlan||[]),...(item.verificationPlan||[])]),updatedAt:now()
