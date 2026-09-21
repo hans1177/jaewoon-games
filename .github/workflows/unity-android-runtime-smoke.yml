@@ -83,11 +83,32 @@ jobs:
           [[ "$(getconf PAGESIZE)" == "4096" ]] || { echo '[JAEWOON_BUILD_ERROR:ARM64_RUNNER_PAGE_SIZE] Redroid runtime requires the verified 4K-page ARM64 runner.' >&2; exit 8; }
 
           sudo apt-get update -y
-          sudo apt-get install -y adb aapt
+          sudo apt-get install -y adb aapt git make gcc "linux-headers-$(uname -r)"
           sudo apt-get install -y "linux-modules-extra-$(uname -r)" || true
           command -v docker >/dev/null 2>&1 || { echo '[JAEWOON_BUILD_ERROR:DOCKER_MISSING] Docker is unavailable on ARM64 runner.' >&2; exit 9; }
           sudo systemctl start docker || sudo service docker start || true
           docker version >/tmp/jaewoon-redroid-docker.txt 2>&1 || { cat /tmp/jaewoon-redroid-docker.txt >&2; exit 9; }
+          redroid_modules_sha='86f0a99f00388122aa2fdfaddf5fd507c58aac66'
+          redroid_modules="$RUNNER_TEMP/jaewoon-redroid-modules"
+          rm -rf "$redroid_modules"
+          git init -q "$redroid_modules"
+          git -C "$redroid_modules" remote add origin https://github.com/remote-android/redroid-modules.git
+          git -C "$redroid_modules" fetch -q --depth=1 origin refs/pull/21/head
+          git -C "$redroid_modules" checkout -q --detach FETCH_HEAD
+          [[ "$(git -C "$redroid_modules" rev-parse HEAD)" == "$redroid_modules_sha" ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_REDROID_MODULE_SOURCE_MISMATCH] pinned redroid module source mismatch.' >&2; exit 9; }
+          git -C "$redroid_modules" apply --check "$GITHUB_WORKSPACE/tools/redroid-ashmem-617.patch" || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_PATCH_CHECK_FAILED] kernel 6.17 ashmem patch no longer applies.' >&2; exit 9; }
+          git -C "$redroid_modules" apply "$GITHUB_WORKSPACE/tools/redroid-ashmem-617.patch"
+
+          make -C "$redroid_modules/ashmem" >"/tmp/jaewoon-redroid-ashmem-build.log" 2>&1 || { cat "/tmp/jaewoon-redroid-ashmem-build.log" >&2; echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_BUILD_FAILED] kernel 6.17 compatible ashmem build failed.' >&2; exit 9; }
+          sudo rmmod ashmem_linux >/dev/null 2>&1 || true
+          sudo insmod "$redroid_modules/ashmem/ashmem_linux.ko" || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_LOAD_FAILED] kernel 6.17 compatible ashmem module could not be loaded.' >&2; exit 9; }
+          ashmem_minor="$(awk '$2=="ashmem"{print $1}' /proc/misc | head -n1)"
+          [[ "$ashmem_minor" =~ ^[0-9]+$ ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_MISC_MISSING] ashmem misc device was not registered.' >&2; exit 9; }
+          if [[ ! -c /dev/ashmem ]]; then sudo mknod -m 0666 /dev/ashmem c 10 "$ashmem_minor"; fi
+          sudo chmod 0666 /dev/ashmem
+          [[ -c /dev/ashmem ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_ASHMEM_NODE_MISSING] /dev/ashmem is unavailable.' >&2; exit 9; }
+          echo 'UNITY_ANDROID_ASHMEM_6_17_COMPAT=READY'
+
 
           sudo modprobe binder_linux devices="binder,hwbinder,vndbinder" || { echo '[JAEWOON_BUILD_ERROR:BINDER_MODULE_UNAVAILABLE] binder_linux could not be loaded.' >&2; exit 10; }
           sudo mkdir -p /dev/binderfs
@@ -104,9 +125,9 @@ jobs:
           mkdir -p "$data"
           docker run -d --privileged --name jaewoon-unity-redroid \
             -p 127.0.0.1:5555:5555 \
+            --device /dev/ashmem:/dev/ashmem \
             -v "$data:/data" \
             "$image" \
-            androidboot.use_memfd=true \
             androidboot.redroid_width=1080 \
             androidboot.redroid_height=2400 \
             androidboot.redroid_dpi=420 \
@@ -194,5 +215,5 @@ jobs:
             /tmp/jaewoon-redroid-docker.txt
             /tmp/jaewoon-redroid-adb-connect.txt
             /tmp/jaewoon-redroid-inspect.json
-          if-no-files-found: warn
+            /tmp/jaewoon-redroid-ashmem-build.log          if-no-files-found: warn
           retention-days: 14

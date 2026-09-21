@@ -128,7 +128,11 @@ test('canonical Unity runtime QA and regression use native ARM64 Android 16 inst
   for(const source of [runtimeWorkflowSource, independentQaSource, regressionSource]){
     assert.match(source,/runs-on: ubuntu-24\.04-arm/);
     assert.match(source,/redroid\/redroid:16\.0\.0_64only-latest/);
-    assert.match(source,/androidboot\.use_memfd=true/);
+    assert.match(source,/redroid_modules_sha='86f0a99f00388122aa2fdfaddf5fd507c58aac66'/);
+    assert.match(source,/redroid-ashmem-617\.patch/);
+    assert.match(source,/ashmem_linux\.ko/);
+    assert.match(source,/--device \/dev\/ashmem:\/dev\/ashmem/);
+    assert.doesNotMatch(source,/androidboot\.use_memfd=true/);
     assert.match(source,/ro\.product\.cpu\.abilist/);
     assert.match(source,/arm64-v8a/);
     assert.doesNotMatch(source,/system-images;android-36;google_apis;x86_64/);
@@ -137,7 +141,7 @@ test('canonical Unity runtime QA and regression use native ARM64 Android 16 inst
   assert.match(runtimeWorkflowSource,/unity-apk-runtime-smoke\.sh/);
   assert.doesNotMatch(runtimeWorkflowSource,/binder_devices=\(\)/);
   assert.doesNotMatch(runtimeWorkflowSource,/\$\{binder_devices\[@\]\}/);
-  assert.match(runtimeWorkflowSource,/androidboot\.use_memfd=true/);
+  assert.match(runtimeWorkflowSource,/UNITY_ANDROID_ASHMEM_6_17_COMPAT=READY/);
   assert.match(regressionSource,/unity-apk-runtime-smoke\.sh/);
   assert.match(runtimeSmokeSource,/ANDROID_RUNTIME_ABI_MISMATCH/);
   assert.match(runtimeSmokeSource,/runtimeAbiCompatible/);
