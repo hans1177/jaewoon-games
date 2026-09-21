@@ -195,13 +195,17 @@
     "provider": "LOCAL_OLLAMA",
     "candidateBranchPrefix": "system-ai/candidate/",
     "directMainWrite": false,
-    "gameSourceWrite": false,
+    "gameSourceWrite": true,
     "workerSelfAcceptance": false,
     "deterministicVerificationBeforePrimaryAiReview": true,
     "primaryAiReworkOrAccept": true,
     "independentTaskParallelism": true,
     "maxExternalExecutionWave": 32,
-    "recruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
+    "recruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK",
+    "gameSourceWriteMode": "EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY",
+    "gameplayFeatureCandidateAllowed": true,
+    "learningCandidateRoute": "EXISTING_VIBE_LEARNING_MOTOR",
+    "fullProcessCollaboration": true
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerSynchronization": {
