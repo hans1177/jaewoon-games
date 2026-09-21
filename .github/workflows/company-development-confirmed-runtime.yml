@@ -1285,6 +1285,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
           const seedState=JSON.parse(fs.readFileSync('/tmp/game-seed-state.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerResetIds=new Set(Array.isArray(seedState?.ownerAllGamesDesignReset?.gameIds)?seedState.ownerAllGamesDesignReset.gameIds.map(String):[]);
           const ownerResetAt=Date.parse(seedState?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetPassIds=new Set((seedState.seeds||[]).filter(seed=>{
@@ -1300,6 +1301,32 @@ jobs:
           }).map(game=>String(game.id||'').trim()).filter(Boolean));
           const runtimeRef=`origin/${process.env.COMPANY_RUNTIME_BRANCH}`;
           const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
+          const unityPromotionEvidence=item=>{
+            if(item.unityWebFirstStagePassed!==true||!item.unityWebFirstStagePassedAt)return{pass:false,blockers:['UNITY_WEB_FIRST_STAGE_PASS_MISSING'],presentationContract:null};
+            const evidencePath=String(item.unityWebFirstStageEvidencePath||'').trim();
+            const baselinePath=String(item.designBaselineSource||'').trim();
+            const sourceRoot=`unity-games/${item.gameId}`;
+            if(!evidencePath||!baselinePath)return{pass:false,blockers:['UNITY_WEB_PROMOTION_EVIDENCE_PATH_MISSING'],presentationContract:null};
+            try{
+              const evidence=JSON.parse(showText(evidencePath));
+              const currentTree=execFileSync('git',['rev-parse',`HEAD:${sourceRoot}`],{encoding:'utf8'}).trim();
+              const baselineSha=sha256Text(showText(baselinePath));
+              const pass=evidence?.engine==='UNITY_WEB'
+                &&evidence?.pass===true
+                &&evidence?.gate?.pass===true
+                &&evidence?.postUnityWebGatePipelineUnchanged===true
+                &&String(item.unityWebFirstStageSourceTreeSha||'')===currentTree
+                &&String(evidence?.sourceTreeSha||'')===currentTree
+                &&String(item.unityWebFirstStageDesignBaselineSha256||'')===baselineSha
+                &&String(evidence?.designBaselineSha256||'')===baselineSha;
+              return{
+                pass,
+                blockers:pass?[]:['UNITY_WEB_PROMOTION_EVIDENCE_STALE_OR_INCOMPLETE'],
+                presentationContract:pass?{ready:true,engine:'UNITY_WEB',gate:evidence.gate}:null,
+                evidence
+              };
+            }catch(error){return{pass:false,blockers:[`UNITY_WEB_PROMOTION_EVIDENCE_READ_FAILED:${String(error?.message||error).replace(/\s+/g,' ').slice(0,120)}`],presentationContract:null};}
+          };
           const promotionEvidence=item=>{
             const evidencePath=String(item.webValidationEvidencePath||'').trim();
             const webSourcePath=String(item.webSourcePath||`web-games/${item.gameId}`).replace(/^\/+|\/+$/g,'');
@@ -1319,12 +1346,15 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
             const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
-            const evidenceGate=promotionEvidence(item);
-            const presentationReady=evidenceGate.presentationContract?.ready===true;
-            const formalPass=firstGatePass||(item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true&&presentationReady);
-            if(!formalPass||(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))){
-              if(item.formalImplementationPassed===true&&!evidenceGate.pass){promotionRejected++;console.log(`WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(evidenceGate.blockers||[]).join('|')}`);}
-              if(item.formalImplementationPassed===true&&evidenceGate.pass===true&&!presentationReady){promotionRejected++;console.log(`WEB_PRESENTATION_HANDOFF_REJECTED=${item.gameId}:WEB_HANDOFF_PRESENTATION_READY_REQUIRED`);}
+            const unityGate=unityPromotionEvidence(item);
+            const unityPass=unityGate.pass===true;
+            const evidenceGate=unityPass?unityGate:promotionEvidence(item);
+            const presentationReady=unityPass||evidenceGate.presentationContract?.ready===true;
+            const formalPass=unityPass||firstGatePass||(item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true&&presentationReady);
+            if(!formalPass||(!unityPass&&!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))){
+              if(item.unityWebFirstStagePassed===true&&!unityGate.pass){promotionRejected++;console.log(`UNITY_WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(unityGate.blockers||[]).join('|')}`);}
+              if(item.formalImplementationPassed===true&&!unityPass&&!evidenceGate.pass){promotionRejected++;console.log(`WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(evidenceGate.blockers||[]).join('|')}`);}
+              if(item.formalImplementationPassed===true&&!unityPass&&evidenceGate.pass===true&&!presentationReady){promotionRejected++;console.log(`WEB_PRESENTATION_HANDOFF_REJECTED=${item.gameId}:WEB_HANDOFF_PRESENTATION_READY_REQUIRED`);}
               continue;
             }
             const status=String(item.status||'').toUpperCase();
@@ -1351,26 +1381,28 @@ jobs:
             const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
             const webSourcePath=String(item.webSourcePath||`web-games/${item.gameId}`).replace(/^\/+|\/+$/g,'');
             const webPlatformHandoff={
-              version:1,
+              version:2,
               stage:'WEB_DEVELOPMENT_BASELINE_READY',
               producer:'.github/workflows/company-development-confirmed-runtime.yml',
               gameId:item.gameId,
+              engine:unityPass?'UNITY_WEB':'LEGACY_WEB',
               sourcePath:webSourcePath,
-              evidencePath:firstGatePass?'':String(item.webValidationEvidencePath||''),
+              evidencePath:unityPass?String(item.unityWebFirstStageEvidencePath||''):(firstGatePass?'':String(item.webValidationEvidencePath||'')),
               baselineSource:baseline,
-              sourceIndexSha256:firstGatePass?sha256Text(showText(`${webSourcePath}/index.html`)):String(item.webSourceIndexSha256||''),
-              designBaselineSha256:firstGatePass?sha256Text(showText(baseline)):String(item.webDesignBaselineSha256||''),
-              validationSchemaVersion:firstGatePass?WEB_VALIDATION_SCHEMA_VERSION:Number(item.webValidationSchemaVersion||0),
-              strictScore:firstGatePass?Number(item.webFirstGateScore||0):Number(item.webStrictScore??item.strictImplementationScore),
-              promotionRevalidationPassed:firstGatePass?false:item.webPromotionRevalidationPassed===true,
-              validationPassedAt:firstGatePass?(item.webFirstGatePassedAt||null):(item.webValidationPassedAt||null),
-              firstGatePassed:firstGatePass,
-              secondGateRequired:firstGatePass?true:item.webSecondGateRequired===true,
-              secondGateCriteriaAuthority:firstGatePass?'OWNER_DIRECTIVE':String(item.webSecondGateCriteriaAuthority||''),
+              sourceIndexSha256:unityPass?'':(firstGatePass?sha256Text(showText(`${webSourcePath}/index.html`)):String(item.webSourceIndexSha256||'')),
+              unitySourceTreeSha:unityPass?String(item.unityWebFirstStageSourceTreeSha||''):null,
+              designBaselineSha256:unityPass?String(item.unityWebFirstStageDesignBaselineSha256||''):(firstGatePass?sha256Text(showText(baseline)):String(item.webDesignBaselineSha256||'')),
+              validationSchemaVersion:unityPass?1:(firstGatePass?WEB_VALIDATION_SCHEMA_VERSION:Number(item.webValidationSchemaVersion||0)),
+              strictScore:unityPass?null:(firstGatePass?Number(item.webFirstGateScore||0):Number(item.webStrictScore??item.strictImplementationScore)),
+              promotionRevalidationPassed:unityPass?true:(firstGatePass?false:item.webPromotionRevalidationPassed===true),
+              validationPassedAt:unityPass?(item.unityWebFirstStagePassedAt||null):(firstGatePass?(item.webFirstGatePassedAt||null):(item.webValidationPassedAt||null)),
+              firstGatePassed:unityPass||firstGatePass,
+              secondGateRequired:unityPass?false:(firstGatePass?true:item.webSecondGateRequired===true),
+              secondGateCriteriaAuthority:unityPass?'UNITY_WEB_FIRST_STAGE_GATE':(firstGatePass?'OWNER_DIRECTIVE':String(item.webSecondGateCriteriaAuthority||'')),
               carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context','presentation-contract'],
-              presentationContract:firstGatePass?null:evidenceGate.presentationContract,
+              presentationContract:unityPass?unityGate.presentationContract:(firstGatePass?null:evidenceGate.presentationContract),
               nativeRuntimePassTransferred:false,
-              authority:firstGatePass?'OWNER_DIRECTIVE_2026-09-21':'MACHINE_EXECUTION_CONTRACT'
+              authority:unityPass?'MACHINE_EXECUTION_CONTRACT':(firstGatePass?'OWNER_DIRECTIVE_2026-09-21':'MACHINE_EXECUTION_CONTRACT')
             };
             const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
             if(adapter&&adapter.existingExecutionPath==null){
@@ -1414,7 +1446,7 @@ jobs:
           console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
           console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);
           console.log('WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED');
-          console.log('PLATFORM_ADMISSION_GATE=WEB_FIRST_GATE_OR_FORMAL_90');
+          console.log('PLATFORM_ADMISSION_GATE=UNITY_WEB_FIRST_STAGE_OR_WEB_FIRST_GATE_OR_FORMAL_90');
           console.log('WEB_SECOND_GATE=OWNER_INSTRUCTION_CRITERIA_SEPARATE');
           console.log('CHANGE_DETECTION=PASS');
           console.log('CHEAP_PRECHECK=PASS_OR_BLOCK_RECORDED');
