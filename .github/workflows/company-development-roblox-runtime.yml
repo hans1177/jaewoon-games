@@ -89,7 +89,7 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
@@ -100,9 +100,9 @@ jobs:
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
             if(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
@@ -485,7 +485,7 @@ jobs:
           for(const item of q.items||[]){
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            if(!platformDevelopmentEligible(item,'ROBLOX'))continue;
             const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
             if(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
@@ -547,7 +547,7 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible} from './tools/company-selected-platform-router.mjs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
@@ -559,9 +559,9 @@ jobs:
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(secondaryOwnerFocus){
               const lane=String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase();
@@ -865,9 +865,9 @@ jobs:
           for(const item of q.items||[]){
             if(current.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(!secondaryOwnerFocus){
               if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
@@ -924,9 +924,9 @@ jobs:
           let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
