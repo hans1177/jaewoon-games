@@ -39,7 +39,6 @@ jobs:
     outputs:
       run: ${{ steps.queue.outputs.run }}
       matrix: ${{ steps.queue.outputs.matrix }}
-      parallel: ${{ steps.queue.outputs.parallel }}
       canary: ${{ steps.queue.outputs.canary }}
       main_sha: ${{ steps.main.outputs.sha }}
     steps:
@@ -69,7 +68,7 @@ jobs:
         id: main
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Resolve Unity work with global six-game window and representative canary
+      - name: Resolve Unity work from unbounded native queue with representative canary
         id: queue
         shell: bash
         run: |
@@ -118,7 +117,6 @@ jobs:
           const parallel=Math.max(1,Math.min(batchMax,selected.length||1));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${selected.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(selected)}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`parallel=${parallel}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`canary=${canary?'true':'false'}\n`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
@@ -126,7 +124,7 @@ jobs:
           console.log(`UNITY_SELECTED_N=${selected.length}`);
           console.log(`REPRESENTATIVE_CANARY=${canary?.gameId||'NONE'}`);
           console.log(`COMMON_FAILURE_DETECTED=${repeated?'YES':'NO'}`);
-          console.log(`UNITY_ACTIVE_PARENT_WINDOW=${parallel}`);
+          console.log(`UNITY_EXECUTION_BATCH_CAPACITY=${batchMax}`);
           NODE
 
   unity-technical-validation:
@@ -135,7 +133,6 @@ jobs:
     if: needs.prepare.outputs.run == 'true'
     strategy:
       fail-fast: false
-      max-parallel: ${{ fromJSON(needs.prepare.outputs.parallel) }}
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     runs-on: ubuntu-latest
