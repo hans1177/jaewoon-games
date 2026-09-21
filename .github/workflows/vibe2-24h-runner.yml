@@ -467,9 +467,7 @@ jobs:
               exit 0
             fi
 
-            if grep -Eq '^(RECOVERY_ESCALATION_ADDED|RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*$' \
-              /tmp/vibe2-recovery-escalation.log /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log 2>/dev/null; then
-              commit_message='vibe2: persist verified recovery and security learning [skip ci]'
+            if grep -Eq '^(RECOVERY_ESCALATION_ADDED|RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*
             elif test -f /tmp/vibe2-system-steward.log && ! grep -Eq '^VIBE2_SYSTEM_STEWARD_ACTION=(HEALTHY_NO_SCOPED_REPAIR|NO_RUNNABLE_WORK_FOR_PLANNER_REFILL)$' /tmp/vibe2-system-steward.log; then
               commit_message='vibe2: repair machine state with system steward [skip ci]'
             elif test -f /tmp/vibe2-platform-exposure.log && grep -Eq '^PLATFORM_INTERNAL_RELEASES=[1-9][0-9]*$|^PLATFORM_SECOND_GATE_READY=[1-9][0-9]*$' /tmp/vibe2-platform-exposure.log; then
@@ -663,6 +661,7 @@ jobs:
             /tmp/vibe2-recovery-learning.log
             /tmp/vibe2-recovery-code-distillation.log
             /tmp/vibe2-security-learning.log
+            /tmp/vibe2-system-ai-learning.log
             /tmp/vibe2-recovery-learning-motor.log
             /tmp/vibe2-post-release-focus.log
             /tmp/vibe2-plan-summary.log
@@ -741,127 +740,8 @@ jobs:
           echo 'VIBE2_24H_REFILL=FAILED' >&2
           exit 1
  \
-              /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log /tmp/vibe2-system-ai-learning.log; then
-              node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
-                --experience=.vibe2/experience.json \
-                --code-patterns=.vibe2/code-pattern-library.json \
-                --queue=.vibe2/queue.json \
-                --company-queue=/tmp/vibe2-company-runtime-queue.json \
-                --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
-                --state=.vibe2/learning-motor-state.json \
-                --benchmark=.vibe2/benchmark-ladder.json \
-                --practice=.vibe2/idle-practice-queue.json \
-                --handoff=.vibe2/web-roblox-handoffs.json | tee /tmp/vibe2-recovery-learning-motor.log
-            else
-              echo 'VIBE2_RECOVERY_SECURITY_LEARNING_MOTOR=NO_NEW_VERIFIED_LESSONS'
-            fi
-
-            node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
-              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --experience="$control_root/.vibe2/experience.json" \
-              --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
-              --output=/tmp/vibe2-handoff-before-attempt.json >/tmp/vibe2-handoff-before-attempt.log
-
-            node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs \
-              --catalog=/tmp/vibe2-main/game-catalog.json \
-              --development-queue=/tmp/vibe2-company-runtime-queue.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --root=/tmp/vibe2-main | tee /tmp/vibe2-release-baseline-plan.log
-
-            node --check /tmp/vibe2-main/tools/vibe2-auto-planner.mjs
-            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
-              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-              --status=/tmp/vibe2-main/company-status.json \
-              --catalog=/tmp/vibe2-main/game-catalog.json \
-              --development-queue=/tmp/vibe2-company-runtime-queue.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --experience="$control_root/.vibe2/experience.json" \
-              --recombination=/tmp/vibe2-recombination-memory.json \
-              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
-              --root=/tmp/vibe2-main \
-              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
-
-            node --check /tmp/vibe2-main/tools/company-department-portfolio-control.mjs
-            (
-              cd /tmp/vibe2-main
-              node --test qa/company-department-portfolio-control.test.mjs
-            )
-            node /tmp/vibe2-main/tools/company-department-portfolio-control.mjs \
-              --catalog=/tmp/vibe2-marketing-catalog.json \
-              --development-queue=/tmp/vibe2-company-runtime-queue.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --marketing=/tmp/vibe2-main/company-learning/marketing \
-              --previous="$control_root/.vibe2/portfolio-decisions.json" \
-              --output="$control_root/.vibe2/portfolio-decisions.json" | tee /tmp/vibe2-portfolio-control.log
-
-            node --check /tmp/vibe2-main/tools/company-platform-suitability.mjs
-            (
-              cd /tmp/vibe2-main
-              node --test qa/company-platform-suitability.test.mjs qa/company-selected-platform-router.test.mjs
-            )
-            node /tmp/vibe2-main/tools/company-platform-suitability.mjs \
-              --catalog=/tmp/vibe2-marketing-catalog.json \
-              --development-queue=/tmp/vibe2-company-runtime-queue.json \
-              --root=/tmp/vibe2-main \
-              --output="$control_root/.vibe2/platform-suitability.json" | tee /tmp/vibe2-platform-suitability.log
-
-            node --check /tmp/vibe2-main/tools/company-platform-exposure-control.mjs
-            (
-              cd /tmp/vibe2-main
-              node --test qa/company-platform-exposure-control.test.mjs qa/vibe2-post-release-boundary.test.mjs
-            )
-            node /tmp/vibe2-main/tools/company-platform-exposure-control.mjs \
-              --development-queue=/tmp/vibe2-company-runtime-queue.json \
-              --tickets="$control_root/.vibe2/tester-debug-tickets.json" \
-              --suitability="$control_root/.vibe2/platform-suitability.json" \
-              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --output="$control_root/.vibe2/platform-exposure-state.json" \
-              --homepage-output="$control_root/.vibe2/homepage-platform-exposure.json" | tee /tmp/vibe2-platform-exposure.log
-
-            node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import { createVibeContinuousQueue } from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js';
-          const file = '.vibe2/queue.json';
-          const beforeText = fs.readFileSync(file, 'utf8');
-          const before = JSON.parse(beforeText);
-          const configured = Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS);
-          const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : 256;
-          const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
-          const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
-          if (beforeText !== afterText) {
-            fs.writeFileSync(file, afterText, 'utf8');
-            console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=YES');
-          } else {
-            console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=NO');
-          }
-          NODE
-
-            node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
-              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --experience="$control_root/.vibe2/experience.json" \
-              --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
-              --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
-
-            (
-              cd /tmp/vibe2-main
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
-            )
-
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json .vibe2/tester-debug-tickets.json .vibe2/platform-suitability.json .vibe2/platform-exposure-state.json .vibe2/homepage-platform-exposure.json
-            if git diff --cached --quiet; then
-              echo 'VIBE2_AUTOPLAN_WRITE=NO'
-              exit 0
-            fi
-
-            if grep -Eq '^(RECOVERY_ESCALATION_ADDED|RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*$' \
-              /tmp/vibe2-recovery-escalation.log /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log 2>/dev/null; then
-              commit_message='vibe2: persist verified recovery and security learning [skip ci]'
+              /tmp/vibe2-recovery-escalation.log /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log /tmp/vibe2-system-ai-learning.log 2>/dev/null; then
+              commit_message='vibe2: persist verified recovery security and System AI learning [skip ci]'
             elif test -f /tmp/vibe2-system-steward.log && ! grep -Eq '^VIBE2_SYSTEM_STEWARD_ACTION=(HEALTHY_NO_SCOPED_REPAIR|NO_RUNNABLE_WORK_FOR_PLANNER_REFILL)$' /tmp/vibe2-system-steward.log; then
               commit_message='vibe2: repair machine state with system steward [skip ci]'
             elif test -f /tmp/vibe2-platform-exposure.log && grep -Eq '^PLATFORM_INTERNAL_RELEASES=[1-9][0-9]*$|^PLATFORM_SECOND_GATE_READY=[1-9][0-9]*$' /tmp/vibe2-platform-exposure.log; then
@@ -1055,6 +935,7 @@ jobs:
             /tmp/vibe2-recovery-learning.log
             /tmp/vibe2-recovery-code-distillation.log
             /tmp/vibe2-security-learning.log
+            /tmp/vibe2-system-ai-learning.log
             /tmp/vibe2-recovery-learning-motor.log
             /tmp/vibe2-post-release-focus.log
             /tmp/vibe2-plan-summary.log
