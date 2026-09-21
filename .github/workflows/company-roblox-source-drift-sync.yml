@@ -1,0 +1,132 @@
+name: Roblox Changed Source Runtime Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/**'
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact game id to revalidate from current main
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-runtime-writer
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate changed-source synchronization contract
+        run: |
+          node --check tools/company-roblox-source-drift-sync.mjs
+          node --test qa/company-roblox-source-drift-sync.test.mjs
+
+      - name: Resolve changed Roblox game ids
+        id: changed
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          CURRENT_SHA: ${{ github.sha }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed=""
+          if [[ -n "$REQUESTED_GAME_ID" ]]; then
+            changed="$REQUESTED_GAME_ID"
+          elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            changed="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ | awk -F/ 'NF>=3 {print $2}' | sort -u | paste -sd, -)"
+          fi
+          echo "game_ids=$changed" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_CHANGED_SOURCE_IDS=${changed:-NONE}"
+
+      - name: Fetch runtime state
+        if: steps.changed.outputs.game_ids != ''
+        run: |
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git worktree add -B changed-source-runtime /tmp/company-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+
+      - name: Revalidate changed source and invalidate stale downstream gates
+        if: steps.changed.outputs.game_ids != ''
+        env:
+          CHANGED_GAME_IDS: ${{ steps.changed.outputs.game_ids }}
+          SOURCE_REVISION: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-roblox-source-drift-sync.mjs \
+            --queue=/tmp/company-runtime/development-queue.json \
+            --repo-root=. \
+            --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
+            --source-revision="$SOURCE_REVISION" \
+            --changed-game-ids="$CHANGED_GAME_IDS" \
+            --output=/tmp/roblox-source-drift-results.json
+          cat /tmp/roblox-source-drift-results.json
+
+      - name: Synchronize homepage platform exposure
+        if: steps.changed.outputs.game_ids != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tools/company-homepage-platform-exposure-sync.mjs /tmp/company-runtime/company-homepage-platform-exposure-sync.mjs
+          (
+            cd /tmp/company-runtime
+            node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+            rm -f company-homepage-platform-exposure-sync.mjs
+          )
+
+      - name: Persist runtime synchronization
+        if: steps.changed.outputs.game_ids != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp/company-runtime
+          git config user.name 'jaewoon-roblox-source-sync'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json homepage-platform-exposure.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: invalidate stale Roblox evidence after source change [skip ci]'
+            for i in 1 2 3 4 5; do
+              git push origin HEAD:"$COMPANY_RUNTIME_BRANCH" && break
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH"
+            done
+          fi
+
+      - name: Dispatch canonical Roblox runtime for fresh build
+        if: steps.changed.outputs.game_ids != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          passed="$(node -e "const r=require('/tmp/roblox-source-drift-results.json');process.stdout.write(String(r.filter(x=>x.pass===true).length))")"
+          echo "ROBLOX_CHANGED_SOURCE_REVALIDATED=$passed"
+          if [[ "$passed" =~ ^[1-9][0-9]*$ ]]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=YES'
+          else
+            echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=NO'
+          fi
