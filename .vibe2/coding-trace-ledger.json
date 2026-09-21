@@ -235453,13 +235453,798 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_9ac387866aeb63455c290690",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "e45ff548ccd9f2028fc885ad4a98c8dce5ef830b",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREAT"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27638,
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-primary-35549427565-1",
+        "candidateSha": "74c6401e5ac625bf4531923a522fe5241baa986b"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 389928,
+        "candidateMs": 356201,
+        "qaMs": 78
+      },
+      "evidenceRefs": [
+        "actions-run:35549427565",
+        "reservation-id:35549427565:1",
+        "incremental-qa-hash:fc963400b4abcbdcac30ea5518818de90bfdccbcb5f8354df8bbfa3ecf5103c3"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_8d1291aa75979567ab283412",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "e45ff548ccd9f2028fc885ad4a98c8dce5ef830b",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREAT"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27638,
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-1-35549427565-1",
+        "candidateSha": "675cb002b8cbb39f3225613d567ee991e8812535"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 232496,
+        "candidateMs": 190344,
+        "qaMs": 75
+      },
+      "evidenceRefs": [
+        "actions-run:35549427565",
+        "reservation-id:35549427565:1",
+        "incremental-qa-hash:fc963400b4abcbdcac30ea5518818de90bfdccbcb5f8354df8bbfa3ecf5103c3"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_45d009d83df2a50eb6364dff",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "amusement-tycoon-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "amusement-tycoon",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "e45ff548ccd9f2028fc885ad4a98c8dce5ef830b",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 놀이공원 타이쿤\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:scope-coreloop-0-523ae29a28|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-1-640e4b8554|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-2-3c5e4bad83|APPROVED_SCOPE_ITEM_MISSING:scope-mobileux-99c5a4b00a|SENIOR_REVIEW_REPEATED_LOOP_CREAT"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "createBuildingVisual",
+          "chooseTarget",
+          "serviceComplete",
+          "addTrash",
+          "updateGuests"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "WORLD",
+          "INTERACTION",
+          "AI",
+          "GOAL_STATE",
+          "CORE_STATE",
+          "SAVE",
+          "COMBAT",
+          "ECONOMY",
+          "PROGRESSION",
+          "INPUT"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 27638,
+        "failureFingerprint": "web|EDIT_MATCH|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/amusement-tycoon-web-runtime-repair-v1-speculative-2-35549427565-1",
+        "candidateSha": "0b87c21b380f01b305393ce5aca95a45a659fc04"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 1,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 225058,
+        "candidateMs": 190737,
+        "qaMs": 76
+      },
+      "evidenceRefs": [
+        "actions-run:35549427565",
+        "reservation-id:35549427565:1",
+        "incremental-qa-hash:fc963400b4abcbdcac30ea5518818de90bfdccbcb5f8354df8bbfa3ecf5103c3"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_d43afd8c8d4defded6860aea",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "e45ff548ccd9f2028fc885ad4a98c8dce5ef830b",
+        "variant": "primary",
+        "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|MUSIC_MUTE_CONTROL_REQUI"
+      },
+      "decision": {
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 23079,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 3,
+        "generationAttemptBudget": 3,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-primary-35549427565-1",
+        "candidateSha": "e328ff836a176425cfcef61a22492fe27b68f980"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 9,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 413160,
+        "candidateMs": 367234,
+        "qaMs": 54
+      },
+      "evidenceRefs": [
+        "actions-run:35549427565",
+        "reservation-id:35549427565:1",
+        "incremental-qa-hash:a2d5db8490a2b85595484cccbc3020e8c865856d470297961c200574551edb6a"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_13a8516154242a52a4198c1d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "e45ff548ccd9f2028fc885ad4a98c8dce5ef830b",
+        "variant": "speculative-1",
+        "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|MUSIC_MUTE_CONTROL_REQUI"
+      },
+      "decision": {
+        "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 23079,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-speculative-1-35549427565-1",
+        "candidateSha": "8bf9ebf6917bef281f315051b32d1b6998a06539"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 9,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 241220,
+        "candidateMs": 204410,
+        "qaMs": 76
+      },
+      "evidenceRefs": [
+        "actions-run:35549427565",
+        "reservation-id:35549427565:1",
+        "incremental-qa-hash:a2d5db8490a2b85595484cccbc3020e8c865856d470297961c200574551edb6a"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_13be6afe2f3808a4d90ca994",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "village-dungeons-web-runtime-repair-v1",
+        "workKey": null,
+        "gameId": "village-dungeons",
+        "target": "web",
+        "roadmapVersion": null,
+        "baseMainSha": "e45ff548ccd9f2028fc885ad4a98c8dce5ef830b",
+        "variant": "speculative-2",
+        "goal": "[WEB_REPAIR] 게임: 마을 던전 RPG\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\nrequested-stage=WEB_BASE_IMPLEMENTATION\nimplementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW:4:5|REAL_GAME_SYSTEM_COUNT_REQUIRED|LOSS_CONDITION_REQUIRED|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-0-ba1530d55b|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-3-efa14099cd|APPROVED_SCOPE_ITEM_MISSING:scope-coreloop-4-d2fe2a4ec6|REAL_3D_COLLISION_OR_RAYCAST_REQUIRED|REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED|MUSIC_MUTE_CONTROL_REQUI"
+      },
+      "decision": {
+        "strategy": "CAUSAL_TRACE_CROSSCHECK",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "claimQuest",
+          "animate",
+          "buildArea",
+          "acceptQuest",
+          "buildTown"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "PROGRESSION",
+          "CORE_STATE",
+          "GOAL_STATE",
+          "ECONOMY"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "SAVE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": "PRIMARY_SYMBOL_WINDOWS",
+        "contextBytes": 23079,
+        "failureFingerprint": "web|EDIT_MATCH|MALFORMED_OUTPUT|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "ANALYZED",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 2,
+        "generationAttemptBudget": 2,
+        "recoveryUsed": true,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": true,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": "vibe2/candidate/village-dungeons-web-runtime-repair-v1-speculative-2-35549427565-1",
+        "candidateSha": "408e30e497ae5ce6dbf45cb540422792a11d5741"
+      },
+      "changeStats": {
+        "changedFileCount": 1,
+        "addedLineCount": 6,
+        "deletedLineCount": 1,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "PASS",
+        "blocker": "candidate-awaiting-qa-and-deployment",
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "PASS",
+          "test": "PASS",
+          "performance": "PASS",
+          "regression": "PASS",
+          "review": "PASS"
+        },
+        "incrementalQaPass": true,
+        "performancePass": true,
+        "fullRegressionPass": true,
+        "reviewPass": true,
+        "causalReplayStatus": "PLAN_ONLY",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 230116,
+        "candidateMs": 193162,
+        "qaMs": 74
+      },
+      "evidenceRefs": [
+        "actions-run:35549427565",
+        "reservation-id:35549427565:1",
+        "incremental-qa-hash:a2d5db8490a2b85595484cccbc3020e8c865856d470297961c200574551edb6a"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "CONTEXT_SELECTION",
+        "ARCHITECTURE_JUDGMENT",
+        "FAILURE_RECOVERY",
+        "QA_DESIGN",
+        "REGRESSION_REASONING",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 6,
     "refreshed": 0,
-    "total": 2030,
-    "verified": 382,
+    "total": 2036,
+    "verified": 384,
     "failures": 1133
   }
 }
