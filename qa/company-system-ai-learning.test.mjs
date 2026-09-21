@@ -116,3 +116,46 @@ test('System AI retrieval can reuse verified System AI experience and code patte
   assert.equal(context.authorityExpanded,false);
 });
 
+test('marketing System AI retrieval does not inject unrelated recovery or security patterns solely by system engine',()=>{
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'marketing-demo-pre-release-v1',
+      department:'planning-growth-marketing',
+      goal:'create organic marketing package and creator outreach angles',
+      responsibleFiles:['company-learning/marketing/demo/latest.json']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[
+      {id:'recovery',verified:true,retrievalEligible:true,engine:'system',system:'EXACT_STAGE_RESUME',problem:'resume failed recovery stage',pattern:'repair regression',tags:['recovery']},
+      {id:'security',verified:true,retrievalEligible:true,engine:'system',system:'WORKFLOW_INTEGRITY',problem:'security quarantine',pattern:'quarantine workflow',tags:['security']},
+      {id:'marketing',verified:true,retrievalEligible:true,engine:'marketing',system:'MARKETING',problem:'organic marketing creator outreach',pattern:'validated organic outreach package',tags:['marketing','creator','organic']}
+    ]},
+    masteryInput:{}
+  });
+  assert.equal(context.resolvedTarget,'marketing');
+  assert.ok(context.exactKnowledgeIds.includes('CODE_PATTERN:marketing'));
+  assert.ok(!context.exactKnowledgeIds.includes('CODE_PATTERN:recovery'));
+  assert.ok(!context.exactKnowledgeIds.includes('CODE_PATTERN:security'));
+});
+
+test('System AI game-source retrieval infers engine from assigned source files',()=>{
+  const context=buildSystemAiLearningContext({
+    task:{
+      id:'web-repair',
+      goal:'repair mobile input runtime bug',
+      responsibleFiles:['web-games/demo/index.html']
+    },
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[
+      {id:'web-input',verified:true,retrievalEligible:true,engine:'web',gameId:null,system:'MOBILE_INPUT',problem:'mobile input runtime bug',pattern:'verified pointer handling',tags:['mobile','input','runtime']},
+      {id:'unity-input',verified:true,retrievalEligible:true,engine:'unity',gameId:null,system:'MOBILE_INPUT',problem:'mobile input runtime bug',pattern:'verified unity input handling',tags:['mobile','input','runtime']}
+    ]},
+    masteryInput:{}
+  });
+  assert.equal(context.resolvedTarget,'web');
+  const webIndex=context.exactKnowledgeIds.indexOf('CODE_PATTERN:web-input');
+  const unityIndex=context.exactKnowledgeIds.indexOf('CODE_PATTERN:unity-input');
+  assert.ok(webIndex>=0);
+  assert.ok(unityIndex<0||webIndex<unityIndex);
+});
+
