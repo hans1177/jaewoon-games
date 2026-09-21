@@ -6,75 +6,184 @@ local Lighting=game:GetService("Lighting")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
-local store=DSS:GetDataStore("daechung-rpg-party-v1")
-local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent");remote.Name=C.RemoteName;remote.Parent=RS
-local world,enemies={},{};local companionParts={}
+local store=DSS:GetDataStore("daechung-rpg-party-v2")
+local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
+remote.Name=C.RemoteName;remote.Parent=RS
+
+local world=nil
+local enemies={}
+local companionParts={}
+local lastHit={}
+
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function class(p)local id=p:GetAttribute("ClassId")or C.Classes[1].Id;for _,x in ipairs(C.Classes)do if x.Id==id then return x end end;return C.Classes[1]end
+local function unlocked(p,id)return p:GetAttribute("Companion_"..id)==true end
+local function unlock(p,id,msg)
+ if not unlocked(p,id)then p:SetAttribute("Companion_"..id,true);p:SetAttribute("LastAction",msg or(id.." 합류"))end
+end
+local function saveKeys()
+ local t={"Gold","XP","Level","WeaponTier","ClassId","AIStyle","Relic","PartyMemory","Kills","StoryStage","BossesDefeated","HiddenCompanionUnlocked"}
+ for _,x in ipairs(C.Companions)do table.insert(t,"Companion_"..x.Id)end
+ return t
+end
+local SAVE_KEYS=saveKeys()
+
 local function ppart(name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=world;return x
 end
 local function nameplate(target,text,color)
- local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(170,36);g.StudsOffset=Vector3.new(0,5,0);g.AlwaysOnTop=true;g.Parent=target
- local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.45;t.Parent=g
+ local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(190,38);g.StudsOffset=Vector3.new(0,5,0);g.AlwaysOnTop=true;g.Parent=target
+ local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.4;t.Parent=g
+end
+local function prompt(target,text,action)
+ local pr=Instance.new("ProximityPrompt");pr.ActionText=action;pr.ObjectText=text;pr.HoldDuration=.15;pr.MaxActivationDistance=10;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
 end
 local function makeWorld()
- local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end;world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
+ local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end
+ world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
- ppart("Field",Vector3.new(190,1,190),Vector3.new(0,0,0),Style.Ground,Enum.Material.Grass)
- ppart("VillagePlaza",Vector3.new(56,2,56),Vector3.new(0,1,0),Style.Stone,Enum.Material.Slate)
+ ppart("Field",Vector3.new(210,1,210),Vector3.new(0,0,0),Style.Ground,Enum.Material.Grass)
+ ppart("VillagePlaza",Vector3.new(60,2,60),Vector3.new(0,1,0),Style.Stone,Enum.Material.Slate)
  for i=1,8 do
-   local a=i/8*math.pi*2;local pos=Vector3.new(math.cos(a)*31,3,math.sin(a)*31)
-   local pillar=ppart("RunePillar",Vector3.new(3,8,3),pos,Style.Stone,Enum.Material.Slate)
-   local crystal=ppart("RuneCrystal",Vector3.new(2,4,2),pos+Vector3.new(0,6,0),Style.Crystal,Enum.Material.Neon);crystal.Orientation=Vector3.new(0,i*23,45)
+  local a=i/8*math.pi*2;local pos=Vector3.new(math.cos(a)*31,3,math.sin(a)*31)
+  ppart("RunePillar",Vector3.new(3,8,3),pos,Style.Stone,Enum.Material.Slate)
+  local crystal=ppart("RuneCrystal",Vector3.new(2,4,2),pos+Vector3.new(0,6,0),Style.Crystal,Enum.Material.Neon);crystal.Orientation=Vector3.new(0,i*23,45)
  end
- local gateL=ppart("GateL",Vector3.new(6,18,6),Vector3.new(-10,9,-34),Style.Stone,Enum.Material.Slate)
- local gateR=ppart("GateR",Vector3.new(6,18,6),Vector3.new(10,9,-34),Style.Stone,Enum.Material.Slate)
- ppart("GateTop",Vector3.new(26,5,6),Vector3.new(0,18,-34),Style.Stone,Enum.Material.Slate)
- nameplate(gateL,"마을 · 4인 파티 거점",Style.Gold)
- workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_V1")
+ local gate=ppart("Gate",Vector3.new(28,18,4),Vector3.new(0,9,-36),Style.Stone,Enum.Material.Slate);nameplate(gate,"마을 · 4인 파티 거점",Style.Gold)
+ local chief=ppart("VillageChief",Vector3.new(4,6,4),Vector3.new(-15,4,6),Color3.fromRGB(186,151,101),Enum.Material.SmoothPlastic);nameplate(chief,"이장 · 첫 동료 카일",Style.Gold)
+ prompt(chief,"이장","이야기 듣기").Triggered:Connect(function(p)
+  if n(p,"StoryStage",0)==0 then p:SetAttribute("StoryStage",1);unlock(p,"KYLE","폐광 수호자 카일이 합류했다.")
+  else p:SetAttribute("LastAction","카일과 함께 필드 몬스터 5마리를 처치해.")end
+ end)
+ local sera=ppart("SeraNPC",Vector3.new(4,6,4),Vector3.new(0,4,12),Style.CompanionColors.SERA,Enum.Material.SmoothPlastic);nameplate(sera,"세라 · 추적자",Style.Gold)
+ prompt(sera,"세라","동료 영입").Triggered:Connect(function(p)
+  if n(p,"Kills",0)>=5 then unlock(p,"SERA","도적단에서 구출한 세라가 합류했다.");p:SetAttribute("StoryStage",math.max(2,n(p,"StoryStage",0)))
+  else p:SetAttribute("LastAction","세라: 몬스터 5마리를 쓰러뜨리고 와.")end
+ end)
+ local iris=ppart("IrisNPC",Vector3.new(4,6,4),Vector3.new(15,4,6),Style.CompanionColors.IRIS,Enum.Material.SmoothPlastic);nameplate(iris,"이리스 · 룬술사",Style.Gold)
+ prompt(iris,"이리스","룬 해방").Triggered:Connect(function(p)
+  if n(p,"BossesDefeated",0)>=1 then unlock(p,"IRIS","보스의 룬을 깨고 이리스가 합류했다.");p:SetAttribute("StoryStage",math.max(3,n(p,"StoryStage",0)))
+  else p:SetAttribute("LastAction","이리스의 룬은 지역보스를 쓰러뜨려야 풀린다.")end
+ end)
+ local noa=ppart("NoaNPC",Vector3.new(4,6,4),Vector3.new(0,4,-13),Color3.fromRGB(102,153,176),Enum.Material.SmoothPlastic);nameplate(noa,"노아 · 영혼소환사",Style.Gold)
+ prompt(noa,"노아","영혼 이야기").Triggered:Connect(function(p)
+  if n(p,"PartyMemory",0)>=12 then unlock(p,"NOA","파티의 기억을 본 노아가 합류했다.")
+  else p:SetAttribute("LastAction","노아: 더 많은 전투의 기억이 필요해.")end
+ end)
+ workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_PLAYABLE_V2")
 end
+
 local function unit(name,pos,hp,boss)
- local p=Instance.new("Part");p.Name=name;p.Anchored=true;p.Size=boss and Vector3.new(8,11,8)or Vector3.new(4,6,4);p.Position=pos;p.Color=boss and Style.Boss or Style.Enemy;p.Material=boss and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
+ local p=Instance.new("Part");p.Name=name;p.Anchored=true;p.Size=boss and Vector3.new(9,12,9)or Vector3.new(4,6,4);p.Position=pos
+ p.Color=boss and Style.Boss or Style.Enemy;p.Material=boss and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
  if boss then local l=Instance.new("PointLight");l.Color=Style.Crystal;l.Range=22;l.Brightness=2;l.Parent=p end
  nameplate(p,name,boss and Style.Gold or Color3.new(1,1,1))
  local e={part=p,hp=hp,max=hp,boss=boss};p:SetAttribute("HP",hp);table.insert(enemies,e);return e
 end
-local function spawnEnemy(boss)local a=math.random()*6.28;local r=boss and 62 or math.random(32,75);return unit(boss and"지역보스"or"몬스터",Vector3.new(math.cos(a)*r,3,math.sin(a)*r),boss and 260 or 60,boss)end
+local function spawnEnemy(boss)
+ local a=math.random()*6.28;local r=boss and 76 or math.random(45,90)
+ return unit(boss and"심연의 간수"or"야생 마물",Vector3.new(math.cos(a)*r,3,math.sin(a)*r),boss and 320 or 70,boss)
+end
+
 local function load(p)
- p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ClassId","BREAKER");p:SetAttribute("AIStyle","PROTECT");p:SetAttribute("Relic","FURY");p:SetAttribute("PartyMemory",0);p:SetAttribute("BossCompanionUnlocked",0);p:SetAttribute("HiddenCompanionUnlocked",0)
- local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end);if ok and typeof(d)=="table"then for k,v in pairs(d)do if typeof(v)=="number"or typeof(v)=="string"then p:SetAttribute(k,v)end end end
+ p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1)
+ p:SetAttribute("ClassId","BREAKER");p:SetAttribute("AIStyle","PROTECT");p:SetAttribute("Relic","FURY")
+ p:SetAttribute("PartyMemory",0);p:SetAttribute("Kills",0);p:SetAttribute("StoryStage",0);p:SetAttribute("BossesDefeated",0);p:SetAttribute("HiddenCompanionUnlocked",0)
+ for _,x in ipairs(C.Companions)do p:SetAttribute("Companion_"..x.Id,false)end
+ local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
+ if ok and typeof(d)=="table"then
+  for _,k in ipairs(SAVE_KEYS)do local v=d[k];if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then p:SetAttribute(k,v)end end
+ end
+ p:SetAttribute("LastAction","마을 이장에게 가서 첫 동료를 만나.")
 end
-local function save(p)local d={};for _,k in ipairs({"Gold","XP","Level","WeaponTier","ClassId","AIStyle","Relic","PartyMemory","BossCompanionUnlocked","HiddenCompanionUnlocked"})do d[k]=p:GetAttribute(k)end;pcall(function()store:SetAsync("p:"..p.UserId,d)end)end
-local function nearest(pos,range)local best,bd=nil,range;for _,e in ipairs(enemies)do if e.hp>0 and e.part.Parent then local d=(e.part.Position-pos).Magnitude;if d<=bd then bd=d;best=e end end end;return best end
+local function save(p)
+ local d={};for _,k in ipairs(SAVE_KEYS)do d[k]=p:GetAttribute(k)end
+ pcall(function()store:SetAsync("p:"..p.UserId,d)end)
+end
+local function grantXP(p,amount)
+ local xp=n(p,"XP",0)+amount;local lv=n(p,"Level",1)
+ while xp>=lv*100 do xp-=lv*100;lv+=1;p:SetAttribute("LastAction","레벨 "..lv.." 달성!")end
+ p:SetAttribute("XP",xp);p:SetAttribute("Level",lv)
+end
+local function nearest(pos,range)
+ local best,bd=nil,range
+ for _,e in ipairs(enemies)do if e.hp>0 and e.part.Parent then local d=(e.part.Position-pos).Magnitude;if d<=bd then bd=d;best=e end end end
+ return best
+end
+local function afterKill(p,e)
+ p:SetAttribute("Gold",n(p,"Gold",0)+(e.boss and 90 or 10));grantXP(p,e.boss and 120 or 18)
+ p:SetAttribute("PartyMemory",n(p,"PartyMemory",0)+(e.boss and 4 or 1))
+ if e.boss then
+  p:SetAttribute("BossesDefeated",n(p,"BossesDefeated",0)+1);unlock(p,"WARDEN","심연의 간수의 의지를 꺾어 보스 동료 루트가 열렸다.")
+ else p:SetAttribute("Kills",n(p,"Kills",0)+1)end
+ if n(p,"PartyMemory",0)>=20 and p:GetAttribute("Relic")=="CONTROL"then unlock(p,"NAMELESS","숨겨진 조건을 만족해 무명의 동료가 나타났다.");p:SetAttribute("HiddenCompanionUnlocked",1)end
+end
 local function hit(p,amount,range)
- local r=root(p);if not r then return end;local e=nearest(r.Position,range);if not e then p:SetAttribute("LastAction","사거리 안 적 없음")return end
- e.hp-=amount; e.part:SetAttribute("HP",math.max(0,e.hp))
- if e.hp<=0 then e.part:Destroy();p:SetAttribute("Gold",n(p,"Gold",0)+(e.boss and 60 or 8));p:SetAttribute("XP",n(p,"XP",0)+(e.boss and 80 or 12));p:SetAttribute("PartyMemory",n(p,"PartyMemory",0)+(e.boss and 3 or 1));if e.boss then p:SetAttribute("BossCompanionUnlocked",1)end;p:SetAttribute("LastAction",e.boss and"보스 격파 - 보스동료 루트 해금"or"몬스터 처치")end
+ local now=os.clock();if now-(lastHit[p]or 0)<.18 then return end;lastHit[p]=now
+ local r=root(p);if not r then return end;local e=nearest(r.Position,range);if not e then p:SetAttribute("LastAction","사거리 안에 적이 없어.");return end
+ e.hp-=amount;e.part:SetAttribute("HP",math.max(0,e.hp))
+ if e.hp<=0 then if e.part.Parent then e.part:Destroy()end;afterKill(p,e);p:SetAttribute("LastAction",e.boss and"지역보스 격파!"or"마물 처치")end
 end
-local function cycle(p,key,list)local cur=p:GetAttribute(key);local idx=1;for i,v in ipairs(list)do local id=typeof(v)=="table"and v.Id or v;if id==cur then idx=i end end;local nextv=list[idx%#list+1];p:SetAttribute(key,typeof(nextv)=="table"and nextv.Id or nextv)end
+local function cycle(p,key,list)
+ local cur=p:GetAttribute(key);local idx=1
+ for i,v in ipairs(list)do local id=typeof(v)=="table"and v.Id or v;if id==cur then idx=i end end
+ local nextv=list[idx%#list+1];p:SetAttribute(key,typeof(nextv)=="table"and nextv.Id or nextv)
+end
 remote.OnServerEvent:Connect(function(p,a)
- if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3,14)
- elseif a==C.Actions.SKILL then local x=class(p);hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4,24)
- elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*45+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
+ if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3+n(p,"Level",1),15)
+ elseif a==C.Actions.SKILL then local x=class(p);local bonus=p:GetAttribute("Relic")=="FURY"and 10 or 0;hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4+bonus,26)
+ elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*48+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
  elseif a==C.Actions.NEXT_CLASS then cycle(p,"ClassId",C.Classes)
  elseif a==C.Actions.NEXT_AI then cycle(p,"AIStyle",C.AIStyles)
  elseif a==C.Actions.NEXT_RELIC then cycle(p,"Relic",C.Relics)
- elseif a==C.Actions.UPGRADE_WEAPON then local cost=40+n(p,"WeaponTier",1)*30;if n(p,"Gold",0)>=cost then p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",n(p,"WeaponTier",1)+1)end end
+ elseif a==C.Actions.UPGRADE_WEAPON then local cost=40+n(p,"WeaponTier",1)*30;if n(p,"Gold",0)>=cost then p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",n(p,"WeaponTier",1)+1);p:SetAttribute("LastAction","무기 강화 완료")else p:SetAttribute("LastAction","강화 골드 부족")end end
 end)
-makeWorld();for i=1,10 do spawnEnemy(false)end;spawnEnemy(true)
-Players.PlayerAdded:Connect(load);for _,p in ipairs(Players:GetPlayers())do load(p)end;Players.PlayerRemoving:Connect(save);game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
-local function rebuildCompanions()
- for _,x in ipairs(companionParts)do if x then x:Destroy()end end;companionParts={}
- local humans=Players:GetPlayers();local needed=math.max(0,C.PartySlots-#humans)
- for i=1,needed do local def=C.StarterCompanions[((i-1)%#C.StarterCompanions)+1];local p=Instance.new("Part");p.Name="AI동료_"..def.Name;p.Anchored=true;p.Size=Vector3.new(3,5,3);p.Color=Style.CompanionColors[def.Id] or Style.Gold;p.Material=Enum.Material.SmoothPlastic;p.Parent=world;nameplate(p,def.Name.." · "..def.Class,Style.Gold);table.insert(companionParts,p)end
+
+makeWorld();for i=1,12 do spawnEnemy(false)end;spawnEnemy(true)
+
+local function unlockedList(p)
+ local list={}
+ for _,def in ipairs(C.Companions)do if unlocked(p,def.Id)then table.insert(list,def)end end
+ return list
 end
-Players.PlayerAdded:Connect(function()task.defer(rebuildCompanions)end);Players.PlayerRemoving:Connect(function()task.defer(rebuildCompanions)end);rebuildCompanions()
+local function rebuildCompanions()
+ for _,x in ipairs(companionParts)do if x.part then x.part:Destroy()elseif x.Destroy then x:Destroy()end end;companionParts={}
+ local humans=Players:GetPlayers();if #humans==0 then return end
+ local leader=humans[1];local needed=math.max(0,C.PartySlots-#humans);local choices=unlockedList(leader)
+ for i=1,math.min(needed,#choices)do
+  local def=choices[i];local p=Instance.new("Part");p.Name="AI동료_"..def.Name;p.Anchored=true;p.Size=Vector3.new(3,5,3)
+  p.Color=Style.CompanionColors[def.Id]or Style.Gold;p.Material=Enum.Material.SmoothPlastic;p.Parent=world;nameplate(p,def.Name.." · "..def.Class,Style.Gold)
+  table.insert(companionParts,{part=p,def=def})
+ end
+ for _,h in ipairs(humans)do h:SetAttribute("HumanPartyMembers",#humans);h:SetAttribute("AIPartyMembers",#companionParts);h:SetAttribute("PartySize",math.min(C.PartySlots,#humans+#companionParts))end
+end
+
+Players.PlayerAdded:Connect(function(p)
+ load(p);p.CharacterAdded:Connect(function()task.delay(.4,rebuildCompanions)end)
+ for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end
+ task.defer(rebuildCompanions)
+end)
+for _,p in ipairs(Players:GetPlayers())do load(p);for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end end
+Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;task.defer(rebuildCompanions)end)
+game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+
 RunService.Heartbeat:Connect(function(dt)
- local humans=Players:GetPlayers();if #humans==0 then return end;local leader=root(humans[1]);if not leader then return end
- for i,p in ipairs(companionParts)do if p.Parent then local target=leader.Position+Vector3.new((i-2)*4,0,5);local d=Vector3.new(target.X-p.Position.X,0,target.Z-p.Position.Z);if d.Magnitude>.5 then p.Position+=d.Unit*math.min(d.Magnitude,14*dt)end
-  local e=nearest(p.Position,13);if e then e.hp-=6*dt;if e.hp<=0 and e.part.Parent then e.part:Destroy()end end
- end end
- for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end;if #enemies<6 then spawnEnemy(false)end
+ local humans=Players:GetPlayers();if #humans==0 then return end;local leader=humans[1];local lr=root(leader);if not lr then return end
+ local style=leader:GetAttribute("AIStyle")or"PROTECT";local relic=leader:GetAttribute("Relic")or"FURY"
+ for i,entry in ipairs(companionParts)do
+  local p=entry.part
+  if p.Parent then
+   local distance=style=="PROTECT"and 4 or 7;local target=lr.Position+Vector3.new((i-2)*distance,0,6)
+   local d=Vector3.new(target.X-p.Position.X,0,target.Z-p.Position.Z);if d.Magnitude>.5 then p.Position+=d.Unit*math.min(d.Magnitude,(style=="AGGRESSIVE"and 17 or 14)*dt)end
+   local range=style=="CONTROL"and 18 or 13;local e=nearest(p.Position,range)
+   if e then
+    local damage=(relic=="FURY"and 9 or 6)*dt;e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp))
+    if e.hp<=0 and e.part.Parent then e.part:Destroy();afterKill(leader,e)end
+   end
+  end
+ end
+ for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
+ if #enemies<7 then spawnEnemy(false)end
+ rebuildCompanions()
 end)

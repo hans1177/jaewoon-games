@@ -7,13 +7,16 @@ local Config={
   {Id="RUNE",Name="룬술사",Damage=12,Skill=30},
   {Id="SOUL",Name="영혼소환사",Damage=11,Skill=28},
  },
- StarterCompanions={
-  {Id="KYLE",Name="카일",Class="BREAKER",Story="폐광에서 괴물을 막던 파쇄기사"},
-  {Id="SERA",Name="세라",Class="SHADOW",Story="도적단 사건에서 구출되는 추적자"},
-  {Id="IRIS",Name="이리스",Class="RUNE",Story="고대 룬에 갇혀 있던 룬술사"},
+ Companions={
+  {Id="KYLE",Name="카일",Class="BREAKER",Kind="STORY",Requirement="INTRO"},
+  {Id="SERA",Name="세라",Class="SHADOW",Kind="STORY",Requirement="KILLS_5"},
+  {Id="IRIS",Name="이리스",Class="RUNE",Kind="STORY",Requirement="BOSS_1"},
+  {Id="NOA",Name="노아",Class="SOUL",Kind="STORY",Requirement="MEMORY_12"},
+  {Id="WARDEN",Name="심연의 간수",Class="BREAKER",Kind="BOSS",Requirement="BOSS_1"},
+  {Id="NAMELESS",Name="무명의 동료",Class="SHADOW",Kind="HIDDEN",Requirement="MEMORY_20_CONTROL"},
  },
- FutureCompanions={{Id="NOA",Name="노아",Kind="STORY"},{Id="WARDEN",Name="심연의 간수",Kind="BOSS"},{Id="NAMELESS",Name="무명의 동료",Kind="HIDDEN"}},
- AIStyles={"AGGRESSIVE","PROTECT","CONTROL"},Relics={"FURY","GUARD","CONTROL"},
+ AIStyles={"AGGRESSIVE","PROTECT","CONTROL"},
+ Relics={"FURY","GUARD","CONTROL"},
  Actions={ATTACK="ATTACK",SKILL="SKILL",DODGE="DODGE",NEXT_CLASS="NEXT_CLASS",NEXT_AI="NEXT_AI",NEXT_RELIC="NEXT_RELIC",UPGRADE_WEAPON="UPGRADE_WEAPON"},
  OwnerDirectDevelopment=true,
 }
