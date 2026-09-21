@@ -37,7 +37,7 @@ canvas{display:block;width:100vw;height:100vh}
  <div id="hpBox"><div id="hp"></div></div><div id="xpBox"><div id="xp"></div></div>
  <div id="quest">퀘스트: 촌장에게 말을 걸어라.</div><div id="hiddenQuest"></div><div id="area">현재 지역: 마을</div>
 </div>
-<div id="joy"><div id="knob"></div></div>
+<div id="joy"><div id="knob"></div><div id="joyState" style="position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);font:700 10px system-ui;color:#fff8;white-space:nowrap;pointer-events:none">MOVE</div></div>
 <button id="attack" class="btn">공격</button><button id="talk" class="btn">대화</button><button id="bagBtn" class="btn">가방</button><button id="soundBtn" class="btn">🔊</button><button id="exitBtn" class="btn">게임 종료</button><button id="actionBtn" class="btn"></button>
 <div id="speech"></div><div id="toast"></div>
 <div id="start" class="overlay"><div class="panel" style="text-align:center"><h1>⚔️ 대충 용사 RPG</h1><p>7개의 포탈과 동굴, 숨겨진 기사 퀘스트를 탐험해라.<br><span class="small">BGM + 전투 BGM + 효과음 50종</span></p><button id="startBtn" class="main">게임 시작</button></div></div>
@@ -374,7 +374,7 @@ function applyJoyPoint(clientX,clientY){
  let dx=clientX-center.x,dy=clientY-center.y,l=Math.hypot(dx,dy),m=42;
  if(l>m){dx=dx/l*m;dy=dy/l*m}
  j.x=Math.max(-1,Math.min(1,dx/m));j.y=Math.max(-1,Math.min(1,dy/m));
- joyKnob.style.transform=`translate(${dx}px,${dy}px)`;
+ joyKnob.style.transform=`translate(${dx}px,${dy}px)`;const s=document.getElementById('joyState');if(s)s.textContent=`MOVE ${j.x.toFixed(1)},${j.y.toFixed(1)}`;
 }
 function beginJoy(e){
  e.preventDefault();initAudio();jid=e.pointerId;touchJoy=false;refreshJoyCenter();
@@ -386,7 +386,7 @@ function endJoy(e){
  if(e&&jid!==null&&e.pointerId!==jid)return;
  if(e)e.preventDefault();
  try{if(jid!==null&&joyEl.hasPointerCapture?.(jid))joyEl.releasePointerCapture(jid)}catch{}
- jid=null;touchJoy=false;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';
+ jid=null;touchJoy=false;j.x=0;j.y=0;joyKnob.style.transform='translate(0,0)';const s=document.getElementById('joyState');if(s)s.textContent='MOVE';
 }
 joyEl.addEventListener('pointerdown',beginJoy,{passive:false});
 addEventListener('pointermove',moveJoy,{passive:false});
@@ -401,6 +401,24 @@ joyEl.addEventListener('touchmove',e=>{
 addEventListener('touchend',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
 addEventListener('touchcancel',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
 addEventListener('blur',()=>endJoy());
+
+let joyDriverLast=performance.now();
+function joystickDirectDriver(now){
+ const dt=Math.min(.035,Math.max(0,(now-joyDriverLast)/1000));joyDriverLast=now;
+ if(run&&p&&jid!==null&&(Math.abs(j.x)>.02||Math.abs(j.y)>.02)){
+  let mx=j.x,my=j.y,l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l}
+  const speed=Math.max(80,Number(p.spd)||185);
+  if(Math.abs(mx)>.02)p.dir=mx>0?1:-1;
+  p.x=Math.max(55,Math.min(WORLD.w-55,p.x+mx*speed*dt));
+  p.y=Math.max(55,Math.min(WORLD.h-55,p.y+my*speed*dt));
+  p.animState='walk';
+  cam.x=Math.max(0,Math.min(WORLD.w-W,p.x-W/2));
+  cam.y=Math.max(0,Math.min(WORLD.h-H,p.y-H/2));
+ }
+ requestAnimationFrame(joystickDirectDriver);
+}
+requestAnimationFrame(joystickDirectDriver);
+
 exitBtn.onclick=()=>{run=false;j.x=0;j.y=0;location.href='../../';};
 attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();initAudio();useAction()};soundBtn.onpointerdown=e=>{e.preventDefault();toggleSound()};
 addEventListener('keydown',e=>{initAudio();keys[e.key.toLowerCase()]=true;if(e.key===' ')attackNow();if(e.key.toLowerCase()==='e')useAction()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
