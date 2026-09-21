@@ -19,6 +19,7 @@ const portfolioPath='autonomous-portfolio.json';
 const catalogPath='game-catalog.json';
 const artbooksPath='game-artbooks.json';
 const developmentQueuePath=process.env.COMPANY_DEVELOPMENT_QUEUE_PATH||'development-queue.json';
+const runtimeCatalogPath=process.env.COMPANY_RUNTIME_GAME_CATALOG_PATH||'';
 const seedStatePath=process.env.COMPANY_SEED_STATE_PATH||'game-seed-state.json';
 const centralPolicyPath='company-learning/platform-release-roadmap.json';
 const ownerWebGameIdsPath=process.env.COMPANY_OWNER_WEB_GAME_IDS_PATH||'';
@@ -452,6 +453,28 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
   return {portfolio,catalog,state:portfolio.productionClassState};
 }
 
+export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},developmentQueue={}}={}){
+  if(!Array.isArray(catalog.games)||!Array.isArray(runtimeCatalog.games))return[];
+  const liveQueueIds=new Set((Array.isArray(developmentQueue.items)?developmentQueue.items:[])
+    .filter(item=>{
+      const cls=clean(item?.productionClass).toUpperCase();
+      const lifecycle=clean(item?.lifecycleState||item?.status||'ACTIVE').toUpperCase();
+      return ['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(cls)&&!['DISABLED','REMOVED','RETIRED'].includes(lifecycle);
+    })
+    .map(item=>clean(item?.gameId))
+    .filter(Boolean));
+  const ids=new Set(catalog.games.map(game=>clean(game?.id||game?.gameId)).filter(Boolean));
+  const added=[];
+  for(const game of runtimeCatalog.games){
+    const id=clean(game?.id||game?.gameId);
+    if(!id||ids.has(id)||!liveQueueIds.has(id))continue;
+    catalog.games.push(JSON.parse(JSON.stringify(game)));
+    ids.add(id);
+    added.push(id);
+  }
+  return added;
+}
+
 export function runCompanyStatusSync({filesystem=fs}={}){
   const company=JSON.parse(filesystem.readFileSync(companyPath,'utf8'));
   const supervision=JSON.parse(filesystem.readFileSync(supervisionPath,'utf8'));
@@ -459,12 +482,14 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const catalog=JSON.parse(filesystem.readFileSync(catalogPath,'utf8'));
   const artbooks=JSON.parse(filesystem.readFileSync(artbooksPath,'utf8'));
   const developmentQueue=optionalJson(filesystem,developmentQueuePath,{items:[]});
+  const runtimeCatalog=runtimeCatalogPath?optionalJson(filesystem,runtimeCatalogPath,{games:[]}):{games:[]};
+  const runtimeCatalogAdded=mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
   const seedState=optionalJson(filesystem,seedStatePath,{seeds:[]});
   const ownerWebGameIds=ownerWebGameIdsPath&&filesystem.existsSync?.(ownerWebGameIdsPath)
     ?filesystem.readFileSync(ownerWebGameIdsPath,'utf8').split(/\r?\n/).map(clean).filter(Boolean)
     :[];
   const ownerWebIngest=ingestOwnerWebGameIds(catalog,ownerWebGameIds,{filesystem});
-  catalog.runtimeCounts={...(catalog.runtimeCounts||{}),ownerWebAdded:ownerWebIngest.added.length,ownerWebUpdated:ownerWebIngest.updated.length,ownerWebDisabled:ownerWebIngest.disabled.length};
+  catalog.runtimeCounts={...(catalog.runtimeCounts||{}),runtimeCatalogAdded:runtimeCatalogAdded.length,ownerWebAdded:ownerWebIngest.added.length,ownerWebUpdated:ownerWebIngest.updated.length,ownerWebDisabled:ownerWebIngest.disabled.length};
 
   synchronizeCompanyStatusPolicy(company,{filesystem});
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem});
@@ -542,6 +567,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log(`COMPANY_HOMEPAGE_RUNTIME_INFO=${catalog.runtimeCounts?.homepageInfo||0}/${catalog.games?.length||0}`);
   console.log(`COMPANY_HOMEPAGE_RUNTIME_AUTHORITY=${catalog.runtimeInfoAuthority||'none'}`);
   console.log(`COMPANY_CATALOG_NORMALIZED=${catalog.runtimeCounts?.normalizedGames||0}/${catalog.games?.length||0}`);
+  console.log(`COMPANY_RUNTIME_CATALOG_ADDED=${runtimeCatalogAdded.join(',')||'NONE'}`);
   console.log(`COMPANY_OWNER_WEB_ADDED=${ownerWebIngest.added.join(',')||'NONE'}`);
   console.log(`COMPANY_OWNER_WEB_UPDATED=${ownerWebIngest.updated.join(',')||'NONE'}`);
   console.log(`COMPANY_OWNER_WEB_DISABLED=${ownerWebIngest.disabled.join(',')||'NONE'}`);
