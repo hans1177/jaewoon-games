@@ -136,7 +136,7 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   assert.match(workflow,/RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION/);
   assert.match(workflow,/TERMINATED_QUARANTINED/);
-  assert.match(workflow,/candidatePublicationAllowed:security\.verdict==='PASS'/);
+  assert.match(workflow,/candidatePublicationAllowed:!infrastructureFailure&&security\.verdict==='PASS'/);
   assert.match(workflow,/learningCandidate:true/);
   assert.match(workflow,/verifiedDefensiveAbsorptionOnly:true/);
   assert.equal(security.ownerRule2?.automaticBindingForAllExternalAiWorkers,true);
