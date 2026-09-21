@@ -20,15 +20,14 @@ const UNITY_EDITOR_VERSION='6000.6.0f1';
 const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const baseline=readJson(baselinePath);
-let web=null;
-let webEvidenceBound=false;
-if(webEvidencePath){
-  web=readJson(webEvidencePath);
-  const webState=String(web.state||web.status||'').toUpperCase();
-  webEvidenceBound=Boolean(web.pass===true||web.validated===true||webState==='PASS'||webState==='PASSED'||webState==='VALIDATED');
-  if(!webEvidenceBound)throw new Error('OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED');
-}
 const design=baseline.content||baseline;
+const unityPlatformProfile=design?.platformProfiles?.UNITY;
+if(!unityPlatformProfile||Array.isArray(unityPlatformProfile)||typeof unityPlatformProfile!=='object')throw new Error('UNITY_PLATFORM_PROFILE_REQUIRED');
+if(String(unityPlatformProfile.platform||'').trim().toUpperCase()!=='UNITY')throw new Error('UNITY_PLATFORM_PROFILE_TARGET_MISMATCH');
+for(const field of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
+  if(String(unityPlatformProfile[field]||'').trim().length<8)throw new Error('UNITY_PLATFORM_PROFILE_FIELD_REQUIRED:'+field);
+}
+const webEvidenceBound=false;
 const platformDesign=design?.platformProfiles?.UNITY;
 if(!platformDesign||typeof platformDesign!=='object'||Array.isArray(platformDesign))throw new Error('UNITY_PLATFORM_DESIGN_PROFILE_REQUIRED');
 if(String(platformDesign.platform||'').trim().toUpperCase()!=='UNITY')throw new Error('UNITY_PLATFORM_DESIGN_TARGET_MISMATCH');
@@ -352,7 +351,7 @@ public static class SeedAndroidBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
-fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- optional source web evidence: \`${webEvidencePath||'NONE'}\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Web gameplay evidence is optional; when supplied it must be a real PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
+fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity app native development baseline\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- Unity app profile: \`design-revised.json#content.platformProfiles.UNITY\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_NATIVE_APP_DEVELOPMENT\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Unity Web is not used. The project is generated from the common game design plus the Unity app platform profile.\nIt remains DEVELOPMENT_CONFIRMED until platform runtime, independent QA, regression, and release evidence pass.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   version:3,gameId,gameName,category,identity,coreLoop,
   selectedPlatform:'UNITY',
