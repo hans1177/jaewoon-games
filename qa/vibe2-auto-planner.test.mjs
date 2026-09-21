@@ -1157,5 +1157,5 @@ test('central Unity Web owner lock routes DEVELOPMENT_CONFIRMED first-stage work
   assert.ok(task.evidence.includes('unity-web-source-root-bootstrap-required'));
   assert.match(task.goal,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
   assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
-  assert.doesNotMatch(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
+  assert.match(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
 });
