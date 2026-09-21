@@ -83,7 +83,7 @@ test('development eligibility is unbounded by internal policy and the caller may
   assert.equal(platformDevelopmentEligible(rows[299],'UNITY'),true);
 });
 
-test('verified owner Roblox release handoff remains compatibility-only admission for existing releases',()=>{
+test('verified owner Roblox release handoff remains readable but cannot bypass minimum design admission',()=>{
   const item={
     gameId:'existing-release',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
@@ -95,7 +95,7 @@ test('verified owner Roblox release handoff remains compatibility-only admission
     }
   };
   assert.equal(verifiedOwnerReleaseHandoffEligible(item),true);
-  assert.equal(targetPlatformDevelopmentEligible(item),true);
+  assert.equal(targetPlatformDevelopmentEligible(item),false);
 });
 
 test('cheap precheck accepts only matching active native source roots',()=>{
