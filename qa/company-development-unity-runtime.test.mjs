@@ -89,15 +89,20 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
   }
 });
 
-test('optional Web evidence must be a real PASS when supplied',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-web-optional-'));
+test('Unity native generator ignores legacy Web evidence and emits no WebGL path',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-native-only-'));
   const sandbox=path.join(root,'sandbox');
   fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
   fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
-  const {baseline,web}=fixtures(root,false);
-  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--web-evidence=${web}`],{cwd:sandbox,encoding:'utf8'});
-  assert.notEqual(run.status,0);
-  assert.match(run.stderr,/OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED/);
+  const {baseline}=fixtures(root,false);
+  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`],{cwd:sandbox,encoding:'utf8'});
+  assert.equal(run.status,0,run.stderr);
+  const project=path.join(sandbox,'unity-games','seed-puzzle-chromatic-cascade');
+  const build=fs.readFileSync(path.join(project,'Assets/Editor/SeedAndroidBuild.cs'),'utf8');
+  const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
+  assert.doesNotMatch(build,/BuildWeb|BuildTarget\.WebGL|WebGL/);
+  assert.equal(meta.nativeAppOnly,true);
+  assert.equal(meta.unityWebEnabled,false);
 });
 
 test('Unity executor uses unbounded eligibility with capacity batching, canary and exact-stage resume sequence',()=>{
