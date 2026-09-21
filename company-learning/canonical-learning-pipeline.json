@@ -58,7 +58,7 @@
   },
   "portableWebLearning": {
     "enabled": true,
-    "sourceRequirement": "VERIFIED_CANONICAL_WEB_GAME_QA_ONLY",
+    "sourceRequirement": "VERIFIED_CANONICAL_UNITY_WEB_GAME_QA_ONLY",
     "portablePatterns": [
       "TOUCH_INPUT",
       "MOBILE_UI",
@@ -76,7 +76,12 @@
     "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
     "robloxSpecificLearningStillRequiresRealVerifiedRobloxEvidence": true,
     "separateCronOrPipelineAllowed": false,
-    "thresholdLoweringAllowed": false
+    "thresholdLoweringAllowed": false,
+    "sourceEngine": "UNITY_WEB",
+    "canonicalSourceRoot": "unity-games/<gameId>/",
+    "buildOutputRoot": "web-games/<gameId>/",
+    "legacyHtmlCanvasDirectAuthoringDefault": false,
+    "postGatePlatformPipelineUnchanged": true
   },
   "externalCommercialBlackBoxPolicy": {
     "allowed": true,
