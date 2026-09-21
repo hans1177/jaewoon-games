@@ -4056,6 +4056,153 @@
         "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json",
         "scheduler": ".github/workflows/vibe2-24h-runner.yml"
       }
+    },
+    "concurrentRobloxUnityDefault": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "defaultDevelopmentMode": "ROBLOX_UNITY_CONCURRENT",
+      "defaultReleaseMode": "ROBLOX_UNITY_CONCURRENT_INDEPENDENT_EVIDENCE",
+      "appliesTo": [
+        "DEVELOPMENT_CONFIRMED",
+        "RELEASE_CONFIRMED"
+      ],
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "fortniteUefn": "OWNER_HOLD",
+      "singleSelectedPlatformIsCompatibilityFieldOnly": true,
+      "platformSuitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+      "platformSuitabilityMayNotDisableDefaultConcurrentDevelopment": true,
+      "platformSuitabilityMayAdjust": [
+        "WORK_ORDER",
+        "OPTIMIZATION_DEPTH",
+        "PRESENTATION_EMPHASIS",
+        "QA_FOCUS",
+        "PLATFORM_NATIVE_FEATURE_PRIORITY"
+      ],
+      "departmentEvidence": {
+        "planning": [
+          "SESSION_LENGTH",
+          "CORE_LOOP",
+          "SOCIAL_PLAY",
+          "ONBOARDING_SPEED",
+          "CONTENT_DEPTH"
+        ],
+        "development": [
+          "NETWORKING",
+          "PLATFORM_API",
+          "IMPLEMENTATION_COST",
+          "PORTABILITY",
+          "PERFORMANCE_RISK"
+        ],
+        "graphics": [
+          "VISUAL_DENSITY",
+          "VFX_COST",
+          "CAMERA_LANGUAGE",
+          "ASSET_ADAPTATION"
+        ],
+        "audio": [
+          "STATE_MUSIC",
+          "SPATIAL_AUDIO",
+          "MIX_COMPLEXITY"
+        ],
+        "qa": [
+          "MOBILE_INPUT",
+          "MULTIPLAYER_STABILITY",
+          "RUNTIME_STABILITY",
+          "DEVICE_PERFORMANCE"
+        ],
+        "balance": [
+          "SHORT_SESSION_PACING",
+          "LONG_SESSION_PROGRESSION",
+          "MULTIPLAYER_ECONOMY"
+        ],
+        "growthMarketing": [
+          "DISCOVERY",
+          "SOCIAL_SPREAD",
+          "TRAILER_APPEAL",
+          "CREATOR_FIT"
+        ]
+      },
+      "decisionAuthority": "PRIMARY_AI_AND_VIBE_JOINT",
+      "departmentVetoForbidden": true,
+      "platformSuitabilityLabels": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "VERY_HIGH"
+      ],
+      "platformAdaptation": {
+        "sharedIdentity": [
+          "CORE_GAME_IDENTITY",
+          "CORE_RULE_MEANING",
+          "SAVE_MEANING",
+          "APPROVED_BALANCE",
+          "PROGRESSION_MEANING"
+        ],
+        "platformSpecificAllowed": [
+          "INPUT",
+          "UI",
+          "CAMERA",
+          "SESSION_PACING_PRESENTATION",
+          "SOCIAL_SURFACES",
+          "MATCHMAKING",
+          "GRAPHICS_DENSITY",
+          "VFX_DENSITY",
+          "AUDIO_PRESENTATION",
+          "LOADING",
+          "TUTORIAL",
+          "PLATFORM_SERVICES"
+        ],
+        "ROBLOX": {
+          "profile": "SOCIAL_FAST_SESSION",
+          "emphasize": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "FRIEND_JOIN",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "LOW_FRICTION_UI",
+            "ROBLOX_NATIVE_SERVICES"
+          ],
+          "avoid": [
+            "UNITY_STYLE_UI_COPY",
+            "OVERDENSE_EFFECTS_ON_LOW_END_MOBILE",
+            "LONG_UNINTERRUPTED_ONBOARDING"
+          ]
+        },
+        "UNITY": {
+          "profile": "DEEP_IMMERSIVE_SESSION",
+          "emphasize": [
+            "DEEPER_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "DEVICE_PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ],
+          "avoid": [
+            "ROBLOX_UI_COPY",
+            "SOCIAL_FEATURE_ASSUMPTIONS_WITHOUT_IMPLEMENTATION",
+            "FIXED_HIGH_END_RENDER_COST"
+          ]
+        }
+      },
+      "independentReleaseEvidenceRequiredPerPlatform": true,
+      "onePlatformFailureMustNotCancelOtherPlatform": true,
+      "noCrossPlatformLiteralSourceCopy": true,
+      "semanticIntentAndStyleIdentityMayCarryAcross": true,
+      "implementation": {
+        "router": "tools/company-selected-platform-router.mjs",
+        "suitabilityTool": "tools/company-platform-suitability.mjs",
+        "state": "vibe2-unreal-core:.vibe2/platform-suitability.json",
+        "unityWorkflow": ".github/workflows/company-development-unity-runtime.yml",
+        "robloxWorkflow": ".github/workflows/company-development-roblox-runtime.yml"
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
