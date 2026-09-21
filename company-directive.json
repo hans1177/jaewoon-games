@@ -340,7 +340,7 @@
     "departmentMultimodelStartsAtClass": "DEVELOPMENT_CONFIRMED",
     "minDistinctModelsPerDepartment": 1,
     "departmentReviewModelCount": 1,
-    "minDistinctLeadModelsAcrossDepartments": 5,
+    "minDistinctLeadModelsAcrossDepartments": 1,
     "departmentLeadModelsMustBeDistinct": false,
     "departmentLeadAssignmentRemappable": true,
     "assistantModelsMayOverlapAcrossDepartments": true,
@@ -501,7 +501,9 @@
         "ROBLOX"
       ],
       "directGameplayBalanceMutationForbidden": true
-    }
+    },
+    "leadDistinctnessPolicy": "NOT_REQUIRED_FOR_EXECUTION",
+    "leadSelectionObjective": "ROLE_FIT_AND_AVAILABLE_FREE_MODEL_CAPACITY_WITHOUT_ARTIFICIAL_DISTINCTNESS_GATE"
   },
   "classes": {
     "DESIGN_ONLY": {
