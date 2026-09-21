@@ -321,11 +321,26 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('VFX_FEEDBACK_VARIETY',hit>=2);
     require('BOUNDED_EFFECT_LIFETIME',/(?:life|ttl|duration|remove|splice|filter|pool|maxParticles|maxEffects|cap)/i.test(text));
   }else if(pass==='AUDIO_FEEL'){
-    require('AUDIO_RUNTIME',/(?:AudioContext|webkitAudioContext|new\s+Audio\s*\(|createGain|createOscillator)/i.test(text));
-    require('USER_GESTURE_UNLOCK',/(?:pointerdown|touchstart|click|keydown|mousedown)/i.test(text));
-    require('MUTE_CONTROL',/(?:mute|muted)/i.test(text));
-    require('VOLUME_CONTROL',/(?:volume|gain)/i.test(text));
-    require('DUPLICATE_RESUME_GUARD',/(?:visibilitychange|pagehide|pageshow|resume|suspend|audioState|musicState|currentTrack)/i.test(text));
+    if(target==='web'){
+      require('AUDIO_RUNTIME',/(?:AudioContext|webkitAudioContext|new\s+Audio\s*\(|createGain|createOscillator)/i.test(text));
+      require('USER_GESTURE_UNLOCK',/(?:pointerdown|touchstart|click|keydown|mousedown)/i.test(text));
+      require('MUTE_CONTROL',/(?:mute|muted)/i.test(text));
+      require('VOLUME_CONTROL',/(?:volume|gain)/i.test(text));
+      require('DUPLICATE_RESUME_GUARD',/(?:visibilitychange|pagehide|pageshow|resume|suspend|audioState|musicState|currentTrack)/i.test(text));
+    }else if(target==='unity'){
+      require('UNITY_AUDIO_RUNTIME',/(?:AudioSource|AudioMixer|AudioClip|PlayOneShot|\.Play\s*\(|\.Stop\s*\()/i.test(text));
+      require('UNITY_MIX_OR_VOLUME_CONTROL',/(?:AudioMixer|SetFloat\s*\(|volume\s*=|mute\s*=)/i.test(text));
+      require('UNITY_STATE_DRIVEN_AUDIO',/(?:combat|boss|explore|ambient|reward|musicState|currentTrack|OnEnable|sceneLoaded)/i.test(text));
+      require('UNITY_DUPLICATE_PLAYBACK_GUARD',/(?:isPlaying|DontDestroyOnLoad|singleton|Instance\s*==|currentTrack|Stop\s*\()/i.test(text));
+    }else if(target==='roblox'){
+      require('ROBLOX_AUDIO_RUNTIME',/(?:SoundService|Instance\.new\s*\(\s*["']Sound["']|:Play\s*\(|:Stop\s*\()/i.test(text));
+      require('ROBLOX_MIX_OR_VOLUME_CONTROL',/(?:Volume\s*=|PlaybackSpeed\s*=|SoundGroup|RespectFilteringEnabled)/i.test(text));
+      require('ROBLOX_STATE_DRIVEN_AUDIO',/(?:combat|boss|explore|ambient|reward|musicState|currentTrack|RemoteEvent|AttributeChanged)/i.test(text));
+      require('ROBLOX_DUPLICATE_PLAYBACK_GUARD',/(?:IsPlaying|Playing|FindFirstChild\s*\(|currentTrack|:Stop\s*\()/i.test(text));
+    }else{
+      require('AUDIO_TARGET_SUPPORTED',false);
+    }
+    require('AUDIO_EVENT_BINDING',/(?:impact|hit|attack|reward|quest|purchase|craft|combat|boss|ambient|musicState|currentTrack)/i.test(text));
   }else if(pass==='CAMERA_LANGUAGE'){
     require('CAMERA_OWNER',/(?:camera|viewport|viewOffset|screenShake|cameraShake)/i.test(text));
     require('SMOOTH_CAMERA_RESPONSE',/(?:shake|zoom|lerp|ease|damp|offset|scale|follow)/i.test(text));
