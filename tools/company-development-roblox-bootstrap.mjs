@@ -54,6 +54,15 @@ function baselineContent(baseline={}){
 function baselineText(baseline={}){
   return JSON.stringify(baselineContent(baseline)).toLowerCase();
 }
+
+function robloxPlatformProfileFromBaseline(baseline={}){
+  const profile=baselineContent(baseline)?.platformProfiles?.ROBLOX;
+  if(!profile||Array.isArray(profile)||typeof profile!=='object')throw new Error('ROBLOX_PLATFORM_PROFILE_REQUIRED');
+  if(clean(profile.platform).toUpperCase()!=='ROBLOX')throw new Error('ROBLOX_PLATFORM_PROFILE_TARGET_MISMATCH');
+  const required=['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'];
+  for(const field of required)if(clean(profile[field]).length<8)throw new Error('ROBLOX_PLATFORM_PROFILE_FIELD_REQUIRED:'+field);
+  return Object.freeze({...profile,platform:'ROBLOX'});
+}
 export function requiresPersistentSave(baseline={}){
   return /(persistent|persistence|save|long-term progression|long term progression|영구|저장)/i.test(baselineText(baseline));
 }
@@ -216,13 +225,12 @@ function approvedActions(baseline={},profile,learning={}){
   return decorateRobloxActionsWithLearning(actions,learning);
 }
 
-function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,learning={},webHandoff={}}){
+function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platformProfile,learning={}}){
   const actionRows=actions.map((action,index)=>`    { Id = ${luauString(action.id)}, Label = ${luauString(action.label)}, Kind = ${luauString(action.kind)}, Order = ${index+1}, LearningPattern = ${luauString(action.learningPattern||'')} },`).join('\n');
   const checklistRows=(learning.checklist||[]).map(value=>`    ${luauString(value)},`).join('\n');
   const featureRows=(learning.featureBlend||[]).map(value=>`    ${luauString(value)},`).join('\n');
   const sourceRows=(learning.sourceProjects||[]).map(value=>`    ${luauString(value)},`).join('\n');
-  const handoffRows=(webHandoff.carryForward||[]).map(value=>`      ${luauString(value)},`).join('\n');
-  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  WebBaseline = {\n    Required = true,\n    Stage = ${luauString(webHandoff.stage||'')},\n    SourcePath = ${luauString(webHandoff.sourcePath||'')},\n    EvidencePath = ${luauString(webHandoff.evidencePath||'')},\n    SourceSha256 = ${luauString(webHandoff.sourceIndexSha256||'')},\n    BaselineSha256 = ${luauString(webHandoff.designBaselineSha256||'')},\n    StrictScore = ${Number(webHandoff.strictScore||0)},\n    PromotionRevalidated = ${webHandoff.promotionRevalidationPassed===true?'true':'false'},\n    NativeRuntimePassTransferred = false,\n    CarryForward = {\n${handoffRows}\n    },\n  },\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
+  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
 }
 
 function serverHandlerBody(kind,index){
@@ -260,17 +268,16 @@ function clientSource({profile,learning={}}){
 }
 
 export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={},webHandoff={},roadmap={}}={}){
+  void webHandoff;
+  void roadmap;
   const profile=robloxBuildProfileFromBaseline(baseline);
+  const platformProfile=robloxPlatformProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
-  const handoffRequired=roadmap?.developmentLifecycleMachine?.webToPlatformHandoff?.required===true;
-  const handoffValidation=handoffRequired
-    ? validateWebPlatformHandoff({handoff:webHandoff,roadmap,gameId})
-    : Object.freeze({pass:true,blockers:Object.freeze([]),carryForward:Object.freeze(Array.isArray(webHandoff?.carryForward)?webHandoff.carryForward.map(clean):[])});
-  if(!handoffValidation.pass)throw new Error(`ROBLOX_WEB_HANDOFF_FAILED: ${handoffValidation.blockers.join('|')}`);
+  const handoffValidation=Object.freeze({pass:true,blockers:Object.freeze([]),carryForward:Object.freeze([])});
   const learning=createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination});
   const actions=approvedActions(baseline,profile,learning);
   const result={
-    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile,learning,webHandoff}),
+    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platformProfile,learning}),
     serverCode:serverSource({gameId,saveRequired,actions,profile,learning}),
     clientCode:clientSource({profile,learning}),
     implementationNotes:[
@@ -279,8 +286,9 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
       `play mode=${profile.playMode}`,
       `multiplayer required=${profile.multiplayerRequired?'yes':'no'}`,
       'genre core action is compiled from the approved Roblox build profile',
-      `verified Web baseline carried forward: ${handoffValidation.carryForward.join(', ')}`,
-      `Web baseline strict score=${Number(webHandoff.strictScore||0)}; native runtime pass transferred=no`,
+      'minimum dual-platform design contract carried forward',
+      `Roblox platform session: ${platformProfile.sessionModel}`,
+      `Roblox internal release target: ${platformProfile.internalReleaseTarget}`,
       profile.multiplayerRequired?'server-authoritative actions broadcast synchronized participant state to all clients':'single-player source does not claim multiplayer implementation',
       profile.coopImplementationRequired?'co-op source maintains SharedObjective across current participants':null,
       profile.competitiveImplementationRequired?'competitive source maintains per-player RoundScore and broadcasts it':null,
@@ -293,7 +301,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   };
   const validation=validateRobloxBootstrap({...result,baseline,profile,learning});
   if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
-  return {result,validation,actions,profile,learning,webHandoff,handoffValidation,generationMode:learning.applied?'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT':'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
+  return {result,validation,actions,profile,platformProfile,learning,webHandoff:null,handoffValidation,generationMode:learning.applied?'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT':'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
 }
 
 export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,model}){
@@ -322,14 +330,14 @@ async function main(){
   const webHandoffFile=clean(arg('web-handoff'));
   const roadmapFile=clean(arg('roadmap','company-learning/platform-release-roadmap.json'));
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
-  if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile||!webHandoffFile||!roadmapFile)throw new Error('required Roblox bootstrap argument missing');
+  if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile||!roadmapFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
   if(fs.existsSync(outputRoot)&&fs.readdirSync(outputRoot).length)throw new Error(`Roblox source root already exists: ${outputRoot}`);
   const baseline=readJson(baselineFile);
   const artbook=readJson(artbookFile);
   const playbooks=readJson(playbooksFile);
   const recombination=readJson(recombinationFile);
-  const webHandoff=readJson(webHandoffFile);
+  const webHandoff=webHandoffFile&&fs.existsSync(webHandoffFile)?readJson(webHandoffFile):{};
   const roadmap=readJson(roadmapFile);
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,model});
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
@@ -338,7 +346,7 @@ async function main(){
     version:3,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
     sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
     saveRequired:built.validation.saveRequired,approvedScopeCount:built.actions.length,
-    robloxBuildProfile:built.profile,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,
+    robloxBuildProfile:built.profile,robloxPlatformProfile:built.platformProfile,minimumDesignContractRequired:true,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,
     generatedFiles:['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json'],
     generationMode:built.generationMode,model,modelUsed:built.modelUsed,modelAttempts:built.attempts,modelContractFailures:built.failures,
     vibe3LearningApplied:built.learning.applied,robloxPlaybookChecklist:built.learning.checklist,recombinationRecipeId:built.learning.recipeId,
