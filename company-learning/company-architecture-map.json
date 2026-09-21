@@ -2309,5 +2309,17 @@
         "RESUME_PIPELINE"
       ]
     }
+  },
+  "learningRetrievalRouting": {
+    "centralContract": "company-learning/platform-release-roadmap.json#learningRetrievalRouting",
+    "retriever": "tools/vibe2-learning-motor.mjs::retrieveUnifiedLearning",
+    "systemAiAdapter": "tools/company-system-ai-learning-context.mjs",
+    "rules": [
+      "VERIFIED_ONLY",
+      "SEMANTIC_RELEVANCE_REQUIRED",
+      "SAME_ENGINE_ONLY_NEVER_SUFFICIENT",
+      "TASK_TARGET_INFERRED_FROM_RESPONSIBLE_SOURCE_OR_DEPARTMENT",
+      "EXACT_KNOWLEDGE_IDS_AUDITED"
+    ]
   }
 }
