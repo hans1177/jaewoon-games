@@ -4,7 +4,7 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-09-21T15:09:50.123Z",
+  "generatedAt": "2026-09-21T21:57:01.868Z",
   "counts": {
     "ACCELERATE": 0,
     "CONTINUE": 0,
@@ -12,7 +12,7 @@
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
-    "PENDING": 15
+    "PENDING": 17
   },
   "games": [
     {
@@ -43,6 +43,15 @@
       "authority": "PENDING_AUTOMATION"
     },
     {
+      "gameId": "cozy-island",
+      "decision": "PENDING",
+      "label": "판정 대기",
+      "priorityRank": 6,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PENDING_AUTOMATION"
+    },
+    {
       "gameId": "daechung-rpg",
       "decision": "PENDING",
       "label": "판정 대기",
@@ -53,6 +62,15 @@
     },
     {
       "gameId": "fantasy-survival",
+      "decision": "PENDING",
+      "label": "판정 대기",
+      "priorityRank": 6,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PENDING_AUTOMATION"
+    },
+    {
+      "gameId": "horror-escape-room",
       "decision": "PENDING",
       "label": "판정 대기",
       "priorityRank": 6,
