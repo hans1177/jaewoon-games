@@ -833,7 +833,7 @@
     },
     {
       "id": "game-fantasy-survival-web-second-gate-collab-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "goal": "Collaborate with Vibe on fantasy-survival using only the already approved gameplay scope. Inspect the existing Web game and repair second-gate gaps that are already documented in company runtime: complete playable cycle evidence, at least two real world areas, approved visible gameplay scope coverage, and real interaction results. Preserve all owner-authored rules, balance, save semantics, multiplayer semantics, and the first-gate platform admission. Do not invent new gameplay scope or tune numbers. Make only necessary edits to the assigned Web game source.",
       "responsibleFiles": [
@@ -867,23 +867,31 @@
         "node --test qa/company-web-real-game-regression.test.mjs"
       ],
       "dependencies": [],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 3,
-      "reservationId": "system-ai:35555396490:1",
-      "reservedAt": "2026-09-21T02:51:03.780Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": null,
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
         "scope:owner-approved-existing-gameplay-only",
-        "learning-route:existing-vibe-learning-motor"
+        "learning-route:existing-vibe-learning-motor",
+        "actions-run:35555396490",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-21T02:51:03.780Z"
+      "updatedAt": "2026-09-21T02:58:08.352Z"
     }
   ]
 }
