@@ -1,0 +1,35 @@
+name: Primary Three Release Polish QA
+
+on:
+  pull_request:
+    paths:
+      - 'roblox-games/cozy-island/**'
+      - 'roblox-games/daechung-rpg/**'
+      - 'roblox-games/horror-escape-room/**'
+      - 'qa/cozy-rpg-release-hardening.test.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
+      - '.github/workflows/primary-three-release-polish-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/cozy-island/**'
+      - 'roblox-games/daechung-rpg/**'
+      - 'roblox-games/horror-escape-room/**'
+      - 'qa/cozy-rpg-release-hardening.test.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
+      - '.github/workflows/primary-three-release-polish-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate primary-three release polish
+        run: |
+          node --test qa/horror-escape-room-release.test.mjs qa/cozy-rpg-release-hardening.test.mjs
