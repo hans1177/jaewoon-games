@@ -56,8 +56,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:02.053Z",
-      "updatedAt": "2026-09-21T13:43:02.053Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:36.039Z",
+      "updatedAt": "2026-09-21T13:53:36.039Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -134,8 +134,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:23.638Z",
-      "updatedAt": "2026-09-21T13:43:23.638Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:20.726Z",
+      "updatedAt": "2026-09-21T13:53:20.726Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -180,10 +180,10 @@
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
-      "status": "PENDING",
+      "status": "ACTIVE",
       "sourcePath": "unity-games/daechung-rpg",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_SELECTED_PLATFORM_BIND",
+      "currentStep": "VIBE_WEB_REPAIR",
+      "canonicalState": "WEB_VIBE_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -191,7 +191,7 @@
       "existingGameContinuation": true,
       "webValidationPassedAt": "2026-09-21T13:51:41.579Z",
       "musicValidationPassed": false,
-      "webValidationEvidencePath": "design/daechung-rpg/2026-09-19/unity-web-first-stage-validation.json",
+      "webValidationEvidencePath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
@@ -207,11 +207,13 @@
       "webInitialCycleStrictReviewPath": "",
       "webInitialCycleSourceRevision": "",
       "webInitialCycleMusicValidationPassed": false,
-      "homepageTestEligible": true,
+      "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
-      "routingBlockers": [],
-      "webValidationLastAttemptAt": "2026-09-21T13:51:41.579Z",
-      "updatedAt": "2026-09-21T13:51:41.579Z",
+      "routingBlockers": [
+        "unity-web-first-stage:UNITY_WEB_CHILD_BUILD_failure"
+      ],
+      "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
+      "updatedAt": "2026-09-21T14:19:07.831Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -222,9 +224,9 @@
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "vibeWebImplementationRequired": false,
-      "vibeWebRequestedStage": null,
-      "vibeWebImplementationReason": null,
+      "vibeWebImplementationRequired": true,
+      "vibeWebRequestedStage": "WEB_REPAIR",
+      "vibeWebImplementationReason": "UNITY_WEB_CHILD_BUILD_failure",
       "sourceRootBootstrapRequired": false,
       "ownerWebEditPropagation": {
         "version": 1,
@@ -258,11 +260,11 @@
       },
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-09-21T11:32:28.016Z",
-      "unityWebFirstStagePassed": true,
-      "unityWebFirstStagePassedAt": "2026-09-21T13:51:41.579Z",
-      "unityWebFirstStageEvidencePath": "design/daechung-rpg/2026-09-19/unity-web-first-stage-validation.json",
-      "unityWebFirstStageBuildRunId": 35607409395,
-      "unityWebFirstStageSourceTreeSha": "bcb88a115c0871a1ac11007cf1f46fb6c8215328",
+      "unityWebFirstStagePassed": false,
+      "unityWebFirstStagePassedAt": null,
+      "unityWebFirstStageEvidencePath": null,
+      "unityWebFirstStageBuildRunId": 35608489113,
+      "unityWebFirstStageSourceTreeSha": "d4186ccd4cb4bc5c3415c26b45d6d59c353ee975",
       "unityWebFirstStageDesignBaselineSha256": "d476c870ee6d95b2526ff27309b847664101bd6b1db2e082693ed187f67e1c6c",
       "unityWebFirstStageGate": {
         "boot": true,
@@ -330,8 +332,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:08.797Z",
-      "updatedAt": "2026-09-21T13:43:08.797Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:29.091Z",
+      "updatedAt": "2026-09-21T13:53:29.091Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -407,8 +409,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:14.319Z",
-      "updatedAt": "2026-09-21T13:43:14.319Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:23.173Z",
+      "updatedAt": "2026-09-21T13:53:23.173Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -484,8 +486,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:07.906Z",
-      "updatedAt": "2026-09-21T13:43:07.906Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:20.399Z",
+      "updatedAt": "2026-09-21T13:53:20.399Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -561,8 +563,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:04.220Z",
-      "updatedAt": "2026-09-21T13:43:04.220Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:19.110Z",
+      "updatedAt": "2026-09-21T13:53:19.110Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -638,8 +640,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:18.863Z",
-      "updatedAt": "2026-09-21T13:43:18.863Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:23.275Z",
+      "updatedAt": "2026-09-21T13:53:23.275Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -715,8 +717,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:18.317Z",
-      "updatedAt": "2026-09-21T13:43:18.317Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:23.644Z",
+      "updatedAt": "2026-09-21T13:53:23.644Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -787,8 +789,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:19.281Z",
-      "updatedAt": "2026-09-21T13:43:19.281Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:18.671Z",
+      "updatedAt": "2026-09-21T13:53:18.671Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -862,8 +864,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:07.155Z",
-      "updatedAt": "2026-09-21T13:43:07.155Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:20.624Z",
+      "updatedAt": "2026-09-21T13:53:20.624Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -937,8 +939,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:17.799Z",
-      "updatedAt": "2026-09-21T13:43:17.799Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:28.859Z",
+      "updatedAt": "2026-09-21T13:53:28.859Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -1042,8 +1044,8 @@
       "routingBlockers": [
         "unity-web-first-stage:UNITY_WEB_CANONICAL_SOURCE_MISSING"
       ],
-      "webValidationLastAttemptAt": "2026-09-21T13:43:17.885Z",
-      "updatedAt": "2026-09-21T13:43:17.885Z",
+      "webValidationLastAttemptAt": "2026-09-21T13:53:35.562Z",
+      "updatedAt": "2026-09-21T13:53:35.562Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1240,12 +1242,12 @@
       "ownerWebEditPropagationUpdatedAt": "2026-09-21T06:11:59.294Z"
     }
   ],
-  "updatedAt": "2026-09-21T14:18:51.361Z",
+  "updatedAt": "2026-09-21T14:19:23.929Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
   "executionContract": "CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT",
-  "webValidationPolicy": "REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM",
+  "webValidationPolicy": "UNITY_WEB_FIRST_STAGE_GATE_THEN_EXISTING_PLATFORM_PIPELINE",
   "webValidationContractVersion": 4,
   "webGateRequired": true,
   "webValidationParallelism": 20,
