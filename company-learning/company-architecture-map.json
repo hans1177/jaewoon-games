@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 86,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2555,6 +2555,25 @@
       "exactCandidate": "REQUIRED",
       "fixedPwaChatRegression": "REQUIRED",
       "fullHomepageManagerContractRerun": "FORBIDDEN_DUPLICATE"
+    }
+  },
+  "developmentPipeline": {
+    "focusedCaretakers": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.focusedDevelopmentCaretakers",
+      "ownerFocusedGameIds": [
+        "fantasy-survival",
+        "daechung-rpg"
+      ],
+      "includeAllReleaseConfirmed": true,
+      "oneLogicalCaretakerPerEligibleGame": true,
+      "primaryRunnerWhenWorkExists": 1,
+      "burstWorkers": {
+        "min": 2,
+        "max": 4,
+        "onlyIndependentHighValueWork": true
+      },
+      "stickyOwnership": true,
+      "unlimitedCausalRepair": true
     }
   }
 }
