@@ -59,7 +59,28 @@
     "genreSpecificUiAnimationRequired": true,
     "artDirectionStyleLockRequiredBeforePresentationImplementation": true,
     "commercialReadinessRequiredBeforeNativeDispatch": true,
-    "placeholderOrContextMismatchCannotPass": true
+    "placeholderOrContextMismatchCannotPass": true,
+    "twoStageGate": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "enabled": true,
+      "firstGate": {
+        "purpose": "PLATFORM_DEVELOPMENT_ADMISSION",
+        "passEffect": "ALLOW_TARGET_PLATFORM_DEVELOPMENT",
+        "nativePlatformsMayDevelopAfterPass": true,
+        "releaseClaimAllowed": false,
+        "nativeRuntimeEvidenceStillRequired": true
+      },
+      "secondGate": {
+        "purpose": "POST_PLATFORM_WEB_REVALIDATION",
+        "activatesAfterFirstGatePlatformAdmission": true,
+        "authority": "OWNER_DIRECTIVE",
+        "criteriaSource": "OWNER_INSTRUCTIONS",
+        "independentFromFirstGate": true,
+        "mayNotRetroactivelyBlockAlreadyAuthorizedPlatformDevelopment": true,
+        "requiredBeforeFinalReleaseDecision": true
+      }
+    }
   },
   "livingMotionVisualQualityContract": {
     "version": 2,
@@ -890,7 +911,9 @@
       "evidenceDoesNotTransferAsNativePass": true,
       "presentationContractField": "presentationContract",
       "presentationContractSource": "WEB_VALIDATION_EVIDENCE.webPlatformPresentationHandoff",
-      "presentationContractReadyRequired": true
+      "presentationContractReadyRequired": true,
+      "firstGateAdmissionAllowed": true,
+      "secondGateMayRemainPendingDuringPlatformDevelopment": true
     },
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
@@ -901,7 +924,10 @@
       "selectedPlatformOwnsSecondImplementation": true,
       "preserveWebBaselineAsReference": true,
       "verifiedLearningContextRequired": true,
-      "runtimeIndependentQaRegressionRequired": true
+      "runtimeIndependentQaRegressionRequired": true,
+      "firstWebGatePassSufficientForDevelopmentAdmission": true,
+      "secondWebGateRunsSeparately": true,
+      "secondWebGateCriteriaAuthority": "OWNER_DIRECTIVE"
     },
     "postReleaseFocusedDevelopment": {
       "enabled": true,
@@ -9547,7 +9573,11 @@
         "UNITY",
         "ROBLOX"
       ],
-      "mode": "UNITY_ROBLOX_CONCURRENT"
+      "mode": "UNITY_ROBLOX_CONCURRENT",
+      "webFirstGatePassed": true,
+      "webSecondGateRequired": true,
+      "webSecondGateCriteriaAuthority": "OWNER_DIRECTIVE",
+      "webFirstGateOwnerConfirmedAt": "2026-09-21"
     },
     "inputContract": {
       "requiredSources": [
