@@ -74,6 +74,23 @@ jobs:
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
 
+      - name: Detect Roblox game source changes in this push
+        id: changed-roblox
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          CURRENT_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed=""
+          if [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            git fetch --no-tags origin "$BEFORE_SHA"
+            changed="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ | awk -F/ 'NF>=3 {print $2}' | sort -u | paste -sd, -)"
+          fi
+          echo "game_ids=$changed" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_CHANGED_GAME_IDS=${changed:-NONE}"
+
       - name: Revalidate exact-main Roblox source already merged
         id: reconcile
         env:
@@ -86,6 +103,7 @@ jobs:
             --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
             --repo-root=. \
             --source-revision="$SOURCE_REVISION" \
+            --changed-game-ids="${{ steps.changed-roblox.outputs.game_ids }}" \
             --results=/tmp/roblox-source-reconciliation.json
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
@@ -349,12 +367,24 @@ jobs:
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
             if(result.pass===true){
+              const priorSourceRevision=String(item.robloxSourceCommit||'').trim()||null;
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
-                robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeEvidence:null,robloxRuntimeFailedAt:null,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxPostRuntimeQaEvidence:null,
+                robloxExactRevisionPassed:false,robloxMultiplayerQaPassed:false,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,robloxHeadlessPassedAt:null,
+                robloxInternalReleaseReady:false,robloxPublicReleaseReady:false,robloxPublicRelease:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                robloxFastMvpPublished:false,robloxFastMvpPublishedAt:null,
+                robloxEvidenceInvalidatedBySourceChange:result.reconciliationReason==='source-drift'?{previousSourceRevision:priorSourceRevision,newSourceRevision:result.sourceRevision,invalidatedAt:stamp}:null,
+                routingBlockers:['roblox-build-package-revalidation-pending'],updatedAt:stamp,
               });
               reconciliationPass++;
             }else{
