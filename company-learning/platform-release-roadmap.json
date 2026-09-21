@@ -1,5 +1,5 @@
 {
-  "version": 243,
+  "version": 244,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4879,9 +4879,9 @@
         "HEADER",
         "FEATURED_GAME",
         "THREE_METRICS",
-        "PLAY_NOW",
+        "PLATFORM_AVAILABLE",
         "IN_DEVELOPMENT",
-        "DEVELOPMENT_FLOW",
+        "RECENT_UPDATES",
         "FOOTER"
       ],
       "header": {
@@ -4905,32 +4905,22 @@
       "metrics": {
         "count": 3,
         "items": [
-          "PLAYABLE",
+          "PLATFORM_AVAILABLE",
           "IN_DEVELOPMENT",
-          "RELEASED"
+          "RECENT_UPDATES"
         ]
       },
       "shelves": [
         {
-          "id": "PLAY_NOW",
-          "source": "CANONICAL_WEB_PUBLISHED"
+          "id": "PLATFORM_AVAILABLE",
+          "source": "VERIFIED_INTERNAL_PLATFORM_RELEASE",
+          "webAction": "FIXED_ON_CARD"
         },
         {
           "id": "IN_DEVELOPMENT",
-          "source": "DEVELOPMENT_CONFIRMED"
+          "source": "DEVELOPMENT_CONFIRMED_EXCLUDING_PLATFORM_AVAILABLE"
         }
       ],
-      "developmentFlow": {
-        "visible": true,
-        "steps": 5,
-        "labels": [
-          "WEB_BUILD",
-          "WEB_QA",
-          "PLATFORM",
-          "PLATFORM_QA",
-          "RELEASE"
-        ]
-      },
       "forbiddenFrontDoorElements": [
         "REVIEWS",
         "MUSIC_PLAYER",
@@ -4946,12 +4936,12 @@
         "navItems": [
           "HOME",
           "GAME",
-          "DEVELOPMENT",
+          "RECENT_UPDATES",
           "CHATGPT"
         ],
         "chatgptUrl": "/command.html?from=chatgpt-shortcut",
         "horizontalGameCards": true,
-        "horizontalDevelopmentSteps": true
+        "horizontalDevelopmentSteps": false
       },
       "runtimeAuthority": "company-runtime",
       "runtimeRenderer": "assets/homepage-enhancements.js",
@@ -5004,7 +4994,15 @@
         "webAlwaysVisible": true,
         "concurrentPlatformSlotsVisible": true,
         "verifiedReleaseLinksActivateAutomatically": true,
+        "platformAvailableShelfRequiresInternalRelease": true,
         "unavailablePlatformState": "DEVELOPMENT_DISABLED_BUTTON"
+      },
+      "recentUpdates": {
+        "enabled": true,
+        "source": "CANONICAL_HOMEPAGE_RUNTIME_LATEST_WORK",
+        "limit": 5,
+        "ambiguousState": "확인 중",
+        "replaces": "DEVELOPMENT_FLOW"
       }
     }
   },
