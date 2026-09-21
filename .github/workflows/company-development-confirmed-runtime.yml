@@ -660,7 +660,7 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          api="repos/$GITHUB_REPOSITORYY/actions/workflows/unity-web-first-stage-build.yml"
+          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-web-first-stage-build.yml"
           baseline="$(gh api "$api/runs?event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0' 2>/dev/null || echo 0)"
           payload="$(jq -n \
             --arg ref main \
