@@ -163,174 +163,16 @@
       "selectedPlatform": "ROBLOX"
     },
     {
-      "id": "amusement-tycoon",
-      "name": "놀이공원 타이쿤",
-      "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
+      "id": "cozy-island",
+      "name": "포근섬",
+      "description": "직접 노동→주민 자동화→병영/병사→기지 자동전투→전략자원 섬 점령으로 성장하는 3D 개척 전략 게임",
       "genre": [
-        "타이쿤",
-        "3D",
-        "경영",
-        "건설"
-      ],
-      "image": "assets/page-bg-v4.webp",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "타이쿤",
-          "3D",
-          "경영",
-          "건설"
-        ],
-        "genreLabel": "타이쿤 · 3D · 경영 · 건설",
-        "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
-        "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-        "updatedAt": "2026-09-21T13:43:07.155Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 2,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "amusement-tycoon",
-          "name": "놀이공원 타이쿤",
-          "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
-          "genres": [
-            "타이쿤",
-            "3D",
-            "경영",
-            "건설"
-          ],
-          "image": "assets/page-bg-v4.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
-          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-          "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/amusement-tycoon/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
-          "recentWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "타이쿤",
-              "3D",
-              "경영",
-              "건설"
-            ],
-            "genreLabel": "타이쿤 · 3D · 경영 · 건설",
-            "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
-            "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-            "updatedAt": "2026-09-21T13:43:07.155Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 2,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/amusement-tycoon",
-        "UNITY": "unity-games/amusement-tycoon"
-      },
-      "updatedAt": "2026-09-21T21:49:19.137Z"
-    },
-    {
-      "id": "bug-defense",
-      "name": "곤충 디펜스",
-      "description": "30웨이브 곤충 디펜스",
-      "genre": [
-        "웨이브",
+        "섬개척",
+        "자동전투",
         "전략",
-        "곤충"
+        "협동"
       ],
-      "image": "assets/insect-war-v2.webp",
+      "image": "assets/title-cozy-island.svg",
       "webPath": null,
       "hasWebArchive": true,
       "featured": true,
@@ -345,45 +187,46 @@
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageRecentWork": "최소 설계 계약 완료 · Roblox/Unity 앱 네이티브 개발 동시 착수",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
         "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
         "score": null,
         "scoreLabel": "점수 미평가",
         "scoreCurrent": false,
         "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
         "validationSchemaVersion": null,
         "genre": [
-          "웨이브",
-          "전략",
-          "곤충"
+          "힐링",
+          "생활",
+          "낚시"
         ],
-        "genreLabel": "웨이브 · 전략 · 곤충",
+        "genreLabel": "힐링 · 생활 · 낚시",
         "subgenre": "",
-        "playMode": "",
-        "playModeLabel": "플레이 방식 미평가",
+        "playMode": "SINGLE_OR_MULTI",
+        "playModeLabel": "싱글 · 멀티",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-21T13:43:02.053Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
+        "updatedAt": "2026-09-20",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 3,
+        "catalogOrder": 2,
         "authority": "company-runtime",
         "identity": {
-          "gameId": "bug-defense",
-          "name": "곤충 디펜스",
-          "description": "30웨이브 곤충 디펜스",
+          "gameId": "cozy-island",
+          "name": "포근섬",
+          "description": "직접 노동→주민 자동화→병영/병사→기지 자동전투→전략자원 섬 점령으로 성장하는 3D 개척 전략 게임",
           "genres": [
-            "웨이브",
+            "섬개척",
+            "자동전투",
             "전략",
-            "곤충"
+            "협동"
           ],
-          "image": "assets/insect-war-v2.webp",
+          "image": "assets/title-cozy-island.svg",
           "aliases": []
         },
         "lifecycle": {
@@ -393,15 +236,15 @@
         },
         "production": {
           "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "unity-android",
+          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+          "selectedPlatform": "ROBLOX",
+          "stage": "Roblox Headless FAST_MVP"
         },
         "sources": {
           "web": {
-            "path": "/web-games/bug-defense/",
+            "path": "/web-games/cozy-island/",
             "archive": true,
             "playable": true,
             "purpose": "PUBLIC_PLAYABLE_COMPANION"
@@ -430,52 +273,75 @@
             "regression": false,
             "multiplayerQa": false,
             "sourceRevision": "",
-            "artifactIdentity": ""
+            "artifactIdentity": "",
+            "validationMode": "HEADLESS_FAST_MVP",
+            "studioRequired": false
           }
         },
         "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
+          "featured": false,
+          "category": "design-only",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "stage": "설계 · 재평가 중",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
           "runtime": {
             "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
             "score": null,
             "scoreLabel": "점수 미평가",
             "scoreCurrent": false,
             "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
             "validationSchemaVersion": null,
             "genre": [
-              "웨이브",
-              "전략",
-              "곤충"
+              "힐링",
+              "생활",
+              "낚시"
             ],
-            "genreLabel": "웨이브 · 전략 · 곤충",
+            "genreLabel": "힐링 · 생활 · 낚시",
             "subgenre": "",
-            "playMode": "",
-            "playModeLabel": "플레이 방식 미평가",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-21T13:43:02.053Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
+            "updatedAt": "2026-09-20",
+            "status": "ACTIVE",
+            "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 3,
-      "selectedPlatform": "UNITY",
+      "catalogOrder": 2,
+      "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/bug-defense",
-        "UNITY": "unity-games/bug-defense"
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
       },
-      "updatedAt": "2026-09-21T21:49:19.137Z"
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "ownerDirectDevelopment": true,
+      "updatedAt": "2026-09-21T21:49:19.137Z",
+      "playModes": [
+        "SINGLE",
+        "COOP"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "fishingEnabled": false,
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 1,
+      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
+      "visualArtPass": "STYLIZED_ROBLOX_V1",
+      "directImplementationState": "PLAYABLE_MANUAL_ECONOMY_RESIDENT_AUTOMATION_BARRACKS_TROOPS_VISIBLE_AUTO_BATTLE_CONQUEST",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "newFeatureExpansionFrozen": true,
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json"
     },
     {
       "id": "daechung-rpg",
@@ -535,7 +401,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 4,
+        "catalogOrder": 3,
         "authority": "company-runtime",
         "identity": {
           "gameId": "daechung-rpg",
@@ -634,7 +500,7 @@
           }
         }
       },
-      "catalogOrder": 4,
+      "catalogOrder": 3,
       "homepageDisplayMode": "WEB_PUBLISHED",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -672,6 +538,494 @@
       "aliases": [
         "대충 RPG"
       ]
+    },
+    {
+      "id": "horror-escape-room",
+      "name": "심야 술래잡기",
+      "description": "실제 플레이어 몬스터 1명이 생존자를 얼리고 생존자는 서로 해동하며 버티는 직관형 몬스터 얼음땡",
+      "genre": [
+        "술래잡기",
+        "몬스터",
+        "비대칭 멀티"
+      ],
+      "image": "assets/page-bg-v4.webp",
+      "webPath": null,
+      "hasWebArchive": false,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+      "homepageStage": "주력 개발 · Roblox Headless FAST_MVP",
+      "homepageRecentWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "playModes": [
+        "SINGLE_WITH_AI",
+        "ASYMMETRIC_MULTIPLAYER"
+      ],
+      "multiplayerSupported": true,
+      "soloPlayable": true,
+      "ownerDirectDevelopment": true,
+      "catalogOrder": 4,
+      "updatedAt": "2026-09-22T04:18:00+09:00",
+      "ownerPrimaryDevelopment": true,
+      "ownerPrimaryRank": 3,
+      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
+      "visualArtPass": "STYLIZED_ROBLOX_V1",
+      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "newFeatureExpansionFrozen": true,
+      "robloxValidationMode": "HEADLESS_FAST_MVP",
+      "robloxStudioExecutionAllowed": false,
+      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "술래잡기",
+          "몬스터",
+          "비대칭 멀티"
+        ],
+        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+        "subgenre": "",
+        "playMode": "COMPETITIVE",
+        "playModeLabel": "경쟁",
+        "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+        "updatedAt": "2026-09-22T04:18:00+09:00",
+        "status": "ACTIVE",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 4,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "horror-escape-room",
+          "name": "심야 술래잡기",
+          "description": "실제 플레이어 몬스터 1명이 생존자를 얼리고 생존자는 서로 해동하며 버티는 직관형 몬스터 얼음땡",
+          "genres": [
+            "술래잡기",
+            "몬스터",
+            "비대칭 멀티"
+          ],
+          "image": "assets/page-bg-v4.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_DEVELOPMENT",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_DEVELOPMENT",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
+          "selectedPlatform": "ROBLOX",
+          "stage": "주력 개발 · Roblox Headless FAST_MVP"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": false,
+            "playable": false,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": "roblox-games/horror-escape-room"
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "주력 개발 · Roblox Headless FAST_MVP",
+          "recentWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "술래잡기",
+              "몬스터",
+              "비대칭 멀티"
+            ],
+            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
+            "subgenre": "",
+            "playMode": "COMPETITIVE",
+            "playModeLabel": "경쟁",
+            "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
+            "updatedAt": "2026-09-22T04:18:00+09:00",
+            "status": "ACTIVE",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      }
+    },
+    {
+      "id": "amusement-tycoon",
+      "name": "놀이공원 타이쿤",
+      "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
+      "genre": [
+        "타이쿤",
+        "3D",
+        "경영",
+        "건설"
+      ],
+      "image": "assets/page-bg-v4.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "타이쿤",
+          "3D",
+          "경영",
+          "건설"
+        ],
+        "genreLabel": "타이쿤 · 3D · 경영 · 건설",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
+        "updatedAt": "2026-09-21T13:43:07.155Z",
+        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 5,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "amusement-tycoon",
+          "name": "놀이공원 타이쿤",
+          "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
+          "genres": [
+            "타이쿤",
+            "3D",
+            "경영",
+            "건설"
+          ],
+          "image": "assets/page-bg-v4.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "unity-android",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/amusement-tycoon/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "recentWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "타이쿤",
+              "3D",
+              "경영",
+              "건설"
+            ],
+            "genreLabel": "타이쿤 · 3D · 경영 · 건설",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
+            "updatedAt": "2026-09-21T13:43:07.155Z",
+            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 5,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/amusement-tycoon",
+        "UNITY": "unity-games/amusement-tycoon"
+      },
+      "updatedAt": "2026-09-21T21:49:19.137Z"
+    },
+    {
+      "id": "bug-defense",
+      "name": "곤충 디펜스",
+      "description": "30웨이브 곤충 디펜스",
+      "genre": [
+        "웨이브",
+        "전략",
+        "곤충"
+      ],
+      "image": "assets/insect-war-v2.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "웨이브",
+          "전략",
+          "곤충"
+        ],
+        "genreLabel": "웨이브 · 전략 · 곤충",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-21T13:43:02.053Z",
+        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 6,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "bug-defense",
+          "name": "곤충 디펜스",
+          "description": "30웨이브 곤충 디펜스",
+          "genres": [
+            "웨이브",
+            "전략",
+            "곤충"
+          ],
+          "image": "assets/insect-war-v2.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "unity-android",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/bug-defense/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "웨이브",
+              "전략",
+              "곤충"
+            ],
+            "genreLabel": "웨이브 · 전략 · 곤충",
+            "subgenre": "",
+            "playMode": "",
+            "playModeLabel": "플레이 방식 미평가",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-21T13:43:02.053Z",
+            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 6,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/bug-defense",
+        "UNITY": "unity-games/bug-defense"
+      },
+      "updatedAt": "2026-09-21T21:49:19.137Z"
     },
     {
       "id": "line-defense",
@@ -723,7 +1077,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 7,
         "authority": "company-runtime",
         "identity": {
           "gameId": "line-defense",
@@ -816,7 +1170,7 @@
           }
         }
       },
-      "catalogOrder": 5,
+      "catalogOrder": 7,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -880,7 +1234,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 8,
         "authority": "company-runtime",
         "identity": {
           "gameId": "village-dungeons",
@@ -975,7 +1329,7 @@
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 8,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1040,7 +1394,7 @@
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -1135,7 +1489,7 @@
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 9,
       "productionTarget": "ROBLOX_UNITY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "concurrentTargetPlatforms": [
@@ -1199,7 +1553,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 8,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -1292,7 +1646,7 @@
           }
         }
       },
-      "catalogOrder": 8,
+      "catalogOrder": 10,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1355,7 +1709,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1446,7 +1800,7 @@
           }
         }
       },
-      "catalogOrder": 9,
+      "catalogOrder": 11,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1508,7 +1862,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 10,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -1599,7 +1953,7 @@
           }
         }
       },
-      "catalogOrder": 10,
+      "catalogOrder": 12,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1661,7 +2015,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1752,7 +2106,7 @@
           }
         }
       },
-      "catalogOrder": 11,
+      "catalogOrder": 13,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1814,7 +2168,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 12,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -1905,7 +2259,7 @@
           }
         }
       },
-      "catalogOrder": 12,
+      "catalogOrder": 14,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1967,7 +2321,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -2058,7 +2412,7 @@
           }
         }
       },
-      "catalogOrder": 13,
+      "catalogOrder": 15,
       "homepageDisplayMode": "WEB_PUBLISHED",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -2126,7 +2480,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -2217,7 +2571,7 @@
           }
         }
       },
-      "catalogOrder": 14,
+      "catalogOrder": 16,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2278,7 +2632,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 15,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -2369,7 +2723,7 @@
           }
         }
       },
-      "catalogOrder": 15,
+      "catalogOrder": 17,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2429,7 +2783,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "crystal-defense",
@@ -2520,7 +2874,7 @@
           }
         }
       },
-      "catalogOrder": 16,
+      "catalogOrder": 18,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -2584,7 +2938,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -2677,7 +3031,7 @@
           }
         }
       },
-      "catalogOrder": 17
+      "catalogOrder": 19
     },
     {
       "id": "chess-battle",
@@ -2728,7 +3082,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -2819,7 +3173,7 @@
           }
         }
       },
-      "catalogOrder": 18,
+      "catalogOrder": 20,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -2830,188 +3184,6 @@
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
-    },
-    {
-      "id": "cozy-island",
-      "name": "포근섬",
-      "description": "직접 노동→주민 자동화→병영/병사→기지 자동전투→전략자원 섬 점령으로 성장하는 3D 개척 전략 게임",
-      "genre": [
-        "섬개척",
-        "자동전투",
-        "전략",
-        "협동"
-      ],
-      "image": "assets/title-cozy-island.svg",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "최소 설계 계약 완료 · Roblox/Unity 앱 네이티브 개발 동시 착수",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "힐링",
-          "생활",
-          "낚시"
-        ],
-        "genreLabel": "힐링 · 생활 · 낚시",
-        "subgenre": "",
-        "playMode": "SINGLE_OR_MULTI",
-        "playModeLabel": "싱글 · 멀티",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-20",
-        "status": "ACTIVE",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 19,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "cozy-island",
-          "name": "포근섬",
-          "description": "직접 노동→주민 자동화→병영/병사→기지 자동전투→전략자원 섬 점령으로 성장하는 3D 개척 전략 게임",
-          "genres": [
-            "섬개척",
-            "자동전투",
-            "전략",
-            "협동"
-          ],
-          "image": "assets/title-cozy-island.svg",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "Roblox Headless FAST_MVP"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/cozy-island/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": "",
-            "validationMode": "HEADLESS_FAST_MVP",
-            "studioRequired": false
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "설계 · 재평가 중",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "힐링",
-              "생활",
-              "낚시"
-            ],
-            "genreLabel": "힐링 · 생활 · 낚시",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-20",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 19,
-      "selectedPlatform": "ROBLOX",
-      "productionTier": 2,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island",
-        "UNITY": "unity-games/cozy-island"
-      },
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "ownerDirectDevelopment": true,
-      "updatedAt": "2026-09-21T21:49:19.137Z",
-      "playModes": [
-        "SINGLE",
-        "COOP"
-      ],
-      "multiplayerSupported": true,
-      "soloPlayable": true,
-      "fishingEnabled": false,
-      "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 1,
-      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
-      "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_MANUAL_ECONOMY_RESIDENT_AUTOMATION_BARRACKS_TROOPS_VISIBLE_AUTO_BATTLE_CONQUEST",
-      "releaseStrategy": "FAST_MVP",
-      "releasePrimaryPlatform": "ROBLOX",
-      "newFeatureExpansionFrozen": true,
-      "robloxValidationMode": "HEADLESS_FAST_MVP",
-      "robloxStudioExecutionAllowed": false,
-      "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json"
     },
     {
       "id": "egg-heist",
@@ -3062,7 +3234,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "egg-heist",
@@ -3153,7 +3325,7 @@
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3215,7 +3387,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -3306,7 +3478,7 @@
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID"
     },
     {
@@ -3360,7 +3532,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -3453,7 +3625,7 @@
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3514,7 +3686,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival2",
@@ -3605,7 +3777,7 @@
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3666,7 +3838,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -3757,7 +3929,7 @@
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "targetPlatform": "ROBLOX",
@@ -3768,7 +3940,6 @@
       "homepageTestCandidate": false,
       "homepageTestScore": null,
       "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
-      "productionTier": 2,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3840,7 +4011,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -3935,181 +4106,8 @@
           }
         }
       },
-      "catalogOrder": 25,
-      "selectedPlatform": "UNITY"
-    },
-    {
-      "id": "horror-escape-room",
-      "name": "심야 술래잡기",
-      "description": "실제 플레이어 몬스터 1명이 생존자를 얼리고 생존자는 서로 해동하며 버티는 직관형 몬스터 얼음땡",
-      "genre": [
-        "술래잡기",
-        "몬스터",
-        "비대칭 멀티"
-      ],
-      "image": "assets/page-bg-v4.webp",
-      "webPath": null,
-      "hasWebArchive": false,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_DEVELOPMENT",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_DEVELOPMENT",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-      "homepageStage": "주력 개발 · Roblox Headless FAST_MVP",
-      "homepageRecentWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
-      },
-      "playModes": [
-        "SINGLE_WITH_AI",
-        "ASYMMETRIC_MULTIPLAYER"
-      ],
-      "multiplayerSupported": true,
-      "soloPlayable": true,
-      "ownerDirectDevelopment": true,
       "catalogOrder": 26,
-      "updatedAt": "2026-09-22T04:18:00+09:00",
-      "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 3,
-      "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
-      "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
-      "releaseStrategy": "FAST_MVP",
-      "releasePrimaryPlatform": "ROBLOX",
-      "newFeatureExpansionFrozen": true,
-      "robloxValidationMode": "HEADLESS_FAST_MVP",
-      "robloxStudioExecutionAllowed": false,
-      "designBaselineSource": "design/horror-escape-room/2026-09-22/design-revised.json",
-      "robloxProjectPath": "roblox-games/horror-escape-room",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "술래잡기",
-          "몬스터",
-          "비대칭 멀티"
-        ],
-        "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
-        "subgenre": "",
-        "playMode": "COMPETITIVE",
-        "playModeLabel": "경쟁",
-        "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
-        "updatedAt": "2026-09-22T04:18:00+09:00",
-        "status": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 26,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "horror-escape-room",
-          "name": "심야 술래잡기",
-          "description": "실제 플레이어 몬스터 1명이 생존자를 얼리고 생존자는 서로 해동하며 버티는 직관형 몬스터 얼음땡",
-          "genres": [
-            "술래잡기",
-            "몬스터",
-            "비대칭 멀티"
-          ],
-          "image": "assets/page-bg-v4.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_DEVELOPMENT",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "OWNER_DIRECT_DEVELOPMENT",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_DIRECT_NATIVE_DEVELOPMENT",
-          "selectedPlatform": "ROBLOX",
-          "stage": "주력 개발 · Roblox Headless FAST_MVP"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": false,
-            "playable": false,
-            "purpose": ""
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": "roblox-games/horror-escape-room"
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "주력 개발 · Roblox Headless FAST_MVP",
-          "recentWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "술래잡기",
-              "몬스터",
-              "비대칭 멀티"
-            ],
-            "genreLabel": "술래잡기 · 몬스터 · 비대칭 멀티",
-            "subgenre": "",
-            "playMode": "COMPETITIVE",
-            "playModeLabel": "경쟁",
-            "latestWork": "몬스터 얼음땡 전면 전환 · 고전 공포 몬스터 수집 · 공정 역할선정 · AI 충원",
-            "updatedAt": "2026-09-22T04:18:00+09:00",
-            "status": "ACTIVE",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      }
+      "selectedPlatform": "UNITY"
     }
   ],
   "runtimeAuthority": "company-runtime",
