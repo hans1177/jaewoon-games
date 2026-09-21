@@ -127,6 +127,7 @@ test('canonical Unity runtime QA and regression use native ARM64 Android 16 inst
   assert.match(cloudBuildSource,/architectures': \['arm64-v8a'\]/);
   for(const source of [runtimeWorkflowSource, independentQaSource, regressionSource]){
     assert.match(source,/runs-on: ubuntu-24\.04-arm/);
+    assert.match(source,/ANDROID_SERIAL: 127\.0\.0\.1:5555/);
     assert.match(source,/redroid\/redroid:16\.0\.0_64only-latest/);
     assert.match(source,/redroid_modules_sha='86f0a99f00388122aa2fdfaddf5fd507c58aac66'/);
     assert.match(source,/redroid-ashmem-617\.patch/);
