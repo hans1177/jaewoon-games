@@ -9,6 +9,7 @@ on:
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-homepage-platform-exposure-sync.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-roblox-runtime.test.mjs'
@@ -160,7 +161,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git fetch --no-tags origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
           git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
@@ -307,7 +308,7 @@ jobs:
           merge-multiple: true
 
       - name: Fetch current company runtime
-        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
 
       - name: Revalidate shared worker context before Roblox persistence
         run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-persist.json
@@ -444,9 +445,15 @@ jobs:
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
+          git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
+          node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+          git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
+          git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
+          node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+          git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
+          git add development-queue.json homepage-platform-exposure.json homepage-platform-exposure.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: reconcile and bind Roblox DEVELOPMENT source [skip ci]'
@@ -471,7 +478,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-queue.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -608,7 +615,7 @@ jobs:
       - name: Fetch exact source and current company runtime
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git fetch --no-tags origin "${{ matrix.sourceRevision }}"
       - name: Install pinned Rojo package tool
         shell: bash
@@ -731,7 +738,7 @@ jobs:
           path: /tmp/roblox-technical-batch
           merge-multiple: true
       - name: Fetch current company runtime
-        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
       - name: Persist exact Roblox build package evidence
         if: needs.technical-plan.outputs.count != '0'
         env:
@@ -848,7 +855,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -908,7 +915,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
