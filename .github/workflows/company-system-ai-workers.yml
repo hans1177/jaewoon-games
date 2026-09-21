@@ -337,6 +337,25 @@ jobs:
           node tools/company-shared-context.mjs --output=/tmp/system-ai-context-after.json
           echo 'COMPANY_SYSTEM_AI_VERIFICATION=PASS'
 
+      - name: Attach Vibe marketing decision
+        id: marketing_decision
+        if: steps.implement.outcome == 'success' && steps.verify.outcome == 'success' && startsWith(matrix.taskId, 'marketing-')
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/marketing-responsible-file.txt
+          const fs=require('fs');
+          const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
+          const file=(task.responsibleFiles||[])[0];
+          if(!file)throw new Error('MARKETING_RESPONSIBLE_FILE_REQUIRED');
+          process.stdout.write(file);
+          NODE
+          file="$(cat /tmp/marketing-responsible-file.txt)"
+          node tools/company-growth-marketing-decision.mjs --file="$file" --output="$file" | tee /tmp/marketing-vibe-decision.log
+          node tools/company-growth-marketing-qa.mjs --file="$file" --game-id="$(node -p "require('/tmp/system-ai-task.json').gameId")"
+          git diff --check
+          echo 'MARKETING_VIBE_REVIEW_ATTACHED=YES'
+
       - name: Publish verified candidate PR
         id: publish
         if: steps.implement.outcome == 'success' && steps.verify.outcome == 'success'
@@ -352,7 +371,7 @@ jobs:
           test -n "$(git diff --cached --name-only)"
           git commit -m "system-ai: candidate ${TASK_ID}"
           git push origin "HEAD:${SYSTEM_AI_BRANCH}"
-          body="External free-AI system candidate.\n\nTask: ${TASK_ID}\n\nStatus: deterministic worker verification passed; primary AI review still required.\n\nDo not merge solely from worker self-assessment."
+          body="External free-AI/Vibe collaboration candidate.\n\nTask: ${TASK_ID}\n\nStatus: deterministic verification passed. Marketing tasks include a Vibe-side decision when applicable; Primary AI joint review remains required.\n\nDo not merge solely from worker self-assessment."
           pr_url="$(gh pr create --base main --head "$SYSTEM_AI_BRANCH" --title "system-ai: ${TASK_ID}" --body "$body" 2>/dev/null || gh pr view "$SYSTEM_AI_BRANCH" --json url -q .url)"
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "COMPANY_SYSTEM_AI_PR=$pr_url"
