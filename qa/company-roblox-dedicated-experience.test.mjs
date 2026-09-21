@@ -123,3 +123,16 @@ test('publishRobloxDedicatedPlace sends built place to exact dedicated target', 
   assert.equal(seen.url,'https://apis.roblox.com/universes/v1/12345/places/67890/versions?versionType=Published');
   assert.equal(seen.init.headers['x-api-key'],'key');
 });
+
+
+test('dedicated Roblox project titles match the published Experience titles',()=>{
+  const expected={
+    'cozy-island':'포근섬',
+    'daechung-rpg':'Whatever RPG',
+    'horror-escape-room':'심야 술래잡기',
+  };
+  for(const [gameId,title] of Object.entries(expected)){
+    const project=JSON.parse(fs.readFileSync(new URL(`../roblox-games/${gameId}/default.project.json`,import.meta.url),'utf8'));
+    assert.equal(project.name,title);
+  }
+});
