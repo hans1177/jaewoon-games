@@ -84,7 +84,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             acceptanceCriteria:['repair only assigned System AI infrastructure files','produce a real responsible-source mutation','rerun deterministic System AI worker QA','clear the repeated shared failure signature','release dependent cohort only after repair task is done','no central policy write','no self acceptance'],
             verificationCommands:uniq(rec.verificationPlan),
             dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
-            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'shared-signature-canary:YES','shared-signature:'+clean(rec.failureSignature),'cohort-size:'+ids.length,'learning-route:existing-vibe-learning-motor']),
+            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'shared-signature-canary:YES','shared-signature:'+clean(rec.failureSignature),'cohort-size:'+ids.length,'learning-route:existing-vibe-learning-motor','primary-ai-collaboration:REQUESTED','primary-ai-collaboration-task:'+repairTaskId]),
             supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
           });
           touched++;
@@ -125,7 +125,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
             acceptanceCriteria:['repair only assigned responsible files','produce a real responsible-source mutation before rerunning the same failed signature','unchanged-source revalidation is forbidden','rerun exact failed stage only after source mutation','preserve verified checkpoint and gameplay semantics','no central policy write','no self acceptance'],
             verificationCommands:uniq(rec.verificationPlan),
             dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
-            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-exact-stage:'+clean(rec.failureStage),'system-ai-scoped-game-repair:'+(gameSourceWrite?'YES':'NO'),'learning-route:existing-vibe-learning-motor']),
+            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-exact-stage:'+clean(rec.failureStage),'system-ai-scoped-game-repair:'+(gameSourceWrite?'YES':'NO'),'learning-route:existing-vibe-learning-motor','primary-ai-collaboration:REQUESTED','primary-ai-collaboration-task:'+taskId]),
             supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
           });
           touched++;
