@@ -40,3 +40,19 @@ test('dedicated Roblox publication is wired into status and homepage propagation
   assert.match(homepage,/github\.event_name.*pull_request/);
   assert.match(homepage,/HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED_FRESH/);
 });
+
+
+test('visible game titles stay aligned with Roblox project titles',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const expected={
+    'cozy-island':'포근섬',
+    'daechung-rpg':'Whatever RPG',
+    'horror-escape-room':'심야 술래잡기'
+  };
+  for(const [id,title] of Object.entries(expected)){
+    const project=JSON.parse(fs.readFileSync(`roblox-games/${id}/default.project.json`,'utf8'));
+    assert.equal(project.name,title);
+    const game=(catalog.games||[]).find(row=>row.id===id);
+    if(game)assert.equal(game.name,title);
+  }
+});
