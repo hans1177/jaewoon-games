@@ -208,7 +208,7 @@ jobs:
       - name: Validate Vibe presentation pipeline and runtime contract
         run: |
           set -euo pipefail
-          node --test qa/company-development-web-runtime.test.mjs
+          node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs

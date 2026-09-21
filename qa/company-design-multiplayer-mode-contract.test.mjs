@@ -6,6 +6,7 @@ const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
 const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const robloxQa=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+const headlessQa=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
 const modes=['SINGLE','COOP','COMPETITIVE','HYBRID'];
 
 test('central policy decides multiplayer mode during game design',()=>{
@@ -31,10 +32,11 @@ test('design baseline fails closed when multiplayer mode is absent or invalid',(
   assert.match(gate,/designMultiplayer:\{required:/);
 });
 
-test('Roblox final review consumes the same design modes without weakening later QA',()=>{
-  assert.match(robloxQa,/new Set\(\['SINGLE','COOP','COMPETITIVE','HYBRID'\]\)/);
-  assert.match(robloxQa,/design\?\.content\?\.multiplayerMode/);
-  assert.match(robloxQa,/item\.robloxMultiplayerQaPassed===true/);
-  assert.match(robloxQa,/ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING/);
-  assert.match(robloxQa,/ROBLOX_MULTIPLAYER_QA_REQUIRED/);
+test('Roblox HEADLESS_FAST_MVP preserves multiplayer design semantics without Studio QA',()=>{
+  assert.match(robloxQa,/HEADLESS_FAST_MVP/);
+  assert.match(robloxQa,/ROBLOX_STUDIO_QA=REMOVED/);
+  assert.match(headlessQa,/function multiplayerRequired\(config\)/);
+  assert.match(headlessQa,/checks\.multiplayerSync=!multi\|\|\(\/FireAllClients/);
+  assert.match(headlessQa,/multiplayerApplicable:multi/);
+  assert.match(headlessQa,/multiplayerStateSyncPassed:checks\.multiplayerSync/);
 });
