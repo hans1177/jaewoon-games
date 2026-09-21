@@ -51,6 +51,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.source_commit || github.sha }}
           fetch-depth: 2
 
       - name: Setup Node
