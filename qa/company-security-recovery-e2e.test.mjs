@@ -80,7 +80,7 @@ function runToReview(){
     outcome:'PASS',
     candidateBranch:'system-ai/candidate/security-run-e2e/test',
     pullRequestUrl:'https://github.com/hans1177/jaewoon-games/pull/9994',
-    evidence:['actions-run:test','verification:success','publish:success','worker-self-acceptance:NO','primary-ai-review-required:YES']
+    evidence:['actions-run:test','verification:success','publish:success','worker-self-acceptance:NO','primary-ai-review-required:YES','changed-file:tools/security-e2e-target.mjs','source-mutation-sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']
   };
   const fanInSystem=applySystemAiResults(reserved.queue,[resultRow]);
   const fanInRecovery=applySecurityRecoverySystemAiFanIn(dispatched.recovery,fanInSystem,[resultRow]);
