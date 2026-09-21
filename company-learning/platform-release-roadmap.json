@@ -11314,5 +11314,127 @@
       "platformTasksMayDispatchToExternalAi": true,
       "externalAiCapacityShouldNotIdleWhileEligibleDisjointDevelopmentWorkExists": true
     }
+  },
+  "departmentDrivenPortfolioDevelopmentControl": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "purpose": "USE_DEPARTMENT_EVIDENCE_TO_PRIORITIZE_CONTINUE_REPAIR_REDESIGN_PAUSE_OR_RETIRE_REVIEW_GAME_DEVELOPMENT_WITHOUT_SINGLE_DEPARTMENT_VETO",
+    "decisionAuthority": "PRIMARY_AI_AND_VIBE_JOINT",
+    "ownerApprovalGate": false,
+    "singleDepartmentVetoForbidden": true,
+    "automaticGameDeletionForbidden": true,
+    "evidenceDepartments": {
+      "planningGrowthMarketing": [
+        "PLAYER_VALUE",
+        "DIFFERENTIATION",
+        "DISCOVERY",
+        "ACTIVATION",
+        "RETENTION",
+        "UPDATE_EXTENSIBILITY"
+      ],
+      "development": [
+        "IMPLEMENTATION_PROGRESS",
+        "TECHNICAL_BOTTLENECK",
+        "PLATFORM_PORTABILITY",
+        "WORK_REUSE",
+        "REPEATED_FAILURE"
+      ],
+      "graphics": [
+        "VISUAL_IDENTITY",
+        "ASSET_REUSE",
+        "PRESENTATION_GAP",
+        "NATIVE_PRESENTATION_FEASIBILITY"
+      ],
+      "audio": [
+        "MUSIC_IDENTITY",
+        "SFX_EVENT_BINDING",
+        "AUDIO_RUNTIME_READINESS"
+      ],
+      "qa": [
+        "FATAL_RUNTIME",
+        "REGRESSION",
+        "MULTIPLAYER",
+        "SAVE",
+        "PLATFORM_RUNTIME",
+        "EVIDENCE_COMPLETENESS"
+      ],
+      "balance": [
+        "CORE_LOOP_STABILITY",
+        "PROGRESSION_BLOCK",
+        "ECONOMY_RISK",
+        "REWARD_CLARITY"
+      ]
+    },
+    "decisions": {
+      "ACCELERATE": {
+        "effect": "RAISE_GAME_TASK_PRIORITY_AND_FILL_FREE_CAPACITY_FIRST"
+      },
+      "CONTINUE": {
+        "effect": "KEEP_NORMAL_DEVELOPMENT_FLOW"
+      },
+      "FOCUSED_REPAIR": {
+        "effect": "RAISE_REPAIR_PRIORITY_AND_ROUTE_BOTTLENECK_EVIDENCE_TO_RESPONSIBLE_DEPARTMENT"
+      },
+      "REDESIGN": {
+        "effect": "STOP_REPEATING_SAME_IMPLEMENTATION_AND_ROUTE_CORE_LOOP_OR_IDENTITY_REDESIGN_BEFORE_RESUME"
+      },
+      "PAUSE": {
+        "effect": "STOP_NEW_PRODUCTION_ASSIGNMENTS_FOR_GAME_AND_FREE_WORKERS_FOR_HIGHER_VALUE_WORK"
+      },
+      "RETIRE_REVIEW": {
+        "effect": "STOP_NEW_PRODUCTION_ASSIGNMENTS_AND_REQUIRE_STRUCTURAL_EVIDENCE_REVIEW_BEFORE_RETIRE_OR_REBUILD"
+      }
+    },
+    "deterministicRules": [
+      "PERMANENT_REMOVAL_ALWAYS_OVERRIDES_PORTFOLIO_CONTROL",
+      "RELEASE_CONFIRMED_WITHOUT_ACTIVE_CRITICAL_BLOCKER_DEFAULTS_CONTINUE",
+      "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER_DEFAULTS_FOCUSED_REPAIR",
+      "SAME_CORE_FUN_OR_DESIGN_FAILURE_AFTER_VERIFIED_REPAIR_CYCLES_ESCALATES_REDESIGN",
+      "REPEATED_REDESIGN_WITHOUT_VERIFIED_PROGRESS_ESCALATES_PAUSE",
+      "RETIRE_REVIEW_REQUIRES_REPEATED_STRUCTURAL_FAILURE_AFTER_REPAIR_AND_REDESIGN_EVIDENCE",
+      "MISSING_MARKETING_OR_ANALYTICS_DATA_IS_UNVERIFIED_NOT_NEGATIVE",
+      "LEARNING_VALUE_CAN_KEEP_A_GAME_IN_LIMITED_EXPERIMENT_INSTEAD_OF_PAUSE_WHEN_NEW_REUSABLE_CAPABILITY_IS_BEING_PROVEN"
+    ],
+    "investmentVelocity": {
+      "enabled": true,
+      "principle": "TRACK_VERIFIED_PROGRESS_PER_WORK_EPISODE_NOT_RAW_AI_CALL_COUNT",
+      "positiveSignals": [
+        "GATE_ADVANCEMENT",
+        "BLOCKER_REMOVED",
+        "NEW_NATIVE_RUNTIME_EVIDENCE",
+        "VERIFIED_PRESENTATION_PASS",
+        "VERIFIED_PLAYER_VALUE_EVIDENCE"
+      ],
+      "negativeSignals": [
+        "SAME_BLOCKER_REPEATED",
+        "RETRY_WITHOUT_NEW_EVIDENCE",
+        "NO_GATE_ADVANCEMENT",
+        "REPEATED_REDESIGN_FAILURE"
+      ]
+    },
+    "pauseResume": {
+      "pauseIsTaskSchedulingStateNotDeletion": true,
+      "runningTaskReceivesStopRequest": true,
+      "queuedProductionTaskMayBeCancelledWithPortfolioPauseEvidence": true,
+      "automaticResumeWhenDecisionReturnsTo": [
+        "ACCELERATE",
+        "CONTINUE",
+        "FOCUSED_REPAIR",
+        "REDESIGN"
+      ],
+      "preserved": [
+        "SOURCE",
+        "SAVE_MEANING",
+        "VERIFIED_EVIDENCE",
+        "LEARNING",
+        "RELEASE_HISTORY"
+      ]
+    },
+    "learning": {
+      "everyDecisionAndOutcomeFeedsExistingVibeLearning": true,
+      "compareDecisionVsObservedProgress": true,
+      "noNewShadowTrainer": true
+    }
   }
 }
