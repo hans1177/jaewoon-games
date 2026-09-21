@@ -177,12 +177,32 @@ if(mode==='result'){
     }else{
       const build=JSON.parse(fs.readFileSync(buildFile,'utf8'));
       const qa=JSON.parse(fs.readFileSync(qaFile,'utf8'));
+      const qaMarkers=Array.isArray(qa?.markers)?qa.markers.map(String):[];
+      const coreFunMarkers=Array.isArray(qa?.coreFun?.markers)?qa.coreFun.markers.map(String):[];
+      const realMobileEvidence=qa?.mobile?.pass===true
+        &&qa?.mobile?.actualBrowserTouchDispatched===true
+        &&qa?.mobile?.realGameTouchHandlerObserved===true
+        &&qa?.input?.mobileInputObserved===true
+        &&String(qa?.input?.qaMode||'').includes('REAL_BROWSER_TOUCH')
+        &&Number.isFinite(Number(qa?.mobile?.target?.x))
+        &&Number.isFinite(Number(qa?.mobile?.target?.y))
+        &&Number(qa.mobile.target.x)>0&&Number(qa.mobile.target.x)<1
+        &&Number(qa.mobile.target.y)>0&&Number(qa.mobile.target.y)<1
+        &&qaMarkers.some(marker=>marker.includes(' MOBILE_TARGET ')&&marker.includes('role=action'))
+        &&qaMarkers.some(marker=>marker.includes(' MOBILE_INPUT ')&&marker.includes('role=action')&&marker.includes('status=PASS'));
+      const realCoreFunEvidence=qa?.coreFun?.pass===true
+        &&Number(qa?.coreFun?.markerCount||0)>0
+        &&coreFunMarkers.some(marker=>marker.includes(' CORE_FUN ')&&marker.includes('status=PASS'))
+        &&qaMarkers.some(marker=>marker.includes(' CORE_FUN ')&&marker.includes('status=PASS'))
+        &&qa?.gameplay?.progressObserved===true
+        &&qa?.gameplay?.coreActionObserved===true;
       const gate={
         boot:build?.bootSmoke==='PASS'&&qa?.boot?.pass===true,
-        input:qa?.input?.pass===true,
-        gameplay:qa?.gameplay?.pass===true,
-        coreFun:qa?.coreFun?.pass===true,
-        mobile:qa?.mobile?.pass===true,
+        input:qa?.input?.pass===true&&realMobileEvidence,
+        gameplay:qa?.gameplay?.pass===true&&qa?.gameplay?.gameplayStartObserved===true&&qa?.gameplay?.safeReturnOrResetObserved===true,
+        coreFun:realCoreFunEvidence,
+        mobile:realMobileEvidence,
+        saveRestore:qa?.saveRestore?.pass===true,
         performance:qa?.performance?.pass===true,
         noCriticalRuntimeError:qa?.noCriticalRuntimeError===true,
       };
