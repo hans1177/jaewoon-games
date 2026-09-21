@@ -7,6 +7,7 @@ import {
   csrfFetch,
   createRobloxDedicatedExperience,
   configureRobloxExperience,
+  introspectRobloxApiKey,
   ensureRobloxExperiencePrivate,
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
@@ -65,6 +66,28 @@ test('configureRobloxExperience uses Cloud v2 with API key and keeps target priv
   assert.match(seen.url,/cloud\/v2\/universes\/12345\?updateMask=displayName,description,visibility$/);
   assert.equal(seen.init.headers['x-api-key'],'key');
   assert.deepEqual(JSON.parse(seen.init.body),{displayName:'Whatever RPG',description:'private',visibility:'PRIVATE'});
+});
+
+test('introspectRobloxApiKey exposes only safe scope metadata', async()=>{
+  const fetchImpl=async(url,init={})=>{
+    assert.equal(url,'https://apis.roblox.com/api-keys/v1/introspect');
+    assert.deepEqual(JSON.parse(init.body),{apiKey:'key'});
+    return new Response(JSON.stringify({
+      enabled:true,
+      expired:false,
+      scopes:[{name:'universe-places',operations:['write'],universeIds:['*']}],
+    }),{status:200});
+  };
+  const result=await introspectRobloxApiKey({apiKey:'key',fetchImpl});
+  assert.equal(result.enabled,true);
+  assert.equal(result.expired,false);
+  assert.deepEqual(result.scopes,[{
+    name:'universe-places',
+    operations:['write'],
+    universeIds:['*'],
+    userIds:[],
+    groupIds:[],
+  }]);
 });
 
 test('ensureRobloxExperiencePrivate falls back from Open Cloud to cookie and verifies inactive', async()=>{
