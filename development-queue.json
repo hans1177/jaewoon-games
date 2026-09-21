@@ -346,8 +346,8 @@
       "homepageTestVerdict": "UNITY_WEB_GATE_PASS",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/daechung-rpg",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "DIRECT_PLAYABLE_SOURCE_READY_RUNTIME_QA_PENDING",
+      "currentStep": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
+      "canonicalState": "FAST_MVP_RUNTIME_QA",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -375,10 +375,13 @@
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
         "roblox-runtime-evidence-pending",
-        "roblox-multiplayer-qa-pending"
+        "roblox-mobile-qa-pending",
+        "roblox-multiplayer-qa-pending",
+        "save-rejoin-evidence-pending",
+        "regression-evidence-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T14:19:07.831Z",
-      "updatedAt": "2026-09-22T02:35:00+09:00",
+      "updatedAt": "2026-09-22T02:46:00+09:00",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -504,9 +507,13 @@
       "minimumParticipantsForRequiredQa": 2,
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "robloxSourceCommit": "fada561a30cdbe26637970c614cc53a60783df76",
+      "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
       "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_STORY_NPC_COMPANION_RECRUITMENT_4_MEMBER_PARTY_COMBAT_BOSS_HIDDEN_COMPANIONS"
+      "directImplementationState": "PLAYABLE_STORY_NPC_COMPANION_RECRUITMENT_4_MEMBER_PARTY_COMBAT_BOSS_HIDDEN_COMPANIONS",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "unityParallelNotBlockingRobloxMvp": true,
+      "newFeatureExpansionFrozen": true
     },
     {
       "gameId": "monster-adventure",
@@ -2375,8 +2382,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "DIRECT_PLAYABLE_SOURCE_READY_RUNTIME_QA_PENDING",
+      "currentStep": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
+      "canonicalState": "FAST_MVP_RUNTIME_QA",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -2385,8 +2392,8 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T02:35:00+09:00",
-      "robloxSourceCommit": "fada561a30cdbe26637970c614cc53a60783df76",
+      "updatedAt": "2026-09-22T02:46:00+09:00",
+      "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
       "robloxSourceBootstrapPassedAt": "2026-09-21T15:46:19.161Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
@@ -2394,7 +2401,10 @@
       "robloxRuntimePassed": false,
       "routingBlockers": [
         "roblox-runtime-evidence-pending",
-        "roblox-multiplayer-qa-pending"
+        "roblox-mobile-qa-pending",
+        "roblox-multiplayer-qa-pending",
+        "save-rejoin-evidence-pending",
+        "regression-evidence-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -2469,7 +2479,11 @@
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 1,
       "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_MANUAL_ECONOMY_RESIDENT_AUTOMATION_BARRACKS_TROOPS_VISIBLE_AUTO_BATTLE_CONQUEST"
+      "directImplementationState": "PLAYABLE_MANUAL_ECONOMY_RESIDENT_AUTOMATION_BARRACKS_TROOPS_VISIBLE_AUTO_BATTLE_CONQUEST",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "unityParallelNotBlockingRobloxMvp": true,
+      "newFeatureExpansionFrozen": true
     },
     {
       "gameId": "territory-war",
@@ -2650,23 +2664,30 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "DIRECT_PLAYABLE_SOURCE_READY_RUNTIME_QA_PENDING",
+      "currentStep": "ROBLOX_RUNTIME_VALIDATION_FAST_TRACK",
+      "canonicalState": "FAST_MVP_RUNTIME_QA",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
         "roblox-runtime-evidence-pending",
-        "roblox-multiplayer-qa-pending"
+        "roblox-mobile-qa-pending",
+        "roblox-multiplayer-qa-pending",
+        "save-rejoin-evidence-pending",
+        "regression-evidence-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T02:35:00+09:00",
+      "updatedAt": "2026-09-22T02:46:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
-      "robloxSourceCommit": "fada561a30cdbe26637970c614cc53a60783df76",
+      "robloxSourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
       "visualArtPass": "STYLIZED_ROBLOX_V1",
-      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL"
+      "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
+      "releaseStrategy": "FAST_MVP",
+      "releasePrimaryPlatform": "ROBLOX",
+      "unityParallelNotBlockingRobloxMvp": true,
+      "newFeatureExpansionFrozen": true
     }
   ],
   "updatedAt": "2026-09-22T01:22:00+09:00",
@@ -2699,5 +2720,27 @@
     "deferredGameIds": [
       "territory-war"
     ]
+  },
+  "fastLaunch": {
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "strategy": "FAST_MVP",
+    "primaryPlatform": "ROBLOX",
+    "gameIds": [
+      "cozy-island",
+      "daechung-rpg",
+      "horror-escape-room"
+    ],
+    "newFeatureExpansionFrozen": true,
+    "unityParallelNotBlockingRobloxMvp": true,
+    "releaseGateOrder": [
+      "ROBLOX_RUNTIME",
+      "MOBILE_CONTROLS",
+      "MULTIPLAYER",
+      "SAVE_REJOIN",
+      "REGRESSION",
+      "PRIVATE_RELEASE_CANDIDATE"
+    ],
+    "sourceCommit": "9be8aa94e94987d5b0b038fe6930cf3cffe19548",
+    "updatedAt": "2026-09-22T02:46:00+09:00"
   }
 }
