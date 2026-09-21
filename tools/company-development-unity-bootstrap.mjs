@@ -25,9 +25,6 @@ if(String(unityPlatformProfile.platform||'').trim().toUpperCase()!=='UNITY')thro
 for(const field of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
   if(String(unityPlatformProfile[field]||'').trim().length<8)throw new Error('UNITY_PLATFORM_PROFILE_FIELD_REQUIRED:'+field);
 }
-for(const field of ['inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence']){
-  if(String(platformDesign[field]||'').trim().length<8)throw new Error('UNITY_PLATFORM_DESIGN_FIELD_REQUIRED:'+field);
-}
 const coreLoop=Array.isArray(design.coreLoop)?design.coreLoop.map(v=>String(v).trim()).filter(Boolean).slice(0,5):[];
 const identity=String(design.identity||gameName).replace(/\s+/g,' ').trim();
 const category=
