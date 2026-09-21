@@ -974,7 +974,7 @@
       "sourceRootBootstrapRequired": false,
       "routingBlockers": [],
       "webValidationLastAttemptAt": "2026-09-21T00:29:52.485Z",
-      "updatedAt": "2026-09-21T01:53:00.000Z",
+      "updatedAt": "2026-09-21T02:02:00.000Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -998,10 +998,48 @@
         "UNITY",
         "ROBLOX"
       ],
-      "ownerFocusConcurrentPlatformDevelopment": true
+      "ownerFocusConcurrentPlatformDevelopment": true,
+      "webPlatformHandoff": {
+        "version": 1,
+        "stage": "WEB_DEVELOPMENT_BASELINE_READY",
+        "producer": "OWNER_FIRST_GATE_DIRECT_RUNTIME_BIND",
+        "gameId": "fantasy-survival",
+        "sourcePath": "web-games/fantasy-survival",
+        "evidencePath": "",
+        "baselineSource": "design/fantasy-survival/2026-09-20/design-revised.json",
+        "sourceIndexSha256": "ded73caccd7b5c42dd87fc9d3cd49236f45deddf3f4b6e1143c5b1a454e0142b",
+        "designBaselineSha256": "c7f0520132cf7ae848daf3646f87e36687490d5b6e224a29d6c6db945f9fda66",
+        "validationSchemaVersion": 15,
+        "strictScore": 0,
+        "promotionRevalidationPassed": false,
+        "validationPassedAt": "2026-09-21T01:53:00.000Z",
+        "firstGatePassed": true,
+        "secondGateRequired": true,
+        "secondGateCriteriaAuthority": "OWNER_DIRECTIVE",
+        "carryForward": [
+          "core-loop",
+          "gameplay-state-model",
+          "progression-model",
+          "input-intent",
+          "ui-flow",
+          "save-meaning",
+          "content-structure",
+          "balance-intent",
+          "verified-learning-context",
+          "presentation-contract"
+        ],
+        "presentationContract": null,
+        "nativeRuntimePassTransferred": false,
+        "authority": "OWNER_DIRECTIVE_2026-09-21"
+      },
+      "platformExecutionRequestedAt": "2026-09-21T02:02:00.000Z",
+      "platformExecutionRequested": [
+        "UNITY",
+        "ROBLOX"
+      ]
     }
   ],
-  "updatedAt": "2026-09-21T02:13:29.651Z",
+  "updatedAt": "2026-09-21T02:02:00.000Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
