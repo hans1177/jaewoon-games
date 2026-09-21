@@ -176,15 +176,15 @@ function buildFocus(catalog,status){
   const rows=[...releaseRows(catalog,status),...webPublishedRows(catalog),...developmentRows(catalog,status)].filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
   const row=rows[0];
   if(!row)return;
-  const game=mergeGame(row),web=game.webPath,statusLabel=classState(row),genre=genreState(row),play=playState(row);
+  const game=mergeGame(row),web=game.webPath;
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><div class="homeFocusMeta"><span>${esc(statusLabel)}</span><span>${esc(genre)}</span><span>${esc(play)}</span></div><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${web?`<a class="homeFocusBtn" href="${esc(web)}">지금 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${web?`<a class="homeFocusBtn" href="${esc(web)}">지금 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
-  const game=mergeGame(row),web=game.webPath,platform=platformHref(game),p=normalizePlatform(displayPlatform(game)),statusLabel=classState(row);
+  const game=mergeGame(row),web=game.webPath,platform=platformHref(game);
   const primary=web?`<a class="foldGameBtn" href="${esc(web)}">플레이</a>`:platform?`<a class="foldGameBtn platformAction" href="${esc(platform)}">열기</a>`:'<span class="foldGameBtn off">준비 중</span>';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span><span class="foldBadge platform">${esc(platformLabel(displayPlatform(game)))}</span></div><p>${esc(game.description)}</p><div class="foldGameActions">${primary}</div></div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-web-path="${esc(web)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameActions">${primary}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
