@@ -91,13 +91,13 @@ export function resolveSelectedPlatform(...sources){
 }
 
 export function concurrentTargetPlatforms(item={}){
-  const explicit=(Array.isArray(item.concurrentTargetPlatforms)?item.concurrentTargetPlatforms:[])
-    .map(normalizeSelectedPlatform).filter(Boolean);
-  if(explicit.length)return Object.freeze([...new Set(explicit)]);
   const production=upper(item.productionClass);
   if(['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(production))return DEFAULT_CONCURRENT_PLATFORMS;
+  const explicit=(Array.isArray(item.concurrentTargetPlatforms)?item.concurrentTargetPlatforms:[])
+    .map(normalizeSelectedPlatform).filter(platform=>DEFAULT_CONCURRENT_PLATFORMS.includes(platform));
+  if(explicit.length)return Object.freeze([...new Set(explicit)]);
   const selected=resolveSelectedPlatform(item);
-  return Object.freeze(selected?[selected]:[]);
+  return Object.freeze(selected&&DEFAULT_CONCURRENT_PLATFORMS.includes(selected)?[selected]:[]);
 }
 
 export function platformDevelopmentEligible(item={},platform=''){
