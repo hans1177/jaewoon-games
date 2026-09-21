@@ -12077,5 +12077,40 @@
       "singleSuccessCannotProveGeneralization": true,
       "objective": "REWEIGHT_KNOWLEDGE_BY_VERIFIED_CAUSAL_USEFULNESS_NOT_STORAGE_VOLUME"
     }
+  },
+  "externalAiLearningPipeline": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "enabled": true,
+    "candidateFeeder": "tools/company-system-ai-external-learning-feed.mjs",
+    "candidateSource": "VERIFIED_SUPERVISED_FREE_SYSTEM_AI_OUTCOMES",
+    "rawModelOutputStored": false,
+    "rawOutputSha256Only": true,
+    "requiredOutcome": [
+      "PRIMARY_AI_ACCEPTED",
+      "PRIMARY_AI_VIBE_JOINT_ACCEPTED"
+    ],
+    "deterministicVerificationRequired": true,
+    "independentVerificationRequired": true,
+    "distiller": "tools/vibe2-external-ai-distillation.mjs",
+    "distilledStore": ".vibe2/external-ai-distilled-knowledge.json",
+    "directSourceWrite": false,
+    "directProductionPass": false,
+    "directMasteryCredit": false,
+    "directTrainingSample": false,
+    "advisoryOnlyUntilFreshProjectVerification": true,
+    "retrieval": "tools/vibe2-learning-motor.mjs::retrieveUnifiedLearning",
+    "effectivenessFeedback": "learningRetrievalRouting.effectivenessReweighting",
+    "sequence": [
+      "FREE_SYSTEM_AI_EXECUTE",
+      "DETERMINISTIC_VERIFY",
+      "SUPERVISOR_OR_JOINT_ACCEPT",
+      "BUILD_RAW_FREE_EXTERNAL_LEARNING_CANDIDATE",
+      "INDEPENDENT_EVIDENCE_GATE",
+      "DISTILL_GENERALIZED_PATTERN",
+      "ADVISORY_RETRIEVAL",
+      "FRESH_TASK_QA",
+      "VERIFIED_EFFECTIVENESS_REWEIGHT"
+    ]
   }
 }
