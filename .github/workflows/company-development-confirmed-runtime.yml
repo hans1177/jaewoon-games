@@ -137,6 +137,7 @@ jobs:
           const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
           const seedState=JSON.parse(fs.readFileSync('/tmp/game-seed-state.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerResetIds=new Set(Array.isArray(seedState?.ownerAllGamesDesignReset?.gameIds)?seedState.ownerAllGamesDesignReset.gameIds.map(String):[]);
           const ownerResetAt=Date.parse(seedState?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetPassIds=new Set((seedState.seeds||[]).filter(seed=>{
@@ -1076,10 +1077,11 @@ jobs:
             if(!canonicalGameIds.has(String(item.gameId||'').trim()))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
+            const firstGatePass=item.webFirstGatePassed===true&&item.webSecondGateRequired===true&&String(item.webSecondGateCriteriaAuthority||'').toUpperCase()==='OWNER_DIRECTIVE';
             const evidenceGate=promotionEvidence(item);
             const presentationReady=evidenceGate.presentationContract?.ready===true;
-            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true&&presentationReady;
-            if(!formalPass||!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true)){
+            const formalPass=firstGatePass||(item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true&&presentationReady);
+            if(!formalPass||(!firstGatePass&&!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))){
               if(item.formalImplementationPassed===true&&!evidenceGate.pass){promotionRejected++;console.log(`WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(evidenceGate.blockers||[]).join('|')}`);}
               if(item.formalImplementationPassed===true&&evidenceGate.pass===true&&!presentationReady){promotionRejected++;console.log(`WEB_PRESENTATION_HANDOFF_REJECTED=${item.gameId}:WEB_HANDOFF_PRESENTATION_READY_REQUIRED`);}
               continue;
@@ -1106,24 +1108,28 @@ jobs:
             const targetSourcePath=adapter&&oldTarget.startsWith(adapter.sourceRoot)?oldTarget:canonicalTarget;
             const baseline=String(item.designBaselineSource||'');
             const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
+            const webSourcePath=String(item.webSourcePath||`web-games/${item.gameId}`).replace(/^\/+|\/+$/g,'');
             const webPlatformHandoff={
               version:1,
               stage:'WEB_DEVELOPMENT_BASELINE_READY',
               producer:'.github/workflows/company-development-confirmed-runtime.yml',
               gameId:item.gameId,
-              sourcePath:String(item.webSourcePath||`web-games/${item.gameId}`).replace(/^\/+|\/+$/g,''),
-              evidencePath:String(item.webValidationEvidencePath||''),
+              sourcePath:webSourcePath,
+              evidencePath:firstGatePass?'':String(item.webValidationEvidencePath||''),
               baselineSource:baseline,
-              sourceIndexSha256:String(item.webSourceIndexSha256||''),
-              designBaselineSha256:String(item.webDesignBaselineSha256||''),
-              validationSchemaVersion:Number(item.webValidationSchemaVersion||0),
-              strictScore:Number(item.webStrictScore??item.strictImplementationScore),
-              promotionRevalidationPassed:item.webPromotionRevalidationPassed===true,
-              validationPassedAt:item.webValidationPassedAt||null,
+              sourceIndexSha256:firstGatePass?sha256Text(showText(`${webSourcePath}/index.html`)):String(item.webSourceIndexSha256||''),
+              designBaselineSha256:firstGatePass?sha256Text(showText(baseline)):String(item.webDesignBaselineSha256||''),
+              validationSchemaVersion:firstGatePass?WEB_VALIDATION_SCHEMA_VERSION:Number(item.webValidationSchemaVersion||0),
+              strictScore:firstGatePass?Number(item.webFirstGateScore||0):Number(item.webStrictScore??item.strictImplementationScore),
+              promotionRevalidationPassed:firstGatePass?false:item.webPromotionRevalidationPassed===true,
+              validationPassedAt:firstGatePass?(item.webFirstGatePassedAt||null):(item.webValidationPassedAt||null),
+              firstGatePassed:firstGatePass,
+              secondGateRequired:firstGatePass?true:item.webSecondGateRequired===true,
+              secondGateCriteriaAuthority:firstGatePass?'OWNER_DIRECTIVE':String(item.webSecondGateCriteriaAuthority||''),
               carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context','presentation-contract'],
-              presentationContract:evidenceGate.presentationContract,
+              presentationContract:firstGatePass?null:evidenceGate.presentationContract,
               nativeRuntimePassTransferred:false,
-              authority:'MACHINE_EXECUTION_CONTRACT'
+              authority:firstGatePass?'OWNER_DIRECTIVE_2026-09-21':'MACHINE_EXECUTION_CONTRACT'
             };
             const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
             if(adapter&&adapter.existingExecutionPath==null){
@@ -1167,7 +1173,8 @@ jobs:
           console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
           console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);
           console.log('WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED');
-          console.log('FORMAL_IMPLEMENTATION_GATE=90');
+          console.log('PLATFORM_ADMISSION_GATE=WEB_FIRST_GATE_OR_FORMAL_90');
+          console.log('WEB_SECOND_GATE=OWNER_INSTRUCTION_CRITERIA_SEPARATE');
           console.log('CHANGE_DETECTION=PASS');
           console.log('CHEAP_PRECHECK=PASS_OR_BLOCK_RECORDED');
           NODE
