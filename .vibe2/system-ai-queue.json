@@ -955,7 +955,8 @@
         "node --test qa/company-web-real-game-regression.test.mjs"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -967,7 +968,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -994,11 +995,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
@@ -1030,7 +1034,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/ant-simulator/latest.json --game-id=ant-simulator"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1042,7 +1047,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1065,11 +1070,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-amusement-tycoon-pre-release-v1",
@@ -1101,7 +1109,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/amusement-tycoon/latest.json --game-id=amusement-tycoon"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1113,7 +1122,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1136,11 +1145,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-bug-defense-pre-release-v1",
@@ -1172,7 +1184,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/bug-defense/latest.json --game-id=bug-defense"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1184,7 +1197,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1207,11 +1220,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-daechung-rpg-pre-release-v1",
@@ -1243,7 +1259,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/daechung-rpg/latest.json --game-id=daechung-rpg"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1255,7 +1272,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1278,11 +1295,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-line-defense-pre-release-v1",
@@ -1314,7 +1334,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/line-defense/latest.json --game-id=line-defense"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1326,7 +1347,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1349,11 +1370,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-village-dungeons-pre-release-v1",
@@ -1385,7 +1409,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/village-dungeons/latest.json --game-id=village-dungeons"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1397,7 +1422,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1420,11 +1445,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-fantasy-survival-pre-release-v1",
@@ -1456,7 +1484,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/fantasy-survival/latest.json --game-id=fantasy-survival"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1468,7 +1497,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1491,11 +1520,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-monster-adventure-pre-release-v1",
@@ -1527,7 +1559,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/monster-adventure/latest.json --game-id=monster-adventure"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1539,7 +1572,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1562,11 +1595,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-seed-action-survival-rogu-echoes-of-the-lost-star-pre-release-v1",
@@ -1598,7 +1634,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-action-survival-rogu-echoes-of-the-lost-star/latest.json --game-id=seed-action-survival-rogu-echoes-of-the-lost-star"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1610,7 +1647,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1633,11 +1670,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-seed-casual-realm-weaver-pre-release-v1",
@@ -1669,7 +1709,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-casual-realm-weaver/latest.json --game-id=seed-casual-realm-weaver"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1681,7 +1722,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1704,11 +1745,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-seed-idle-growth-rpg-crystal-bloom-pre-release-v1",
@@ -1740,7 +1784,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-idle-growth-rpg-crystal-bloom/latest.json --game-id=seed-idle-growth-rpg-crystal-bloom"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1752,7 +1797,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1775,11 +1820,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-seed-puzzle-chromatic-cascade-pre-release-v1",
@@ -1811,7 +1859,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-puzzle-chromatic-cascade/latest.json --game-id=seed-puzzle-chromatic-cascade"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1823,7 +1872,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1846,11 +1895,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-seed-single-defense-strat-celestial-bastion-pre-release-v1",
@@ -1882,7 +1934,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-single-defense-strat-celestial-bastion/latest.json --game-id=seed-single-defense-strat-celestial-bastion"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1894,7 +1947,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1917,11 +1970,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-seed-story-complete-rpg-chronicles-of-eldoria-pre-release-v1",
@@ -1953,7 +2009,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-story-complete-rpg-chronicles-of-eldoria/latest.json --game-id=seed-story-complete-rpg-chronicles-of-eldoria"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -1965,7 +2022,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -1988,11 +2045,14 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "marketing-survival-pre-release-v1",
@@ -2024,7 +2084,8 @@
         "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/survival/latest.json --game-id=survival"
       ],
       "dependencies": [
-        "recovery-recovery-a84ac1939c7d23662341"
+        "recovery-recovery-a84ac1939c7d23662341",
+        "recovery-recovery-5b037d3c85e87819c676"
       ],
       "retries": 2,
       "sourceMutationRequired": false,
@@ -2036,7 +2097,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:pre-release",
@@ -2059,15 +2120,18 @@
         "actions-run:35568382649",
         "recovery-queue:recovery-a84ac1939c7d23662341",
         "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
-        "shared-signature:FAIL"
+        "shared-signature:FAIL",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:recovery-recovery-5b037d3c85e87819c676",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T02:59:00.000Z",
-      "updatedAt": "2026-09-21T06:56:44.534Z"
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     },
     {
       "id": "recovery-recovery-a84ac1939c7d23662341",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -2102,12 +2166,12 @@
       "sourceMutationBaseline": "2026-09-21T06:46:45.661Z",
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35571042695:1",
+      "reservedAt": "2026-09-21T07:03:16.586Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "source-mutation-required-before-revalidation",
+      "blocker": null,
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -2150,7 +2214,92 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-21T06:56:44.534Z",
-      "updatedAt": "2026-09-21T07:02:00.805Z"
+      "updatedAt": "2026-09-21T07:03:16.586Z"
+    },
+    {
+      "id": "recovery-recovery-5b037d3c85e87819c676",
+      "status": "queued",
+      "priority": "critical",
+      "department": "recovery",
+      "taskType": "bottleneck-repair",
+      "gameId": null,
+      "jointDecisionRequired": false,
+      "goal": "Collaborate with Vibe on fantasy-survival using only the already approved gameplay scope. Inspect the existing Web game and repair second-gate gaps that are already documented in company runtime: complete playable cycle evidence, at least two real world areas, approved visible gameplay scope coverage, and real interaction results. Preserve all owner-authored rules, balance, save semantics, multiplayer semantics, and the first-gate platform admission. Do not invent new gameplay scope or tune numbers. Make only necessary edits to the assigned Web game source.",
+      "responsibleFiles": [
+        "web-games/fantasy-survival/index.html"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "repair only assigned System AI infrastructure files",
+        "produce a real responsible-source mutation",
+        "rerun deterministic System AI worker QA",
+        "clear the repeated shared failure signature",
+        "release dependent cohort only after repair task is done",
+        "no central policy write",
+        "no self acceptance"
+      ],
+      "verificationCommands": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": null,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
+        "game:fantasy-survival",
+        "scope:owner-approved-existing-gameplay-only",
+        "learning-route:existing-vibe-learning-motor",
+        "actions-run:35555396490",
+        "implementation:failure",
+        "verification:skipped",
+        "publish:skipped",
+        "pre-model-verification:skipped",
+        "current-main-verification:failure",
+        "worker-self-acceptance:NO",
+        "primary-ai-review-required:YES",
+        "actions-run:35555905973",
+        "recovery-queue:recovery-804b2acf67074bfd8b28",
+        "recovery-strategy:ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
+        "recovery-exact-stage:system-ai-implementation-failed",
+        "system-ai-stale-reservation-reclaimed:YES",
+        "stale-reservation-cause:LEASE_EXPIRED",
+        "retry-budget-consumed:NO",
+        "learning-penalty:NO",
+        "actions-run:35567379397",
+        "preflight:success",
+        "actions-run:35568382649",
+        "recovery-queue:recovery-a84ac1939c7d23662341",
+        "shared-signature-canary:recovery-recovery-a84ac1939c7d23662341",
+        "shared-signature:FAIL",
+        "recovery-escalated-from:system-ai",
+        "recovery-route:SYSTEM_AI",
+        "primary-ai-collaboration:REQUESTED",
+        "primary-ai-collaboration-reason:COMMON_BOTTLENECK",
+        "primary-ai-collaboration-task:game-fantasy-survival-web-second-gate-collab-v1",
+        "recovery-queue:recovery-5b037d3c85e87819c676",
+        "shared-signature-canary:YES",
+        "shared-signature:shared-signature-canary-pending:recovery-recovery-a84ac1939c7d23662341",
+        "cohort-size:16",
+        "primary-ai-collaboration-task:recovery-recovery-5b037d3c85e87819c676"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-21T07:03:16.523Z",
+      "updatedAt": "2026-09-21T07:03:16.523Z"
     }
   ]
 }
