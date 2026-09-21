@@ -1,5 +1,5 @@
 {
-  "version": 244,
+  "version": 245,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4995,7 +4995,9 @@
         "concurrentPlatformSlotsVisible": true,
         "verifiedReleaseLinksActivateAutomatically": true,
         "platformAvailableShelfRequiresInternalRelease": true,
-        "unavailablePlatformState": "DEVELOPMENT_DISABLED_BUTTON"
+        "unavailablePlatformState": "DEVELOPMENT_DISABLED_BUTTON",
+        "verifiedTestBuildAloneIsNotInternalRelease": true,
+        "staleOrPrePropagationPlatformBuildMustNotActivate": true
       },
       "recentUpdates": {
         "enabled": true,
