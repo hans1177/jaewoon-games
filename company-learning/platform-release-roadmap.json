@@ -1,16 +1,15 @@
 {
-  "version": 250,
+  "version": 251,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
   "priority": [
-    "UNITY",
     "ROBLOX",
-    "FORTNITE_UEFN"
+    "UNITY"
   ],
   "primaryPlatform": "ROBLOX",
-  "currentPhase": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
-  "priorityMeaning": "UNITY_AND_ROBLOX_EQUAL_FIRST_TIER; WITHIN_TIER_SELECT_BY_READINESS_AND_EXECUTION_EFFICIENCY; FORTNITE_UEFN_OWNER_HOLD",
+  "currentPhase": "ROBLOX_UNITY_DIRECT_NATIVE_DUAL_DEVELOPMENT",
+  "priorityMeaning": "EVERY_ELIGIBLE_GAME_AUTOMATICALLY_DEVELOPS_ROBLOX_AND_UNITY_APP_FROM_ONE_SHARED_MINIMUM_DESIGN",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "ALWAYS_ALLOWED",
@@ -23,7 +22,7 @@
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
   "webCompanion": {
-    "requiredForEveryGame": true,
+    "requiredForEveryGame": false,
     "requiredAcross": [
       "ROBLOX",
       "UNITY",
@@ -81,12 +80,12 @@
         "requiredBeforeFinalReleaseDecision": true
       }
     },
-    "engine": "UNITY_WEB",
+    "engine": "DISABLED",
     "canonicalSourceRoot": "unity-games/<gameId>/",
     "publicBuildRoot": "web-games/<gameId>/",
     "directWebAuthoringDefault": false,
-    "unityProjectIsCanonicalSource": true,
-    "webGamesIsBuildOutput": true,
+    "unityProjectIsCanonicalSource": false,
+    "webGamesIsBuildOutput": false,
     "postGatePipelineUnchanged": true
   },
   "livingMotionVisualQualityContract": {
@@ -439,7 +438,7 @@
     "scope": "EXECUTION_SPEED_ONLY",
     "qualityOrEvidenceGateWeakeningForbidden": true,
     "globalSelectedPlatformDevelopmentWipMax": null,
-    "webValidationParallelismControlledSeparately": true,
+    "webValidationParallelismControlledSeparately": false,
     "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
     "canonicalSequence": [
       "CHANGE_DETECTION",
@@ -931,19 +930,24 @@
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
         "ROBLOX",
-        "UNITY",
-        "FORTNITE_UEFN"
+        "UNITY"
       ],
       "selectedPlatformOwnsSecondImplementation": true,
       "preserveWebBaselineAsReference": true,
       "verifiedLearningContextRequired": true,
       "runtimeIndependentQaRegressionRequired": true,
-      "firstWebGatePassSufficientForDevelopmentAdmission": true,
-      "secondWebGateRunsSeparately": true,
+      "firstWebGatePassSufficientForDevelopmentAdmission": false,
+      "secondWebGateRunsSeparately": false,
       "secondWebGateCriteriaAuthority": "OWNER_DIRECTIVE",
-      "firstWebStageEngine": "UNITY_WEB",
+      "firstWebStageEngine": "DISABLED",
       "unityTargetUsesSameCanonicalProject": true,
-      "robloxAndUefnFlowsUnchanged": true
+      "robloxAndUefnFlowsUnchanged": false,
+      "concurrentTargets": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "bidirectionalAutoPair": true,
+      "admissionGate": "MINIMUM_DESIGN_CONTRACT_READY"
     },
     "postReleaseFocusedDevelopment": {
       "enabled": true,
@@ -4566,6 +4570,19 @@
       "appliesBeforePublicRelease": true,
       "preservesExistingPostReleaseCaretaker": true,
       "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_RELEASE_CONFIRMED"
+    },
+    "directNativeDualPlatformDevelopment": {
+      "required": true,
+      "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
+      "admission": "MINIMUM_DESIGN_CONTRACT_READY",
+      "concurrentTargets": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "bidirectionalAutoPair": true,
+      "webStageSkipped": true,
+      "webGateSkipped": true,
+      "globalGameDevelopmentWindow": null
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -4843,22 +4860,15 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-21T13:46:40.951Z",
+  "updatedAt": "2026-09-21T14:05:54.606Z",
   "priorityTiers": [
     {
       "tier": 1,
       "platforms": [
-        "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
-      "selection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT"
-    },
-    {
-      "tier": 2,
-      "platforms": [
-        "FORTNITE_UEFN"
-      ],
-      "selection": "OWNER_HOLD"
+      "selection": "CONCURRENT_SAME_GAME_REQUIRED"
     }
   ],
   "primaryPlatformRole": "LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY",
@@ -12417,11 +12427,11 @@
   },
   "unityWebFirstStage": {
     "version": 1,
-    "status": "OWNER_DIRECT_LOCKED",
+    "status": "DISABLED_BY_OWNER_DIRECTIVE",
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "scope": "FIRST_WEB_GAME_STAGE_ONLY",
-    "appliesToAllGames": true,
-    "replacesFirstStageWebAuthoringOnly": true,
+    "scope": "DISABLED",
+    "appliesToAllGames": false,
+    "replacesFirstStageWebAuthoringOnly": false,
     "postUnityWebGatePipelineUnchanged": true,
     "platformPriorityUnchanged": true,
     "canonicalGameSourceRoot": "unity-games/<gameId>/",
@@ -12659,6 +12669,67 @@
         "CORE_FUN"
       ],
       "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
-    }
+    },
+    "enabled": false,
+    "disabledReason": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT"
+  },
+  "directNativeDualPlatformDevelopment": {
+    "status": "OWNER_DIRECT_LOCKED",
+    "recordedAt": "2026-09-21",
+    "mode": "ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR",
+    "unityWebEnabled": false,
+    "unityWebRequired": false,
+    "unityWebGateRequired": false,
+    "supportedDevelopmentPlatforms": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "autoPairRules": {
+      "ROBLOX": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "UNITY": [
+        "UNITY",
+        "ROBLOX"
+      ]
+    },
+    "oneSharedDesignPerGame": true,
+    "minimumDesignRequired": true,
+    "minimumDesignContract": [
+      "GAME_IDENTITY",
+      "TARGET_GENRE",
+      "CORE_LOOP",
+      "PLAYER_INPUT",
+      "WIN_LOSE_OR_SESSION_END",
+      "CORE_NUMBERS_AND_BALANCE",
+      "PROGRESSION",
+      "SAVE_MEANING",
+      "MULTIPLAYER_MODE",
+      "CORE_CONTENT_SCOPE"
+    ],
+    "strictDesignScoreRequiredForDevelopmentAdmission": false,
+    "designMayBeCreatedAutomaticallyByVibe": true,
+    "ownerMayRequestEitherPlatformFirst": true,
+    "platformRequestAutomaticallyStartsBoth": true,
+    "sameGameBothPlatformsRequired": true,
+    "platformSpecificImplementationRequired": true,
+    "platformSpecificRuntimeEvidenceRequired": true,
+    "platformSpecificIndependentQaRequired": true,
+    "platformSpecificRegressionRequired": true,
+    "developmentAdmissionSequence": [
+      "OWNER_REQUEST_OR_AUTONOMOUS_GAME_SELECTION",
+      "MINIMUM_DESIGN_CONTRACT_READY",
+      "ROBLOX_AND_UNITY_APP_DEVELOPMENT_CONCURRENT",
+      "PLATFORM_RUNTIME",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "RELEASE"
+    ],
+    "globalGameDevelopmentWindow": null,
+    "noArtificialGlobalGameCountCap": true,
+    "executionCapacityMayQueueWithoutChangingEligibility": true,
+    "fortniteUefnAutomaticDevelopment": false,
+    "fortniteUefnState": "OWNER_HOLD"
   }
 }
