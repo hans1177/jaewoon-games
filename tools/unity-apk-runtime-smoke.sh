@@ -177,9 +177,19 @@ adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
 adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
 
 fatal=0
-if grep -Eiq "FATAL EXCEPTION|ANR in ${package}|Fatal signal|Process ${package} .* died" "$out_dir/logcat.txt"; then
+set +e
+python3 tools/unity-package-fatal-logcat.py "$out_dir/logcat.txt" "$package" > "$out_dir/package-fatal-scan.txt" 2>&1
+fatal_scan_status=$?
+set -e
+if [[ "$fatal_scan_status" -eq 1 ]]; then
   fatal=1
+elif [[ "$fatal_scan_status" -ne 0 ]]; then
+  cat "$out_dir/package-fatal-scan.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:PACKAGE_FATAL_SCAN_FAILED] unable to classify logcat for $package" >&2
+  exit 20
 fi
+echo "UNITY_PACKAGE_FATAL=$([[ "$fatal" -eq 1 ]]&&echo true||echo false)"
+echo "UNITY_SYSTEM_CRASHES_DO_NOT_FAIL_GAME=YES"
 runtime_pass=false
 if [[ "$launch_command_pass" == "true" && -n "$pid" && "$fatal" -eq 0 ]]; then runtime_pass=true; fi
 seed_signals_pass=true
@@ -259,7 +269,7 @@ data={
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
-    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','activity':'activity.txt','packageDump':'package.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
