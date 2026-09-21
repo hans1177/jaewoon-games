@@ -1,5 +1,5 @@
 {
-  "version": 70,
+  "version": 71,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2230,5 +2230,34 @@
       "scheduler": ".github/workflows/vibe2-24h-runner.yml",
       "homepageSnapshot": "homepage-platform-exposure.json"
     }
+  },
+  "autonomousBottleneckRecovery": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.autonomousBottleneckRecovery",
+    "mode": "DOCUMENT_EQUALS_EXECUTABLE_CODE",
+    "sequence": [
+      "FAILURE_OR_STALL_EVENT",
+      "RECOVERY_ESCALATION",
+      "RECOVERY_QUEUE",
+      "VIBE2_VIBE3_OR_SYSTEM_AI_DISPATCH",
+      "RESPONSIBLE_FILE_REPAIR",
+      "EXACT_STAGE_REVALIDATION",
+      "INDEPENDENT_QA_AND_REGRESSION_WHEN_APPLICABLE",
+      "FAILURE_SIGNATURE_CLEARANCE",
+      "CANONICAL_PIPELINE_RESUME",
+      "VERIFIED_RECOVERY_LEARNING"
+    ],
+    "codeBindings": {
+      "detect": "tools/company-recovery-escalation.mjs",
+      "state": "tools/company-recovery-queue.mjs",
+      "dispatch": "tools/company-recovery-dispatch.mjs",
+      "systemAi": "tools/company-system-ai-worker.mjs",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml"
+    },
+    "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+    "terminalFailureFromRetryCount": false,
+    "hardInhibitorsRemainFailClosed": true,
+    "primaryAiPresenceRequired": false,
+    "deterministicEvidenceRequiredForCompletion": true
   }
 }
