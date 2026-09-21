@@ -400,6 +400,19 @@ joyEl.addEventListener('touchmove',e=>{
 },{passive:false});
 addEventListener('touchend',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
 addEventListener('touchcancel',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
+document.body.addEventListener('touchstart',e=>{
+ if(touchJoy||jid!==null)return;
+ const t=e.changedTouches?.[0];if(!t)return;
+ const r=joyEl.getBoundingClientRect();
+ if(t.clientX<r.left-24||t.clientX>r.right+24||t.clientY<r.top-24||t.clientY>r.bottom+24)return;
+ e.preventDefault();initAudio();touchJoy=true;jid=-1;refreshJoyCenter();applyJoyPoint(t.clientX,t.clientY);
+},{passive:false});
+document.body.addEventListener('touchmove',e=>{
+ if(!touchJoy)return;
+ const t=e.changedTouches?.[0]||e.touches?.[0];if(!t)return;
+ e.preventDefault();applyJoyPoint(t.clientX,t.clientY);
+},{passive:false});
+document.body.addEventListener('touchend',e=>{if(touchJoy){e.preventDefault();endJoy()}},{passive:false});
 addEventListener('blur',()=>endJoy());
 
 let joyDriverLast=performance.now();
