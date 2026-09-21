@@ -309,22 +309,34 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
-          const humanApproved=process.env.GITHUB_EVENT_NAME==='workflow_dispatch'
+          const inputApproved=process.env.GITHUB_EVENT_NAME==='workflow_dispatch'
             &&String(process.env.STUDIO_RUN_APPROVED||'').toLowerCase()==='true'
             &&String(process.env.GITHUB_ACTOR||'')!=='github-actions[bot]';
-          const manualGameId=String(process.env.MANUAL_GAME_ID||'').trim();
+          const approval=q.fastLaunch?.robloxStudioHumanApproval||{};
+          const approvedIds=new Set(Array.isArray(approval.gameIds)?approval.gameIds.map(String):[]);
+          const queueApproved=approval.approved===true
+            &&approval.singleSessionOnly===true
+            &&approval.actualStudioEvidenceRequired===true
+            &&approvedIds.size>0;
+          const requestedGameId=String(process.env.MANUAL_GAME_ID||'').trim();
+          const manualGameId=requestedGameId||(queueApproved?[...approvedIds].find(id=>{
+            const item=(q.items||[]).find(x=>x.gameId===id);
+            return item&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true;
+          })||'':'');
+          const humanApproved=inputApproved||(queueApproved&&approvedIds.has(manualGameId));
           const runnerWip=1;
           const rows=[];
           if(!humanApproved||!manualGameId){
             fs.appendFileSync(process.env.GITHUB_OUTPUT,'count=0\n');
             fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:[]})}\n`);
             fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json=[]\n');
-            console.log('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN');
-            console.log('ROBLOX_STUDIO_MANUAL_APPROVAL_REQUIRED=YES');
+            console.log('ROBLOX_STUDIO_OWNER_APPROVAL_REQUIRED=YES');
             console.log(`ROBLOX_STUDIO_APPROVAL_PRESENT=${humanApproved?'YES':'NO'}`);
             console.log(`ROBLOX_STUDIO_EXACT_GAME_ID_PRESENT=${manualGameId?'YES':'NO'}`);
             process.exit(0);
           }
+          console.log(`ROBLOX_STUDIO_APPROVAL_SOURCE=${inputApproved?'WORKFLOW_DISPATCH':'OWNER_RUNTIME_APPROVAL'}`);
+          console.log('ROBLOX_STUDIO_SINGLE_SESSION_ONLY=YES');
           for(const item of q.items||[]){
             if(rows.length>=runnerWip)break;
             if(item.gameId!==manualGameId)continue;
@@ -371,7 +383,7 @@ jobs:
           console.log('ROBLOX_RUNTIME_RETRY_LIMIT=2');
           console.log('ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0');
           console.log('ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED');
-          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=NO_MANUAL_SINGLE_SESSION');
+          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=OWNER_APPROVED_SINGLE_SESSION');
           console.log('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES');
           console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');
           NODE
