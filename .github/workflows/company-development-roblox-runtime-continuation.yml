@@ -185,8 +185,20 @@ jobs:
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/q.json
           node - <<'NODE' > /tmp/release-ids
-          const q=require('/tmp/q.json');const ids=JSON.parse(process.env.TARGETS||'[]').map(x=>x.gameId);
-          for(const id of ids){const x=q.items.find(y=>y.gameId===id);if(x?.robloxHeadlessFastMvpPassed===true)console.log(id)}
+          const q=require('/tmp/q.json');
+          const ids=JSON.parse(process.env.TARGETS||'[]').map(x=>x.gameId);
+          const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
+          let sharedFallbackUsed=false;
+          for(const id of ids){
+            const x=q.items.find(y=>y.gameId===id);
+            if(x?.robloxHeadlessFastMvpPassed!==true)continue;
+            const exactTarget=(x.robloxPublicationTarget?.verified===true&&valid(x.robloxPublicationTarget))
+              ||(x.robloxInternalReleaseEvidence?.published===true&&valid(x.robloxInternalReleaseEvidence))
+              ||(x.robloxReleaseEvidence?.published===true&&valid(x.robloxReleaseEvidence));
+            if(exactTarget){console.log(id);continue;}
+            if(!sharedFallbackUsed){sharedFallbackUsed=true;console.log(id);continue;}
+            console.error('ROBLOX_SHARED_FALLBACK_DEFERRED='+id);
+          }
           NODE
           while read -r id; do
             [ -n "$id" ] || continue
