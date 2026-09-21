@@ -41,8 +41,19 @@ test('complete Unity Web child evidence produces public build and first-stage pa
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS',sourceCommit:'abc'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
       version:1,engine:'UNITY_WEB',gameId,pass:true,
-      boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},
-      mobile:{pass:true},performance:{pass:true},noCriticalRuntimeError:true
+      boot:{pass:true},
+      input:{pass:true,qaMode:'REAL_GAME_FUNCTION_INPUT_AND_REAL_BROWSER_TOUCH',mobileInputObserved:true},
+      gameplay:{pass:true,gameplayStartObserved:true,coreActionObserved:true,progressObserved:true,safeReturnOrResetObserved:true},
+      coreFun:{pass:true,markerCount:1,markers:[`JAEWOON_UNITY_WEB_QA CORE_FUN game=${gameId} status=PASS`]},
+      saveRestore:{pass:true,persistentChangedKeys:['progress'],restoredKeys:['progress']},
+      mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true,target:{role:'action',x:0.5,y:0.7}},
+      performance:{pass:true},
+      noCriticalRuntimeError:true,
+      markers:[
+        `JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=${gameId} role=action x=0.5000 y=0.7000`,
+        `JAEWOON_UNITY_WEB_QA MOBILE_INPUT game=${gameId} role=action status=PASS`,
+        `JAEWOON_UNITY_WEB_QA CORE_FUN game=${gameId} status=PASS`
+      ]
     });
     run([
       'result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,
@@ -55,6 +66,34 @@ test('complete Unity Web child evidence produces public build and first-stage pa
     assert.equal(result.update.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
     assert.ok(fs.existsSync(path.join(output,'public','web-games',gameId,'index.html')));
     assert.ok(fs.existsSync(path.join(output,'persist','design',gameId,'2026-09-21','unity-web-first-stage-validation.json')));
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('boolean-only Unity Web evidence cannot satisfy the final gate',()=>{
+  const dir=temp();
+  try{
+    const gameId='worker-boolean-only-game';
+    const baseline=path.join(dir,'design-revised.json');
+    const child=path.join(dir,'child');
+    const web=path.join(child,'artifact','web-games',gameId);
+    const output=path.join(dir,'out');
+    fs.mkdirSync(web,{recursive:true});
+    fs.writeFileSync(baseline,'{"version":1}\n');
+    fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
+    writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
+    writeJson(path.join(web,'unity-web-gameplay-validation.json'),{
+      version:1,engine:'UNITY_WEB',gameId,pass:true,
+      boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},
+      saveRestore:{pass:true},mobile:{pass:true},performance:{pass:true},noCriticalRuntimeError:true
+    });
+    run([
+      'result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,
+      `--baseline=${baseline}`,'--baseline-source=design/worker-boolean-only-game/2026-09-21/design-revised.json',
+      '--source-tree=tree555','--build-run-id=555',`--child-root=${child}`,`--output-root=${output}`
+    ]);
+    const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
+    assert.equal(result.pass,false);
+    assert.match(result.update.vibeWebImplementationReason,/input|coreFun|mobile|gameplay/);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
