@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function buildTown(){",
+      "replace": "  var r=new THREE.Mesh(new THREE.DodecahedronGeometry(scale,0),mat(color||0x777b7d));r.position.set(x,scale*.65,z);r.scale.y=.7;world.add(r);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
