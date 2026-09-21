@@ -24,37 +24,6 @@ const M={
  chief:mat(.72,.48,.18,0,.28),merchant:mat(.58,.28,.12,0,.32),armor:mat(.55,.58,.64,.45,.58),cloth:mat(.18,.48,.62,0,.22),gold:mat(.92,.65,.18,.35,.7)
 };
 const portalMats=[mat(.24,.60,1,.18,.72),mat(.55,.30,1,.18,.72),mat(.15,.85,.66,.18,.72),mat(1,.48,.22,.18,.72),mat(.92,.25,.64,.18,.72),mat(.66,.75,.95,.18,.72),mat(.32,.95,.35,.18,.72)];
-const assetCache=new Map();
-const slimeBlobUrl=URL.createObjectURL(new Blob([Uint8Array.from(atob(SLIME_GLB_BASE64),c=>c.charCodeAt(0))],{type:'model/gltf-binary'}));
-function loadContainer(url,filename=url.split('/').pop()){
-  if(assetCache.has(url))return assetCache.get(url);
-  const p=new Promise((resolve,reject)=>{
-    app.assets.loadFromUrlAndFilename(url,filename,'container',(err,asset)=>err?reject(err):resolve(asset));
-  });
-  assetCache.set(url,p);return p;
-}
-async function attachAsset(root,url,{filename,scale=.65,y=0,rotY=180,hidePrimitive=true}={}){
-  try{
-    const asset=await loadContainer(url,filename);
-    if(!root||!root.parent)return null;
-    const visual=asset.resource.instantiateRenderEntity({castShadows:true});
-    visual.name='AssetVisual';visual.setLocalPosition(0,y,0);visual.setLocalEulerAngles(0,rotY,0);visual.setLocalScale(scale,scale,scale);
-    root.addChild(visual);
-    if(hidePrimitive&&root.model)root.model.enabled=false;
-    root.__assetVisual=visual;
-    return visual;
-  }catch(err){console.warn('asset fallback',url,err);return null}
-}
-function attachCharacterAsset(root,kind){
-  const map={
-    warrior:['./assets/Warrior.gltf','Warrior.gltf',.72],
-    ranger:['./assets/Ranger.gltf','Ranger.gltf',.72],
-    wizard:['./assets/Wizard.gltf','Wizard.gltf',.72]
-  };
-  const item=map[kind];if(!item)return Promise.resolve(null);
-  return attachAsset(root,item[0],{filename:item[1],scale:item[2],y:0,rotY:180});
-}
-
 function primitive(name,type,pos,scale,material,parent=app.root){
   const e=new pc.Entity(name);e.addComponent('model',{type});
   parent.addChild(e);e.setLocalPosition(...pos);e.setLocalScale(...scale);
@@ -76,13 +45,19 @@ const actorRoot=new pc.Entity('ActorRoot');app.root.addChild(actorRoot);
 const CARTOON={
   warrior:null,ranger:null,wizard:null,slime:null,ready:false,slimeUrl:null
 };
+const cartoonAssetPromises=new Map();
 function base64BlobUrl(base64,type='model/gltf-binary'){
   const raw=atob(base64),bytes=new Uint8Array(raw.length);
   for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
   return URL.createObjectURL(new Blob([bytes],{type}));
 }
 function loadContainer(url,filename){
-  return new Promise(resolve=>app.assets.loadFromUrlAndFilename(url,filename,'container',(err,asset)=>resolve(err?null:asset)));
+  if(cartoonAssetPromises.has(url))return cartoonAssetPromises.get(url);
+  const pending=new Promise(resolve=>app.assets.loadFromUrlAndFilename(url,filename,'container',(err,asset)=>{
+    if(err){console.warn('cartoon asset fallback',filename,err);resolve(null);return}
+    resolve(asset);
+  }));
+  cartoonAssetPromises.set(url,pending);return pending;
 }
 function mountAsset(parent,asset,key,{scale=1,y=0,rotY=180}={}){
   if(!asset?.resource?.instantiateRenderEntity||parent.__cartoonVisual)return null;
@@ -130,7 +105,6 @@ async function loadCartoonAssets(){
 }
 
 const player=primitive('Player','capsule',[0,1.1,8],[1.05,1.05,1.05],M.hero,actorRoot);
-attachCharacterAsset(player,'warrior').then(v=>{if(v){sword.enabled=false;toast('카툰 모험가 에셋 적용')}});
 const sword=primitive('Sword','box',[.75,1.15,0],[.12,1.2,.18],M.stone,player);sword.setLocalEulerAngles(0,0,-18);
 const armorPlate=primitive('ArmorPlate','box',[0,.28,.02],[1.15,.85,.72],M.armor,player);armorPlate.enabled=false;
 const helmet=primitive('Helmet','sphere',[0,1.1,0],[.72,.42,.72],M.armor,player);helmet.enabled=false;
@@ -251,7 +225,6 @@ function spawnEnemy(i,spec){
   const angle=(i/7)*Math.PI*2+.4,r=10+(i%3)*4;
   const e=primitive(name+'-'+i,'sphere',[Math.cos(angle)*r,.85,Math.sin(angle)*r-8],[1.3,.85,1.3],material,zoneRoot);
   e.enemyName=name;e.hp=hp;e.maxHp=hp;e.attack=atk;e.speed=speed;e.alive=true;e.hitCd=.2+Math.random()*.5;
-  if(name.includes('슬라임'))attachAsset(e,slimeBlobUrl,{filename:'Slime.glb',scale:.9,y:-.75,rotY:0});
   enemies.push(e);if(CARTOON.ready)applyEnemyAsset(e);
 }
 function buildHunt(id){
