@@ -10,6 +10,10 @@ on:
         description: 'Exact Primary-AI-assigned security recovery task id; when set, reserve only this task'
         required: false
         type: string
+      marketing_task_ids:
+        description: 'Comma-separated queued marketing task ids to start immediately'
+        required: false
+        type: string
   repository_dispatch:
     types: [company-system-ai-cycle]
   schedule:
@@ -76,6 +80,7 @@ jobs:
         id: matrix
         env:
           SECURITY_RECOVERY_TASK_ID: ${{ inputs.security_recovery_task_id || '' }}
+          MARKETING_TASK_IDS: ${{ inputs.marketing_task_ids || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -113,6 +118,13 @@ jobs:
                 --command=reserve-security-recovery \
                 --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
                 --id="$SECURITY_RECOVERY_TASK_ID" \
+                --reservation="$reservation" \
+                --output=/tmp/system-ai-reserved.json
+            elif [ -n "$MARKETING_TASK_IDS" ]; then
+              node tools/company-system-ai-queue.mjs \
+                --command=reserve-targets \
+                --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
+                --ids="$MARKETING_TASK_IDS" \
                 --reservation="$reservation" \
                 --output=/tmp/system-ai-reserved.json
             else
