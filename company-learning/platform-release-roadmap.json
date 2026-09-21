@@ -12025,7 +12025,32 @@
     "leadAssignmentRemappable": true,
     "artificialDistinctModelGateForbidden": true,
     "objective": "MINIMIZE_MODEL_SERIALIZATION_AND_LATENCY_WHILE_PRESERVING_ROLE_LEVEL_REVIEW_AND_DETERMINISTIC_QA",
-    "qualityGateWeakeningForbidden": true
+    "qualityGateWeakeningForbidden": true,
+    "systemAiBottleneckResilience": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "existingArchitectureOnly": true,
+      "objective": "MAXIMIZE_24H_SYSTEM_AI_BOTTLENECK_RECOVERY_SUCCESS_WITHOUT_GATE_WEAKENING",
+      "representativeCanaryOnRepeatedSharedFailure": true,
+      "repeatedSharedFailureThreshold": 2,
+      "readWriteScopeSeparationRequired": true,
+      "readOnlyContextMayIncludeExplicitRootMetadata": true,
+      "modelCallPreflightRequired": true,
+      "infrastructureFailureSeparatedFromTaskFailure": true,
+      "infrastructureFailureMustNotPenalizeLearning": true,
+      "infrastructureFailureMustNotConsumeTaskRetryBudget": true,
+      "exactFailureStageResumeRequired": true,
+      "sharedFailureSignatureDedupeRequired": true,
+      "cohortBlastRadiusTrackingRequired": true,
+      "sourceMutationBeforeRevalidationRequired": true,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "security": {
+        "writableScopeExpansionForbidden": true,
+        "centralPolicyWriteForbidden": true,
+        "preApplyScopeValidationRequired": true,
+        "rawExternalOutputStored": false
+      }
+    }
   },
   "learningRetrievalRouting": {
     "version": 1,
