@@ -27,10 +27,9 @@ test('legacy homepage policy mirror stays removed and machine roadmap remains au
   assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
 });
 
-test('Director supervises the exact Homepage Manager candidate before publication',()=>{
+test('Director reviews and publishes the exact Homepage Manager candidate in one post-work stage',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
-  const director=section('  director-supervision:','  publish-after-director:');
-  const publish=section('  publish-after-director:');
+  const director=section('  director-supervision:');
   assert.ok(manage.includes('Capture exact self-QA candidate'));
   assert.ok(manage.includes('actions/upload-artifact@v4'));
   assert.ok(manage.includes('homepage-candidate.patch'));
@@ -38,18 +37,18 @@ test('Director supervises the exact Homepage Manager candidate before publicatio
   assert.ok(director.includes('actions/download-artifact@v4'));
   assert.ok(director.includes('Verify and apply exact self-QA candidate'));
   assert.ok(director.includes('sha256sum'));
-  assert.ok(publish.includes('needs: [manage-and-self-qa, director-supervision]'));
-  assert.ok(publish.includes('Verify and apply Director-approved candidate'));
-  assert.ok(publish.includes('gh pr create'));
-  assert.ok(publish.includes('gh pr merge'));
+  assert.ok(director.includes('Publish Director-approved homepage candidate'));
+  assert.ok(director.includes('gh pr create'));
+  assert.ok(director.includes('gh pr merge'));
+  assert.doesNotMatch(workflow,/\\n  publish-after-director:/);
 });
 
 test('verified runtime status and catalog join the same supervised publication candidate',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
-  const publish=section('  publish-after-director:');
+  const director=section('  director-supervision:');
   for(const file of ['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json']){
     assert.ok(manage.includes(file),`candidate capture missing ${file}`);
-    assert.ok(publish.includes(file),`publication missing ${file}`);
+    assert.ok(director.includes(file),`publication missing ${file}`);
   }
   assert.ok(manage.includes('Prepare verified runtime status/catalog candidate'));
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
@@ -159,11 +158,11 @@ test('successful runtime events must bind company-runtime before homepage public
   assert.equal(roadmap.serverHomepageIntegration?.staleMainFallbackAfterSuccessfulRuntimeEventForbidden,true);
 });
 
-test('PR creation failure remains a blocking publication failure',()=>{
-  const publish=section('  publish-after-director:');
-  assert.ok(publish.includes('HOMEPAGE_PUBLICATION_BRANCH_READY=$branch'));
-  assert.ok(publish.includes('HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'));
-  assert.ok(publish.includes('exit 1'));
+test('PR creation failure remains a blocking publication failure inside Director stage',()=>{
+  const director=section('  director-supervision:');
+  assert.ok(director.includes('HOMEPAGE_PUBLICATION_BRANCH_READY=$branch'));
+  assert.ok(director.includes('HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'));
+  assert.ok(director.includes('exit 1'));
 });
 
 test('current development score policy requires Web schema15 and rejects schema13',()=>{
