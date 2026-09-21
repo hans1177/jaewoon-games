@@ -276,3 +276,19 @@ When local capability becomes available, the accumulated verified trajectories/s
 - no proprietary source/assets/internal algorithm extraction from external commercial games;
 - no paid API or GitHub-hosted model training;
 - no automatic adapter promotion.
+
+
+## Unity Web 1차 게임 제작/학습 동기화
+
+`company-learning/platform-release-roadmap.json`의 `unityWebFirstStage`가 권한 원본이다. Vibe3는 이 규칙을 구현/학습에 반영할 뿐 별도 정책을 만들지 않는다.
+
+- 변경 범위는 **1차 Web 게임 제작/검증 단계만**이다. Unity/Roblox/Fortnite UEFN의 후속 플랫폼 플로우와 증거 권한은 그대로 유지한다.
+- 모든 신규 1차 Web 게임의 원본은 `unity-games/<gameId>/` Unity 프로젝트다.
+- `web-games/<gameId>/`는 직접 HTML/Canvas 게임을 작성하는 원본이 아니라 Unity Web 빌드 산출물 배포 경로다.
+- 기본 제작 지식은 C#, Scene, Prefab, MonoBehaviour, ScriptableObject, Animator, Material, Particle System, Unity UI, Input System, Physics/AI, Audio, Lighting, Camera, Web Build/최적화 중심으로 검색·후보생성·검증한다.
+- 기존 HTML/JavaScript/Canvas/PlayCanvas 구현은 마이그레이션 동안 참고·비교·비상 폴백으로 보존할 수 있지만 Unity Web PASS 뒤에는 canonical source가 될 수 없다.
+- Unity Web QA의 성공/실패은 기존 verified RAG/trajectory/distillation 체인으로 들어가며 별도 학습 파이프라인이나 cron을 만들지 않는다.
+- Unity 플랫폼 대상 게임은 Unity Web PASS 후 **같은 Unity 프로젝트**에서 Android APK/AAB로 진행한다.
+- Roblox/UEFN 대상 게임은 Unity Web을 1차 검증 표면으로 사용한 뒤 기존 native 구현/런타임/독립 QA/회귀 플로우를 그대로 사용한다. Unity Web PASS는 native PASS를 대체하지 않는다.
+- 모바일 입력은 Unity 프로젝트 내부 Input System/On-Screen Control/Touch로 구현한다. `_worker.js` 공통 조이스틱 주입은 장기 기본 입력 경로가 아니다.
+- 1차 Web 화면도 실제 에셋·전투·AI·UI·맵·장르 핵심 시스템·모바일 조작을 요구한다. primitive 중심 가짜 플레이어블은 학습 성공 근거가 아니다.
