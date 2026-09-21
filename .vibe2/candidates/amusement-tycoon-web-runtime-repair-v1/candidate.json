@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function addTrash(pathKey){",
+      "replace": "  var weighted=[];\n  candidates.forEach(function(b){\n    var d=BUILD_DEFS[b. /no_think"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
