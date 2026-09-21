@@ -21,7 +21,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-21
+  latestOwnerDirectiveRecordedAt: 2026-09-22
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -50,6 +50,11 @@ currentDirectNativeExecutionMirror:
     globalEligibleGameCap: null
     executionBatchesAreCapacityOnly: true
     onePlatformFailureCancelsOther: false
+  robloxValidationMode: HEADLESS_FAST_MVP
+  robloxStudioExecution: FORBIDDEN
+  robloxStudioEvidenceRequired: false
+  robloxInternalPublishRoute: OPEN_CLOUD_ONLY
+  robloxHeadlessEvidenceAuthority: company-learning/platform-release-roadmap.json#roblox.headlessValidation
   release:
     firstGoal: INTERNAL_PLATFORM_RELEASE
     robloxInternal: PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE

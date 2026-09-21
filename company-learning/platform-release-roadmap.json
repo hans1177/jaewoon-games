@@ -775,7 +775,7 @@
       "studioUiPublishAllowed": false,
       "cookiePublishAllowed": false,
       "resumeMode": "AUTO_AFTER_CANONICAL_FINAL_REVIEW",
-      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "authority": "OWNER_DIRECTIVE_2026-09-22",
       "openCloudSafety": {
         "officialApiOnly": true,
         "exactFinalReviewedArtifactRequired": true,
@@ -808,7 +808,45 @@
         "persistPerGameAfterProvenPublish": true,
         "requireGitHubSecretIdMatch": true,
         "authority": "OWNER_DIRECTIVE_2026-09-19"
-      }
+      },
+      "studioRuntimeRequired": false,
+      "publicationTargetFromStudioForbidden": true
+    },
+    "validationMode": "HEADLESS_FAST_MVP",
+    "studioExecution": {
+      "enabled": false,
+      "required": false,
+      "workflowUseForbidden": true,
+      "qaEvidenceAuthorityForbidden": true,
+      "universeOrPlaceIdDiscoveryForbidden": true,
+      "removedAt": "2026-09-22T03:45:00+09:00",
+      "authority": "OWNER_DIRECTIVE_2026-09-22"
+    },
+    "headlessValidation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-22",
+      "requiredStages": [
+        "EXACT_SOURCE_STATIC_VALIDATION",
+        "ROJO_PACKAGE",
+        "VIBE_SHARED_MODEL_PREFLIGHT",
+        "SERVER_CLIENT_AUTHORITY_CONTRACT",
+        "REMOTE_SECURITY_CONTRACT",
+        "MOBILE_INPUT_UI_CONTRACT",
+        "SAVE_REJOIN_CONTRACT_WHEN_APPLICABLE",
+        "MULTIPLAYER_STATE_SYNC_CONTRACT_WHEN_APPLICABLE",
+        "HEADLESS_REGRESSION",
+        "OPEN_CLOUD_PRIVATE_OR_RESTRICTED_PUBLISH"
+      ],
+      "evidenceField": "robloxHeadlessFastMvpEvidence",
+      "passField": "robloxHeadlessFastMvpPassed",
+      "studioPassFieldsMustRemainFalseWithoutHistoricalEvidence": true,
+      "fakeRuntimePassForbidden": true,
+      "releaseMayUseHeadlessEvidence": true,
+      "gameSpecificPublicationTargetPriority": [
+        "company-runtime-publication-target",
+        "prior-proven-open-cloud-release",
+        "owner-pinned-open-cloud-target"
+      ]
     }
   },
   "unity": {
@@ -4699,7 +4737,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-21T14:42:26.743Z",
+  "updatedAt": "2026-09-22T03:45:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -12541,7 +12579,7 @@
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
-    "recordedAt": "2026-09-21",
+    "recordedAt": "2026-09-22",
     "mode": "ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR",
     "unityWebEnabled": false,
     "unityWebRequired": false,
@@ -12685,6 +12723,15 @@
     "uefn": {
       "automaticDevelopment": false,
       "state": "OWNER_HOLD"
+    },
+    "robloxValidationOverride": {
+      "mode": "HEADLESS_FAST_MVP",
+      "studioForbidden": true,
+      "runtimeMeaning": "HEADLESS_PLATFORM_CONTRACT_VALIDATION",
+      "independentQaMeaning": "HEADLESS_INDEPENDENT_CONTRACT_QA",
+      "regressionMeaning": "HEADLESS_EXACT_ARTIFACT_REGRESSION",
+      "openCloudPublishRequiredForInternalRelease": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-22"
     }
   }
 }

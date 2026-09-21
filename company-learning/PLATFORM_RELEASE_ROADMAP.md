@@ -38,19 +38,25 @@ Unity Web은 신규 제작·검증·개발 입장 관문으로 사용하지 않�
 
 ## QA
 
-Roblox와 Unity 앱은 각각 독립적으로:
+Roblox는 앞으로 Studio를 실행하지 않는다. Roblox 검증은 다음 Headless FAST_MVP 체인으로 통일한다.
 
-1. Native Source Bind
-2. Build/Package
-3. Target Runtime
-4. Independent QA
-5. Regression
+1. Exact Source Static Validation
+2. Rojo Package
+3. Vibe + 공용모델 1회 Preflight
+4. Server/Client Authority + Remote Security 계약검사
+5. Mobile Input/UI 계약검사
+6. Save/Rejoin 계약검사(저장 게임)
+7. Multiplayer State Sync 계약검사(멀티 게임)
+8. Headless Exact-Artifact Regression
+9. Open Cloud Private/Restricted Publish
 
-을 통과한다. 한 플랫폼의 PASS는 다른 플랫폼 PASS로 승격되지 않는다.
+`robloxRuntimePassed` 같은 기존 Studio PASS 필드는 실제 과거 Studio 증거가 없으면 새로 true로 만들지 않는다. 새 자동출시 판정은 `robloxHeadlessFastMvpPassed`와 exact artifact evidence를 사용한다.
+
+Unity 앱은 기존처럼 Build/Runtime/Independent QA/Regression을 독립적으로 통과한다. 한 플랫폼의 PASS는 다른 플랫폼 PASS로 승격되지 않는다.
 
 ## 내부 출시 — 1차 목표
 
-- Roblox: Private/Restricted 경험으로 서버에 게시하고 소유자/허용 테스터가 실제 Roblox 앱에서 플레이
+- Roblox: Studio 없이 검증된 exact Rojo artifact를 Open Cloud로 Private/Restricted 경험에 게시한다.
 - Unity 앱: 내부/Closed 테스트 빌드로 실제 기기에 설치하고 플레이
 
 홈페이지는 company-runtime을 권위로 각 플랫폼 내부출시 상태를 따로 표시한다.

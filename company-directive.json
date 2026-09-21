@@ -1,7 +1,7 @@
 {
   "version": 1,
   "revision": 48,
-  "updatedAt": "2026-09-22T03:31:00+09:00",
+  "updatedAt": "2026-09-22T03:45:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -522,7 +522,10 @@
     "leadDistinctnessPolicy": "NOT_REQUIRED_FOR_EXECUTION",
     "leadSelectionObjective": "VIBE_PLUS_ONE_AVAILABLE_SHARED_MODEL",
     "robloxPreflightMode": "VIBE_PLUS_SHARED_MODEL",
-    "robloxPreflightModel": "llama3.2:1b"
+    "robloxPreflightModel": "llama3.2:1b",
+    "robloxValidationMode": "HEADLESS_FAST_MVP",
+    "robloxStudioExecutionAllowed": false,
+    "robloxStudioEvidenceRequired": false
   },
   "classes": {
     "DESIGN_ONLY": {

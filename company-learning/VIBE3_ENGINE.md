@@ -315,3 +315,14 @@ Vibe는 게임 하나에 대해 Roblox 또는 Unity 앱 요청이 들어오면 �
 Roblox와 Unity는 같은 게임 의미를 공유하지만 소스와 런타임 QA 증거는 각각 독립적이다. 한 플랫폼 실패는 다른 플랫폼을 취소하지 않는다. 검증된 결과는 기존 Vibe3 공통 학습 메모리로 환류한다.
 
 1차 출시 목표는 내부 출시이며 Roblox는 Private/Restricted 경험, Unity 앱은 내부/비공개 테스트 빌드를 사용한다. 외부 공개는 각 플랫폼이 자기 검증을 통과하면 서로 기다리지 않고 진행할 수 있다.
+
+
+## Roblox Headless FAST_MVP
+
+Roblox Studio 실행은 회사 자동화 경로에서 사용하지 않는다. Roblox의 canonical validation mode는 `HEADLESS_FAST_MVP`이며 기계 정책 권위는 `company-learning/platform-release-roadmap.json#roblox.headlessValidation`이다.
+
+Vibe는 Roblox에서 exact-source static validation, Rojo package, Vibe + shared-model preflight, server/client authority, Remote security, mobile input/UI, save/rejoin, multiplayer state-sync, exact-artifact regression을 headless로 검증한다.
+
+Studio를 실행하지 않았는데 legacy `robloxRuntimePassed`, `actualStudioRuntime` 같은 필드를 새 PASS로 만들면 안 된다.
+
+내부 출시는 Studio Publish가 아니라 Open Cloud만 사용한다. Universe/Place ID도 Studio 출력에서 찾지 않고 company-runtime publication target, prior proven Open Cloud release, owner-pinned Open Cloud target 순으로 해결한다.
