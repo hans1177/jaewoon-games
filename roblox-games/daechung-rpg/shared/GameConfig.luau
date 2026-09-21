@@ -2,7 +2,7 @@ local Config={
  PolicySource = "company-learning/platform-release-roadmap.json",
  Platform = "ROBLOX",
  MobileFirst = true,
- GameId="daechung-rpg",GameName="대충 RPG",GameNameEnglish="Whatever RPG",SaveEnabled=true,
+ GameId="daechung-rpg",GameName="Whatever RPG",GameNameKorean="대충 RPG",GameNameEnglish="Whatever RPG",SaveEnabled=true,
  Genre = "RPG",
  PlayMode = "COOP",
  MultiplayerRequired = true,
