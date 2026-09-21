@@ -6,6 +6,7 @@ import path from 'node:path';
 import {
   csrfFetch,
   createRobloxDedicatedExperience,
+  configureRobloxExperience,
   ensureRobloxExperiencePrivate,
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
@@ -35,6 +36,35 @@ test('createRobloxDedicatedExperience parses dedicated universe and root place i
   assert.deepEqual(result,{universeId:'12345',placeId:'67890',created:true});
   assert.equal(calls[1].url,'https://apis.roblox.com/universes/v1/universes/create');
   assert.match(String(calls[1].init.body),/templatePlaceId/);
+});
+
+test('createRobloxDedicatedExperience tries existing Open Cloud key when cookie is absent', async()=>{
+  const calls=[];
+  const fetchImpl=async(url,init={})=>{
+    calls.push({url,init});
+    return new Response(JSON.stringify({universeId:12345,rootPlaceId:67890}),{status:200,headers:{'content-type':'application/json'}});
+  };
+  const result=await createRobloxDedicatedExperience({cookie:'',apiKey:'key',fetchImpl});
+  assert.equal(result.universeId,'12345');
+  assert.equal(result.placeId,'67890');
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].init.headers['x-api-key'],'key');
+  assert.equal(calls[0].init.headers.cookie,undefined);
+});
+
+test('configureRobloxExperience uses Cloud v2 with API key and keeps target private when cookie is absent', async()=>{
+  let seen=null;
+  const fetchImpl=async(url,init={})=>{
+    seen={url,init};
+    return new Response(JSON.stringify({path:'universes/12345',displayName:'Whatever RPG',visibility:'PRIVATE'}),{status:200});
+  };
+  const result=await configureRobloxExperience({
+    universeId:'12345',name:'Whatever RPG',description:'private',cookie:'',apiKey:'key',fetchImpl,
+  });
+  assert.equal(result.configured,true);
+  assert.match(seen.url,/cloud\/v2\/universes\/12345\?updateMask=displayName,description,visibility$/);
+  assert.equal(seen.init.headers['x-api-key'],'key');
+  assert.deepEqual(JSON.parse(seen.init.body),{displayName:'Whatever RPG',description:'private',visibility:'PRIVATE'});
 });
 
 test('ensureRobloxExperiencePrivate falls back from Open Cloud to cookie and verifies inactive', async()=>{
