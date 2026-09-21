@@ -1,5 +1,5 @@
 {
-  "version": 233,
+  "version": 234,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4896,7 +4896,14 @@
       "runtimeDataAuthority": "company-runtime",
       "renderer": "index.html + assets/homepage-enhancements.js",
       "gameplayAndReleaseSemanticsUnchanged": true,
-      "directPlayPriority": true
+      "directPlayPriority": true,
+      "runtimeRendererContract": {
+        "renderer": "assets/homepage-enhancements.js",
+        "mustPreserveLiveSummary": true,
+        "desktopGameColumns": 4,
+        "mobileGameBrowse": "HORIZONTAL_TOUCH_CARDS",
+        "runtimeMayOverrideApprovedFrontDoor": false
+      }
     }
   },
   "serverHomepageIntegration": {
