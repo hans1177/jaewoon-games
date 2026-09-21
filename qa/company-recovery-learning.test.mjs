@@ -9,16 +9,17 @@ import { distillRecoveryCodePatterns } from '../tools/company-recovery-code-dist
 test('repeated failure is escalated into recovery queue',()=>{
   const result=escalateRecoveryCandidates({
     gameQueueInput:{tasks:[
-      {id:'g1',status:'failed',target:'web',sourceRoot:'web-games/g1',currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']},
-      {id:'g2',status:'failed',target:'web',sourceRoot:'web-games/g2',currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']},
-      {id:'g3',status:'failed',target:'web',sourceRoot:'web-games/g3',currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']}
+      {id:'g1',gameId:'g1',status:'failed',target:'web',sourceRoot:'web-games/g1',responsibleFiles:['web-games/g1/index.html'],currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']},
+      {id:'g2',gameId:'g2',status:'failed',target:'web',sourceRoot:'web-games/g2',responsibleFiles:['web-games/g2/index.html'],currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']},
+      {id:'g3',gameId:'g3',status:'failed',target:'web',sourceRoot:'web-games/g3',responsibleFiles:['web-games/g3/index.html'],currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']}
     ]}
   });
   assert.equal(result.added.length,1);
   const row=result.queue.tasks[0];
   assert.equal(row.blastRadius,'portfolio:3');
-  assert.equal(row.recoveryOwner,'VIBE2_VIBE3');
-  assert.match(row.recoveryStrategy,/RESUME_EXACT_FAILED_GAME_STAGE/);
+  assert.equal(row.recoveryOwner,'SYSTEM_AI');
+  assert.match(row.recoveryStrategy,/ASSIGN_SCOPED_IMPLEMENTATION_REPAIR/);
+  assert.deepEqual(row.responsibleFiles,['web-games/g1/index.html']);
 });
 
 test('cancelled or completed tasks never re-enter recovery escalation from stale failure evidence',()=>{
@@ -135,4 +136,31 @@ test('verified recovery becomes mastery-eligible code pattern while external sou
   assert.ok(internal.every(x=>x.independentQa==='PASS'&&x.masteryEligible===true&&x.rawCodeStored===false));
   assert.ok(external.length>=2);
   assert.ok(external.every(x=>x.masteryEligible===false&&x.rawCodeStored===false));
+});
+
+test('game-source recovery without explicit scoped files stays with Vibe',()=>{
+  const result=escalateRecoveryCandidates({
+    gameQueueInput:{tasks:[
+      {id:'legacy-game',gameId:'legacy-game',status:'failed',target:'web',sourceRoot:'web-games/legacy-game',currentStep:'WEB_RUNTIME',blocker:'legacy-failure',evidence:['failure-cause:legacy-failure']}
+    ]}
+  });
+  assert.equal(result.queue.tasks[0].recoveryOwner,'VIBE2_VIBE3');
+});
+
+test('scoped Vibe game bottleneck dispatch creates supervised System-AI repair task',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const recovery=escalateRecoveryCandidates({
+    gameQueueInput:{tasks:[
+      {id:'game-task',gameId:'demo',status:'failed',target:'web',sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:['game-catalog.json'],goal:'repair demo exact failure',currentStep:'WEB_RUNTIME',blocker:'runtime-failure',evidence:['failure-cause:runtime-failure']}
+    ]}
+  }).queue;
+  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.dispatched.length,1);
+  const task=dispatched.systemAi.tasks.find(x=>x.id.startsWith('recovery-'));
+  assert.ok(task);
+  assert.equal(task.gameId,'demo');
+  assert.deepEqual(task.responsibleFiles,['web-games/demo/index.html']);
+  assert.equal(task.status,'queued');
+  assert.equal(task.supervisorReviewRequired,true);
+  assert.equal(task.workerSelfAcceptance,false);
 });
