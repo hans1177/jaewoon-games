@@ -3986,7 +3986,40 @@
     "releaseShelfUnchanged": true,
     "top30ShelfUnchanged": true,
     "developmentShelfUnchanged": true,
-    "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true
+    "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true,
+    "departmentPortfolioControl": {
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "publicSnapshot": "homepage-portfolio-status.json",
+      "generator": "tools/homepage-portfolio-snapshot.mjs",
+      "internalSource": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
+      "internalEvidenceExposureForbidden": true,
+      "publicFields": [
+        "gameId",
+        "decision",
+        "label",
+        "priorityRank",
+        "productionClass",
+        "lifecycleState",
+        "authority"
+      ],
+      "labels": {
+        "ACCELERATE": "우선개발",
+        "CONTINUE": "정상개발",
+        "FOCUSED_REPAIR": "집중수리",
+        "REDESIGN": "재설계",
+        "PAUSE": "일시중지",
+        "RETIRE_REVIEW": "종료검토",
+        "PENDING": "판정 대기"
+      },
+      "homepageUi": {
+        "operationsBoard": true,
+        "gameCardBadge": true,
+        "refreshWithRuntime": true,
+        "renderer": "assets/homepage-enhancements.js"
+      },
+      "pendingBehavior": "SHOW_PENDING_NOT_FALSE_DECISION"
+    }
   },
   "catalogNormalization": {
     "version": 1,
