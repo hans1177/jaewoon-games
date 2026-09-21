@@ -296,6 +296,7 @@ jobs:
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
       - name: Confirm Web implementation ownership contract
+        if: matrix.firstStageEngine != 'UNITY_WEB'
         run: |
           set -euo pipefail
           grep -q "GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3" tools/company-development-web-bootstrap.mjs
@@ -309,11 +310,13 @@ jobs:
           echo 'WEB_PAID_RUNNER=NO'
 
       - name: Install isolated browser runtime
+        if: matrix.firstStageEngine != 'UNITY_WEB'
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
       - name: Validate one Vibe-built Web companion
+        if: matrix.firstStageEngine != 'UNITY_WEB'
         env:
           GAME_ID: ${{ matrix.gameId }}
           GAME_NAME: ${{ matrix.gameName }}
@@ -615,6 +618,127 @@ jobs:
           }
           fs.writeFileSync(path.join(resultsRoot,`${safe}.json`),JSON.stringify(result,null,2)+'\n');
           NODE
+
+      - name: Prepare canonical Unity Web source
+        id: unity_prepare
+        if: matrix.firstStageEngine == 'UNITY_WEB'
+        env:
+          GACE_ID: ${{ matrix.gameId }}
+          DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
+          UNITY_SOURCE_PATH: ${{ matrix.unitySourcePath }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$DESIGN_BASELINE_SOURCE" ]]; then
+            mkdir -p "$(dirname "$DESIGN_BASELINE_SOURCE")"
+            git show "origin/$COMPANY_RUNTIME_BRANCH:$DESIGN_BASELINE_SOURCE" > "$DESIGN_BASELINE_SOURCE" 2>/dev/null || true
+          fi
+          node tools/company-development-unity-web-worker.mjs prepare \
+            --game-id="$GAME_ID" \
+            --source-root="$UNITY_SOURCE_PATH" \
+            --baseline="$DESIGN_BASELINE_SOURCE" \
+            --source-commit="$GITHBA_SHA" \
+            --output=/tmp/unity-web-prepare.json
+          echo "ready=$(jq -r '.ready // false' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
+          echo "reason=$(jq -r '.reason // "UNITY_WEB_PREPARE_FAILED"' /tmp/unity-web-prepare.json)" >> "$GITHBA_OUTPUT"
+          echo "source_tree=$(jq -r '.sourceTreeSha // ""' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
+          echo "baseline_sha=$(jq -r '.designBaselineSha256 // ""' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
+          echo "build_method=$(jq -r '.buildMethod // ""' /tmp/unity-web-prepare.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch exact Unity Web child build
+        id: unity_child
+        if: matrix.firstStageEngine == 'UNITY_WEB' && steps.unity_prepare.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          UNITY_SOURCE_PATH: ${{ matrix.unitySourcePath }}
+          BUILD_METHOD: ${{ steps.unity_prepare.outputs.build_method }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          api="repos/$GITHBA_REPOSITORY/actions/workflows/unity-web-first-stage-build.yml"
+          baseline="$(gh api "$api/runs?event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0' 2>/dev/null || echo 0)"
+          payload="$(jq -n \
+            --arg ref main \
+            --arg game "$GAME_ID" \
+            --arg project "$UNITY_SOURCE_PATH" \
+            --arg method "$BUILD_METHOD" \
+            --arg source "$GITHUB_SHA" \
+            '{ref:$ref,inputs:{request_file:"",game_id:$game,project_path:$project,build_method:$method,source_commit:$source,publish_to_main:"false"}}')"
+          if ! printf '%s' "$payload" | gh api --method POST "$api/dispatches" --input - >/dev/null 2>&1; then
+            echo 'conclusion=failure' >> "$GITHBA_OUTPUT"
+            echo 'reason=UNITY_WEB_CHILD_DISPATCH_FAILED' >> "$GITHBA_OUTPUT"
+            exit 0
+          fi
+          run_id=''
+          title="Unity Web $GAME_ID"
+          for _ in $(seq 1 90); do
+            run_id="$(gh api "$api/runs?event=workflow_dispatch&per_page=100" 2>/dev/null | jq -r --argjson base "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$base and .display_title==$title)|.id]|max//empty')"
+            [[ "$run_id" =~ ^[0-9]+$ ]] && break
+            sleep 4
+          done
+          if [[ ! "$run_id" =~ ^[0-9]+$ ]]; then
+            echo 'conclusion=failure' >> "$GITHUB_OUTPUT"
+            echo 'reason=UNITY_WEB_CHILD_RUN_NOT_FOUND' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          conclusion=''
+          for _ in $(seq 1 540); do
+            status="$(gh api "repos/$GITHBA_REPOSITOR/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            conclusion="$(gh api "repos/$GITHBA_REPOSITOR/actions/runs/$run_id" --jq '.conclusion // ""' 2>/dev/null || true)"
+            [[ "$status" == 'completed' ]] && break
+            sleep 8
+          done
+          if [[ "$conclusion" != 'success' ]]; then
+            echo "conclusion=${conclusion:-failure}" >> "$GITHUB_OUTPUT"
+            echo "reason=UNITY_WEB_CHILD_BUILD_${conclusion:-TIMEOUT}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          rm -rf /tmp/unity-web-child
+          mkdir -p /tmp/unity-web-child
+          if ! gh run download "$run_id" -D /tmp/unity-web-child >/dev/null 2>&1; then
+            echo 'conclusion=failure' >> "$GITHUB_OUTPUT"
+            echo 'reason=UNITY_WEB_CHILD_ARTIFACT_DOWNLOAD_FAILED' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'conclusion=success' >> "$GITHBA_OUTPUT"
+          echo 'reason=PASS' >> "$GITHUB_OUTPUT"
+
+      - name: Build Unity Web worker result
+        if: always() && matrix.firstStageEngine == 'UNITY_WEB'
+        env:
+          GACE_ID: ${{ matrix.gameId }}
+          DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
+          UNITY_SOURCE_PATH: ${{ matrix.unitySourcePath }}
+          PREP_READY: ${{ steps.unity_prepare.outputs.ready }}
+          PREP_REASON: ${{ steps.unity_prepare.outputs.reason }}
+          SOURCE_TREE: ${{ steps.unity_prepare.outputs.source_tree }}
+          CHILD_RUN_ID: ${{ steps.unity_child.outputs.run_id }}
+          CHILD_CONCLUSION: ${{ steps.unity_child.outputs.conclusion }}
+          CHILD_REASON: ${{ steps.unity_child.outputs.reason }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          failure=''
+          if [[ "$PREP_READY" != 'true' ]]; then
+            failure="${PREP_REASON:-UNITY_WEB_PREPARE_FAILED}"
+          elif [[ "$CHILD_CONCLUSION" != 'success' ]]; then
+            failure="${CHILD_REASON:-UNITY_WEB_CHILD_BUILD_FAILED}"
+          fi
+          args=(
+            tools/company-development-unity-web-worker.mjs result
+            "--game-id=$GAME_ID"
+            "--source-root=$UNITY_SOURCE_PATH"
+            "--baseline=$DESIGN_BASELINE_SOURCE"
+            "--baseline-source=$DESIGN_BASELINE_SOURCE"
+            "--source-tree=$SOURCE_TREE"
+            "--build-run-id=${CHILD_RUN_ID:-0}"
+            "--child-root=/tmp/unity-web-child"
+            "--output-root=/tmp/web-worker"
+           )
+          if [[ -n "$failure" ]]; then args+=("--failure=$failure"); fi
+          node "${args[@]}"
 
       - name: Upload isolated Web worker result
         if: always()
