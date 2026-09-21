@@ -34,7 +34,7 @@ namespace JaewoonGames.DaechungRpg.Editor
             PlayerSettings.Android.forceInternetPermission = true;
 
             var runNumber = ResolveRunNumber();
-            PlayerSettings.Android.bundleVersionCode = 20000 + runNumber;
+            PlayerSettings.Android.bundleVersionCode = 20000 + runNumber; PlayerSettings.Android.bundleVersion = "0.2.1";
             PlayerSettings.bundleVersion = $"0.2.{runNumber}";
 
             var repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", ".."));
