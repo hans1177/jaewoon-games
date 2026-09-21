@@ -42,6 +42,11 @@ on:
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/UNITY_WEB_FIRST_STAGE.md'
+      - '.github/workflows/unity-web-first-stage-build.yml'
+      - 'tools/company-unity-web-first-stage.mjs'
+      - 'qa/company-unity-web-first-stage.test.mjs'
+      - 'unity-games/**'
       - 'qa/company-shared-context.test.mjs'
       - 'tools/company-shared-context.mjs'
       - 'company-learning/company-architecture-map.json'
@@ -87,6 +92,8 @@ jobs:
           node --check tools/company-shared-context.mjs
           node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-web-plan.json
+          node --check tools/company-unity-web-first-stage.mjs
+          node --test qa/company-unity-web-first-stage.test.mjs
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-web-contract-adapter.mjs
           node --check tools/company-vibe2-gameplay-intelligence.mjs
