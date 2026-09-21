@@ -261,18 +261,18 @@ test('new Roblox package identity clears every downstream preflight runtime and 
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('bot-dispatched Roblox package flow wakes preflight continuation but never grants Studio approval',()=>{
+test('successful Roblox package flow auto-dispatches HEADLESS FAST_MVP continuation without Studio gate',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  assert.ok(workflow.includes("github.actor == 'github-actions[bot]'"));
+  assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation'));
+  assert.ok(!workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT'));
   assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_UNATTENDED_AUTORUN=FORBIDDEN'));
-  assert.ok(workflow.includes('ROBLOX_STUDIO_MANUAL_WORKFLOW_DISPATCH_REQUIRED=YES'));
-  assert.ok(!workflow.includes('studio_run_approved=true'));
+  assert.ok(workflow.includes('ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'));
 });
 
 
