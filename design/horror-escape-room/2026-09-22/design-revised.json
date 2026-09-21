@@ -6,7 +6,7 @@
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T01:05:00+09:00",
-  "updatedAt": "2026-09-22T01:35:00+09:00",
+  "updatedAt": "2026-09-22T01:53:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
@@ -42,9 +42,13 @@
       {
         "name": "마지막 생존자 역전",
         "purpose": "마지막 생존자는 잠깐의 생존 보정을 받고 대신 위치가 간헐적으로 드러나 막판 추격 긴장감을 만든다."
+      },
+      {
+        "name": "대중적 몬스터 수집",
+        "purpose": "흡혈귀·인조괴물·늑대인간·미라·사신처럼 즉시 알아보는 고전 공포 원형을 이름만 살짝 변형해 사용하고, 각 몬스터는 한눈에 이해되는 추격 능력 하나를 가진다."
       }
     ],
-    "progressionDirection": "몬스터 플레이 기록으로 새로운 몬스터와 진화 선택지를 해금하고, 생존자는 구조·생존 기록과 코스메틱을 쌓는다. 희귀 몬스터도 상위호환 대신 다른 사냥 방식으로 설계한다.",
+    "progressionDirection": "드라크를 기본 몬스터로 시작하고 플레이 기록으로 프랑켄·울프·미이라·리퍼를 해금한다. 새 몬스터는 상위호환이 아니라 다른 추격 방식으로 확장한다.",
     "failureRetryRisk": {
       "failureStates": [
         "생존자가 몬스터에게 잡혀 얼음 상태가 됨",
@@ -88,7 +92,7 @@
         "performanceBudget": "모바일에서 조명·괴물·파티클을 제한하고 방 단위 활성화로 인스턴스 수를 관리한다.",
         "uiUx": "역할, 남은 시간, 얼어 있는 생존자 수, 간단한 대시·몬스터 스킬·해동 버튼만 표시한다.",
         "saveAndNetwork": "몬스터 해금·진화 선택지·코스메틱·역할 이력과 공정선정 가중치에 필요한 최소 기록만 저장하고 라운드 판정은 서버가 관리한다.",
-        "platformContentAdaptation": "Roblox 3D 학교·병원·놀이공원 같은 맵에서 달리기, 문, 사물함, 장애물과 포획/해동 상호작용으로 즉시 이해되는 얼음땡 추격전을 구현한다.",
+        "platformContentAdaptation": "학교·병원·놀이공원 같은 3D 맵에서 드라크·프랑켄·울프·미이라·리퍼를 직접 조종해 생존자를 얼리고, 생존자는 달리기·문·사물함·장애물·해동으로 버틴다.",
         "internalReleaseTarget": "Owner가 플레이 가능한 비공개 또는 제한 Roblox 테스트 경험.",
         "validationEvidence": "실제 Roblox 서버에서 1인 AI 충원, 2명 이상 실제 플레이어 몬스터 선정, 포획·해동·승패 동기화, 모바일 입력, 연속 몬스터 방지와 재접속 회귀를 검증한다."
       },
@@ -100,10 +104,47 @@
         "performanceBudget": "모바일 조명과 후처리 예산을 제한하고 방 단위 오브젝트 활성화를 사용한다.",
         "uiUx": "직관적인 이동·대시·스킬·해동 UI만 제공한다.",
         "saveAndNetwork": "탈출 기록은 버전 저장하고 라운드 상태는 세션 authoritative 상태로 유지한다.",
-        "platformContentAdaptation": "Unity 3D 공간에서 추격, 장애물, 포획/해동, 몬스터 능력을 같은 규칙으로 구현한다.",
+        "platformContentAdaptation": "같은 고전 공포 몬스터 로스터와 얼음땡 규칙을 Unity 3D 추격전으로 구현한다.",
         "internalReleaseTarget": "내부 Android 테스트 빌드.",
         "validationEvidence": "1인 AI 충원과 실제 멀티 역할선정·포획·해동·승패·성능을 같은 빌드에서 검증한다."
       }
-    }
+    },
+    "monsterRoster": [
+      {
+        "id": "DRAK",
+        "name": "드라크",
+        "archetype": "고전 흡혈귀",
+        "ability": "박쥐 돌진",
+        "playStyle": "짧은 직선 돌진으로 거리를 좁히는 기본형"
+      },
+      {
+        "id": "FRANKEN",
+        "name": "프랑켄",
+        "archetype": "고전 인조괴물",
+        "ability": "괴력 돌진",
+        "playStyle": "느리지만 강하게 돌진하고 일부 장애물을 밀쳐 길을 연다"
+      },
+      {
+        "id": "WOLF",
+        "name": "울프",
+        "archetype": "늑대인간",
+        "ability": "폭주 질주",
+        "playStyle": "일정 시간 빠르게 달려 도망가는 생존자를 따라붙는다"
+      },
+      {
+        "id": "MIRAA",
+        "name": "미이라",
+        "archetype": "고대 미라",
+        "ability": "저주의 손길",
+        "playStyle": "가까운 생존자의 이동을 잠깐 느리게 만든다"
+      },
+      {
+        "id": "REAPER",
+        "name": "리퍼",
+        "archetype": "사신",
+        "ability": "그림자 점프",
+        "playStyle": "짧은 거리 순간이동으로 코너와 장애물을 넘겨 추격한다"
+      }
+    ]
   }
 }
