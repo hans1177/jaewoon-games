@@ -169,15 +169,18 @@ jobs:
           const selected=candidates[0];
           const universeId=String(selected.target.universeId).trim();
           const placeId=String(selected.target.placeId).trim();
+          let sharedRotation=false;
           if(selected.source==='owner-pinned-open-cloud-target'){
             const occupied=(q.items||[]).find(row=>
               row.gameId!==gameId
-              &&row.robloxInternalReleaseReady===true
               &&row.robloxInternalReleaseEvidence?.published===true
               &&String(row.robloxInternalReleaseEvidence?.universeId||'').trim()===universeId
               &&String(row.robloxInternalReleaseEvidence?.placeId||'').trim()===placeId
+              &&row.robloxSharedTargetCurrent!==false
             );
-            if(occupied)throw new Error(`ROBLOX_RELEASE_SHARED_FALLBACK_OCCUPIED:${gameId}:${occupied.gameId}`);
+            sharedRotation=item.releaseStrategy==='FAST_MVP'&&ownerPinned.sharedFastMvpRotationAllowed===true;
+            if(occupied&&!sharedRotation)throw new Error(`ROBLOX_RELEASE_SHARED_FALLBACK_OCCUPIED:${gameId}:${occupied.gameId}`);
+            if(occupied&&sharedRotation)console.log(`ROBLOX_FAST_MVP_SHARED_TARGET_ROTATE=${occupied.gameId}->${gameId}`);
           }
           for(const candidate of candidates.slice(1)){
             const candidateUniverse=String(candidate.target.universeId).trim();
@@ -196,6 +199,7 @@ jobs:
           put('universe_id',universeId);
           put('place_id',placeId);
           put('publication_target_source',selected.source);
+          put('shared_rotation',sharedRotation?'true':'false');
           put('visibility_intent','PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           console.log(`ROBLOX_RELEASE_CANONICAL_TARGET=${gameId}`);
           console.log(`ROBLOX_RELEASE_SOURCE_REVISION=${revision}`);
@@ -287,7 +291,7 @@ jobs:
           echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
 
       - name: Force Roblox universe private before internal publish
-        if: steps.target.outputs.skip != 'true' && github.event_name != 'push'
+        if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -399,7 +403,8 @@ jobs:
           UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           PLACE_ID: ${{ steps.target.outputs.place_id }}
           PUBLICATION_TARGET_SOURCE: ${{ steps.target.outputs.publication_target_source }}
-          VISIBILITY_INTENT: ${{ github.event_name == 'push' && 'PRESERVE_EXISTING_TARGET_VISIBILITY' || steps.target.outputs.visibility_intent }}
+          VISIBILITY_INTENT: ${{ steps.target.outputs.visibility_intent }}
+          SHARED_ROTATION: ${{ steps.target.outputs.shared_rotation }}
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -418,6 +423,7 @@ jobs:
           const universeId=String(process.env.UNIVERSE_ID||'').trim();
           const placeId=String(process.env.PLACE_ID||'').trim();
           const targetSource=String(process.env.PUBLICATION_TARGET_SOURCE||'').trim();
+          const sharedRotation=String(process.env.SHARED_ROTATION||'').trim()==='true';
           if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('release source revision changed before persist');
           if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('release artifact identity changed before persist');
           const finalGate=item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFastMvpPassed===true:item.robloxFinalReviewPassed===true;
@@ -431,6 +437,20 @@ jobs:
           const visibilityIntent=String(process.env.VISIBILITY_INTENT||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           const preserveExistingVisibility=visibilityIntent==='PRESERVE_EXISTING_TARGET_VISIBILITY';
           if(!preserveExistingVisibility&&visibilityIntent!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE')throw new Error('release visibility intent changed');
+          if(sharedRotation){
+            for(const other of q.items||[]){
+              if(other.gameId===item.gameId)continue;
+              const prior=other.robloxInternalReleaseEvidence||{};
+              if(prior.published===true&&String(prior.universeId||'')===universeId&&String(prior.placeId||'')===placeId){
+                other.robloxSharedTargetCurrent=false;
+                other.robloxFastMvpSupersededBy=item.gameId;
+                other.robloxInternalReleaseReady=false;
+                other.updatedAt=stamp;
+              }
+            }
+          }
+          item.robloxSharedTargetCurrent=true;
+          item.robloxFastMvpSupersededBy=null;
           item.robloxPublicationTarget={
             version:2,
             gameId:item.gameId,

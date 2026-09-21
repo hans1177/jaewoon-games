@@ -1,5 +1,5 @@
 {
-  "version": 254,
+  "version": 255,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -807,7 +807,12 @@
         "fallbackOnlyWhenNoGameSpecificVerifiedTarget": true,
         "persistPerGameAfterProvenPublish": true,
         "requireGitHubSecretIdMatch": true,
-        "authority": "OWNER_DIRECTIVE_2026-09-19"
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "sharedFastMvpRotationAllowed": true,
+        "sharedFastMvpRotationSemantics": "ONE_CURRENT_LIVE_GAME_AT_A_TIME_PREVIOUS_PUBLISH_EVIDENCE_RETAINED",
+        "sharedFastMvpCurrentGameField": "robloxSharedTargetCurrent",
+        "sharedFastMvpSupersededField": "robloxFastMvpSupersededBy",
+        "internalReleaseVisibilityRequired": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE"
       },
       "studioRuntimeRequired": false,
       "publicationTargetFromStudioForbidden": true

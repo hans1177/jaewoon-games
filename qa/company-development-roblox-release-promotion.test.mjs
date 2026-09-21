@@ -85,6 +85,10 @@ test('internal release workflow publishes only retained exact artifact to restri
   assert.match(workflow,/group: company-development-roblox-release-promotion/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.match(workflow,/ROBLOX_RELEASE_SHARED_FALLBACK_OCCUPIED/);
+  assert.match(workflow,/sharedFastMvpRotationAllowed/);
+  assert.match(workflow,/ROBLOX_FAST_MVP_SHARED_TARGET_ROTATE/);
+  assert.match(workflow,/robloxSharedTargetCurrent=false/);
+  assert.match(workflow,/robloxFastMvpSupersededBy=item\.gameId/);
   assert.match(workflow,/OWNER_SECRET_UNIVERSE_ID: \$\{\{ secrets\.ROBLOX_UNIVERSE_ID \}\}/);
   assert.match(workflow,/OWNER_SECRET_PLACE_ID: \$\{\{ secrets\.ROBLOX_PLACE_ID \}\}/);
   assert.match(workflow,/ROBLOX_RELEASE_OWNER_PINNED_SECRET_ID_MISMATCH/);
@@ -127,6 +131,7 @@ test('internal release workflow publishes only retained exact artifact to restri
   assert.match(workflow,/item\.robloxReleaseClaim=false/);
   assert.match(workflow,/item\.robloxPublicRelease=false/);
   assert.match(workflow,/const visibilityIntent=String\(process\.env\.VISIBILITY_INTENT\|\|'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'\)/);
+  assert.match(workflow,/VISIBILITY_INTENT: \$\{\{ steps\.target\.outputs\.visibility_intent \}\}/);
   assert.match(workflow,/publicDiscoveryAllowed:preserveExistingVisibility\?null:false/);
   assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
   assert.match(workflow,/item\.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
