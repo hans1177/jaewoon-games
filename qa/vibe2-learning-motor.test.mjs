@@ -941,3 +941,78 @@ test('native positive mastery does not rise from verified metadata without match
   assert.equal(result.state.domains.UEFN_VERSE.xp,0);
   assert.ok(result.state.domains.CORE_LOOP.xp>0);
 });
+
+test('verified knowledge outcomes reward first-pass and failure-clear evidence',()=>{
+  const task={
+    id:'knowledge-good',gameId:'g1',target:'web',goal:'repair save restore',
+    evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      'coding-candidate-first-attempt:YES','coding-failure-fingerprint:web|SAVE_RESTORE',
+      'learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(['CODE_PATTERN:save-good'])),
+      'learning-primary-domains:'+encodeURIComponent(JSON.stringify(['SAVE'])),
+      'coding-primary-systems:'+encodeURIComponent(JSON.stringify(['SAVE_PERSISTENCE'])),
+      'actions-run:100'
+    ]
+  };
+  const learned=applyVerifiedKnowledgeOutcomes({}, {tasks:[task]});
+  const row=learned.state.knowledgeAttribution.entries['CODE_PATTERN:save-good'];
+  assert.equal(row.verifiedApplications,1);
+  assert.equal(row.firstPasses,1);
+  assert.equal(row.failureSignatureClears,1);
+  assert.equal(row.primaryDomainMatches,1);
+});
+
+test('repeated regression failures retire harmful knowledge and remove it from retrieval',()=>{
+  let state={};
+  const tasks=[];
+  for(let i=0;i<4;i++)tasks.push({
+    id:'bad-'+i,gameId:'g'+(i%2+1),target:'web',goal:'repair save restore',
+    evidence:[
+      'failure-cause:fan-in-regression-failed',
+      'learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(['CODE_PATTERN:save-bad'])),
+      'learning-primary-domains:'+encodeURIComponent(JSON.stringify(['SAVE'])),
+      'coding-primary-systems:'+encodeURIComponent(JSON.stringify(['SAVE_PERSISTENCE'])),
+      'actions-run:'+(200+i)
+    ]
+  });
+  state=applyVerifiedKnowledgeOutcomes(state,{tasks}).state;
+  assert.equal(state.knowledgeAttribution.entries['CODE_PATTERN:save-bad'].state,'RETIRED');
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'gx',target:'web',goal:'repair save restore'},
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[
+      {id:'save-bad',verified:true,retrievalEligible:true,engine:'web',system:'SAVE_PERSISTENCE',problem:'save restore',pattern:'persist state',tags:['save','restore']}
+    ]},
+    masteryInput:state
+  });
+  assert.ok(!ctx.exactKnowledgeIds.includes('CODE_PATTERN:save-bad'));
+});
+
+test('preferred knowledge outranks otherwise similar candidate knowledge after verified effectiveness',()=>{
+  let state={};
+  const goodTasks=[];
+  for(let i=0;i<5;i++)goodTasks.push({
+    id:'good-'+i,gameId:i<2?'g1':'g2',target:'web',goal:'repair save restore',
+    evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      'coding-candidate-first-attempt:YES',
+      'learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(['CODE_PATTERN:preferred-save'])),
+      'learning-primary-domains:'+encodeURIComponent(JSON.stringify(['SAVE'])),
+      'coding-primary-systems:'+encodeURIComponent(JSON.stringify(['SAVE_PERSISTENCE'])),
+      'actions-run:'+(300+i)
+    ]
+  });
+  state=applyVerifiedKnowledgeOutcomes(state,{tasks:goodTasks}).state;
+  assert.equal(state.knowledgeAttribution.entries['CODE_PATTERN:preferred-save'].state,'PREFERRED');
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'other',target:'web',goal:'repair save restore'},
+    experienceInput:{records:[]},
+    codePatternsInput:{patterns:[
+      {id:'candidate-save',verified:true,retrievalEligible:true,engine:'web',system:'SAVE_PERSISTENCE',problem:'save restore',pattern:'persist state',tags:['save','restore']},
+      {id:'preferred-save',verified:true,retrievalEligible:true,engine:'web',system:'SAVE_PERSISTENCE',problem:'save restore',pattern:'persist state',tags:['save','restore']}
+    ]},
+    masteryInput:state
+  });
+  assert.equal(ctx.codePatterns[0].id,'preferred-save');
+});
+
