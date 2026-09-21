@@ -6,7 +6,8 @@ local Config={
  Genre = "RPG",
  PlayMode = "COOP",
  MultiplayerRequired = true,
- SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,MinimumParticipants=2,PartySlots=4,RemoteName="GameAction",
+ SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,MinimumParticipants=2,PartySlots=4,RemoteName="GameAction",RemoteMinInterval=.08,
+ Audio={Background="rbxassetid://1839010065",Battle="rbxassetid://1837821768",Action="rbxassetid://7171761940",Victory="rbxassetid://1839321582"},
  Classes={
   {Id="BREAKER",Name="파쇄기사",Damage=14,Skill=36},
   {Id="SHADOW",Name="그림자추적자",Damage=13,Skill=42},
