@@ -2,7 +2,7 @@
   "version": 3,
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "ownerDirective": "Owner-directed existing-game DESIGN_ONLY intake. Each request's seed defines whether the existing implementation is preserved or rebuilt. Always use the canonical design/promotion/Vibe pipeline; do not create parallel runners or weaken gates.",
-  "requestedAt": "2026-09-16T00:00:00+09:00",
+  "requestedAt": "2026-09-22T00:28:00+09:00",
   "requests": [
     {
       "revision": "OWNER-FULL-REBUILD-20260916-1",
@@ -334,8 +334,14 @@
         "lifecycleState": "DESIGN_ONLY",
         "preserveExistingWebArchive": true,
         "existingWebSourcePath": "web-games/cozy-island",
-        "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY"
-      }
+        "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+        "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
+        "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
+        "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX"
+      },
+      "ownerImmediateDevelopmentRequested": true,
+      "ownerImmediateDevelopmentRequestedAt": "2026-09-22T00:28:00+09:00",
+      "ownerRequestedPrimaryPlatform": "ROBLOX"
     },
     {
       "revision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
@@ -604,8 +610,14 @@
         "TRANSFORMATION_MODE": "REINTERPRETATION",
         "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
         "productionClass": "DESIGN_ONLY",
-        "lifecycleState": "DESIGN_ONLY"
-      }
+        "lifecycleState": "DESIGN_ONLY",
+        "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
+        "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
+        "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX"
+      },
+      "ownerImmediateDevelopmentRequested": true,
+      "ownerImmediateDevelopmentRequestedAt": "2026-09-22T00:28:00+09:00",
+      "ownerRequestedPrimaryPlatform": "ROBLOX"
     },
     {
       "revision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
@@ -731,5 +743,17 @@
         "lifecycleState": "DESIGN_ONLY"
       }
     }
-  ]
+  ],
+  "ownerImmediateDevelopmentStart": {
+    "authority": "OWNER_DIRECTIVE_2026-09-22",
+    "requestedAt": "2026-09-22T00:28:00+09:00",
+    "gameIds": [
+      "cozy-island",
+      "territory-war"
+    ],
+    "requestedPrimaryPlatform": "ROBLOX",
+    "designAuthoring": "VIBE_AUTOFILL_MINIMUM_DESIGN",
+    "developmentStartCondition": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+    "nativeExecution": "ROBLOX_UNITY_AUTO_PAIR"
+  }
 }
