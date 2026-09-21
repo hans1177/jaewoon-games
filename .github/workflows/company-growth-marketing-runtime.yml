@@ -79,18 +79,19 @@ jobs:
             exit 1
           fi
 
-      - name: Wake external AI and Vibe collaboration
+      - name: Start exact queued marketing tasks
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           count="$(node -p "require('/tmp/marketing-plan.json').added.length")"
           pending="$(node -e "const q=require('/tmp/marketing-system-ai-queue.json');console.log((q.tasks||[]).filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued').length)")"
-          if [ "$count" != "0" ] || [ "$pending" != "0" ]; then
-            printf '%s\n' '{"event_type":"company-system-ai-cycle","client_payload":{"source":"growth-marketing-runtime"}}' > /tmp/system-ai-dispatch.json
-            gh api repos/"$GITHUB_REPOSITORY"/dispatches --method POST --input /tmp/system-ai-dispatch.json
+          ids="$(node -e "const q=require('/tmp/marketing-system-ai-queue.json');console.log((q.tasks||[]).filter(t=>String(t.id||'').startsWith('marketing-')&&String(t.status||'')==='queued').slice(0,32).map(t=>t.id).join(','))")"
+          if [ "$pending" != "0" ] && [ -n "$ids" ]; then
+            gh workflow run company-system-ai-workers.yml --repo "$GITHUB_REPOSITORY" --ref main -f marketing_task_ids="$ids"
             gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo "MARKETING_COLLABORATION_WAKE=YES:added-$count:pending-$pending"
+            echo "MARKETING_COLLABORATION_START=YES:added-$count:pending-$pending"
+            echo "MARKETING_TARGET_IDS=$ids"
           else
-            echo 'MARKETING_COLLABORATION_WAKE=NO_PENDING_TASK'
+            echo 'MARKETING_COLLABORATION_START=NO_PENDING_TASK'
           fi
