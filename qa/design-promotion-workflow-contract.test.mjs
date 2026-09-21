@@ -5,31 +5,34 @@ import fs from 'node:fs';
 const promotion=fs.readFileSync('.github/workflows/company-design-promotion-sync.yml','utf8');
 const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 
-test('partial DESIGN_ONLY batch failure still evaluates persisted strict-ready games for promotion',()=>{
+test('partial DESIGN_ONLY batch failure still evaluates persisted minimum-design-ready games for native promotion',()=>{
   assert.match(designRuntime,/fail-fast:\s*false/);
   assert.match(promotion,/workflow_run:[\s\S]*types:\s*\[completed\]/);
   assert.match(promotion,/workflow_run\.conclusion == 'success'/);
   assert.match(promotion,/workflow_run\.conclusion == 'failure'/);
   assert.doesNotMatch(promotion,/workflow_run\.conclusion == 'cancelled'/);
-  assert.match(promotion,/Promote 80-point strict-ready design baselines directly to Web gate/);
-  assert.match(promotion,/review\.verdict==='PASS'/);
-  assert.match(promotion,/Number\(review\.totalScore\)>=80/);
-  assert.match(promotion,/review\.hardFailures\.length===0/);
-  assert.match(promotion,/PRE_WEB_ARTBOOK_REQUIRED=NO/);
+  assert.match(promotion,/Promote minimum dual-platform design directly to native development/);
+  assert.match(promotion,/company-minimum-design-contract\.mjs/);
+  assert.match(promotion,/minimumDesignContract\?\.pass!==true/);
+  assert.match(promotion,/concurrentTargetPlatforms/);
+  assert.match(promotion,/Roblox platform profile missing/);
+  assert.match(promotion,/Unity platform profile missing/);
+  assert.match(promotion,/legacy Web gate still active/);
+  assert.match(promotion,/STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE/);
+  assert.match(promotion,/UNITY_WEB_GATE=DISABLED/);
 });
 
 
-test('promotion is per-game and Web development remains stopped at the queue while owner pause is active',()=>{
-  assert.match(designRuntime,/Dispatch per-game promotion reconciliation on own strict PASS/);
+test('promotion is per-game and dispatches both native lanes after minimum design is ready',()=>{
   assert.match(designRuntime,/PER_GAME_PROMOTION_DISPATCH=YES/);
   assert.match(designRuntime,/PER_GAME_PROMOTION_FORCE=NO/);
   assert.match(designRuntime,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
-  assert.match(promotion,/Stop after DEVELOPMENT_CONFIRMED queue while Web development is owner-paused/);
-  assert.match(promotion,/developmentRuntimeDispatchAllowed===false/);
-  assert.match(promotion,/DEVELOPMENT_CONFIRMED_QUEUE=ALLOWED/);
-  assert.match(promotion,/DEVELOPMENT_RUNTIME_DISPATCHED=NO/);
-  assert.match(promotion,/OWNER_WEB_DEVELOPMENT_PAUSED=true/);
-  assert.match(promotion,/STOP_AFTER_STAGE=DEVELOPMENT_CONFIRMED_QUEUE/);
+  assert.match(promotion,/Dispatch Roblox and Unity native development together/);
+  assert.match(promotion,/company-development-roblox-runtime\.yml/);
+  assert.match(promotion,/company-development-unity-runtime\.yml/);
+  assert.match(promotion,/DIRECT_NATIVE_DUAL_DISPATCH=ROBLOX,UNITY/);
+  assert.match(promotion,/UNITY_WEB_DISPATCH=NO/);
+  assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
 });
 
 test('promotion persistence retries only against the newest runtime state and never replays stale JSON snapshots',()=>{
