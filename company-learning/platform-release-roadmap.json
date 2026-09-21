@@ -1,5 +1,5 @@
 {
-  "version": 241,
+  "version": 242,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4981,6 +4981,18 @@
         "fallback": "/command.html?from=chatgpt-shortcut",
         "finalWeb": "https://chatgpt.com/",
         "safetyBypassForbidden": true
+      },
+      "gameCardPlatforms": {
+        "web": "ALWAYS_FIXED_VISIBLE",
+        "concurrent": [
+          "ROBLOX",
+          "UNITY",
+          "FORTNITE_UEFN"
+        ],
+        "visibility": "ALL_TRACKS_SIMULTANEOUS",
+        "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
+        "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
+        "selectedPlatformDoesNotHideOtherTracks": true
       }
     }
   },
