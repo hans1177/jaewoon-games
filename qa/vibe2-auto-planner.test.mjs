@@ -1074,3 +1074,35 @@ test('final Web presentation pass requires commercial readiness marker and keeps
   assert.match(finalPass.goal,/타이쿤\/시뮬레이션/);
   assert.match(finalPass.goal,/Commercial Readiness/);
 });
+
+
+test('owner focused games and all released games receive focused caretaker priority',()=>{
+  const root=tempRepo();
+  fs.mkdirSync(path.join(root,'web-games','fantasy-survival'),{recursive:true});
+  fs.writeFileSync(path.join(root,'web-games','fantasy-survival','index.html'),'<!doctype html><html><body>game</body></html>');
+  fs.mkdirSync(path.join(root,'web-games','released-demo'),{recursive:true});
+  fs.writeFileSync(path.join(root,'web-games','released-demo','index.html'),'<!doctype html><html><body>game</body></html>');
+  const roadmapPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  fs.mkdirSync(path.dirname(roadmapPath),{recursive:true});
+  fs.writeFileSync(roadmapPath,JSON.stringify({developmentLifecycleMachine:{focusedDevelopmentCaretakers:{enabled:true,ownerFocusedGameIds:['fantasy-survival','daechung-rpg'],includeAllReleaseConfirmed:true}}}));
+  const catalog={games:[
+    {id:'fantasy-survival',name:'마력숲 생존기',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/fantasy-survival/'},
+    {id:'released-demo',name:'Released Demo',productionClass:'RELEASE_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/released-demo/'}
+  ]};
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,
+    developmentQueue:{items:[{gameId:'fantasy-survival',gameName:'마력숲 생존기',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:'web-games/fantasy-survival',sourcePath:'web-games/fantasy-survival'}]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const focus=result.tasks.find(row=>row.gameId==='fantasy-survival');
+  assert.ok(focus);
+  assert.equal(focus.priority,'critical');
+  assert.equal(focus.ownerDirective,true);
+  assert.equal(focus.maxRetries,null);
+  assert.equal(focus.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(focus.packageLongWorkProtected,true);
+  assert.equal(focus.packageRole,'implementation-owner');
+  assert.equal(focus.focusedCaretaker,true);
+  assert.equal(focus.caretakerStickyOwnership,true);
+  assert.ok(focus.evidence.includes('focused-caretaker:yes'));
+});
