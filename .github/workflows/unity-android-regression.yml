@@ -180,5 +180,6 @@ jobs:
             /tmp/jaewoon-regression-redroid-device.txt
             /tmp/jaewoon-regression-redroid-docker.txt
             /tmp/jaewoon-regression-redroid-adb-connect.txt
-            /tmp/jaewoon-regression-redroid-ashmem-build.log          if-no-files-found: warn
+            /tmp/jaewoon-regression-redroid-ashmem-build.log
+          if-no-files-found: warn
           retention-days: 14

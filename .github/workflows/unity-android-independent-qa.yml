@@ -235,5 +235,6 @@ jobs:
             /tmp/jaewoon-independent-redroid-device.txt
             /tmp/jaewoon-independent-redroid-docker.txt
             /tmp/jaewoon-independent-redroid-adb-connect.txt
-            /tmp/jaewoon-independent-redroid-ashmem-build.log          if-no-files-found: warn
+            /tmp/jaewoon-independent-redroid-ashmem-build.log
+          if-no-files-found: warn
           retention-days: 14

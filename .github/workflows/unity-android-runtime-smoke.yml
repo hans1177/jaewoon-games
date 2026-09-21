@@ -215,5 +215,6 @@ jobs:
             /tmp/jaewoon-redroid-docker.txt
             /tmp/jaewoon-redroid-adb-connect.txt
             /tmp/jaewoon-redroid-inspect.json
-            /tmp/jaewoon-redroid-ashmem-build.log          if-no-files-found: warn
+            /tmp/jaewoon-redroid-ashmem-build.log
+          if-no-files-found: warn
           retention-days: 14
