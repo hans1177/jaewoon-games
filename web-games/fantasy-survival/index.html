@@ -35,13 +35,18 @@ const multiplayer={client:null,channel:null,room:'',connected:false,playerId:ses
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=38,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=39,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const JUNGLE_REGION={x:18000,y:0,w:18000,h:9600}; // 172,800,000 = 전체 맵 면적의 정확히 40%
 const SNOW_REGION={x:18000,y:9600,w:18000,h:4800}; // 밀림 바로 아래 · 기존 설원의 정확히 2배
 const JUNGLE_LAKES=[{x:24400,y:2600,r:360},{x:29400,y:6500,r:300},{x:34200,y:8900,r:340}];
+const JUNGLE_TEMPLE_ENTRANCE={x:28100,y:3900,r:105};
+const JUNGLE_TEMPLE_LOBBY={w:2600,h:1800,entry:{x:1300,y:1480},exit:{x:1300,y:1620},upper:{x:650,y:280},lower:{x:1950,y:280}};
+const JUNGLE_TEMPLE_UPPER={w:4200,h:2600,return:{x:2100,y:2380},altar:{x:2100,y:1300},secret:{x:3850,y:330}};
+const JUNGLE_TEMPLE_LOWER={w:4200,h:2600,return:{x:2100,y:2380}};
+const JUNGLE_TEMPLE_SECRET={w:2600,h:1800,return:{x:320,y:900},chest:{x:1950,y:900}};
 const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y:8500},{x:11550,y:7000}];
 const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},SHADOW_WOLF_EGG_2={x:11480,y:9750,r:30},MAP_CELL=400;
 const GIANT_LAKE_SURFACE={x:0,y:0,w:14400,h:2000};
@@ -175,6 +180,8 @@ const recipes=[
 {id:'anaconda-armor',name:'아나콘다 비늘갑옷',where:'junglebench',cost:{anacondaScale:7,monopolyIngot:7,goldIngot:6},desc:'최대 체력 +240 · 받는 피해 22% 감소 · 4티어',kind:'armor',maxHp:240,reduce:.22},
 {id:'mud-blade',name:'머드 워커 도',where:'junglebench',cost:{mudCore:5,monopolyIngot:5,goldIngot:4},desc:'공격력 170 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:170,range:86,cooldown:760,slowChance:.10,slowDuration:3000},
 {id:'mud-spear',name:'머드 워커 창',where:'junglebench',cost:{mudCore:6,monopolyIngot:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000},
+{id:'jungle-guardian-glaive',name:'밀림 수호자의 장창',where:'junglebench',cost:{jungleGuardianCore:1,monopolyIngot:8,goldIngot:6},desc:'공격력 215 · 긴 사거리 · 밀림 신전 수호자 전리품으로 만드는 4티어 무기',kind:'weapon',power:215,range:122,cooldown:900},
+{id:'tiger-twin-blades',name:'호랑이 쌍검',where:'hidden',cost:{},desc:'히든 4티어 무기 · 공격력 222 · 공격속도 1초',kind:'weapon',power:222,range:90,cooldown:1000},
 {id:'jungle-bench',name:'독점석 제작대',where:'goldbench',cost:{monopolyIngot:5,goldIngot:3,wood:2},desc:'밀림과 설원 장비를 제작하는 상위 제작대',kind:'structure'},
 {id:'cooked-bird-meat',name:'구운 꿩고기',where:'smelt',cost:{},desc:'세계수 꿩고기를 구운 음식 · 밥 +55',kind:'consumable',hunger:55},
 {id:'cooked-crystal-goat-meat',name:'구운 수정염소고기',where:'smelt',cost:{},desc:'수정염소고기를 구운 음식 · 밥 +65',kind:'consumable',hunger:65},
@@ -244,12 +251,12 @@ function registerAllCookingCombos(){
 registerAllCookingCombos();
 const ITEM_TIER_2=new Set(['rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
 const ITEM_TIER_3=new Set(['gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
-const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
+const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
 const ITEM_TIER_5=new Set(['yeti-horn-maul','yeti-armor']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul']);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,canyonlizard:1,crystalgoat:2,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:4,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -289,18 +296,22 @@ yetileader:{id:'yetileader',name:'예티 우두머리',mood:'aggressive',hp:2599
 yeticub:{id:'yeticub',name:'예티 새끼',mood:'aggressive',hp:400,dmg:30,speed:82,r:23,color:'#edf4f6',detect:620,snow:true,summoned:true},
 polarbear:{id:'polarbear',name:'북극곰',mood:'aggressive',hp:1000,dmg:50,speed:72,r:34,color:'#f1f3ed',detect:620,snow:true,polarBearSpecial:true},
 polarwolf:{id:'polarwolf',name:'북극늑대',mood:'neutral',hp:650,dmg:35,speed:92,r:24,color:'#c7d4dc',detect:560,snow:true,polarWolfSpecial:true},
-polarfox:{id:'polarfox',name:'북극여우',mood:'harmless',hp:100,dmg:0,speed:95,r:16,color:'#f6f8f3',detect:0,snow:true,huntable:true}
+polarfox:{id:'polarfox',name:'북극여우',mood:'harmless',hp:100,dmg:0,speed:95,r:16,color:'#f6f8f3',detect:0,snow:true,huntable:true},
+jungletiger:{id:'jungletiger',name:'밀림 호랑이',mood:'aggressive',hp:850,dmg:55,speed:110,r:29,color:'#c67a31',detect:680,jungle:true},
+primitiveSpearman:{id:'primitiveSpearman',name:'창병 원시인',mood:'aggressive',hp:600,dmg:30,speed:68,r:24,color:'#8c6843',detect:900,area:'jungletemple-upper',templeSpearman:true},
+primitiveArcher:{id:'primitiveArcher',name:'원거리 원시인',mood:'aggressive',hp:400,dmg:50,speed:64,r:22,color:'#6e8150',detect:1050,area:'jungletemple-upper',templeArcher:true},
+jungleGuardian:{id:'jungleGuardian',name:'밀림 수호자',mood:'aggressive',hp:1300,dmg:70,speed:76,r:36,color:'#37654c',detect:950,area:'jungletemple-lower',templeGuardian:true}
 };
 const DROP_MATERIAL_NAMES={
  mossTusk:'이끼멧돼지 엄니',stoneCore:'돌정령 핵',goblinCharm:'고블린 부적',wolfHide:'늑대가죽',
  ironSpiritCore:'철 정령 핵',bearClaw:'곰발톱',bearHide:'곰가죽',bearFang:'곰이빨',
  sovereignCore:'근원포식자 핵',fireWolfFang:'화염 늑대 송곳니',burrowerShell:'초거대 벌레 갑각',
  walkerClaw:'샌드워커 집게',calmMagmaCore:'고요한 화염 핵',rageMagmaCore:'격노한 화염 핵',
- fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽'
+ fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽',tigerOffering:'호랑이 제물',jungleGuardianCore:'밀림 수호자 핵'
 };
-const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt'];
+const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,cookingStation:null,incubator:null,flags:[],trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],carrots:[],poisonStones:[],enemies:[],projectiles:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',cookingChoiceA:'',cookingChoiceB:'',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},bookCategory:'neutral',dirty:false};
 const ACHIEVEMENTS=[
  {id:'strong-body',name:'강력한 신체',desc:'화산 또는 수정 지역 몬스터를 처치'},
  {id:'escape-step',name:'탈출의 1걸음',desc:'무전기 부품을 발견'},
@@ -672,11 +683,12 @@ function initWorld(){
   for(let i=0;i<4;i++)state.enemies.push(spawnCreature(creatures.polarbear,i));
   for(let i=0;i<5;i++)state.enemies.push(spawnCreature(creatures.polarwolf,i));
   for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.polarfox,i));
-  // 밀림 생태계
-  for(let i=0;i<8;i++)state.enemies.push(spawnCreature(creatures.giantleech,i));
-  for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.gorilla,i));
-  for(let i=0;i<6;i++)state.enemies.push(spawnCreature(creatures.mudwalker,i));
-  {const lake=JUNGLE_LAKES[Math.floor(Math.random()*JUNGLE_LAKES.length)],a=rand(0,Math.PI*2),rr=lake.r+100;state.enemies.push(spawnAt(creatures.anaconda,lake.x+Math.cos(a)*rr,lake.y+Math.sin(a)*rr,null))}
+  // 밀림 생태계 · 기존 수량의 3배
+  for(let i=0;i<24;i++)state.enemies.push(spawnCreature(creatures.giantleech,i));
+  for(let i=0;i<9;i++)state.enemies.push(spawnCreature(creatures.gorilla,i));
+  for(let i=0;i<18;i++)state.enemies.push(spawnCreature(creatures.mudwalker,i));
+  for(let i=0;i<3;i++){const lake=JUNGLE_LAKES[i%JUNGLE_LAKES.length],a=rand(0,Math.PI*2),rr=lake.r+100;state.enemies.push(spawnAt(creatures.anaconda,lake.x+Math.cos(a)*rr,lake.y+Math.sin(a)*rr,null))}
+  for(let i=0;i<3;i++)state.enemies.push(spawnCreature(creatures.jungletiger,i));
 }
 function item(id){return recipes.find(r=>r.id===id)}
 function nameOf(id,fallback='없음'){return item(id)?.name||fallback}
@@ -692,8 +704,8 @@ function updateHud(){
  ui.hpfill.style.width=100*p.hp/p.maxHp+'%';ui.hptext.textContent=Math.ceil(p.hp)+'/'+p.maxHp;
  ui.foodfill.style.width=clamp(p.hunger,0,100)+'%';ui.foodtext.textContent=Math.ceil(p.hunger)+'/100';
  ui.weapon.textContent=nameOf(p.weapon,'맨손');ui.tool.textContent=nameOf(p.tool);ui.armor.textContent=nameOf(p.armor);
- const z=state.area==='underwater'?'underwater':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':regionAt(p.x,p.y);
- let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='snow'?'설원':'마력숲';
+ const z=state.area==='underwater'?'underwater':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':state.area==='jungletemple'?'jungletemple':state.area==='jungletemple-upper'?'jungletemple-upper':state.area==='jungletemple-lower'?'jungletemple-lower':state.area==='jungletemple-secret'?'jungletemple-secret':regionAt(p.x,p.y);
+ let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='snow'?'설원':'마력숲';
  if(z==='underwater')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
  if(z==='snow')zoneName+=' · 추위 '+(item(p.armor)?.coldImmune?'면역':Math.floor(p.cold||0)+'/100');
  ui.zone.textContent=zoneName;
@@ -1213,6 +1225,8 @@ function awardLoot(e){
  if(e.type.id==='gorilla'){addMaterial('gorillaHide',2);showNotice('전리품 · 고릴라 가죽 +2')}
  if(e.type.id==='anaconda'){addMaterial('anacondaScale',2);showNotice('전리품 · 아나콘다 비늘 +2')}
  if(e.type.id==='mudwalker'){addMaterial('mudCore',1);showNotice('전리품 · 머드 워커 진흙핵 +1')}
+ if(e.type.id==='jungletiger'){addMaterial('tigerOffering',1);showNotice('전리품 · 호랑이 제물 +1')}
+ if(e.type.id==='jungleGuardian'){addMaterial('jungleGuardianCore',1);showNotice('전리품 · 밀림 수호자 핵 +1')}
  if(e.type.id==='yetileader'){addMaterial('yetiHide',4);addMaterial('yetiHorn',2);showNotice('전리품 · 예티 가죽 +4 · 예티 뿔 +2')}
  if(e.type.id==='polarbear'){addMaterial('polarBearHide',1);addMaterial('polarBearClaw',1);showNotice('전리품 · 북극곰 가죽/발톱 +1')}
  if(e.type.id==='polarwolf'){addMaterial('polarWolfPelt',1);showNotice('전리품 · 북극늑대 가죽 +1')}
@@ -1321,6 +1335,8 @@ function applyRemoteEnemyEffect(payload){
  else if(payload.kind==='poison'){p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000;showNotice('독 상태 · '+Math.round(duration/1000)+'초')}
  else if(payload.kind==='mudslow'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);showNotice('진흙 둔화 · 3초')}
  else if(payload.kind==='coldburst'){p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);showNotice('추위 상승속도 3배 · 5초')}
+ else if(payload.kind==='slow30'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+duration);showNotice('독화살 · 이동속도 30% 감소')}
+ else if(payload.kind==='attackblock'){p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+duration);showNotice('공격 불가 · '+Math.max(1,Math.round(duration/1000))+'초')}
  else if(payload.kind==='heavy'){showNotice((payload.sourceName||'적')+' · 특수 공격 강타')}
  else if(payload.kind==='grab'){p.grabbedUntil=Math.max(p.grabbedUntil||0,now+duration);p.grabbedBy=payload.sourceId||null;p.vulnerableUntil=Math.max(p.vulnerableUntil||0,now+duration);showNotice('적에게 붙잡혔다')}
  state.dirty=true;updateHud()
@@ -1335,6 +1351,8 @@ function applyEnemyEffectTarget(e,p,kind,duration=0){
  else if(kind==='poison'){p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000}
  else if(kind==='mudslow')p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+duration);
  else if(kind==='coldburst')p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);
+ else if(kind==='slow30')p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+duration);
+ else if(kind==='attackblock')p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+duration);
  else if(kind==='grab'){p.grabbedUntil=Math.max(p.grabbedUntil||0,now+duration);p.grabbedBy=e?.netId||null;p.vulnerableUntil=Math.max(p.vulnerableUntil||0,now+duration)}
 }
 
@@ -1544,7 +1562,7 @@ function updatePet(dt,now){
  }
 }
 function attack(){
- const now=performance.now(),p=state.player,w=currentWeapon();interruptAutoGather(now);if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+ const now=performance.now(),p=state.player,w=currentWeapon();interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  p.attackAt=now;p.attackFx=now+150;
  const audioWeight=Math.max(0,Math.min(1,(Number(w?.power)||0)/180));playCombatAudio('swing',audioWeight);
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2'){
@@ -1578,7 +1596,7 @@ function attack(){
  if(hit){playCombatAudio('hit',audioWeight);state.dirty=true}updateHud()
 }
 function knockoutPlayer(message='쓰러져 숲 중앙에서 부활했어'){
- const p=state.player;if(state.pet.mounted)dismountPet(false);p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=START.x;p.y=START.y;state.area='surface';if(petAlive()){state.pet.x=START.x+55;state.pet.y=START.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.poisonUntil=0;p.poisonNext=0;p.mudSlowUntil=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;p.grabbedUntil=0;p.grabbedBy=null;p.vulnerableUntil=0;p.oxygen=40000;p.oxygenEndsAt=0;showNotice(message);state.dirty=true;updateHud()
+ const p=state.player;if(state.pet.mounted)dismountPet(false);p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=START.x;p.y=START.y;state.area='surface';if(petAlive()){state.pet.x=START.x+55;state.pet.y=START.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.poisonUntil=0;p.poisonNext=0;p.mudSlowUntil=0;p.templeSlowUntil=0;p.attackBlockedUntil=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;p.grabbedUntil=0;p.grabbedBy=null;p.vulnerableUntil=0;p.oxygen=40000;p.oxygenEndsAt=0;showNotice(message);state.dirty=true;updateHud()
 }
 function enemyDamageTarget(e,n,force=false){
  const remoteId=multiplayer.connected&&multiIsHost()&&e?.playerTargetId&&e.playerTargetId!==multiplayer.playerId?e.playerTargetId:null;
@@ -1795,6 +1813,61 @@ function updateStoryLabBoss(e,p,now){
  return{vx:0,vy:0}
 }
 
+function jungleTempleSpec(area){
+ if(area==='jungletemple')return JUNGLE_TEMPLE_LOBBY;
+ if(area==='jungletemple-upper')return JUNGLE_TEMPLE_UPPER;
+ if(area==='jungletemple-lower')return JUNGLE_TEMPLE_LOWER;
+ if(area==='jungletemple-secret')return JUNGLE_TEMPLE_SECRET;
+ return null
+}
+function enterJungleTemple(){
+ if(state.area!=='surface')return;
+ state.templeReturnPos={x:state.player.x,y:state.player.y};state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y;state.dirty=true;showNotice('밀림 신전 · 위층 또는 지하로 갈 수 있어')
+}
+function leaveJungleTemple(){state.area='surface';state.player.x=state.templeReturnPos?.x||JUNGLE_TEMPLE_ENTRANCE.x;state.player.y=(state.templeReturnPos?.y||JUNGLE_TEMPLE_ENTRANCE.y)+130;state.dirty=true;showNotice('밀림으로 나왔다')}
+function spawnTempleUpperEnemies(){
+ if(state.templeUpperSpawned)return;state.templeUpperSpawned=true;
+ const spears=[[900,720],[2100,560],[3300,720]],archers=[[1250,1680],[2950,1680]];
+ for(const [x,y] of spears){const m=spawnAt(creatures.primitiveSpearman,x,y,null);m.area='jungletemple-upper';m.noRespawn=true;state.enemies.push(m)}
+ for(const [x,y] of archers){const m=spawnAt(creatures.primitiveArcher,x,y,null);m.area='jungletemple-upper';m.noRespawn=true;state.enemies.push(m)}
+}
+function spawnTempleGuardian(){if(state.templeGuardianSpawned)return;state.templeGuardianSpawned=true;const m=spawnAt(creatures.jungleGuardian,2100,1150,null);m.area='jungletemple-lower';m.noRespawn=true;state.enemies.push(m)}
+function enterTempleUpper(){state.area='jungletemple-upper';state.player.x=JUNGLE_TEMPLE_UPPER.return.x;state.player.y=JUNGLE_TEMPLE_UPPER.return.y-120;spawnTempleUpperEnemies();state.dirty=true;showNotice('밀림 신전 위층 · 원시인 5명')}
+function enterTempleLower(){state.area='jungletemple-lower';state.player.x=JUNGLE_TEMPLE_LOWER.return.x;state.player.y=JUNGLE_TEMPLE_LOWER.return.y-120;spawnTempleGuardian();state.dirty=true;showNotice('밀림 신전 지하 · 밀림 수호자')}
+function returnTempleLobby(){state.area='jungletemple';state.player.x=JUNGLE_TEMPLE_LOBBY.entry.x;state.player.y=JUNGLE_TEMPLE_LOBBY.entry.y-120;state.dirty=true}
+function offerTigerAtAltar(){if(state.templeOfferingUsed){showNotice('호랑이 제물이 이미 바쳐져 있어');return}if(materialAmount('tigerOffering')<1){showNotice('호랑이를 잡아 호랑이 제물이 필요해');return}pay({tigerOffering:1});state.templeOfferingUsed=true;state.dirty=true;showNotice('호랑이 제물을 바쳤다 · 비밀공간 개방')}
+function enterTempleSecret(){if(!state.templeOfferingUsed){showNotice('제단에 호랑이 제물을 먼저 바쳐야 해');return}state.area='jungletemple-secret';state.player.x=JUNGLE_TEMPLE_SECRET.return.x+120;state.player.y=JUNGLE_TEMPLE_SECRET.return.y;state.dirty=true;showNotice('밀림 신전 비밀공간')}
+function openTempleSecretChest(){if(state.templeChestOpened){showNotice('빈 상자야');return}state.templeChestOpened=true;addMaterial('goldIngot',10);addInv('tiger-twin-blades',1);state.dirty=true;showNotice('비밀 상자 · 구운금 +10 · 호랑이 쌍검 획득')}
+function throwTempleProjectile(e,p,now,kind,count,speedMult,damage){
+ const dx=p.x-e.x,dy=p.y-e.y,base=Math.atan2(dy,dx),speed=(Number(p.speed)||state.player.speed)*speedMult;
+ for(let i=0;i<count;i++){const spread=count===1?0:(i-(count-1)/2)*.13,a=base+spread;state.projectiles.push({x:e.x,y:e.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,damage,createdAt:now,life:4500,area:e.area,sourceId:e.netId,kind})}
+}
+function updateTempleEnemySpecial(e,p,now,playerD){
+ if(e.type.templeSpearman){
+  if(playerD>(e.type.detect||900))return null;
+  if(now<(e.attackLockUntil||0))return{vx:0,vy:0};
+  if(now>=(e.nextTempleAttackAt||0)){e.nextTempleAttackAt=now+2000;e.attackLockUntil=now+3000;e.attackAt=now;throwTempleProjectile(e,p,now,'templeSpear',3,3,30);if(e.playerTargetId===multiplayer.playerId)showNotice('창병 원시인 · 창 3개 투척 · 3초 공격 불가');return{vx:0,vy:0}}
+  if(playerD>360)return{vx:(p.x-e.x)/(playerD||1)*e.type.speed*.55,vy:(p.y-e.y)/(playerD||1)*e.type.speed*.55};
+  return{vx:0,vy:0}
+ }
+ if(e.type.templeArcher){
+  if(playerD>(e.type.detect||1050))return null;
+  if(now>=(e.nextTempleAttackAt||0)){e.nextTempleAttackAt=now+2000;e.attackAt=now;throwTempleProjectile(e,p,now,'poisonArrow',1,2,50)}
+  if(playerD<260)return{vx:(e.x-p.x)/(playerD||1)*e.type.speed*.65,vy:(e.y-p.y)/(playerD||1)*e.type.speed*.65};
+  if(playerD>620)return{vx:(p.x-e.x)/(playerD||1)*e.type.speed*.45,vy:(p.y-e.y)/(playerD||1)*e.type.speed*.45};
+  return{vx:0,vy:0}
+ }
+ if(e.type.templeGuardian){
+  if(playerD>(e.type.detect||950))return null;
+  if(!e.nextTempleSpecialAt)e.nextTempleSpecialAt=now+3000;
+  if(now>=e.nextTempleSpecialAt){e.nextTempleSpecialAt=now+3000;if(playerD<e.type.r+48&&Math.random()<.20){e.attackAt=now;enemyDamageTarget(e,70,true);applyEnemyEffectTarget(e,p,'attackblock',2000);e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.30);if(e.playerTargetId===multiplayer.playerId)showNotice('밀림 수호자 · 찢고 뜯기 · 70 피해 · 체력 30% 회복');return{vx:0,vy:0}}}
+  const melee=e.type.r+30;if(playerD>melee)return{vx:(p.x-e.x)/(playerD||1)*e.type.speed,vy:(p.y-e.y)/(playerD||1)*e.type.speed};
+  if(now>=(e.nextAttackAt||0)){e.attackAt=now;e.nextAttackAt=now+1800;enemyDamageTarget(e,70,false)}
+  return{vx:0,vy:0}
+ }
+ return null
+}
+
 function handleWorldTap(e){
  const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y,now=performance.now();
  if(state.area!=='storylab1'&&state.area!=='storylab2'&&state.pet.hatched&&!state.pet.alive&&dist(wx,wy,state.pet.x,state.pet.y)<60){
@@ -1813,6 +1886,22 @@ function handleWorldTap(e){
    if(!doubleTapTarget('remote-player:'+remoteId,now,()=>openGiftPlayer(remoteId)))showNotice('동료를 한 번 더 눌러 아이템 주기');
    return
   }
+ }
+ if(state.area==='surface'&&dist(wx,wy,JUNGLE_TEMPLE_ENTRANCE.x,JUNGLE_TEMPLE_ENTRANCE.y)<JUNGLE_TEMPLE_ENTRANCE.r+30){if(!doubleTapTarget('jungle-temple-entry',now,enterJungleTemple))showNotice('밀림 신전 · 한 번 더 눌러 입장');return}
+ if(state.area==='jungletemple'){
+  if(dist(wx,wy,JUNGLE_TEMPLE_LOBBY.upper.x,JUNGLE_TEMPLE_LOBBY.upper.y)<90){doubleTapTarget('temple-upper',now,enterTempleUpper);return}
+  if(dist(wx,wy,JUNGLE_TEMPLE_LOBBY.lower.x,JUNGLE_TEMPLE_LOBBY.lower.y)<90){doubleTapTarget('temple-lower',now,enterTempleLower);return}
+  if(dist(wx,wy,JUNGLE_TEMPLE_LOBBY.exit.x,JUNGLE_TEMPLE_LOBBY.exit.y)<100){doubleTapTarget('temple-exit',now,leaveJungleTemple);return}
+ }
+ if(state.area==='jungletemple-upper'){
+  if(dist(wx,wy,JUNGLE_TEMPLE_UPPER.return.x,JUNGLE_TEMPLE_UPPER.return.y)<95){doubleTapTarget('temple-upper-return',now,returnTempleLobby);return}
+  if(dist(wx,wy,JUNGLE_TEMPLE_UPPER.altar.x,JUNGLE_TEMPLE_UPPER.altar.y)<120){doubleTapTarget('temple-altar',now,offerTigerAtAltar);return}
+  if(dist(wx,wy,JUNGLE_TEMPLE_UPPER.secret.x,JUNGLE_TEMPLE_UPPER.secret.y)<110){doubleTapTarget('temple-secret',now,enterTempleSecret);return}
+ }
+ if(state.area==='jungletemple-lower'&&dist(wx,wy,JUNGLE_TEMPLE_LOWER.return.x,JUNGLE_TEMPLE_LOWER.return.y)<95){doubleTapTarget('temple-lower-return',now,returnTempleLobby);return}
+ if(state.area==='jungletemple-secret'){
+  if(dist(wx,wy,JUNGLE_TEMPLE_SECRET.return.x,JUNGLE_TEMPLE_SECRET.return.y)<95){doubleTapTarget('temple-secret-return',now,enterTempleUpper);return}
+  if(dist(wx,wy,JUNGLE_TEMPLE_SECRET.chest.x,JUNGLE_TEMPLE_SECRET.chest.y)<100){doubleTapTarget('temple-secret-chest',now,openTempleSecretChest);return}
  }
  if(state.area==='surface'&&pointInGiantLakeWater(wx,wy)&&regionAt(state.player.x,state.player.y)==='giantlake'&&dist(wx,wy,state.player.x,state.player.y)<320){
   if(!doubleTapTarget('giant-lake-water',now,enterUnderwater))showNotice('물을 한 번 더 눌러 잠수');return
@@ -1900,7 +1989,7 @@ function markEnemyAttack(e,now){
  else if(!enemyFastAttackException(e.type))e.nextAttackAt=now+rand(3000,4000)
 }
 function enemyHasBuiltInSpecial(type){
- return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial)
+ return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial||type.templeSpearman||type.templeArcher||type.templeGuardian)
 }
 function enemyCanUseCommonSpecial(e){
  return!!e&&e.type.mood!=='harmless'&&!enemyHasBuiltInSpecial(e.type)&&e.type.id!=='crystalboarjunior'
@@ -2228,6 +2317,8 @@ function updateProjectiles(dt,now){
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
    damagePlayer(q.damage,true,state.enemies.find(e=>e.netId===q.sourceId)||null);
    if(q.kind==='mud'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+3000);showNotice('진흙 포격 적중 · 35 피해 · 3초 둔화')}
+   else if(q.kind==='poisonArrow'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+2000);p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+2000);showNotice('독화살 적중 · 50 피해 · 이동속도 30% 감소 · 2초 공격 불가')}
+   else if(q.kind==='templeSpear')showNotice('원시인 창 적중 · 30 피해');
    else showNotice('수정 투척 적중 · 78 데미지');
    state.projectiles.splice(i,1);continue
   }
@@ -2238,6 +2329,7 @@ function updateProjectiles(dt,now){
     if(dist(q.x,q.y,Number(r.x)||0,Number(r.y)||0)<25){
      multiSend('enemy-hit',{targetId:id,damage:q.damage,force:true,sourceId:q.sourceId||null});
      if(q.kind==='mud')multiSend('enemy-effect',{targetId:id,kind:'mudslow',duration:3000,sourceId:q.sourceId||null});
+     if(q.kind==='poisonArrow'){multiSend('enemy-effect',{targetId:id,kind:'slow30',duration:2000,sourceId:q.sourceId||null});multiSend('enemy-effect',{targetId:id,kind:'attackblock',duration:2000,sourceId:q.sourceId||null})}
      state.projectiles.splice(i,1);hitRemote=true;break
     }
    }
@@ -2347,7 +2439,7 @@ function update(dt,now){
       m=Math.hypot(mx,my);
   if(m>.01&&now>=(p.stunnedUntil||0)&&now>=(p.grabbedUntil||0)){
     mx/=Math.max(1,m);my/=Math.max(1,m);
-    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){p.x=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24);p.y=clamp(p.y+my*moveSpeed*dt,24,UNDERWATER.h-24)}
+    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){p.x=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24);p.y=clamp(p.y+my*moveSpeed*dt,24,UNDERWATER.h-24)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
     else{const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);if(!pointInGiantLakeWater(nx,ny)){p.x=nx;p.y=ny}}
     p.faceX=mx;p.faceY=my
   }
@@ -2392,6 +2484,7 @@ function update(dt,now){
       if(!monsterFight&&updateGorillaSpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&updateAnacondaWrap(e,now))monsterFight=true;
       if(!monsterFight&&updateMudSpecial(e,targetP,now,playerD))monsterFight=true;
+      if(!monsterFight){const tp=updateTempleEnemySpecial(e,targetP,now,playerD);if(tp){vx=tp.vx;vy=tp.vy;monsterFight=true}}
       if(!monsterFight&&updateSnowSpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&e.type.sharkSpecial&&updateSharkCombo(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&tryTimedCommonEnemySpecial(e,targetP,now,playerD))monsterFight=true;
@@ -2523,7 +2616,7 @@ function update(dt,now){
   musicTick();
   finishSmeltIfReady();
   if(ui.smeltPanel.classList.contains('open')){if(!nearFurnace())ui.smeltPanel.classList.remove('open');else updateSmeltUi()}
-  const camW=state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:WORLD.w,camH=state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:WORLD.h;
+  const templeRoom=jungleTempleSpec(state.area),camW=templeRoom?templeRoom.w:state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:WORLD.w,camH=templeRoom?templeRoom.h:state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:WORLD.h;
   updateCameraPresentation(p,dt,now,camW,camH);
   autosave+=dt;
   if(autosave>10&&state.dirty){autosave=0;saveGame(false)}
@@ -2584,6 +2677,8 @@ function drawBackground(cx,cy,w,h){
  for(const l of JUNGLE_LAKES){ctx.fillStyle='#285d58';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6d9b75';ctx.lineWidth=18;ctx.stroke()}
  ctx.fillStyle='#b6e8a7';ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.fillText('밀림',JUNGLE_REGION.x+JUNGLE_REGION.w/2,120);
  ctx.font='bold 12px system-ui';ctx.fillText('독점석 광맥의 독가스를 조심해',JUNGLE_REGION.x+JUNGLE_REGION.w/2,155);
+ ctx.fillStyle='#5a5336';ctx.fillRect(JUNGLE_TEMPLE_ENTRANCE.x-115,JUNGLE_TEMPLE_ENTRANCE.y-85,230,170);ctx.strokeStyle='#b4a86b';ctx.lineWidth=10;ctx.strokeRect(JUNGLE_TEMPLE_ENTRANCE.x-115,JUNGLE_TEMPLE_ENTRANCE.y-85,230,170);
+ ctx.fillStyle='#171b12';ctx.beginPath();ctx.ellipse(JUNGLE_TEMPLE_ENTRANCE.x,JUNGLE_TEMPLE_ENTRANCE.y+25,58,72,0,Math.PI,0);ctx.fill();ctx.fillStyle='#f0dda0';ctx.font='bold 13px system-ui';ctx.fillText('밀림 신전 · 두 번 눌러 입장',JUNGLE_TEMPLE_ENTRANCE.x,JUNGLE_TEMPLE_ENTRANCE.y+120);
  // 거대 호수 · 화산 위 일반 지역
  ctx.fillStyle='#557c69';ctx.fillRect(GIANT_LAKE_SURFACE.x,GIANT_LAKE_SURFACE.y,GIANT_LAKE_SURFACE.w,GIANT_LAKE_SURFACE.h);fillFantasyRegionTextureRect(GIANT_LAKE_SURFACE,'forest',.24);
  ctx.fillStyle='#1d6b91';ctx.fillRect(GIANT_LAKE_WATER.x,GIANT_LAKE_WATER.y,GIANT_LAKE_WATER.w,GIANT_LAKE_WATER.h);fillFantasyRegionTextureRect(GIANT_LAKE_WATER,'water',.55);
@@ -3070,6 +3165,8 @@ function drawProjectiles(cx,cy){
   if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;
   ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);
   if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
+  else if(q.kind==='poisonArrow'){ctx.strokeStyle='#8bcf6a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#b7f58c';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
+  else if(q.kind==='templeSpear'){ctx.strokeStyle='#8f6c43';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,-18);ctx.stroke();ctx.fillStyle='#d6d0b8';ctx.beginPath();ctx.moveTo(0,-25);ctx.lineTo(7,-13);ctx.lineTo(-7,-13);ctx.closePath();ctx.fill()}
   else{ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke()}
   ctx.restore()
  }
@@ -3145,6 +3242,24 @@ function drawUnderwater(cx,cy,w,h){
  ctx.restore();
  ctx.fillStyle='rgba(0,18,30,.22)';ctx.fillRect(0,0,w,h)
 }
+function drawJungleTemple(cx,cy,w,h){
+ const area=state.area,room=jungleTempleSpec(area);ctx.fillStyle=area==='jungletemple-lower'?'#0c1510':'#151c10';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ ctx.fillStyle=area==='jungletemple-secret'?'#2a2414':area==='jungletemple-lower'?'#17231b':'#26301c';ctx.fillRect(35,35,room.w-70,room.h-70);ctx.strokeStyle='#786f45';ctx.lineWidth=34;ctx.strokeRect(35,35,room.w-70,room.h-70);
+ ctx.fillStyle='#d9ce91';ctx.font='bold 20px system-ui';ctx.textAlign='center';
+ if(area==='jungletemple'){
+  ctx.fillText('밀림 신전 중앙층',room.w/2,90);
+  for(const [pt,label,color] of [[room.upper,'위층','#637d48'],[room.lower,'지하','#4c5c46'],[room.exit,'밖으로','#765941']]){ctx.fillStyle=color;ctx.fillRect(pt.x-75,pt.y-55,150,110);ctx.fillStyle='#f6edc8';ctx.font='bold 12px system-ui';ctx.fillText(label+' · 두 번 누르기',pt.x,pt.y+78)}
+ }else if(area==='jungletemple-upper'){
+  ctx.fillText('밀림 신전 위층 · 3티어 원시인',room.w/2,90);const a=room.altar;ctx.strokeStyle='#d5bd70';ctx.lineWidth=8;ctx.beginPath();ctx.arc(a.x,a.y,95,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#6b5833';ctx.beginPath();ctx.arc(a.x,a.y,55,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f5e2a0';ctx.font='bold 12px system-ui';ctx.fillText(state.templeOfferingUsed?'제물 완료 · 비밀공간 개방':'바치는 제단 · 호랑이 제물',a.x,a.y+130);
+  ctx.fillStyle=state.templeOfferingUsed?'#292114':'#171712';ctx.fillRect(room.secret.x-75,room.secret.y-70,150,140);ctx.fillStyle='#f4df9e';ctx.fillText(state.templeOfferingUsed?'비밀공간 · 두 번 누르기':'봉인된 비밀문',room.secret.x,room.secret.y+95);ctx.fillStyle='#5f5438';ctx.fillRect(room.return.x-85,room.return.y-45,170,90);ctx.fillStyle='#f6edc8';ctx.fillText('중앙층으로 · 두 번 누르기',room.return.x,room.return.y+72)
+ }else if(area==='jungletemple-lower'){
+  ctx.fillText('밀림 신전 지하 · 4티어 밀림 수호자',room.w/2,90);ctx.strokeStyle='#416c50';ctx.lineWidth=12;ctx.beginPath();ctx.arc(room.w/2,room.h/2,420,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#5f5438';ctx.fillRect(room.return.x-85,room.return.y-45,170,90);ctx.fillStyle='#f6edc8';ctx.font='bold 12px system-ui';ctx.fillText('중앙층으로 · 두 번 누르기',room.return.x,room.return.y+72)
+ }else{
+  ctx.fillText('밀림 신전 비밀공간',room.w/2,90);const ch=room.chest;ctx.fillStyle='#8a632d';ctx.fillRect(ch.x-55,ch.y-38,110,76);ctx.strokeStyle='#f0cf68';ctx.lineWidth=7;ctx.strokeRect(ch.x-55,ch.y-38,110,76);ctx.fillStyle='#fff0ad';ctx.font='bold 12px system-ui';ctx.fillText(state.templeChestOpened?'빈 상자':'비밀 상자 · 두 번 누르기',ch.x,ch.y+65);ctx.fillStyle='#5f5438';ctx.fillRect(room.return.x-65,room.return.y-70,130,140);ctx.fillStyle='#f6edc8';ctx.fillText('위층으로',room.return.x,room.return.y+95)
+ }
+ ctx.restore()
+}
+
 function draw(){
  const cx=state.camera.x,cy=state.camera.y,now=performance.now();
  if(state.area==='underwater')drawUnderwater(cx,cy,innerWidth,innerHeight);
@@ -3152,6 +3267,7 @@ function draw(){
  else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);
  else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);
  else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);
+ else if(state.area.startsWith('jungletemple'))drawJungleTemple(cx,cy,innerWidth,innerHeight);
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
   for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);
@@ -3169,7 +3285,7 @@ function resetGameSave(){
 function saveGame(manual=true){
  try{
    const p=state.player;
-   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
+   localStorage.setItem(SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory},bench:state.bench,furnace:state.furnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,cookingStation:state.cookingStation,incubator:state.incubator,flags:state.flags,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,pet:state.pet,smelting:state.smelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -3205,9 +3321,9 @@ function loadGame(){
      state.explored[Math.floor(wx/MAP_CELL)+','+Math.floor(wy/MAP_CELL)]=1
    }
   }else state.explored={};
-  state.area=s.area==='underwater'?'underwater':s.area==='underground'?'underground':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
-  state.rootTaken=!!s.rootTaken;state.rootRespawnAt=Math.max(0,Number(s.rootRespawnAt)||0);state.lakeReturnPos=s.lakeReturnPos&&Number.isFinite(Number(s.lakeReturnPos.x))?{x:Number(s.lakeReturnPos.x),y:Number(s.lakeReturnPos.y)}:null;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}state.questCaveInit=!!s.questCaveInit;
-  if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='underwater'){state.pet.mounted=false;p.oxygen=40000;p.oxygenEndsAt=performance.now()+40000;}if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);
+  state.area=s.area==='underwater'?'underwater':s.area==='underground'?'underground':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':s.area==='jungletemple'?'jungletemple':s.area==='jungletemple-upper'?'jungletemple-upper':s.area==='jungletemple-lower'?'jungletemple-lower':s.area==='jungletemple-secret'?'jungletemple-secret':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
+  state.rootTaken=!!s.rootTaken;state.rootRespawnAt=Math.max(0,Number(s.rootRespawnAt)||0);state.lakeReturnPos=s.lakeReturnPos&&Number.isFinite(Number(s.lakeReturnPos.x))?{x:Number(s.lakeReturnPos.x),y:Number(s.lakeReturnPos.y)}:null;state.templeReturnPos=s.templeReturnPos&&Number.isFinite(Number(s.templeReturnPos.x))?{x:Number(s.templeReturnPos.x),y:Number(s.templeReturnPos.y)}:null;state.templeOfferingUsed=!!s.templeOfferingUsed;state.templeChestOpened=!!s.templeChestOpened;state.templeUpperSpawned=false;state.templeGuardianSpawned=false;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}state.questCaveInit=!!s.questCaveInit;
+  if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='underwater'){state.pet.mounted=false;p.oxygen=40000;p.oxygenEndsAt=performance.now()+40000;}if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='jungletemple-upper')spawnTempleUpperEnemies();if(state.area==='jungletemple-lower')spawnTempleGuardian();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);
   if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false};state.enemies.push(boss)}
   checkAchievementProgress(false);if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
  }catch(e){}
