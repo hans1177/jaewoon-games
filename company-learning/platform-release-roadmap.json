@@ -1,5 +1,5 @@
 {
-  "version": 238,
+  "version": 239,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-21",
@@ -4961,7 +4961,12 @@
         "FOCUS",
         "ONLINE",
         "VISIBILITY_RETURN"
-      ]
+      ],
+      "deploymentVerification": {
+        "versionMarker": "SAMPLE_FRONT_DOOR_V1",
+        "buildMarker": "2026-09-21-sample-exact",
+        "markerLocation": "html[data-homepage-version][data-homepage-build]"
+      }
     }
   },
   "serverHomepageIntegration": {
