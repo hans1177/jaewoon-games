@@ -9,6 +9,7 @@ import { isSafeSecurityRepairFile } from './company-recovery-queue.mjs';
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const now=()=>new Date().toISOString();
+const GAME_SOURCE_PREFIXES=['web-games/','roblox-games/','unity-games/','unreal-games/','godot-games/'];
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
@@ -72,6 +73,25 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           updatedAt:stamp
         };
       });
+      if(touched===0&&clean(rec.sourceQueue).toLowerCase()==='vibe2'&&uniq(rec.responsibleFiles).length){
+        const taskId='recovery-'+clean(rec.id);
+        const exists=systemAi.tasks.some(task=>clean(task.id)===taskId);
+        if(!exists){
+          const gameSourceWrite=uniq(rec.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>clean(file).startsWith(prefix)));
+          systemAi.tasks.push({
+            id:taskId,status:'queued',priority:'critical',department:'recovery',taskType:'bottleneck-repair',
+            gameId:clean(rec.gameId)||null,
+            goal:clean(rec.goal)||`Repair exact failed stage ${clean(rec.failureStage)} for recovery ${clean(rec.id)} without expanding scope. Failure signature: ${clean(rec.failureSignature)}.`,
+            responsibleFiles:uniq(rec.responsibleFiles),contextFiles:uniq(rec.contextFiles),
+            acceptanceCriteria:['repair only assigned responsible files','rerun exact failed stage','preserve verified checkpoint and gameplay semantics','no central policy write','no self acceptance'],
+            verificationCommands:uniq(rec.verificationPlan),
+            dependencies:[],retries:0,maxRetries:3,reservationId:null,reservedAt:null,candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
+            evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),'recovery-exact-stage:'+clean(rec.failureStage),'system-ai-scoped-game-repair:'+(gameSourceWrite?'YES':'NO'),'learning-route:existing-vibe-learning-motor']),
+            supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,createdAt:stamp,updatedAt:stamp
+          });
+          touched++;
+        }
+      }
     }else return rec;
     if(touched===0){
       if(owner==='SYSTEM_AI'&&clean(rec.sourceQueue).toLowerCase()==='security'){
