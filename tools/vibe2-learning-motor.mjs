@@ -111,7 +111,8 @@ export function classifyLearningDomains(task={}){
     .map(([domain,score])=>({domain,score,sources:[...(sources.get(domain)||[])]}))
     .sort((a,b)=>b.score-a.score||a.domain.localeCompare(b.domain));
   const top=ranked[0]?.score||0;
-  const primary=ranked.filter(x=>x.score===top&&top>=3).map(x=>x.domain).slice(0,3);
+  const primaryThreshold=Math.max(3,top-2);
+  const primary=ranked.filter(x=>x.score>=primaryThreshold&&top>=3).map(x=>x.domain).slice(0,3);
   const secondary=ranked.filter(x=>!primary.includes(x.domain)&&x.score>=2).map(x=>x.domain).slice(0,6);
   return{
     primary,
