@@ -12051,6 +12051,31 @@
       "irrelevantDomainSuppression": true,
       "sameGameMayOverrideSuppressionWhenSemanticallyRelevant": true,
       "outputTraceRequired": true
+    },
+    "effectivenessReweighting": {
+      "version": 1,
+      "verifiedOutcomeOnly": true,
+      "signals": {
+        "pass": "POSITIVE",
+        "firstCandidatePass": "STRONG_POSITIVE",
+        "failureSignatureCleared": "STRONG_POSITIVE",
+        "primaryDomainConfirmed": "POSITIVE",
+        "regressionFailure": "STRONG_NEGATIVE",
+        "primaryDomainMismatch": "NEGATIVE"
+      },
+      "lifecycle": [
+        "CANDIDATE",
+        "VERIFIED",
+        "PREFERRED",
+        "DEMOTED",
+        "RETIRED"
+      ],
+      "repeatedRegressionCanRetireKnowledge": true,
+      "retiredKnowledgeRetrievalForbidden": true,
+      "demotedKnowledgePenaltyRequired": true,
+      "infrastructureFailureMustNotPenalizeKnowledge": true,
+      "singleSuccessCannotProveGeneralization": true,
+      "objective": "REWEIGHT_KNOWLEDGE_BY_VERIFIED_CAUSAL_USEFULNESS_NOT_STORAGE_VOLUME"
     }
   }
 }
