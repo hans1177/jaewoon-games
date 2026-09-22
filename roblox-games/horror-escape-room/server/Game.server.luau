@@ -52,6 +52,8 @@ local function load(p)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("MonsterForm","DRAK");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0)
+ p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+ p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비")
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
  if ok and typeof(d)=="table"then
   for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"})do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end
@@ -116,6 +118,7 @@ local function applyMapEvent(f,map,event)
  end
 end
 local function makeArena(map)
+ workspace:SetAttribute("MapReady",false)
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
@@ -227,6 +230,7 @@ local function makeArena(map)
  workspace:SetAttribute("CurrentMapName",map.Name)
  applyMapEvent(f,map,event)
  workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_READABLE_ART_V4")
+ workspace:SetAttribute("MapReady",true)
  return f
 end
 local function clearBots()
@@ -434,6 +438,15 @@ Players.PlayerRemoving:Connect(function(p)
  save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;qaCaptureLast[p]=nil
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+
+-- 로비에서도 맵이 즉시 보여야 한다. 첫 라운드 전 학교 맵을 프리로드한다.
+if not workspace:FindFirstChild("MidnightArena")then
+ arena=makeArena(C.Maps[1])
+end
+for _,p in ipairs(Players:GetPlayers())do
+ p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+ p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+end
 
 task.spawn(function()
  while true do
