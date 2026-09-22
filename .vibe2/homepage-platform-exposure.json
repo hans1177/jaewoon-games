@@ -2,7 +2,7 @@
   "version": 2,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-22T22:41:49.121Z",
+  "updatedAt": "2026-09-22T23:21:02.512Z",
   "games": [
     {
       "gameId": "cozy-island",
@@ -81,7 +81,9 @@
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-7d114ff3812bf7516f00"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
