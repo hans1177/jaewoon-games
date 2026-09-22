@@ -132,3 +132,24 @@ test('F9 final review promotes the same tested candidate without republishing it
   assert.doesNotMatch(finalReview,/publishRobloxPlace/);
   assert.doesNotMatch(finalReview,/versions\?versionType=Published/);
 });
+
+
+test('central F0 contract pins official Luau compiler and exact source workflow requires compile evidence',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const f0=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack.f0NativeCompiler;
+  assert.equal(f0.required,true);
+  assert.equal(f0.implementation,'OFFICIAL_LUAU_COMPILER');
+  assert.equal(f0.version,'0.739');
+  assert.equal(f0.sha256,'8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247');
+  assert.equal(f0.allLuauFilesUnderGameSourceMustCompile,true);
+  assert.equal(f0.structuralMarkersCannotSubstituteCompile,true);
+  assert.equal(f0.missingCompilerEvidenceAction,'F0_BLOCKED');
+
+  const preflight=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(preflight,/luau-lang\/luau\/releases\/download\/0\.739\/luau-ubuntu\.zip/);
+  assert.match(preflight,/8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247/);
+  assert.match(preflight,/git archive "\$SOURCE_REVISION" "\$SOURCE_PATH"/);
+  assert.match(preflight,/luau-compile "\$file"/);
+  assert.match(preflight,/--native-language-compile-passed=true/);
+  assert.match(preflight,/--native-compiler-version=0\.739/);
+});
