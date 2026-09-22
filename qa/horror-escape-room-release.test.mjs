@@ -78,3 +78,13 @@ test('기존 출시 핵심 게이트는 유지된다',()=>{
   assert.equal(launch.evidencePolicy.abuseResistancePassRequired,true);
   assert.equal(launch.evidencePolicy.startUiRegressionPassRequired,true);
 });
+
+
+test('발소리 얼리기 구출 결과 음악과 추격 화면 피드백이 연결된다',()=>{
+  for(const key of ['Footstep','Freeze','Rescue','Result'])assert.match(config,new RegExp(key+'="rbxassetid://'));
+  for(const marker of ['MidnightFootstep','MidnightFreeze','MidnightRescue','MidnightResult','chaseTint','Humanoid.Running','FeedbackEvent'])assert.match(client,new RegExp(marker.replace('.', '\\.')));
+  assert.match(server,/FeedbackEvent","FREEZE:/);
+  assert.match(server,/FeedbackEvent","RESCUE:/);
+  assert.match(server,/FeedbackEvent","RESULT:/);
+  for(const gate of ['footstep feedback','freeze/rescue audio feedback','result music','chase screen feedback'])assert.ok(launch.releaseGates.includes(gate),gate);
+});
