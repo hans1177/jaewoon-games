@@ -30,6 +30,7 @@ local lastRequest={}
 local lastValidPosition={}
 local movementGraceUntil={}
 local movementGuardClock=0
+local soloStartRequested=false
 local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
@@ -396,8 +397,8 @@ remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER")
  elseif a==C.Actions.PREFER_SURVIVOR and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR")
- elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("SoloRole","MONSTER")
- elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("SoloRole","SURVIVOR")
+ elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("SoloRole","MONSTER");soloStartRequested=true
+ elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("SoloRole","SURVIVOR");soloStartRequested=true
  elseif a==C.Actions.RESCUE then rescue(p)
  elseif a==C.Actions.DASH then survivorDash(p)
  elseif a==C.Actions.ABILITY then ability(p)
@@ -406,10 +407,31 @@ remote.OnServerEvent:Connect(function(p,a)
 end)
 local function onCharacter(p)
  task.wait(.25)
- if state=="RUNNING"then setRole(p,p==monster and"MONSTER"or"SURVIVOR")end
+ if state=="RUNNING"then
+  setRole(p,p==monster and"MONSTER"or"SURVIVOR")
+ else
+  -- 1인 플레이는 로비에서도 실제 맵 안에서 시작한다.
+  if #Players:GetPlayers()==1 then
+   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+   teleport(p,survivorSpawns[1])
+  end
+ end
 end
-Players.PlayerAdded:Connect(function(p)load(p);p.CharacterAdded:Connect(function()onCharacter(p)end)end)
-for _,p in ipairs(Players:GetPlayers())do load(p);p.CharacterAdded:Connect(function()onCharacter(p)end)end
+Players.PlayerAdded:Connect(function(p)
+ load(p)
+ p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+ p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+ p.CharacterAdded:Connect(function()onCharacter(p)end)
+ if p.Character then task.defer(function()onCharacter(p)end)end
+end)
+for _,p in ipairs(Players:GetPlayers())do
+ load(p)
+ p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
+ p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+ p.CharacterAdded:Connect(function()onCharacter(p)end)
+ if p.Character then task.defer(function()onCharacter(p)end)end
+end
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
  if typeof(label)~="string"or #label<1 or #label>48 then return end
@@ -453,8 +475,10 @@ task.spawn(function()
   if #Players:GetPlayers()==0 then state="WAITING";task.wait(1)
   else
    state="INTERMISSION"
+   soloStartRequested=false
    for t=C.IntermissionSeconds,1,-1 do
     for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("RoundState","INTERMISSION");p:SetAttribute("TimeLeft",t)end
+    if #Players:GetPlayers()==1 and soloStartRequested then break end
     task.wait(1)
    end
    if startRound()then
