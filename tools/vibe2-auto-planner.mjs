@@ -136,29 +136,6 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
   if(clean(item?.status).toUpperCase()!=='ACTIVE'||stateFromCatalog(game)!=='development-confirmed')continue;
-  const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
-  const queueRobloxRoot=posix(item?.robloxProjectPath||item?.targetSourcePaths?.ROBLOX||(queueTarget==='ROBLOX'?item?.targetSourcePath:''));
-  if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
-    const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
-    const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
-    const queuePatch={
-      queueCurrentStep:clean(item?.currentStep),
-      queueCanonicalState:clean(item?.canonicalState),
-      queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
-      queueRobloxFailureStage:clean(item?.robloxFailureStage),
-      queueRobloxFailureSignature:clean(item?.robloxFailureSignature),
-      queueRobloxSourceCommit:clean(item?.robloxSourceCommit),
-      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity),
-      queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
-      queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
-      queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
-      queueRobloxInternalReleaseArtifact:clean(item?.robloxInternalReleaseEvidence?.artifactIdentity),
-      companyDevelopmentQueueSource:true
-    };
-    if(existingRoblox)Object.assign(existingRoblox,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
-    else rows.push({gameId:id,name:clean(item?.gameName||game?.name||id),engine:'roblox',target:'roblox',projectPath:root,lifecycleState:gameLifecycleState(game),existing:fs.existsSync(path.join(repoRoot,root)),releaseState:'development-confirmed',progress:Number(item?.progress||0),source:'company-development-queue-roblox',developmentBaseline:null,...queuePatch});
-    continue;
-  }
   const firstStagePolicy=centralPresentationPolicy(repoRoot)?.unityWebFirstStage||{};
   const unityWebFirstStage=clean(firstStagePolicy?.status).toUpperCase()==='OWNER_DIRECT_LOCKED'&&clean(firstStagePolicy?.scope)==='FIRST_WEB_GAME_STAGE_ONLY'&&firstStagePolicy?.appliesToAllGames===true;
   if(unityWebFirstStage){
@@ -200,6 +177,29 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     continue;
   }
 
+  const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
+  const queueRobloxRoot=posix(item?.robloxProjectPath||item?.targetSourcePaths?.ROBLOX||(queueTarget==='ROBLOX'?item?.targetSourcePath:''));
+  if(queueTarget==='ROBLOX'||/^roblox-games\//.test(queueRobloxRoot)){
+    const root=/^roblox-games\/[a-zA-Z0-9._-]+$/.test(queueRobloxRoot)?queueRobloxRoot:'roblox-games/'+id;
+    const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
+    const queuePatch={
+      queueCurrentStep:clean(item?.currentStep),
+      queueCanonicalState:clean(item?.canonicalState),
+      queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
+      queueRobloxFailureStage:clean(item?.robloxFailureStage),
+      queueRobloxFailureSignature:clean(item?.robloxFailureSignature),
+      queueRobloxSourceCommit:clean(item?.robloxSourceCommit),
+      queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity),
+      queueRobloxInternalReleaseReady:item?.robloxInternalReleaseReady===true,
+      queueRobloxInternalReleaseVersion:Number(item?.robloxInternalReleaseEvidence?.versionNumber||0)||null,
+      queueRobloxInternalReleaseSource:clean(item?.robloxInternalReleaseEvidence?.sourceRevision),
+      queueRobloxInternalReleaseArtifact:clean(item?.robloxInternalReleaseEvidence?.artifactIdentity),
+      companyDevelopmentQueueSource:true
+    };
+    if(existingRoblox)Object.assign(existingRoblox,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
+    else rows.push({gameId:id,name:clean(item?.gameName||game?.name||id),engine:'roblox',target:'roblox',projectPath:root,lifecycleState:gameLifecycleState(game),existing:fs.existsSync(path.join(repoRoot,root)),releaseState:'development-confirmed',progress:Number(item?.progress||0),source:'company-development-queue-roblox',developmentBaseline:null,...queuePatch});
+    continue;
+  }
   const existingWeb=rows.find(r=>r.gameId===id&&r.engine==='web');
   if(existingWeb){
     existingWeb.queueCurrentStep=clean(item?.currentStep);
