@@ -34,7 +34,7 @@ function setup(){
   assert.match(task.goal,/POST_RELEASE_FOCUSED_DEVELOPMENT/);
   assert.match(task.goal,/피드백은 구현 강제가 아니다/);
   assert.match(task.goal,/HOTFIX 최고 우선순위/);
-  assert.match(task.goal,/MAJOR는 공개 버전을 유지한 채 업데이트 후보를 미리 준비/);
+  assert.match(task.goal,/MAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비/);
   assert.equal(task.feedbackAdvisoryOnly,true);
   assert.equal(task.feedbackDecisionAuthority,'VIBE');
   assert.deepEqual(task.allowedFeedbackDecisions,['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT']);
