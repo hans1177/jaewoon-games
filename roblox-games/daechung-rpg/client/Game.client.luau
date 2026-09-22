@@ -71,15 +71,15 @@ local hud=Instance.new("Frame")
 hud.Name="RPGTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.new(1,-16,0,126)
+hud.Size=UDim2.new(1,-16,0,70)
 hud.BackgroundColor3=Color3.fromRGB(31,29,43)
 hud.BackgroundTransparency=.06
 hud.Parent=gui
 roundify(hud,14);outline(hud,.38)
 
 local status=Instance.new("TextLabel")
-status.Size=UDim2.new(1,-16,0,78)
-status.Position=UDim2.fromOffset(8,6)
+status.Size=UDim2.new(1,-16,0,34)
+status.Position=UDim2.fromOffset(8,3)
 status.BackgroundTransparency=1
 status.TextColor3=Color3.fromRGB(240,236,255)
 status.TextWrapped=true
@@ -88,8 +88,8 @@ status.Font=Enum.Font.Gotham
 status.Parent=hud
 
 local note=Instance.new("TextLabel")
-note.Size=UDim2.new(1,-16,0,34)
-note.Position=UDim2.fromOffset(8,86)
+note.Size=UDim2.new(1,-16,0,25)
+note.Position=UDim2.fromOffset(8,41)
 note.BackgroundColor3=Color3.fromRGB(52,46,70)
 note.BackgroundTransparency=.1
 note.TextColor3=Color3.fromRGB(255,215,115)
@@ -104,7 +104,7 @@ local combatDock=Instance.new("Frame")
 combatDock.Name="CombatDock"
 combatDock.AnchorPoint=Vector2.new(.5,1)
 combatDock.Position=UDim2.new(.5,0,1,-10)
-combatDock.Size=UDim2.new(1,-16,0,96)
+combatDock.Size=UDim2.new(1,-16,0,64)
 combatDock.BackgroundTransparency=1
 combatDock.Parent=gui
 
@@ -115,8 +115,8 @@ local combatActions={
 }
 for i,a in ipairs(combatActions)do
  local b=makeButton(combatDock,a[2],a[3])
- b.Size=UDim2.new(.31,0,0,80)
- b.Position=UDim2.new(.015+(i-1)*.33,0,0,8)
+ b.Size=UDim2.new(.31,0,0,52)
+ b.Position=UDim2.new(.015+(i-1)*.33,0,0,6)
  b.Activated:Connect(function()
   if a[1]==C.Actions.SKILL then skillSfx.TimePosition=0;skillSfx:Play()else actionSfx.TimePosition=0;actionSfx:Play()end
   remote:FireServer(a[1])
@@ -127,14 +127,14 @@ end
 local menuButton=makeButton(gui,"파티/장비",Color3.fromRGB(68,61,92))
 menuButton.Name="PartyMenuButton"
 menuButton.AnchorPoint=Vector2.new(1,1)
-menuButton.Position=UDim2.new(1,-12,1,-112)
-menuButton.Size=UDim2.fromOffset(110,44)
+menuButton.Position=UDim2.new(1,-12,1,-78)
+menuButton.Size=UDim2.fromOffset(96,36)
 
 local secondary=Instance.new("Frame")
 secondary.Name="PartyMenu"
 secondary.AnchorPoint=Vector2.new(1,1)
-secondary.Position=UDim2.new(1,-12,1,-162)
-secondary.Size=UDim2.fromOffset(220,206)
+secondary.Position=UDim2.new(1,-12,1,-120)
+secondary.Size=UDim2.fromOffset(190,168)
 secondary.BackgroundColor3=Color3.fromRGB(35,32,48)
 secondary.BackgroundTransparency=.05
 secondary.Visible=false
@@ -149,8 +149,8 @@ local secondaryActions={
 }
 for i,a in ipairs(secondaryActions)do
  local b=makeButton(secondary,a[2],Color3.fromRGB(77,68,104))
- b.Size=UDim2.new(1,-16,0,42)
- b.Position=UDim2.fromOffset(8,8+(i-1)*48)
+ b.Size=UDim2.new(1,-16,0,34)
+ b.Position=UDim2.fromOffset(8,8+(i-1)*39)
  b.Activated:Connect(function()remote:FireServer(a[1])end)
 end
 
