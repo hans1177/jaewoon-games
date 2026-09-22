@@ -116,21 +116,20 @@ objective.Font=Enum.Font.GothamBold
 objective.Parent=gui
 roundify(objective,9)
 
-local autoGather=Instance.new("TextLabel")
-autoGather.Name="AutoGatherStatus"
-autoGather.Size=UDim2.fromOffset(160,24)
-autoGather.AnchorPoint=Vector2.new(.5,0)
-autoGather.Position=UDim2.new(.5,0,0,40)
-autoGather.BackgroundColor3=Color3.fromRGB(33,58,47)
-autoGather.BackgroundTransparency=.26
-autoGather.TextColor3=Color3.fromRGB(211,239,213)
-autoGather.TextSize=11
-autoGather.Font=Enum.Font.GothamBold
-autoGather.Text="자동채집 · 숲/농장 근처"
-autoGather.Parent=gui
-roundify(autoGather,8)
+local gatherHint=Instance.new("TextLabel")
+gatherHint.Name="ManualGatherHint"
+gatherHint.Size=UDim2.fromOffset(188,24)
+gatherHint.Position=UDim2.fromOffset(8,72)
+gatherHint.BackgroundColor3=Color3.fromRGB(33,58,47)
+gatherHint.BackgroundTransparency=.24
+gatherHint.TextColor3=Color3.fromRGB(211,239,213)
+gatherHint.TextSize=11
+gatherHint.Font=Enum.Font.GothamBold
+gatherHint.Text="나무/작물에 가까이 가서 직접 채집"
+gatherHint.Parent=gui
+roundify(gatherHint,8)
 
--- 하단 조작: 평소에는 카테고리 3개만 표시하고, 탭한 카테고리의 액션만 잠깐 노출
+-- 하단 조작: 채집은 월드 상호작용, 여기에는 마을 운영/정복만 표시
 local controls=Instance.new("Frame")
 controls.Name="ActionDock"
 controls.AnchorPoint=Vector2.new(.5,1)
@@ -225,10 +224,8 @@ local function render()
   p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
 
  local inBattle=p:GetAttribute("InBattle")==true
- local activity=p:GetAttribute("LastActivity")or"숲·농장 가까이 가면 자동채집"
+ local activity=p:GetAttribute("LastActivity")or"나무/작물에 가까이 가서 직접 채집"
  objective.Text=inBattle and ("⚔ "..target.." · 전투 "..(p:GetAttribute("BattleProgress")or 0).."%") or (activity.."  |  다음: "..target)
- local zone=p:GetAttribute("AutoGatherZone")or""
- autoGather.Text=zone=="WOOD"and"자동채집 · 숲 +나무"or zone=="FOOD"and"자동채집 · 농장 +식량"or zone=="BOTH"and"자동채집 · 나무+식량"or"자동채집 · 숲/농장 근처"
 
  if inBattle then
   if bgm.IsPlaying then bgm:Stop()end
@@ -243,7 +240,7 @@ local function render()
  lastCaptured=captured
 end
 
-for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle","AutoGatherZone"})do
+for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
