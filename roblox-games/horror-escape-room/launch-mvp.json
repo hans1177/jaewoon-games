@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -22,11 +22,10 @@
     "five classic monsters with distinct abilities",
     "server-authoritative action validation, multiplayer sync and movement abuse guards",
     "340x340 expanded map footprint for each map",
-    "four survivor objectives and unlocked escape gate",
-    "180-second objective chase rounds",
     "classic monster roster: Dracula, Frankenstein, Werewolf, Mummy, Grim Reaper",
     "Roblox Creator Store environment asset decoration with script stripping",
-    "distinct expanded school hospital and abandoned theme park subzones"
+    "distinct expanded school hospital and abandoned theme park subzones",
+    "240-second infection rounds"
   ],
   "deferredUntilAfterMvp": [
     "extra monsters",
@@ -63,7 +62,6 @@
     "lobby role selection separated from chase HUD",
     "round-start tag grace",
     "340x340 arena footprint",
-    "four interactive survivor objectives",
     "classic five-monster roster",
     "asset scripts stripped before world decoration",
     "expanded subzones and route variety"
@@ -79,7 +77,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-22T19:15:00+09:00",
+  "updatedAt": "2026-09-22T19:32:00+09:00",
   "externalReleaseCandidate": true,
   "candidateScopeVersion": 6,
   "gameTitleKo": "심야 감염전 [4대4]",
@@ -92,5 +90,14 @@
   "robloxDescriptionKorean": "인간 4 대 몬스터 4로 시작하는 8인 감염전. 빈자리는 AI가 채우고 인간이 잡히면 몬스터가 되어 전 동료를 사냥해. 인간은 고유 도구와 정화 공격으로 몬스터를 제거할 수 있어.",
   "robloxDescriptionEnglish": "An 8-player 4v4 infection chase. AI fills empty slots. Caught humans become monsters and hunt former teammates while humans fight back with purification.",
   "artDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
-  "robloxServerSize": 8
+  "robloxServerSize": 8,
+  "designContract": {
+    "authorityBranch": "company-runtime",
+    "designJsonPath": "design/horror-escape-room/2026-09-22/design-revised.json",
+    "designMarkdownPath": "design/horror-escape-room/2026-09-22/GAME_DESIGN.md",
+    "graphicsConcept": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+    "runtimeWorldArtPass": "INFECTION_HORROR_V9",
+    "runtimeCharacterArtDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+    "rule": "GAME_DESIGN_AND_DESIGN_REVISED_MUST_MATCH_IMPLEMENTED_ROBLOX_CODE"
+  }
 }
