@@ -56,8 +56,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -66,7 +66,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T20:31:32.241Z",
+      "updatedAt": "2026-09-22T20:33:19.923Z",
       "robloxSourceCommit": "017415a22acb8f921db48a0a41e04dc2e09db32e",
       "robloxSourceBootstrapPassedAt": "2026-09-22T20:24:48.922Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -74,7 +74,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -161,9 +161,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "multiplayerSupported": true,
       "soloPlayable": true,
       "multiplayerMode": "COOP",
@@ -278,7 +278,7 @@
         "placeId": "116850096561713",
         "verified": true,
         "verifiedAt": "2026-09-22T06:05:40.331Z",
-        "lastVerifiedAt": "2026-09-22T16:48:46.641Z",
+        "lastVerifiedAt": "2026-09-22T20:33:19.923Z",
         "source": "owner-dedicated-github-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
@@ -287,7 +287,7 @@
       },
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
-      "robloxReleaseVersionNumber": 20,
+      "robloxReleaseVersionNumber": 21,
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxFastMvpPublicationEvidence": {
@@ -435,7 +435,25 @@
         "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "platform": "ROBLOX",
+        "sourceRevision": "017415a22acb8f921db48a0a41e04dc2e09db32e",
+        "artifactIdentity": "sha256:86cd892f9eb1a7d2e839b951c629808c73d856c794c61bfe8874834f8a56a13f",
+        "artifactRunId": 35780441879,
+        "universeId": "10767445741",
+        "placeId": "116850096561713",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 21,
+        "workflowRunId": 35780862969,
+        "publishedAt": "2026-09-22T20:33:19.923Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxF9ReleaseRegressionPassed": false,
@@ -3797,7 +3815,7 @@
       "robloxReleasePublishedAt": null
     }
   ],
-  "updatedAt": "2026-09-22T20:31:32.241Z",
+  "updatedAt": "2026-09-22T20:33:19.923Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
