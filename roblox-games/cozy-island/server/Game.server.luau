@@ -35,13 +35,14 @@ local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("H
 local function msg(p,t)p:SetAttribute("LastActivity",t)end
 local function feedback(p,k)p:SetAttribute("FeedbackEvent",k..":"..tostring(math.floor(os.clock()*1000)))end
 local function foundationCheckpoint(name,p,extra)
- local payload={name=name,at=os.time(),userId=p and p.UserId or 0}
+ local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=game.PlaceId,placeVersion=game.PlaceVersion}
  if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
  workspace:SetAttribute("Foundation_"..name,true)
  pcall(function()
   foundationStore:UpdateAsync("latest",function(old)
    local data=typeof(old)=="table"and old or{}
-   data.version=1;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+   if tonumber(data.placeVersion)~=game.PlaceVersion or tonumber(data.placeId)~=game.PlaceId or tostring(data.gameId or"")~=tostring(C.GameId)then data.checkpoints={}end
+   data.version=2;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
    data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
    data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
    data.checkpoints[name]=payload
