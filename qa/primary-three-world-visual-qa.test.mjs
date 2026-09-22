@@ -57,8 +57,8 @@ test('QA 캡처는 갤러리 저장 뒤에 읽기 업로드 권한을 요청한�
   const qa=read(`roblox-games/${id}/shared/QACamera.luau`);
   const saveIndex=qa.indexOf('PromptSaveCapturesToGallery');
   const permissionIndex=qa.lastIndexOf('PromptCaptureGalleryPermissionAsync');
-  const readIndex=qa.indexOf('ReadCapturesFromGalleryAsync');
+  const readCallIndex=qa.indexOf('readLatestFromGallery(savedCount)');
   assert.ok(saveIndex>=0 && permissionIndex>saveIndex, id+' permission must follow save');
-  assert.ok(readIndex>permissionIndex, id+' gallery read must follow permission');
+  assert.ok(readCallIndex>permissionIndex, id+' gallery read call must follow permission');
  }
 });
