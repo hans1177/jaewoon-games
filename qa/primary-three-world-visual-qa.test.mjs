@@ -14,7 +14,7 @@ test('3개 내부 빌드는 공식 CaptureService QA 카메라와 안전한 서�
   const server=read(`roblox-games/${id}/server/Game.server.luau`);
   assert.match(config,/QACameraEnabled=true/);
   assert.match(config,/QACaptureRemoteName="QACaptureReport"/);
-  for(const marker of ['CaptureService','PromptCaptureGalleryPermissionAsync','Enum.CaptureGalleryPermission.ReadAndUpload','TakeScreenshotCaptureAsync','PromptSaveCapturesToGallery','ReadCapturesFromGalleryAsync','StartUploadCaptureAsync','CheckUploadCaptureStatusAsync','Enum.CameraType.Scriptable','UICaptureMode=Enum.UICaptureMode.All','camera.CameraType=saved.cameraType']){
+  for(const marker of ['CaptureService','PromptCaptureGalleryPermissionAsync','Enum.CaptureGalleryPermission.ReadAndUpload','TakeScreenshotCaptureAsync','PromptSaveCapturesToGallery','StartUploadCaptureAsync','CheckUploadCaptureStatusAsync','Enum.CameraType.Scriptable','UICaptureMode=Enum.UICaptureMode.All','camera.CameraType=saved.cameraType']){
    assert.match(qa,new RegExp(marker.replaceAll('.','\\.')));
   }
   assert.match(client,/QACamera\.install\(C,gui/);
@@ -52,13 +52,14 @@ test('심야 술래잡기는 실제 좌표 미니맵과 맵별 가독성 바닥/
  assert.match(style,/FogEnd=270/);
 });
 
-test('QA 캡처는 갤러리 저장 뒤에 읽기 업로드 권한을 요청한다',()=>{
+test('QA 캡처는 저장된 원본 Capture를 권한 승인 뒤 직접 업로드한다',()=>{
  for(const id of games){
   const qa=read(`roblox-games/${id}/shared/QACamera.luau`);
   const saveIndex=qa.indexOf('PromptSaveCapturesToGallery');
   const permissionIndex=qa.lastIndexOf('PromptCaptureGalleryPermissionAsync');
-  const readCallIndex=qa.indexOf('readLatestFromGallery(savedCount)');
+  const uploadCallIndex=qa.indexOf('uploadSavedCapture(entry.capture)');
   assert.ok(saveIndex>=0 && permissionIndex>saveIndex, id+' permission must follow save');
-  assert.ok(readCallIndex>permissionIndex, id+' gallery read call must follow permission');
+  assert.ok(uploadCallIndex>permissionIndex, id+' saved capture upload must follow permission');
+  assert.doesNotMatch(qa,/ReadCapturesFromGalleryAsync/);
  }
 });
