@@ -87,7 +87,7 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
 });
 
-test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes artbook and native dispatch',()=>{
+test('DESIGN_ONLY stops at strict design baseline; promoted work follows direct-native Roblox and Unity development',()=>{
   const design=directive.classes.DESIGN_ONLY;
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.deepEqual(design.requiredFlow,[
@@ -95,29 +95,29 @@ test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes ar
     'DETERMINISTIC_DEPARTMENT_EVIDENCE','DETERMINISTIC_REVALIDATION',
     'STRICT_DESIGN_REVIEW','DESIGN_BASELINE_GATE'
   ]);
-  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED','STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'])assert.ok(design.baselineReadyRequires.includes(token));
+  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED','STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'])assert.ok(design.baselineReadyRequires.includes(token));
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.equal(design.sourceCodeAutoDevelopment,false);
   assert.equal(design.artbookBeforePromotionForbidden,true);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
-  assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
-  assert.equal(directive.stageGateScoringV2.currentThresholds.webPlatformPromotion,90);
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
-  assert.equal(directive.ai.artbookEditor.startsAfterDesignPromotion,true);
-  assert.equal(directive.ai.artbookEditor.startsAfterWebStrictReview,true);
-  assert.equal(directive.ai.artbookEditor.minimumWebStrictScore,80);
-  assert.equal(directive.ai.artbookEditor.startsAtClass,'DEVELOPMENT_CONFIRMED');
-  assert.ok(development.requiredFlow.includes('WEB_STRICT_REVIEW'));
-  assert.ok(development.requiredFlow.includes('POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER'));
-  assert.ok(development.requiredFlow.includes('HOMEPAGE_TEST_CANDIDATE_IF_ARTBOOK_READY'));
-  assert.ok(development.requiredFlow.includes('TARGET_PLATFORM_90_POINT_GATE'));
+  assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
+  assert.equal(development.webPurpose,'LEGACY_OPTIONAL_COMPANION_ONLY');
+  assert.equal(development.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
+  assert.equal(development.webBeforeTargetPlatformByDefault,false);
+  assert.equal(development.targetPlatformMayRunImmediately,true);
+  assert.equal(development.webGameplayValidationRequired,false);
+  assert.equal(development.webCompanionValidationRequired,false);
+  assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,false);
+  assert.equal(development.legacyWebGateStatus,'LEGACY_DISABLED');
+  for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','TARGETED_REPAIR_AND_REVALIDATION','PUBLIC_RELEASE_READY'])assert.ok(development.requiredFlow.includes(token),token);
   assert.equal(development.preWebArtbookForbidden,true);
   assert.equal(development.postWebArtbookRequiredForHomepage,true);
-  assert.equal(development.webStrictHomepageMinimum,80);
-  assert.equal(development.formalImplementationMinimumForTargetPlatformDispatch,90);
-  assert.equal(development.artbookFailureBlocksHomepageRegistrationOnly,true);
+  assert.equal(development.approvedScopeCompletionRequired,true);
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
+  assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
+  assert.equal(directive.ai.vibe2.ownsSelectedPlatformImplementation,true);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
   assert.match(designCycle,/GAME_SEED_REQUIRED/);
   assert.match(designCycle,/sameModelAsDraft:false/);
@@ -172,14 +172,15 @@ test('DESIGN_ONLY keeps deterministic evidence while lead-model distinctness is 
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
-test('Vibe2/Vibe3 remain primary integration and learning owner while assigned external AI may collaborate in isolated candidate scope',()=>{
+test('Vibe2/Vibe3 remain primary integration and learning owner for direct-native implementation with isolated external AI collaboration',()=>{
   const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
   assert.equal(authority.authority,'VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION');
   assert.equal(authority.implementationOwner,'VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS');
-  assert.equal(authority.appliesFromStage,'WEB_BASE_IMPLEMENTATION');
-  assert.equal(authority.ownsWebFirstImplementation,true);
+  assert.equal(authority.appliesFromStage,'MINIMUM_DESIGN_CONTRACT_READY');
+  assert.equal(authority.ownsWebFirstImplementation,false);
   assert.equal(authority.ownsSelectedPlatformImplementation,true);
   assert.equal(authority.ownsPostReleaseGameSourceDevelopment,true);
+  assert.equal(authority.ownsInternalPlaytestRepair,true);
   assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
   assert.equal(authority.nonVibeAiMayWriteGameSource,true);
   assert.equal(authority.nonVibeAiMayCreateGameplayFeatureCommits,true);
@@ -191,60 +192,48 @@ test('Vibe2/Vibe3 remain primary integration and learning owner while assigned e
   assert.equal(authority.vibeMustLearnDuringCollaborativeWork,true);
   assert.equal(authority.verifiedResultsReturnToExistingLearningMotor,true);
   assert.equal(directive.ai.vibe2.implementationOwner,true);
+  assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
+  assert.equal(directive.ai.vibe2.ownsSelectedPlatformImplementation,true);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
 });
 
-test('every game requires a full approved-scope Web companion before selected target platform validation',()=>{
+test('direct-native development keeps Web optional while preserving approved scope and native evidence gates',()=>{
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   const release=directive.classes.RELEASE_CONFIRMED;
-  assert.equal(directive.production.webCompanion.requiredForEveryGame,true);
-  assert.equal(directive.production.webCompanion.appliesToAllTargetPlatforms,true);
+  assert.equal(directive.production.webCompanion.requiredForEveryGame,false);
+  assert.equal(directive.production.webCompanion.appliesToAllTargetPlatforms,false);
+  assert.equal(directive.production.webCompanion.role,'LEGACY_OPTIONAL_COMPANION');
+  assert.equal(directive.production.webCompanion.developmentAdmissionAuthority,false);
   assert.equal(directive.production.webCompanion.silentFeatureOmissionForbidden,true);
+  assert.equal(directive.production.webCompanion.nativePlatformReleaseStillRequiresNativeEvidence,true);
   assert.equal(directive.production.approvedScopeCompletion.approvedDesignBaselineMustBeFullyImplemented,true);
   assert.equal(directive.production.approvedScopeCompletion.prototypeCannotSatisfyCompletionOrReleaseCandidateGate,true);
-  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
-  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
-  assert.equal(development.executionMode,'GATED_DIRECT');
-  assert.equal(development.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');
-  assert.equal(development.targetPlatformPurpose,'TECHNICAL_AND_GAMEPLAY_VALIDATION');
-  assert.equal(development.webBeforeTargetPlatformByDefault,true);
-  assert.equal(development.targetPlatformMayRunImmediately,false);
-  assert.equal(development.webGameplayValidationRequired,true);
-  assert.equal(development.webCompanionValidationRequired,true);
+  assert.equal(development.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
+  assert.equal(development.webPurpose,'LEGACY_OPTIONAL_COMPANION_ONLY');
+  assert.equal(development.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
+  assert.equal(development.webBeforeTargetPlatformByDefault,false);
+  assert.equal(development.targetPlatformMayRunImmediately,true);
+  assert.equal(development.webGameplayValidationRequired,false);
+  assert.equal(development.webCompanionValidationRequired,false);
   assert.equal(development.approvedScopeCompletionRequired,true);
-  assert.equal(development.musicValidationRequired,true);
-  assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,true);
-  assert.equal(development.webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch,true);
-  assert.equal(development.webStrictHomepageMinimum,80);
-  assert.equal(development.formalImplementationMinimumForTargetPlatformDispatch,90);
-  assert.equal(development.artbookAfterWebStrictReview,true);
-  assert.equal(development.artbookFailureBlocksHomepageRegistrationOnly,true);
-  for(const token of ['FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','WEB_STRICT_REVIEW','POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER','TARGET_PLATFORM_90_POINT_GATE','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION'])assert.ok(development.requiredFlow.includes(token),token);
-  for(const token of ['REAL_WEB_GAMEPLAY_PASS','APPROVED_SCOPE_FULLY_IMPLEMENTED','MUSIC_RUNTIME_PASS','REAL_TARGET_PLATFORM_GAMEPLAY_PASS','REAL_TARGET_PLATFORM_TECHNICAL_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
-  assert.equal(development.developmentMusic.firstUserGestureUnlockRequired,true);
-  assert.equal(development.developmentMusic.muteControlRequired,true);
-  assert.equal(development.developmentMusic.volumeControlRequired,true);
-  assert.equal(development.developmentMusic.musicFailureBlocksTargetPlatformDispatch,true);
+  assert.equal(development.musicValidationRequired,false);
+  assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,false);
+  assert.equal(development.webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch,false);
+  for(const token of ['ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'])assert.ok(development.requiredFlow.includes(token),token);
+  for(const token of ['PLATFORM_SPECIFIC_SOURCE_EXISTS','PLATFORM_SPECIFIC_RUNTIME_PASS','PLATFORM_SPECIFIC_INDEPENDENT_QA_PASS','PLATFORM_SPECIFIC_REGRESSION_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
   assert.equal(release.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
   assert.equal(release.target,'PROJECT_SELECTED_PLATFORM');
   assert.equal(release.targetPlatformProjectRequired,true);
-  assert.equal(release.webCompanionRequired,true);
+  assert.equal(release.webCompanionRequired,false);
   assert.equal(release.approvedScopeCompletionRequired,true);
   assert.equal(release.vibe2PrimaryDeveloper,true);
   assert.equal(release.coreDesignLock,true);
-  assert.ok(release.requiredFlow.includes('BIND_CURRENT_WEB_COMPANION_SOURCE_TREE'));
-  assert.ok(release.requiredFlow.includes('WEB_COMPANION_RUNTIME_VALIDATION'));
   assert.ok(release.requiredFlow.includes('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE'));
   assert.ok(release.requiredFlow.includes('TARGET_PLATFORM_BUILD_OR_PACKAGE'));
   assert.ok(release.requiredFlow.includes('TARGET_PLATFORM_RUNTIME_VALIDATION'));
-  assert.match(flow,/webCompanion:[\s\S]*requiredForEveryGame: true/);
-  assert.match(flow,/approvedScopeCompletion:[\s\S]*approvedDesignBaselineMustBeFullyImplemented: true/);
-  assert.match(flow,/webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION/);
-  assert.match(flow,/approvedScopeCompletionRequired: true/);
-  assert.match(flow,/APPROVED_SCOPE_FULLY_IMPLEMENTED/);
-  assert.match(flow,/musicFailureBlocksTargetPlatformDispatch: true/);
-  assert.match(flow,/target: PROJECT_SELECTED_PLATFORM/);
+  assert.ok(release.requiredFlow.includes('INDEPENDENT_QA_AND_REGRESSION'));
+  assert.ok(!release.requiredFlow.includes('BIND_CURRENT_WEB_COMPANION_SOURCE_TREE'));
 });
 
 test('Web learning evidence is auxiliary and cannot replace native platform evidence',()=>{
@@ -286,27 +275,30 @@ test('equal-tier design stabilization preserves canonical Web-first development 
   assert.match(flow,/developmentRuntimeDispatchAllowed: true/);
 });
 
-test('Unity and Roblox share the first development priority tier without creating a platform lock',()=>{
+test('Unity and Roblox share the active first development tier while Fortnite UEFN remains owner-held',()=>{
   const strategy=directive.platformStrategy;
   assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
-  assert.deepEqual(strategy.priority,['UNITY','ROBLOX','FORTNITE_UEFN']);
-  assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX'],['FORTNITE_UEFN']]);
-  assert.equal(strategy.priorityMeaning,'UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK');
+  assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
+  assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX']]);
+  assert.equal(strategy.priorityMeaning,'ROBLOX_UNITY_ACTIVE_EQUAL_TIER_UEFN_OWNER_HOLD');
   assert.equal(strategy.designStabilizationScheduling.unityRobloxEqualPriority,true);
   assert.equal(strategy.designStabilizationScheduling.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
-  assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,true);
+  assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
   assert.equal(strategy.roadmapPhaseEntryGatesForbidden,true);
   assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
-  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'ALWAYS_ALLOWED'});
+  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'OWNER_HOLD'});
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
+  assert.equal(strategy.FORTNITE_UEFN.role,'OWNER_HOLD_SUPPORTED_PLATFORM');
+  assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
   assert.equal(roadmap.platformPriorityInvariant.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
-  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX'],['FORTNITE_UEFN']]);
+  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
   assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleDevelopmentSlot,false);
-  assert.match(flow,/allThreePlatformsMayBeDevelopedConcurrently: true/);
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnState,'OWNER_HOLD');
   assert.match(flow,/roadmapPhaseEntryGatesForbidden: true/);
 });
 
@@ -350,19 +342,19 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
 });
 
 
-test('development WIP is policy-unbounded while external capacity and gates remain fail-closed',()=>{
+test('development WIP is policy-unbounded while execution capacity and gates remain fail-closed',()=>{
   assert.equal(roadmap.platformRepresentativeSets.implementationWipTarget,null);
   assert.equal(roadmap.platformRepresentativeSets.implementationWipMax,null);
-  assert.equal(roadmap.platformRepresentativeSets.implementationWipPolicy,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_PROVIDER_CAPACITY_ONLY');
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipPolicy,'UNBOUNDED_TOTAL_ELIGIBILITY_EXTERNAL_EXECUTION_CAPACITY_ONLY');
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipScope,'UNBOUNDED_ELIGIBLE_GAMES_CAPACITY_BATCHED_ONLY');
   assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,null);
   assert.equal(roadmap.developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden,true);
   assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
   assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
-  assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
 });
-
 
 test('all automated gates repair and retest the same failed gate until PASS',()=>{
   const loop=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticGateRepairLoop;
@@ -533,7 +525,7 @@ test('Vibe self-architecture evolution is executable and adopted only after veri
 });
 
 
-test('planning department is the canonical combined planning growth monetization and marketing function',()=>{
+test('planning department is the canonical combined planning growth monetization and marketing function with joint Primary-AI and Vibe decisions',()=>{
   const p=roadmap.planningGrowthMarketingDepartment;
   assert.equal(p.canonicalRoleKey,'planning');
   assert.equal(p.mergeMode,'EXTEND_EXISTING_PLANNING_DEPARTMENT_NO_PARALLEL_DUPLICATE_DEPARTMENT');
@@ -546,11 +538,13 @@ test('planning department is the canonical combined planning growth monetization
   assert.ok(p.researchDomains.marketingAndGrowth.includes('PLATFORM_ADVERTISING_OPTIONS'));
   assert.ok(p.researchDomains.marketingAndGrowth.includes('LAUNCH_TIMING_AND_UPDATE_TIMING'));
   assert.deepEqual(p.applicationDecisionContract.allowedDecisions,['ACCEPT','PARTIAL_ACCEPT','DEFER','REJECT']);
-  assert.equal(p.applicationDecisionContract.decisionAuthority,'VIBE');
-  assert.equal(p.applicationDecisionContract.automaticAcceptanceForbidden,true);
+  assert.equal(p.applicationDecisionContract.decisionAuthority,'PRIMARY_AI_AND_VIBE_JOINT');
+  assert.equal(p.applicationDecisionContract.automaticAcceptanceForbidden,false);
+  assert.equal(p.applicationDecisionContract.jointDecisionRequired,true);
   assert.equal(p.timingPolicy.majorGameChangeUsesPostReleaseMajorPreparationLane,true);
   assert.equal(p.timingPolicy.revenueBlockingBugUsesHotfixLane,true);
-  assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,true);
+  assert.equal(p.safeguards.paidCampaignSpendCannotBeTriggeredWithoutOwnerAuthorizedFinancialAction,false);
+  assert.equal(p.safeguards.paidCampaignExecutionUnavailableWithoutExplicitFinancialExecutionTool,true);
   assert.equal(p.learningLoop.verifiedOutcomeReturnsToExistingVibeLearning,true);
   const commercial=p.postReleaseCommercializationEngine;
   assert.deepEqual(commercial.executionOrder.slice(0,4),[
@@ -574,7 +568,8 @@ test('planning department is the canonical combined planning growth monetization
   assert.ok(p.departmentToVibeDecisionBoundary.departmentMay.includes('ANALYZE_USER_ACQUISITION_RETENTION_MONETIZATION_AND_TRENDS'));
   assert.ok(p.departmentToVibeDecisionBoundary.departmentMayNot.includes('FORCE_IMPLEMENTATION'));
   assert.ok(p.departmentToVibeDecisionBoundary.vibeAuthority.includes('RUN_LIMITED_EXPERIMENT'));
-  assert.ok(p.departmentToVibeDecisionBoundary.vibeAuthority.includes('CHOOSE_APPLICATION_TIMING'));
+  assert.ok(p.departmentToVibeDecisionBoundary.primaryAiAuthority.includes('RUN_LIMITED_EXPERIMENT'));
+  assert.equal(p.departmentToVibeDecisionBoundary.jointApplicationDecision,'PRIMARY_AI_AND_VIBE');
   assert.equal(p.dataResearchDiscipline.factsInferenceHypothesisMustBeSeparated,true);
   assert.equal(p.dataResearchDiscipline.noUsersMeansNoPlayerBehaviorClaim,true);
   assert.equal(p.dataResearchDiscipline.noPurchasesMeansNoConversionOrRevenueOptimizationClaim,true);
@@ -589,6 +584,7 @@ test('planning department is the canonical combined planning growth monetization
   assert.ok(p.playerAcquisitionResearch.channelPortfolio.includes('CREATOR_OR_INFLUENCER_OUTREACH'));
   assert.equal(p.playerAcquisitionResearch.paidAcquisitionGate.brokenOnboardingOrRetentionBlocksScalingSpend,true);
   assert.equal(p.monetizationReadinessDecision.defaultWhenEvidenceMissing,'DEFER');
+  assert.equal(p.monetizationReadinessDecision.decisionAuthority,'PRIMARY_AI_AND_VIBE_JOINT');
   assert.deepEqual(p.strategyPriority.slice(0,4),[
     '1_MARKET_AND_TREND_RESEARCH',
     '2_PLAYER_ACQUISITION',
