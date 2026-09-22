@@ -71750,8 +71750,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": true,
@@ -71797,654 +71797,66 @@
         "package-quantity-goal:FEATURE_COMPLETION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
         "portfolio-decision:FOCUSED_REPAIR",
-        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+        "base-main:308bc2b59d3282400d21704d217d8f39a9524196",
+        "role-result:exploration:PASS",
+        "role-result:implementation:FAIL",
+        "role-result:test:FAIL",
+        "role-result:performance:FAIL",
+        "role-result:regression:WAITING_FAN_IN",
+        "role-result:review:WAITING_FAN_IN",
+        "source-generation-failure:OTHER",
+        "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
+        "coding-responsibility-confidence:LOW",
+        "coding-candidate-first-attempt:NO",
+        "coding-failure-fingerprint:roblox|MOBILE_INPUT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|QUEST_DESIGN|ROBLOX_STUDIO|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX",
+        "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
+        "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_system_ai_34373d2f1f6135962e2e0a5d%22%2C%22EXPERIENCE%3Aexp_system_ai_0b0a34e7dbf177b41b7207d9%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9b7b3c1df9b291d1f576%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_98ff2306686a32e38f808a33%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_c77e9012adc1458e5f026af9%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_a2b005913e4bbc43fa7d8870%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_8384b04814b6ef675cd54829%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_328d0c1d1272087207a460af%22%5D",
+        "learning-primary-domains:%5B%22ROBLOX_STUDIO%22%5D",
+        "learning-secondary-domains:%5B%22ASSET_ADAPTATION%22%2C%22ASSET_PRODUCTION%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%2C%22LIVING_MOTION%22%2C%22MOBILE_INPUT%22%5D",
+        "actions-run:35793415011",
+        "reservation-id:35793415011:1",
+        "variant:speculative-1",
+        "shared-context-sync:MISSING",
+        "workload:changed-files:0",
+        "workload:changed-lines:0",
+        "workload:prep-ms:6403",
+        "workload:cycle-ms:290128",
+        "exploration-reuse:b80c2ea4e37001e39298592f",
+        "exploration-impact:client/Game.client.luau|roblox-source-bootstrap.json|shared/QACamera.luau|server/Game.server.luau|shared/GameConfig.luau|shared/VisualStyle.luau",
+        "exploration-tests:shared/QACamera.luau",
+        "failure-cause:source-candidate-generation-failed",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cspeculative-1%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cspeculative-1%22%2C%22predictedResponsibility%22%3A%22UNKNOWN%22%2C%22predictedConfidence%22%3A1%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-shadow-match:MISMATCH",
+        "neural-shadow-observed-stage:SOURCE_GENERATION",
+        "neural-shadow-critic:%7B%22version%22%3A1%2C%22verdict%22%3A%22PIPELINE_CONTRADICTED%22%2C%22predictedResponsibility%22%3A%22UNKNOWN%22%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22failureSignature%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22causalRepairVerified%22%3Afalse%2C%22prePatchReproduced%22%3Afalse%2C%22causalReplayPass%22%3Afalse%2C%22confidenceAdjustmentHint%22%3A-0.1%2C%22confidenceMutationAllowed%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22RETRY_SAME_TASK_AFTER_SOURCE_GENERATION_RECOVERY%22%2C%22VERIFY_ORIGINAL_GAME_FAILURE_STILL_REPRODUCES_OR_IS_RESOLVED%22%5D%7D",
+        "neural-shadow-critic-verdict:PIPELINE_CONTRADICTED",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cspeculative-1%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22UNKNOWN%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-root-cause-state:UNRESOLVED",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-event-shadow-action:REQUEST_EVIDENCE",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cspeculative-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A13%2C%22edgeCount%22%3A11%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A1%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "coding-strategy:PRIMARY_RESPONSIBILITY_MINIMAL",
+        "variant:primary",
+        "workload:prep-ms:12025",
+        "workload:cycle-ms:388394",
+        "exploration-reuse:076c96b474aef1b75a037358",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cprimary%22%2C%22feedback%22%3A%22MISMATCH%22%2C%22critic%22%3A%22PIPELINE_CONTRADICTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER%22%2C%22sampleId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22UNKNOWN%22%2C%22predictedConfidence%22%3A1%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MISMATCH%22%2C%22responsibilityMatch%22%3Afalse%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22UNKNOWN%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A2%2C%22eventIdentityVersion%22%3A2%2C%22eventId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A1%2C%22graphId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22daechung-rpg-roblox-presentation-asset-adaptation-v1%7C35793415011%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A13%2C%22edgeCount%22%3A11%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A3%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A1%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%2C%22PHASE2_EXECUTION_AUTHORITY_NOT_GRANTED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "retry-failure-signature:source-candidate-generation-failed",
+        "retry-policy:UNLIMITED_OR_WITHIN_BOUND"
       ],
-      "lastOutcome": null,
-      "reservationId": "35793415011:1",
-      "reservationRunId": "35793415011",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-22T22:39:48Z",
-      "neuronExpectedVariants": 2,
-      "neuronResults": [
-        {
-          "version": 14,
-          "taskId": "daechung-rpg-roblox-presentation-asset-adaptation-v1",
-          "reservationId": "35793415011:1",
-          "variant": "speculative-1",
-          "outcome": "FAIL",
-          "blocker": "source-candidate-generation-failed",
-          "candidateBranch": null,
-          "baseMainSha": "308bc2b59d3282400d21704d217d8f39a9524196",
-          "candidateIdentity": null,
-          "candidateFailure": {
-            "class": "OTHER",
-            "message": "CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE:5f0360118d82d6007140d33e6dc701762f39ce88c9e4afa73f7e23283ab4f3ab->eb091e702fee6b560506eea7ffc539e06f310a85385034e5d6bfca9560e6aef4"
-          },
-          "evidence": [
-            "base-main:308bc2b59d3282400d21704d217d8f39a9524196",
-            "role-result:exploration:PASS",
-            "role-result:implementation:FAIL",
-            "role-result:test:FAIL",
-            "role-result:performance:FAIL",
-            "role-result:regression:WAITING_FAN_IN",
-            "role-result:review:WAITING_FAN_IN",
-            "source-generation-failure:OTHER",
-            "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
-            "coding-responsibility-confidence:LOW",
-            "coding-candidate-first-attempt:NO",
-            "coding-failure-fingerprint:roblox|MOBILE_INPUT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|QUEST_DESIGN|ROBLOX_STUDIO|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX",
-            "coding-patch-recipe:DETERMINISTIC_CAUSAL_RECIPE",
-            "learning-knowledge-ids:%5B%22EXPERIENCE%3Aexp_i00mwv%22%2C%22EXPERIENCE%3Aexp_rg6lvy%22%2C%22EXPERIENCE%3Asupervised_bug-defense_35476177742_revise%22%2C%22EXPERIENCE%3Aexp_1oonbi8%22%2C%22EXPERIENCE%3Aexp_4odofx%22%2C%22EXPERIENCE%3Aexp_pg739o%22%2C%22EXPERIENCE%3Aexp_system_ai_34373d2f1f6135962e2e0a5d%22%2C%22EXPERIENCE%3Aexp_system_ai_0b0a34e7dbf177b41b7207d9%22%2C%22CODE_PATTERN%3Apat_14v79w7%22%2C%22CODE_PATTERN%3Apat_1lx9uhh%22%2C%22CODE_PATTERN%3Apat_15k9k0m%22%2C%22CODE_PATTERN%3Apat_1dj8rdx%22%2C%22CODE_PATTERN%3Apat_1e917b8%22%2C%22CODE_PATTERN%3Apat_1gglxo2%22%2C%22PRACTICE_DISTILLED%3Apractice-distilled%3A9b7b3c1df9b291d1f576%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_98ff2306686a32e38f808a33%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_c77e9012adc1458e5f026af9%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_a2b005913e4bbc43fa7d8870%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_8384b04814b6ef675cd54829%22%2C%22VERIFIED_CAPABILITY%3Acapability_ctrace_328d0c1d1272087207a460af%22%5D",
-            "learning-primary-domains:%5B%22ROBLOX_STUDIO%22%5D",
-            "learning-secondary-domains:%5B%22ASSET_ADAPTATION%22%2C%22ASSET_PRODUCTION%22%2C%22CORE_LOOP%22%2C%22DEBUGGING%22%2C%22LIVING_MOTION%22%2C%22MOBILE_INPUT%22%5D",
-            "actions-run:35793415011",
-            "reservation-id:35793415011:1",
-            "variant:speculative-1",
-            "shared-context-sync:MISSING"
-          ],
-          "exploration": {
-            "version": 1,
-            "role": "exploration",
-            "sourceWrite": false,
-            "reused": false,
-            "taskId": "daechung-rpg-roblox-presentation-asset-adaptation-v1",
-            "packageId": "daechung-rpg-wp-1n6owy9",
-            "target": "roblox",
-            "sourceRoot": "roblox-games/daechung-rpg",
-            "baseMainSha": "308bc2b59d3282400d21704d217d8f39a9524196",
-            "responsibleFiles": [
-              "client/Game.client.luau"
-            ],
-            "impactFiles": [
-              "client/Game.client.luau",
-              "roblox-source-bootstrap.json",
-              "shared/QACamera.luau",
-              "server/Game.server.luau",
-              "shared/GameConfig.luau",
-              "shared/VisualStyle.luau"
-            ],
-            "contextFiles": [
-              "client/Game.client.luau",
-              "roblox-source-bootstrap.json",
-              "shared/QACamera.luau",
-              "server/Game.server.luau",
-              "shared/GameConfig.luau",
-              "shared/VisualStyle.luau"
-            ],
-            "relatedFiles": [
-              {
-                "path": "roblox-source-bootstrap.json",
-                "score": 34
-              },
-              {
-                "path": "shared/QACamera.luau",
-                "score": 13
-              },
-              {
-                "path": "server/Game.server.luau",
-                "score": 10
-              },
-              {
-                "path": "shared/GameConfig.luau",
-                "score": 10
-              },
-              {
-                "path": "shared/VisualStyle.luau",
-                "score": 5
-              }
-            ],
-            "testTargets": [
-              "shared/QACamera.luau"
-            ],
-            "protectedScopeSignals": [
-              "combat-number"
-            ],
-            "diagnosticEvidence": [],
-            "existingWebAssessment": null,
-            "fileDigests": [
-              {
-                "path": "client/Game.client.luau",
-                "hash": "43519eba7bc3b45b",
-                "bytes": 9246
-              },
-              {
-                "path": "roblox-source-bootstrap.json",
-                "hash": "dee4c623b4ce8e06",
-                "bytes": 1320
-              },
-              {
-                "path": "shared/QACamera.luau",
-                "hash": "3711eeaa81781975",
-                "bytes": 7705
-              },
-              {
-                "path": "server/Game.server.luau",
-                "hash": "8ddf58811c473dd9",
-                "bytes": 44372
-              },
-              {
-                "path": "shared/GameConfig.luau",
-                "hash": "fc4c2cc902d912e6",
-                "bytes": 2824
-              },
-              {
-                "path": "shared/VisualStyle.luau",
-                "hash": "cb47e6def36e4520",
-                "bytes": 509
-              }
-            ],
-            "editContract": {
-              "version": 1,
-              "mode": "COMPILED_EDIT_CONTRACT",
-              "strategyHint": "PRESERVE_PATCH_RESPONSIBLE_SCOPE",
-              "responsibilityConfidence": "LOW",
-              "rawResponsibilityConfidence": "LOW",
-              "responsibilityCalibration": {
-                "recommendation": "KEEP_RAW_CONFIDENCE",
-                "applied": false,
-                "extraReadOnlyExploration": false,
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "regressionHotspotRisk": {
-                "riskLevel": "MEDIUM",
-                "matched": [],
-                "focusedChecksAdded": [],
-                "writableScopeExpansionAllowed": false,
-                "authorityExpanded": false
-              },
-              "primaryTargets": [],
-              "allowedResponsibleFiles": [
-                "client/Game.client.luau"
-              ],
-              "allowedDependentSymbolsOrSystems": [],
-              "primarySystems": [],
-              "dependentSystems": [],
-              "directDependentSystems": [],
-              "readOnlyImpactSystems": [],
-              "ownedState": [],
-              "readState": [],
-              "preserveSemantics": [
-                "EXISTING_WORKING_BEHAVIOR",
-                "APPROVED_GAMEPLAY_VALUES",
-                "SAVE_MEANING",
-                "PROTECTED_SIGNAL:combat-number"
-              ],
-              "failureOrRequirementCausalChain": [
-                "FAILURE_EVIDENCE",
-                "RESPONSIBILITY_NOT_RESOLVED"
-              ],
-              "requiredObservableResult": "[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.\n[GENRE_PRESENTATION_GUIDANCE] UI는 장르와 실제 게임 규칙에서 새로 구성하고 unrelated 장르의 동일 HUD를 복사하지 않는다. Style Lock의 UI Motion Language/아이콘/타이포와 모바일 엄지 도달성을 지킨다. 적 종류는 색만 바꿔 구분하지 않고 실루엣·이동·공격·피격·사망·전투 역할 중 하나 이상을 실제로 다르게 구현한다. RPG/어드벤처 계열은 HP·마나/자원·경험치·퀵슬롯·퀘스트 등 실제 설계에 존재하는 핵심 정보를 우선하고 무기/스킬/NPC 상호작용 모션을 역할별로 구분한다.\n[COMMERCIAL_READINESS_GUIDANCE] 상업용 준비 기준: 첫 10분 안에 핵심 재미와 학습 흐름이 실제 플레이로 드러나야 하며, 버튼/보상/피격/구매/제작/레벨업/퀘스트 완료 피드백을 실제 이벤트와 연결한다. BGM/SFX/UI/환경음은 역할을 분리하고 mute/volume 및 반복음 변형을 제공한다. 모바일 핵심 조작은 44px 이상과 엄지 도달성을 지키고, 과도한 흔들림·번쩍임·진동은 조절 가능해야 하며 텍스트/상태를 색 하나만으로 구분하지 않는다. 저장이 있는 게임은 업데이트 후 기존 저장 의미를 보존하고 실패 시 전체 데이터 손실을 피한다. 초반/중반/후반 목표와 반복 플레이 이유를 만들고, 수익화가 있으면 일반 게임 UI와 구매/광고 UI를 분리하며 결제 없이는 핵심 루프가 막히지 않게 한다. 이 기준이 실패하면 기존 repair/revalidation으로 되돌린다.\n[PLATFORM_ADAPTATION:ROBLOX:SOCIAL_FAST_SESSION]\n핵심 게임 정체성·밸런스 의미·세이브 의미는 유지한다.\nRoblox 환경에 맞춰 빠른 진입, 모바일 우선 입력/UI, 친구 합류와 소셜/멀티 흐름, 짧고 반복 가능한 목표, 서버 권위 동기화, 저사양 기기 표현 밀도를 우선 최적화한다.\nUnity UI/카메라/렌더 구조를 문자 그대로 복사하지 않고 Roblox 네이티브 서비스와 표현으로 재구성한다.",
-              "semanticDiffBudget": {
-                "allowedSystems": [],
-                "preferredPrimarySymbols": [],
-                "maxSystemCount": 1,
-                "readOnlyImpactSystems": [],
-                "impactPredictionDoesNotGrantWriteAuthority": true,
-                "unrelatedSystemMutationForbidden": true,
-                "saveKeysMustRemainCompatible": []
-              },
-              "requiredFocusedChecks": [
-                "TEST_TARGET:shared/QACamera.luau"
-              ],
-              "causalReplay": {
-                "version": 2,
-                "required": true,
-                "prePatchReproduced": false,
-                "nodeTestTargets": [],
-                "executable": false,
-                "mode": "PLAN_ONLY",
-                "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-                "diagnosticType": null,
-                "diagnosticFile": null,
-                "diagnosticLine": null,
-                "diagnosticNeedle": null,
-                "diagnosticMicroTask": null,
-                "verifiedResponsibleSystem": null,
-                "diagnosticVerifier": null,
-                "identicalOrEquivalentInputStateRequired": true,
-                "canonicalQaStillRequired": true,
-                "sourceWrite": false,
-                "authorityExpanded": false
-              },
-              "patchRecipe": {
-                "version": 1,
-                "mode": "DETERMINISTIC_CAUSAL_RECIPE",
-                "failureFingerprint": "roblox|MOBILE_INPUT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|QUEST_DESIGN|ROBLOX_STUDIO|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX",
-                "verifiedMemoryIds": [],
-                "verifiedMemoryCount": 0,
-                "reusePatterns": [],
-                "avoidPatterns": [],
-                "steps": [
-                  "CONFIRM_FAILURE_OR_REQUIREMENT_AGAINST_CURRENT_SOURCE",
-                  "IDENTIFY_PRIMARY_RESPONSIBILITY_BEFORE_WRITE",
-                  "DO_NOT_EXPAND_TO_UNRELATED_DEPENDENCIES",
-                  "VERIFY_OBSERVABLE_STATE_OR_RUNTIME_CHANGE",
-                  "USE_CURRENT_SOURCE_CAUSAL_STRUCTURE",
-                  "AVOID_UNRELATED_OR_SPECULATIVE_REWRITE",
-                  "VERIFY_PRESERVE_SEMANTICS",
-                  "RUN_COMPILED_FOCUSED_CHECKS"
-                ],
-                "primaryTargets": [],
-                "dependentSymbolsOrSystems": [],
-                "ownedState": [],
-                "focusedChecks": [
-                  "TEST_TARGET:shared/QACamera.luau"
-                ],
-                "protectedSemantics": [
-                  "EXISTING_WORKING_BEHAVIOR",
-                  "APPROVED_GAMEPLAY_VALUES",
-                  "SAVE_MEANING",
-                  "PROTECTED_SIGNAL:combat-number"
-                ],
-                "verifiedMemoryOnly": true,
-                "scopeExpansionAllowed": false,
-                "qaBypassAllowed": false,
-                "authorityExpanded": false
-              },
-              "codingArchitecture": {
-                "developmentMode": "PRESERVE_PATCH",
-                "stateOwnershipSystems": [
-                  "CORE_STATE",
-                  "INPUT",
-                  "PRESENTATION",
-                  "WORLD",
-                  "PLAYER",
-                  "COMBAT",
-                  "AI",
-                  "INTERACTION",
-                  "ECONOMY",
-                  "PROGRESSION",
-                  "PLACEMENT",
-                  "GOAL_STATE"
-                ],
-                "apiNames": [
-                  "transitionRunState(next,reason)",
-                  "submitPlayerIntent(intent)",
-                  "queryWorld(position,action)",
-                  "applyPlayerDelta(delta,reason)",
-                  "resolveCombatAction(action)",
-                  "advanceAgentIntent(agentId,context)",
-                  "resolveInteraction(targetId,action)",
-                  "applyTransaction(transaction)",
-                  "advanceObjective(event)",
-                  "placeEntity(request)",
-                  "evaluateGoalState(context)",
-                  "renderFromState(snapshot)"
-                ],
-                "invariantIds": [
-                  "STATE_OWNER_ONLY_WRITE",
-                  "NO_DUPLICATE_CAUSAL_REWARD",
-                  "TERMINAL_STATE_STOPS_ACTIVE_ACTIONS",
-                  "GOAL_STATE_EXCLUSIVE",
-                  "NO_NAN_OR_INFINITE_GAMEPLAY_STATE",
-                  "INPUT_TO_STATE_CAUSALITY",
-                  "SAVE_SCHEMA_VERSIONED",
-                  "PLAYER_VITAL_BOUNDS",
-                  "ECONOMY_NO_UNDECLARED_NEGATIVE_BALANCE",
-                  "PLACEMENT_OCCUPANCY_CONSISTENT",
-                  "PROGRESSION_REWARD_IDEMPOTENT"
-                ],
-                "impactRule": "PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED"
-              },
-              "architectureSnapshot": {
-                "version": 1,
-                "nodeCount": 0,
-                "edgeCount": 0,
-                "maxFunctionBodyBytes": 0,
-                "maxCallsPerFunction": 0,
-                "maxCalledByPerFunction": 0,
-                "maxStateWritesPerFunction": 0,
-                "maxSystemsPerFunction": 0,
-                "multiWriterStateCount": 0,
-                "stateWriterLinkCount": 0,
-                "multiOwnerStorageKeyCount": 0,
-                "storageOwnerLinkCount": 0,
-                "timerFunctionCount": 0,
-                "eventBindingCount": 0,
-                "largeFunctionCount": 0,
-                "broadSystemFunctionCount": 0
-              },
-              "responsibilityGraph": {
-                "nodeCount": 0,
-                "relevantNodes": [],
-                "relevantEdges": []
-              },
-              "behaviorChains": [
-                {
-                  "id": "CORE_ACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "REAL_INPUT",
-                    "RESPONSIBLE_FUNCTION",
-                    "OWNED_STATE_CHANGE",
-                    "OBSERVABLE_GAME_RESULT"
-                  ]
-                },
-                {
-                  "id": "PLACEMENT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "POSITION_SELECTION",
-                    "COST_OR_VALIDATION",
-                    "ENTITY_MATERIALIZED_AT_POSITION",
-                    "WORLD_OR_COMBAT_EFFECT"
-                  ]
-                },
-                {
-                  "id": "INTERACTION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "TARGET_SELECTION_OR_APPROACH",
-                    "REAL_INPUT",
-                    "TARGET_STATE_CHANGE",
-                    "QUEST_ITEM_WORLD_OR_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "COMBAT_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "ATTACK_INTENT",
-                    "HIT_OR_REJECT_RESULT",
-                    "HP_OR_COMBAT_STATE_CHANGE",
-                    "TERMINAL_OR_CONTINUED_COMBAT_RESULT"
-                  ]
-                },
-                {
-                  "id": "PROGRESSION_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "OBJECTIVE_EVENT",
-                    "PROGRESS_DELTA",
-                    "REWARD_OR_UNLOCK",
-                    "NEXT_GAMEPLAY_OPTION_CHANGED"
-                  ]
-                },
-                {
-                  "id": "STRATEGY_DIVERGENCE_CHAIN",
-                  "required": true,
-                  "steps": [
-                    "CHOICE_A_AND_CHOICE_B",
-                    "SAME_OR_EQUIVALENT_START_STATE",
-                    "DIFFERENT_STATE_TRANSITIONS",
-                    "DIFFERENT_OBSERVED_OUTCOME"
-                  ]
-                }
-              ],
-              "seniorReview": {
-                "score": 100,
-                "hardBlockers": [],
-                "issues": []
-              },
-              "failureEvidence": [
-                "presentation-runtime-qa-required",
-                "graphics-pass-real-asset-binding-runtime-required",
-                "presentation-real-runtime-graphics:v2",
-                "learning-motor-candidate-tournament:repeated-verified-failure",
-                "portfolio-decision:FOCUSED_REPAIR",
-                "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
-              ],
-              "writableScopeExpansionAllowed": false,
-              "learningAuthorityExpanded": false
-            },
-            "reuseKey": "b80c2ea4e37001e39298592f",
-            "generatedAt": "2026-09-22T22:42:32.746Z"
-          },
-          "codingMethod": {
-            "version": 2,
-            "strategy": "DEPENDENCY_SAFE_COHERENT_PATCH",
-            "candidateVariant": "speculative-1",
-            "responsibilityConfidence": "LOW",
-            "primaryTargets": [],
-            "primarySystems": [],
-            "dependentSystems": [],
-            "ownedState": [],
-            "semanticDiffBudget": {
-              "allowedSystems": [],
-              "preferredPrimarySymbols": [],
-              "maxSystemCount": 1,
-              "readOnlyImpactSystems": [],
-              "impactPredictionDoesNotGrantWriteAuthority": true,
-              "unrelatedSystemMutationForbidden": true,
-              "saveKeysMustRemainCompatible": []
-            },
-            "semanticDiffEnforcement": null,
-            "causalReplay": {
-              "version": 2,
-              "required": true,
-              "prePatchReproduced": false,
-              "nodeTestTargets": [],
-              "executable": false,
-              "mode": "PLAN_ONLY",
-              "status": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-              "diagnosticType": null,
-              "diagnosticFile": null,
-              "diagnosticLine": null,
-              "diagnosticNeedle": null,
-              "diagnosticMicroTask": null,
-              "verifiedResponsibleSystem": null,
-              "diagnosticVerifier": null,
-              "identicalOrEquivalentInputStateRequired": true,
-              "canonicalQaStillRequired": true,
-              "sourceWrite": false,
-              "authorityExpanded": false
-            },
-            "failureFingerprint": "roblox|MOBILE_INPUT|STATE_FLOW|RUNTIME|RELEASE|AI|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|CORE_LOOP|LIVING_MOTION|MOBILE_INPUT|PERFORMANCE|QUEST_DESIGN|ROBLOX_STUDIO|STATE_MACHINE|UI_STATE|UNITY_RUNTIME|VFX",
-            "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-            "verifiedFailureLocalMemoryCount": 0,
-            "verifiedFailureLocalMemoryIds": [],
-            "generationAttempts": 0,
-            "candidateProducedFirstAttempt": false,
-            "writableScopeExpansionAllowed": false,
-            "learningAuthorityExpanded": false,
-            "implementationPass": false,
-            "incrementalQaPass": false,
-            "performanceSanityPass": false,
-            "firstCandidatePass": false,
-            "fullRegressionVerified": false,
-            "reviewVerified": false,
-            "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-            "causalReplayExecuted": false,
-            "architectureDrift": {
-              "status": "NOT_AVAILABLE",
-              "riskLevel": "LOW",
-              "score": 0,
-              "signals": [],
-              "hardReject": false,
-              "focusedReviewRequired": false
-            },
-            "telemetrySource": "WORK_ORDER_FALLBACK"
-          },
-          "presentationQuality": null,
-          "roleResults": {
-            "exploration": "PASS",
-            "implementation": "FAIL",
-            "test": "FAIL",
-            "performance": "FAIL",
-            "regression": "WAITING_FAN_IN",
-            "review": "WAITING_FAN_IN"
-          },
-          "practiceDistillation": null,
-          "practiceArtifact": null,
-          "neuralDiagnosis": {
-            "version": 2,
-            "mode": "PHASE1_SHADOW_ADVISORY",
-            "authority": "DIAGNOSIS_ONLY_NO_EXECUTION_AUTHORITY",
-            "facts": [
-              {
-                "id": "fact-1",
-                "value": "central-policy:company-learning/platform-release-roadmap.json",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-2",
-                "value": "release-state:development-confirmed",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              },
-              {
-                "id": "fact-3",
-                "value": "source-root:roblox-games/daechung-rpg",
-                "source": "TASK_OR_RUNTIME_EVIDENCE",
-                "verified": true
-              }
-            ],
-            "hypotheses": [
-              {
-                "id": "responsible-system-unknown",
-                "system": "UNKNOWN",
-                "confidence": 0.35,
-                "reason": "명시적 실패 시그니처가 충분하지 않아 추가 증거 필요"
-              }
-            ],
-            "causalEdges": [
-              {
-                "from": "responsible-system-unknown",
-                "to": "TASK_GOAL",
-                "relation": "POSSIBLE_CAUSE_OF",
-                "confidence": 0.35,
-                "verified": false,
-                "rank": 1
-              }
-            ],
-            "responsibility": {
-              "system": "UNKNOWN",
-              "confidence": 1,
-              "alternatives": [],
-              "basis": "WEIGHTED_SHADOW_HYPOTHESES",
-              "verified": false
-            },
-            "pipelinePrediction": {
-              "nextBlockingSystem": "UNKNOWN",
-              "confidence": 1,
-              "basis": "RESPONSIBILITY_FALLBACK_NO_DISTINCT_PIPELINE_BLOCKER",
-              "calibrationTarget": "NEXT_OBSERVED_BLOCKING_SYSTEM_NOT_ROOT_CAUSE",
-              "advisoryOnly": true
-            },
-            "bottleneck": {
-              "score": 96,
-              "components": {
-                "downstreamDepth": 5,
-                "recurrence": 2,
-                "sharedScope": 2,
-                "priority": 1,
-                "evidenceConfidence": 0.35
-              },
-              "advisoryOnly": true,
-              "mayReorderWave": false
-            },
-            "inhibitors": [],
-            "actionRecommendation": {
-              "mode": "EXACT_FAILURE_STAGE_REPAIR",
-              "failureStage": null,
-              "responsibleSystem": "UNKNOWN",
-              "preserveAlreadyPassedStages": true,
-              "restartFromBeginning": false,
-              "automaticScopeExpansion": false,
-              "blocked": false,
-              "blocker": null
-            },
-            "learning": {
-              "eligible": false,
-              "reason": "SHADOW_DIAGNOSIS_REQUIRES_POST_QA_ROOT_CAUSE_VERIFICATION"
-            },
-            "waveControl": {
-              "currentWaveSchedulerRemainsAuthoritative": true,
-              "mayReorderWave": false,
-              "mayCreateWorker": false
-            }
-          },
-          "capabilityApplication": {
-            "version": 1,
-            "layer": "verifiedCapabilityMemory",
-            "injected": true,
-            "exactInjectedCapabilityIds": [
-              "capability_ctrace_98ff2306686a32e38f808a33",
-              "capability_ctrace_c77e9012adc1458e5f026af9",
-              "capability_ctrace_a2b005913e4bbc43fa7d8870",
-              "capability_ctrace_8384b04814b6ef675cd54829",
-              "capability_ctrace_328d0c1d1272087207a460af"
-            ],
-            "coAppliedCapabilityIds": [
-              "capability_ctrace_98ff2306686a32e38f808a33",
-              "capability_ctrace_c77e9012adc1458e5f026af9",
-              "capability_ctrace_a2b005913e4bbc43fa7d8870",
-              "capability_ctrace_8384b04814b6ef675cd54829",
-              "capability_ctrace_328d0c1d1272087207a460af"
-            ],
-            "workKey": null,
-            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
-            "onlyActuallyInjectedCapabilitiesEligible": true,
-            "freshTaskQaRequired": true,
-            "rawCodeStored": false,
-            "rawModelOutputStored": false,
-            "hiddenChainOfThoughtStored": false,
-            "authorityExpanded": false
-          },
-          "phase4BenchmarkVerification": null,
-          "durationMs": 290128,
-          "knowledgeApplication": {
-            "version": 1,
-            "exactInjectedKnowledgeIds": [
-              "EXPERIENCE:exp_i00mwv",
-              "EXPERIENCE:exp_rg6lvy",
-              "EXPERIENCE:supervised_bug-defense_35476177742_revise",
-              "EXPERIENCE:exp_1oonbi8",
-              "EXPERIENCE:exp_4odofx",
-              "EXPERIENCE:exp_pg739o",
-              "EXPERIENCE:exp_system_ai_34373d2f1f6135962e2e0a5d",
-              "EXPERIENCE:exp_system_ai_0b0a34e7dbf177b41b7207d9",
-              "CODE_PATTERN:pat_14v79w7",
-              "CODE_PATTERN:pat_1lx9uhh",
-              "CODE_PATTERN:pat_15k9k0m",
-              "CODE_PATTERN:pat_1dj8rdx",
-              "CODE_PATTERN:pat_1e917b8",
-              "CODE_PATTERN:pat_1gglxo2",
-              "PRACTICE_DISTILLED:practice-distilled:9b7b3c1df9b291d1f576",
-              "VERIFIED_CAPABILITY:capability_ctrace_98ff2306686a32e38f808a33",
-              "VERIFIED_CAPABILITY:capability_ctrace_c77e9012adc1458e5f026af9",
-              "VERIFIED_CAPABILITY:capability_ctrace_a2b005913e4bbc43fa7d8870",
-              "VERIFIED_CAPABILITY:capability_ctrace_8384b04814b6ef675cd54829",
-              "VERIFIED_CAPABILITY:capability_ctrace_328d0c1d1272087207a460af"
-            ],
-            "freshIndependentQaRequired": true,
-            "infrastructureFailurePenalizesKnowledge": false,
-            "authorityExpanded": false
-          },
-          "workLock": {
-            "required": true,
-            "acquired": true,
-            "id": "wl-1c9utut",
-            "reason": "existing-worker-task-lock",
-            "worker": "vibe2",
-            "baseSha": "308bc2b59d3282400d21704d217d8f39a9524196",
-            "files": [
-              "roblox-games/daechung-rpg/client/Game.client.luau"
-            ],
-            "releaseRule": "RELEASE_AFTER_FAN_IN_QA_OR_ABORT"
-          },
-          "metrics": {
-            "requestedMax": 20,
-            "effectiveMax": 20,
-            "reservationId": "35793415011:1",
-            "reservedAt": "2026-09-22T22:39:48Z",
-            "workerStartedAt": 1790116918563,
-            "workerFinishedAt": 1790117208691,
-            "checkoutMs": 3367,
-            "modelPrepMs": 3036,
-            "candidateMs": 255556,
-            "qaMs": 0,
-            "workerTotalMs": 290128,
-            "changedFileCount": 0,
-            "addedLineCount": 0,
-            "deletedLineCount": 0,
-            "ollamaCacheHit": true,
-            "ollamaRuntimeSource": "CACHE"
-          }
-        }
-      ],
+      "lastOutcome": "FAIL",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
+      "neuronExpectedVariants": 0,
+      "neuronResults": [],
       "companyContext": null,
       "sourceRoot": "roblox-games/daechung-rpg",
       "speculativeEligible": true,
