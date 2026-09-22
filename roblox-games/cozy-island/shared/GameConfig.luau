@@ -7,7 +7,7 @@ local Config={
   PlayMode = "COOP",
   MultiplayerRequired = true,
   SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,MinimumParticipants=2,
-  RemoteName="GameAction",AutomationTickSeconds=5,AutoGatherTickSeconds=1.5,AutoGatherAmount=1,AutoGatherWoodRadius=34,AutoGatherFoodRadius=28,RateLimitSeconds=0.12,
+  RemoteName="GameAction",AutomationTickSeconds=5,ManualGatherAmount=3,GatherCooldownSeconds=.8,RateLimitSeconds=0.12,
   Audio={Background="rbxassetid://1837169004",Battle="rbxassetid://1847075059",Action="rbxassetid://7171761940",Victory="rbxassetid://1839321582",Resource="rbxassetid://7171761940",Build="rbxassetid://7171761940",Hit="rbxassetid://1847075059",Capture="rbxassetid://1839321582"},
   InitialState={Coins=30,Wood=0,Food=0,Iron=0,Horses=0,Stone=0,Gold=0,Sulfur=0,Residents=0,WoodWorkers=0,Farmers=0,BarracksLevel=1,Troops=0,CapturedBases=0,CapturedIslands=0,NextBaseIndex=1,BattleProgress=0},
   Bases={
@@ -18,6 +18,7 @@ local Config={
     {Id="VOLCANO",Name="화산 유황요새",Enemy="화산 군단",BossName="유황 장군",Boss=true,Strength=105,Reward="Sulfur",Amount=8,Coins=45,IslandFinal=true},
   },
   Actions={CHOP="CHOP",FOOD="FOOD",HIRE="HIRE",WOOD_JOB="WOOD_JOB",FOOD_JOB="FOOD_JOB",BARRACKS="BARRACKS",RECRUIT="RECRUIT",ATTACK="ATTACK",SUPPORT="SUPPORT"},
+  HomeIslandMobs={BoarHP=55,BoarDamage=7,RaiderHP=85,RaiderDamage=11,RespawnSeconds=10},
   QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
   OwnerDirectDevelopment=true,
 }
