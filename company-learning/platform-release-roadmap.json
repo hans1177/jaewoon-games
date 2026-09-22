@@ -1,5 +1,5 @@
 {
-  "version": 269,
+  "version": 270,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -5616,7 +5616,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-23T00:08:00+09:00",
+  "updatedAt": "2026-09-23T08:24:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6339,6 +6339,12 @@
       "platformSpecificEvidenceStillRequired": true,
       "internalPlaytestIsActiveCoDevelopment": true,
       "legacyWebMaintenanceNotDeleted": true
+    },
+    "systemAiEvolution20260923": {
+      "authority": "OWNER_DIRECTIVE_2026-09-23",
+      "summary": "SYSTEM_AI_FAILURE_CLASSIFICATION_WORKER_HANDOFF_BOTTLENECK_SENSING_CARETAKER_QA_EVOLUTION_PRIMARY_AI_VIBE_COLLABORATION_VERIFIED_LEARNING_REUSE",
+      "centralPolicyOnly": true,
+      "implementationState": "DOCUMENTED_DESIGN_PENDING_IMPLEMENTATION"
     }
   },
   "vibeExecutionLaneContract": {
@@ -13884,6 +13890,170 @@
           "note": "Homepage files unchanged after this validated homepage head; subsequent commits only changed System AI queue/tests."
         },
         "deterministicEvidenceOnly": true
+      }
+    },
+    "systemAiEvolution": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-23",
+      "status": "DOCUMENTED_DESIGN_PENDING_IMPLEMENTATION",
+      "objective": "IMPROVE_SYSTEM_AI_RECOVERY_THROUGHPUT_CONTINUITY_AND_VERIFIED_LEARNING_WITHOUT_WEAKENING_DETERMINISTIC_QA_SECURITY_OR_CENTRAL_AUTHORITY",
+      "principles": {
+        "reservationSerializationPreservedForSharedQueueMutation": true,
+        "gameWorkersRemainParallel": true,
+        "infrastructureFailureMustNotBecomeTaskFailure": true,
+        "exactCheckpointResumePreferred": true,
+        "duplicateExecutionForbidden": true,
+        "deterministicQaRemainsFinalPassFailAuthority": true,
+        "centralPolicyMutationAuthorityUnchanged": true,
+        "directMainWriteNotGranted": true,
+        "qualityOrEvidenceGateWeakeningForbidden": true
+      },
+      "failureClassification": {
+        "required": true,
+        "classes": [
+          "IMPLEMENTATION_DEFECT",
+          "STALE_QA_CONTRACT",
+          "RESERVATION_OR_LOCK_CONTENTION",
+          "RUNNER_OR_INFRASTRUCTURE_FAILURE",
+          "CENTRAL_POLICY_OR_SHARED_CONTEXT_MISMATCH",
+          "EXTERNAL_SERVICE_OR_CREDENTIAL_FAILURE",
+          "SECURITY_OR_AUTHORITY_BOUNDARY",
+          "UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS"
+        ],
+        "routeByClass": true,
+        "exactFailureStageRequired": true,
+        "failureSignatureRequired": true,
+        "staleQaClassificationRequiresPolicyImplementationAgreementProof": true,
+        "actualImplementationFailureMayNotBeReclassifiedAsQaDriftWithoutEvidence": true,
+        "unknownRoutesToMultiHypothesisCausalDiagnosis": true
+      },
+      "workerAutomaticHandoff": {
+        "enabled": true,
+        "trigger": [
+          "WORKER_CRASH_OR_CANCEL_WITH_UNFINISHED_RESERVED_TASK",
+          "RESERVATION_LEASE_EXPIRED",
+          "RUNNER_DISAPPEARED_OR_INFRASTRUCTURE_FAILURE",
+          "REPEATED_NON_SOURCE_FAILURE"
+        ],
+        "action": "RECLAIM_RESERVATION_AND_ASSIGN_NEXT_ELIGIBLE_WORKER_FROM_EXACT_VERIFIED_CHECKPOINT",
+        "sameTaskDuplicateExecutionForbidden": true,
+        "sourceRootAndResponsibleFileConflictGuardRequired": true,
+        "infrastructureHandoffConsumesRetryBudget": false,
+        "infrastructureHandoffPenalizesLearning": false,
+        "verifiedCheckpointPreserved": true,
+        "stickyLogicalCaretakerPreserved": true
+      },
+      "bottleneckSensing": {
+        "enabled": true,
+        "observe": [
+          "QUEUED_WORK",
+          "PENDING_WORKFLOW_RUNS",
+          "ACTIVE_RESERVATIONS",
+          "RESERVATION_WAIT",
+          "WORKER_STARTUP_DELAY",
+          "FAN_IN_DELAY",
+          "RELEASE_WAIT",
+          "RUNNER_CAPACITY",
+          "COMMON_FAILURE_SIGNATURE",
+          "PER_GAME_CARETAKER_BACKLOG"
+        ],
+        "adaptiveAction": [
+          "REFILL_FREE_GAME_WORKER_SLOTS",
+          "EXPAND_ONLY_DISJOINT_HIGH_VALUE_WORK",
+          "DEDUPE_REDUNDANT_RUNS",
+          "PRIORITIZE_HIGHEST_THROUGHPUT_RESTORATION",
+          "ROUTE_SHARED_FAILURE_TO_REPRESENTATIVE_CANARY",
+          "RECLAIM_STALE_RESERVATIONS"
+        ],
+        "totalEligibleWorkCap": null,
+        "currentExecutionCapacityRemainsExternalConstraint": true,
+        "internalArtificialWorkerCapForbidden": true,
+        "sharedQueueReservationMutationRemainsSerialized": true
+      },
+      "focusedCaretakerEvolution": {
+        "enabled": true,
+        "eligible": "OWNER_FOCUSED_PLUS_ALL_VERIFIED_INTERNAL_OR_PUBLIC_RELEASED_GAMES",
+        "oneLogicalCaretakerPerEligibleGame": true,
+        "stickyOwnership": true,
+        "physicalWorkerMayHandoff": true,
+        "continuousLoop": [
+          "PLAYTEST_OR_RUNTIME_EVIDENCE",
+          "CLASSIFY_BUG_COMPLETENESS_UX_VISUAL_AUDIO_BALANCE_PERFORMANCE_GAP",
+          "VIBE_ACCEPT_PARTIAL_DEFER_OR_REJECT",
+          "IMPLEMENT_ACCEPTED_SCOPE",
+          "INCREMENTAL_QA",
+          "PLATFORM_RUNTIME_OR_SMOKE_AS_APPLICABLE",
+          "FOCUSED_REGRESSION",
+          "PROMOTE_VERIFIED_CHECKPOINT",
+          "LEARN_VERIFIED_RESULT",
+          "CREATE_NEXT_CAUSAL_GAP"
+        ],
+        "noSafeGapAction": "REASSESS_RUNTIME_AND_VERIFIED_LEARNING_THEN_CREATE_NEXT_SAFE_GAP"
+      },
+      "qaEvolution": {
+        "enabled": true,
+        "objective": "DISTINGUISH_IMPLEMENTATION_FAILURE_FROM_CANONICAL_CONTRACT_DRIFT_WITHOUT_HIDING_REAL_FAILURES",
+        "staleQaDetectionRequired": true,
+        "compareAgainst": [
+          "CURRENT_CENTRAL_POLICY",
+          "CURRENT_RESPONSIBLE_IMPLEMENTATION",
+          "CURRENT_ARCHITECTURE_PROJECTION",
+          "LAST_VERIFIED_BEHAVIOR_WHEN_RELEVANT"
+        ],
+        "qaContractRepairAllowedOnlyWhenImplementationMatchesCurrentCanonicalPolicy": true,
+        "implementationRepairRequiredWhenRuntimeOrCodeViolatesCurrentCanonicalPolicy": true,
+        "selfPassingByWeakeningAssertionForbidden": true,
+        "independentVerificationAfterQaContractRepairRequired": true,
+        "regressionCoverageMayNotDecreaseWithoutExplicitPolicyChange": true
+      },
+      "primaryAiVibeCollaborationEvolution": {
+        "enabled": true,
+        "mode": "NON_BLOCKING_CROSS_SYSTEM_CAUSAL_COPILOT",
+        "repeatedFailure": "PRIMARY_AI_SYNTHESIS_PLUS_RECOVERY_QUEUE",
+        "sharedBottleneck": "DEDUPLICATE_THEN_REPRESENTATIVE_CANARY",
+        "crossSystemAmbiguity": "CROSS_SYSTEM_CAUSAL_SYNTHESIS",
+        "securityBoundary": "SECURITY_IMMUNE_SYSTEM_PLUS_PRIMARY_AI_REVIEW",
+        "verifiedSuccess": "EXISTING_FAN_IN_PLUS_VERIFIED_LEARNING",
+        "primaryAiAbsenceNeverBlocks24h": true,
+        "vibeImplementationOwnershipPreserved": true,
+        "authorityExpansion": false
+      },
+      "verifiedLearningReuseEvolution": {
+        "enabled": true,
+        "sameGameSameFailureHighestPriority": true,
+        "sameGameVerifiedStrategyPreferred": true,
+        "crossGameUseRequiresTransformativeAdaptation": true,
+        "rawCopyForbidden": true,
+        "freshQaRequiredOnReuse": true,
+        "exactKnowledgeIdsAndOutcomeAttributionRequired": true,
+        "failedStrategyFingerprintMustReduceFutureSelection": true,
+        "infrastructureFailureMustNotPenalizeKnowledge": true,
+        "verifiedSuccessMayPromoteKnowledgePreference": true
+      },
+      "implementationPlan": {
+        "reuseExistingSystems": true,
+        "noShadowPipeline": true,
+        "expectedBindings": [
+          "tools/company-system-ai-queue.mjs",
+          "tools/company-system-ai-worker.mjs",
+          "tools/company-recovery-escalation.mjs",
+          "tools/company-recovery-dispatch.mjs",
+          "tools/vibe2-neural-diagnosis.mjs",
+          "tools/vibe2-learning-motor.mjs",
+          "tools/vibe2-post-release-focus.mjs",
+          "assets/vibe-continuous-queue.js",
+          ".github/workflows/company-system-ai-workers.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-24h-runner.yml"
+        ],
+        "requiredQa": [
+          "qa/company-system-ai-worker.test.mjs",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "qa/vibe2-post-release-focus.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "qa/company-shared-context.test.mjs"
+        ]
       }
     }
   },
