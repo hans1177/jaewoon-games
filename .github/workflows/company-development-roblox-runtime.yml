@@ -98,6 +98,8 @@ jobs:
           import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
+          const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
           const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const EXECUTION_BATCH_MAX=256;
@@ -117,6 +119,7 @@ jobs:
               :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
             if(candidateReady)continue;
             const target=`roblox-games/${item.gameId}`;
+            if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId))continue;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             if(fs.existsSync(target)&&!bootstrapFailed)continue;
             rows.push({
@@ -483,10 +486,13 @@ jobs:
           set -euo pipefail
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main main
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-queue.json
+          mkdir -p /tmp/roblox-runtime-tools
+          git show "origin/main:tools/company-selected-platform-router.mjs" > /tmp/roblox-runtime-tools/company-selected-platform-router.mjs
+          git show "origin/main:tools/company-web-validation-evidence-contract.mjs" > /tmp/roblox-runtime-tools/company-web-validation-evidence-contract.mjs
           remaining="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
-          import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {platformDevelopmentEligible} from 'file:///tmp/roblox-runtime-tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-queue.json','utf8'));
           const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
           let count=0;
