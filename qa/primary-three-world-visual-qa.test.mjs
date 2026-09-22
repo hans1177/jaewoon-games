@@ -31,7 +31,7 @@ test('포근섬 월드는 확장된 섬과 시야 비가림 지역 라벨을 가
  assert.match(style,/Size=Vector3\.new\(176,10,176\)/);
  assert.match(style,/Pos=Vector3\.new\(0,12,-232\)/);
  assert.match(server,/MaxDistance=78/);
- for(const marker of ['FarmPlot','BarracksYard','Dock','MarketStallA','WatchTower','WindmillBase','IronVein','HayBale','QuarryCut','GoldVein','SulfurVent','STYLIZED_ISLANDS_LIVING_WORLD_V3'])assert.match(server,new RegExp(marker));
+ for(const marker of ['FarmPlot','ForestFloor','BarracksYard','Dock','MarketStallA','WatchTower','WindmillBase','IronVein','HayBale','QuarryCut','GoldVein','SulfurVent','STYLIZED_ISLANDS_AUTO_GATHER_V4'])assert.match(server,new RegExp(marker));
 });
 
 test('Whatever RPG는 블록 NPC/몹 대신 캐릭터 실루엣과 지역 아트를 생성한다',()=>{
