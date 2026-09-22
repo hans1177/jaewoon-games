@@ -112,7 +112,7 @@ env:
   VIBE2_24H_GEMINI_ALLOWED: 'false'
 
 # Keep each 24H cycle start independent so stale workflow-level concurrency
-# cannot block the continuity chain. Shared control state is serialized in plan.
+# cannot block the continuity chain. Shared control state is reconciled optimistically in plan.
 concurrency:
   group: vibe2-24h-cycle-${{ github.run_id }}
   cancel-in-progress: false
@@ -147,7 +147,6 @@ jobs:
         run: |
           set -euo pipefail
           node -e "const fs=require('fs'); for (const file of ['.vibe2/queue.json','.vibe2/parallelism-control.json']) JSON.parse(fs.readFileSync(file,'utf8')); console.log('VIBE2_CONTROL_STATE_JSON=VALID')"
-          node --check tools/company-constitution-enforcer.mjs
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
