@@ -3559,7 +3559,9 @@
         "WORKER_CONTEXT_LOG_MAP_SHA256",
         "WORKER_CONTEXT_ARCHITECTURE_SHA256",
         "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
-        "WORKER_CONTEXT_SYNC=PASS"
+        "WORKER_CONTEXT_SYNC=PASS",
+        "WORKER_CONTEXT_ARCHITECTURE_PROJECTION_SHA256",
+        "WORKER_CONTEXT_ARCHITECTURE_PROJECTION_SYNC=PASS"
       ],
       "securityPolicy": "company-learning/security-immune-system.json",
       "documentIsCode": true,
