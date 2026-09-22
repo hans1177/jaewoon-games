@@ -74,7 +74,7 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.fromOffset(320,46)
+hud.Size=UDim2.fromOffset(330,62)
 hud.BackgroundColor3=Color3.fromRGB(22,24,31)
 hud.BackgroundTransparency=.12
 hud.ZIndex=10
@@ -111,6 +111,17 @@ roundLine.TextSize=13
 roundLine.Font=Enum.Font.GothamBold
 roundLine.Parent=hud
 roundify(roundLine,9)
+
+local objectiveLine=Instance.new("TextLabel")
+objectiveLine.Name="ObjectiveProgress"
+objectiveLine.Size=UDim2.new(1,-16,0,15)
+objectiveLine.Position=UDim2.fromOffset(8,44)
+objectiveLine.BackgroundTransparency=1
+objectiveLine.TextColor3=Color3.fromRGB(153,224,185)
+objectiveLine.TextSize=10
+objectiveLine.Font=Enum.Font.GothamBold
+objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
+objectiveLine.Parent=hud
 
 -- 실제 플레이 좌표를 보여주는 소형 미니맵
 local mapPanel=Instance.new("Frame")
@@ -158,20 +169,17 @@ roundify(playerDot,8)
 
 local mapLayouts={
  SCHOOL={
-  {p={.44,.08},s={.12,.84}},
-  {p={.05,.14},s={.32,.22}},{p={.63,.14},s={.32,.22}},
-  {p={.05,.58},s={.32,.30}},{p={.63,.58},s={.32,.30}},
+  {p={.45,.28},s={.10,.44}},{p={.06,.06},s={.30,.24}},{p={.64,.06},s={.30,.24}},
+  {p={.06,.36},s={.30,.24}},{p={.64,.36},s={.30,.24}},{p={.06,.68},s={.30,.24}},{p={.64,.68},s={.30,.24}},
+  {p={.36,.72},s={.28,.10}},
  },
  HOSPITAL={
-  {p={.46,.05},s={.08,.90}},
-  {p={.08,.12},s={.30,.17}},{p={.62,.12},s={.30,.17}},
-  {p={.08,.39},s={.30,.17}},{p={.62,.39},s={.30,.17}},
-  {p={.08,.68},s={.30,.22}},{p={.62,.68},s={.30,.22}},
+  {p={.46,.24},s={.08,.50}},{p={.05,.06},s={.31,.24}},{p={.64,.06},s={.31,.24}},
+  {p={.05,.36},s={.31,.24}},{p={.64,.36},s={.31,.24}},{p={.05,.68},s={.31,.24}},{p={.64,.68},s={.31,.24}},
  },
  THEME_PARK={
-  {p={.45,.05},s={.10,.90}},{p={.06,.34},s={.88,.10}},
-  {p={.08,.48},s={.28,.38}},{p={.62,.52},s={.30,.34}},
-  {p={.08,.08},s={.24,.18}},{p={.62,.08},s={.28,.18}},
+  {p={.44,.08},s={.12,.84}},{p={.06,.08},s={.30,.24}},{p={.64,.08},s={.30,.24}},
+  {p={.06,.38},s={.30,.24}},{p={.64,.38},s={.30,.24}},{p={.06,.68},s={.30,.24}},{p={.64,.68},s={.30,.24}},
  },
 }
 local drawnMapId=""
@@ -281,7 +289,7 @@ abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOff
 abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
- local id=p:GetAttribute("MonsterForm")or"DRAK"
+ local id=p:GetAttribute("MonsterForm")or"DRACULA"
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f.Name end end
  return"드라크"
 end
@@ -301,6 +309,8 @@ local function render()
 
  mapLine.Text=mapName..(eventName~=""and(" · "..eventName)or"")
  roleLine.Text=string.format("%s · %s · 생존 %d / 얼음 %d",role,frozen and"얼음"or"정상",p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
+ local done=p:GetAttribute("ObjectivesDone")or 0;local total=p:GetAttribute("ObjectivesTotal")or C.ObjectiveCount
+ objectiveLine.Text=workspace:GetAttribute("EscapeUnlocked")==true and"목표 완료 · 비상 탈출구로 이동"or string.format("목표 %d/%d · 패널을 찾아 작동",done,total)
  roundLine.Text=running and(string.format("%d초",seconds))or round
 
  if round:find("^RESULT_") then setupChosen=false end
@@ -329,7 +339,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent","ObjectivesDone","ObjectivesTotal","Escaped"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
@@ -415,21 +425,21 @@ QACamera.install(C,gui,function()
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
  if id=="HOSPITAL"then
   return{
-   {label="horror-hospital-hall",position=Vector3.new(0,12,-62),lookAt=Vector3.new(0,5,34)},
-   {label="horror-hospital-surgery",position=Vector3.new(-75,20,72),lookAt=Vector3.new(-48,4,52)},
-   {label="horror-hospital-basement",position=Vector3.new(78,14,76),lookAt=Vector3.new(47,3,57)},
+   {label="horror-hospital-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)},
+   {label="horror-hospital-emergency",position=Vector3.new(-155,25,-45),lookAt=Vector3.new(-118,4,-82)},
+   {label="horror-hospital-morgue",position=Vector3.new(-150,24,145),lookAt=Vector3.new(-118,4,108)},
   }
  elseif id=="THEME_PARK"then
   return{
-   {label="horror-park-overview",position=Vector3.new(0,88,112),lookAt=Vector3.new(0,2,0)},
-   {label="horror-park-carousel",position=Vector3.new(-67,22,35),lookAt=Vector3.new(-32,5,8)},
-   {label="horror-park-haunted",position=Vector3.new(78,21,72),lookAt=Vector3.new(34,5,38)},
+   {label="horror-park-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)},
+   {label="horror-park-arcade",position=Vector3.new(-154,24,-52),lookAt=Vector3.new(-118,4,-92)},
+   {label="horror-park-maintenance",position=Vector3.new(154,24,145),lookAt=Vector3.new(118,4,108)},
   }
  end
  return{
-  {label="horror-school-hall",position=Vector3.new(0,13,-64),lookAt=Vector3.new(0,5,34)},
-  {label="horror-school-cafeteria",position=Vector3.new(-76,21,68),lookAt=Vector3.new(-51,3,43)},
-  {label="horror-school-gym",position=Vector3.new(76,22,72),lookAt=Vector3.new(50,4,48)},
+  {label="horror-school-overview",position=Vector3.new(0,150,205),lookAt=Vector3.new(0,2,0)},
+  {label="horror-school-library",position=Vector3.new(-154,24,-40),lookAt=Vector3.new(-118,4,-70)},
+  {label="horror-school-auditorium",position=Vector3.new(154,24,145),lookAt=Vector3.new(108,4,104)},
  }
 end)
 
