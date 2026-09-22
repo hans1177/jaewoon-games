@@ -14,6 +14,7 @@ local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
+local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
 
 -- 사운드
 local function sound(name,id,volume,looped)
@@ -37,6 +38,18 @@ gui.ResetOnSpawn=false
 gui.IgnoreGuiInset=false
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.Parent=p:WaitForChild("PlayerGui")
+foundationRemote:FireServer("INPUT_READY")
+task.spawn(function()
+ local camera=workspace.CurrentCamera
+ local character=p.Character or p.CharacterAdded:Wait()
+ local h=character:WaitForChild("Humanoid",10)
+ if camera and h then
+  for _=1,30 do
+   if camera.CameraSubject==h then foundationRemote:FireServer("CAMERA_READY");break end
+   task.wait(.1)
+  end
+ end
+end)
 
 local function roundify(target,radius)
  local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,radius or 12);corner.Parent=target
