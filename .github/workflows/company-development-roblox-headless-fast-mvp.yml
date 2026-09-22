@@ -86,6 +86,17 @@ jobs:
           echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
           unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
           chmod +x /tmp/rojo-bin/rojo
+      - name: Install pinned official Luau compiler
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/luau-bin /tmp/luau.zip
+          mkdir -p /tmp/luau-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
+          test -x /tmp/luau-bin/luau-compile
+          echo 'ROBLOX_F0_LUAU_COMPILER=0.739'
       - name: Rebuild exact artifact and F0 source preflight
         env:
           GAME_ID: ${{ matrix.gameId }}
@@ -98,10 +109,19 @@ jobs:
           safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           mkdir -p /tmp/headless/packages /tmp/headless/results /tmp/headless/input
           git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE" > /tmp/headless/input/baseline.json
+          rm -rf /tmp/luau-exact-source
+          mkdir -p /tmp/luau-exact-source
+          git archive "$SOURCE_REVISION" "$SOURCE_PATH" | tar -x -C /tmp/luau-exact-source
+          mapfile -d '' luau_files < <(find "/tmp/luau-exact-source/$SOURCE_PATH" -type f -name '*.luau' -print0 | sort -z)
+          [ "${#luau_files[@]}" -gt 0 ]
+          for file in "${luau_files[@]}"; do
+            /tmp/luau-bin/luau-compile "$file" >/dev/null
+          done
+          echo "ROBLOX_F0_LUAU_COMPILE_PASS=${#luau_files[@]}"
           node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --baseline=/tmp/headless/input/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/headless/packages --evidence=/tmp/headless/results/build.json
           rebuilt="$(node -e "const e=require('/tmp/headless/results/build.json');process.stdout.write(e.artifactIdentity)")"
           [ "$rebuilt" = "$EXPECTED_ARTIFACT" ]
-          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --artifact-identity="$EXPECTED_ARTIFACT" --rebuilt-artifact-identity="$rebuilt" --artifact-run-id="$GITHUB_RUN_ID" --output="/tmp/headless/results/$safe.headless.json"
+          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --artifact-identity="$EXPECTED_ARTIFACT" --rebuilt-artifact-identity="$rebuilt" --artifact-run-id="$GITHUB_RUN_ID" --native-language-compile-passed=true --native-compiler-version=0.739 --output="/tmp/headless/results/$safe.headless.json"
       - uses: actions/upload-artifact@v4
         with:
           name: development-roblox-package-${{ matrix.gameId }}
