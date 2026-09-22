@@ -31,7 +31,7 @@ function QACamera.install(config,screenGui,pointProvider)
  status.Name="InternalQACameraStatus"
  status.AnchorPoint=Vector2.new(0,.5)
  status.Position=UDim2.new(0,68,.5,0)
- status.Size=UDim2.fromOffset(150,28)
+ status.Size=UDim2.fromOffset(168,28)
  status.BackgroundColor3=Color3.fromRGB(20,22,28)
  status.BackgroundTransparency=.22
  status.TextColor3=Color3.fromRGB(226,233,242)
@@ -44,7 +44,11 @@ function QACamera.install(config,screenGui,pointProvider)
  status.Parent=screenGui
  roundify(status,7)
 
- local function takeOne(label)
+ local function report(label,value)
+  remote:FireServer(label,tostring(value or""))
+ end
+
+ local function takeOne()
   local done=false
   local captureObject=nil
   local failure=nil
@@ -52,78 +56,45 @@ function QACamera.install(config,screenGui,pointProvider)
   status.Visible=false
   local ok,err=pcall(function()
    CaptureService:TakeScreenshotCaptureAsync(function(result,capture)
-    if result==Enum.ScreenshotCaptureResult.Success and capture then
-     captureObject=capture
-    else
-     failure="capture:"..tostring(result)
-    end
+    if result==Enum.ScreenshotCaptureResult.Success and capture then captureObject=capture else failure=tostring(result)end
     done=true
    end,{UICaptureMode=Enum.UICaptureMode.All})
   end)
-  if not ok then
-   button.Visible=true;status.Visible=true
-   return nil,"api:"..tostring(err)
-  end
+  if not ok then button.Visible=true;status.Visible=true;return nil,"api:"..tostring(err)end
   local deadline=os.clock()+12
   while not done and os.clock()<deadline do task.wait(.1)end
   button.Visible=true;status.Visible=true
   if not done then return nil,"capture-timeout"end
-  if not captureObject then return nil,failure or"capture-failed"end
-  return captureObject,nil
+  return captureObject,failure
  end
 
- local function saveAndUpload(entries)
-  local captures={}
-  local labelByCapture={}
-  for _,entry in ipairs(entries)do
-   table.insert(captures,entry.capture)
-   labelByCapture[entry.capture]=entry.label
+ local function readLatestFromGallery(count)
+  local result,pages=CaptureService:ReadCapturesFromGalleryAsync({Enum.CaptureType.Screenshot},false)
+  if result~=Enum.ReadCapturesFromGalleryResult.Success or not pages then return nil,"gallery:"..tostring(result)end
+  local page=pages:GetCurrentPage()
+  local latest={}
+  for i=1,math.min(count,#page)do table.insert(latest,page[i])end
+  if #latest<count then return nil,"gallery-count:"..tostring(#latest)end
+  -- 갤러리는 최신순이므로 원래 촬영 순서로 되돌린다.
+  local ordered={}
+  for i=#latest,1,-1 do table.insert(ordered,latest[i])end
+  return ordered,nil
+ end
+
+ local function uploadGalleryCapture(capture)
+  local startResult,token=CaptureService:StartUploadCaptureAsync(capture)
+  if startResult==Enum.UploadCaptureResult.Success then
+   local statusResult,assetId=CaptureService:CheckUploadCaptureStatusAsync(token)
+   return statusResult,assetId
   end
-  if #captures==0 then return false,"no-captures"end
-
-  local saveDone=false
-  local saved={}
-  local saveOk,saveErr=pcall(function()
-   CaptureService:PromptSaveCapturesToGallery(captures,function(results)
-    for capture,result in pairs(results or{})do
-     if result==true then saved[capture]=true end
-    end
-    saveDone=true
-   end)
-  end)
-  if not saveOk then return false,"save-prompt:"..tostring(saveErr)end
-
-  local saveDeadline=os.clock()+45
-  while not saveDone and os.clock()<saveDeadline do task.wait(.1)end
-  if not saveDone then return false,"save-timeout"end
-
-  local savedCount=0
-  for capture in pairs(saved)do if labelByCapture[capture]then savedCount+=1 end end
-  if savedCount==0 then return false,"save-denied"end
-
-  task.spawn(function()
-   local uploaded=0
-   for capture,label in pairs(labelByCapture)do
-    if saved[capture]then
-     local uploadOk,uploadResult,id=pcall(function()
-      return CaptureService:UploadCaptureAsync(capture)
-     end)
-     if uploadOk and uploadResult==Enum.UploadCaptureResult.Success and tonumber(id)and tonumber(id)>0 then
-      remote:FireServer(label,tostring(math.floor(tonumber(id))))
-      uploaded+=1
-      status.Text=string.format("업로드 %d/%d",uploaded,savedCount)
-      status.Visible=true
-     else
-      warn("QA capture upload failed:",label,uploadOk and tostring(uploadResult)or tostring(id))
-     end
-    end
-   end
-   if uploaded==savedCount then status.Text="QA 업로드 완료"else status.Text=string.format("QA 업로드 %d/%d",uploaded,savedCount)end
-   status.Visible=true
-   task.delay(5,function()if not busy then status.Visible=false end end)
-  end)
-
-  return true,nil
+  if startResult~=Enum.UploadCaptureResult.UploadPending then return startResult,0 end
+  local deadline=os.clock()+150
+  while os.clock()<deadline do
+   task.wait(.6)
+   local statusResult,assetId=CaptureService:CheckUploadCaptureStatusAsync(token)
+   if statusResult~=Enum.UploadCaptureResult.UploadPending then return statusResult,assetId end
+  end
+  return Enum.UploadCaptureResult.UploadFailed,0
  end
 
  local function restoreCamera(camera,saved)
@@ -142,16 +113,17 @@ function QACamera.install(config,screenGui,pointProvider)
 
   task.spawn(function()
    if #points==0 then
-    local deadline=os.clock()+18
+    local deadline=os.clock()+25
     status.Text="맵 준비 기다리는 중"
     while #points==0 and os.clock()<deadline do
      task.wait(.25)
      points=pointProvider and pointProvider()or{}
     end
     if #points==0 then
-     status.Text="맵 시작 후 다시 눌러"
+     status.Text="맵 생성 실패"
+     report("STATUS","MAP_NOT_READY")
      busy=false;button.Text="QA촬영"
-     task.delay(4,function()if not busy then status.Visible=false end end)
+     task.delay(5,function()if not busy then status.Visible=false end end)
      return
     end
    end
@@ -159,53 +131,90 @@ function QACamera.install(config,screenGui,pointProvider)
    local permissionOk,permissionGranted=pcall(function()
     return CaptureService:PromptCaptureGalleryPermissionAsync(Enum.CaptureGalleryPermission.ReadAndUpload)
    end)
-   if not permissionOk then
-    status.Text="Roblox 메뉴 > 캡처 켜기"
-    warn("QA capture gallery permission request failed:",permissionGranted)
-    busy=false;button.Text="QA촬영"
-    task.delay(5,function()if not busy then status.Visible=false end end)
-    return
-   end
-   if permissionGranted~=true then
-    status.Text="캡처 접근 허용 후 다시 눌러"
+   if not permissionOk or permissionGranted~=true then
+    status.Text="캡처 갤러리 권한 필요"
+    report("STATUS","PERMISSION_DENIED")
     busy=false;button.Text="QA촬영"
     task.delay(5,function()if not busy then status.Visible=false end end)
     return
    end
 
-   button.Text="촬영중"
    local camera=Workspace.CurrentCamera
-   if not camera then busy=false;button.Text="QA촬영";return end
+   if not camera then report("STATUS","NO_CAMERA");busy=false;button.Text="QA촬영";return end
    local savedCamera={cameraType=camera.CameraType,cframe=camera.CFrame,focus=camera.Focus,fov=camera.FieldOfView,subject=camera.CameraSubject}
    camera.CameraType=Enum.CameraType.Scriptable
    camera.FieldOfView=68
 
-   local entries={}
+   local rawCaptures={}
    for index,shot in ipairs(points)do
     status.Text=string.format("%d/%d · %s",index,#points,shot.label)
     camera.CFrame=CFrame.lookAt(shot.position,shot.lookAt)
     camera.Focus=CFrame.new(shot.lookAt)
     task.wait(.75)
-    local capture,err=takeOne(shot.label)
-    if capture then
-     table.insert(entries,{label=shot.label,capture=capture})
-    else
-     warn("QA capture failed:",shot.label,err)
-    end
-    task.wait(.2)
+    local capture,err=takeOne()
+    if capture then table.insert(rawCaptures,capture) else report("STATUS","CAPTURE_FAIL:"..tostring(err or shot.label))end
+    task.wait(.15)
+   end
+   restoreCamera(camera,savedCamera)
+
+   if #rawCaptures==0 then
+    status.Text="촬영 실패";report("STATUS","NO_CAPTURES")
+    busy=false;button.Text="QA촬영";return
    end
 
-   restoreCamera(camera,savedCamera)
-   status.Text="갤러리 저장 확인"
-   status.Visible=true
-   local saveOk,saveErr=saveAndUpload(entries)
-   busy=false;button.Text="QA촬영"
-   if saveOk then
-    status.Text="저장 완료 · 업로드 중"
-   else
-    status.Text="저장 실패 · "..tostring(saveErr)
-    task.delay(5,function()if not busy then status.Visible=false end end)
+   status.Text="갤러리 저장 허용"
+   local saveDone=false
+   local savedCount=0
+   local saveOk,saveErr=pcall(function()
+    CaptureService:PromptSaveCapturesToGallery(rawCaptures,function(results)
+     for _,saved in pairs(results or{})do if saved==true then savedCount+=1 end end
+     saveDone=true
+    end)
+   end)
+   if not saveOk then
+    status.Text="갤러리 저장 실패";report("STATUS","SAVE_PROMPT_FAIL:"..tostring(saveErr))
+    busy=false;button.Text="QA촬영";return
    end
+   local saveDeadline=os.clock()+45
+   while not saveDone and os.clock()<saveDeadline do task.wait(.1)end
+   if not saveDone or savedCount==0 then
+    status.Text="갤러리 저장 취소";report("STATUS",saveDone and"SAVE_DENIED"or"SAVE_TIMEOUT")
+    busy=false;button.Text="QA촬영";return
+   end
+
+   task.wait(1)
+   status.Text="갤러리 다시 읽는 중"
+   local galleryCaptures,readErr
+   local readOk,readFailure=pcall(function()
+    galleryCaptures,readErr=readLatestFromGallery(savedCount)
+   end)
+   if not readOk or not galleryCaptures then
+    status.Text="갤러리 읽기 실패";report("STATUS","READ_FAIL:"..tostring(readOk and readErr or readFailure))
+    busy=false;button.Text="QA촬영";return
+   end
+
+   local labels={}
+   for _,shot in ipairs(points)do table.insert(labels,shot.label)end
+   local uploaded=0
+   for index,capture in ipairs(galleryCaptures)do
+    local label=labels[index]or("shot-"..index)
+    status.Text=string.format("업로드 %d/%d",index,#galleryCaptures)
+    local uploadResult,assetId
+    local uploadOk,uploadErr=pcall(function()
+     uploadResult,assetId=uploadGalleryCapture(capture)
+    end)
+    if uploadOk and uploadResult==Enum.UploadCaptureResult.Success and tonumber(assetId)and tonumber(assetId)>0 then
+     report(label,tostring(math.floor(tonumber(assetId))))
+     uploaded+=1
+    else
+     report("STATUS","UPLOAD_FAIL:"..label..":"..tostring(uploadOk and uploadResult or uploadErr))
+    end
+   end
+
+   report("STATUS","UPLOAD_COMPLETE:"..uploaded.."/"..#galleryCaptures)
+   status.Text=uploaded==#galleryCaptures and"QA 업로드 완료"or string.format("QA 업로드 %d/%d",uploaded,#galleryCaptures)
+   busy=false;button.Text="QA촬영"
+   task.delay(6,function()if not busy then status.Visible=false end end)
   end)
  end)
 end
