@@ -20,6 +20,69 @@ function readJson(file){return JSON.parse(fs.readFileSync(resolveInput(file),'ut
 function sha256(file){return createHash('sha256').update(fs.readFileSync(resolveInput(file))).digest('hex');}
 function fail(message){throw new Error(`SHARED_WORKER_CONTEXT_INVALID:${message}`);}
 function sameList(a,b){return JSON.stringify(a||[])===JSON.stringify(b||[]);}
+const textSha256=value=>createHash('sha256').update(String(value??''),'utf8').digest('hex');
+const OWNER_RULE_KEY=/^rule(\d+)$/i;
+const OWNER_RULE_ORDER=/^RULE_(\d+)$/i;
+
+export function compileOwnerCanonicalConstitution(policy={}){
+  const owner=policy?.ownerCanonicalRules;
+  const errors=[];
+  if(!owner||typeof owner!=='object'){
+    return{valid:false,errors:['OWNER_CANONICAL_RULES_MISSING'],version:null,authority:null,binding:null,fingerprint:null,orderedRuleIds:[],rules:[]};
+  }
+  const binding=owner?.constitutionalBinding||{};
+  if(clean(owner?.constitutionalAuthority)!=='HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY')errors.push('CONSTITUTION_AUTHORITY');
+  if(owner?.orderedImplementationRequired!==true)errors.push('CONSTITUTION_ORDER_REQUIRED');
+  if(clean(binding?.mode)!=='DYNAMIC_CANONICAL_RULE_AUTO_BIND')errors.push('CONSTITUTION_BINDING_MODE');
+  if(binding?.automaticContractBinding!==true)errors.push('CONSTITUTION_AUTO_BIND');
+  if(binding?.appliesToAllCurrentAndFutureRegisteredVibeWorkers!==true)errors.push('CONSTITUTION_ALL_WORKERS');
+  if(binding?.appliesToAllInternalAiDepartmentsAndAutonomousSubsystems!==true)errors.push('CONSTITUTION_ALL_INTERNAL_AI');
+  if(binding?.workerMayNotOptOut!==true||binding?.childContractMayNotOverride!==true)errors.push('CONSTITUTION_NON_OVERRIDE');
+  if(binding?.futureCanonicalRulesAutoBindWithoutWorkerCodeChange!==true)errors.push('CONSTITUTION_FUTURE_AUTO_BIND');
+  if(binding?.executionFingerprintMustIncludeEveryEnabledCanonicalRule!==true)errors.push('CONSTITUTION_EXECUTION_FINGERPRINT');
+  if(binding?.sharedContextMustCompileEveryEnabledCanonicalRule!==true)errors.push('CONSTITUTION_SHARED_CONTEXT_COMPILE');
+  if(binding?.centralWorkContractMustEmbedEveryEnabledCanonicalRule!==true)errors.push('CONSTITUTION_WORK_CONTRACT_EMBED');
+  if(binding?.workerInstructionMustExposeOrderedCanonicalRules!==true)errors.push('CONSTITUTION_WORKER_INSTRUCTION');
+  if(binding?.beforeWorkValidationRequired!==true||binding?.afterWorkValidationRequired!==true)errors.push('CONSTITUTION_PRE_POST_VALIDATION');
+  if(binding?.staleConstitutionMayNotStartWork!==true||binding?.staleConstitutionMayNotCompleteWork!==true)errors.push('CONSTITUTION_STALE_GUARD');
+  if(clean(binding?.missingOrInvalidBindingAction)!=='FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE')errors.push('CONSTITUTION_FAIL_CLOSED');
+  if(binding?.constitutionChangeInvalidatesActiveWorkerExecutionFingerprint!==true)errors.push('CONSTITUTION_STALE_FINGERPRINT');
+  if(binding?.subordinatePolicyCannotWeakenCanonicalRule!==true)errors.push('CONSTITUTION_SUBORDINATE_WEAKENING');
+
+  const discovered=[];
+  for(const [key,value] of Object.entries(owner)){
+    const match=OWNER_RULE_KEY.exec(key);
+    if(!match||!value||typeof value!=='object'||value.enabled!==true)continue;
+    const number=Number(match[1]);
+    const id=clean(value.id);
+    const idNumber=Number((/^RULE_(\d+)_/i.exec(id)||[])[1]||0);
+    if(!number||idNumber!==number)errors.push(`CONSTITUTION_RULE_ID_MISMATCH:${key}`);
+    discovered.push({key,number,id,label:clean(value.label)||`제${number}규칙`,authority:clean(value.authority)||clean(owner.authority)||null,objective:clean(value.objective)||null,fingerprint:textSha256(JSON.stringify(value)),contract:value});
+  }
+  const byNumber=new Map(discovered.map(row=>[row.number,row]));
+  for(const required of [1,2,3,4])if(!byNumber.has(required))errors.push(`CONSTITUTION_REQUIRED_RULE_MISSING:${required}`);
+  const explicit=[];
+  for(const item of Array.isArray(owner.implementationOrder)?owner.implementationOrder:[]){
+    const match=OWNER_RULE_ORDER.exec(clean(item));
+    const number=Number(match?.[1]||0);
+    if(number&&byNumber.has(number)&&!explicit.includes(number))explicit.push(number);
+  }
+  const orderedNumbers=[...explicit,...[...byNumber.keys()].filter(n=>!explicit.includes(n)).sort((a,b)=>a-b)];
+  const rules=orderedNumbers.map(number=>byNumber.get(number)).filter(Boolean);
+  const orderedRuleIds=rules.map(row=>row.id);
+  const fingerprint=textSha256(JSON.stringify(rules.map(row=>({number:row.number,id:row.id,fingerprint:row.fingerprint}))));
+  return{
+    valid:errors.length===0,
+    errors,
+    version:Number(owner.version)||null,
+    authority:clean(owner.authority)||null,
+    constitutionalAuthority:clean(owner.constitutionalAuthority)||null,
+    binding,
+    fingerprint,
+    orderedRuleIds,
+    rules
+  };
+}
 
 export function validateSharedWorkerContext({
   policyFile=DEFAULT_POLICY,
@@ -30,6 +93,8 @@ export function validateSharedWorkerContext({
 }={}){
   for(const file of [policyFile,logMapFile,architectureFile,securityPolicyFile])if(!fs.existsSync(resolveInput(file)))fail(`MISSING:${file}`);
   const policy=readJson(policyFile),logMap=readJson(logMapFile),architecture=readJson(architectureFile),securityPolicy=readJson(securityPolicyFile);
+  const constitution=compileOwnerCanonicalConstitution(policy);
+  if(!constitution.valid)fail(`OWNER_CANONICAL_CONSTITUTION:${constitution.errors.join('|')||'UNKNOWN'}`);
   const contract=policy?.developmentLifecycleMachine?.sharedWorkerContext;
   if(Number(contract?.version||0)<2)fail('CENTRAL_SHARED_CONTEXT_VERSION');
   if(contract?.requiredForAllWorkers!==true)fail('CENTRAL_REQUIRED_FOR_ALL_WORKERS');
@@ -122,6 +187,7 @@ export function validateSharedWorkerContext({
     pass:true,version:2,
     files:{policy:policyFile,logMap:logMapFile,architecture:architectureFile,securityPolicy:securityPolicyFile},
     hashes,policyVersion:Number(policy.version||0),
+    constitution:{version:constitution.version,authority:constitution.authority,constitutionalAuthority:constitution.constitutionalAuthority,fingerprint:constitution.fingerprint,orderedRuleIds:constitution.orderedRuleIds,ruleCount:constitution.rules.length,automaticContractBinding:constitution.binding?.automaticContractBinding===true},
     documentIsCode:true,roadmapSynchronized:true,workerLaunchersValidated:launchers.length,
     primaryAiOrchestrator:orchestration.orchestrator,primaryAiReviewRequired:false,autonomous24hWorkersContinue:true,internalVibeAiCollaboration:'SYNCED',
     completionAuthority:'DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES',checkedAt:new Date().toISOString()
@@ -146,6 +212,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`WORKER_CONTEXT_LOG_MAP_SHA256=${result.hashes.logMapSha256}`);
     console.log(`WORKER_CONTEXT_ARCHITECTURE_SHA256=${result.hashes.architectureSha256}`);
     console.log(`WORKER_CONTEXT_SECURITY_POLICY_SHA256=${result.hashes.securityPolicySha256}`);
+    console.log(`WORKER_CONTEXT_CONSTITUTION_SHA256=${result.constitution.fingerprint}`);
+    console.log(`WORKER_CONTEXT_CONSTITUTION_RULES=${result.constitution.orderedRuleIds.join(',')}`);
+    console.log(`WORKER_CONTEXT_CONSTITUTION_AUTO_BIND=${result.constitution.automaticContractBinding===true?'YES':'NO'}`);
     console.log(`WORKER_CONTEXT_LAUNCHERS=${result.workerLaunchersValidated}`);
     console.log('WORKER_CONTEXT_SYNC=PASS');
   }catch(error){console.error(error.stack||error.message);process.exitCode=1;}
