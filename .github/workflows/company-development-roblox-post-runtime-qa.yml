@@ -1,8 +1,287 @@
-name: Company DEVELOPMENT_CONFIRMED Roblox Post-Runtime QA (Disabled)
+name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA
+
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty means all pending Roblox runtime candidates.
+        required: false
+        type: string
+  schedule:
+    - cron: '*/15 * * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-development-roblox-runtime-foundation-qa
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
 jobs:
-  disabled:
+  runtime-foundation-qa:
+    name: existing game tester and QA validate exact Roblox runtime candidate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - run: echo 'ROBLOX_STUDIO_QA=REMOVED; ROBLOX_VALIDATION_MODE=HEADLESS_FAST_MVP'
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Synchronize worker with constitution central policy and compiled architecture
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/roblox-foundation-worker-context.json
+          node -e "const x=require('/tmp/roblox-foundation-worker-context.json');if(x.pass!==true||x.architectureProjection?.valid!==true)process.exit(1)"
+          echo 'ROBLOX_FOUNDATION_SHARED_CONTEXT=PASS'
+
+      - name: Run deterministic foundation protocol QA
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-tester-debug-intake.test.mjs
+          echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
+
+      - name: Read exact runtime sentinel and persist tester QA evidence
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {
+            fetchRobloxRuntimeFoundationEvidence,
+            validateRobloxRuntimeFoundationEvidence,
+          } from './tools/company-development-roblox-runtime-foundation.mjs';
+
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const queuePath='../runtime/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const candidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            return candidate.published===true
+              &&item.robloxFoundationF0Passed===true
+              &&item.robloxInternalReleaseReady!==true
+              &&item.robloxPublicRelease!==true
+              &&['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
+          });
+          let changed=false,passed=0,pending=0,failed=0;
+          const f9Ids=[];
+          const stamp=new Date().toISOString();
+
+          for(const item of candidates){
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const exactCandidate=
+              candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&Number(candidate.versionNumber)>0
+              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''));
+            if(!exactCandidate){
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH';
+              item.routingBlockers=['roblox-runtime-candidate-identity-mismatch'];
+              item.updatedAt=stamp;changed=true;failed++;
+              continue;
+            }
+
+            let sentinel;
+            try{
+              sentinel=await fetchRobloxRuntimeFoundationEvidence({
+                universeId:String(candidate.universeId),
+                apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+              });
+            }catch(error){
+              const message=String(error?.message||error);
+              if(/HTTP_404/.test(message)){
+                console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}`);
+                pending++;
+                continue;
+              }
+              throw error;
+            }
+
+            const result=validateRobloxRuntimeFoundationEvidence({
+              sentinel,
+              gameId:item.gameId,
+              placeId:String(candidate.placeId),
+              versionNumber:Number(candidate.versionNumber),
+            });
+            const evidence={
+              ...result,
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:Number(candidate.artifactRunId||0),
+              universeId:String(candidate.universeId),
+              candidateVersionNumber:Number(candidate.versionNumber),
+              observedAt:stamp,
+              workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+              authority:'existing-game-tester-roblox-runtime-foundation-v1',
+            };
+            item.robloxRuntimeFoundationEvidence=evidence;
+            item.robloxRuntimeFoundationPassed=result.runtimeFoundationPassed===true;
+            item.robloxRuntimePassed=result.runtimeAcceptancePassed===true;
+            item.robloxServerClientBoundaryPassed=result.f6CoreServicesPassed===true;
+            item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
+            item.robloxMobileControlUiPassed=result.f5InputCameraUiPassed===true;
+            item.robloxMultiplayerQaPassed=result.f7MultiplayerFoundationPassed===true;
+            item.robloxRuntimeEvidence={
+              ...evidence,
+              runtimePassed:result.runtimeAcceptancePassed===true,
+              serverClientBoundaryPassed:result.f6CoreServicesPassed===true,
+              datastoreRejoinPassed:result.f6CoreServicesPassed===true,
+              mobileControlUiPassed:result.f5InputCameraUiPassed===true,
+              multiplayerQaPassed:result.f7MultiplayerFoundationPassed===true,
+              actualPlatformRuntime:true,
+              authority:'roblox-actual-runtime-foundation-and-core-acceptance',
+            };
+
+            if(result.runtimeAcceptancePassed===true){
+              item.robloxRuntimePassedAt=stamp;
+              item.robloxRuntimeFailedAt=null;
+              item.robloxIndependentQaPassed=true;
+              item.robloxIndependentQaPassedAt=stamp;
+              item.robloxRegressionPassed=true;
+              item.robloxRegressionPassedAt=stamp;
+              item.robloxPostRuntimeQaEvidence={
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                runtimeFoundationEvidence:evidence,
+                exactRevision:true,
+                independentQaPassed:true,
+                regressionPassed:true,
+                actualRuntimeEvidence:true,
+                deterministicQa:[
+                  'qa/company-development-roblox-runtime-foundation.test.mjs',
+                  'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+                  'qa/company-tester-debug-intake.test.mjs',
+                ],
+                authority:'existing-independent-qa-native-foundation-v2',
+                verifiedAt:stamp,
+              };
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
+              item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              if(item.executionEvidence){
+                item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+                item.executionEvidence.runtimePassed=true;
+                item.executionEvidence.independentQaPassed=true;
+                item.executionEvidence.regressionPassed=true;
+                item.executionEvidence.failureStage=null;
+                item.executionEvidence.failureSignature=null;
+              }
+              f9Ids.push(item.gameId);
+              passed++;
+            }else{
+              const cp=result.checkpointPass||{};
+              const groundFailure=result.exactVersion===true&&cp.CHARACTER_READY===true&&cp.GROUND_CONTACT!==true;
+              item.robloxIndependentQaPassed=false;
+              item.robloxRegressionPassed=false;
+              if(groundFailure){
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                item.robloxFailureSignature='GROUND_CONTACT_FAILURE';
+                item.routingBlockers=['roblox-ground-contact-failure'];
+                failed++;
+              }else if(result.runtimeFoundationPassed===true){
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                item.robloxFailureSignature='ROBLOX_RUNTIME_ACCEPTANCE_PENDING';
+                item.routingBlockers=['roblox-runtime-acceptance-awaiting-tester-actions'];
+                pending++;
+              }else{
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                pending++;
+              }
+            }
+            item.updatedAt=stamp;changed=true;
+          }
+
+          if(changed){
+            q.updatedAt=stamp;
+            fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
+          }
+          console.log(`ROBLOX_FOUNDATION_CANDIDATES=${candidates.length}`);
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
+          fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
+          NODE
+
+      - name: Persist runtime tester and QA evidence
+        working-directory: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-tester-qa'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
+
+      - name: Dispatch F9 review for runtime-accepted candidates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-f9-ids || exit 0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            echo "ROBLOX_F9_DISPATCHED=$id"
+          done < /tmp/roblox-f9-ids
+

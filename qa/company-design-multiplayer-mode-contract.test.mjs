@@ -32,11 +32,14 @@ test('design baseline fails closed when multiplayer mode is absent or invalid',(
   assert.match(gate,/designMultiplayer:\{required:/);
 });
 
-test('Roblox HEADLESS_FAST_MVP preserves multiplayer design semantics without Studio QA',()=>{
-  assert.match(robloxQa,/HEADLESS_FAST_MVP/);
-  assert.match(robloxQa,/ROBLOX_STUDIO_QA=REMOVED/);
+test('Roblox multiplayer design semantics are preflighted statically but accepted only by actual runtime tester evidence',()=>{
   assert.match(headlessQa,/function multiplayerRequired\(config\)/);
   assert.match(headlessQa,/checks\.multiplayerSync=!multi\|\|\(\/Players:GetPlayers\\s\*\\\(\\\)\/\.test\(server\)&&\/FireAllClients/);
   assert.match(headlessQa,/multiplayerApplicable:multi/);
-  assert.match(headlessQa,/multiplayerStateSyncPassed:checks\.multiplayerSync/);
+  assert.match(headlessQa,/actualRuntimeEvidence:false/);
+  assert.match(headlessQa,/runtimeFoundationPassed:false/);
+  assert.match(robloxQa,/validateRobloxRuntimeFoundationEvidence/);
+  assert.match(robloxQa,/item\.robloxMultiplayerQaPassed=result\.f7MultiplayerFoundationPassed===true/);
+  assert.match(robloxQa,/runtimeAcceptancePassed===true/);
+  assert.match(robloxQa,/actualPlatformRuntime:true/);
 });

@@ -1,5 +1,5 @@
 {
-  "version": 90,
+  "version": 91,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -25,10 +25,10 @@
     }
   },
   "authorityOrder": [
-    "OWNER_DIRECTIVE",
+    "OWNER_CANONICAL_CONSTITUTION",
     "company-learning/platform-release-roadmap.json",
-    "company-learning/company-architecture-map.json",
-    "company-learning/company-log-map.json",
+    "COMPILED_CENTRAL_ARCHITECTURE_PROJECTION",
+    "WORK_CONTRACT",
     "VERIFIED_RUNTIME_EVIDENCE",
     "RUNTIME_STATE"
   ],
@@ -46,10 +46,14 @@
     "selectedPlatform": [
       "ROBLOX_UNITY_AUTO_PAIR",
       "NATIVE_SOURCE_BIND",
-      "BUILD_OR_PACKAGE",
-      "TARGET_RUNTIME",
-      "INDEPENDENT_QA",
-      "REGRESSION",
+      "F0_SOURCE_INTEGRITY",
+      "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "F1_SERVER_BOOT",
+      "F2_WORLD_FOUNDATION",
+      "F3_CHARACTER_FOUNDATION",
+      "F4_PHYSICS_AND_MOVEMENT",
+      "IMPACT_SCOPED_F5_TO_F8",
+      "F9_RELEASE_REGRESSION",
       "INTERNAL_PLATFORM_RELEASE",
       "INTERNAL_PLAYTEST",
       "PUBLIC_RELEASE_READY",
@@ -100,7 +104,8 @@
     "PRIMARY_AI_ORCHESTRATOR": "NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR",
     "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS",
     "PLANNING_GROWTH_MARKETING": "EXISTING_PLANNING_ROLE_PRODUCT_STRATEGY_MONETIZATION_REVENUE_MARKETING_RESEARCH_AND_APPLICATION_TIMING",
-    "RECORDS_GOVERNANCE": "SHARED_MACHINE_RECORD_SCHEMA_PATH_PROVENANCE_RETENTION_AND_INTEGRITY_VALIDATION"
+    "RECORDS_GOVERNANCE": "SHARED_MACHINE_RECORD_SCHEMA_PATH_PROVENANCE_RETENTION_AND_INTEGRITY_VALIDATION",
+    "GAME_TESTER": "EXISTING_RUNTIME_FOUNDATION_AND_GAMEPLAY_ERROR_REPRODUCTION_CAPABILITY"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -2659,5 +2664,25 @@
       "ROBLOX_LEARNING_CONTEXT_RETRIEVAL",
       "FRESH_QA_REQUIRED_ON_TRANSFER"
     ]
+  },
+  "sourceOfTruthRole": "STATIC_MACHINE_TOPOLOGY_AND_COMPATIBILITY_REGISTRY_ONLY",
+  "centralArchitectureProjection": {
+    "required": true,
+    "source": "company-learning/platform-release-roadmap.json",
+    "compiler": "tools/company-shared-context.mjs::compileCentralArchitectureProjection",
+    "generatedAtExecutionTime": true,
+    "manualSemanticMirrorRequired": false,
+    "thisFileMayNotOverrideCompiledProjection": true,
+    "projectionFingerprintBoundToSharedContext": true,
+    "projectionFingerprintBoundToWorkContract": true,
+    "staleProjectionBlocksWork": true,
+    "humanReadableArchitectureArtifactRequired": false
+  },
+  "foundationValidation": {
+    "role": "MACHINE_TOPOLOGY_POINTER_ONLY",
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.nativeGameFoundationValidationStack",
+    "newDepartmentCreated": false,
+    "executionOwner": "EXISTING_GAME_TESTER_AND_QA_CAPABILITY",
+    "ticketState": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json"
   }
 }

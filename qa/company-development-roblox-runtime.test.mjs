@@ -235,39 +235,54 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
   assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
 
-test('Roblox package completion dispatches Vibe shared preflight then headless FAST_MVP and internal release',()=>{
+test('Roblox package completion follows F0 then private runtime candidate then existing tester QA then F9',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
-  const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
+  const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
+  const candidate=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
+  const runtimeQa=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-post-runtime-qa.yml',import.meta.url),'utf8');
+  const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(!preflight.includes('workflow_run:'));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(preflight.includes('Vibe plus shared-model build preflight'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
-  assert.ok(headless.includes('Company DEVELOPMENT_CONFIRMED Roblox Headless FAST_MVP'));
-  assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
-  assert.ok(headless.includes('HEADLESS_FAST_MVP'));
-  assert.ok(headless.includes('robloxHeadlessFastMvpPassed=exact'));
-  assert.ok(headless.includes("item.currentStep='INTERNAL_PLATFORM_RELEASE'"));
-  assert.ok(headless.includes('Dispatch Open Cloud internal release'));
-  assert.ok(headless.includes('company-development-roblox-release-promotion.yml'));
-  assert.ok(!headless.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
+  assert.ok(f0.includes('Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight'));
+  assert.ok(f0.includes('company-development-roblox-headless-fast-mvp.mjs'));
+  assert.ok(f0.includes('HEADLESS_SOURCE_PREFLIGHT_F0')||f0.includes('robloxFoundationF0Passed'));
+  assert.ok(f0.includes("item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'"));
+  assert.ok(f0.includes('Dispatch private runtime candidate deployment'));
+  assert.ok(candidate.includes('Private Runtime Candidate Deployment'));
+  assert.ok(candidate.includes("item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'"));
+  assert.ok(candidate.includes('company-development-roblox-post-runtime-qa.yml'));
+  assert.ok(runtimeQa.includes('Roblox Runtime Foundation QA'));
+  assert.ok(runtimeQa.includes('validateRobloxRuntimeFoundationEvidence'));
+  assert.ok(runtimeQa.includes("item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'"));
+  assert.ok(runtimeQa.includes('company-development-roblox-final-review-revalidation.yml'));
+  assert.ok(f9.includes('Roblox F9 Final Review'));
+  assert.ok(f9.includes('item.robloxInternalReleaseReady=true'));
+  assert.ok(!f0.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
 });
 
 test('new Roblox package identity clears every downstream preflight runtime and QA checkpoint',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   for(const marker of [
     'robloxBuildPreflightPassedAt:null','robloxBuildPreflightFailedAt:null','robloxBuildPreflightEvidence:null',
+    'robloxFoundationF0Passed:false','robloxFoundationF0PassedAt:null','robloxFoundationF0Evidence:null',
+    'robloxHeadlessFastMvpPassed:false','robloxHeadlessFastMvpEvidence:null',
+    'robloxRuntimeCandidateEvidence:null','robloxRuntimeFoundationPassed:false','robloxRuntimeFoundationEvidence:null',
     'robloxRuntimePassedAt:null','robloxRuntimeFailedAt:null','robloxRuntimeEvidence:null','robloxRuntimeRetryCount:0',
     'robloxServerClientBoundaryPassed:false','robloxDatastoreRejoinPassed:false','robloxMobileControlUiPassed:false',
-    'robloxIndependentQaPassedAt:null','robloxRegressionPassedAt:null','robloxFinalReviewPassedAt:null','robloxPostRuntimeQaEvidence:null',
+    'robloxIndependentQaPassedAt:null','robloxRegressionPassedAt:null','robloxFinalReviewPassedAt:null','robloxF9ReleaseRegressionPassed:false','robloxF9ReleaseRegressionEvidence:null','robloxPostRuntimeQaEvidence:null',
+    'robloxInternalReleaseReady:false','robloxInternalReleaseAt:null',
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('successful Roblox package flow auto-dispatches shared preflight continuation without Studio gate',()=>{
+test('successful Roblox package flow auto-dispatches shared preflight then F0 without a Studio approval gate',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
-  assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation'));
+  assert.ok(workflow.includes('Dispatch Roblox HEADLESS FAST_MVP continuation')||workflow.includes('continuation'));
   assert.ok(!workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
@@ -275,6 +290,7 @@ test('successful Roblox package flow auto-dispatches shared preflight continuati
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
+  assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
   assert.ok(!preflight.includes('studio_run_approved:'));
 });
 

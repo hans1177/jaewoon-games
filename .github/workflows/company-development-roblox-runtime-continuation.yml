@@ -237,8 +237,12 @@ jobs:
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
                 robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
                 robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
-                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxPostRuntimeQaEvidence:null,
-                robloxLastSuccessfulStage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:'ROBLOX_RUNTIME_PENDING',routingBlockers:['roblox-runtime-pending'],updatedAt:stamp});
+                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
+                robloxLastSuccessfulStage:'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',robloxFailureStage:'F0_SOURCE_INTEGRITY',robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING',routingBlockers:['roblox-f0-source-preflight-pending'],updatedAt:stamp});
               pass++;
             }else{
               Object.assign(item,{robloxBuildPreflightPassed:false,robloxBuildPreflightFailedAt:stamp,robloxBuildPreflightEvidence:result||null,
@@ -266,7 +270,7 @@ jobs:
           fi
 
   dispatch-headless:
-    name: dispatch Roblox Headless FAST_MVP
+    name: dispatch Roblox F0 source preflight
     needs: preflight-persist
     if: always() && needs.preflight-persist.result == 'success' && needs.preflight-persist.outputs.pass_count != '0'
     runs-on: ubuntu-latest
@@ -275,10 +279,10 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - name: Dispatch exact-package headless FAST_MVP
+      - name: Dispatch exact-package F0 source preflight
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'ROBLOX_HEADLESS_FAST_MVP_DISPATCHED=YES'
+          echo 'ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'

@@ -9,14 +9,14 @@ const headlessEvaluator=fs.readFileSync(new URL('../tools/company-development-ro
 const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
-test('Roblox fast path is package -> Vibe shared preflight -> headless -> private release',()=>{
+test('Roblox native path is package -> shared preflight -> F0 -> private runtime candidate -> actual tester QA',()=>{
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(!preflight.includes('company-development-roblox-package.mjs'));
   assert.ok(preflight.includes('company-development-roblox-build-preflight.mjs'));
   assert.ok(preflight.includes("model: 'llama3.2:1b'"));
   assert.ok(preflight.includes('Run Vibe plus shared-model build preflight'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
-  assert.ok(headless.includes('HEADLESS_FAST_MVP'));
+  assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
   assert.ok(headless.includes('company-development-roblox-release-promotion.yml'));
 });
@@ -38,15 +38,18 @@ test('preflight persistence promotes only exact source and artifact',()=>{
   assert.ok(preflight.includes('result?.sourceRevision===sourceRevision'));
   assert.ok(preflight.includes('result?.artifactIdentity===artifactIdentity'));
   assert.ok(preflight.includes('robloxBuildPreflightPassed:true'));
-  assert.ok(preflight.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
+  assert.ok(preflight.includes("robloxFailureStage:'F0_SOURCE_INTEGRITY'"));
+  assert.ok(preflight.includes("robloxFailureSignature:'ROBLOX_F0_SOURCE_PREFLIGHT_PENDING'"));
 });
 
-test('headless fast path validates mobile, save/rejoin, multiplayer and exact artifact',()=>{
-  for(const token of ['mobileControlUiPassed','datastoreRejoinPassed','multiplayerStateSyncPassed','exactRevision']){
+test('F0 source preflight validates source integrity and explicitly cannot claim actual runtime',()=>{
+  for(const token of ['duplicateDeclarationGuard','foundationSentinelContract','sourceStartupMarkers','f0SourceIntegrityPassed','actualRuntimeEvidence:false','runtimeFoundationPassed:false']){
     assert.ok(headlessEvaluator.includes(token),token);
   }
   assert.ok(headless.includes('rebuilt'));
   assert.ok(headless.includes('EXPECTED_ARTIFACT'));
+  assert.ok(headless.includes('robloxFoundationF0Passed=exact'));
+  assert.ok(headless.includes("item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'"));
 });
 
 test('canonical parent watches both fast-path workflows',()=>{

@@ -116,6 +116,8 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.constitution.appliesToAllCurrentAndFutureRegisteredVibeWorkers,true);
   assert.deepEqual(contract.constitution.orderedRuleIds,['RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT','RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION','RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE','RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION']);
   assert.equal(contract.constitution.rules.length,4);
+  assert.match(contract.architectureProjection.fingerprint,/^[a-f0-9]{64}$/);
+  assert.equal(contract.architectureProjection.sourceOfTruth,CANONICAL_VIBE_POLICY_PATH);
   assert.equal(contract.workRequest.workKey,'repair-1');
   assert.equal(contract.workRequest.roadmapVersion,196);
   assert.equal(contract.workRequest.mainSha,'abc123');
@@ -324,4 +326,56 @@ test('active compiled work becomes stale when owner adds a constitutional rule',
   document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
   fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
   assert.throws(()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),/CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/);
+});
+
+
+test('central architecture semantic change automatically invalidates an active work contract',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({
+    snapshot:before,
+    task:{id:'architecture-stale',gameId:'cozy-island',target:'roblox'},
+    plan:{target:'roblox'},
+    route:{route:'text-source-worker'},
+    responsibleFiles:['roblox-games/cozy-island/server/Game.server.luau'],
+    mainSha:'abc123'
+  });
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.developmentLifecycleMachine.nativeGameFoundationValidationStack={
+    version:1,
+    status:'DESIGN_LOCKED_IMPLEMENTATION_REQUIRED',
+    ownership:{
+      executionOwner:'EXISTING_GAME_TESTER_AND_QA_CAPABILITY',
+      testerTicketState:'vibe2-unreal-core:.vibe2/tester-debug-tickets.json',
+      runtimePlaytestOwner:'developmentLifecycleMachine.internalPlatformPlaytestDevelopment',
+      platformQaOwner:'developmentLifecycleMachine.targetPlatformDevelopment.runtimeIndependentQaRegressionRequired',
+      deterministicVerdictAuthority:'developmentLifecycleMachine.deterministicGateAuthority',
+      newDepartmentCreated:false
+    },
+    departmentReuse:{duplicateFoundationDepartmentForbidden:true},
+    layers:[{id:'F0',alwaysRequired:true},{id:'F1',alwaysRequired:true},{id:'F2',alwaysRequired:true},{id:'F3',alwaysRequired:true},{id:'F4',alwaysRequired:true}],
+    testerQaFlow:['F0','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1','F2','F3','F4'],
+    releaseGate:{canonicalSequence:['F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','F1_SERVER_BOOT_PASS','F2_WORLD_FOUNDATION_PASS','F3_CHARACTER_FOUNDATION_PASS','F4_PHYSICS_AND_MOVEMENT_PASS','INTERNAL_PLATFORM_RELEASE']}
+  };
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,true);
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),/CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/);
+  const next=compileVibeCentralWorkContract({snapshot:after,task:{id:'architecture-new',gameId:'cozy-island',target:'roblox'},plan:{target:'roblox'},route:{route:'text-source-worker'},responsibleFiles:['roblox-games/cozy-island/server/Game.server.luau'],mainSha:'abc123'});
+  assert.equal(next.architectureProjection.nativeFoundation.version,1);
+  assert.deepEqual(next.architectureProjection.nativeFoundation.requiredFoundationLayers,['F0','F1','F2','F3','F4']);
+});
+
+test('policy metadata version bump alone does not invalidate compiled architecture or work contract',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({snapshot:before,task:{id:'version-only',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
+  writePolicy(root,197);
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.executionFingerprint,before.executionFingerprint);
+  assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
 });

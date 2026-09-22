@@ -1,3 +1,4 @@
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,7 +8,7 @@ import {
   validateRobloxSourcePath,
   assembleRobloxTechnicalEvidence,
   validateRobloxReleaseEvidence,
-  createRobloxPlacePublishPlan,
+  createRobloxPlacePublishPlan,createRobloxRuntimeCandidatePublishPlan,
   publishRobloxPlace,
 } from '../tools/vibe3-roblox-platform.mjs';
 
@@ -31,6 +32,8 @@ const evidence={
   buildOrPackagePassed:true,
   artifactIdentity:'sha256:test-place-artifact',
   luauOrSourceValidationPassed:true,
+  actualRuntimeEvidence:true,
+  runtimeFoundationPassed:true,
   runtimePassed:true,
   serverClientBoundaryPassed:true,
   saveExists:false,
@@ -59,6 +62,9 @@ const assembled=assembleRobloxTechnicalEvidence({
     state:'PASS',
     sourceRevision:'abcdef1234567890',
     artifactIdentity:'sha256:test-place-artifact',
+    actualRuntimeEvidence:true,
+    actualPlatformRuntime:true,
+    runtimeFoundationPassed:true,
     runtimePassed:true,
     serverClientBoundaryPassed:true,
     saveExists:false,
@@ -90,7 +96,7 @@ assert.equal(validateRobloxReleaseEvidence(assembled,'abcdef1234567890').pass,tr
 
 const artifactMismatch=assembleRobloxTechnicalEvidence({
   build:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',luauOrSourceValidationPassed:true},
-  runtime:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-b',runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
+  runtime:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-b',actualRuntimeEvidence:true,runtimeFoundationPassed:true,runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
   independent:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',independentQaPassed:true},
   regression:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',regressionPassed:true,protectedStatePreserved:true,exactRevision:true},
 });
@@ -100,7 +106,7 @@ assert(artifactMismatch.blockedReasons.includes('exact-revision-unproven'));
 
 const revisionMismatch=assembleRobloxTechnicalEvidence({
   build:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',luauOrSourceValidationPassed:true},
-  runtime:{state:'PASS',sourceRevision:'deadbeef12345678',artifactIdentity:'artifact-a',runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
+  runtime:{state:'PASS',sourceRevision:'deadbeef12345678',artifactIdentity:'artifact-a',actualRuntimeEvidence:true,runtimeFoundationPassed:true,runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
   independent:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',independentQaPassed:true},
   regression:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',regressionPassed:true,protectedStatePreserved:true,exactRevision:true},
 });
@@ -284,3 +290,40 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
 }
 
 console.log(`PASS active Roblox source regression: ${ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length}/${ROBLOX_PORTFOLIO_ALL_GAME_IDS.length-ROBLOX_PERMANENTLY_REMOVED.size}`);
+
+
+test('Roblox runtime candidate publish plan accepts exact F0 evidence but never claims runtime or internal release',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const plan=createRobloxRuntimeCandidatePublishPlan({
+    placeFile:'roblox-games/demo/place.rbxl',
+    universeId:'123',placeId:'456',sourceRevision:revision,artifactIdentity:artifact,
+    f0Evidence:{sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:false,runtimeFoundationPassed:false,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+  });
+  assert.equal(plan.executionReady,true);
+  assert.equal(plan.planKind,'PRIVATE_RUNTIME_CANDIDATE');
+  assert.equal(plan.releaseClaim,false);
+  assert.equal(plan.evidenceGate.runtimeClaimAllowed,false);
+  assert.equal(plan.evidenceGate.internalReleaseClaimAllowed,false);
+  assert.equal(plan.actualRuntimeValidationRequiredAfterPublish,true);
+});
+
+test('Roblox runtime candidate publish plan rejects headless evidence that claims runtime',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const plan=createRobloxRuntimeCandidatePublishPlan({
+    placeFile:'roblox-games/demo/place.rbxl',
+    universeId:'123',placeId:'456',sourceRevision:revision,artifactIdentity:artifact,
+    f0Evidence:{sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:true,runtimeFoundationPassed:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:77}
+  });
+  assert.equal(plan.executionReady,false);
+  assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-evidence'));
+  assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-foundation'));
+});
+
+
+test('Roblox release evidence rejects marker-only runtime claims even when all legacy booleans are true',()=>{
+  const markerOnly={...evidence,actualRuntimeEvidence:false,runtimeFoundationPassed:false};
+  const gate=validateRobloxReleaseEvidence(markerOnly,'abcdef1234567890');
+  assert.equal(gate.pass,false);
+  assert.ok(gate.blockedReasons.includes('actual-runtime-evidence-missing'));
+  assert.ok(gate.blockedReasons.includes('runtime-foundation-not-passed'));
+});

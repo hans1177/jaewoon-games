@@ -68,84 +68,174 @@ test('development final release evidence fails closed on final review, peer or a
   assert.equal(assembleRobloxDevelopmentReleaseEvidence(artifactMismatch).exactRevision,false);
 });
 
-test('internal release workflow publishes only retained exact artifact to restricted intent and never claims public release',()=>{
-  assert.match(workflow,/robloxFinalReviewPassed===true/);
-  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PENDING/);
-  assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
-  assert.match(workflow,/gh run download "\$ARTIFACT_RUN_ID" --repo "\$GITHUB_REPOSITORY"/);
-  assert.match(workflow,/sha256sum "\$place"/);
-  assert.match(workflow,/"sha256:\$hash" = "\$expected"/);
-  assert.match(workflow,/--assemble-development-release-evidence/);
-  assert.match(workflow,/item\.robloxPublicationTarget/);
-  assert.match(workflow,/company-runtime-publication-target/);
-  assert.match(workflow,/company-runtime-prior-release/);
-  assert.match(workflow,/known-good-runtime-evidence\.json/);
-  assert.match(workflow,/ownerPinnedPublicationTarget/);
-  assert.match(workflow,/owner-pinned-open-cloud-target/);
-  assert.match(workflow,/group: company-development-roblox-release-promotion/);
-  assert.match(workflow,/cancel-in-progress: false/);
-  assert.match(workflow,/ROBLOX_RELEASE_SHARED_FALLBACK_OCCUPIED/);
-  assert.match(workflow,/sharedFastMvpRotationAllowed/);
-  assert.match(workflow,/ROBLOX_FAST_MVP_SHARED_TARGET_ROTATE/);
-  assert.match(workflow,/robloxSharedTargetCurrent=false/);
-  assert.match(workflow,/robloxFastMvpSupersededBy=item\.gameId/);
-  assert.match(workflow,/OWNER_SECRET_UNIVERSE_ID: \$\{\{ secrets\.ROBLOX_UNIVERSE_ID \}\}/);
-  assert.match(workflow,/OWNER_SECRET_PLACE_ID: \$\{\{ secrets\.ROBLOX_PLACE_ID \}\}/);
-  assert.match(workflow,/ROBLOX_RELEASE_OWNER_PINNED_SECRET_ID_MISMATCH/);
-  assert.match(workflow,/exactCandidates\.length\?exactCandidates/);
-  assert.match(workflow,/row\.gameId===gameId/);
-  assert.match(workflow,/row\.sourceRevision===revision/);
-  assert.match(workflow,/row\.artifactIdentity===artifact/);
-  assert.match(workflow,/Number\(row\.artifactRunId\)===artifactRunId/);
-  assert.match(workflow,/publicationTarget\|\|\{\}/);
-  assert.match(workflow,/persistedTarget\.verified===true/);
-  assert.match(workflow,/ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH/);
-  assert.match(workflow,/ROBLOX_RELEASE_PUBLICATION_TARGET_CONFLICT/);
-  assert.match(workflow,/ROBLOX_UNIVERSE_ID: \$\{\{ steps\.target\.outputs\.universe_id \}\}/);
-  assert.match(workflow,/ROBLOX_PLACE_ID: \$\{\{ steps\.target\.outputs\.place_id \}\}/);
-  assert.doesNotMatch(workflow,/vars\.ROBLOX_UNIVERSE_ID/);
-  assert.doesNotMatch(workflow,/vars\.ROBLOX_PLACE_ID/);
-  assert.match(workflow,/item\.robloxPublicationTarget=\{/);
-  assert.match(workflow,/verified:true/);
-  assert.match(workflow,/authority:'roblox-canonical-publication-target'/);
-  assert.match(workflow,/canonical Roblox publication target changed before persist/);
-  assert.match(workflow,/ROBLOX_PUBLICATION_TARGET_PERSISTED/);
-  assert.match(workflow,/ROBLOX_V3_STATE=READY/);
-  assert.match(workflow,/legacy-develop\/v1\/universes\/\$ROBLOX_UNIVERSE_ID\/deactivate/);
-  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS/);
-  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO/);
-  assert.match(workflow,/publishRobloxPlace\(\{plan,retryDelaysMs:\[\]\}\)/);
-  assert.match(workflow,/ROBLOX_V3_STATE=PUBLISHED/);
-  assert.match(workflow,/actions: write/);
-  assert.match(workflow,/timeout-minutes: 300/);
-  assert.match(workflow,/retry_seconds=60/);
-  assert.match(workflow,/retry_window_seconds=900/);
-  assert.match(workflow,/Roblox publish failed HTTP 409/);
-  assert.doesNotMatch(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
-  assert.match(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO/);
-  assert.match(workflow,/BUSY_MANUAL_RETRY_REQUIRED/);
-  assert.match(workflow,/deferred=true/);
-  assert.match(workflow,/steps\.publish\.outputs\.deferred != 'true'/);
-  assert.match(workflow,/ROBLOX_INTERNAL_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY/);
-  assert.match(workflow,/item\.robloxInternalReleaseReady=true/);
-  assert.match(workflow,/item\.robloxReleaseClaim=false/);
-  assert.match(workflow,/item\.robloxPublicRelease=false/);
-  assert.match(workflow,/const visibilityIntent=String\(process\.env\.VISIBILITY_INTENT\|\|'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'\)/);
-  assert.match(workflow,/VISIBILITY_INTENT: \$\{\{ steps\.target\.outputs\.visibility_intent \}\}/);
-  assert.match(workflow,/publicDiscoveryAllowed:preserveExistingVisibility\?null:false/);
-  assert.match(workflow,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
-  assert.match(workflow,/item\.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
-  assert.match(workflow,/ROBLOX_PUBLIC_RELEASE=NO/);
-  assert.doesNotMatch(workflow,/item\.currentStep='POST_RELEASE_FOCUSED_DEVELOPMENT'/);
-  assert.match(workflow,/steps\.publish\.outcome == 'success'/);
-  assert.doesNotMatch(workflow,/company-homepage-platform-exposure-sync\.mjs/);
-  assert.doesNotMatch(workflow,/git add development-queue\.json homepage-platform-exposure\.json/);
-  assert.match(workflow,/pending\?\.gameId/);
-  assert.match(workflow,/ROBLOX_RUNTIME_RERUN=NO/);
-  assert.match(workflow,/ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
-  assert.match(workflow,/ROBLOX_REGRESSION_RERUN=NO/);
-  assert.match(workflow,/ROBLOX_MULTIPLAYER_QA_RERUN=NO/);
-  assert.doesNotMatch(workflow,/RobloxStudioBeta\.exe/);
-  assert.doesNotMatch(workflow,/company-development-roblox-runtime-smoke\.luau/);
-  assert.doesNotMatch(workflow,/company-development-roblox-mobile-independent-qa\.luau/);
+test('headless source preflight can never satisfy Roblox final release evidence',()=>{
+  const item=canonicalItem();
+  item.robloxValidationMode='HEADLESS_FAST_MVP';
+  item.robloxFoundationF0Passed=true;
+  item.robloxFoundationF0Evidence={
+    sourcePreflightPassed:true,f0SourceIntegrityPassed:true,actualRuntimeEvidence:false,runtimeFoundationPassed:false,
+    sourceRevision:item.robloxSourceCommit,artifactIdentity:item.robloxBuildArtifactIdentity,artifactRunId:12345
+  };
+  const evidence=assembleRobloxDevelopmentReleaseEvidence(item);
+  assert.equal(evidence.pass,false);
+  assert.equal(evidence.runtimePassed,false);
+  assert.ok(evidence.blockedReasons.includes('headless-source-preflight-cannot-satisfy-runtime-release'));
+});
+
+test('candidate deployment workflow stops at private runtime candidate and never claims internal release',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/Private Runtime Candidate Deployment/);
+  assert.match(candidate,/robloxFoundationF0Passed===true/);
+  assert.match(candidate,/createRobloxRuntimeCandidatePublishPlan/);
+  assert.match(candidate,/ROBLOX_F0_FALSE_RUNTIME_CLAIM/);
+  assert.match(candidate,/item\.robloxRuntimeCandidateEvidence=\{/);
+  assert.match(candidate,/releaseClaim:false/);
+  assert.match(candidate,/item\.robloxInternalReleaseReady=false/);
+  assert.match(candidate,/item\.robloxRuntimePassed=false/);
+  assert.match(candidate,/item\.robloxRuntimeFoundationPassed=false/);
+  assert.match(candidate,/item\.robloxInternalReleaseEvidence=null/);
+  assert.match(candidate,/item\.robloxReleaseEvidence=null/);
+  assert.match(candidate,/item\.robloxFinalReviewPassed=false/);
+  assert.match(candidate,/item\.robloxPostRuntimeQaEvidence=null/);
+  assert.match(candidate,/item\.robloxRuntimeFoundationEvidence=null/);
+  assert.match(candidate,/item\.robloxIndependentQaPassed=false/);
+  assert.match(candidate,/item\.robloxRegressionPassed=false/);
+  assert.match(candidate,/item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/);
+  assert.match(candidate,/item\.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
+  assert.doesNotMatch(candidate,/const legacyCanonical=/);
+  assert.doesNotMatch(candidate,/assemble-development-release-evidence/);
+  assert.doesNotMatch(candidate,/item\.robloxInternalReleaseReady=true/);
+});
+
+test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the exact candidate',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  assert.match(runtime,/Roblox Runtime Foundation QA/);
+  assert.match(runtime,/fetchRobloxRuntimeFoundationEvidence/);
+  assert.match(runtime,/validateRobloxRuntimeFoundationEvidence/);
+  assert.match(runtime,/candidate\.sourceRevision===sourceRevision/);
+  assert.match(runtime,/candidate\.artifactIdentity===artifactIdentity/);
+  assert.match(runtime,/runtimeAcceptancePassed===true/);
+  assert.match(runtime,/GROUND_CONTACT_FAILURE/);
+  assert.match(runtime,/ROBLOX_RUNTIME_ACCEPTANCE_PENDING/);
+  assert.match(runtime,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
+  assert.match(runtime,/actualRuntimeEvidence:true/);
+  assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
+});
+
+test('F9 final review promotes the same tested candidate without republishing it',()=>{
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(finalReview,/Roblox F9 Final Review/);
+  assert.match(finalReview,/item\.robloxRuntimeFoundationPassed===true/);
+  assert.match(finalReview,/item\.robloxRuntimePassed===true/);
+  assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
+  assert.match(finalReview,/item\.robloxRegressionPassed===true/);
+  assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
+  assert.match(finalReview,/String\(runtime\.placeId\|\|''\)===String\(candidate\.placeId\|\|''\)/);
+  assert.match(finalReview,/runtime\.exactPlace===true/);
+  assert.match(finalReview,/runtime\.exactVersion===true/);
+  assert.match(finalReview,/Number\(runtime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+  assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
+  assert.match(finalReview,/currentBlockingTickets/);
+  assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
+  assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
+  assert.match(finalReview,/promotedWithoutRepublish:true/);
+  assert.match(finalReview,/item\.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
+  assert.match(finalReview,/publicRelease:false/);
+  assert.doesNotMatch(finalReview,/publishRobloxPlace/);
+  assert.doesNotMatch(finalReview,/versions\?versionType=Published/);
+});
+
+
+
+test('cozy island foundation ordering and successful core-loop proof stay fail-closed',()=>{
+  const server=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
+  const buildIndex=server.indexOf('\nbuildWorld()\n');
+  const bindIndex=server.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
+  assert.ok(buildIndex>=0,'cozy island must build world before binding players');
+  assert.ok(bindIndex>buildIndex,'safe spawn and world foundation must exist before player binding');
+  assert.match(server,/local accepted=H\[a\]\(p\)/);
+  assert.match(server,/if accepted==true then\s+foundationCheckpoint\("CORE_LOOP_READY"/);
+  assert.match(server,/if battling\[p\]then msg\(p,"전투 중"\)return false end/);
+  assert.match(server,/if troops<=0 then msg\(p,"병사가 필요해"\)return false end/);
+  assert.match(server,/task\.spawn\(function\(\)[\s\S]*?end\)\s+return true\s+end/);
+});
+
+test('new Roblox runtime candidate atomically invalidates stale release and QA pass state',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  for(const pattern of [
+    /item\.robloxInternalReleaseEvidence=null/,
+    /item\.robloxReleaseEvidence=null/,
+    /item\.robloxFinalReviewPassed=false/,
+    /item\.robloxF9ReleaseRegressionPassed=false/,
+    /item\.robloxPostRuntimeQaEvidence=null/,
+    /item\.robloxRuntimeEvidence=null/,
+    /item\.robloxRuntimeFoundationEvidence=null/,
+    /item\.robloxIndependentQaPassed=false/,
+    /item\.robloxRegressionPassed=false/,
+    /item\.robloxMultiplayerQaPassed=false/,
+    /item\.robloxRuntimePassed=false/,
+    /item\.robloxRuntimeFoundationPassed=false/,
+  ]) assert.match(candidate,pattern);
+});
+
+test('F9 binds the promoted candidate to source artifact universe place and exact version runtime evidence',()=>{
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(finalReview,/candidate\.sourceRevision===sourceRevision/);
+  assert.match(finalReview,/candidate\.artifactIdentity===artifactIdentity/);
+  assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
+  assert.match(finalReview,/String\(runtime\.placeId\|\|''\)===String\(candidate\.placeId\|\|''\)/);
+  assert.match(finalReview,/runtime\.exactGame===true/);
+  assert.match(finalReview,/runtime\.exactPlace===true/);
+  assert.match(finalReview,/runtime\.exactVersion===true/);
+  assert.match(finalReview,/Number\(runtime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+  assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
+});
+
+test('central foundation contract records the implemented atomic repair invariants',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
+  assert.equal(stack.governingPrinciples.safeSpawnMustExistBeforePlayerBinding,true);
+  assert.equal(stack.governingPrinciples.coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition,true);
+  assert.equal(stack.governingPrinciples.newRuntimeCandidateInvalidatesPriorReleasePassState,true);
+  assert.equal(stack.governingPrinciples.f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.cozyIslandSpawnBeforePlayerBinding,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.coreLoopCheckpointRequiresSuccessfulTransition,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.newCandidateClearsPriorReleasePassState,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.f9BindsUniversePlaceVersion,true);
+});
+
+test('central F0 contract pins official Luau compiler and exact source workflow requires compile evidence',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const f0=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack.f0NativeCompiler;
+  assert.equal(f0.required,true);
+  assert.equal(f0.implementation,'OFFICIAL_LUAU_COMPILER');
+  assert.equal(f0.version,'0.739');
+  assert.equal(f0.sha256,'8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247');
+  assert.equal(f0.allLuauFilesUnderGameSourceMustCompile,true);
+  assert.equal(f0.structuralMarkersCannotSubstituteCompile,true);
+  assert.equal(f0.missingCompilerEvidenceAction,'F0_BLOCKED');
+
+  const preflight=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  assert.match(preflight,/luau-lang\/luau\/releases\/download\/0\.739\/luau-ubuntu\.zip/);
+  assert.match(preflight,/8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247/);
+  assert.match(preflight,/git archive "\$SOURCE_REVISION" "\$SOURCE_PATH"/);
+  assert.match(preflight,/luau-compile "\$file"/);
+  assert.match(preflight,/--native-language-compile-passed=true/);
+  assert.match(preflight,/--native-compiler-version=0\.739/);
+});
+
+test('central native foundation policy locks spawn ordering candidate invalidation and exact F9 identity',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const foundation=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
+  assert.equal(foundation.governingPrinciples.safeSpawnMustExistBeforePlayerBinding,true);
+  assert.equal(foundation.governingPrinciples.coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition,true);
+  assert.equal(foundation.governingPrinciples.newRuntimeCandidateInvalidatesPriorReleasePassState,true);
+  assert.equal(foundation.governingPrinciples.f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion,true);
+  assert.equal(foundation.robloxContract.spawnOrdering.safeSpawnLocationRequiredBeforePlayerBinding,true);
+  assert.equal(foundation.robloxContract.coreLoopProof.failedOrRejectedActionMayNotEmitCoreLoopReady,true);
+  assert.equal(foundation.releaseGate.newCandidateInvalidation.clearPriorFinalReviewPass,true);
+  assert.deepEqual(foundation.releaseGate.f9ExactBinding,[
+    'SOURCE_REVISION','ARTIFACT_IDENTITY','UNIVERSE_ID','PLACE_ID',
+    'CANDIDATE_VERSION_NUMBER','ACTUAL_RUNTIME_SENTINEL','POST_RUNTIME_QA'
+  ]);
 });

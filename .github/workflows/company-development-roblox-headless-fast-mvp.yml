@@ -1,4 +1,4 @@
-name: Company DEVELOPMENT_CONFIRMED Roblox Headless FAST_MVP
+name: Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-headless-fast-mvp
+  group: company-development-roblox-f0-source-preflight
   cancel-in-progress: false
 
 env:
@@ -48,14 +48,14 @@ jobs:
             if(item.robloxValidationMode!=='HEADLESS_FAST_MVP')continue;
             const revision=String(item.robloxSourceCommit||'');
             const artifact=String(item.robloxBuildArtifactIdentity||'');
-            if(item.robloxBuildOrPackagePassed!==true||item.robloxBuildPreflightPassed!==true||item.robloxHeadlessFastMvpPassed===true)continue;
+            if(item.robloxBuildOrPackagePassed!==true||item.robloxBuildPreflightPassed!==true||item.robloxFoundationF0Passed===true)continue;
             if(item.robloxBuildSourceRevision!==revision||!/^[0-9a-f]{40}$/i.test(revision)||!/^sha256:[0-9a-f]{64}$/i.test(artifact))continue;
             rows.push({gameId:item.gameId,sourcePath:item.robloxProjectPath||item.targetSourcePath||('roblox-games/'+item.gameId),sourceRevision:revision,artifactIdentity:artifact,baseline:item.designBaselineSource});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+rows.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'matrix='+JSON.stringify({include:rows})+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'targets_json='+JSON.stringify(rows)+'\n');
-          console.log('ROBLOX_HEADLESS_TARGETS='+rows.map(x=>x.gameId).join(','));
+          console.log('ROBLOX_F0_PREFLIGHT_TARGETS='+rows.map(x=>x.gameId).join(','));
           NODE
 
   validate:
@@ -86,7 +86,18 @@ jobs:
           echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
           unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
           chmod +x /tmp/rojo-bin/rojo
-      - name: Rebuild exact artifact and headless validate
+      - name: Install pinned official Luau compiler
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/luau-bin /tmp/luau.zip
+          mkdir -p /tmp/luau-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
+          test -x /tmp/luau-bin/luau-compile
+          echo 'ROBLOX_F0_LUAU_COMPILER=0.739'
+      - name: Rebuild exact artifact and F0 source preflight
         env:
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_PATH: ${{ matrix.sourcePath }}
@@ -98,10 +109,19 @@ jobs:
           safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           mkdir -p /tmp/headless/packages /tmp/headless/results /tmp/headless/input
           git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE" > /tmp/headless/input/baseline.json
+          rm -rf /tmp/luau-exact-source
+          mkdir -p /tmp/luau-exact-source
+          git archive "$SOURCE_REVISION" "$SOURCE_PATH" | tar -x -C /tmp/luau-exact-source
+          mapfile -d '' luau_files < <(find "/tmp/luau-exact-source/$SOURCE_PATH" -type f -name '*.luau' -print0 | sort -z)
+          [ "${#luau_files[@]}" -gt 0 ]
+          for file in "${luau_files[@]}"; do
+            /tmp/luau-bin/luau-compile "$file" >/dev/null
+          done
+          echo "ROBLOX_F0_LUAU_COMPILE_PASS=${#luau_files[@]}"
           node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --baseline=/tmp/headless/input/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/headless/packages --evidence=/tmp/headless/results/build.json
           rebuilt="$(node -e "const e=require('/tmp/headless/results/build.json');process.stdout.write(e.artifactIdentity)")"
           [ "$rebuilt" = "$EXPECTED_ARTIFACT" ]
-          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --artifact-identity="$EXPECTED_ARTIFACT" --rebuilt-artifact-identity="$rebuilt" --artifact-run-id="$GITHUB_RUN_ID" --output="/tmp/headless/results/$safe.headless.json"
+          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_PATH" --source-revision="$SOURCE_REVISION" --artifact-identity="$EXPECTED_ARTIFACT" --rebuilt-artifact-identity="$rebuilt" --artifact-run-id="$GITHUB_RUN_ID" --native-language-compile-passed=true --native-compiler-version=0.739 --output="/tmp/headless/results/$safe.headless.json"
       - uses: actions/upload-artifact@v4
         with:
           name: development-roblox-package-${{ matrix.gameId }}
@@ -110,7 +130,7 @@ jobs:
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: development-roblox-headless-${{ matrix.gameId }}
+          name: development-roblox-f0-${{ matrix.gameId }}
           path: /tmp/headless/results/*.headless.json
           retention-days: 7
           if-no-files-found: error
@@ -130,7 +150,7 @@ jobs:
       - if: needs.plan.outputs.count != '0'
         uses: actions/download-artifact@v4
         with:
-          pattern: development-roblox-headless-*
+          pattern: development-roblox-f0-*
           path: /tmp/headless-batch
           merge-multiple: true
       - name: Persist headless evidence
@@ -153,14 +173,19 @@ jobs:
             const item=(q.items||[]).find(x=>x.gameId===target.gameId);if(!item)continue;
             const e=byId.get(target.gameId);
             const exact=e?.pass===true&&e.sourceRevision===item.robloxSourceCommit&&e.artifactIdentity===item.robloxBuildArtifactIdentity;
+            item.robloxFoundationF0Passed=exact;
+            item.robloxFoundationF0Evidence=exact?e:null;
+            item.robloxFoundationF0PassedAt=exact?stamp:null;
             item.robloxHeadlessFastMvpPassed=exact;
             item.robloxHeadlessFastMvpEvidence=exact?e:null;
-            item.robloxHeadlessFinalReviewPassed=exact;
-            item.robloxHeadlessPassedAt=exact?stamp:null;
+            item.robloxHeadlessFinalReviewPassed=false;
             item.robloxExactRevisionPassed=exact;
+            item.robloxRuntimePassed=false;
+            item.robloxRuntimeFoundationPassed=false;
+            item.robloxInternalReleaseReady=false;
             item.updatedAt=stamp;
-            if(exact){item.currentStep='INTERNAL_PLATFORM_RELEASE';item.canonicalState='HEADLESS_FAST_MVP_PASSED';item.robloxFailureStage='INTERNAL_PLATFORM_RELEASE';item.robloxFailureSignature='ROBLOX_INTERNAL_RELEASE_PENDING';item.routingBlockers=['roblox-internal-release-pending'];}
-            else{item.currentStep='ROBLOX_HEADLESS_FAST_MVP_VALIDATION';item.canonicalState='HEADLESS_FAST_MVP_REPAIR_REQUIRED';item.robloxFailureStage='HEADLESS_FAST_MVP';item.robloxFailureSignature='ROBLOX_HEADLESS_FAST_MVP_FAILED';item.routingBlockers=['roblox-headless-fast-mvp-failed'];}
+            if(exact){item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';item.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';item.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';item.routingBlockers=['roblox-runtime-candidate-deploy-pending'];}
+            else{item.currentStep='ROBLOX_F0_SOURCE_PREFLIGHT';item.canonicalState='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED';item.robloxFailureStage='F0_SOURCE_INTEGRITY';item.robloxFailureSignature='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';item.routingBlockers=['roblox-f0-source-preflight-failed'];}
           }
           q.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
@@ -168,14 +193,14 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add development-queue.json
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist Roblox headless FAST_MVP evidence [skip ci]'
+            git commit -m 'runtime: persist Roblox F0 source preflight evidence [skip ci]'
             for i in 1 2 3 4 5; do
               git push origin HEAD:"$COMPANY_RUNTIME_BRANCH" && break
               git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
               git rebase "origin/$COMPANY_RUNTIME_BRANCH"
             done
           fi
-      - name: Dispatch Open Cloud internal release
+      - name: Dispatch private runtime candidate deployment
         if: needs.plan.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -191,7 +216,7 @@ jobs:
           let sharedFallbackUsed=false;
           for(const id of ids){
             const x=q.items.find(y=>y.gameId===id);
-            if(x?.robloxHeadlessFastMvpPassed!==true)continue;
+            if(x?.robloxFoundationF0Passed!==true||x?.robloxRuntimeFoundationPassed===true)continue;
             const exactTarget=(x.robloxPublicationTarget?.verified===true&&valid(x.robloxPublicationTarget))
               ||(x.robloxInternalReleaseEvidence?.published===true&&valid(x.robloxInternalReleaseEvidence))
               ||(x.robloxReleaseEvidence?.published===true&&valid(x.robloxReleaseEvidence));

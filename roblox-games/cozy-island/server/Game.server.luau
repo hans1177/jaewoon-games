@@ -17,9 +17,13 @@ remote.Name=C.RemoteName;remote.Parent=RS
 local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
+local foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1")
+local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
+foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 
 local world
-local lastRequest,battling,gatherCooldown,qaCaptureLast={},{},{},{}
+local foundationSpawn
+local lastRequest,battling,gatherCooldown,qaCaptureLast,movementProbeStart={},{},{},{},{}
 local mobs={}
 local assetCache={}
 local ASSETS={Nature=6933438443,City=6933556508,Forest=6432306802}
@@ -30,6 +34,24 @@ local function root(p)local c=p.Character;return c and c:FindFirstChild("Humanoi
 local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
 local function msg(p,t)p:SetAttribute("LastActivity",t)end
 local function feedback(p,k)p:SetAttribute("FeedbackEvent",k..":"..tostring(math.floor(os.clock()*1000)))end
+local function foundationCheckpoint(name,p,extra)
+ local payload={name=name,at=os.time(),userId=p and p.UserId or 0,gameId=C.GameId,placeId=game.PlaceId,placeVersion=game.PlaceVersion}
+ if typeof(extra)=="table"then for k,v in pairs(extra)do if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then payload[k]=v end end end
+ workspace:SetAttribute("Foundation_"..name,true)
+ pcall(function()
+  foundationStore:UpdateAsync("latest",function(old)
+   local data=typeof(old)=="table"and old or{}
+   if tonumber(data.placeVersion)~=game.PlaceVersion or tonumber(data.placeId)~=game.PlaceId or tostring(data.gameId or"")~=tostring(C.GameId)then data.checkpoints={}end
+   data.version=2;data.gameId=C.GameId;data.placeId=game.PlaceId;data.placeVersion=game.PlaceVersion;data.updatedAt=os.time()
+   data.requirements={saveEnabled=C.SaveEnabled==true,multiplayerRequired=C.MultiplayerRequired==true}
+   data.checkpoints=typeof(data.checkpoints)=="table"and data.checkpoints or{}
+   data.checkpoints[name]=payload
+   return data
+  end)
+ end)
+end
+foundationCheckpoint("SERVER_BOOT",nil,{placeVersion=game.PlaceVersion})
+foundationCheckpoint("MODULE_GRAPH_READY",nil,{modulesReady=true})
 
 local function part(parent,name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
@@ -141,7 +163,7 @@ local function figure(parent,name,pos,color,accent,scale)
  end
  return r
 end
-local function tree(parent,pos,scale)local function tree(parent,pos,scale)
+local function tree(parent,pos,scale)
  scale=scale or 1
  local trunk=part(parent,"TreeTrunk",Vector3.new(2.4,8,2.4)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(106,74,48),Enum.Material.Wood)
  local crown=part(parent,"TreeCrown",Vector3.new(8,8,8)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(77,150,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
@@ -159,20 +181,20 @@ local function gather(p,key,amount,text)
 end
 
 local function freeResidents(p)return n(p,"Residents",0)-n(p,"WoodWorkers",0)-n(p,"Farmers",0)end
-local function hire(p)if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족")return end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용")end
+local function hire(p)if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족")return false end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용");return true end
 local function job(p,key)
- if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return end
- s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치")
+ if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return false end
+ s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치");return true
 end
 local function barracks(p)
  local lv=n(p,"BarracksLevel",1);local wc=14+lv*8;local fc=10+lv*6;local ic=math.max(0,(lv-1)*4)
- if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic))return end
- s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD")
+ if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic))return false end
+ s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD");return true
 end
 local function recruit(p)
  local lv=n(p,"BarracksLevel",1);local fc=4+lv;local wc=2+math.floor(lv/2);local ic=lv>=3 and 1 or 0
- if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return end
- s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD")
+ if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return false end
+ s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD");return true
 end
 local function supportPower(p)local total=0;for _,o in ipairs(Players:GetPlayers())do if o~=p and o:GetAttribute("SupportReady")==true then total+=n(o,"Troops",0)*2 end end;return total end
 local function broadcastMultiplayerSync(actor)
@@ -189,11 +211,12 @@ local function broadcastMultiplayerSync(actor)
   SharedObjective=sharedObjective,
   SharedSupportPower=sharedSupportPower,
  })
+ if #participants>=2 then foundationCheckpoint("MULTIPLAYER_SYNC",actor,{participantCount=#participants})end
 end
 local function attackBase(p)
- if battling[p]then msg(p,"전투 중")return end
- local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"5개 거점 정복 완료")return end
- local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return end
+ if battling[p]then msg(p,"전투 중")return false end
+ local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"5개 거점 정복 완료")return false end
+ local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return false end
  battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattleEnemy",b.Enemy);p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));feedback(p,"HIT");BattleVisual.start(p,idx,troops,C,Style);broadcastMultiplayerSync(p)
  task.spawn(function()
   for i=1,4 do if not p.Parent then battling[p]=nil return end;s(p,"BattleProgress",i*25);task.wait(.55)end
@@ -203,6 +226,7 @@ local function attackBase(p)
   else msg(p,b.Name.." 패배 · 병력/병영을 강화해");feedback(p,"HIT")end
   s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won);broadcastMultiplayerSync(p)
  end)
+ return true
 end
 
 local function spawnMob(kind,pos)
@@ -255,6 +279,18 @@ local function spawnMob(kind,pos)
 end
 
 local function buildWorld()
+
+task.spawn(function()
+ if C.SaveEnabled~=true then return end
+ local probeKey="__foundation_probe__:"..tostring(game.PlaceVersion)
+ local token=C.GameId..":"..tostring(game.PlaceVersion)..":"..tostring(os.time())
+ local ok,readBack=pcall(function()
+  store:SetAsync(probeKey,{token=token,at=os.time()})
+  local value=store:GetAsync(probeKey)
+  return typeof(value)=="table"and value.token or nil
+ end)
+ if ok and readBack==token then foundationCheckpoint("SAVE_ROUNDTRIP",nil,{roundtrip=true})end
+end)
  local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
  world=Instance.new("Folder");world.Name="CozyConquestWorld";world.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
@@ -273,6 +309,7 @@ local function buildWorld()
   part(world,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
   if index~=1 then decorateRemoteIsland(world,r,topY,index)end
   if index==1 then
+   foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.CanCollide=true;foundationSpawn.Transparency=1;foundationSpawn.Position=Vector3.new(0,topY+1.5,18);foundationSpawn.Parent=world
    part(world,"BeachShelf",Vector3.new(196,1.6,196),Vector3.new(0,seaLevel-12,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
    part(world,"VillagePlaza",Vector3.new(60,1,60),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
    part(world,"FarmPlot",Vector3.new(38,1,28),Vector3.new(-36,topY+.7,-31),Color3.fromRGB(116,91,56),Enum.Material.Ground)
@@ -324,7 +361,11 @@ local function buildWorld()
   end
  end
  workspace:SetAttribute("WorldArtPass","COZY_CHIBI_KINGDOM_WORLD_V8")
+ foundationCheckpoint("WORLD_READY",nil,{worldReady=true})
+ if foundationSpawn and foundationSpawn.Parent then foundationCheckpoint("SPAWN_READY",nil,{spawnY=foundationSpawn.Position.Y})end
 end
+
+buildWorld()
 
 local function init(p)
  for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end
@@ -340,19 +381,44 @@ local function save(p)local d={SupportReady=p:GetAttribute("SupportReady")==true
 local H={
  [C.Actions.HIRE]=hire,[C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
  [C.Actions.BARRACKS]=barracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attackBase,
- [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF")end,
+ [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF");return true end,
 }
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"or not H[a]then return end
  local now=os.clock();if now-(lastRequest[p]or 0)<C.RateLimitSeconds then return end
  lastRequest[p]=now
- H[a](p)
- broadcastMultiplayerSync(p)
+ local accepted=H[a](p)
+ if accepted==true then
+  foundationCheckpoint("CORE_LOOP_READY",p,{action=a})
+  broadcastMultiplayerSync(p)
+ end
 end)
 
-Players.PlayerAdded:Connect(function(p)load(p);p.CharacterAdded:Connect(function(c)local h=c:WaitForChild("Humanoid");h.MaxHealth=100;h.Health=100 end)end)
-for _,p in ipairs(Players:GetPlayers())do load(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;BattleVisual.cleanup(p)end)
+local function validateCharacterFoundation(p,c)
+ local h=c:WaitForChild("Humanoid",10);local r=c:WaitForChild("HumanoidRootPart",10)
+ if not h or not r then p:SetAttribute("FoundationFailure","CHARACTER_FOUNDATION_FAILURE");return end
+ h.MaxHealth=100;h.Health=100;h.PlatformStand=false;h.AutoRotate=true;r.Anchored=false
+ if foundationSpawn and foundationSpawn.Parent then p.RespawnLocation=foundationSpawn;c:PivotTo(foundationSpawn.CFrame*CFrame.new(0,4,0))end
+ foundationCheckpoint("CHARACTER_READY",p,{rootAnchored=r.Anchored,platformStand=h.PlatformStand})
+ task.delay(.6,function()
+  if not c.Parent or not r.Parent then return end
+  local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances={c}
+  local hit=workspace:Raycast(r.Position,Vector3.new(0,-14,0),params)
+  if hit and h.FloorMaterial~=Enum.Material.Air then
+   foundationCheckpoint("GROUND_CONTACT",p,{groundY=hit.Position.Y,rootY=r.Position.Y})
+  else
+   p:SetAttribute("FoundationFailure","GROUND_CONTACT_FAILURE")
+  end
+ end)
+end
+local function bindPlayer(p)
+ load(p)
+ p.CharacterAdded:Connect(function(c)validateCharacterFoundation(p,c)end)
+ if p.Character then task.spawn(validateCharacterFoundation,p,p.Character)end
+end
+Players.PlayerAdded:Connect(bindPlayer)
+for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
+Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;BattleVisual.cleanup(p)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 task.spawn(function()
@@ -364,11 +430,22 @@ task.spawn(function()
  end
 end)
 
+foundationRemote.OnServerEvent:Connect(function(p,name)
+ if name~="CAMERA_READY"and name~="INPUT_READY"then return end
+ foundationCheckpoint("REMOTE_ROUNDTRIP",p,{clientReported=true})
+ foundationCheckpoint(name,p,{clientReported=true})
+end)
+
 RunService.Heartbeat:Connect(function(dt)
  local now=os.clock()
  for _,p in ipairs(Players:GetPlayers())do
-  local h=hum(p)
+  local h=hum(p);local r=root(p)
   if h and h.FloorMaterial==Enum.Material.Water and h:GetState()~=Enum.HumanoidStateType.Swimming then h:ChangeState(Enum.HumanoidStateType.Swimming)end
+  if h and r and h.MoveDirection.Magnitude>.05 then
+   local start=movementProbeStart[p]
+   if not start then movementProbeStart[p]=r.Position
+   elseif (r.Position-start).Magnitude>=2 then foundationCheckpoint("MOVEMENT_CONFIRMED",p,{displacement=(r.Position-start).Magnitude});movementProbeStart[p]=nil end
+  elseif h and h.MoveDirection.Magnitude<=.05 then movementProbeStart[p]=nil end
  end
  for i=#mobs,1,-1 do
   local e=mobs[i]
@@ -394,5 +471,3 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,labelName,value)
  local rec={gameId=C.GameId,label=labelName,userId=p.UserId,capturedAt=os.time(),kind=isStatus and"STATUS"or"CAPTURE"};if isStatus then rec.status=raw else rec.assetId=raw end
  pcall(function()qaCaptureStore:UpdateAsync("latest",function(old)local d=typeof(old)=="table"and old or{captures={}};d.captures=typeof(d.captures)=="table"and d.captures or{};table.insert(d.captures,rec);while#d.captures>30 do table.remove(d.captures,1)end;d.updatedAt=os.time();d.gameId=C.GameId;return d end)end)
 end)
-
-buildWorld()

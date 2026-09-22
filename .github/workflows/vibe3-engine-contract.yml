@@ -92,6 +92,27 @@ jobs:
           console.log('PASS platform release roadmap contract');
           NODE
 
+      - name: Install pinned official Luau compiler for Roblox source syntax gate
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/luau-bin /tmp/luau.zip
+          mkdir -p /tmp/luau-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
+          test -x /tmp/luau-bin/luau-compile
+
+      - name: Compile Cozy Island Luau source with official compiler
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find roblox-games/cozy-island -type f -name '*.luau' -print0 | sort -z)
+          [ "${#files[@]}" -gt 0 ]
+          for file in "${files[@]}"; do
+            /tmp/luau-bin/luau-compile "$file" >/dev/null
+          done
+          echo "COZY_ISLAND_LUAU_COMPILE_PASS=${#files[@]}"
+
       - name: Check Vibe3 syntax
         run: |
           node --input-type=module --check < assets/vibe-v3-engine.js
@@ -101,6 +122,9 @@ jobs:
           node --input-type=module --check < tools/vibe3-model-selection.mjs
           node --input-type=module --check < tools/vibe3-pump-index.mjs
           node --input-type=module --check < tools/vibe3-roblox-platform.mjs
+          node --input-type=module --check < tools/company-development-roblox-runtime-foundation.mjs
+          node --input-type=module --check < tools/company-development-roblox-headless-fast-mvp.mjs
+          node --input-type=module --check < tools/company-tester-debug-intake.mjs
           node --check tools/company-minimum-design-contract.mjs
 
       - name: Run Vibe3 engine contract tests
@@ -117,6 +141,10 @@ jobs:
 
       - name: Run Roblox Phase 1 adapter tests
         run: node qa/vibe3-roblox-platform.test.mjs
+
+      - name: Run Roblox native foundation and tester QA contract tests
+        run: |
+          node --test             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-development-roblox-release-promotion.test.mjs             qa/company-tester-debug-intake.test.mjs             qa/company-development-roblox-runtime.test.mjs
 
       - name: Run direct native router tests
         run: node --test qa/company-selected-platform-router.test.mjs
