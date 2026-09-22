@@ -86,13 +86,22 @@ function QACamera.install(config,screenGui,pointProvider)
  button.Activated:Connect(function()
   if busy then return end
   local points=pointProvider and pointProvider()or{}
-  if #points==0 then
-   status.Text="QA 지점 준비 안 됨";status.Visible=true
-   task.delay(2,function()if not busy then status.Visible=false end end)
-   return
-  end
-  busy=true;button.Text="권한확인";status.Visible=true
+  busy=true;button.Text="준비중";status.Visible=true
   task.spawn(function()
+   if #points==0 then
+    local deadline=os.clock()+18
+    status.Text="맵 준비 기다리는 중"
+    while #points==0 and os.clock()<deadline do
+     task.wait(.25)
+     points=pointProvider and pointProvider()or{}
+    end
+    if #points==0 then
+     status.Text="맵 시작 후 다시 눌러"
+     busy=false;button.Text="QA촬영"
+     task.delay(4,function()if not busy then status.Visible=false end end)
+     return
+    end
+   end
    local permissionOk,permissionGranted=pcall(function()
     return CaptureService:PromptCaptureGalleryPermissionAsync(Enum.CaptureGalleryPermission.ReadAndUpload)
    end)
