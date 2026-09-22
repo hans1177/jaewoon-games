@@ -37,45 +37,95 @@ local function ppart(name,size,pos,color,material)
  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=world;return x
 end
 local function nameplate(target,text,color)
- local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(190,38);g.StudsOffset=Vector3.new(0,5,0);g.AlwaysOnTop=true;g.Parent=target
- local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=1;t.TextScaled=true;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.4;t.Parent=g
+ local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(120,24);g.StudsOffset=Vector3.new(0,4.2,0);g.AlwaysOnTop=false;g.MaxDistance=42;g.LightInfluence=.25;g.Parent=target
+ local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,22,31);t.BackgroundTransparency=.35;t.TextScaled=true;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.65;t.Parent=g
+ local cr=Instance.new("UICorner");cr.CornerRadius=UDim.new(0,5);cr.Parent=t
 end
 local function prompt(target,text,action)
  local pr=Instance.new("ProximityPrompt");pr.ActionText=action;pr.ObjectText=text;pr.HoldDuration=.15;pr.MaxActivationDistance=10;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
+end
+local function attach(root,name,size,offset,color,material,shape)
+ local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.Massless=true
+ x.Anchored=false;x.CFrame=root.CFrame*CFrame.new(offset);if shape then x.Shape=shape end;x.Parent=root
+ local w=Instance.new("WeldConstraint");w.Part0=root;w.Part1=x;w.Parent=x
+ return x
+end
+local function humanoidFigure(name,pos,color,accent,scale)
+ scale=scale or 1
+ local root=ppart(name,Vector3.new(3.2,4.2,2.2)*scale,pos,color,Enum.Material.SmoothPlastic);root.CanCollide=true
+ attach(root,"Head",Vector3.new(2.5,2.5,2.5)*scale,Vector3.new(0,3.15*scale,0),Color3.fromRGB(224,190,154),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ attach(root,"ArmL",Vector3.new(1.1,3.8,1.1)*scale,Vector3.new(-2.05*scale,0,0),color)
+ attach(root,"ArmR",Vector3.new(1.1,3.8,1.1)*scale,Vector3.new(2.05*scale,0,0),color)
+ attach(root,"LegL",Vector3.new(1.2,3.2,1.2)*scale,Vector3.new(-.85*scale,-3.55*scale,0),accent or color)
+ attach(root,"LegR",Vector3.new(1.2,3.2,1.2)*scale,Vector3.new(.85*scale,-3.55*scale,0),accent or color)
+ attach(root,"ShoulderGlow",Vector3.new(3.7,.35,2.6)*scale,Vector3.new(0,1.4*scale,0),accent or color,Enum.Material.Neon)
+ return root
+end
+local function treeProp(pos,scale)
+ scale=scale or 1
+ local trunk=ppart("WorldTree",Vector3.new(2.2,7,2.2)*scale,pos+Vector3.new(0,3.5*scale,0),Color3.fromRGB(92,68,51),Enum.Material.Wood)
+ local crown=ppart("WorldTreeCrown",Vector3.new(7,7,7)*scale,trunk.Position+Vector3.new(0,5*scale,0),Color3.fromRGB(67,112,73),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
 end
 local function makeWorld()
  local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end
  world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
- ppart("Field",Vector3.new(210,1,210),Vector3.new(0,0,0),Style.Ground,Enum.Material.Grass)
- ppart("VillagePlaza",Vector3.new(60,2,60),Vector3.new(0,1,0),Style.Stone,Enum.Material.Slate)
+ ppart("Field",Vector3.new(320,1,320),Vector3.new(0,0,0),Style.Ground,Enum.Material.Grass)
+ ppart("VillagePlaza",Vector3.new(78,2,78),Vector3.new(0,1,0),Style.Stone,Enum.Material.Slate)
+ ppart("NorthRoad",Vector3.new(18,1.1,130),Vector3.new(0,1.1,-88),Color3.fromRGB(116,104,91),Enum.Material.Cobblestone)
+ ppart("EastRoad",Vector3.new(130,1.1,15),Vector3.new(88,1.1,12),Color3.fromRGB(108,99,88),Enum.Material.Cobblestone)
+ ppart("WestRoad",Vector3.new(122,1.1,15),Vector3.new(-84,1.1,-8),Color3.fromRGB(108,99,88),Enum.Material.Cobblestone)
  for i=1,8 do
   local a=i/8*math.pi*2;local pos=Vector3.new(math.cos(a)*31,3,math.sin(a)*31)
   ppart("RunePillar",Vector3.new(3,8,3),pos,Style.Stone,Enum.Material.Slate)
   local crystal=ppart("RuneCrystal",Vector3.new(2,4,2),pos+Vector3.new(0,6,0),Style.Crystal,Enum.Material.Neon);crystal.Orientation=Vector3.new(0,i*23,45)
  end
  local gate=ppart("Gate",Vector3.new(28,18,4),Vector3.new(0,9,-36),Style.Stone,Enum.Material.Slate);nameplate(gate,"마을 · 4인 파티 거점",Style.Gold)
- local chief=ppart("VillageChief",Vector3.new(4,6,4),Vector3.new(-15,4,6),Color3.fromRGB(186,151,101),Enum.Material.SmoothPlastic);nameplate(chief,"이장 · 첫 동료 카일",Style.Gold)
+ local chief=humanoidFigure("VillageChief",Vector3.new(-15,5,6),Color3.fromRGB(142,104,68),Color3.fromRGB(218,174,92),1);nameplate(chief,"이장 · 카일",Style.Gold)
  prompt(chief,"이장","이야기 듣기").Triggered:Connect(function(p)
   if n(p,"StoryStage",0)==0 then p:SetAttribute("StoryStage",1);unlock(p,"KYLE","폐광 수호자 카일이 합류했다.")
   else p:SetAttribute("LastAction","카일과 함께 필드 몬스터 5마리를 처치해.")end
  end)
- local sera=ppart("SeraNPC",Vector3.new(4,6,4),Vector3.new(0,4,12),Style.CompanionColors.SERA,Enum.Material.SmoothPlastic);nameplate(sera,"세라 · 추적자",Style.Gold)
+ local sera=humanoidFigure("SeraNPC",Vector3.new(0,5,12),Style.CompanionColors.SERA,Color3.fromRGB(116,171,193),.95);nameplate(sera,"세라 · 추적자",Style.Gold)
  prompt(sera,"세라","동료 영입").Triggered:Connect(function(p)
   if unlocked(p,"KYLE")and n(p,"Kills",0)>=5 then unlock(p,"SERA","카일과 함께 도적단을 밀어내 세라가 합류했다.");p:SetAttribute("StoryStage",math.max(2,n(p,"StoryStage",0)))
   else p:SetAttribute("LastAction","세라: 먼저 카일과 합류하고 몬스터 5마리를 쓰러뜨려.")end
  end)
- local iris=ppart("IrisNPC",Vector3.new(4,6,4),Vector3.new(15,4,6),Style.CompanionColors.IRIS,Enum.Material.SmoothPlastic);nameplate(iris,"이리스 · 룬술사",Style.Gold)
+ local iris=humanoidFigure("IrisNPC",Vector3.new(15,5,6),Style.CompanionColors.IRIS,Style.Crystal,.95);nameplate(iris,"이리스 · 룬술사",Style.Gold)
  prompt(iris,"이리스","룬 해방").Triggered:Connect(function(p)
   if unlocked(p,"SERA")and n(p,"BossesDefeated",0)>=1 then unlock(p,"IRIS","세라의 추적 끝에 보스의 룬을 깨고 이리스가 합류했다.");p:SetAttribute("StoryStage",math.max(3,n(p,"StoryStage",0)))
   else p:SetAttribute("LastAction","이리스: 세라와 합류한 뒤 지역보스를 쓰러뜨려.")end
  end)
- local noa=ppart("NoaNPC",Vector3.new(4,6,4),Vector3.new(0,4,-13),Color3.fromRGB(102,153,176),Enum.Material.SmoothPlastic);nameplate(noa,"노아 · 영혼소환사",Style.Gold)
+ local noa=humanoidFigure("NoaNPC",Vector3.new(0,5,-13),Color3.fromRGB(83,125,148),Color3.fromRGB(131,211,219),.95);nameplate(noa,"노아 · 영혼소환사",Style.Gold)
  prompt(noa,"노아","영혼 이야기").Triggered:Connect(function(p)
   if unlocked(p,"IRIS")and n(p,"PartyMemory",0)>=12 then unlock(p,"NOA","완성된 파티의 기억을 본 노아가 합류했다.")
   else p:SetAttribute("LastAction","노아: 이리스와 합류하고 전투의 기억 12를 모아.")end
  end)
- workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_PLAYABLE_V2")
+ -- 마을 외곽과 사냥터를 구역처럼 읽히게 하는 배경 디테일
+ for i=1,12 do
+  local a=i/12*math.pi*2
+  treeProp(Vector3.new(math.cos(a)*(88+(i%3)*12),1,math.sin(a)*(82+(i%2)*18)),.8+(i%3)*.12)
+ end
+ for i=1,5 do
+  local x=-56+i*22
+  local house=ppart("VillageHouse",Vector3.new(15,9,13),Vector3.new(x,5,42+(i%2)*8),Color3.fromRGB(128,94,73),Enum.Material.WoodPlanks)
+  ppart("VillageHouseRoof",Vector3.new(18,2,16),house.Position+Vector3.new(0,5.4,0),Color3.fromRGB(83,68,74),Enum.Material.Slate)
+  ppart("VillageWindow",Vector3.new(3,3,.5),house.Position+Vector3.new(0,1,6.7),Color3.fromRGB(179,217,225),Enum.Material.Neon)
+ end
+ for i=1,9 do
+  local a=i/9*math.pi*2
+  local pos=Vector3.new(math.cos(a)*126,2,math.sin(a)*118)
+  local ruin=ppart("FieldRuin",Vector3.new(8,math.random(5,11),5),pos,Color3.fromRGB(81,78,88),Enum.Material.Slate)
+  ruin.Orientation=Vector3.new(0,i*31,math.random(-7,7))
+ end
+ for i=1,7 do
+  local a=i/7*math.pi*2
+  local crystal=ppart("FieldCrystal",Vector3.new(3,9,3),Vector3.new(math.cos(a)*105,5,math.sin(a)*105),Style.Crystal,Enum.Material.Neon)
+  crystal.Orientation=Vector3.new(0,i*23,18)
+ end
+ ppart("BossArena",Vector3.new(58,1.2,58),Vector3.new(0,1,-128),Color3.fromRGB(67,54,77),Enum.Material.Slate)
+ for i=1,8 do local a=i/8*math.pi*2;ppart("BossObelisk",Vector3.new(4,13,4),Vector3.new(math.cos(a)*24,7,-128+math.sin(a)*24),Color3.fromRGB(76,61,91),Enum.Material.Slate)end
+ workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_WORLD_ART_V3")
 end
 
 local function enemyColor(id)
@@ -87,10 +137,40 @@ local function enemyColor(id)
 end
 local function unit(def,pos,kind)
  local boss=kind=="BOSS";local elite=kind=="ELITE"
- local p=Instance.new("Part");p.Name=def.Name;p.Anchored=true
- p.Size=boss and Vector3.new(10,13,10)or elite and Vector3.new(7,9,7)or Vector3.new(4,6,4);p.Position=pos
- p.Color=boss and Style.Boss or elite and Color3.fromRGB(125,91,52)or enemyColor(def.Id)
- p.Material=(boss or elite)and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
+ local baseColor=boss and Style.Boss or elite and Color3.fromRGB(125,91,52)or enemyColor(def.Id)
+ local p=Instance.new("Part");p.Name=def.Name;p.Anchored=true;p.CanCollide=true
+ p.Size=boss and Vector3.new(6,8,4)or elite and Vector3.new(5.2,6.5,3.5)or Vector3.new(3.6,4.5,3);p.Position=pos
+ p.Color=baseColor;p.Material=(boss or elite)and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
+ if def.Id=="HOUND"then
+  p.Size=Vector3.new(3.8,2.7,6);p.Position=pos
+  attach(p,"HoundHead",Vector3.new(3.1,2.6,3),Vector3.new(0,.55,-3.8),baseColor,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  for _,x in ipairs({-1.25,1.25})do for _,z in ipairs({-1.7,1.7})do attach(p,"HoundLeg",Vector3.new(.8,2.4,.8),Vector3.new(x,-2,z),Color3.fromRGB(91,67,57))end end
+ elseif def.Id=="SLIME"then
+  p.Shape=Enum.PartType.Ball;p.Size=Vector3.new(5.5,4.5,5.5);p.Position=pos
+  attach(p,"SlimeCore",Vector3.new(1.6,1.6,1.6),Vector3.new(0,.2,-2.1),Style.Crystal,Enum.Material.Neon,Enum.PartType.Ball)
+ elseif def.Id=="GOBLIN"then
+  attach(p,"GoblinHead",Vector3.new(2.6,2.6,2.6),Vector3.new(0,3.15,0),Color3.fromRGB(111,154,80),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(p,"GoblinEarL",Vector3.new(1.5,.6,.7),Vector3.new(-1.7,3.2,0),Color3.fromRGB(111,154,80))
+  attach(p,"GoblinEarR",Vector3.new(1.5,.6,.7),Vector3.new(1.7,3.2,0),Color3.fromRGB(111,154,80))
+  attach(p,"GoblinBlade",Vector3.new(.45,4,.8),Vector3.new(2.5,0,-.4),Color3.fromRGB(175,181,182),Enum.Material.Metal)
+ elseif def.Id=="BANDIT"then
+  attach(p,"BanditHead",Vector3.new(2.5,2.5,2.5),Vector3.new(0,3.2,0),Color3.fromRGB(171,135,107),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(p,"BanditHood",Vector3.new(3.1,1.4,2.8),Vector3.new(0,4,0),Color3.fromRGB(45,48,61),Enum.Material.Fabric)
+  attach(p,"BanditBlade",Vector3.new(.45,4.5,.8),Vector3.new(2.5,-.2,0),Color3.fromRGB(183,187,194),Enum.Material.Metal)
+ else
+  attach(p,"StoneHead",Vector3.new(3.8,3.5,3.6),Vector3.new(0,5.2,0),baseColor,Enum.Material.Slate)
+ end
+ if elite then
+  attach(p,"EliteShoulderL",Vector3.new(3.4,2.4,3),Vector3.new(-3.7,1.5,0),Color3.fromRGB(100,82,64),Enum.Material.Slate)
+  attach(p,"EliteShoulderR",Vector3.new(3.4,2.4,3),Vector3.new(3.7,1.5,0),Color3.fromRGB(100,82,64),Enum.Material.Slate)
+  attach(p,"EliteCore",Vector3.new(2,2,1),Vector3.new(0,1,-2.1),Style.Gold,Enum.Material.Neon)
+ end
+ if boss then
+  attach(p,"BossHead",Vector3.new(5,4,4),Vector3.new(0,6.2,0),Color3.fromRGB(54,31,69),Enum.Material.Slate)
+  attach(p,"BossHornL",Vector3.new(1,4,1),Vector3.new(-2.1,9,0),Style.Crystal,Enum.Material.Neon)
+  attach(p,"BossHornR",Vector3.new(1,4,1),Vector3.new(2.1,9,0),Style.Crystal,Enum.Material.Neon)
+  attach(p,"BossCore",Vector3.new(2.5,3,1),Vector3.new(0,1,-2.6),Style.Crystal,Enum.Material.Neon)
+ end
  if boss or elite then local l=Instance.new("PointLight");l.Color=boss and Style.Crystal or Style.Gold;l.Range=boss and 26 or 16;l.Brightness=boss and 3 or 1.5;l.Parent=p end
  nameplate(p,(elite and"ELITE · "or"")..def.Name,boss and Style.Gold or elite and Style.Gold or Color3.new(1,1,1))
  local e={part=p,hp=def.HP,max=def.HP,boss=boss,elite=elite,gold=def.Gold,xp=def.XP,id=def.Id}
@@ -196,8 +276,8 @@ local function rebuildCompanions()
  local humans=Players:GetPlayers();if #humans==0 then return end
  local leader=humans[1];local needed=math.max(0,C.PartySlots-#humans);local choices=unlockedList(leader)
  for i=1,math.min(needed,#choices)do
-  local def=choices[i];local p=Instance.new("Part");p.Name="AI동료_"..def.Name;p.Anchored=true;p.Size=Vector3.new(3,5,3)
-  p.Color=Style.CompanionColors[def.Id]or Style.Gold;p.Material=Enum.Material.SmoothPlastic;p.Parent=world;nameplate(p,def.Name.." · "..def.Class,Style.Gold)
+  local def=choices[i];local col=Style.CompanionColors[def.Id]or Style.Gold
+  local p=humanoidFigure("AI동료_"..def.Name,Vector3.new(0,5,0),col,Style.Gold,.78);p.CanCollide=false;nameplate(p,def.Name.." · "..def.Class,Style.Gold)
   table.insert(companionParts,{part=p,def=def})
  end
  for _,h in ipairs(humans)do h:SetAttribute("HumanPartyMembers",#humans);h:SetAttribute("AIPartyMembers",#companionParts);h:SetAttribute("PartySize",math.min(C.PartySlots,#humans+#companionParts))end
