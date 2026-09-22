@@ -188,7 +188,14 @@ local function buildWorld()
  local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
  world=Instance.new("Folder");world.Name="CozyConquestWorld";world.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
- local water=part(world,"Sea",Vector3.new(940,2,940),Vector3.new(0,-6,0),Style.Water,Enum.Material.Glass);water.Transparency=.16
+ local terrain=workspace.Terrain
+ terrain.WaterColor=Style.Water
+ terrain.WaterTransparency=.28
+ terrain.WaterWaveSize=.12
+ terrain.WaterWaveSpeed=9
+ terrain:FillBlock(CFrame.new(0,-4,0),Vector3.new(940,8,940),Enum.Material.Water)
+ local water=part(world,"Sea",Vector3.new(940,1,940),Vector3.new(0,-8.5,0),Style.Water,Enum.Material.Glass)
+ water.Transparency=.72;water.CanCollide=false;water.CanTouch=false
  for index,r in ipairs(Style.Regions)do
   local island=part(world,r.Name,r.Size,r.Pos,r.Color,r.Material);label(island,r.Name,r.Accent,58)
   local topY=r.Pos.Y+r.Size.Y/2
@@ -244,7 +251,7 @@ local function buildWorld()
    for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
   end
  end
- workspace:SetAttribute("WorldArtPass","COZY_ASSET_GATHER_WORLD_V6")
+ workspace:SetAttribute("WorldArtPass","COZY_ASSET_GATHER_SWIM_WORLD_V7")
 end
 
 local function init(p)
