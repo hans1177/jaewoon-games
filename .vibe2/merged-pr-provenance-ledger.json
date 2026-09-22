@@ -16639,11 +16639,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ac730731e57d842f9b2a6d45",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2572",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7d632e5ae25fce13c14feafabc91be197e03f7da",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2572,
+        "baseBranch": "main",
+        "headBranch": "assistant/homepage-central-policy-system-ai",
+        "baseSha": "7d632e5ae25fce13c14feafabc91be197e03f7da",
+        "headSha": "51becddee42347a749ca29b8646d7dc737d1df85",
+        "mergeCommitSha": "936e6f89a57928ee5ca8f734c71d0b6b46802dfb",
+        "mergedAt": "2026-09-22T17:02:07Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ec310d52b7bb30f5bb35ec11ce9f633173011df3172d52953407d62ebb809cee",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/homepage-central-policy-system-ai",
+        "candidateSha": "51becddee42347a749ca29b8646d7dc737d1df85"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 819,
+        "deletedLineCount": 41,
+        "changedFiles": [
+          ".github/workflows/company-system-ai-workers.yml",
+          ".github/workflows/homepage-manager.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "qa/company-system-ai-worker.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "tools/company-homepage-platform-exposure-sync.mjs",
+          "tools/company-recovery-dispatch.mjs",
+          "tools/company-shared-context.mjs",
+          "tools/company-system-ai-queue.mjs",
+          "tools/company-system-ai-worker.mjs",
+          "tools/homepage-manager.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-system-ai-workers.yml",
+          ".github/workflows/homepage-manager.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "qa/company-system-ai-supervision-loop.test.mjs",
+          "qa/company-system-ai-worker.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "tools/company-homepage-platform-exposure-sync.mjs",
+          "tools/company-recovery-dispatch.mjs",
+          "tools/company-shared-context.mjs",
+          "tools/company-system-ai-queue.mjs",
+          "tools/company-system-ai-worker.mjs",
+          "tools/homepage-manager.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2572",
+        "merge-commit:936e6f89a57928ee5ca8f734c71d0b6b46802dfb",
+        "base-main:7d632e5ae25fce13c14feafabc91be197e03f7da"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 136
+    "total": 137
   }
 }
