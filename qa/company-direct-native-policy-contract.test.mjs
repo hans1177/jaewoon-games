@@ -76,6 +76,10 @@ test('architecture and runtime execute the same direct-native topology',()=>{
   assert.match(runtime,/UNITY_APP_RUNTIME_DISPATCH=YES/);
   assert.match(runtime,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
   assert.match(runtime,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.match(runtime,/namespaceName=source\.match\(\/\\bnamespace\\s\+\(\[A-Za-z_\]/);
+  const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  assert.match(webWorkflow,/namespace = re\.search\(r'\\bnamespace\\s\+/);
+  assert.match(webWorkflow,/candidates\.append\(f'\{prefix\}\{classes\[0\]\}\.BuildWeb'\)/);
   assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
   assert.doesNotMatch(runtime,/company-development-web-gameplay-validation\.mjs/);
 });
