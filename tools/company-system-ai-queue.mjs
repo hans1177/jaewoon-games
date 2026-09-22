@@ -296,9 +296,10 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
   const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
     .sort((a,b)=>(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)||rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
+  const requestedBatch=Math.max(0,Math.floor(Number(max)||0));
   const chosen=[],commonCanarySignatures=new Set();
   for(const task of candidates){
-    if(chosen.length>=Math.max(1,Math.floor(Number(max)||16)))break;
+    if(chosen.length>=requestedBatch)break;
     if([...active,...chosen].some(other=>overlap(task,other)))continue;
     const impact=profiles.get(task.id);
     const signature=clean(impact?.signature);
