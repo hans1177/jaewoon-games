@@ -524,6 +524,15 @@ jobs:
           echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
           echo 'VIBE2_WORKER_PREFLIGHT_SYNC=PASS'
 
+      - name: Enforce canonical constitution before source write
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          cd "$contract_root"
+          node --check tools/company-constitution-enforcer.mjs
+          node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
+
       - name: Restore shared Ollama runtime cache
         id: worker_ollama_cache
         uses: actions/cache/restore@v4
@@ -997,6 +1006,15 @@ jobs:
             --output=/tmp/vibe2-performance.json | tee /tmp/vibe2-performance.log
           echo 'VIBE2_PERFORMANCE_ROLE=PASS'
           echo 'VIBE2_PERFORMANCE_ROLE_SOURCE_WRITE=NO'
+
+      - name: Enforce canonical constitution after worker execution
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          cd "$contract_root"
+          node tools/company-constitution-enforcer.mjs --phase=worker-after-execution
 
       - name: Build immutable worker result
         id: result
