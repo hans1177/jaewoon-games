@@ -23,8 +23,10 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const c=JSON.parse(fs.readFileSync('company-learning/vibe3-engine-contract.json','utf8'));
-          if(c.version!==3||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
+          if(c.version!==4||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
           if(c.relationshipToVibe2!=='INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE'||c.parallelPipeline!==false) throw new Error('Vibe3 must remain inside canonical pipeline');
+          const co=c.robloxCoDevelopmentDesign;
+          if(co?.version!==1||co?.status!=='DESIGNED_IMPLEMENTATION_PENDING'||co?.constraints?.preserveExistingPipelineStages!==true||co?.constraints?.noShadowPipeline!==true) throw new Error('roblox co-development design contract missing');
           if(c.execution?.minIndependentCandidates!==3||c.execution?.maxIndependentCandidates!==5||c.execution?.defaultIndependentCandidates!==5||c.execution?.defaultMaxRepairAttempts!==3) throw new Error('Vibe3 Pump tournament/repair contract changed');
           if(c.pumpMode?.enabled!==true||c.pumpMode?.localWeightsRequired!==false||c.pumpMode?.hourlyRefresh!==true) throw new Error('Vibe3 Pump mode disabled');
           if(c.pumpMode?.benchmarkCountsAsTrainingSample!==false||c.pumpMode?.githubHostedModelTrainingAllowed!==false||c.pumpMode?.paidTeacherFallbackAllowed!==false) throw new Error('Vibe3 Pump safety contract changed');
