@@ -33,6 +33,7 @@ bgm:Play()
 local gui=Instance.new("ScreenGui")
 gui.Name="DaechungRPGHUD"
 gui.ResetOnSpawn=false
+gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.Parent=p:WaitForChild("PlayerGui")
 
 local function roundify(target,radius)
@@ -69,42 +70,44 @@ end
 -- 상단 캐릭터/파티 HUD
 local hud=Instance.new("Frame")
 hud.Name="RPGTopHUD"
-hud.AnchorPoint=Vector2.new(.5,0)
-hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.new(1,-16,0,70)
+hud.AnchorPoint=Vector2.new(0,0)
+hud.Position=UDim2.fromOffset(8,8)
+hud.Size=UDim2.fromOffset(230,54)
 hud.BackgroundColor3=Color3.fromRGB(31,29,43)
 hud.BackgroundTransparency=.06
 hud.Parent=gui
 roundify(hud,14);outline(hud,.38)
 
 local status=Instance.new("TextLabel")
-status.Size=UDim2.new(1,-16,0,34)
+status.Size=UDim2.new(1,-16,0,46)
 status.Position=UDim2.fromOffset(8,3)
 status.BackgroundTransparency=1
 status.TextColor3=Color3.fromRGB(240,236,255)
 status.TextWrapped=true
-status.TextScaled=true
+status.TextScaled=false
+status.TextSize=13
 status.Font=Enum.Font.Gotham
 status.Parent=hud
 
 local note=Instance.new("TextLabel")
-note.Size=UDim2.new(1,-16,0,25)
-note.Position=UDim2.fromOffset(8,41)
+note.Size=UDim2.fromOffset(260,26)
+note.AnchorPoint=Vector2.new(.5,0)
+note.Position=UDim2.new(.5,0,0,8)
 note.BackgroundColor3=Color3.fromRGB(52,46,70)
 note.BackgroundTransparency=.1
 note.TextColor3=Color3.fromRGB(255,215,115)
 note.TextWrapped=true
 note.TextScaled=true
 note.Font=Enum.Font.GothamBold
-note.Parent=hud
+note.Parent=gui
 roundify(note,9)
 
 -- 전투 버튼: 오른손/왼손 모두 닿는 하단 중앙
 local combatDock=Instance.new("Frame")
 combatDock.Name="CombatDock"
-combatDock.AnchorPoint=Vector2.new(.5,1)
-combatDock.Position=UDim2.new(.5,0,1,-10)
-combatDock.Size=UDim2.new(1,-16,0,64)
+combatDock.AnchorPoint=Vector2.new(1,.5)
+combatDock.Position=UDim2.new(1,-12,.62,0)
+combatDock.Size=UDim2.fromOffset(62,174)
 combatDock.BackgroundTransparency=1
 combatDock.Parent=gui
 
@@ -115,8 +118,8 @@ local combatActions={
 }
 for i,a in ipairs(combatActions)do
  local b=makeButton(combatDock,a[2],a[3])
- b.Size=UDim2.new(.31,0,0,52)
- b.Position=UDim2.new(.015+(i-1)*.33,0,0,6)
+ b.Size=UDim2.fromOffset(58,50)
+ b.Position=UDim2.fromOffset(2,(i-1)*58)
  b.Activated:Connect(function()
   if a[1]==C.Actions.SKILL then skillSfx.TimePosition=0;skillSfx:Play()else actionSfx.TimePosition=0;actionSfx:Play()end
   remote:FireServer(a[1])
@@ -126,15 +129,15 @@ end
 -- 보조 설정은 접어서 전투 화면을 가리지 않음
 local menuButton=makeButton(gui,"파티/장비",Color3.fromRGB(68,61,92))
 menuButton.Name="PartyMenuButton"
-menuButton.AnchorPoint=Vector2.new(1,1)
-menuButton.Position=UDim2.new(1,-12,1,-78)
-menuButton.Size=UDim2.fromOffset(96,36)
+menuButton.AnchorPoint=Vector2.new(1,0)
+menuButton.Position=UDim2.new(1,-10,0,8)
+menuButton.Size=UDim2.fromOffset(88,32)
 
 local secondary=Instance.new("Frame")
 secondary.Name="PartyMenu"
-secondary.AnchorPoint=Vector2.new(1,1)
-secondary.Position=UDim2.new(1,-12,1,-120)
-secondary.Size=UDim2.fromOffset(190,168)
+secondary.AnchorPoint=Vector2.new(1,0)
+secondary.Position=UDim2.new(1,-10,0,46)
+secondary.Size=UDim2.fromOffset(168,154)
 secondary.BackgroundColor3=Color3.fromRGB(35,32,48)
 secondary.BackgroundTransparency=.05
 secondary.Visible=false
@@ -149,8 +152,8 @@ local secondaryActions={
 }
 for i,a in ipairs(secondaryActions)do
  local b=makeButton(secondary,a[2],Color3.fromRGB(77,68,104))
- b.Size=UDim2.new(1,-16,0,34)
- b.Position=UDim2.fromOffset(8,8+(i-1)*39)
+ b.Size=UDim2.new(1,-16,0,30)
+ b.Position=UDim2.fromOffset(8,8+(i-1)*35)
  b.Activated:Connect(function()remote:FireServer(a[1])end)
 end
 
@@ -173,9 +176,9 @@ local function companionNames()
 end
 
 local function render()
- status.Text=string.format("%s · Lv.%d · XP %d · 골드 %d · 무기 T%d\n파티 %d/4 [%s] · 처치 %d · 기억 %d",
-  className(),p:GetAttribute("Level")or 1,p:GetAttribute("XP")or 0,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,
-  p:GetAttribute("PartySize")or 1,companionNames(),p:GetAttribute("Kills")or 0,p:GetAttribute("PartyMemory")or 0)
+ status.Text=string.format("%s  Lv.%d  XP %d  골드 %d\n무기 T%d · 파티 %d/4 · 처치 %d",
+  className(),p:GetAttribute("Level")or 1,p:GetAttribute("XP")or 0,p:GetAttribute("Gold")or 0,
+  p:GetAttribute("WeaponTier")or 1,p:GetAttribute("PartySize")or 1,p:GetAttribute("Kills")or 0)
  note.Text=p:GetAttribute("LastAction")or"이장에게 가서 첫 동료를 만나."
 
  local bossEngaged=p:GetAttribute("BossEngaged")==true
