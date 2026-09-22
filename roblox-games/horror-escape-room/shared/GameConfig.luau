@@ -11,7 +11,7 @@ local Config={
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=36,ArenaLimit=86,
  Audio={
-  Background="rbxassetid://9044889073",
+  Background="rbxassetid://9043557976",
   Chase="rbxassetid://9042664292",
   Result="rbxassetid://1839321582",
   Action="rbxassetid://1837829181",
