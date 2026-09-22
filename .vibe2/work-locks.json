@@ -3,25 +3,27 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-chatgpt-vibe-phase1-work-lock",
+      "id": "wl-chatgpt-vibe-constitution-binding",
       "worker": "chatgpt",
-      "taskId": "vibe-phase1-work-lock-integration",
+      "taskId": "vibe-constitution-auto-binding",
       "gameId": null,
       "files": [
-        ".github/workflows/vibe2-continuous-core.yml",
+        "company-learning/platform-release-roadmap.json",
+        "tools/company-shared-context.mjs",
         "tools/vibe2-central-work-contract.mjs",
+        "qa/company-shared-context.test.mjs",
         "qa/vibe2-central-work-contract.test.mjs",
         "qa/vibe-roblox-co-development.test.mjs",
-        "company-learning/platform-release-roadmap.json"
+        ".github/workflows/vibe2-continuous-core.yml"
       ],
       "baseSha": "a91ee75ace3d3c968f5ce345c663e314e7ca6602",
-      "acquiredAt": "2026-09-22T15:54:06.000Z",
-      "expiresAt": "2026-09-22T16:39:06.000Z",
+      "acquiredAt": "2026-09-22T16:14:28.968Z",
+      "expiresAt": "2026-09-22T16:59:28.968Z",
       "status": "active",
       "evidence": [
-        "owner-request:continue-phase1",
-        "central-document-synchronized-before-work",
-        "phase1-existing-work-lock-integration"
+        "owner-directive:constitution-top-level-auto-binding",
+        "future-constitutional-rules-auto-bind-required",
+        "central-document-synchronized-before-work"
       ]
     }
   ]
