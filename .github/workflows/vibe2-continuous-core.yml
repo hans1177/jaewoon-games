@@ -227,8 +227,8 @@ jobs:
                   echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'
                   ;;
                 TASK_ALREADY_MICRO_FANIN_COMPLETE)
-                  neuron_refill=1
-                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_REFILL_RETRY'
+                  neuron_refill=0
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_DEDUP_NO_REFILL'
                   ;;
                 AWAITING_VARIANTS)
                   echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'
