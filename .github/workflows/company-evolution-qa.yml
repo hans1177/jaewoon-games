@@ -82,7 +82,7 @@ jobs:
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
           const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
-          if(dev.executionMode!=='GATED_DIRECT'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.webPurpose!=='MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION'||dev.targetPlatformPurpose!=='TECHNICAL_AND_GAMEPLAY_VALIDATION'||dev.webBeforeTargetPlatformByDefault!==true||dev.targetPlatformMayRunImmediately!==false||dev.webGameplayValidationRequired!==true||dev.musicValidationRequired!==true||dev.webCandidateMustPassBeforeTargetPlatformDispatch!==true||dev.webCandidatePublicPromotionRequiresValidationPass!==true||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.artbookRevisionOnlyAfterBaselineReady!==true)throw new Error('DEVELOPMENT_CONFIRMED required Web gameplay/music gated direct settings missing');
+          if(dev.executionMode!=='DIRECT_NATIVE_DUAL_PLATFORM'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.webBeforeTargetPlatformByDefault!==false||dev.targetPlatformMayRunImmediately!==true||dev.webGameplayValidationRequired!==false||dev.webCompanionValidationRequired!==false||dev.webCandidateMustPassBeforeTargetPlatformDispatch!==false||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true)throw new Error('DEVELOPMENT_CONFIRMED direct-native settings missing');
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
@@ -90,11 +90,10 @@ jobs:
           const releaseFlow=release.requiredFlow||[];
           const sourceBind=releaseFlow.indexOf('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE');
           const build=releaseFlow.indexOf('TARGET_PLATFORM_BUILD_OR_PACKAGE');
-          const preflight=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
           const runtime=releaseFlow.indexOf('TARGET_PLATFORM_RUNTIME_VALIDATION');
           const independentQa=releaseFlow.indexOf('INDEPENDENT_QA_AND_REGRESSION');
-          const finalReview=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW');
-          if(!(sourceBind>=0&&build>sourceBind&&preflight>build&&runtime>preflight&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform release review order invalid');
+          const finalReview=releaseFlow.indexOf('FINAL_RELEASE_REVIEW');
+          if(!(sourceBind>=0&&build>sourceBind&&runtime>build&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform direct-native release review order invalid');
           for(const state of ['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
           for(const obsoletePolicyMirror of ['AGENTS.md','HOMEPAGE_OPERATIONS.md']){
@@ -103,7 +102,7 @@ jobs:
           console.log('CENTRAL_POLICY=PASS');
           console.log(`DEPARTMENT_LEAD_DISTINCTNESS_REQUIRED=NO`);
           console.log(`CONFIGURED_DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
-          console.log('DEVELOPMENT_GATED_DIRECT_POLICY=PASS');
+          console.log('DEVELOPMENT_DIRECT_NATIVE_POLICY=PASS');
           console.log('RELEASE_GATED_DIRECT_POLICY=PASS');
           console.log('RELEASE_SELECTED_PLATFORM_REVIEW_POLICY=PASS');
           NODE
