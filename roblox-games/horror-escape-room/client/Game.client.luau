@@ -14,12 +14,19 @@ local bgm=makeSound("MidnightBackground",C.Audio.Background,.18,true)
 local chase=makeSound("MidnightChase",C.Audio.Chase,.22,true)
 local actionSfx=makeSound("MidnightAction",C.Audio.Action,.32,false)
 local warningSfx=makeSound("MidnightWarning",C.Audio.Warning,.26,false)
+local resultSfx=makeSound("MidnightResult",C.Audio.Result,.34,false)
+local footstepSfx=makeSound("MidnightFootstep",C.Audio.Footstep,.12,false)
+local freezeSfx=makeSound("MidnightFreeze",C.Audio.Freeze,.34,false)
+local rescueSfx=makeSound("MidnightRescue",C.Audio.Rescue,.34,false)
 local wasFrozen=false
+local lastRoundState="WAITING"
+local stepClock=0
 bgm:Play()
 
 local gui=Instance.new("ScreenGui");gui.Name="MidnightTagHUD";gui.ResetOnSpawn=false;gui.Parent=p:WaitForChild("PlayerGui")
 local root=Instance.new("Frame");root.AnchorPoint=Vector2.new(.5,1);root.Position=UDim2.fromScale(.5,.98);root.Size=UDim2.new(1,-18,0,330);root.BackgroundTransparency=.08;root.Parent=gui
 local status=Instance.new("TextLabel");status.Size=UDim2.new(1,-12,0,120);status.Position=UDim2.fromOffset(6,4);status.BackgroundTransparency=1;status.TextWrapped=true;status.TextScaled=true;status.Parent=root
+local chaseTint=Instance.new("Frame");chaseTint.Size=UDim2.fromScale(1,1);chaseTint.BackgroundColor3=Color3.fromRGB(120,8,18);chaseTint.BackgroundTransparency=1;chaseTint.BorderSizePixel=0;chaseTint.ZIndex=7;chaseTint.Parent=gui
 
 local defs={
  {C.Actions.PREFER_MONSTER,"몬스터 선호","PREF"},{C.Actions.PREFER_SURVIVOR,"생존자 선호","PREF"},
@@ -55,13 +62,19 @@ local function render()
  if running then
   if bgm.IsPlaying then bgm:Stop()end
   if not chase.IsPlaying then chase:Play()end
+  chaseTint.BackgroundTransparency=role=="SURVIVOR" and .94 or .975
  else
+  chaseTint.BackgroundTransparency=1
   if chase.IsPlaying then chase:Stop()end
-  if not bgm.IsPlaying then bgm:Play()end
+  if round:find("^RESULT_")then
+   if bgm.IsPlaying then bgm:Stop()end
+   if round~=lastRoundState then resultSfx.TimePosition=0;resultSfx:Play()end
+  elseif not bgm.IsPlaying then bgm:Play()end
  end
  local frozen=p:GetAttribute("Frozen")==true
  if frozen and not wasFrozen then warningSfx.TimePosition=0;warningSfx:Play()end
  wasFrozen=frozen
+ lastRoundState=round
  local showSetup=not running and not setupDismissed
  root.Size=UDim2.new(1,-18,0,(running or showSetup)and 330 or 132)
  root.BackgroundTransparency=(running or showSetup)and .08 or .35
@@ -72,6 +85,26 @@ local function render()
  end
 end
 for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent"})do p:GetAttributeChangedSignal(k):Connect(render)end
+
+local function bindFootsteps(character)
+ local humanoid=character:WaitForChild("Humanoid",5)
+ if not humanoid then return end
+ humanoid.Running:Connect(function(speed)
+  if speed>4 and p:GetAttribute("RoundState")=="RUNNING"and p:GetAttribute("Frozen")~=true then
+   local now=os.clock()
+   if now-stepClock>.34 then stepClock=now;footstepSfx.TimePosition=0;footstepSfx.PlaybackSpeed=p:GetAttribute("Role")=="MONSTER"and .82 or 1.08;footstepSfx:Play()end
+  end
+ end)
+end
+if p.Character then task.defer(bindFootsteps,p.Character)end
+p.CharacterAdded:Connect(bindFootsteps)
+
+p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
+ local value=tostring(p:GetAttribute("FeedbackEvent")or"")
+ if value:find("^FREEZE:")then freezeSfx.TimePosition=0;freezeSfx:Play();chaseTint.BackgroundTransparency=.78
+ elseif value:find("^RESCUE:")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
+ elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()end
+end)
 render()
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
