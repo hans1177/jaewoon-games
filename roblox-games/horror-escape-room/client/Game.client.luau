@@ -249,7 +249,7 @@ survivorRule.TextSize=12
 survivorRule.TextWrapped=true
 survivorRule.TextXAlignment=Enum.TextXAlignment.Left
 survivorRule.Font=Enum.Font.GothamBold
-survivorRule.Text="생존자  1 패널 4개 작동  →  2 얼은 친구 구조  →  3 탈출구로 탈출"
+survivorRule.Text="인간  고유 도구로 몬스터를 정화 · 잡히면 몬스터로 감염"
 survivorRule.ZIndex=11
 survivorRule.Parent=ruleCard
 roundify(survivorRule,8)
@@ -264,7 +264,7 @@ monsterRule.TextSize=11
 monsterRule.TextWrapped=true
 monsterRule.TextXAlignment=Enum.TextXAlignment.Left
 monsterRule.Font=Enum.Font.GothamBold
-monsterRule.Text="괴물  생존자를 터치해 얼리고 전부 얼리면 승리"
+monsterRule.Text="몬스터  인간을 잡아 감염시켜라 · 인간 0명이면 승리"
 monsterRule.ZIndex=11
 monsterRule.Parent=ruleCard
 roundify(monsterRule,8)
@@ -285,7 +285,7 @@ local setupTitle=Instance.new("TextLabel")
 setupTitle.Size=UDim2.new(1,-16,0,28)
 setupTitle.Position=UDim2.fromOffset(8,8)
 setupTitle.BackgroundTransparency=1
-setupTitle.Text="5인 · 인간 4 / 귀신 1"
+setupTitle.Text="8인 감염전 · 인간 4 VS 몬스터 4"
 setupTitle.TextColor3=Color3.fromRGB(255,255,255)
 setupTitle.TextScaled=true
 setupTitle.Font=Enum.Font.GothamBold
@@ -311,10 +311,11 @@ for i,a in ipairs(setupButtons)do
  end)
 end
 
-local monsterCycle=makeButton(setupPanel,"괴물 변경",Color3.fromRGB(76,58,96))
-monsterCycle.ZIndex=11
-monsterCycle.Size=UDim2.new(.45,0,0,28)
-monsterCycle.Position=UDim2.new(.275,0,1,-30)
+local humanCycle=makeButton(setupPanel,"인간 변경",Color3.fromRGB(49,91,105))
+humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,28);humanCycle.Position=UDim2.new(.04,0,1,-30)
+humanCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_HUMAN)end)
+local monsterCycle=makeButton(setupPanel,"몬스터 변경",Color3.fromRGB(76,58,96))
+monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,28);monsterCycle.Position=UDim2.new(.52,0,1,-30)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -327,9 +328,9 @@ actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
-local rescueButton=makeButton(actionDock,"친구 구출",Color3.fromRGB(42,126,151))
+local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(42,126,151))
 rescueButton.Size=UDim2.fromOffset(91,40);rescueButton.Position=UDim2.fromOffset(4,4);rescueButton.ZIndex=11
-rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.RESCUE)end)
+rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
 dashButton.Size=UDim2.fromOffset(91,40);dashButton.Position=UDim2.fromOffset(99,4);dashButton.ZIndex=11
@@ -349,7 +350,7 @@ local function render()
  local role=p:GetAttribute("Role")or"WAITING"
  local round=p:GetAttribute("RoundState")or"WAITING"
  local running=round=="RUNNING"
- local frozen=p:GetAttribute("Frozen")==true
+ local frozen=false
  local mapName=p:GetAttribute("CurrentMap")or"맵 준비"
  local eventName=p:GetAttribute("CurrentMapEvent")or""
  local seconds=math.max(0,math.floor((p:GetAttribute("TimeLeft")or 0)+.5))
@@ -359,17 +360,18 @@ local function render()
  mapPanel.Visible=running
 
  mapLine.Text=mapName..(eventName~=""and(" · "..eventName)or"")
- local roleText=role=="MONSTER"and"괴물"or role=="SURVIVOR"and"생존자"or"대기"
- roleLine.Text=string.format("%s · %s · 생존 %d / 얼음 %d",roleText,frozen and"얼음"or"정상",p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
- local done=p:GetAttribute("ObjectivesDone")or 0;local total=p:GetAttribute("ObjectivesTotal")or C.ObjectiveCount
+ local roleText=role=="MONSTER"and"몬스터"or role=="SURVIVOR"and"인간"or role=="ELIMINATED"and"탈락"or role=="SPECTATING"and"관전"or"대기"
+ local hc=p:GetAttribute("HumanCount")or workspace:GetAttribute("HumanCount")or 0
+ local mc=p:GetAttribute("MonsterCount")or workspace:GetAttribute("MonsterCount")or 0
+ roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
  if role=="MONSTER"then
-  objectiveLine.Text="괴물 목표 · 생존자를 찾아 모두 얼려라"
- elseif frozen then
-  objectiveLine.Text="얼음 상태 · 친구 구조를 기다려"
- elseif workspace:GetAttribute("EscapeUnlocked")==true then
-  objectiveLine.Text="3단계 · 비상 탈출구로 이동"
+  objectiveLine.Text=p:GetAttribute("Infected")==true and"감염 완료 · 이제 인간을 잡아 몬스터로 만들어"or"몬스터 목표 · 인간을 감염시켜 0명으로 만들어"
+ elseif role=="SURVIVOR"then
+  objectiveLine.Text="인간 목표 · 정화 공격으로 몬스터를 0명으로 만들어"
+ elseif role=="ELIMINATED"then
+  objectiveLine.Text="정화되어 이번 라운드에서 탈락"
  else
-  objectiveLine.Text=string.format("1단계 · 패널 작동 %d/%d  |  얼은 친구는 구출",done,total)
+  objectiveLine.Text="다음 라운드 준비"
  end
  roundLine.Text=running and(string.format("%d초",seconds))or round
 
@@ -378,8 +380,8 @@ local function render()
  ruleCard.Visible=setupPanel.Visible
  actionDock.Visible=running
  mapPanel.Visible=running
- rescueButton.Visible=running and role=="SURVIVOR"and not frozen
- dashButton.Visible=running and role=="SURVIVOR"and not frozen
+ rescueButton.Visible=running and role=="SURVIVOR"
+ dashButton.Visible=running and role=="SURVIVOR"
  abilityButton.Visible=running and role=="MONSTER"
 
  if running then
@@ -395,12 +397,12 @@ local function render()
   elseif not bgm.IsPlaying then bgm:Play()end
  end
 
- if frozen and not wasFrozen then warningSfx.TimePosition=0;warningSfx:Play()end
- wasFrozen=frozen
+ if p:GetAttribute("Infected")==true and role=="MONSTER"then chaseTint.BackgroundTransparency=.88 end
+ wasFrozen=false
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent","ObjectivesDone","ObjectivesTotal","Escaped"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
@@ -419,8 +421,7 @@ local function nearestMonsterDistance()
   end
  end
  local arena=workspace:FindFirstChild("MidnightArena")
- local ai=arena and arena:FindFirstChild("AI_MONSTER",true)
- if ai and ai:IsA("BasePart")then best=math.min(best,(ai.Position-root.Position).Magnitude)end
+ if arena then for _,ai in ipairs(arena:GetDescendants())do if ai:IsA("BasePart")and ai.Name=="AI_MONSTER"then best=math.min(best,(ai.Position-root.Position).Magnitude)end end end
  return best
 end
 
@@ -469,8 +470,8 @@ p.CharacterAdded:Connect(bindFootsteps)
 
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
- if value:find("^FREEZE:")then freezeSfx.TimePosition=0;freezeSfx:Play();chaseTint.BackgroundTransparency=.78
- elseif value:find("^RESCUE:")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
+ if value:find("^INFECT:")then warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
+ elseif value:find("^PURIFY")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
  elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()end
 end)
 
@@ -479,8 +480,8 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("SyncedHumanParticipants",tonumber(snapshot.ParticipantCount)or 1)
  p:SetAttribute("SyncedParticipants",tonumber(snapshot.ActivePopulation)or tonumber(snapshot.ParticipantCount)or 1)
  p:SetAttribute("SyncedAICount",tonumber(snapshot.AICount)or 0)
- p:SetAttribute("SyncedAIMonster",snapshot.AIMonster==true)
- p:SetAttribute("SyncedRoundScore",tonumber(snapshot.RoundScore)or 0)
+ p:SetAttribute("HumanCount",tonumber(snapshot.HumanCount)or 0)
+ p:SetAttribute("MonsterCount",tonumber(snapshot.MonsterCount)or 0)
 end)
 
 QACamera.install(C,gui,function()

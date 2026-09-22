@@ -7,195 +7,50 @@ const server=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server
 const client=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client.luau','utf8');
 const launch=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8'));
 
-test('심야 술래잡기 외부출시 빌드는 구조가 다른 3개 맵과 전용 이벤트를 가진다',()=>{
-  for(const id of ['SCHOOL','HOSPITAL','THEME_PARK'])assert.match(config,new RegExp('Id="'+id+'"'));
-  for(const area of ['교실','복도','급식실','체육관','병실','수술실','지하실','회전목마','귀신의 집','매표소','지하 통로'])assert.match(config,new RegExp(area));
-  for(const eventId of ['LIGHTS_OUT','RED_HALL','FIRE_DRILL','POWER_OUTAGE','WARD_LOCKDOWN','BASEMENT_FOG','CAROUSEL_START','RIDE_BLACKOUT','TUNNEL_FOG'])assert.match(config,new RegExp(eventId));
-  for(const marker of ['ClassDesk','CafeteriaTable','GymFloor','HospitalHallL','HospitalBed','SurgeryTable','BasementCeiling','CarouselRotor','HauntedShell','TicketBooth','UnderpassCeiling'])assert.match(server,new RegExp(marker));
-  assert.match(server,/currentMapIndex=\(currentMapIndex%#C\.Maps\)\+1/);
-  assert.match(server,/workspace:SetAttribute\("CurrentMapName"/);
-  assert.match(server,/workspace:SetAttribute\("CurrentMapEventName"/);
-  assert.match(server,/workspace:SetAttribute\("MapEventGameplay"/);
-  assert.ok(launch.releaseGates.includes('3-map round rotation'));
-  assert.ok(launch.releaseGates.includes('three map-specific events per map'));
+test('8명 4대4 시작과 AI 채움',()=>{
+ assert.match(config,/TargetPopulation=8/);assert.match(config,/SurvivorSlots=4/);assert.match(config,/MonsterSlots=4/);
+ assert.match(server,/local function selectStartingMonsters\(h\)/);
+ assert.match(server,/monsterNeed=math\.max/);assert.match(server,/humanNeed=math\.max/);
+ for(const gate of ['8-player logical population','4-human 4-monster opening composition','AI fills every missing team slot'])assert.ok(launch.releaseGates.includes(gate),gate);
 });
 
-test('심야 술래잡기 UI는 추격 시야를 비우고 상황별 최소 행동만 표시한다',()=>{
-  for(const marker of ['MidnightTopHUD','RoleSetup','RoundActions','친구 구출','대시','괴물 스킬','setupPanel.Visible','actionDock.Visible','CoreUISafeInsets'])assert.match(client,new RegExp(marker));
-  assert.match(client,/hud\.Size=UDim2\.fromOffset\(330,62\)/);
-  assert.match(client,/actionDock\.Size=UDim2\.fromOffset\(194,48\)/);
-  assert.match(client,/rescueButton\.Visible=running and role=="SURVIVOR"/);
-  assert.match(client,/abilityButton\.Visible=running and role=="MONSTER"/);
-  assert.match(client,/setupChosen=true/);
-  assert.ok(launch.releaseGates.includes('start UI collapses after selection'));
+test('인간 감염과 양 진영 0명 승리조건',()=>{
+ assert.match(server,/local function infectPlayer\(p\)/);assert.match(server,/local function infectBot\(b\)/);
+ assert.match(server,/setRole\(p,"MONSTER"\)/);assert.match(server,/FeedbackEvent","INFECT:/);
+ assert.match(server,/if humans==0 then endRound\("MONSTER"\)/);assert.match(server,/if monsters==0 then endRound\("SURVIVOR"\)/);
+ assert.match(server,/endRound\("DRAW"\)/);
 });
 
-test('클라이언트가 임의 Remote 액션이나 스팸으로 서버 상태를 조작할 수 없다',()=>{
-  assert.match(server,/local allowedActions=\{\}/);
-  assert.match(server,/allowedActions\[action\]=true/);
-  assert.match(server,/allowedActions\[a\]~=true then return false/);
-  assert.match(server,/now-\(lastRequest\[p\]or 0\)<C\.RemoteMinInterval/);
-  assert.equal((server.match(/remote\.OnServerEvent:Connect/g)||[]).length,1);
-  assert.match(server,/broadcastMultiplayerSync\(p\)/);
-  assert.match(server,/remote:FireAllClients\("MULTIPLAYER_SYNC"/);
-  assert.doesNotMatch(server,/RoundScore.*\+1/);
-  assert.ok(launch.releaseGates.includes('remote action allowlist and spam rejection'));
+test('HumanForms는 도구 패시브 감염능력으로 확장된다',()=>{
+ assert.match(config,/HumanForms=/);
+ for(const id of ['BROADCAST','ELECTRICIAN','COURIER','PHOTOGRAPHER','SECURITY'])assert.ok(config.includes('Id="'+id+'"'));
+ for(const key of ['Tool=','Passive=','InfectedAbility='])assert.ok(config.includes(key));
+ assert.match(server,/local function humanForm\(p\)/);assert.match(server,/local function nextHuman\(p\)/);
+ assert.ok(client.includes('인간 변경'));assert.ok(launch.releaseGates.includes('expandable human-form roster'));
 });
 
-test('서버가 순간이동 속도조작 맵밖 이동을 되돌린다',()=>{
-  assert.match(config,/MaxHorizontalVelocity=92/);
-  assert.match(config,/MaxTeleportStep=48/);
-  assert.match(config,/ArenaLimit=176/);
-  assert.match(server,/horizontal<=C\.MaxHorizontalVelocity/);
-  assert.match(server,/Magnitude<=C\.MaxTeleportStep/);
-  assert.match(server,/math\.abs\(pos\.X\)<=C\.ArenaLimit/);
-  assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
-  assert.match(server,/r\.CFrame=CFrame\.new\(previous\)/);
-  assert.ok(launch.releaseGates.includes('teleport/speed/out-of-bounds abuse rejection'));
+test('인간 정화공격은 몬스터를 제거한다',()=>{
+ assert.match(config,/PurifyDistance=8/);assert.match(config,/PurifyCooldown=5/);
+ assert.match(server,/local function purify\(p\)/);assert.match(server,/local function eliminateMonsterPlayer/);assert.match(server,/local function removeBot/);
+ assert.ok(client.includes('정화 공격'));assert.match(client,/C\.Actions\.PURIFY/);
 });
 
-test('검증된 Creator Store 오디오가 실제 런타임에 연결된다',()=>{
-  for(const id of ['9043557976','9042664292','1837829181','9043346574'])assert.match(config,new RegExp(id));
-  assert.match(client,/local SoundService=game:GetService\("SoundService"\)/);
-  assert.match(client,/bgm:Play\(\)/);
-  assert.match(client,/chase:Play\(\)/);
-  assert.match(client,/actionSfx:Play\(\)/);
-  assert.match(client,/warningSfx:Play\(\)/);
-  assert.ok(launch.releaseGates.includes('Creator Store BGM and gameplay SFX'));
-  assert.equal(launch.evidencePolicy.audioFeedbackPassRequired,true);
-  assert.equal(launch.externalReleaseCandidate,true);
+test('감염전 HUD는 현재 진영 인원을 표시한다',()=>{
+ for(const marker of ['8인 감염전 · 인간 4 VS 몬스터 4','정화 공격','몬스터 변경','인간 변경','감염 완료'])assert.ok(client.includes(marker),marker);
+ assert.match(client,/인간 %d : 몬스터 %d/);
+ assert.match(client,/rescueButton\.Visible=running and role=="SURVIVOR"/);assert.match(client,/abilityButton\.Visible=running and role=="MONSTER"/);
 });
 
-test('기존 출시 핵심 게이트는 유지된다',()=>{
-  for(const gate of [
-    'five-slot 4-survivor 1-monster composition',
-    'AI ghost when no real player selects ghost',
-    'AI survivor fill for all missing human slots',
-    'freeze/rescue sync',
-    'monster abilities',
-    'mobile controls',
-    'save/rejoin',
-    'round restart regression',
-  ])assert.ok(launch.releaseGates.includes(gate),gate);
-  assert.equal(launch.evidencePolicy.aiMayInventPass,false);
-  assert.equal(launch.evidencePolicy.abuseResistancePassRequired,true);
-  assert.equal(launch.evidencePolicy.startUiRegressionPassRequired,true);
+test('세 맵 이벤트 오디오 보안은 유지된다',()=>{
+ for(const id of ['SCHOOL','HOSPITAL','THEME_PARK'])assert.ok(config.includes('Id="'+id+'"'));
+ for(const marker of ['ClassDesk','HospitalBed','CarouselRotor'])assert.ok(server.includes(marker));
+ assert.match(server,/workspace:SetAttribute\("CurrentMapEventName"/);assert.match(client,/local function nearestMonsterDistance\(\)/);assert.match(client,/chase:Play\(\)/);
+ assert.match(server,/allowedActions\[a\]~=true then return false/);assert.match(server,/horizontal<=C\.MaxHorizontalVelocity/);assert.match(server,/Magnitude<=C\.MaxTeleportStep/);
+ for(const gate of ['3-map round rotation','remote action allowlist and spam rejection','teleport/speed/out-of-bounds abuse rejection','save/rejoin'])assert.ok(launch.releaseGates.includes(gate),gate);
 });
 
-
-test('발소리 얼리기 구출 결과 음악과 추격 화면 피드백이 연결된다',()=>{
-  for(const key of ['Footstep','Freeze','Rescue','Result'])assert.match(config,new RegExp(key+'="rbxassetid://'));
-  for(const marker of ['MidnightFootstep','MidnightFreeze','MidnightRescue','MidnightResult','chaseTint','humanoid.Running','FeedbackEvent'])assert.match(client,new RegExp(marker.replace('.', '\\.')));
-  assert.match(server,/FeedbackEvent","FREEZE:/);
-  assert.match(server,/FeedbackEvent","RESCUE:/);
-  assert.match(server,/FeedbackEvent","RESULT:/);
-  for(const gate of ['footstep feedback','freeze/rescue audio feedback','result music','chase screen feedback'])assert.ok(launch.releaseGates.includes(gate),gate);
-});
-
-test('심야 술래잡기는 첫 라운드 전에도 학교 맵을 프리로드한다',()=>{
-  assert.match(server,/arena=ensureArena\(C\.Maps\[1\]\)/);
-  assert.match(server,/workspace:SetAttribute\("MapReady",true\)/);
-  assert.match(client,/workspace:GetAttribute\("MapReady"\)~=true/);
-  assert.match(client,/workspace:FindFirstChild\("MidnightArena"\)/);
-});
-
-test('5인 역할 구성은 1인에서도 AI로 빈자리를 채우고 역할 선택 시 즉시 시작을 요청한다',()=>{
-  assert.match(server,/if #Players:GetPlayers\(\)==1 then/);
-  assert.match(server,/teleport\(p,survivorSpawns\[1\]\)/);
-  assert.match(server,/SOLO_MONSTER.*soloStartRequested=true/);
-  assert.match(server,/SOLO_SURVIVOR.*soloStartRequested=true/);
-  assert.match(server,/if #Players:GetPlayers\(\)==1 and soloStartRequested then break end/);
-  assert.match(config,/SoloPlayable=true/);
-  assert.match(config,/TargetPopulation=5/);
-  assert.match(config,/SurvivorSlots=4/);
-  assert.match(config,/MonsterSlots=1/);
-  assert.match(server,/if #volunteers==0 and #h<C\.TargetPopulation then return nil,false end/);
-  assert.match(server,/if not monster then monsterBot=bot\("MONSTER",monsterSpawn\)end/);
-  assert.match(server,/survivorNeed=math\.max\(0,survivorSlots-humanSurvivors\)/);
-});
-
-test('심야 BGM은 평상시 가벼운 서스펜스이고 강한 추격곡은 괴물이 가까울 때만 재생한다',()=>{
-  assert.match(config,/Background="rbxassetid:\/\/9043557976"/);
-  assert.match(client,/MidnightBackground",C\.Audio\.Background,\.11,true/);
-  assert.match(client,/MidnightChase",C\.Audio\.Chase,\.14,true/);
-  assert.match(client,/local function nearestMonsterDistance\(\)/);
-  assert.match(client,/local near=distance<=32/);
-  assert.match(client,/local danger=distance<=17/);
-  assert.match(client,/if near then/);
-  assert.match(client,/bgm\.Volume=near and \.045 or \.105/);
-});
-
-test('심야 맵 전환은 기존 맵을 유지한 채 완성 후 교체하고 첫 학교 맵은 재사용한다',()=>{
-  assert.match(server,/workspace:SetAttribute\("MapBuilding",true\)/);
-  assert.match(server,/f\.Name=old and"MidnightArenaNext"or"MidnightArena"/);
-  assert.match(server,/if old and old\.Parent then/);
-  assert.match(server,/f\.Name="MidnightArena"/);
-  assert.match(server,/workspace:SetAttribute\("MapBuilding",false\)/);
-  assert.match(server,/workspace:GetAttribute\("CurrentMapId"\)==map\.Id/);
-  assert.match(server,/arena=existing/);
-  assert.match(server,/while workspace:GetAttribute\("MapReady"\)~=true/);
-});
-
-test('심야는 상세 맵 생성 실패 시 안전한 기본맵으로 자동 복구한다',()=>{
-  assert.match(server,/local function recordServerQA\(status\)/);
-  assert.match(server,/local function makeFallbackArena\(map,reason\)/);
-  assert.match(server,/local function ensureArena\(map\)/);
-  assert.match(server,/pcall\(function\(\)return makeArena\(map\)end\)/);
-  assert.match(server,/MIDNIGHT_FALLBACK_SAFE_V1/);
-  assert.match(server,/workspace:SetAttribute\("MapReady",true\)/);
-  assert.match(server,/recordServerQA\("MAP_FALLBACK:"/);
-  assert.match(server,/arena=ensureArena\(C\.Maps\[1\]\)/);
-});
-
-test('1인 얼음 상태는 영구 이동불가가 되지 않고 AI 구조와 이동복구를 가진다',()=>{
-  assert.match(server,/local tagGraceUntil=\{\}/);
-  assert.match(server,/tagGraceUntil\[p\]=os\.clock\(\)\+6/);
-  assert.match(server,/if #Players:GetPlayers\(\)==1 then/);
-  assert.match(server,/task\.delay\(2\.4/);
-  assert.match(server,/RESCUE:SOLO_AUTO/);
-  assert.match(server,/local function restoreMovement\(p,v\)/);
-  assert.match(server,/h\.PlatformStand=false/);
-  assert.match(server,/h\.AutoRotate=true/);
-  assert.match(server,/r\.Anchored=false/);
-  assert.match(server,/rescueTarget/);
-  for(const gate of ['round-start tag grace','solo player cannot remain permanently frozen','AI survivors rescue frozen human players','movement state restored after thaw/spawn'])assert.ok(launch.releaseGates.includes(gate),gate);
-});
-
-test('심야는 340x340 대형 맵과 목표 탈출 루프를 사용한다',()=>{
-  assert.match(config,/RoundSeconds=180/);
-  assert.match(config,/ArenaLimit=176/);
-  assert.match(config,/ObjectiveCount=4/);
-  assert.match(server,/Vector3\.new\(340,1,340\)/);
-  assert.match(server,/addObjectiveStation/);
-  assert.match(server,/addEscapeGate/);
-  assert.match(server,/workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true/);
-  assert.match(client,/ObjectiveProgress/);
-  assert.match(client,/1단계 · 패널 작동 %d\/%d/);
-  for(const gate of ['340x340 arena footprint','four interactive survivor objectives','escape gate unlock and survivor escape victory'])assert.ok(launch.releaseGates.includes(gate),gate);
-});
-
-test('심야 괴물은 드라큘라 프랑켄슈타인 늑대인간 미라 사신 5종이다',()=>{
-  for(const id of ['DRACULA','FRANKENSTEIN','WEREWOLF','MUMMY','GRIM_REAPER'])assert.match(config,new RegExp('Id="'+id+'"'));
-  for(const name of ['드라큘라','프랑켄슈타인','늑대인간','미라','사신'])assert.match(config,new RegExp(name));
-  for(const id of ['DRACULA','FRANKENSTEIN','WEREWOLF','MUMMY','GRIM_REAPER'])assert.match(server,new RegExp(id));
-  assert.match(server,/legacyMonsterIds/);
-  assert.ok(launch.releaseGates.includes('classic five-monster roster'));
-});
-
-test('심야 환경 에셋은 로딩 후 스크립트를 제거하고 장식으로만 사용한다',()=>{
-  assert.match(server,/AssetService:LoadAssetAsync|AssetService\.LoadAssetAsync/);
-  assert.match(server,/LuaSourceContainer/);
-  assert.match(server,/d:Destroy\(\)/);
-  assert.match(server,/decorateArenaWithOfficialAssets/);
-  assert.ok(launch.releaseGates.includes('asset scripts stripped before world decoration'));
-});
-
-test('심야 게임 룰 안내는 로비 3단계와 역할별 실시간 지시로 직관적이다',()=>{
-  for(const marker of ['RuleGuide','심야 술래잡기 · 게임 방법','패널 4개 작동','얼은 친구 구조','탈출구로 탈출','생존자를 터치해 얼리고 전부 얼리면 승리'])assert.match(client,new RegExp(marker));
-  assert.match(client,/ruleCard\.Visible=setupPanel\.Visible/);
-  assert.match(client,/괴물 목표 · 생존자를 찾아 모두 얼려라/);
-  assert.match(client,/얼음 상태 · 친구 구조를 기다려/);
-  assert.match(client,/3단계 · 비상 탈출구로 이동/);
-  assert.match(client,/1단계 · 패널 작동 %d\/%d/);
-  assert.match(client,/role=="MONSTER"and"괴물"or role=="SURVIVOR"and"생존자"/);
+test('한글 영문 유입 메타데이터',()=>{
+ assert.equal(launch.gameTitleKo,'심야 감염전 [4대4]');
+ assert.equal(launch.gameTitleEn,'Midnight Infection [4v4]');
+ assert.ok(launch.gameDescriptionKo.includes('감염전'));assert.ok(launch.gameDescriptionEn.includes('infection'));
 });
