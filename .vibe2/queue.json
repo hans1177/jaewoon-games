@@ -17,8 +17,7 @@
     "sourceRootExclusive": true,
     "responsibleFileExclusive": true,
     "unityReleaseFocusSlots": 1,
-    "postReleaseFocusedSlots": 3,
-    "postReleaseFocusedSlotsScaleWithEligibleGames": true,
+    "postReleaseFocusedSlots": 1,
     "postReleaseCaretakerMode": "per-game-persistent",
     "systemStewardProtectedSlots": 1,
     "systemStewardSlotBorrowableWhenIdle": true,
@@ -62829,7 +62828,606 @@
       "reservationRunAttempt": 1,
       "reservedAt": "2026-09-22T22:36:43Z",
       "neuronExpectedVariants": 3,
-      "neuronResults": [],
+      "neuronResults": [
+        {
+          "version": 14,
+          "taskId": "SYS-ARCH-b6e6cadf9046-v1",
+          "reservationId": "35793185683:1",
+          "variant": "primary",
+          "outcome": "PASS",
+          "blocker": "candidate-awaiting-qa-and-deployment",
+          "candidateBranch": "vibe2/candidate/SYS-ARCH-b6e6cadf9046-v1-primary-35793185683-1",
+          "baseMainSha": "eaf7cf02c0af2374336b57b6755c17d14f388f0c",
+          "candidateIdentity": {
+            "taskId": "SYS-ARCH-b6e6cadf9046-v1",
+            "gameId": "__vibe_system__",
+            "target": "system",
+            "sourceRoot": ".",
+            "baseMainSha": "eaf7cf02c0af2374336b57b6755c17d14f388f0c",
+            "manifestPath": "/tmp/vibe2-candidate-SYS-ARCH-b6e6cadf9046-v1-primary-35793185683/.vibe2/candidates/SYS-ARCH-b6e6cadf9046-v1/manifest.json"
+          },
+          "candidateFailure": null,
+          "evidence": [
+            "vibe2/candidate/SYS-ARCH-b6e6cadf9046-v1-primary-35793185683-1",
+            "candidate-sha:29775374d43c5dcae89bafc01f4e2bfa6e7d13f4",
+            "base-main:eaf7cf02c0af2374336b57b6755c17d14f388f0c",
+            "incremental-qa-hash:21806b0035bc52741c0f3ab1d032cd0fafdbfc7d58964954abf931a8ebc8a6a9",
+            "incremental-qa-cache:HIT",
+            "causal-replay-status:PLAN_ONLY",
+            "causal-replay-executed:NO",
+            "causal-replay-prepatch-reproduced:NO",
+            "architecture-drift-status:ANALYZED",
+            "architecture-drift-risk:LOW",
+            "architecture-drift-score:0",
+            "architecture-drift-signals:NONE",
+            "presentation-static-qa-status:NOT_REQUIRED",
+            "role-result:exploration:PASS",
+            "role-result:implementation:PASS",
+            "role-result:test:PASS",
+            "role-result:performance:PASS",
+            "role-result:regression:WAITING_FAN_IN",
+            "role-result:review:WAITING_FAN_IN",
+            "coding-strategy:PRIMARY_RESPONSIBILITY_MINIMAL",
+            "coding-responsibility-confidence:MEDIUM",
+            "coding-generation-attempts:3",
+            "coding-generation-attempt-budget:3",
+            "coding-context-mode:STANDARD_CONTEXT",
+            "coding-context-bytes:48081",
+            "coding-candidate-first-attempt:NO",
+            "coding-primary-target-count:2",
+            "coding-primary-targets:%5B%22tools%2Fvibe2-system-steward.mjs%22%2C%22qa%2Fvibe2-system-steward.test.mjs%22%5D",
+            "coding-primary-systems:%5B%22VIBE_SYSTEM_ARCHITECTURE%22%5D",
+            "coding-semantic-diff-mode:OBSERVE_ONLY",
+            "coding-semantic-diff-pass:YES",
+            "coding-patch-recipe:SYSTEM_ARCHITECTURE_CAUSAL_RECIPE",
+            "actions-run:35793185683",
+            "reservation-id:35793185683:1",
+            "variant:primary",
+            "shared-context-policy:72b252f9acc93c183236923b4e5c527478ca744f8b8b72b4848c621e473c137b",
+            "shared-context-log-map:09119d4214d6a744a69f3575997703abfb7254fb127ac7638e3b6bea6ddd6ff3",
+            "shared-context-architecture:4bb90ee086488bb6275d821cf4c67e42c89834dcee2481995fafdb028ec83850",
+            "shared-context-sync:PASS"
+          ],
+          "exploration": {
+            "version": 1,
+            "role": "exploration",
+            "sourceWrite": false,
+            "reused": true,
+            "taskId": "SYS-ARCH-b6e6cadf9046-v1",
+            "packageId": null,
+            "target": "system",
+            "sourceRoot": ".",
+            "baseMainSha": "eaf7cf02c0af2374336b57b6755c17d14f388f0c",
+            "responsibleFiles": [
+              "tools/vibe2-system-steward.mjs",
+              "qa/vibe2-system-steward.test.mjs"
+            ],
+            "impactFiles": [
+              "tools/vibe2-system-steward.mjs",
+              "qa/vibe2-system-steward.test.mjs",
+              ".github/workflows/vibe2-24h-runner.yml",
+              ".vibe2/work-order.json",
+              ".github/workflows/vibe2-core-qa.yml",
+              ".github/workflows/vibe2-continuous-core.yml",
+              ".github/workflows/vibe2-parallelism-contract-qa.yml",
+              ".github/workflows/vibe2-system-evolution-release.yml",
+              ".github/workflows/artbook-vibe2-draft-qa.yml",
+              ".github/workflows/company-central-policy-contract-qa.yml"
+            ],
+            "contextFiles": [
+              "tools/vibe2-system-steward.mjs",
+              "qa/vibe2-system-steward.test.mjs",
+              ".github/workflows/vibe2-24h-runner.yml",
+              ".vibe2/work-order.json",
+              ".github/workflows/vibe2-core-qa.yml",
+              ".github/workflows/vibe2-continuous-core.yml",
+              ".github/workflows/vibe2-parallelism-contract-qa.yml",
+              ".github/workflows/vibe2-system-evolution-release.yml",
+              ".github/workflows/artbook-vibe2-draft-qa.yml",
+              ".github/workflows/company-central-policy-contract-qa.yml",
+              ".github/workflows/company-evolution-qa.yml",
+              ".github/workflows/department-standards-qa.yml"
+            ],
+            "relatedFiles": [
+              {
+                "path": ".github/workflows/vibe2-24h-runner.yml",
+                "score": 53
+              },
+              {
+                "path": ".vibe2/work-order.json",
+                "score": 53
+              },
+              {
+                "path": ".github/workflows/vibe2-core-qa.yml",
+                "score": 37
+              },
+              {
+                "path": ".github/workflows/vibe2-continuous-core.yml",
+                "score": 29
+              },
+              {
+                "path": ".github/workflows/vibe2-parallelism-contract-qa.yml",
+                "score": 18
+              },
+              {
+                "path": ".github/workflows/vibe2-system-evolution-release.yml",
+                "score": 15
+              },
+              {
+                "path": ".github/workflows/artbook-vibe2-draft-qa.yml",
+                "score": 13
+              },
+              {
+                "path": ".github/workflows/company-central-policy-contract-qa.yml",
+                "score": 13
+              },
+              {
+                "path": ".github/workflows/company-evolution-qa.yml",
+                "score": 13
+              },
+              {
+                "path": ".github/workflows/department-standards-qa.yml",
+                "score": 13
+              },
+              {
+                "path": ".github/workflows/motion-evolution-qa.yml",
+                "score": 13
+              },
+              {
+                "path": ".github/workflows/unity-android-independent-qa.yml",
+                "score": 13
+              }
+            ],
+            "testTargets": [
+              ".github/workflows/vibe2-core-qa.yml",
+              ".github/workflows/vibe2-parallelism-contract-qa.yml",
+              ".github/workflows/artbook-vibe2-draft-qa.yml",
+              ".github/workflows/company-central-policy-contract-qa.yml",
+              ".github/workflows/company-evolution-qa.yml",
+              ".github/workflows/department-standards-qa.yml",
+              ".github/workflows/motion-evolution-qa.yml",
+              ".github/workflows/unity-android-independent-qa.yml"
+            ],
+            "protectedScopeSignals": [
+              "combat-number"
+            ],
+            "diagnosticEvidence": [],
+            "existingWebAssessment": null,
+            "fileDigests": [
+              {
+                "path": "tools/vibe2-system-steward.mjs",
+                "hash": "520f672585023cd3",
+                "bytes": 10258
+              },
+              {
+                "path": "qa/vibe2-system-steward.test.mjs",
+                "hash": "17928e38dd2d04e8",
+                "bytes": 7953
+              },
+              {
+                "path": ".github/workflows/vibe2-24h-runner.yml",
+                "hash": "219a27bcda9b3e8b",
+                "bytes": 45767
+              },
+              {
+                "path": ".vibe2/work-order.json",
+                "hash": "8c216c601717acb6",
+                "bytes": 49873
+              },
+              {
+                "path": ".github/workflows/vibe2-core-qa.yml",
+                "hash": "839d9a727e44cf25",
+                "bytes": 17106
+              },
+              {
+                "path": ".github/workflows/vibe2-continuous-core.yml",
+                "hash": "7a57b72ba6d57362",
+                "bytes": 105568
+              },
+              {
+                "path": ".github/workflows/vibe2-parallelism-contract-qa.yml",
+                "hash": "bab6643bcc025e7a",
+                "bytes": 1309
+              },
+              {
+                "path": ".github/workflows/vibe2-system-evolution-release.yml",
+                "hash": "504d0451abb8cc24",
+                "bytes": 8852
+              }
+            ],
+            "editContract": {
+              "version": 1,
+              "mode": "SYSTEM_ARCHITECTURE_EDIT_CONTRACT",
+              "strategyHint": "STRUCTURAL_CAUSE_FIRST",
+              "responsibilityConfidence": "MEDIUM",
+              "primaryTargets": [
+                "tools/vibe2-system-steward.mjs",
+                "qa/vibe2-system-steward.test.mjs"
+              ],
+              "allowedResponsibleFiles": [
+                "tools/vibe2-system-steward.mjs",
+                "qa/vibe2-system-steward.test.mjs"
+              ],
+              "allowedDependentSymbolsOrSystems": [],
+              "primarySystems": [
+                "VIBE_SYSTEM_ARCHITECTURE"
+              ],
+              "dependentSystems": [],
+              "ownedState": [],
+              "readState": [],
+              "preserveSemantics": [
+                "CENTRAL_POLICY_AUTHORITY_BOUNDARY",
+                "QUALITY_AND_EVIDENCE_GATES",
+                "SECURITY_GATES",
+                "VERIFIED_LEARNING"
+              ],
+              "failureOrRequirementCausalChain": [
+                "architecture-recovery-generation:7",
+                "learning-motor-candidate-tournament:repeated-verified-failure"
+              ],
+              "requiredObservableResult": "VERIFIED_STRUCTURAL_IMPROVEMENT_WITHOUT_AUTHORITY_OR_GATE_CHANGE",
+              "semanticDiffBudget": {
+                "allowedSystems": [],
+                "preferredPrimarySymbols": [],
+                "maxSystemCount": 4,
+                "unrelatedSystemMutationForbidden": true,
+                "saveKeysMustRemainCompatible": []
+              },
+              "requiredFocusedChecks": [
+                "SAME_FAILURE_RECHECK",
+                "RELATED_REGRESSION",
+                "SECURITY",
+                "BEFORE_AFTER_METRICS",
+                "TEST_TARGET:.github/workflows/vibe2-core-qa.yml",
+                "TEST_TARGET:.github/workflows/vibe2-parallelism-contract-qa.yml",
+                "TEST_TARGET:.github/workflows/artbook-vibe2-draft-qa.yml",
+                "TEST_TARGET:.github/workflows/company-central-policy-contract-qa.yml",
+                "TEST_TARGET:.github/workflows/company-evolution-qa.yml",
+                "TEST_TARGET:.github/workflows/department-standards-qa.yml",
+                "TEST_TARGET:.github/workflows/motion-evolution-qa.yml",
+                "TEST_TARGET:.github/workflows/unity-android-independent-qa.yml"
+              ],
+              "causalReplay": {
+                "version": 1,
+                "required": true,
+                "prePatchReproduced": false,
+                "nodeTestTargets": [
+                  ".github/workflows/vibe2-core-qa.yml",
+                  ".github/workflows/vibe2-parallelism-contract-qa.yml",
+                  ".github/workflows/artbook-vibe2-draft-qa.yml",
+                  ".github/workflows/company-central-policy-contract-qa.yml",
+                  ".github/workflows/company-evolution-qa.yml",
+                  ".github/workflows/department-standards-qa.yml",
+                  ".github/workflows/motion-evolution-qa.yml",
+                  ".github/workflows/unity-android-independent-qa.yml"
+                ],
+                "executable": false,
+                "mode": "PLAN_ONLY",
+                "status": "STRUCTURAL_RECHECK_REQUIRED",
+                "identicalOrEquivalentInputStateRequired": true,
+                "canonicalQaStillRequired": true,
+                "sourceWrite": false,
+                "authorityExpanded": false
+              },
+              "patchRecipe": {
+                "version": 1,
+                "mode": "SYSTEM_ARCHITECTURE_CAUSAL_RECIPE",
+                "failureFingerprint": null,
+                "verifiedMemoryIds": [],
+                "verifiedMemoryCount": 0,
+                "reusePatterns": [],
+                "avoidPatterns": [],
+                "steps": [
+                  "VERIFY_STRUCTURAL_CAUSE",
+                  "COMPARE_AT_LEAST_TWO_ALTERNATIVES",
+                  "PATCH_DIRECT_RESPONSIBILITY",
+                  "RUN_SAME_FAILURE_RECHECK",
+                  "COMPARE_BEFORE_AFTER_METRICS"
+                ],
+                "primaryTargets": [
+                  "tools/vibe2-system-steward.mjs",
+                  "qa/vibe2-system-steward.test.mjs"
+                ],
+                "dependentSymbolsOrSystems": [],
+                "ownedState": [],
+                "focusedChecks": [
+                  "RELATED_REGRESSION",
+                  "SECURITY"
+                ],
+                "protectedSemantics": [
+                  "AUTHORITY_UNCHANGED",
+                  "GATES_UNCHANGED"
+                ],
+                "verifiedMemoryOnly": true,
+                "scopeExpansionAllowed": false,
+                "qaBypassAllowed": false,
+                "authorityExpanded": false
+              },
+              "codingArchitecture": {
+                "developmentMode": "PRESERVE_PATCH",
+                "stateOwnershipSystems": [
+                  "VIBE_SYSTEM_ARCHITECTURE"
+                ],
+                "apiNames": [],
+                "invariantIds": [
+                  "AUTHORITY_UNCHANGED",
+                  "GATES_UNCHANGED"
+                ],
+                "impactRule": "SYSTEM_ARCHITECTURE_CHANGES_REQUIRE_RELATED_AND_FULL_REGRESSION"
+              },
+              "architectureSnapshot": {
+                "version": 1,
+                "nodeCount": 0,
+                "edgeCount": 0,
+                "maxFunctionBodyBytes": 0,
+                "maxCallsPerFunction": 0,
+                "maxCalledByPerFunction": 0,
+                "maxStateWritesPerFunction": 0,
+                "maxSystemsPerFunction": 0,
+                "multiWriterStateCount": 0,
+                "stateWriterLinkCount": 0,
+                "multiOwnerStorageKeyCount": 0,
+                "storageOwnerLinkCount": 0,
+                "timerFunctionCount": 0,
+                "eventBindingCount": 0,
+                "largeFunctionCount": 0,
+                "broadSystemFunctionCount": 0
+              },
+              "responsibilityGraph": {
+                "nodeCount": 0,
+                "relevantNodes": [],
+                "relevantEdges": []
+              },
+              "behaviorChains": [],
+              "seniorReview": {
+                "score": null,
+                "hardBlockers": [],
+                "issues": []
+              },
+              "failureEvidence": [
+                "architecture-recovery-generation:7",
+                "learning-motor-candidate-tournament:repeated-verified-failure"
+              ],
+              "writableScopeExpansionAllowed": false,
+              "learningAuthorityExpanded": false
+            },
+            "reuseKey": "f51a67ed516a441d2145648e",
+            "generatedAt": "2026-09-22T22:38:52.822Z",
+            "reusedFrom": ".vibe2/exploration.json"
+          },
+          "codingMethod": {
+            "version": 2,
+            "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+            "compiledStrategyHint": "STRUCTURAL_CAUSE_FIRST",
+            "candidateVariant": "primary",
+            "generationAttemptBudget": 3,
+            "speculativeAttemptBudgetApplied": false,
+            "fullWebInitialSeedStrategy": false,
+            "fullWebInitialSeedTargetBytes": [],
+            "responsibilityConfidence": "MEDIUM",
+            "primaryTargets": [
+              "tools/vibe2-system-steward.mjs",
+              "qa/vibe2-system-steward.test.mjs"
+            ],
+            "primarySystems": [
+              "VIBE_SYSTEM_ARCHITECTURE"
+            ],
+            "dependentSystems": [],
+            "ownedState": [],
+            "semanticDiffBudget": {
+              "allowedSystems": [],
+              "preferredPrimarySymbols": [],
+              "maxSystemCount": 4,
+              "unrelatedSystemMutationForbidden": true,
+              "saveKeysMustRemainCompatible": []
+            },
+            "semanticDiffEnforcement": {
+              "version": 1,
+              "mode": "OBSERVE_ONLY",
+              "hardGate": false,
+              "pass": true,
+              "confidence": "MEDIUM",
+              "developmentMode": "PRESERVE_PATCH",
+              "markerCount": 2,
+              "editCount": 2,
+              "touchedSystems": [],
+              "allowedSystems": [],
+              "unexpectedSystems": [],
+              "unprovenEditPaths": [],
+              "protectedSaveKeyCount": 0,
+              "saveKeyViolations": [],
+              "saveContractMutations": [],
+              "saveKeyMigrationAllowed": false,
+              "saveContractInvariantEnforced": false,
+              "violations": [],
+              "ambiguousClassificationObserved": true,
+              "writableScopeExpansionAllowed": false,
+              "authorityExpanded": false,
+              "diagnosticPostcondition": {
+                "required": false,
+                "pass": true,
+                "type": null,
+                "file": null,
+                "reason": null
+              }
+            },
+            "causalReplay": {
+              "version": 1,
+              "required": true,
+              "prePatchReproduced": false,
+              "nodeTestTargets": [
+                ".github/workflows/vibe2-core-qa.yml",
+                ".github/workflows/vibe2-parallelism-contract-qa.yml",
+                ".github/workflows/artbook-vibe2-draft-qa.yml",
+                ".github/workflows/company-central-policy-contract-qa.yml",
+                ".github/workflows/company-evolution-qa.yml",
+                ".github/workflows/department-standards-qa.yml",
+                ".github/workflows/motion-evolution-qa.yml",
+                ".github/workflows/unity-android-independent-qa.yml"
+              ],
+              "executable": false,
+              "mode": "PLAN_ONLY",
+              "status": "STRUCTURAL_RECHECK_REQUIRED",
+              "identicalOrEquivalentInputStateRequired": true,
+              "canonicalQaStillRequired": true,
+              "sourceWrite": false,
+              "authorityExpanded": false
+            },
+            "requiredFocusedChecks": [
+              "SAME_FAILURE_RECHECK",
+              "RELATED_REGRESSION",
+              "SECURITY",
+              "BEFORE_AFTER_METRICS",
+              "TEST_TARGET:.github/workflows/vibe2-core-qa.yml",
+              "TEST_TARGET:.github/workflows/vibe2-parallelism-contract-qa.yml",
+              "TEST_TARGET:.github/workflows/artbook-vibe2-draft-qa.yml",
+              "TEST_TARGET:.github/workflows/company-central-policy-contract-qa.yml",
+              "TEST_TARGET:.github/workflows/company-evolution-qa.yml",
+              "TEST_TARGET:.github/workflows/department-standards-qa.yml",
+              "TEST_TARGET:.github/workflows/motion-evolution-qa.yml",
+              "TEST_TARGET:.github/workflows/unity-android-independent-qa.yml"
+            ],
+            "failureFingerprint": null,
+            "patchRecipeMode": "SYSTEM_ARCHITECTURE_CAUSAL_RECIPE",
+            "verifiedFailureLocalMemoryCount": 0,
+            "verifiedFailureLocalMemoryIds": [],
+            "contextFiles": 9,
+            "contextBytes": 48081,
+            "contextMode": "STANDARD_CONTEXT",
+            "contextPreferenceRequested": null,
+            "contextPreferenceApplied": false,
+            "focusedSymbolCount": 0,
+            "exactSourceWindows": false,
+            "fullFileContextFallback": false,
+            "fullWebExpansionStages": 0,
+            "fullWebExpansionDocumentSeedRecoveries": 0,
+            "fullWebClosedHtmlEarlyStop": false,
+            "fullWebFinalAdditiveExpansion": false,
+            "fullWebAdditiveAttemptCreditUsed": false,
+            "fullWebProgressCreditCount": 0,
+            "fullWebProgressCreditUsed": false,
+            "baseAttemptBudget": 3,
+            "effectiveAttemptBudget": 3,
+            "fullWebRetryPromptCompacted": false,
+            "fullWebRetryPromptBytes": 0,
+            "fullWebFallbackBestPartialBytes": 0,
+            "intermediateGrowthBytes": [],
+            "intermediateGrowthTotalBytes": 0,
+            "repeatedIntermediateOutputs": 0,
+            "expansionStageTargets": [],
+            "generationAttempts": 3,
+            "generationRecoveryUsed": true,
+            "partialTimeoutRecovery": false,
+            "partialMalformedRecovery": false,
+            "streamedPartialEditRecovery": false,
+            "focusedFirstEditEarlyStop": false,
+            "focusedFinalRetry": false,
+            "focusedReplaceOnly": false,
+            "focusedReplaceStringRecovery": false,
+            "focusedFirstAttemptFastPath": false,
+            "malformedFastEscalation": false,
+            "focusedReplaceAnchorRotations": 0,
+            "focusedReplaceNoOpCreditUsed": false,
+            "focusedMinimalJsonContract": false,
+            "candidateProducedFirstAttempt": false,
+            "deterministicDiagnosticRepair": false,
+            "deterministicDiagnosticType": null,
+            "writableScopeExpansionAllowed": false,
+            "learningAuthorityExpanded": false,
+            "implementationPass": true,
+            "incrementalQaPass": true,
+            "performanceSanityPass": true,
+            "firstCandidatePass": false,
+            "fullRegressionVerified": false,
+            "reviewVerified": false,
+            "causalReplayStatus": "PLAN_ONLY",
+            "causalReplayExecuted": false,
+            "architectureDrift": {
+              "status": "ANALYZED",
+              "riskLevel": "LOW",
+              "score": 0,
+              "signals": [],
+              "hardReject": false,
+              "focusedReviewRequired": false
+            },
+            "telemetrySource": "CANDIDATE_MANIFEST"
+          },
+          "presentationQuality": {
+            "required": false,
+            "pass": null,
+            "authorityExpanded": false,
+            "staticQaStatus": "NOT_REQUIRED",
+            "staticQaPass": "NONE",
+            "runtimeQaRequired": false
+          },
+          "roleResults": {
+            "exploration": "PASS",
+            "implementation": "PASS",
+            "test": "PASS",
+            "performance": "PASS",
+            "regression": "WAITING_FAN_IN",
+            "review": "WAITING_FAN_IN"
+          },
+          "practiceDistillation": null,
+          "practiceArtifact": null,
+          "neuralDiagnosis": null,
+          "capabilityApplication": {
+            "version": 1,
+            "layer": "verifiedCapabilityMemory",
+            "injected": false,
+            "exactInjectedCapabilityIds": [],
+            "coAppliedCapabilityIds": [],
+            "workKey": null,
+            "binding": "SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA",
+            "onlyActuallyInjectedCapabilitiesEligible": true,
+            "freshTaskQaRequired": true,
+            "rawCodeStored": false,
+            "rawModelOutputStored": false,
+            "hiddenChainOfThoughtStored": false,
+            "authorityExpanded": false
+          },
+          "phase4BenchmarkVerification": null,
+          "durationMs": 329044,
+          "knowledgeApplication": {
+            "version": 1,
+            "exactInjectedKnowledgeIds": [],
+            "freshIndependentQaRequired": true,
+            "infrastructureFailurePenalizesKnowledge": false,
+            "authorityExpanded": false
+          },
+          "workLock": {
+            "required": true,
+            "acquired": true,
+            "id": "wl-mpm8y5",
+            "reason": "existing-worker-task-lock",
+            "worker": "vibe2",
+            "baseSha": "eaf7cf02c0af2374336b57b6755c17d14f388f0c",
+            "files": [
+              "tools/vibe2-system-steward.mjs",
+              "qa/vibe2-system-steward.test.mjs"
+            ],
+            "releaseRule": "RELEASE_AFTER_FAN_IN_QA_OR_ABORT"
+          },
+          "metrics": {
+            "requestedMax": 256,
+            "effectiveMax": 256,
+            "reservationId": "35793185683:1",
+            "reservedAt": "2026-09-22T22:36:43Z",
+            "workerStartedAt": 1790116681485,
+            "workerFinishedAt": 1790117010529,
+            "checkoutMs": 6237,
+            "modelPrepMs": 7225,
+            "candidateMs": 271653,
+            "qaMs": 71,
+            "workerTotalMs": 329044,
+            "changedFileCount": 2,
+            "addedLineCount": 2,
+            "deletedLineCount": 2,
+            "ollamaCacheHit": true,
+            "ollamaRuntimeSource": "CACHE"
+          }
+        }
+      ],
       "companyContext": null,
       "sourceRoot": ".",
       "speculativeEligible": true,
