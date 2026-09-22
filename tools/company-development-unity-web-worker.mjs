@@ -242,7 +242,7 @@ if(mode==='result'){
           webValidationRequired:false,
           unityWebValidationSurfaceLastAttemptAt:stamp,
           updatedAt:stamp,
-        }}    }};
+        }};
       }
     }
   }
