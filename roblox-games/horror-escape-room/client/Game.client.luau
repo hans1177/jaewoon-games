@@ -69,7 +69,7 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.new(1,-16,0,110)
+hud.Size=UDim2.new(1,-16,0,70)
 hud.BackgroundColor3=Color3.fromRGB(22,24,31)
 hud.BackgroundTransparency=.12
 hud.ZIndex=10
@@ -77,8 +77,8 @@ hud.Parent=gui
 roundify(hud,14);outline(hud,.5)
 
 local mapLine=Instance.new("TextLabel")
-mapLine.Size=UDim2.new(1,-16,0,35)
-mapLine.Position=UDim2.fromOffset(8,5)
+mapLine.Size=UDim2.new(1,-16,0,22)
+mapLine.Position=UDim2.fromOffset(8,3)
 mapLine.BackgroundTransparency=1
 mapLine.TextColor3=Color3.fromRGB(235,237,244)
 mapLine.TextScaled=true
@@ -86,8 +86,8 @@ mapLine.Font=Enum.Font.GothamBold
 mapLine.Parent=hud
 
 local roleLine=Instance.new("TextLabel")
-roleLine.Size=UDim2.new(1,-16,0,31)
-roleLine.Position=UDim2.fromOffset(8,41)
+roleLine.Size=UDim2.new(1,-16,0,20)
+roleLine.Position=UDim2.fromOffset(8,25)
 roleLine.BackgroundTransparency=1
 roleLine.TextColor3=Color3.fromRGB(212,218,230)
 roleLine.TextScaled=true
@@ -95,8 +95,8 @@ roleLine.Font=Enum.Font.Gotham
 roleLine.Parent=hud
 
 local roundLine=Instance.new("TextLabel")
-roundLine.Size=UDim2.new(1,-16,0,29)
-roundLine.Position=UDim2.fromOffset(8,75)
+roundLine.Size=UDim2.new(1,-16,0,20)
+roundLine.Position=UDim2.fromOffset(8,47)
 roundLine.BackgroundColor3=Color3.fromRGB(46,49,61)
 roundLine.BackgroundTransparency=.12
 roundLine.TextColor3=Color3.fromRGB(255,203,121)
@@ -110,7 +110,7 @@ local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
 setupPanel.Position=UDim2.fromScale(.5,.56)
-setupPanel.Size=UDim2.new(1,-32,0,230)
+setupPanel.Size=UDim2.new(1,-52,0,176)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -118,7 +118,7 @@ setupPanel.Parent=gui
 roundify(setupPanel,16);outline(setupPanel,.35)
 
 local setupTitle=Instance.new("TextLabel")
-setupTitle.Size=UDim2.new(1,-16,0,38)
+setupTitle.Size=UDim2.new(1,-16,0,28)
 setupTitle.Position=UDim2.fromOffset(8,8)
 setupTitle.BackgroundTransparency=1
 setupTitle.Text="이번 판 역할 선호"
@@ -128,6 +128,7 @@ setupTitle.Font=Enum.Font.GothamBold
 setupTitle.ZIndex=11
 setupTitle.Parent=setupPanel
 
+local setupChosen=false
 local setupButtons={
  {C.Actions.PREFER_SURVIVOR,"생존자 선호",Color3.fromRGB(50,112,145)},
  {C.Actions.PREFER_MONSTER,"괴물 선호",Color3.fromRGB(145,48,59)},
@@ -139,19 +140,20 @@ for i,a in ipairs(setupButtons)do
  b.ZIndex=11
  local col=(i-1)%2
  local row=math.floor((i-1)/2)
- b.Size=UDim2.new(.465,0,0,65)
- b.Position=UDim2.new(.025+col*.485,0,0,53+row*73)
+ b.Size=UDim2.new(.465,0,0,46)
+ b.Position=UDim2.new(.025+col*.485,0,0,41+row*52)
  b.Activated:Connect(function()
   actionSfx.TimePosition=0;actionSfx:Play()
   remote:FireServer(a[1])
+  setupChosen=true
   setupPanel.Visible=false
  end)
 end
 
 local monsterCycle=makeButton(setupPanel,"괴물 변경",Color3.fromRGB(76,58,96))
 monsterCycle.ZIndex=11
-monsterCycle.Size=UDim2.new(.45,0,0,34)
-monsterCycle.Position=UDim2.new(.275,0,1,-39)
+monsterCycle.Size=UDim2.new(.45,0,0,28)
+monsterCycle.Position=UDim2.new(.275,0,1,-32)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -159,21 +161,21 @@ local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
 actionDock.Position=UDim2.new(.5,0,1,-12)
-actionDock.Size=UDim2.new(1,-28,0,88)
+actionDock.Size=UDim2.new(1,-28,0,64)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"친구 구출",Color3.fromRGB(42,126,151))
-rescueButton.Size=UDim2.new(.48,0,0,76);rescueButton.Position=UDim2.new(.01,0,0,6);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.new(.48,0,0,52);rescueButton.Position=UDim2.new(.01,0,0,6);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.RESCUE)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
-dashButton.Size=UDim2.new(.48,0,0,76);dashButton.Position=UDim2.new(.51,0,0,6);dashButton.ZIndex=11
+dashButton.Size=UDim2.new(.48,0,0,52);dashButton.Position=UDim2.new(.51,0,0,6);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
-abilityButton.Size=UDim2.new(.7,0,0,76);abilityButton.Position=UDim2.new(.15,0,0,6);abilityButton.ZIndex=11
+abilityButton.Size=UDim2.new(.56,0,0,52);abilityButton.Position=UDim2.new(.22,0,0,6);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
@@ -195,7 +197,8 @@ local function render()
  roleLine.Text=string.format("%s · %s · 괴물 %s · 생존 %d / 얼음 %d",role,frozen and"얼음 상태"or"이동 가능",monsterName(),p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
  roundLine.Text=running and(string.format("남은 시간 %d초 · XP %d · 코인 %d",seconds,p:GetAttribute("MonsterXP")or 0,p:GetAttribute("Coins")or 0))or round
 
- setupPanel.Visible=not running and not round:find("^RESULT_")
+ if round:find("^RESULT_") then setupChosen=false end
+ setupPanel.Visible=not setupChosen and not running and not round:find("^RESULT_")
  actionDock.Visible=running
  rescueButton.Visible=running and role=="SURVIVOR"and not frozen
  dashButton.Visible=running and role=="SURVIVOR"and not frozen
