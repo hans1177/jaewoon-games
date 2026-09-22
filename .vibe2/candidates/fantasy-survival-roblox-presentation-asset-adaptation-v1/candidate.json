@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial malformed edit",
+  "expectedEffect": "recovered complete edit from bounded malformed output",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local multiplayerStatus = Instance.new(\"TextLabel\")",
+      "replace": "local multiplayerStatus = Instance.new(\"TextLabel\")\nmultiplayerStatus.Name = \"MultiplayerStatus\"\nmultiplayerStatus.Size = UDim2.new(1, -20, 0, 36)\nmultiplayerStatus.Position = UDim2.fromOffset(10, 104)\nmultiplayerStatus.BackgroundTransparency = 1\nmultiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)\nmultiplayerStatus.TextScaled = true\nmultiplayerStatus.Text = \"Multiplayer sync ready\"\nmultiplayerStatus.Parent = root"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
