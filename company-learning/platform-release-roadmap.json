@@ -1,5 +1,5 @@
 {
-  "version": 258,
+  "version": 259,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -1463,17 +1463,18 @@
     "gameDevelopmentAuthority": {
       "authority": "VIBE_PRIMARY_INTEGRATION_AND_LEARNING_OWNER_WITH_FULL_PROCESS_COLLABORATION",
       "implementationOwner": "VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS",
-      "appliesFromStage": "WEB_BASE_IMPLEMENTATION",
+      "appliesFromStage": "MINIMUM_DESIGN_CONTRACT_READY",
       "appliesToStages": [
-        "WEB_BASE_IMPLEMENTATION",
-        "WEB_RUNTIME_VALIDATION",
+        "MINIMUM_DESIGN_CONTRACT_READY",
         "TARGET_PLATFORM_SOURCE_BIND",
         "TARGET_PLATFORM_RUNTIME",
         "TARGET_PLATFORM_INDEPENDENT_QA",
         "TARGET_PLATFORM_REGRESSION",
+        "INTERNAL_PLATFORM_RELEASE",
+        "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "POST_RELEASE_FOCUSED_DEVELOPMENT"
       ],
-      "ownsWebFirstImplementation": true,
+      "ownsWebFirstImplementation": false,
       "ownsSelectedPlatformImplementation": true,
       "ownsPostReleaseGameSourceDevelopment": true,
       "nonVibeAiRole": "ASSIGNED_COLLABORATOR_ACROSS_IMPLEMENTATION_REPAIR_QA_PLATFORM_AND_POST_RELEASE",
@@ -1485,7 +1486,7 @@
       "designAuthorityUnaffected": true,
       "designProviderPolicyUnaffected": true,
       "existingWebAssessment": {
-        "required": true,
+        "required": false,
         "stage": "WEB_BASE_IMPLEMENTATION",
         "assessor": "tools/vibe2-exploration-worker.mjs",
         "decisionSource": "READ_ONLY_EXPLORATION_EVIDENCE",
@@ -1515,7 +1516,9 @@
           "explorationHandoffField": "existingWebAssessment",
           "fullRewriteAllowedOnlyWhen": "strategy=FULL_REBUILD",
           "implementationWorker": "tools/vibe2-source-worker.mjs"
-        }
+        },
+        "status": "LEGACY_MAINTENANCE_ONLY",
+        "developmentAdmissionAuthority": false
       },
       "nonVibeAiGameSourceWriteMode": "EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY",
       "nonVibeAiGameplayFeatureCommitMode": "CANDIDATE_BRANCH_ONLY_NO_DIRECT_MAIN",
@@ -1523,7 +1526,8 @@
       "everyCollaborativeCodingResultLearningCandidate": true,
       "verifiedResultsReturnToExistingLearningMotor": true,
       "externalAiSelfAcceptance": false,
-      "externalAiDirectMainWrite": false
+      "externalAiDirectMainWrite": false,
+      "ownsInternalPlaytestRepair": true
     },
     "learningMotor": {
       "authority": "VERIFIED_LEARNING_MOTOR",
@@ -1831,11 +1835,13 @@
       "source": "platformPriorityInvariant",
       "schedulerMustHonorRobloxFirst": false,
       "appliesTo": [
-        "WEB_BASE_IMPLEMENTATION",
+        "MINIMUM_DESIGN_CONTRACT_READY",
         "TARGET_PLATFORM_SOURCE_BIND",
         "TARGET_PLATFORM_RUNTIME",
         "TARGET_PLATFORM_INDEPENDENT_QA",
         "TARGET_PLATFORM_REGRESSION",
+        "INTERNAL_PLATFORM_RELEASE",
+        "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "RELEASE_PROMOTION",
         "POST_RELEASE_FOCUSED_DEVELOPMENT"
       ],
@@ -1845,7 +1851,8 @@
         "UNITY",
         "ROBLOX"
       ],
-      "equalTierSelection": "READINESS_THEN_EXECUTION_EFFICIENCY"
+      "equalTierSelection": "READINESS_THEN_EXECUTION_EFFICIENCY",
+      "fortniteUefnExcludedWhileOwnerHold": true
     },
     "platformExecutionHolds": {
       "FORTNITE_UEFN": {
@@ -4714,15 +4721,14 @@
     "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
     "schedulingOrder": [
       "UNITY",
-      "ROBLOX",
-      "FORTNITE_UEFN"
+      "ROBLOX"
     ],
     "robloxMustReceiveFirstEligibleDevelopmentSlot": false,
     "robloxMustReceiveFirstEligibleFocusedSlot": false,
     "robloxMustReceiveFirstEligiblePostReleaseProtectedSlot": false,
     "unityDevelopmentStillAllowed": true,
-    "fortniteUefnDevelopmentStillAllowed": true,
-    "lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains": true,
+    "fortniteUefnDevelopmentStillAllowed": false,
+    "lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains": false,
     "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": false,
     "qualityOrEvidenceGateWeakeningAllowed": false,
     "ownerExplicitOverrideAllowed": true,
@@ -4730,12 +4736,10 @@
       [
         "UNITY",
         "ROBLOX"
-      ],
-      [
-        "FORTNITE_UEFN"
       ]
     ],
-    "equalTierSelection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT"
+    "equalTierSelection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT",
+    "fortniteUefnState": "OWNER_HOLD"
   },
   "homepagePortfolioVisibility": {
     "version": 1,
@@ -4976,7 +4980,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-22T23:55:00+09:00",
+  "updatedAt": "2026-09-23T00:08:00+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -5498,30 +5502,26 @@
     }
   },
   "changeRecord": {
-    "id": "DIRECT_NATIVE_MACHINE_INSTRUCTION_ALIGNMENT_2026-09-22",
-    "previousChangeRecordId": "ROBLOX_VIBE_CO_DEVELOPMENT_VISUAL_DISTILLATION_2026-09-22",
+    "id": "DIRECT_NATIVE_POLICY_DRIFT_CLEANUP_2026-09-23",
+    "previousChangeRecordId": "DIRECT_NATIVE_MACHINE_INSTRUCTION_ALIGNMENT_2026-09-22",
     "documentIsCode": true,
     "documentationFirst": true,
-    "reason": "ALIGN_LEGACY_WEB_FIRST_MACHINE_INSTRUCTIONS_WITH_OWNER_LOCKED_DIRECT_NATIVE_ROBLOX_UNITY_DEVELOPMENT_AND_EXISTING_EXECUTION_TOPOLOGY",
-    "activeDevelopmentPath": [
-      "MINIMUM_DESIGN_CONTRACT_READY",
-      "ROBLOX_UNITY_NATIVE_SOURCE_BIND",
-      "TARGET_PLATFORM_RUNTIME",
-      "TARGET_PLATFORM_INDEPENDENT_QA",
-      "TARGET_PLATFORM_REGRESSION",
-      "INTERNAL_PLATFORM_RELEASE",
-      "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "PUBLIC_RELEASE_READY",
-      "PUBLIC_RELEASE",
-      "POST_RELEASE_FOCUSED_DEVELOPMENT"
+    "reason": "REMOVE_REMAINING_WEB_FIRST_AND_UEFN_ACTIVE_SCHEDULING_DRIFT_FROM_THE_OWNER_LOCKED_ROBLOX_UNITY_DIRECT_NATIVE_MACHINE_CONTRACT",
+    "activePlatforms": [
+      "ROBLOX",
+      "UNITY"
     ],
-    "legacyWebFirstStatus": "DISABLED_FOR_DEVELOPMENT_ADMISSION",
+    "ownerHeldPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "webDevelopmentStage": "LEGACY_DISABLED",
+    "activeAdmission": "MINIMUM_DESIGN_CONTRACT_READY",
     "invariants": {
       "noNewPipeline": true,
-      "existingDepartmentsPreserved": true,
-      "legacyWebMaintenanceStillPossible": true,
-      "platformSpecificRuntimeQaRegressionPreserved": true,
-      "ownerAuthorityPreserved": true
+      "noQualityGateWeakening": true,
+      "platformSpecificEvidenceStillRequired": true,
+      "internalPlaytestIsActiveCoDevelopment": true,
+      "legacyWebMaintenanceNotDeleted": true
     }
   },
   "vibeExecutionLaneContract": {
