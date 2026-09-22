@@ -316,7 +316,7 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,label,assetId)
  p:SetAttribute("QALastCaptureStored",ok)
 end)
 
-Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;lastRequest[p]=nil;task.defer(rebuildCompanions)qaCaptureLast[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;lastRequest[p]=nil;task.defer(rebuildCompanions);qaCaptureLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 RunService.Heartbeat:Connect(function(dt)
