@@ -425,7 +425,7 @@ local function buildWorld()
  Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
  makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
  for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
- workspace:SetAttribute("WorldArtPass","RPG_FIVE_PORTAL_VISUAL_WORLD_V3")
+ workspace:SetAttribute("WorldArtPass","RPG_FIVE_PORTAL_ASSET_WORLD_V2")
 end
 
 remote.OnServerEvent:Connect(function(p,a)
