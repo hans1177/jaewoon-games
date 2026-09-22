@@ -136,8 +136,34 @@ export function assembleRobloxTechnicalEvidence({build={},runtime={},independent
 }
 
 export function assembleRobloxDevelopmentReleaseEvidence(item={}){
-  if(upper(item.robloxValidationMode)==='HEADLESS_FAST_MVP'){
+  if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(upper(item.robloxValidationMode))){
     const sourceRevision=clean(item.robloxSourceCommit);
+    const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+    const f0=item.robloxFoundationF0Evidence||item.robloxHeadlessFastMvpEvidence||{};
+    return Object.freeze({
+      version:3,
+      platform:'ROBLOX',
+      target:'ROBLOX_DEVELOPMENT_FINAL_RELEASE',
+      validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',
+      checkedAt:new Date().toISOString(),
+      sourceRevision,
+      artifactIdentity:artifactIdentity||null,
+      sourcePreflightPassed:item.robloxFoundationF0Passed===true&&f0.sourcePreflightPassed===true,
+      actualRuntimeEvidence:false,
+      runtimePassed:false,
+      independentQaPassed:false,
+      regressionPassed:false,
+      finalReviewPassed:false,
+      exactRevision:false,
+      protectedStatePreserved:false,
+      pass:false,
+      validated:false,
+      state:'FAIL',
+      blockedReasons:['headless-source-preflight-cannot-satisfy-runtime-release'],
+      authority:'roblox-f0-cannot-authorize-release'
+    });
+  }
+  const sourceRevision=clean(item.robloxSourceCommit);
     const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
     const preflight=item.robloxBuildPreflightEvidence||{};
     const headless=item.robloxHeadlessFastMvpEvidence||{};
@@ -257,8 +283,11 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
 export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   const blocked=[];
   const revision=clean(sourceRevision||evidence.sourceRevision);
-  if(upper(evidence.validationMode)==='HEADLESS_FAST_MVP'){
-    if(!SHA.test(revision))blocked.push('source-revision-invalid');
+  if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(upper(evidence.validationMode))){
+    blocked.push('headless-source-preflight-cannot-satisfy-runtime-release');
+    return Object.freeze({pass:false,sourceRevision:revision,blockedReasons:Object.freeze(blocked),browserQa:'NOT_APPLICABLE',authority:'roblox-f0-release-block'});
+  }
+  if(!SHA.test(revision))blocked.push('source-revision-invalid');
     if(clean(evidence.sourceRevision)!==revision)blocked.push('exact-source-revision-mismatch');
     if(evidence.buildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
     if(!clean(evidence.artifactIdentity))blocked.push('artifact-identity-missing');
