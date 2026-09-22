@@ -71,3 +71,9 @@ test('Whatever RPG 모바일 UI는 오른손 전투 스택과 접힌 파티 장�
   assert.match(rpgClient,/b\.Size=UDim2\.fromOffset\(58,50\)/);
   assert.match(rpgClient,/secondary\.Visible=not secondary\.Visible/);
 });
+
+test('포근섬 모바일 액션 팝업은 화면을 오래 가리지 않고 자동으로 닫힌다',()=>{
+  assert.match(cozyClient,/local popupToken=0/);
+  assert.match(cozyClient,/task\.delay\(4\.5/);
+  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(276,44\)/);
+});
