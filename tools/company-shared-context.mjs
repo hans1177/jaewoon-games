@@ -188,7 +188,6 @@ export function compileCentralArchitectureProjection(policy={}){
   const contract={
     version:1,
     sourceOfTruth:DEFAULT_POLICY,
-    policyVersion:Number(policy?.version)||0,
     authorityOrder:['OWNER_CANONICAL_CONSTITUTION','CENTRAL_POLICY','COMPILED_CENTRAL_ARCHITECTURE_PROJECTION','WORK_CONTRACT','VERIFIED_RUNTIME_EVIDENCE','RUNTIME_STATE'],
     constitution:{fingerprint:constitution.fingerprint,orderedRuleIds:constitution.orderedRuleIds},
     workerSynchronization:{
