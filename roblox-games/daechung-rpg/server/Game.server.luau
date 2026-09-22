@@ -20,6 +20,7 @@ for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
+local function feedback(p,kind)p:SetAttribute("FeedbackEvent",kind..":"..tostring(math.floor(os.clock()*1000)))end
 local function class(p)local id=p:GetAttribute("ClassId")or C.Classes[1].Id;for _,x in ipairs(C.Classes)do if x.Id==id then return x end end;return C.Classes[1]end
 local function unlocked(p,id)return p:GetAttribute("Companion_"..id)==true end
 local function unlock(p,id,msg)
@@ -61,32 +62,47 @@ local function makeWorld()
  end)
  local sera=ppart("SeraNPC",Vector3.new(4,6,4),Vector3.new(0,4,12),Style.CompanionColors.SERA,Enum.Material.SmoothPlastic);nameplate(sera,"세라 · 추적자",Style.Gold)
  prompt(sera,"세라","동료 영입").Triggered:Connect(function(p)
-  if n(p,"Kills",0)>=5 then unlock(p,"SERA","도적단에서 구출한 세라가 합류했다.");p:SetAttribute("StoryStage",math.max(2,n(p,"StoryStage",0)))
-  else p:SetAttribute("LastAction","세라: 몬스터 5마리를 쓰러뜨리고 와.")end
+  if unlocked(p,"KYLE")and n(p,"Kills",0)>=5 then unlock(p,"SERA","카일과 함께 도적단을 밀어내 세라가 합류했다.");p:SetAttribute("StoryStage",math.max(2,n(p,"StoryStage",0)))
+  else p:SetAttribute("LastAction","세라: 먼저 카일과 합류하고 몬스터 5마리를 쓰러뜨려.")end
  end)
  local iris=ppart("IrisNPC",Vector3.new(4,6,4),Vector3.new(15,4,6),Style.CompanionColors.IRIS,Enum.Material.SmoothPlastic);nameplate(iris,"이리스 · 룬술사",Style.Gold)
  prompt(iris,"이리스","룬 해방").Triggered:Connect(function(p)
-  if n(p,"BossesDefeated",0)>=1 then unlock(p,"IRIS","보스의 룬을 깨고 이리스가 합류했다.");p:SetAttribute("StoryStage",math.max(3,n(p,"StoryStage",0)))
-  else p:SetAttribute("LastAction","이리스의 룬은 지역보스를 쓰러뜨려야 풀린다.")end
+  if unlocked(p,"SERA")and n(p,"BossesDefeated",0)>=1 then unlock(p,"IRIS","세라의 추적 끝에 보스의 룬을 깨고 이리스가 합류했다.");p:SetAttribute("StoryStage",math.max(3,n(p,"StoryStage",0)))
+  else p:SetAttribute("LastAction","이리스: 세라와 합류한 뒤 지역보스를 쓰러뜨려.")end
  end)
  local noa=ppart("NoaNPC",Vector3.new(4,6,4),Vector3.new(0,4,-13),Color3.fromRGB(102,153,176),Enum.Material.SmoothPlastic);nameplate(noa,"노아 · 영혼소환사",Style.Gold)
  prompt(noa,"노아","영혼 이야기").Triggered:Connect(function(p)
-  if n(p,"PartyMemory",0)>=12 then unlock(p,"NOA","파티의 기억을 본 노아가 합류했다.")
-  else p:SetAttribute("LastAction","노아: 더 많은 전투의 기억이 필요해.")end
+  if unlocked(p,"IRIS")and n(p,"PartyMemory",0)>=12 then unlock(p,"NOA","완성된 파티의 기억을 본 노아가 합류했다.")
+  else p:SetAttribute("LastAction","노아: 이리스와 합류하고 전투의 기억 12를 모아.")end
  end)
  workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_PLAYABLE_V2")
 end
 
-local function unit(name,pos,hp,boss)
- local p=Instance.new("Part");p.Name=name;p.Anchored=true;p.Size=boss and Vector3.new(9,12,9)or Vector3.new(4,6,4);p.Position=pos
- p.Color=boss and Style.Boss or Style.Enemy;p.Material=boss and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
- if boss then local l=Instance.new("PointLight");l.Color=Style.Crystal;l.Range=22;l.Brightness=2;l.Parent=p end
- nameplate(p,name,boss and Style.Gold or Color3.new(1,1,1))
- local e={part=p,hp=hp,max=hp,boss=boss};p:SetAttribute("HP",hp);table.insert(enemies,e);return e
+local function enemyColor(id)
+ if id=="HOUND"then return Color3.fromRGB(137,92,73)end
+ if id=="GOBLIN"then return Color3.fromRGB(91,132,76)end
+ if id=="SLIME"then return Color3.fromRGB(101,91,190)end
+ if id=="BANDIT"then return Color3.fromRGB(76,83,104)end
+ return Style.Enemy
 end
-local function spawnEnemy(boss)
- local a=math.random()*6.28;local r=boss and 76 or math.random(45,90)
- return unit(boss and"심연의 간수"or"야생 마물",Vector3.new(math.cos(a)*r,3,math.sin(a)*r),boss and 320 or 70,boss)
+local function unit(def,pos,kind)
+ local boss=kind=="BOSS";local elite=kind=="ELITE"
+ local p=Instance.new("Part");p.Name=def.Name;p.Anchored=true
+ p.Size=boss and Vector3.new(10,13,10)or elite and Vector3.new(7,9,7)or Vector3.new(4,6,4);p.Position=pos
+ p.Color=boss and Style.Boss or elite and Color3.fromRGB(125,91,52)or enemyColor(def.Id)
+ p.Material=(boss or elite)and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
+ if boss or elite then local l=Instance.new("PointLight");l.Color=boss and Style.Crystal or Style.Gold;l.Range=boss and 26 or 16;l.Brightness=boss and 3 or 1.5;l.Parent=p end
+ nameplate(p,(elite and"ELITE · "or"")..def.Name,boss and Style.Gold or elite and Style.Gold or Color3.new(1,1,1))
+ local e={part=p,hp=def.HP,max=def.HP,boss=boss,elite=elite,gold=def.Gold,xp=def.XP,id=def.Id}
+ p:SetAttribute("HP",def.HP);p:SetAttribute("EnemyId",def.Id);p:SetAttribute("Elite",elite);p:SetAttribute("Boss",boss);table.insert(enemies,e);return e
+end
+local function spawnEnemy(kind)
+ local a=math.random()*6.28
+ if kind=="BOSS"then return unit(C.FinalBoss,Vector3.new(math.cos(a)*76,6,math.sin(a)*76),"BOSS")end
+ if kind=="ELITE"then return unit(C.Elite,Vector3.new(math.cos(a)*62,5,math.sin(a)*62),"ELITE")end
+ local def=C.EnemyTypes[math.random(1,#C.EnemyTypes)]
+ local r=math.random(45,90)
+ return unit(def,Vector3.new(math.cos(a)*r,3,math.sin(a)*r),"NORMAL")
 end
 
 local function load(p)
@@ -105,9 +121,10 @@ local function save(p)
  pcall(function()store:SetAsync("p:"..p.UserId,d)end)
 end
 local function grantXP(p,amount)
- local xp=n(p,"XP",0)+amount;local lv=n(p,"Level",1)
- while xp>=lv*100 do xp-=lv*100;lv+=1;p:SetAttribute("LastAction","레벨 "..lv.." 달성!")end
+ local xp=n(p,"XP",0)+amount;local lv=n(p,"Level",1);local before=lv
+ while xp>=lv*100 do xp-=lv*100;lv+=1 end
  p:SetAttribute("XP",xp);p:SetAttribute("Level",lv)
+ if lv>before then p:SetAttribute("LastAction","레벨 "..lv.." 달성!");feedback(p,"LEVEL_UP")end
 end
 local function nearest(pos,range)
  local best,bd=nil,range
@@ -115,19 +132,32 @@ local function nearest(pos,range)
  return best
 end
 local function afterKill(p,e)
- p:SetAttribute("Gold",n(p,"Gold",0)+(e.boss and 90 or 10));grantXP(p,e.boss and 120 or 18)
- p:SetAttribute("PartyMemory",n(p,"PartyMemory",0)+(e.boss and 4 or 1))
+ p:SetAttribute("Gold",n(p,"Gold",0)+(e.gold or(e.boss and 100 or e.elite and 35 or 10)))
+ grantXP(p,e.xp or(e.boss and 140 or e.elite and 55 or 18))
+ p:SetAttribute("PartyMemory",n(p,"PartyMemory",0)+(e.boss and 4 or e.elite and 2 or 1))
  if e.boss then
-  p:SetAttribute("BossesDefeated",n(p,"BossesDefeated",0)+1);unlock(p,"WARDEN","심연의 간수의 의지를 꺾어 보스 동료 루트가 열렸다.")
- else p:SetAttribute("Kills",n(p,"Kills",0)+1)end
+  p:SetAttribute("BossEngaged",false);p:SetAttribute("BossesDefeated",n(p,"BossesDefeated",0)+1);unlock(p,"WARDEN","심연의 간수의 의지를 꺾어 보스 동료 루트가 열렸다.");feedback(p,"VICTORY")
+ else p:SetAttribute("Kills",n(p,"Kills",0)+1);feedback(p,e.elite and"ELITE_KILL"or"KILL")end
  if n(p,"PartyMemory",0)>=20 and p:GetAttribute("Relic")=="CONTROL"then unlock(p,"NAMELESS","숨겨진 조건을 만족해 무명의 동료가 나타났다.");p:SetAttribute("HiddenCompanionUnlocked",1)end
 end
-local function hit(p,amount,range)
+local function hit(p,amount,range,kind)
  local now=os.clock();if now-(lastHit[p]or 0)<.18 then return end;lastHit[p]=now
  local r=root(p);if not r then return end;local e=nearest(r.Position,range);if not e then p:SetAttribute("LastAction","사거리 안에 적이 없어.");return end
+ local firstBoss=e.boss and p:GetAttribute("BossEngaged")~=true
+ p:SetAttribute("InCombat",true);p:SetAttribute("CombatStamp",now);p:SetAttribute("BossEngaged",e.boss==true)
+ if firstBoss then p:SetAttribute("LastAction","심연의 간수 등장!");feedback(p,"BOSS_APPEAR")else feedback(p,kind or"ATTACK")end
+ local original=e.part.Color;e.part.Color=Color3.fromRGB(245,245,255)
+ task.delay(.08,function()if e.part and e.part.Parent then e.part.Color=original end end)
+ if kind=="SKILL"then
+  local pulse=Instance.new("PointLight");pulse.Color=Style.Crystal;pulse.Range=18;pulse.Brightness=3;pulse.Parent=e.part
+  task.delay(.18,function()if pulse.Parent then pulse:Destroy()end end)
+ end
  e.hp-=amount;e.part:SetAttribute("HP",math.max(0,e.hp))
- if e.hp<=0 then if e.part.Parent then e.part:Destroy()end;afterKill(p,e);p:SetAttribute("LastAction",e.boss and"지역보스 격파!"or"마물 처치")end
+ local stamp=now
+ task.delay(4,function()if p.Parent and p:GetAttribute("CombatStamp")==stamp and p:GetAttribute("BossEngaged")~=true then p:SetAttribute("InCombat",false)end end)
+ if e.hp<=0 then if e.part.Parent then e.part:Destroy()end;afterKill(p,e);p:SetAttribute("LastAction",e.boss and"최종 보스 격파!"or e.elite and"엘리트 격파!"or(e.part.Name.." 처치"))end
 end
+
 local function cycle(p,key,list)
  local cur=p:GetAttribute(key);local idx=1
  for i,v in ipairs(list)do local id=typeof(v)=="table"and v.Id or v;if id==cur then idx=i end end
@@ -144,8 +174,8 @@ remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return end
  local now=os.clock();if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end
  lastRequest[p]=now
- if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3+n(p,"Level",1),15)
- elseif a==C.Actions.SKILL then local x=class(p);local bonus=p:GetAttribute("Relic")=="FURY"and 10 or 0;hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4+bonus,26)
+ if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3+n(p,"Level",1),15,"ATTACK")
+ elseif a==C.Actions.SKILL then local x=class(p);local bonus=p:GetAttribute("Relic")=="FURY"and 10 or 0;hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4+bonus,26,"SKILL")
  elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*48+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
  elseif a==C.Actions.NEXT_CLASS then cycle(p,"ClassId",C.Classes)
  elseif a==C.Actions.NEXT_AI then cycle(p,"AIStyle",C.AIStyles)
@@ -154,7 +184,7 @@ remote.OnServerEvent:Connect(function(p,a)
  broadcastMultiplayerSync(p)
 end)
 
-makeWorld();for i=1,12 do spawnEnemy(false)end;spawnEnemy(true)
+makeWorld();for i=1,10 do spawnEnemy("NORMAL")end;spawnEnemy("ELITE");spawnEnemy("BOSS")
 
 local function unlockedList(p)
  local list={}
@@ -198,5 +228,8 @@ RunService.Heartbeat:Connect(function(dt)
   end
  end
  for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
- if #enemies<7 then spawnEnemy(false)end
+ if #enemies<7 then spawnEnemy("NORMAL")end
+ local eliteAlive=false
+ for _,enemy in ipairs(enemies)do if enemy.elite and enemy.hp>0 and enemy.part.Parent then eliteAlive=true;break end end
+ if not eliteAlive then spawnEnemy("ELITE")end
 end)
