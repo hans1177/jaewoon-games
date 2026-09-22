@@ -11,10 +11,10 @@ import { compileVibeCentralWorkContract } from '../tools/vibe2-central-work-cont
 import { planVibe2AutonomousTasks } from '../tools/vibe2-auto-planner.mjs';
 
 test('atomic change set binds exact source, acceptance and owner interrupt without restart',()=>{
-  const change=createVibeChangeSet({request:'늑대 공격 모션 고쳐',target:'roblox',gameId:'demo',baseSourceRevision:'a'.repeat(40),files:['roblox-games/demo/server/Game.server.luau'],edits:[{file:'roblox-games/demo/server/Game.server.luau',area:'wolf attack',reason:'bite timing'}],responsibleSystems:['combat','animation'],affectedDepartments:['graphics','development','qa'],acceptanceCriteria:['BITE_MOTION_OBSERVED','DAMAGE_TIMING_UNCHANGED']});
+  const change=createVibeChangeSet({request:'늑대 공격 모션 고쳐',target:'roblox',gameId:'demo',baseSourceRevision:'a'.repeat(40),files:['roblox-games/demo/server/Game.server.luau'],edits:[{file:'roblox-games/demo/server/Game.server.luau',area:'wolf attack',reason:'bite timing'}],responsibleSystems:['combat','animation'],affectedDepartments:['graphics','development','qa'],acceptanceContract:{observable:['BITE_MOTION_OBSERVED','DAMAGE_TIMING_UNCHANGED'],runtimeEvidenceRequired:true}});
   assert.equal(change.version,2);
   assert.equal(change.target,'roblox');
-  assert.equal(change.policy.sourceLockRequired,true);
+  assert.equal(change.policy.workLockRequired,true);
   assert.equal(canApplyVibeChangeSet(change).ok,true);
   const interrupt=classifyVibeOwnerInterrupt({activeChangeSet:change,request:'늑대 죽는 모션도 같은 스타일로 추가'});
   assert.equal(interrupt.preserveUnaffectedWork,true);
@@ -26,9 +26,9 @@ test('orchestrator routes Roblox to existing specialists',()=>{
   assert.equal(goal.target,'roblox');
   const route=routeVibeCapabilities({request:'로블록스 몬스터 그래픽 오류 고쳐'});
   assert.equal(route.target,'roblox');
-  assert.ok(route.capabilities.includes('assets/vibe-art-pipeline.js'));
+  assert.ok(route.modules.includes('assets/vibe-art-pipeline.js'));
   assert.ok(route.capabilities.includes('assets/vibe-quality-intelligence.js'));
-  assert.equal(route.routerAuthority,'dispatch-only');
+  assert.equal(route.authority,'existing-capability-router-only');
 });
 
 test('three repeated failures on same responsibility escalate to root cause mode',()=>{
