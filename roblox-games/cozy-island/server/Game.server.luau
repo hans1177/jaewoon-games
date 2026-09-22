@@ -9,7 +9,7 @@ local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
 local store=DSS:GetDataStore("cozy-island-conquest-v2")
 local remote=RS:FindFirstChild(C.RemoteName) or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
-local last,battling={},{}
+local lastRequest,battling={},{}
 local function part(parent,name,size,pos,color,material)
   local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=parent;return x
 end
@@ -94,11 +94,11 @@ local function broadcastMultiplayerSync(actor)
 end
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"or not H[a]then return end
- local t=os.clock();if t-(last[p]or 0)<C.RateLimitSeconds then return end
- last[p]=t
+ local t=os.clock();if t-(lastRequest[p]or 0)<C.RateLimitSeconds then return end
+ lastRequest[p]=t
  H[a](p)
  broadcastMultiplayerSync(p)
 end)
 task.spawn(function()while true do task.wait(C.AutomationTickSeconds);for _,p in ipairs(Players:GetPlayers())do local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0);if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end;if f>0 then s(p,"Food",n(p,"Food",0)+f)end;if w+f>0 and not battling[p] then msg(p,string.format("주민 자동생산 나무+%d 식량+%d",w,f))end end end end)
-Players.PlayerRemoving:Connect(function(p)save(p);last[p]=nil;battling[p]=nil;BattleVisual.cleanup(p)end)
+Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;BattleVisual.cleanup(p)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
