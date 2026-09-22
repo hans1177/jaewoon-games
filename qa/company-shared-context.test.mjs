@@ -108,7 +108,7 @@ test('Vibe capability growth cannot auto-promote Primary AI or worker authority'
 
 test('future owner canonical rule auto-binds without worker code change',()=>{
   const cwd=root(),f=fixtures();
-  f.policyJson.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
+  f.policyJson.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE',machineEnforcement:{schemaVersion:1,assertions:[{code:'ENABLED',operator:'EQ',path:'enabled',expected:true}]}};
   setup(cwd,f);const previous=process.cwd();process.chdir(cwd);
   try{
     const result=validateSharedWorkerContext();
