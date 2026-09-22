@@ -406,10 +406,17 @@ test('free-slot refill keeps learning-idle and game-study gated by an actually i
   assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
-test('24H cycle start never blocks behind stale workflow-level concurrency',()=>{
+test('24H cycle and plan never starve behind shared control-state concurrency',()=>{
   assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
   assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-main'));
-  assert(safetyNetWorkflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
+  const planStart=safetyNetWorkflow.indexOf('  plan:');
+  const recoveryStart=safetyNetWorkflow.indexOf('  recovery_fast:');
+  assert(planStart>=0 && recoveryStart>planStart);
+  const planBlock=safetyNetWorkflow.slice(planStart,recoveryStart);
+  assert(!planBlock.includes('group: vibe2-control-state-vibe2-unreal-core'));
+  assert(planBlock.includes('VIBE2_AUTOPLAN_ATTEMPT=$attempt/5'));
+  assert(planBlock.includes('git reset --hard origin/vibe2-unreal-core'));
+  assert(planBlock.includes('if git push origin HEAD:vibe2-unreal-core; then'));
   const gameStudyStart=safetyNetWorkflow.indexOf('  game_study:');
   const refillStart=safetyNetWorkflow.indexOf('  refill:');
   assert(gameStudyStart>=0 && refillStart>gameStudyStart);
