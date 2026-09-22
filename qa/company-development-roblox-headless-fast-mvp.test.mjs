@@ -55,6 +55,14 @@ test('F0 blocks when actual Luau compiler evidence is missing even if structural
  assert.ok(r.blockers.includes('nativeLanguageCompilePassed'));
 });
 
+
+test('Roblox F0 workflow uses shallow checkout and exact source revision fetch instead of full history',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+ assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+ assert.equal((workflow.match(/fetch-depth:\s*1/g)||[]).length,2);
+ assert.match(workflow,/git fetch --no-tags origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+});
+
 test('cozy-island creates safe spawn before player binding and core loop evidence requires an accepted action',()=>{
  const source=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
  assert.equal((source.match(/local function tree\(parent,pos,scale\)/g)||[]).length,1);
