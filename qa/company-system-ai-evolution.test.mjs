@@ -75,6 +75,20 @@ test('reserve chooses one representative canary for a shared failure signature w
   assert.ok(result.reserved.find(x=>x.id==='a').evidence.includes('system-ai-representative-canary:COMMON_X'));
 });
 
+test('active representative canary suppresses another worker for the same shared failure',()=>{
+  const queue={tasks:[
+    {id:'active',status:'running',priority:'critical',goal:'active',responsibleFiles:['tools/active.mjs'],failureSignature:'COMMON_ACTIVE',reservationId:'r1',reservedAt:'2026-09-23T00:05:00Z',createdAt:'2026-09-23T00:00:00Z'},
+    {id:'duplicate',status:'queued',priority:'critical',goal:'duplicate',responsibleFiles:['tools/duplicate.mjs'],failureSignature:'COMMON_ACTIVE',createdAt:'2026-09-23T00:01:00Z'},
+    {id:'independent',status:'queued',priority:'high',goal:'independent',responsibleFiles:['tools/independent.mjs'],failureSignature:'OTHER',createdAt:'2026-09-23T00:02:00Z'}
+  ]};
+  const result=reserveSystemAiBatch(queue,{max:2,reservationId:'r2',at:Date.parse('2026-09-23T00:10:00Z')});
+  assert.deepEqual(result.reserved.map(x=>x.id),['independent']);
+  const snapshot=analyzeSystemAiBottlenecks({systemAiQueue:queue,maxBatch:3,at:Date.parse('2026-09-23T00:10:00Z')});
+  const cohort=snapshot.commonFailureCohorts.find(x=>x.signature==='COMMON_ACTIVE');
+  assert.equal(cohort.runningRepresentativeExists,true);
+  assert.equal(cohort.representativeTaskId,null);
+});
+
 test('bottleneck sensor reports free capacity, common failures, stale reservations, and caretaker backlog',()=>{
   const snapshot=analyzeSystemAiBottlenecks({
     systemAiQueue:{tasks:[
