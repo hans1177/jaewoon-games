@@ -1,5 +1,5 @@
 {
-  "version": 264,
+  "version": 265,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -5880,7 +5880,7 @@
       "UNITY"
     ],
     "showWebPlay": false,
-    "showUnityWeb": false,
+    "showUnityWeb": true,
     "showInternalReleaseState": true,
     "showPublicReleaseState": true,
     "perGamePlatformStates": [
@@ -5967,11 +5967,11 @@
         ],
         "separateFromTop30Promotion": true,
         "mustNotClaimValidationOrRelease": true,
-        "webTestButtonEnabled": false,
-        "webTestButtonLabel": null,
+        "webTestButtonEnabled": true,
+        "webTestButtonLabel": "UNITY WEB 테스트",
         "platformTestButtonEnabled": true,
         "platformTestButtonLabelMode": "PLATFORM_NAME",
-        "webAndPlatformTestButtonsMustBeSeparate": false,
+        "webAndPlatformTestButtonsMustBeSeparate": true,
         "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
         "scoreDisplayEnabled": false,
         "ranking": "CATALOG_ORDER",
@@ -13610,10 +13610,10 @@
   },
   "unityWebFirstStage": {
     "version": 1,
-    "status": "DISABLED_BY_OWNER_DIRECTIVE",
-    "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "scope": "DISABLED",
-    "appliesToAllGames": false,
+    "status": "OWNER_DIRECT_LOCKED",
+    "authority": "OWNER_DIRECTIVE_2026-09-23",
+    "scope": "UNITY_WEB_VALIDATION_SURFACE",
+    "appliesToAllGames": true,
     "replacesFirstStageWebAuthoringOnly": false,
     "postUnityWebGatePipelineUnchanged": true,
     "platformPriorityUnchanged": true,
@@ -13853,15 +13853,23 @@
       ],
       "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     },
-    "enabled": false,
-    "disabledReason": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT",
-    "developmentAdmissionAuthority": false
+    "enabled": true,
+    "disabledReason": null,
+    "developmentAdmissionAuthority": false,
+    "role": "OWNER_PLAYABLE_VALIDATION_SURFACE",
+    "releasePlatform": false,
+    "nativeRuntimeAuthority": false,
+    "nativeReleaseAuthority": false,
+    "automaticBuildForEligibleUnityProjects": true,
+    "homepageTestLinkEnabled": true,
+    "homepageLinkRequiresVerifiedBuildManifest": true,
+    "homepageLinkLabel": "UNITY WEB 테스트"
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
     "recordedAt": "2026-09-22",
     "mode": "ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR",
-    "unityWebEnabled": false,
+    "unityWebEnabled": true,
     "unityWebRequired": false,
     "unityWebGateRequired": false,
     "supportedDevelopmentPlatforms": [
@@ -14012,6 +14020,21 @@
       "regressionMeaning": "HEADLESS_EXACT_ARTIFACT_REGRESSION",
       "openCloudPublishRequiredForInternalRelease": true,
       "authority": "OWNER_DIRECTIVE_2026-09-22"
+    },
+    "unityWebValidationSurface": {
+      "enabled": true,
+      "role": "OWNER_PLAYABLE_VALIDATION_SURFACE",
+      "releasePlatform": false,
+      "developmentAdmissionAuthority": false,
+      "nativeRuntimeAuthority": false,
+      "nativeReleaseAuthority": false,
+      "automaticBuildForEligibleUnityProjects": true,
+      "outputRoot": "web-games/<gameId>/",
+      "homepageTestLinkEnabled": true,
+      "homepageLinkRequiresVerifiedBuildManifest": true,
+      "homepageLinkLabel": "UNITY WEB 테스트",
+      "nativeRobloxAndUnityAppDevelopmentRemainConcurrent": true,
+      "failureDoesNotCancelNativePlatformDevelopment": true
     }
   },
   "centralDocumentation": {
