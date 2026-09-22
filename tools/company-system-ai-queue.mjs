@@ -32,12 +32,18 @@ function normalizeTask(row={}){
     goal:clean(row.goal),responsibleFiles:unique(row.responsibleFiles),contextFiles:unique(row.contextFiles),
     focusPatterns:row.focusPatterns&&typeof row.focusPatterns==='object'?row.focusPatterns:{},
     acceptanceCriteria:unique(row.acceptanceCriteria),verificationCommands:unique(row.verificationCommands),
-    dependencies:unique(row.dependencies),retries:Math.max(0,Number(row.retries||0)),
+    dependencies:unique(row.dependencies),relatedTaskIds:unique(row.relatedTaskIds),blockedTaskIds:unique(row.blockedTaskIds),
+    retries:Math.max(0,Number(row.retries||0)),recurrenceCount:Math.max(0,Number(row.recurrenceCount||0)),
+    failureStage:clean(row.failureStage)||null,failureSignature:clean(row.failureSignature)||null,
+    blastRadius:clean(row.blastRadius)||null,knownGoodRevision:clean(row.knownGoodRevision||row.knownGoodSourceRevision)||null,
+    repairRisk:Math.max(0,Math.min(10,Number(row.repairRisk??1)||0)),
     sourceMutationRequired:row.sourceMutationRequired===true,sourceMutationBaseline:clean(row.sourceMutationBaseline)||null,
     retryPolicy,maxRetries:retryPolicy==='UNLIMITED_CAUSAL_REPAIR'?null:Math.max(0,Math.min(5,Number(row.maxRetries??2))),reservationId:clean(row.reservationId)||null,
     reservedAt:clean(row.reservedAt)||null,candidateBranch:clean(row.candidateBranch)||null,
     pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:clean(row.lastOutcome)||null,
     blocker:clean(row.blocker)||null,evidence:unique(row.evidence),supervisorReviewRequired:row.supervisorReviewRequired!==false,
+    impactScore:Number.isFinite(Number(row.impactScore))?Number(row.impactScore):null,
+    impactComponents:row.impactComponents&&typeof row.impactComponents==='object'?row.impactComponents:null,
     createdAt:clean(row.createdAt)||now(),updatedAt:clean(row.updatedAt)||now()
   };
 }
@@ -46,6 +52,59 @@ export function normalizeSystemAiQueue(input={}){
     worker:'tools/company-system-ai-worker.mjs',tasks:(input.tasks||[]).map(normalizeTask)};
 }
 function rank(p){return({critical:4,high:3,normal:2,low:1})[clean(p).toLowerCase()]||2;}
+function failureSignatureOf(task={}){
+  const explicit=clean(task.failureSignature);
+  if(explicit)return explicit;
+  const evidence=unique(task.evidence);
+  for(const prefix of ['shared-signature:','system-steward:failure-signature:','failure-cause:']){
+    const row=[...evidence].reverse().find(x=>x.startsWith(prefix));
+    if(row)return clean(row.slice(prefix.length));
+  }
+  return clean(task.blocker||task.lastOutcome)||null;
+}
+function numericEvidence(task={},prefix=''){
+  const row=[...unique(task.evidence)].reverse().find(x=>x.startsWith(prefix));
+  const value=Number(row?clean(row.slice(prefix.length)):NaN);
+  return Number.isFinite(value)?value:null;
+}
+export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Date.now()}={}){
+  const queue=normalizeSystemAiQueue(queueInput),task=normalizeTask(taskInput);
+  const signature=failureSignatureOf(task);
+  const live=queue.tasks.filter(x=>!['done','completed','cancelled','verified'].includes(clean(x.status).toLowerCase()));
+  const directDependents=live.filter(x=>(x.dependencies||[]).includes(task.id)).map(x=>x.id);
+  const signatureCohort=signature?live.filter(x=>x.id!==task.id&&failureSignatureOf(x)===signature).map(x=>x.id):[];
+  const explicitCohort=Math.max(0,Number(numericEvidence(task,'cohort-size:')??0));
+  const blockedIds=unique([...(task.blockedTaskIds||[]),...(task.relatedTaskIds||[]),...directDependents,...signatureCohort]);
+  const blockedTaskCount=Math.max(blockedIds.length,Math.max(0,explicitCohort-1));
+  const recurrenceCount=Math.max(task.recurrenceCount||0,task.retries||0,signatureCohort.length);
+  const dependencyCentrality=Math.max(directDependents.length,task.relatedTaskIds?.length||0);
+  const createdMs=Date.parse(task.createdAt);
+  const ageHours=Number.isFinite(createdMs)?Math.max(0,Math.min(168,(at-createdMs)/3600000)):0;
+  const severity=rank(task.priority);
+  const repairRisk=Math.max(0,Math.min(10,Number(task.repairRisk||0)));
+  const score=Math.max(0,Math.round(
+    severity*100+
+    Math.min(50,blockedTaskCount)*28+
+    Math.min(20,recurrenceCount)*22+
+    Math.min(50,dependencyCentrality)*16+
+    ageHours*0.75-
+    repairRisk*24
+  ));
+  return{
+    score,
+    signature,
+    commonBottleneck:Boolean(signature&&(signatureCohort.length>0||explicitCohort>1||task.relatedTaskIds?.length>1)),
+    blockedTaskCount,
+    blockedTaskIds,
+    recurrenceCount,
+    dependencyCentrality,
+    ageHours:Number(ageHours.toFixed(2)),
+    severity,
+    repairRisk,
+    cohortSize:Math.max(1,signatureCohort.length+1,explicitCohort),
+    components:{severity,blockedTaskCount,recurrenceCount,dependencyCentrality,ageHours:Number(ageHours.toFixed(2)),repairRisk}
+  };
+}
 function overlap(a,b){const s=new Set(a.responsibleFiles||[]);return (b.responsibleFiles||[]).some(x=>s.has(x));}
 function dependencyReady(task,queue){
   const byId=new Map(queue.tasks.map(x=>[x.id,x]));
@@ -219,8 +278,9 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId=''}=
 export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
   const queue=reclaimed.queue, active=queue.tasks.filter(t=>t.status==='running');
+  const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
-    .sort((a,b)=>rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
+    .sort((a,b)=>(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)||rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
   const chosen=[];
   for(const task of candidates){
     if(chosen.length>=Math.max(1,Math.floor(Number(max)||16)))break;
@@ -229,8 +289,16 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
   }
   const ids=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai:${Date.now()}`;
-  const tasks=queue.tasks.map(t=>ids.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed};
+  const tasks=queue.tasks.map(t=>{
+    if(!ids.has(t.id))return t;
+    const impact=profiles.get(t.id)||systemAiImpactProfile(t,queue,{at});
+    return{
+      ...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null,
+      impactScore:impact.score,impactComponents:impact.components,
+      evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`])
+    };
+  });
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
 }
 export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
