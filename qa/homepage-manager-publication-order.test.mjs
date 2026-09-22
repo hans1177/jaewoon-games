@@ -231,7 +231,7 @@ test('homepage has one canonical runtime data renderer',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(index,/\nloadData\(\);/);
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
-  assert.match(runtime,/const boundCatalog=await bindVerifiedUnityWebSurfaces\(catalog\)/);
+  assert.match(runtime,/const boundCatalog=await bindAvailableUnityWebSurfaces\(catalog\)/);
   assert.match(runtime,/updateLiveSummary\(boundCatalog,status\);buildFocus\(boundCatalog,status\)/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
@@ -304,16 +304,36 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   assert.match(index,/function openChatGpt\(\)/);
 });
 
-test('game cards expose exactly the Roblox and Unity app tracks',()=>{
+test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
   assert.match(runtime,/robloxAction/);
   assert.match(runtime,/unityAction/);
+  assert.match(runtime,/unityWebAction/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
+  assert.match(runtime,/Unity Web · 개발중/);
   assert.doesNotMatch(runtime,/Web 플레이|button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+});
+
+test('Unity Web homepage links require only an existing build page, not QA gate PASS',()=>{
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
+  assert.match(block,/index\.html\?ts=/);
+  assert.match(block,/response\.ok/);
+  assert.match(block,/unityWebAvailable:true/);
+  assert.doesNotMatch(block,/unity-web-build\.json|unity-web-gameplay-validation\.json|bootSmoke|initialRealGameplayQa|noCriticalRuntimeError/);
+  const display=roadmap.serverHomepageIntegration?.managerContract?.developmentProgressDisplay||{};
+  const surface=roadmap.serverHomepageIntegration?.unityWebValidationSurface||{};
+  assert.equal(display.unityWebHomepageExposureGate,'OUTPUT_INDEX_EXISTS_ONLY');
+  assert.equal(display.unityWebQaPassRequiredForHomepageLink,false);
+  assert.equal(display.unityWebEvidenceFilesRequiredForHomepageLink,false);
+  assert.equal(surface.homepageLinkGate,'OUTPUT_INDEX_EXISTS_ONLY');
+  assert.equal(surface.homepageLinkQaPassRequired,false);
+  assert.equal(surface.homepageLinkEvidenceFilesRequired,false);
+  assert.equal(surface.validationEvidenceStillRequiredForQaVerdict,true);
 });
 test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
