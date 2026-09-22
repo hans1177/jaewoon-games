@@ -4544,11 +4544,40 @@
       "globalGameDevelopmentWindow": null
     },
     "internalPlatformPlaytestDevelopment": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-22",
-      "implementationState": "DOCUMENTED_DESIGN_PENDING",
+      "implementationState": "PHASE1_IMPLEMENTED",
       "stage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "objective": "USE_THE_EXISTING_INTERNAL_PLATFORM_RELEASE_AS_A_REAL_PLAYABLE_CO_DEVELOPMENT_SURFACE_WHERE_VIBE_REPAIRS_AND_EXTENDS_THE_CURRENT_GAME_WITHOUT_CREATING_A_SHADOW_PIPELINE",
+      "phase1Implementation": {
+        "status": "IMPLEMENTED",
+        "noNewPipeline": true,
+        "noNewDepartment": true,
+        "bindings": [
+          "assets/vibe-change-set.js",
+          "assets/vibe-orchestrator.js",
+          "assets/vibe-quality-intelligence.js",
+          "assets/vibe-work-lock.js",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-central-work-contract.mjs",
+          "tools/vibe2-remote-work-lock.mjs",
+          ".github/workflows/vibe2-continuous-core.yml"
+        ],
+        "workLock": {
+          "existingStateBranch": "vibe2-work-locks",
+          "existingStatePath": ".vibe2/work-locks.json",
+          "acquireBeforeSourceWrite": true,
+          "sameTaskSpeculativeVariantsMayReuse": true,
+          "releaseAfterFanInOrAbort": true,
+          "authority": "EDIT_EXCLUSIVITY_ONLY"
+        },
+        "repair": {
+          "unlimitedCausalRepair": true,
+          "repeatedFailureThreshold": 3,
+          "repeatedFailureMode": "ROOT_CAUSE_MODE",
+          "resumeExactFailureStage": true
+        }
+      },
       "principles": {
         "internalReleaseIsDevelopmentSurface": true,
         "internalReleaseIsNotCompletion": true,
@@ -12549,9 +12578,9 @@
       "noNewShadowTrainer": true
     },
     "changeSetCollaboration": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-22",
-      "implementationState": "DOCUMENTED_DESIGN_PENDING",
+      "implementationState": "PHASE1_IMPLEMENTED",
       "sharedChangeSetAcrossDepartments": true,
       "requiredHandoffFields": [
         "DECISION",
