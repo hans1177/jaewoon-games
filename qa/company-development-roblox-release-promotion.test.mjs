@@ -165,3 +165,19 @@ test('central F0 contract pins official Luau compiler and exact source workflow 
   assert.match(preflight,/--native-language-compile-passed=true/);
   assert.match(preflight,/--native-compiler-version=0\.739/);
 });
+
+test('central native foundation policy locks spawn ordering candidate invalidation and exact F9 identity',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const foundation=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
+  assert.equal(foundation.governingPrinciples.safeSpawnMustExistBeforePlayerBinding,true);
+  assert.equal(foundation.governingPrinciples.coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition,true);
+  assert.equal(foundation.governingPrinciples.newRuntimeCandidateInvalidatesPriorReleasePassState,true);
+  assert.equal(foundation.governingPrinciples.f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion,true);
+  assert.equal(foundation.robloxContract.spawnOrdering.safeSpawnLocationRequiredBeforePlayerBinding,true);
+  assert.equal(foundation.robloxContract.coreLoopProof.failedOrRejectedActionMayNotEmitCoreLoopReady,true);
+  assert.equal(foundation.releaseGate.newCandidateInvalidation.clearPriorFinalReviewPass,true);
+  assert.deepEqual(foundation.releaseGate.f9ExactBinding,[
+    'SOURCE_REVISION','ARTIFACT_IDENTITY','UNIVERSE_ID','PLACE_ID',
+    'CANDIDATE_VERSION_NUMBER','ACTUAL_RUNTIME_SENTINEL','POST_RUNTIME_QA'
+  ]);
+});
