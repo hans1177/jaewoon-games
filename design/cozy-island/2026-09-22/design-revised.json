@@ -1,61 +1,46 @@
 {
-  "version": 4,
+  "version": 5,
   "gameId": "cozy-island",
-  "gameName": "포근섬",
+  "gameName": "포근섬: 작은 왕국 키우기",
   "gameCategory": "CASUAL",
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T00:45:00+09:00",
-  "updatedAt": "2026-09-22T04:12:00+09:00",
+  "updatedAt": "2026-09-22T19:50:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
   "content": {
-    "identity": "기본섬에서 직접 벌목·식량 수급으로 시작해 주민을 확보하고 병영과 병사를 성장시키며, 섬마다 서로 다른 특수자원을 가진 적 기지를 자동전투로 하나씩 격파해 영토를 넓히는 섬 개척 전략 게임.",
-    "coreFun": "초반에는 직접 노동으로 생존 기반을 만들고, 주민 자동화와 병영 성장으로 노가다를 줄인 뒤, 필요한 철·말·금·유황 같은 특수자원을 얻기 위해 각 섬의 기지를 자동전투로 점령해 국가 규모를 키우는 재미.",
+    "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.",
+    "coreFun": "손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감.",
     "coreLoop": [
-      "기본섬에서 직접 벌목과 식량 수급으로 목재·식량을 확보한다.",
-      "무역상에게 주민을 영입하고 벌목·식량 생산에 배치해 기본자원 생산을 자동화한다.",
-      "병영을 강화하고 병사를 모집해 전투력을 만든다.",
-      "필요한 특수자원을 가진 섬과 기지를 선택해 자동전투로 하나씩 격파한다.",
-      "점령 지역의 전용 자원과 기능을 확보해 더 강한 병종·무역·해전·공성을 열고 다음 섬으로 확장한다."
+      "나무·식량 직접 채집",
+      "주민 고용과 벌목/농업 자동화",
+      "병영 강화와 병사 모집",
+      "다음 자원 거점 선택",
+      "보이는 자동전투와 점령 보상",
+      "협동 지원으로 강한 거점 공략"
     ],
     "signatureSystems": [
       {
-        "name": "기본섬 직접노동",
-        "purpose": "게임 초반 목재와 식량은 플레이어가 직접 벌목·수확해 얻을 수 있다."
+        "name": "직접 채집",
+        "purpose": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다."
       },
       {
         "name": "주민 자동화",
-        "purpose": "무역상에게 주민을 영입하고 벌목꾼·농부 등에 배치하면 기본자원 생산이 자동화된다."
+        "purpose": "고용한 주민을 생산 직업에 배치해 반복 노동을 자동화한다."
       },
       {
-        "name": "병영과 병사",
-        "purpose": "목재·식량·특수자원을 소비해 병영을 강화하고 병사를 모집한다."
+        "name": "병영/병사",
+        "purpose": "자원을 병력으로 전환하고 병영 레벨로 전투력을 확장한다."
       },
       {
-        "name": "기지 자동전투",
-        "purpose": "플레이어가 목표 기지를 선택하면 서버가 개인 병력과 협동 지원 병력을 계산해 자동전투 결과를 처리한다."
+        "name": "5개 자원 거점",
+        "purpose": "서로 다른 적과 보상을 가진 5개 거점을 순차 점령한다."
       },
       {
-        "name": "지역별 특수자원",
-        "purpose": "모든 섬이 같은 자원을 갖지 않는다. 산악은 철, 초원은 말, 사막은 금, 화산은 유황처럼 지형마다 핵심 특산자원이 다르다."
-      },
-      {
-        "name": "점령 네트워크",
-        "purpose": "한 섬의 여러 적 기지를 차례로 격파하고 마지막 요새를 점령하면 해당 섬을 완전히 확보한다."
-      },
-      {
-        "name": "무역",
-        "purpose": "내 영토에서 부족한 특수자원을 NPC 상인 또는 향후 다른 플레이어와 교환한다."
-      },
-      {
-        "name": "해전·공성 확장",
-        "purpose": "항구와 공성 자원을 확보하면 바다 건너 섬과 성벽 기지를 공격할 수 있다."
-      },
-      {
-        "name": "협동 원정",
-        "purpose": "혼자서도 진행 가능하지만 여러 플레이어가 같은 목표를 공격하면 병력 지원 보너스를 받아 강한 기지를 공략한다."
+        "name": "협동 지원",
+        "purpose": "다른 플레이어의 준비 병력을 서버가 지원 전력으로 합산한다."
       }
     ],
     "progressionDirection": "초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다.",
@@ -88,12 +73,12 @@
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
       "displayLabelKo": "시뮬레이션 · 정복 · 협동",
-      "visualQualityTarget": "STYLIZED_ROBLOX_HIGH_READABILITY",
+      "visualQualityTarget": "COZY_CHIBI_STORYBOOK",
       "visualPriority": [
-        "island-silhouette",
-        "resource-biome-readability",
-        "base-conquest-feedback",
-        "army-movement"
+        "chibi-villager-silhouette",
+        "connected-animal-silhouette",
+        "biome-readability",
+        "base-conquest-feedback"
       ],
       "validationMode": "HEADLESS_FAST_MVP",
       "studioRequired": false
@@ -132,38 +117,75 @@
         "validationEvidence": "실기기 터치, 저장 복구, 프레임, 독립 QA와 회귀검증을 같은 빌드에서 확인한다."
       }
     },
-    "visualDirection": "밝고 따뜻한 스타일라이즈드 3D 디오라마. Roblox의 읽기 쉬운 실루엣을 유지하되 장난감처럼 싸보이지 않게 섬 지형·기지·자원 지역을 큰 형태와 재질 차이로 구분한다. 초원·산악·사막·화산·해안이 멀리서도 즉시 구분되고, 주민·병사보다 섬 확장과 군대 이동 장면에 시각 예산을 우선 배분한다.",
+    "visualDirection": "밝고 따뜻한 동화책 미니어처 왕국. 큰 머리와 둥근 얼굴, 짧고 굵은 팔다리의 치비 주민과 하나의 연결된 실루엣으로 보이는 야생동물을 사용한다.",
     "artAudioDirection": {
       "visualIdentity": "작은 왕국 디오라마 + 밝은 자연광 + 지역별 강한 색/재질 차이. 기본섬은 녹색 생활권, 철광산은 회색 슬레이트, 목장은 연두 초원, 금광은 황금 사막, 화산은 검은 현무암과 주황 발광으로 식별한다."
     },
     "playerFantasy": "작은 섬에서 맨손으로 시작해 주민과 군대가 움직이는 왕국으로 키우고, 새로운 섬을 점령할 때마다 전략자원을 손에 넣는 개척자.",
     "mvpScope": {
       "launch": [
-        "기본섬",
-        "직접 벌목/식량",
-        "주민 고용/배치",
-        "병영",
-        "병사 모집",
-        "5개 자원 기지",
-        "보이는 자동전투",
-        "점령 보상",
-        "저장",
-        "협동 지원"
+        "직접 채집",
+        "NPC 마을",
+        "야생동물/약탈병",
+        "주민 자동화",
+        "병영/병사",
+        "5개 거점",
+        "자동전투",
+        "협동지원",
+        "저장"
       ],
       "deferred": [
-        "고급 병종",
+        "신규 병종",
         "해전",
-        "공성",
         "동맹",
-        "불만/반란",
+        "반란",
         "월드 이벤트",
         "희귀 섬",
-        "대륙 최종전"
+        "추가 바이옴"
       ],
       "forbidden": [
         "낚시 핵심루프 복귀",
         "대기만 하는 방치형 진행"
       ]
+    },
+    "titleLocalization": {
+      "ko": "포근섬: 작은 왕국 키우기",
+      "en": "Cozy Island: Build a Tiny Kingdom"
+    },
+    "graphicsConcept": {
+      "id": "COZY_CHIBI_STORYBOOK",
+      "worldArtPass": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "characterArtDirection": "COZY_CHIBI_KINGDOM",
+      "rules": [
+        "큰 머리·둥근 얼굴·짧고 굵은 팔다리",
+        "직업 소품으로 역할 식별",
+        "동물 파츠는 하나의 연결된 몸처럼 보여야 함",
+        "따뜻한 자연광과 지역별 큰 색/재질 차이"
+      ],
+      "forbidden": [
+        "RPG 영웅 체형 재사용",
+        "심야 공포 체형 재사용",
+        "색만 바꾼 기본 블록 NPC",
+        "공중에 떨어져 보이는 동물 파츠"
+      ]
+    },
+    "implementationSync": {
+      "sourceBranch": "main",
+      "sourceRevision": "5bb5500a2d43e0fb32a84c55ac46a61356093796",
+      "syncedAt": "2026-09-22T19:50:00+09:00",
+      "codePaths": {
+        "config": "roblox-games/cozy-island/shared/GameConfig.luau",
+        "server": "roblox-games/cozy-island/server/Game.server.luau",
+        "client": "roblox-games/cozy-island/client/Game.client.luau",
+        "launch": "roblox-games/cozy-island/launch-mvp.json"
+      },
+      "launchMvpVersion": 8,
+      "graphicsConcept": "COZY_CHIBI_STORYBOOK",
+      "runtimeWorldArtPass": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "runtimeCharacterArtDirection": "COZY_CHIBI_KINGDOM",
+      "qaContract": "qa/primary-three-design-code-sync.test.mjs",
+      "syncRule": "DESIGN_EQUALS_IMPLEMENTED_CODE"
     }
-  }
+  },
+  "gameNameEnglish": "Cozy Island: Build a Tiny Kingdom"
 }

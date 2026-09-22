@@ -1,79 +1,80 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "horror-escape-room",
-  "gameName": "심야 술래잡기",
+  "gameName": "심야 감염전 [4대4]",
   "gameCategory": "CASUAL",
   "status": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
   "authority": "OWNER_DIRECTIVE_2026-09-22",
   "createdAt": "2026-09-22T01:05:00+09:00",
-  "updatedAt": "2026-09-22T04:12:00+09:00",
+  "updatedAt": "2026-09-22T19:50:00+09:00",
   "ownerDirectDevelopment": true,
   "strictDesignReviewRequiredForAdmission": false,
   "strictDesignReviewContinuesInParallel": true,
   "content": {
-    "identity": "실제 플레이어 몬스터 1명이 친숙한 고전 공포 몬스터가 되어 생존자를 얼리고, 생존자들은 서로 해동하며 제한시간을 버티는 단순·직관형 비대칭 몬스터 얼음땡.",
-    "coreFun": "퍼즐 없이 잡아라·도망가라·얼면 친구가 풀어줘라가 바로 이해되는 짧은 추격전.",
+    "identity": "인간 4명과 몬스터 4명이 시작하고, 잡힌 인간이 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.",
+    "coreFun": "4대4에서 시작한 인원 구성이 감염과 정화 때문에 실시간으로 바뀌며, 방금 전 동료가 다음 순간 나를 쫓는 긴장감.",
     "coreLoop": [
-      "라운드 시작 시 실제 플레이어 1명을 몬스터로 선정하고 나머지는 생존자가 된다. 1인 플레이에서는 플레이어가 역할을 고르고 AI가 빈 역할을 채운다.",
-      "몬스터는 생존자를 직접 추격해 얼리고, 생존자는 뛰고 숨고 문·장애물을 이용하며 얼어 있는 동료를 터치해 해동한다.",
-      "전원이 얼면 몬스터 승리, 제한시간까지 한 명이라도 남으면 생존자 승리. 라운드 종료 후 몬스터 진화·수집과 기록 보상을 적용한다."
+      "인간4/몬스터4 배정, 빈자리 AI 충원",
+      "인간은 고유 도구·대시·정화로 생존/반격",
+      "몬스터는 인간을 접촉 감염",
+      "감염된 인간은 몬스터로 전환해 옛 팀 추격",
+      "한 진영이 0명이 되면 즉시 승패",
+      "240초까지 양팀이 남으면 무승부"
     ],
     "signatureSystems": [
       {
-        "name": "공정 몬스터 선정",
-        "purpose": "몬스터 지원자를 우선하되 아무도 지원하지 않으면 전원 중 가중 랜덤으로 한 명을 뽑는다. 오래 몬스터를 못 한 사람의 확률을 올리고 직전 몬스터는 다음 판에서 제외한다."
+        "name": "4대4 AI 충원",
+        "purpose": "논리 인원 8명, 인간4/몬스터4를 실제 플레이어+AI로 항상 채운다."
       },
       {
-        "name": "얼음땡 구조",
-        "purpose": "몬스터에게 잡힌 생존자는 얼음 상태가 되며 다른 생존자가 가까이 가서 터치하면 다시 움직일 수 있다."
+        "name": "감염 전환",
+        "purpose": "잡힌 인간이 탈락하지 않고 몬스터가 되어 즉시 반대팀으로 플레이한다."
       },
       {
-        "name": "몬스터 성장과 진화",
-        "purpose": "속도형·추적형·함정형처럼 새로운 플레이 방식을 열되 단순 스탯 압살은 금지한다. 희귀 몬스터는 고유 능력과 외형을 가진다."
+        "name": "인간 정화",
+        "purpose": "인간이 정화 공격으로 몬스터를 라운드에서 제거한다."
       },
       {
-        "name": "AI 자동 충원",
-        "purpose": "혼자 또는 인원이 부족할 때 AI 생존자와 AI 몬스터가 빈 슬롯을 채우고 실제 플레이어가 들어오면 자연스럽게 대체한다."
+        "name": "확장형 인간 로스터",
+        "purpose": "각 인간은 고유 도구+패시브+감염 후 능력 세트로 계속 추가한다."
       },
       {
-        "name": "직관형 맵 장치",
-        "purpose": "사물함, 문 잠그기, 장애물 넘기, 회전문처럼 설명 없이 이해되는 장치만 사용하고 복잡한 퍼즐은 넣지 않는다."
+        "name": "고전 몬스터 5종",
+        "purpose": "드라큘라·프랑켄슈타인·늑대인간·미라·사신의 다른 추격 능력."
       },
       {
-        "name": "마지막 생존자 역전",
-        "purpose": "마지막 생존자는 잠깐의 생존 보정을 받고 대신 위치가 간헐적으로 드러나 막판 추격 긴장감을 만든다."
-      },
-      {
-        "name": "대중적 몬스터 수집",
-        "purpose": "흡혈귀·인조괴물·늑대인간·미라·사신처럼 즉시 알아보는 고전 공포 원형을 이름만 살짝 변형해 사용하고, 각 몬스터는 한눈에 이해되는 추격 능력 하나를 가진다."
+        "name": "3맵 순환",
+        "purpose": "학교·폐병원·폐놀이공원을 서로 다른 동선과 랜덤 이벤트로 순환한다."
       }
     ],
-    "progressionDirection": "드라크를 기본 몬스터로 시작하고 플레이 기록으로 프랑켄·울프·미이라·리퍼를 해금한다. 새 몬스터는 상위호환이 아니라 다른 추격 방식으로 확장한다.",
+    "progressionDirection": "새 인간 직업과 몬스터를 동일한 데이터 구조에 계속 추가하고, 각 캐릭터는 플레이 방식이 달라지게 확장한다.",
     "failureRetryRisk": {
       "failureStates": [
-        "생존자가 몬스터에게 잡혀 얼음 상태가 됨",
-        "모든 생존자가 얼어 몬스터가 승리",
-        "제한시간 종료까지 생존자가 남아 몬스터가 패배"
+        "인간이 감염돼 몬스터로 전환",
+        "정화로 몬스터 탈락",
+        "팀 인원 0명"
       ],
-      "retryDirection": "라운드 종료 후 짧은 결과 화면만 거쳐 즉시 다음 라운드 역할 선정으로 이어진다."
+      "retryDirection": "짧은 결과 후 다음 4대4 라운드 즉시 시작."
     },
-    "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
+    "multiplayerMode": "FOUR_VS_FOUR_INFECTION_WITH_AI_FILL",
     "technicalAssumptions": [
-      "2명 이상 멀티에서는 매판 실제 플레이어 한 명이 반드시 몬스터가 된다.",
-      "몬스터 지원자가 없으면 생존자 선호와 관계없이 공정 가중 랜덤으로 실제 플레이어 한 명을 선정한다.",
-      "직전 몬스터는 다음 판에서 제외하고 오래 몬스터를 못 한 플레이어일수록 가중치가 올라간다.",
-      "강제 몬스터 선정자는 해당 라운드 보상 보너스를 받는다.",
-      "1인 플레이에서는 플레이어가 몬스터 또는 생존자를 직접 고르고 AI가 나머지 역할을 채운다.",
-      "서버가 역할, 얼음/해동, 타이머, 포획, 승패, 몬스터 성장 보상을 authoritative하게 관리한다."
+      "TargetPopulation=8",
+      "SurvivorSlots=4",
+      "MonsterSlots=4",
+      "RoundSeconds=240",
+      "PurifyDistance=8",
+      "PurifyCooldown=5",
+      "역할·감염·정화·승패 서버 authoritative",
+      "AI가 양팀 빈자리 충원"
     ],
-    "mobileUx": "이동·대시·몬스터 스킬·해동처럼 바로 이해되는 큰 버튼만 제공하고 퍼즐 UI는 사용하지 않는다.",
+    "mobileUx": "인간은 정화/대시, 몬스터는 능력 중심의 최소 버튼만 노출하고 HUD에 인간:몬스터 현재 인원을 표시한다.",
     "robloxBuildProfile": {
       "version": 4,
       "targetPlatform": "ROBLOX",
       "taxonomy": "OWNER_DIRECT_DEVELOPMENT_BASELINE",
       "declaredGameCategory": "CASUAL",
       "genre": "Survival",
-      "subgenre": "Asymmetric Monster Tag",
+      "subgenre": "4v4 Infection Chase",
       "playMode": "COMPETITIVE",
       "multiplayerRequired": true,
       "coopImplementationRequired": false,
@@ -81,13 +82,13 @@
       "networkingRequired": true,
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "displayLabelKo": "몬스터 · 얼음땡 · 술래잡기",
-      "visualQualityTarget": "STYLIZED_ROBLOX_HORROR_READABLE",
+      "displayLabelKo": "4대4 · 감염전 · 인간 VS 몬스터",
+      "visualQualityTarget": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
       "visualPriority": [
-        "monster-silhouette",
+        "human-monster-silhouette-separation",
+        "monster-archetype-identity",
         "chase-readability",
-        "map-landmarks",
-        "freeze-rescue-feedback"
+        "map-landmark-readability"
       ],
       "validationMode": "HEADLESS_FAST_MVP",
       "studioRequired": false
@@ -128,46 +129,31 @@
     },
     "monsterRoster": [
       {
-        "id": "DRAK",
-        "name": "드라크",
-        "archetype": "고전 흡혈귀",
-        "ability": "박쥐 돌진",
-        "playStyle": "짧은 직선 돌진으로 거리를 좁히는 기본형"
+        "id": "DRACULA",
+        "name": "드라큘라"
       },
       {
-        "id": "FRANKEN",
-        "name": "프랑켄",
-        "archetype": "고전 인조괴물",
-        "ability": "괴력 돌진",
-        "playStyle": "느리지만 강하게 돌진하고 일부 장애물을 밀쳐 길을 연다"
+        "id": "FRANKENSTEIN",
+        "name": "프랑켄슈타인"
       },
       {
-        "id": "WOLF",
-        "name": "울프",
-        "archetype": "늑대인간",
-        "ability": "폭주 질주",
-        "playStyle": "일정 시간 빠르게 달려 도망가는 생존자를 따라붙는다"
+        "id": "WEREWOLF",
+        "name": "늑대인간"
       },
       {
-        "id": "MIRAA",
-        "name": "미이라",
-        "archetype": "고대 미라",
-        "ability": "저주의 손길",
-        "playStyle": "가까운 생존자의 이동을 잠깐 느리게 만든다"
+        "id": "MUMMY",
+        "name": "미라"
       },
       {
-        "id": "REAPER",
-        "name": "리퍼",
-        "archetype": "사신",
-        "ability": "그림자 점프",
-        "playStyle": "짧은 거리 순간이동으로 코너와 장애물을 넘겨 추격한다"
+        "id": "GRIM_REAPER",
+        "name": "사신"
       }
     ],
-    "visualDirection": "어둡지만 길을 잃을 정도로 어둡지 않은 Roblox 스타일 공포 3D. 학교·병원·놀이공원처럼 익숙한 공간을 큰 실루엣과 명확한 동선으로 만들고, 몬스터는 고전 공포 원형을 과장된 체형·색·발광 포인트로 한눈에 구분한다. 실사 공포보다 추격 중 가독성과 캐릭터 식별을 우선한다.",
+    "visualDirection": "세 게임 중 가장 현실적인 인간 비율과 가장 비정상적인 몬스터 체형을 강하게 대비시키는 가독성 중심 공포 3D.",
     "artAudioDirection": {
       "visualIdentity": "차가운 야간 조명, 회색 콘크리트, 청록 사물함과 제한된 네온 포인트. 드라크는 적색, 프랑켄은 녹색, 울프는 갈색/황색, 미이라는 사막색, 리퍼는 보라색 포인트로 구분한다."
     },
-    "playerFantasy": "내가 키운 몬스터를 직접 조종해 사람들을 쫓아다니며 연속으로 얼리고 새 몬스터와 능력을 모으는 술래.",
+    "playerFantasy": "인간으로 버티며 몬스터를 정화하다가 잡히면 즉시 괴물이 되어 방금 전 동료를 사냥하는 감염전 참가자.",
     "monsterSelection": {
       "volunteersFirst": true,
       "noVolunteerRule": "전원 중 공정 가중 랜덤",
@@ -179,30 +165,106 @@
     },
     "mvpScope": {
       "launch": [
-        "학교맵1",
-        "공정 역할선정",
-        "얼음/해동",
-        "생존자 대시",
-        "마지막 생존자",
-        "몬스터5종",
-        "몬스터 XP/코인",
-        "1인 AI 충원",
-        "저장",
-        "라운드 재시작"
+        "8인 4대4",
+        "AI 양팀 충원",
+        "감염 전환",
+        "정화",
+        "인간 5종",
+        "몬스터 5종",
+        "학교/병원/놀이공원",
+        "맵 이벤트",
+        "대시/몬스터 능력",
+        "모바일 UI",
+        "저장"
       ],
       "deferred": [
-        "병원맵",
-        "놀이공원맵",
         "추가 몬스터",
-        "진화트리",
+        "고급 진화트리",
         "랭크"
       ],
       "forbidden": [
-        "퍼즐",
-        "암호",
-        "복잡한 탈출아이템",
-        "멀티에서 AI 몬스터를 기본으로 사용"
+        "1몬스터 얼음/해동 규칙 복귀",
+        "복잡한 퍼즐/암호",
+        "지나치게 어두운 화면"
       ]
+    },
+    "titleLocalization": {
+      "ko": "심야 감염전 [4대4]",
+      "en": "Midnight Infection [4v4]"
+    },
+    "humanRoster": [
+      {
+        "id": "BROADCAST",
+        "name": "방송부",
+        "tool": "신호 송신기",
+        "passive": "넓은 정화",
+        "infectedAbility": "가짜 경보"
+      },
+      {
+        "id": "ELECTRICIAN",
+        "name": "전기기사",
+        "tool": "고압 정화기",
+        "passive": "빠른 정화",
+        "infectedAbility": "정전"
+      },
+      {
+        "id": "COURIER",
+        "name": "배달부",
+        "tool": "긴급 가방",
+        "passive": "강화 대시",
+        "infectedAbility": "돌진"
+      },
+      {
+        "id": "PHOTOGRAPHER",
+        "name": "사진가",
+        "tool": "플래시 카메라",
+        "passive": "플래시 정화",
+        "infectedAbility": "사냥 플래시"
+      },
+      {
+        "id": "SECURITY",
+        "name": "경비원",
+        "tool": "충격봉",
+        "passive": "근접 정화",
+        "infectedAbility": "돌파"
+      }
+    ],
+    "graphicsConcept": {
+      "id": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+      "worldArtPass": "MIDNIGHT_<MAP>_INFECTION_HORROR_V9",
+      "characterArtDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+      "rules": [
+        "세 게임 중 가장 현실적인 Roblox 인간 비율",
+        "몬스터는 체형 자체가 다른 과장 공포 실루엣",
+        "화면은 어둡되 길과 적이 읽힘",
+        "학교/병원/놀이공원 랜드마크 차별화",
+        "학교 전체를 거대한 단일 지붕으로 덮지 않음"
+      ],
+      "forbidden": [
+        "포근섬 치비 인간 비율",
+        "RPG 영웅 갑옷 골격 재사용",
+        "색만 바꾼 몬스터",
+        "길을 잃을 정도의 암흑",
+        "SchoolMainRoof 전체판"
+      ]
+    },
+    "implementationSync": {
+      "sourceBranch": "main",
+      "sourceRevision": "5bb5500a2d43e0fb32a84c55ac46a61356093796",
+      "syncedAt": "2026-09-22T19:50:00+09:00",
+      "codePaths": {
+        "config": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "server": "roblox-games/horror-escape-room/server/Game.server.luau",
+        "client": "roblox-games/horror-escape-room/client/Game.client.luau",
+        "launch": "roblox-games/horror-escape-room/launch-mvp.json"
+      },
+      "launchMvpVersion": 11,
+      "graphicsConcept": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+      "runtimeWorldArtPass": "MIDNIGHT_<MAP>_INFECTION_HORROR_V9",
+      "runtimeCharacterArtDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+      "qaContract": "qa/primary-three-design-code-sync.test.mjs",
+      "syncRule": "DESIGN_EQUALS_IMPLEMENTED_CODE"
     }
-  }
+  },
+  "gameNameEnglish": "Midnight Infection [4v4]"
 }

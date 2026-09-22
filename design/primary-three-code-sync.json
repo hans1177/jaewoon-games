@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-22T19:50:00+09:00",
+  "sourceBranch": "main",
+  "sourceRevision": "5bb5500a2d43e0fb32a84c55ac46a61356093796",
+  "policy": "GAME_DESIGN_EQUALS_IMPLEMENTED_ROBLOX_CODE",
+  "qaContract": "qa/primary-three-design-code-sync.test.mjs",
+  "games": [
+    {
+      "gameId": "cozy-island",
+      "designPath": "design/cozy-island/2026-09-22/design-revised.json",
+      "launchVersion": 8,
+      "graphicsConcept": "COZY_CHIBI_STORYBOOK",
+      "worldArtPass": "COZY_CHIBI_KINGDOM_WORLD_V8",
+      "characterArtDirection": "COZY_CHIBI_KINGDOM"
+    },
+    {
+      "gameId": "daechung-rpg",
+      "designPath": "design/daechung-rpg/2026-09-22/design-revised.json",
+      "launchVersion": 8,
+      "graphicsConcept": "RPG_HEROIC_PORTAL_FANTASY",
+      "worldArtPass": "RPG_FANTASY_SILHOUETTE_WORLD_V4",
+      "characterArtDirection": "RPG_HEROIC_FANTASY_SILHOUETTE"
+    },
+    {
+      "gameId": "horror-escape-room",
+      "designPath": "design/horror-escape-room/2026-09-22/design-revised.json",
+      "launchVersion": 11,
+      "graphicsConcept": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+      "worldArtPass": "MIDNIGHT_<MAP>_INFECTION_HORROR_V9",
+      "characterArtDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS"
+    }
+  ]
+}
