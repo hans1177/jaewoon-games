@@ -1,5 +1,5 @@
 {
-  "version": 88,
+  "version": 89,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -113,7 +113,14 @@
     "duringWork": "DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY",
     "afterWork": "REVALIDATE_SHARED_CONTEXT_AND_BIND_OUTPUT_EVIDENCE",
     "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
-    "requiredDepartmentPolicy": "ALL_EXISTING_DEPARTMENTS_SUPPORT_COMMON_CORE_PLUS_PLATFORM_PROFILES_WITHOUT_DUPLICATING_SHARED_DEPARTMENTS"
+    "requiredDepartmentPolicy": "ALL_EXISTING_DEPARTMENTS_SUPPORT_COMMON_CORE_PLUS_PLATFORM_PROFILES_WITHOUT_DUPLICATING_SHARED_DEPARTMENTS",
+    "centralDocumentationContract": "company-learning/platform-release-roadmap.json#centralDocumentation",
+    "codeChangeDocumentationImpactReviewRequired": true,
+    "documentationChangeImplementationImpactReviewRequired": true,
+    "currentMainRebindRequiredAfterCentralPolicyChange": true,
+    "vibeWorkerPreflightMustUseCurrentMainPolicySha": true,
+    "afterCentralDocumentWrite": "RELOAD_ROADMAP_LOG_ARCHITECTURE_SECURITY_AND_VERIFY_SHARED_CONTEXT",
+    "shadowDocumentationSystemForbidden": true
   },
   "forbidden": [
     "WORK_WITHOUT_SHARED_CONTEXT",
@@ -268,7 +275,7 @@
   },
   "securityPolicy": "company-learning/security-immune-system.json",
   "workerSynchronization": {
-    "version": 1,
+    "version": 2,
     "documentIsCode": true,
     "roadmapFirst": true,
     "validator": "tools/company-shared-context.mjs",
@@ -286,7 +293,12 @@
       ".github/workflows/homepage-manager.yml"
     ],
     "launcherValidationRequired": true,
-    "staleRoadmapExecutionForbidden": true
+    "staleRoadmapExecutionForbidden": true,
+    "centralDocumentationRequired": true,
+    "centralDocumentationContract": "company-learning/platform-release-roadmap.json#centralDocumentation",
+    "currentMainPolicyShaBindingRequired": true,
+    "afterWorkSharedContextRevalidationRequired": true,
+    "postCentralDocumentWriteResyncRequired": true
   },
   "longHorizonTopology": {
     "version": 2,
@@ -2576,5 +2588,24 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-22T03:56:00+09:00"
+  "updatedAt": "2026-09-22T11:10:00+09:00",
+  "centralDocumentationTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
+    "role": "STRUCTURAL_MIRROR_AND_BINDING_POINTERS_ONLY",
+    "policyCreationAuthority": "company-learning/platform-release-roadmap.json",
+    "canonicalSetSource": "company-learning/platform-release-roadmap.json#centralDocumentation.canonicalSet",
+    "branchRoleSource": "company-learning/company-architecture-map.json#branches",
+    "sharedContextLoadOrderSource": "company-learning/company-architecture-map.json#sharedContextLoadOrder",
+    "synchronizationSource": "company-learning/company-architecture-map.json#synchronization",
+    "workerSynchronizationSource": "company-learning/company-architecture-map.json#workerSynchronization",
+    "implementationBindings": [
+      "tools/company-shared-context.mjs",
+      "qa/company-shared-context.test.mjs",
+      ".github/workflows/vibe2-continuous-core.yml"
+    ],
+    "duplicatePolicyReplicationForbidden": true,
+    "runtimeStateMayNotCreatePolicy": true,
+    "vibeControlStateMayNotCreatePolicy": true
+  }
 }
