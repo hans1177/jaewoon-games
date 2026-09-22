@@ -5128,7 +5128,8 @@
         "testerDebugRecoveryIntegration": "IMPLEMENTED",
         "cozyIslandSourceAndSpawnRepair": "IMPLEMENTED",
         "unityFoundationAdapter": "PENDING_NO_FALSE_PASS",
-        "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS"
+        "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS",
+        "robloxF0NativeLanguageCompile": "IMPLEMENTED_PINNED_OFFICIAL_LUAU_0_739"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5190,7 +5191,11 @@
           "privateRuntimeCandidateSeparatedFromInternalRelease": true,
           "f9ExactCandidatePromotionRequired": true,
           "cozyIslandDuplicateTreeRegressionRemoved": true,
-          "cozyIslandSafeSpawnAndRuntimeSentinelAdded": true
+          "cozyIslandSafeSpawnAndRuntimeSentinelAdded": true,
+          "officialLuauCompilerPinned": true,
+          "officialLuauCompilerSha256Verified": true,
+          "cozyIslandLuauFilesCompiled": 6,
+          "missingCompileEvidenceBlocksF0": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
@@ -5208,6 +5213,21 @@
           "MULTIPLAYER_SYNC_WHEN_REQUIRED",
           "CORE_LOOP_READY"
         ]
+      },
+      "f0NativeCompiler": {
+        "required": true,
+        "implementation": "OFFICIAL_LUAU_COMPILER",
+        "version": "0.739",
+        "releaseAsset": "luau-ubuntu.zip",
+        "releaseUrl": "https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip",
+        "sha256": "8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247",
+        "executable": "luau-compile",
+        "exactSourceRevisionRequired": true,
+        "allLuauFilesUnderGameSourceMustCompile": true,
+        "structuralMarkersCannotSubstituteCompile": true,
+        "missingCompilerEvidenceAction": "F0_BLOCKED",
+        "workflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+        "prGate": ".github/workflows/vibe3-engine-contract.yml"
       }
     }
   },
