@@ -344,9 +344,12 @@ test('security recovery fan-in fails closed on mismatched supervisor state or re
 test('System AI fan-in persists exact security recovery review linkage before control commit',()=>{
   const fanIn=workflow.slice(workflow.indexOf('- name: Persist results for primary AI supervision'));
   const systemFanIn=fanIn.indexOf('company-system-ai-queue.mjs --command=fan-in');
+  const workerHandoff=fanIn.indexOf('company-system-ai-queue.mjs --command=handoff-missing');
   const recoveryFanIn=fanIn.indexOf('company-recovery-queue.mjs --command=fan-in-system-ai');
-  const commit=fanIn.indexOf('git commit -m "system-ai: persist supervised results and security quarantine [skip ci]"');
-  assert.ok(systemFanIn>=0&&recoveryFanIn>systemFanIn&&commit>recoveryFanIn);
+  const commit=fanIn.indexOf('git commit -m "system-ai: persist supervised results and worker handoff [skip ci]"');
+  assert.ok(systemFanIn>=0&&workerHandoff>systemFanIn&&recoveryFanIn>workerHandoff&&commit>recoveryFanIn);
+  assert.match(fanIn,/for attempt in 1 2 3 4 5; do/);
+  assert.match(fanIn,/COMPANY_SYSTEM_AI_FANIN_OPTIMISTIC_RETRY=/);
   assert.match(fanIn,/--system-ai=\/tmp\/system-ai-control\/\.vibe2\/system-ai-queue\.json/);
   assert.match(fanIn,/--results=\/tmp\/company-system-ai-results/);
 });
