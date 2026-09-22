@@ -56,12 +56,14 @@ test('Whatever RPG Remote는 allowlist와 rate limit 뒤에만 게임 액션과 
 });
 
 
-test('포근섬 모바일 UI는 운영형 컴팩트 HUD와 접이식 자원/성장/정복 조작을 쓴다',()=>{
-  for(const marker of ['TopHUD','ActionDock','ActionPopup','채집','마을 성장','정복','기지공격','병영강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
+test('포근섬 모바일 UI는 자동채집과 작은 마을/정복 운영 조작을 쓴다',()=>{
+  for(const marker of ['TopHUD','ActionDock','ActionPopup','AutoGatherStatus','자동채집','마을','정복','기지 공격','병영 강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
   assert.match(cozyClient,/hud\.Size=UDim2\.fromOffset\(286,58\)/);
-  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(276,44\)/);
+  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,42\)/);
   assert.match(cozyClient,/actionPopup\.Visible=false/);
   assert.match(cozyClient,/showGroup\(groupIndex\)/);
+  assert.doesNotMatch(cozyClient,/C\.Actions\.CHOP/);
+  assert.doesNotMatch(cozyClient,/C\.Actions\.FOOD/);
 });
 
 test('Whatever RPG 모바일 UI는 오른손 전투 스택과 접힌 파티 장비 메뉴를 쓴다',()=>{
@@ -75,5 +77,17 @@ test('Whatever RPG 모바일 UI는 오른손 전투 스택과 접힌 파티 장�
 test('포근섬 모바일 액션 팝업은 화면을 오래 가리지 않고 자동으로 닫힌다',()=>{
   assert.match(cozyClient,/local popupToken=0/);
   assert.match(cozyClient,/task\.delay\(4\.5/);
-  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(276,44\)/);
+  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,42\)/);
+});
+
+test('포근섬은 수동 채집 Remote 없이 근처 자원을 자동으로 수확한다',()=>{
+  assert.match(cozyConfig,/AutoGatherTickSeconds=1\.5/);
+  assert.match(cozyConfig,/AutoGatherWoodRadius=34/);
+  assert.match(cozyConfig,/AutoGatherFoodRadius=28/);
+  assert.match(cozyServer,/ForestFloor/);
+  assert.match(cozyServer,/horizontalDistance\(root\.Position,forest\.Position\)<=C\.AutoGatherWoodRadius/);
+  assert.match(cozyServer,/horizontalDistance\(root\.Position,farm\.Position\)<=C\.AutoGatherFoodRadius/);
+  assert.match(cozyServer,/p:SetAttribute\("AutoGatherZone",zone\)/);
+  assert.doesNotMatch(cozyServer,/\[C\.Actions\.CHOP\]=chop/);
+  assert.doesNotMatch(cozyServer,/\[C\.Actions\.FOOD\]=food/);
 });
