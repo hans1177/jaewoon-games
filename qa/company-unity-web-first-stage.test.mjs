@@ -68,5 +68,5 @@ test('Unity Web validation publication uses PR instead of direct main write',()=
   assert.match(workflow,/Create verified Unity Web build PR/);
   assert.match(workflow,/gh pr create/);
   assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
-  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+  assert.equal(workflow.includes(['git','push','origin','HEAD:main'].join(' ')),false);
 });
