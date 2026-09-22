@@ -1,5 +1,5 @@
 {
-  "version": 261,
+  "version": 262,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -4793,7 +4793,8 @@
         "safeSpawnMustExistBeforePlayerBinding": true,
         "coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition": true,
         "newRuntimeCandidateInvalidatesPriorReleasePassState": true,
-        "f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion": true
+        "f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion": true,
+        "mainGameSourceDriftInvalidatesBoundRobloxEvidence": true
       },
       "layers": [
         {
@@ -5040,7 +5041,30 @@
           "CANDIDATE_VERSION_NUMBER",
           "ACTUAL_RUNTIME_SENTINEL",
           "POST_RUNTIME_QA"
-        ]
+        ],
+        "sourceDriftInvalidation": {
+          "scope": "ROBLOX_GAME_SOURCE_TREE_ONLY",
+          "compare": "BOUND_ROBLOX_SOURCE_COMMIT_TO_CURRENT_MAIN_FOR_ROBLOX_GAMES_GAME_ID",
+          "lifecycleStateIndependent": true,
+          "noSourceTreeChangeNoRevalidation": true,
+          "changedSourceTreeAction": "REBIND_EXACT_MAIN_SOURCE_AND_INVALIDATE_ALL_DOWNSTREAM_EXACT_EVIDENCE",
+          "clear": [
+            "BUILD_PACKAGE_PASS",
+            "BUILD_PREFLIGHT_PASS",
+            "F0_SOURCE_PREFLIGHT_PASS",
+            "RUNTIME_CANDIDATE_EVIDENCE",
+            "RUNTIME_FOUNDATION_EVIDENCE",
+            "RUNTIME_ACCEPTANCE_PASS",
+            "INDEPENDENT_QA_PASS",
+            "REGRESSION_PASS",
+            "F9_FINAL_REVIEW_PASS",
+            "INTERNAL_RELEASE_READY",
+            "INTERNAL_RELEASE_EVIDENCE"
+          ],
+          "retain": [
+            "ROBLOX_PUBLICATION_TARGET_IDENTITY"
+          ]
+        }
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,
@@ -5172,7 +5196,8 @@
         "cozyIslandSpawnOrderingRaceRepair": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "runtimeCandidateStaleEvidenceInvalidation": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "f9UniversePlaceVersionExactBinding": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
-        "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
+        "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "robloxMainSourceDriftRebind": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5242,7 +5267,8 @@
           "cozyIslandSpawnBeforePlayerBinding": true,
           "coreLoopCheckpointRequiresSuccessfulTransition": true,
           "newCandidateClearsPriorReleasePassState": true,
-          "f9BindsUniversePlaceVersion": true
+          "f9BindsUniversePlaceVersion": true,
+          "robloxMainSourceDriftRebind": false
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
