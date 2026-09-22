@@ -1,5 +1,5 @@
 {
-  "version": 89,
+  "version": 90,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2588,7 +2588,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-22T11:10:00+09:00",
+  "updatedAt": "2026-09-22T23:30:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2607,5 +2607,57 @@
     "duplicatePolicyReplicationForbidden": true,
     "runtimeStateMayNotCreatePolicy": true,
     "vibeControlStateMayNotCreatePolicy": true
+  },
+  "plannedExecutionEnhancements": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralPolicyPath": "company-learning/platform-release-roadmap.json",
+    "policyChangeRecord": "ROBLOX_VIBE_CO_DEVELOPMENT_VISUAL_DISTILLATION_2026-09-22",
+    "implementationState": "DOCUMENTED_DESIGN_PENDING",
+    "preserveExistingExecutionTopology": true,
+    "noNewPipelineStages": true,
+    "interactiveGameDevelopment": [
+      "OWNER_INPUT_OR_SYSTEM_EVENT",
+      "COMPILE_CURRENT_TRUTH_FROM_CANONICAL_SOURCES",
+      "CREATE_OR_UPDATE_ATOMIC_CHANGE_SET",
+      "RESERVE_EXISTING_WORK_LOCK_FOR_OVERLAPPING_RESPONSIBLE_SOURCE",
+      "ROUTE_EXISTING_VIBE_CAPABILITIES_BY_INTENT_IMPACT_AND_FAILURE",
+      "EXECUTE_EXACT_RESPONSIBLE_SOURCE_CHANGE",
+      "RUN_IMPACT_SCOPED_QA",
+      "PUBLISH_VERIFIED_BASELINE_TO_INTERNAL_DEVELOPMENT_TARGET",
+      "PLAYTEST_AND_CAPTURE_RUNTIME_VISUAL_OWNER_EVIDENCE",
+      "CAUSAL_REPAIR_OR_ROOT_CAUSE_ESCALATION",
+      "PROMOTE_NEW_KNOWN_GOOD_ONLY_AFTER_ACCEPTANCE",
+      "CONTINUE_UNTIL_PUBLIC_RELEASE_READY"
+    ],
+    "departmentCollaboration": [
+      "SHARED_CHANGE_SET_ID",
+      "DECISION_EVIDENCE_IMPACT_HANDOFF",
+      "IMPACT_ROUTED_DEPARTMENT_FANOUT",
+      "SINGLE_GAME_SOURCE_IMPLEMENTATION_OWNER",
+      "DETERMINISTIC_QA_ACCEPTANCE"
+    ],
+    "graphics": [
+      "STYLE_LOCK_AND_CANONICAL_EXEMPLARS",
+      "ASSET_ACQUISITION_AND_VERIFIED_REUSE",
+      "EXISTING_ART_PIPELINE_VARIANT_TOURNAMENT",
+      "GOLDEN_SCENE_RUNTIME_CAPTURE",
+      "VISUAL_DEBT_REPAIR",
+      "NO_MARKER_ONLY_GRAPHICS_PASS"
+    ],
+    "repairAndRecovery": [
+      "PATCH_SATURATION_DETECTION",
+      "ROOT_CAUSE_MODE",
+      "STABLE_AND_CANDIDATE_SEMANTICS",
+      "KNOWN_GOOD_RESTORE_AS_SAFETY_NET",
+      "EXACT_FAILURE_STAGE_RESUME"
+    ],
+    "learning": [
+      "INTERNAL_ROBLOX_SOURCE_PLUS_RUNTIME_DISTILLATION",
+      "EXTERNAL_ROBLOX_BLACK_BOX_RUNTIME_DISTILLATION",
+      "EXISTING_EXPERIENCE_AND_CAPABILITY_DISTILLATION",
+      "ROBLOX_LEARNING_CONTEXT_RETRIEVAL",
+      "FRESH_QA_REQUIRED_ON_TRANSFER"
+    ]
   }
 }
