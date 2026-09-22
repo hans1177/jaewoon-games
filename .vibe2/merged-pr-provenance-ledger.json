@@ -17069,11 +17069,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b721de4d9f70ab8392019d17",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-2584",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8a02c3ad2ef9bee0803a9e422e1d2b213f1c6fb8",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2584,
+        "baseBranch": "main",
+        "headBranch": "fix/cozy-foundation-sentinel-order",
+        "baseSha": "8a02c3ad2ef9bee0803a9e422e1d2b213f1c6fb8",
+        "headSha": "ac657689da42d5cf5162dd5cb7c461feabc4cf29",
+        "mergeCommitSha": "8275294b364bb758c9922fa9fe2ab99e23311383",
+        "mergedAt": "2026-09-22T20:14:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "792f08f0fc188d4540d07d66b8f9b5650fea1d0909d59b0a346f88f634489097",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/cozy-foundation-sentinel-order",
+        "candidateSha": "ac657689da42d5cf5162dd5cb7c461feabc4cf29"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 92,
+        "deletedLineCount": 23,
+        "changedFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "tools/company-development-roblox-runtime-foundation.mjs"
+        ],
+        "codingRelevantFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "roblox-games/cozy-island/server/Game.server.luau",
+          "tools/company-development-roblox-runtime-foundation.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2584",
+        "merge-commit:8275294b364bb758c9922fa9fe2ab99e23311383",
+        "base-main:8a02c3ad2ef9bee0803a9e422e1d2b213f1c6fb8"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 139
+    "total": 140
   }
 }
