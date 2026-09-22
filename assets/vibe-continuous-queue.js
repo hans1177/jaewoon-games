@@ -275,7 +275,8 @@ export function createVibeContinuousQueue(seed = {}) {
       sourceRootExclusive: true,
       responsibleFileExclusive: true,
       unityReleaseFocusSlots: 1,
-      postReleaseFocusedSlots: 1,
+      postReleaseFocusedSlots: 3,
+      postReleaseFocusedSlotsScaleWithEligibleGames: true,
       postReleaseCaretakerMode: 'per-game-persistent',
       systemStewardProtectedSlots: 1,
       systemStewardSlotBorrowableWhenIdle: true,
@@ -448,10 +449,29 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const shardUse = Object.create(null);
   for (const task of capacityRunning) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
 
-  let postReleaseFocusedSlotUsed = false;
-  let postReleaseFocusedTaskId = null;
-  if (freeSlots > 0 && !capacityRunning.some(isPostReleaseFocused)) {
-    for (const focusedRow of candidates.filter((row) => isPostReleaseFocused(row.task))) {
+  const focusedGameId=(task)=>clean(task?.gameId)||clean(task?.sourceRoot)||clean(task?.id);
+  const focusedRunning=capacityRunning.filter(isPostReleaseFocused);
+  const focusedCandidates=candidates.filter((row)=>isPostReleaseFocused(row.task));
+  const focusedGameIds=new Set(focusedRunning.map(focusedGameId).filter(Boolean));
+  const eligibleFocusedGameIds=new Set([...focusedGameIds,...focusedCandidates.map((row)=>focusedGameId(row.task)).filter(Boolean)]);
+  const postReleaseFocusedSlotLimit=Math.min(effectiveMax,Math.max(3,eligibleFocusedGameIds.size));
+  const postReleaseFocusedTaskIds=[];
+  const focusedSlotAvailable=(task)=>{
+    if(!isPostReleaseFocused(task))return true;
+    const gameId=focusedGameId(task);
+    if(gameId&&focusedGameIds.has(gameId))return false;
+    return focusedGameIds.size<postReleaseFocusedSlotLimit;
+  };
+  const noteFocusedSelection=(task)=>{
+    if(!isPostReleaseFocused(task))return;
+    const gameId=focusedGameId(task);
+    if(gameId)focusedGameIds.add(gameId);
+    postReleaseFocusedTaskIds.push(task.id);
+  };
+
+  if (freeSlots > 0) {
+    for (const focusedRow of focusedCandidates) {
+      if(selected.length>=freeSlots||!focusedSlotAvailable(focusedRow.task))continue;
       const conflict = conflictsWith(focusedRow.task, active);
       if (conflict) {
         if (!deferredConflicts.some((item) => item.task.id === focusedRow.task.id)) deferredConflicts.push(freeze({ task: focusedRow.task, reason: conflict }));
@@ -460,19 +480,18 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
       selected.push(focusedRow.task);
       active.push(focusedRow.task);
       shardUse[focusedRow.task.shard] = (shardUse[focusedRow.task.shard] || 0) + 1;
-      postReleaseFocusedSlotUsed = true;
-      postReleaseFocusedTaskId = focusedRow.task.id;
-      break;
+      noteFocusedSelection(focusedRow.task);
     }
   }
 
-  const postReleasePhysicalSlotBusy=()=>capacityRunning.some(isPostReleaseFocused)||selected.some(isPostReleaseFocused);
+  const postReleaseFocusedSlotUsed=postReleaseFocusedTaskIds.length>0;
+  const postReleaseFocusedTaskId=postReleaseFocusedTaskIds[0]||null;
 
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
   if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
     for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
-      if(isPostReleaseFocused(protectedRow.task)&&postReleasePhysicalSlotBusy())continue;
+      if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
       const conflict = conflictsWith(protectedRow.task, active);
       if (conflict) {
         if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
@@ -481,6 +500,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
       selected.push(protectedRow.task);
       active.push(protectedRow.task);
       shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
+      noteFocusedSelection(protectedRow.task);
       longWorkProtectedSlotUsed = true;
       longWorkOwnerTaskId = protectedRow.task.id;
       break;
@@ -490,20 +510,20 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   for (const row of candidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
-    if(isPostReleaseFocused(row.task)&&postReleasePhysicalSlotBusy())continue;
+    if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
     const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
     if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
     const conflict = conflictsWith(row.task, active);
     if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
-    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1;
+    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
   for (const row of candidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
-    if(isPostReleaseFocused(row.task)&&postReleasePhysicalSlotBusy())continue;
+    if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
     const conflict = conflictsWith(row.task, active);
     if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
-    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1;
+    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
 
   const queuedEligible = candidates.length;
@@ -533,6 +553,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     freeSlots,
     postReleaseFocusedSlotUsed,
     postReleaseFocusedTaskId,
+    postReleaseFocusedTaskIds: freeze([...postReleaseFocusedTaskIds]),
+    postReleaseFocusedSlotLimit,
     longWorkProtectedSlotUsed,
     longWorkOwnerTaskId,
     workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
