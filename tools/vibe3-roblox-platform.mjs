@@ -344,6 +344,56 @@ export function createRobloxPlacePublishPlan({placeFile='',universeId='',placeId
   });
 }
 
+
+export function createRobloxRuntimeCandidatePublishPlan({placeFile='',universeId='',placeId='',sourceRevision='',artifactIdentity='',f0Evidence={}}={}){
+  const file=clean(placeFile).replaceAll('\\','/'),universe=clean(universeId),place=clean(placeId),revision=clean(sourceRevision),artifact=clean(artifactIdentity),blocked=[];
+  const sourcePath=validateRobloxSourcePath(file);
+  const contentType=contentTypeForPlaceFile(file);
+  if(!file)blocked.push('place-file-missing');
+  if(file&&!sourcePath.underRoot)blocked.push('place-file-outside-roblox-root');
+  if(!contentType)blocked.push('place-file-extension-unsupported');
+  if(!DIGITS.test(universe))blocked.push('universe-id-invalid');
+  if(!DIGITS.test(place))blocked.push('place-id-invalid');
+  if(!COMMIT40.test(revision))blocked.push('source-revision-invalid');
+  if(!ARTIFACT_SHA256.test(artifact))blocked.push('artifact-identity-invalid');
+  if(f0Evidence?.sourcePreflightPassed!==true)blocked.push('f0-source-preflight-not-passed');
+  if(f0Evidence?.f0SourceIntegrityPassed!==true)blocked.push('f0-source-integrity-not-passed');
+  if(f0Evidence?.actualRuntimeEvidence!==false)blocked.push('f0-must-not-claim-runtime-evidence');
+  if(f0Evidence?.runtimeFoundationPassed!==false)blocked.push('f0-must-not-claim-runtime-foundation');
+  if(clean(f0Evidence?.sourceRevision)!==revision)blocked.push('f0-source-revision-mismatch');
+  if(clean(f0Evidence?.artifactIdentity)!==artifact)blocked.push('f0-artifact-identity-mismatch');
+  if(!Number.isInteger(Number(f0Evidence?.artifactRunId))||Number(f0Evidence?.artifactRunId)<=0)blocked.push('f0-artifact-run-missing');
+  const endpoint=(DIGITS.test(universe)&&DIGITS.test(place))?`https://apis.roblox.com/universes/v1/${universe}/places/${place}/versions?versionType=Published`:null;
+  return Object.freeze({
+    version:1,
+    platform:'ROBLOX',
+    planKind:'PRIVATE_RUNTIME_CANDIDATE',
+    executionReady:blocked.length===0,
+    dryRun:true,
+    method:'POST',
+    endpoint,
+    placeFile:file||null,
+    contentType,
+    sourceRoot:ROBLOX_PLATFORM_POLICY.sourceRoot,
+    sourceRevision:revision||null,
+    artifactIdentity:artifact||null,
+    auth:Object.freeze({type:'API_KEY',header:'x-api-key',valueSource:'ENV:ROBLOX_OPEN_CLOUD_API_KEY',secretIncluded:false}),
+    requiredApiPermission:ROBLOX_PLATFORM_POLICY.requiredApiPermission,
+    evidenceGate:Object.freeze({
+      pass:blocked.length===0,
+      sourcePreflightPassed:f0Evidence?.sourcePreflightPassed===true,
+      runtimeClaimAllowed:false,
+      internalReleaseClaimAllowed:false,
+      authority:'roblox-f0-runtime-candidate-gate'
+    }),
+    blockedReasons:Object.freeze([...new Set(blocked)]),
+    releaseClaim:false,
+    actualRuntimeValidationRequiredAfterPublish:true,
+    noParallelPipeline:true,
+    authority:'roblox-place-publish-plan',
+  });
+}
+
 export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,fetchImpl=globalThis.fetch,readFile=fs.readFileSync,sleepImpl=sleep,retryDelaysMs=ROBLOX_PUBLISH_BUSY_RETRY_DELAYS_MS}={}){
   if(plan?.authority!=='roblox-place-publish-plan')throw new Error('validated Roblox publish plan required');
   if(plan.executionReady!==true)throw new Error(`Roblox publish blocked: ${(plan.blockedReasons||[]).join(',')}`);
