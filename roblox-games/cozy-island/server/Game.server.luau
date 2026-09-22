@@ -27,7 +27,7 @@ local function buildWorld()
   local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
   local f=Instance.new("Folder");f.Name="CozyConquestWorld";f.Parent=workspace
   for k,v in pairs(Style.Lighting)do Lighting[k]=v end
-  local water=part(f,"Sea",Vector3.new(720,2,720),Vector3.new(0,-6,0),Style.Water,Enum.Material.Glass);water.Transparency=.18
+  local water=part(f,"Sea",Vector3.new(900,2,900),Vector3.new(0,-6,0),Style.Water,Enum.Material.Glass);water.Transparency=.16
 
   local function tree(pos,scale)
     local trunk=part(f,"TreeTrunk",Vector3.new(2.4,8,2.4)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(106,74,48),Enum.Material.Wood)
@@ -51,6 +51,21 @@ local function buildWorld()
 
     if index==1 then
       -- 기본섬: 넓은 생활권 + 채집/성장 시설을 눈으로 구분
+      local beach=part(f,"BeachShelf",Vector3.new(192,2,192),Vector3.new(r.Pos.X,topY-5.2,r.Pos.Z),Color3.fromRGB(220,203,151),Enum.Material.Sand)
+      beach.CanCollide=true
+      part(f,"VillagePlaza",Vector3.new(54,1,54),Vector3.new(0,topY+.55,5),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
+      local fountain=part(f,"VillageFountain",Vector3.new(10,2,10),Vector3.new(0,topY+1.6,5),Color3.fromRGB(100,144,160),Enum.Material.SmoothPlastic);fountain.Shape=Enum.PartType.Cylinder
+      part(f,"MarketStallA",Vector3.new(14,7,10),Vector3.new(-26,topY+3.5,12),Color3.fromRGB(183,137,82),Enum.Material.WoodPlanks)
+      part(f,"MarketAwningA",Vector3.new(16,1,12),Vector3.new(-26,topY+7.2,12),Color3.fromRGB(215,102,82),Enum.Material.Fabric)
+      part(f,"MarketStallB",Vector3.new(14,7,10),Vector3.new(26,topY+3.5,12),Color3.fromRGB(183,137,82),Enum.Material.WoodPlanks)
+      part(f,"MarketAwningB",Vector3.new(16,1,12),Vector3.new(26,topY+7.2,12),Color3.fromRGB(92,150,181),Enum.Material.Fabric)
+      part(f,"WatchTower",Vector3.new(8,20,8),Vector3.new(64,topY+10,-58),Color3.fromRGB(126,91,58),Enum.Material.WoodPlanks)
+      part(f,"WatchDeck",Vector3.new(16,2,16),Vector3.new(64,topY+20,-58),Color3.fromRGB(109,77,51),Enum.Material.WoodPlanks)
+      part(f,"WindmillBase",Vector3.new(12,18,12),Vector3.new(-62,topY+9,-54),Color3.fromRGB(200,188,159),Enum.Material.Brick)
+      part(f,"WindmillHub",Vector3.new(3,3,3),Vector3.new(-62,topY+20,-60),Color3.fromRGB(94,72,53),Enum.Material.Wood)
+      for _,offset in ipairs({Vector3.new(0,7,0),Vector3.new(0,-7,0),Vector3.new(7,0,0),Vector3.new(-7,0,0)})do
+        part(f,"WindmillBlade",Vector3.new(offset.X~=0 and 12 or 2,offset.Y~=0 and 12 or 2,1.2),Vector3.new(-62,topY+20,-60)+offset,Color3.fromRGB(230,220,193),Enum.Material.WoodPlanks)
+      end
       for i=1,18 do
         local a=i/18*math.pi*2;local radius=44+(i%3)*8
         tree(r.Pos+Vector3.new(math.cos(a)*radius,topY-r.Pos.Y,math.sin(a)*radius),.85+(i%4)*.08)
@@ -60,7 +75,8 @@ local function buildWorld()
       for i=1,5 do part(f,"CropRow",Vector3.new(29,.7,2),Vector3.new(-33,topY+1.2,-38+i*4),Color3.fromRGB(122,177,75),Enum.Material.Grass)end
       part(f,"BarracksYard",Vector3.new(36,1,28),Vector3.new(34,topY+.65,-26),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
       part(f,"Dock",Vector3.new(16,2,34),Vector3.new(0,topY-1,76),Color3.fromRGB(125,89,56),Enum.Material.WoodPlanks)
-      for _,x in ipairs({-54,-18,18,54})do part(f,"PathStone",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+      for _,x in ipairs({-72,-54,-36,-18,0,18,36,54,72})do part(f,"PathStone",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+      for _,z in ipairs({-66,-44,-22,22,44,66})do part(f,"PathStoneNorth",Vector3.new(6,.5,12),Vector3.new(0,topY+.5,z),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
     elseif index==2 then
       for i=1,16 do local a=i/16*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*36,topY-r.Pos.Y,math.sin(a)*36),.7+(i%3)*.15,Color3.fromRGB(86,91,101))end
       for i=1,6 do part(f,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-30+i*10,topY+3,r.Pos.Z+26),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
@@ -83,7 +99,7 @@ local function buildWorld()
       local lava=part(f,"LavaCrack",Vector3.new(64,.7,8),Vector3.new(r.Pos.X,topY+.4,r.Pos.Z-33),Color3.fromRGB(255,91,30),Enum.Material.Neon);lava.CanCollide=false
     end
   end
-  workspace:SetAttribute("WorldArtPass","STYLIZED_ISLANDS_EXPANDED_V2")
+  workspace:SetAttribute("WorldArtPass","STYLIZED_ISLANDS_LIVING_WORLD_V3")
 end
 buildWorld()
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number" and v or d end
