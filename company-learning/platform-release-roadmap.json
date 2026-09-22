@@ -11302,7 +11302,7 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 4,
+    "version": 5,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
@@ -11608,7 +11608,35 @@
       "RULE_3",
       "RULE_4"
     ],
-    "orderedImplementationRequired": true
+    "orderedImplementationRequired": true,
+    "constitutionalAuthority": "HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY",
+    "constitutionalBinding": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-22",
+      "mode": "DYNAMIC_CANONICAL_RULE_AUTO_BIND",
+      "automaticContractBinding": true,
+      "appliesToAllCurrentAndFutureRegisteredVibeWorkers": true,
+      "appliesToAllInternalAiDepartmentsAndAutonomousSubsystems": true,
+      "workerMayNotOptOut": true,
+      "childContractMayNotOverride": true,
+      "runtimeMayNotSilentlyAmend": true,
+      "onlyOwnerDirectiveMayCreateAmendDisableOrRemoveCanonicalRule": true,
+      "ruleDiscoveryKeyPattern": "rule<N>",
+      "ruleIdentityPattern": "RULE_<N>_*",
+      "orderResolution": "IMPLEMENTATION_ORDER_FIRST_THEN_NUMERIC_AUTO_APPEND",
+      "futureCanonicalRulesAutoBindWithoutWorkerCodeChange": true,
+      "executionFingerprintMustIncludeEveryEnabledCanonicalRule": true,
+      "sharedContextMustCompileEveryEnabledCanonicalRule": true,
+      "centralWorkContractMustEmbedEveryEnabledCanonicalRule": true,
+      "workerInstructionMustExposeOrderedCanonicalRules": true,
+      "beforeWorkValidationRequired": true,
+      "afterWorkValidationRequired": true,
+      "staleConstitutionMayNotStartWork": true,
+      "staleConstitutionMayNotCompleteWork": true,
+      "missingOrInvalidBindingAction": "FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "constitutionChangeInvalidatesActiveWorkerExecutionFingerprint": true,
+      "subordinatePolicyCannotWeakenCanonicalRule": true
+    }
   },
   "planningGrowthMarketingDepartment": {
     "version": 1,
