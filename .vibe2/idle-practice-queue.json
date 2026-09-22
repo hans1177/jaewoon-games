@@ -9,7 +9,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 30,
+  "phase4GeneralizationDrills": 34,
   "drills": [
     {
       "id": "review-fail_1agpu1k",
@@ -75,6 +75,26 @@
       "sourceFailure": "fail_3e38u6"
     },
     {
+      "id": "review-fail_lhx93q",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "SAVE",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "WEB_RUNTIME",
+        "PROGRESSION",
+        "QUEST_DESIGN",
+        "ECONOMY"
+      ],
+      "sourceFailure": "fail_lhx93q"
+    },
+    {
       "id": "review-fail_17sa11i",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -87,27 +107,6 @@
         "UI_STATE"
       ],
       "sourceFailure": "fail_17sa11i"
-    },
-    {
-      "id": "review-fail_h11jum",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "AI",
-        "DEBUGGING",
-        "RECOVERY",
-        "ASSET_PRODUCTION",
-        "WEB_RUNTIME",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "ROBLOX_STUDIO",
-        "UNITY_RUNTIME",
-        "CORE_LOOP"
-      ],
-      "sourceFailure": "fail_h11jum"
     },
     {
       "id": "relearn-fail_1agpu1k",
@@ -667,6 +666,82 @@
       "mayPromoteGeneralization": false
     },
     {
+      "id": "phase4-generalization-capability_ctrace_2c0a700824026293385a417b-control",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_2c0a700824026293385a417b",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_2c0a700824026293385a417b",
+      "phase4PairId": "phase4-pair-1dxwlb4",
+      "phase4Role": "CONTROL",
+      "holdoutGameId": "bug-defense",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-x9qcdi",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_2c0a700824026293385a417b-challenger",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_2c0a700824026293385a417b",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_2c0a700824026293385a417b",
+      "phase4PairId": "phase4-pair-1dxwlb4",
+      "phase4Role": "CHALLENGER",
+      "holdoutGameId": "bug-defense",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-x9qcdi",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_333cb035bd13d117708a9b9d",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d",
+      "phase4PairId": "phase4-pair-18s0lk5",
+      "phase4Role": "CONTROL",
+      "holdoutGameId": "bug-defense",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-iw0qx7",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-challenger",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_333cb035bd13d117708a9b9d",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d",
+      "phase4PairId": "phase4-pair-18s0lk5",
+      "phase4Role": "CHALLENGER",
+      "holdoutGameId": "bug-defense",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-iw0qx7",
+      "mayPromoteGeneralization": false
+    },
+    {
       "id": "phase4-generalization-capability_ctrace_b8d48cb4bef5453d919f5f04-control",
       "kind": "CAPABILITY_GENERALIZATION_SCREEN",
       "priority": "low",
@@ -1053,16 +1128,6 @@
       ]
     },
     {
-      "id": "gap-economy-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ECONOMY"
-      ]
-    },
-    {
       "id": "gap-combat-l12",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1070,6 +1135,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "COMBAT"
+      ]
+    },
+    {
+      "id": "gap-economy-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ECONOMY"
       ]
     },
     {
