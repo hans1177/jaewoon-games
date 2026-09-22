@@ -8,7 +8,7 @@ const client='local UIS=game:GetService("UserInputService") local touchEnabled=U
 const project='{"tree":{"$className":"DataModel","ServerScriptService":{"GameServer":{"$path":"server"}},"StarterPlayer":{"StarterPlayerScripts":{"GameClient":{"$path":"client"}}}}}';
 
 test('headless FAST_MVP passes complete release checklist without Studio',()=>{
- const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,config,server,client,project});
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server,client,project});
  assert.equal(r.pass,true);
  assert.equal(r.validationMode,'HEADLESS_SOURCE_PREFLIGHT_F0');
  assert.equal(r.sourcePreflightPassed,true);
@@ -18,14 +18,14 @@ test('headless FAST_MVP passes complete release checklist without Studio',()=>{
 });
 
 test('headless FAST_MVP blocks artifact drift',()=>{
- const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),artifactRunId:123,config,server,client,project});
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'c'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server,client,project});
  assert.equal(r.pass,false);
  assert.ok(r.blockers.includes('exactArtifact'));
 });
 
 test('headless FAST_MVP blocks missing multiplayer synchronization',()=>{
  const broken=server.replace('r:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})','');
- const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,config,server:broken,client,project});
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server:broken,client,project});
  assert.equal(r.pass,false);
  assert.ok(r.blockers.includes('multiplayerSync'));
 });
@@ -33,7 +33,7 @@ test('headless FAST_MVP blocks missing multiplayer synchronization',()=>{
 
 test('headless F0 blocks malformed duplicate local function declarations',()=>{
  const broken=server+' local function tree(parent,pos,scale)local function tree(parent,pos,scale) end';
- const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,config,server:broken,client,project});
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server:broken,client,project});
  assert.equal(r.pass,false);
  assert.ok(r.blockers.includes('duplicateDeclarationGuard'));
  assert.equal(r.gameStartPassed,false);
@@ -41,7 +41,15 @@ test('headless F0 blocks malformed duplicate local function declarations',()=>{
 
 test('headless F0 blocks sources without native foundation sentinel contract',()=>{
  const broken=server.replace('native-foundation-sentinel-v1','ordinary-store').replace('GROUND_CONTACT','NO_GROUND_PROBE').replace('MOVEMENT_CONFIRMED','NO_MOVE_PROBE');
- const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,config,server:broken,client,project});
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:true,nativeCompilerVersion:'0.739',config,server:broken,client,project});
  assert.equal(r.pass,false);
  assert.ok(r.blockers.includes('foundationSentinelContract'));
+});
+
+
+test('F0 blocks when actual Luau compiler evidence is missing even if structural markers pass',()=>{
+ const r=inspectHeadlessSourceTexts({gameId:'g',sourcePath:'roblox-games/g',sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),rebuiltArtifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:123,nativeLanguageCompilePassed:false,config,server,client,project});
+ assert.equal(r.pass,false);
+ assert.equal(r.nativeLanguageCompilePassed,false);
+ assert.ok(r.blockers.includes('nativeLanguageCompilePassed'));
 });
