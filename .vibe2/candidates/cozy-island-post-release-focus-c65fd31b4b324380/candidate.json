@@ -1,0 +1,14 @@
+{
+  "summary": "Recovery attempt: fixed zero actual source changes",
+  "expectedEffect": "Recovery attempt: fixed zero actual source changes",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local inBattle=p:GetAttribute(\"InBattle\")==true",
+      "replace": "local inBattle=p:GetAttribute(\"InBattle\")==true; local activity=p:GetAttribute(\"LastActivity\")or\"나무/작물에 가까이 가서 직접 채집\""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
