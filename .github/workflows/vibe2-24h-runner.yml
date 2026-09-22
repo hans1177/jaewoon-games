@@ -262,7 +262,19 @@ jobs:
 
             # Focused release caretakers are primary game work. Persist them before auxiliary planning
             # so unrelated marketing/learning failures cannot erase or delay the 24H game queue.
-            if grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES            node /tmp/vibe2-main/tools/vibe2-authorized-source-memory.mjs \
+            if grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES$' /tmp/vibe2-post-release-focus.log; then
+              git add .vibe2/queue.json
+              if ! git diff --cached --quiet; then
+                git commit -m 'vibe2: checkpoint focused release caretakers [skip ci]'
+                git push origin HEAD:vibe2-unreal-core
+                echo 'VIBE2_FOCUSED_CARETAKER_CHECKPOINT=PUSHED'
+                git fetch origin vibe2-unreal-core --quiet
+              else
+                echo 'VIBE2_FOCUSED_CARETAKER_CHECKPOINT=UNCHANGED'
+              fi
+            fi
+
+            node /tmp/vibe2-main/tools/vibe2-authorized-source-memory.mjs \
               --summary=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
               --experience=.vibe2/experience.json | tee /tmp/vibe2-authorized-source-memory.log
 
