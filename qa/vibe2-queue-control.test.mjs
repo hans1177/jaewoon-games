@@ -1209,6 +1209,16 @@ test('reserve-batch heals downgraded atomic queue schema even when no work is re
 });
 
 
+test('continuous worker compiles work lock against the pinned contract SHA',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('- name: Build reserved task work order');
+  const end=workflow.indexOf('- name: Acquire shared Work Lock before source write',start);
+  assert.ok(start>=0&&end>start);
+  const orderStep=workflow.slice(start,end);
+  assert.match(orderStep,/VIBE2_BASE_MAIN_SHA:\s*\$\{\{ needs\.reserve\.outputs\.contract_sha \}\}/);
+  assert.match(workflow,/test "\$LOCK_BASE_SHA" = "\$CONTRACT_SHA"/);
+});
+
 test('continuous core fan-in replays immutable results on latest runtime head instead of rebasing stale queue commits',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const fanInStart=workflow.indexOf('\n  fan_in:');
