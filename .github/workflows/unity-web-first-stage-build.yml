@@ -35,13 +35,14 @@ on:
         default: ''
         type: string
       publish_to_main:
-        description: 'Publish verified output to web-games on main'
+        description: 'Create a PR containing verified output for web-games'
         required: false
         default: false
         type: boolean
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   build:
@@ -345,34 +346,30 @@ jobs:
           retention-days: 7
 
 
-      - name: Publish verified Unity Web build
+      - name: Create verified Unity Web build PR
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for attempt in 1 2 3 4 5; do
-            git fetch --no-tags origin main
-            git checkout -B unity-web-publish origin/main
-            rm -rf "web-games/$GAME_ID"
-            mkdir -p "web-games/$GAME_ID"
-            cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
-            git add "web-games/$GAME_ID"
-            git diff --cached --check
-            if git diff --cached --quiet; then
-              echo "UNITY_WEB_PUBLICATION=NO_CHANGE"
-              exit 0
-            fi
-            git commit -m "build: publish $GAME_ID Unity Web [skip ci]"
-            if git push origin HEAD:main; then
-              echo "UNITY_WEB_PUBLICATION=PASS"
-              exit 0
-            fi
-            echo "UNITY_WEB_PUBLICATION_RETRY=$attempt"
-            sleep 2
-          done
-          echo "UNITY_WEB_PUBLICATION=FAILED_AFTER_RETRY"
-          exit 1
+          git fetch --no-tags origin main
+          branch="unity-web/${GAME_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -B "$branch" origin/main
+          rm -rf "web-games/$GAME_ID"
+          mkdir -p "web-games/$GAME_ID"
+          cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
+          git add "web-games/$GAME_ID"
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
+            exit 0
+          fi
+          git commit -m "build: publish $GAME_ID Unity Web validation"
+          git push --force-with-lease origin HEAD:"$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web validation"             --body "Verified Unity WebGL validation-surface build from workflow run $GITHUB_RUN_ID. This is a homepage test artifact only and does not satisfy Unity native release gates.")"
+          echo "UNITY_WEB_PUBLICATION_PR=$pr_url"
+          echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
