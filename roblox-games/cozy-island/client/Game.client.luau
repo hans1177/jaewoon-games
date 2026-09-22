@@ -11,6 +11,7 @@ local SoundService=game:GetService("SoundService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 
 -- 사운드
@@ -234,5 +235,16 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
  p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
 end)
+
+QACamera.install(C,gui,function()
+ return{
+  {label="cozy-home-overview",position=Vector3.new(0,145,170),lookAt=Vector3.new(0,4,0)},
+  {label="cozy-home-ground",position=Vector3.new(0,24,98),lookAt=Vector3.new(0,5,0)},
+  {label="cozy-east-regions",position=Vector3.new(270,135,5),lookAt=Vector3.new(170,5,0)},
+  {label="cozy-west-regions",position=Vector3.new(-270,135,5),lookAt=Vector3.new(-170,5,0)},
+  {label="cozy-volcano",position=Vector3.new(0,145,-350),lookAt=Vector3.new(0,12,-232)},
+ }
+end)
+
 
 render()
