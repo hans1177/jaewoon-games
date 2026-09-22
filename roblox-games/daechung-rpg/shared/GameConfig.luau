@@ -1,7 +1,7 @@
 local Config={
  PolicySource="company-learning/platform-release-roadmap.json",
  Platform="ROBLOX",MobileFirst=true,
- GameId="daechung-rpg",GameName="Whatever RPG",GameNameKorean="대충 RPG",SaveEnabled=true,
+ GameId="daechung-rpg",GameName="Five Portal RPG",GameNameKorean="5포탈 RPG: 던전 파티",GameNameEnglish="Five Portal RPG: Dungeon Party",SaveEnabled=true,
  Genre = "RPG",PlayMode = "COOP",SoloPlayable=true,CoopRequired=true,CompetitiveRequired=false,
  MultiplayerRequired = true,MinimumParticipants=2,PartySlots=4,RemoteName="GameAction",RemoteMinInterval=.08,
  VillageCenter=Vector3.new(0,2,0),VillageHealRadius=92,CombatLockSeconds=5,
