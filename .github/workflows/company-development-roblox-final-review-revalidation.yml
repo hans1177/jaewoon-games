@@ -1,8 +1,224 @@
-name: Company DEVELOPMENT_CONFIRMED Roblox Legacy Final Review (Disabled)
+name: Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review
+
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty means all Roblox candidates ready for F9.
+        required: false
+        type: string
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-development-roblox-f9-final-review
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
 jobs:
-  disabled:
+  final-review:
+    name: deterministic F9 review and exact-candidate internal release promotion
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - run: echo 'ROBLOX_LEGACY_STUDIO_FINAL_REVIEW=REMOVED; ROBLOX_FINAL_REVIEW=HEADLESS_FAST_MVP'
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Synchronize constitution central policy and compiled architecture
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/roblox-f9-worker-context.json
+          node -e "const x=require('/tmp/roblox-f9-worker-context.json');if(x.pass!==true||x.architectureProjection?.valid!==true)process.exit(1)"
+          echo 'ROBLOX_F9_SHARED_CONTEXT=PASS'
+
+      - name: Run F9 deterministic regression contract
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-tester-debug-intake.test.mjs             qa/company-development-roblox-release-promotion.test.mjs             qa/vibe3-roblox-platform.test.mjs
+          echo 'ROBLOX_F9_DETERMINISTIC_REGRESSION=PASS'
+
+      - name: Promote only the exact tested runtime candidate
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {ingestTesterDebug} from './tools/company-tester-debug-intake.mjs';
+
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const queuePath='../runtime/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const fresh=ingestTesterDebug({developmentQueue:q,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
+          const currentBlockingTickets=new Map();
+          for(const ticket of fresh.tickets.tickets||[]){
+            if(ticket.status!=='OPEN'||ticket.repairEligible===false||!['CRITICAL','HIGH'].includes(ticket.severity))continue;
+            const rows=currentBlockingTickets.get(ticket.gameId)||[];rows.push(ticket);currentBlockingTickets.set(ticket.gameId,rows);
+          }
+          const stamp=new Date().toISOString();
+          let promoted=0,blocked=0;
+
+          for(const item of q.items||[]){
+            if(requested&&item.gameId!==requested)continue;
+            if(item.currentStep!=='ROBLOX_FINAL_REVIEW_REVALIDATION'||item.robloxFailureSignature!=='ROBLOX_FINAL_REVIEW_PENDING')continue;
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const runtime=item.robloxRuntimeFoundationEvidence||{};
+            const post=item.robloxPostRuntimeQaEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const exact=
+              item.robloxFoundationF0Passed===true
+              &&item.robloxRuntimeFoundationPassed===true
+              &&item.robloxRuntimePassed===true
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&candidate.published===true
+              &&candidate.releaseClaim===false
+              &&candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&runtime.sourceRevision===sourceRevision
+              &&runtime.artifactIdentity===artifactIdentity
+              &&runtime.runtimeAcceptancePassed===true
+              &&Number(runtime.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&post.independentQaPassed===true
+              &&post.regressionPassed===true;
+            const tickets=currentBlockingTickets.get(item.gameId)||[];
+            if(!exact||tickets.length){
+              item.robloxFinalReviewPassed=false;
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature=!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
+              item.routingBlockers=[!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure'];
+              item.updatedAt=stamp;blocked++;
+              continue;
+            }
+
+            item.robloxFinalReviewPassed=true;
+            item.robloxFinalReviewPassedAt=stamp;
+            item.robloxF9ReleaseRegressionPassed=true;
+            item.robloxF9ReleaseRegressionEvidence={
+              version:1,
+              gameId:item.gameId,
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:Number(candidate.artifactRunId||0),
+              candidateVersionNumber:Number(candidate.versionNumber),
+              runtimeFoundationEvidenceAuthority:runtime.authority,
+              postRuntimeQaAuthority:post.authority,
+              noCurrentCriticalOrHighTesterFailure:true,
+              exactCandidateReusedWithoutRepublish:true,
+              deterministicRegression:[
+                'qa/company-development-roblox-runtime-foundation.test.mjs',
+                'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+                'qa/company-tester-debug-intake.test.mjs',
+                'qa/company-development-roblox-release-promotion.test.mjs',
+                'qa/vibe3-roblox-platform.test.mjs',
+              ],
+              authority:'deterministic-f9-exact-runtime-candidate-review',
+              verifiedAt:stamp,
+            };
+            item.robloxInternalReleaseReady=true;
+            item.robloxInternalReleaseAt=stamp;
+            item.robloxInternalReleaseEvidence={
+              version:2,
+              ...candidate,
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:Number(candidate.artifactRunId||0),
+              versionNumber:Number(candidate.versionNumber),
+              published:true,
+              actualRuntimeFoundationPassed:true,
+              runtimeAcceptancePassed:true,
+              independentQaPassed:true,
+              regressionPassed:true,
+              finalReviewPassed:true,
+              f9ReleaseRegressionPassed:true,
+              promotedWithoutRepublish:true,
+              releaseClaim:'INTERNAL_PLATFORM_RELEASE_ONLY',
+              publicRelease:false,
+              authority:'roblox-exact-runtime-candidate-promoted-after-f9',
+              promotedAt:stamp,
+            };
+            item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-internal-release-compatibility-after-f9'};
+            item.robloxReleaseVersionNumber=Number(candidate.versionNumber);
+            item.robloxPublicReleaseReady=false;
+            item.robloxPublicRelease=false;
+            item.robloxReleaseClaim=false;
+            item.robloxReleasePublishedAt=null;
+            item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+            item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+            item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
+            item.robloxFailureStage=null;
+            item.robloxFailureSignature=null;
+            item.routingBlockers=[];
+            if(item.executionEvidence){
+              item.executionEvidence.lastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
+              item.executionEvidence.failureStage=null;
+              item.executionEvidence.failureSignature=null;
+            }
+            item.updatedAt=stamp;promoted++;
+          }
+
+          if(promoted||blocked){
+            q.updatedAt=stamp;
+            fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
+          }
+          console.log(`ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=${promoted}`);
+          console.log(`ROBLOX_F9_BLOCKED=${blocked}`);
+          NODE
+
+      - name: Persist F9 internal release state
+        working-directory: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-f9-qa'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m 'runtime: promote exact Roblox candidate after F9 [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=YES'
