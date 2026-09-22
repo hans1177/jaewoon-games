@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 const clean=v=>String(v??'').trim();
 const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','CORE_LOOP_READY'];
+const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
 
 export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0}={}){
   const checkpoints=sentinel&&typeof sentinel.checkpoints==='object'&&sentinel.checkpoints?sentinel.checkpoints:{};
@@ -24,6 +25,13 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
       &&Number(row.placeVersion)===Number(versionNumber)
     )];
   }));
+  const checkpointOrderPassed=foundationCausalOrder.every((name,index)=>{
+    const sequence=Number(checkpoints[name]?.sequence);
+    if(!checkpointPass[name]||!Number.isInteger(sequence)||sequence<=0)return false;
+    if(index===0)return true;
+    const previous=Number(checkpoints[foundationCausalOrder[index-1]]?.sequence);
+    return Number.isInteger(previous)&&previous<sequence;
+  });
   const f1=checkpointPass.SERVER_BOOT&&checkpointPass.MODULE_GRAPH_READY;
   const f2=checkpointPass.WORLD_READY&&checkpointPass.SPAWN_READY;
   const f3=checkpointPass.CHARACTER_READY;
@@ -32,17 +40,18 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const f6=checkpointPass.REMOTE_ROUNDTRIP&&(!saveEnabled||checkpointPass.SAVE_ROUNDTRIP);
   const f7=!multiplayerRequired||checkpointPass.MULTIPLAYER_SYNC;
   const f8=checkpointPass.CORE_LOOP_READY;
-  const foundation=exactGame&&exactPlace&&exactVersion&&f1&&f2&&f3&&f4;
+  const foundation=exactGame&&exactPlace&&exactVersion&&checkpointOrderPassed&&f1&&f2&&f3&&f4;
   const acceptance=foundation&&f5&&f6&&f7&&f8;
   return Object.freeze({
-    version:2,platform:'ROBLOX',gameId:clean(gameId)||clean(sentinel.gameId),placeId:clean(placeId),placeVersion:Number(versionNumber)||0,
+    version:3,platform:'ROBLOX',gameId:clean(gameId)||clean(sentinel.gameId),placeId:clean(placeId),placeVersion:Number(versionNumber)||0,
     exactGame,exactPlace,exactVersion,requirements:Object.freeze({saveEnabled,multiplayerRequired}),
-    requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),
+    requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),checkpointOrderPassed,foundationCausalOrder:Object.freeze([...foundationCausalOrder]),
     f1ServerBootPassed:f1,f2WorldFoundationPassed:f2,f3CharacterFoundationPassed:f3,f4PhysicsAndMovementPassed:f4,
     f5InputCameraUiPassed:f5,f6CoreServicesPassed:f6,f7MultiplayerFoundationPassed:f7,f8GameplaySystemsPassed:f8,
     runtimeFoundationPassed:foundation,runtimeAcceptancePassed:acceptance,actualRuntimeEvidence:true,state:acceptance?'PASS':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
     blockers:Object.freeze([
       ...(!exactGame?['exactGame']:[]),...(!exactPlace?['exactPlace']:[]),...(!exactVersion?['exactVersion']:[]),
+      ...(!checkpointOrderPassed?['checkpointOrder']:[]),
       ...required.filter(name=>!checkpointPass[name]).map(name=>'checkpoint:'+name)
     ]),
     authority:'roblox-runtime-foundation-sentinel'
