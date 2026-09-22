@@ -1,9 +1,9 @@
 local Style={
-  Lighting={Brightness=1.45,ClockTime=0.2,Ambient=Color3.fromRGB(54,60,70),OutdoorAmbient=Color3.fromRGB(42,48,58),FogColor=Color3.fromRGB(45,52,62),FogEnd=235},
-  Floor=Color3.fromRGB(69,74,83),
-  Wall=Color3.fromRGB(103,111,119),
-  Locker=Color3.fromRGB(68,91,105),
-  SafeLight=Color3.fromRGB(188,215,224),
+  Lighting={Brightness=2.05,ClockTime=0.35,Ambient=Color3.fromRGB(72,78,90),OutdoorAmbient=Color3.fromRGB(58,64,76),FogColor=Color3.fromRGB(50,57,68),FogEnd=270},
+  Floor=Color3.fromRGB(82,88,99),
+  Wall=Color3.fromRGB(122,128,137),
+  Locker=Color3.fromRGB(74,101,118),
+  SafeLight=Color3.fromRGB(202,230,238),
   Frozen=Color3.fromRGB(112,202,255),
   Survivor=Color3.fromRGB(201,219,231),
   Monsters={
