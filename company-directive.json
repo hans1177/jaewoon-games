@@ -102,13 +102,12 @@
         "concurrentTargetPlatforms",
         "platformReleaseState"
       ],
-      "separateFromTop30Promotion": true,
       "mustNotClaimValidationOrRelease": true,
-      "webTestButtonEnabled": false,
-      "webTestButtonLabel": null,
+      "webTestButtonEnabled": true,
+      "webTestButtonLabel": "Web 테스트",
       "platformTestButtonEnabled": true,
       "platformTestButtonLabelMode": "PLATFORM_NAME",
-      "webAndPlatformTestButtonsMustBeSeparate": false,
+      "webAndPlatformTestButtonsMustBeSeparate": true,
       "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
       "scoreDisplayEnabled": false,
       "ranking": "CATALOG_ORDER",
@@ -118,7 +117,14 @@
       "scoreRequiresMusicPass": false,
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
       "reworkOrRevalidationScoresNotShownAsCurrent": false,
-      "scoreRequiresSchema15": false
+      "scoreRequiresSchema15": false,
+      "independentOfPromotion": true,
+      "webTestEligibility": "CANONICAL_WEB_PATH_PRESENT_ONLY",
+      "webTestRequiresScore": false,
+      "webTestRequiresQa": false,
+      "webTestRequiresArtbook": false,
+      "webTestRequiresPromotion": false,
+      "webTestRequiresRuntimePass": false
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -901,11 +907,13 @@
     "commercial-readiness-failure-becomes-repair-required-and-immediate-revalidation"
   ],
   "homepageTesting": {
-    "minimumWebStrictScore": 80,
-    "hardGatesMustPass": true,
-    "maxVisibleTestCandidates": 30,
-    "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
-    "artbookRequiredForHomepageRegistration": true,
+    "version": 2,
+    "top30Removed": true,
+    "developmentWebExposureGate": "NONE",
+    "developmentWebRequiresScore": false,
+    "developmentWebRequiresQa": false,
+    "developmentWebRequiresArtbook": false,
+    "developmentWebRequiresPromotion": false,
     "officialCardRequiresPromotion": true
   },
   "productionThroughput": {
