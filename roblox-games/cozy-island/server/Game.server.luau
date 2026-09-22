@@ -1,238 +1,258 @@
+-- 포근섬: 수동 채집 + 주민 자동화 + 기본섬 NPC/몹 + 5거점 정복
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local Lighting=game:GetService("Lighting")
+local RunService=game:GetService("RunService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 local BattleVisual=require(script.Parent:WaitForChild("BattleVisual"))
-local store=DSS:GetDataStore("cozy-island-conquest-v2")
-local remote=RS:FindFirstChild(C.RemoteName) or Instance.new("RemoteEvent")
+
+local store=DSS:GetDataStore("cozy-island-conquest-v3")
+local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
 local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
 local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
-local qaCaptureLast={}
 
-local lastRequest,battling={},{}
-local function part(parent,name,size,pos,color,material)
-  local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=parent;return x
-end
-local function label(target,text)
-  local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(112,24);g.StudsOffset=Vector3.new(0,5,0);g.AlwaysOnTop=false;g.MaxDistance=78;g.LightInfluence=.35;g.Parent=target
-  local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,35,31);t.BackgroundTransparency=.28;t.TextScaled=true;t.Text=text;t.TextColor3=Color3.new(1,1,1);t.TextStrokeTransparency=.65;t.Parent=g
-  local cr=Instance.new("UICorner");cr.CornerRadius=UDim.new(0,6);cr.Parent=t
-end
-local function buildWorld()
-  local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
-  local f=Instance.new("Folder");f.Name="CozyConquestWorld";f.Parent=workspace
-  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
-  local water=part(f,"Sea",Vector3.new(900,2,900),Vector3.new(0,-6,0),Style.Water,Enum.Material.Glass);water.Transparency=.16
+local world
+local lastRequest,battling,gatherCooldown,qaCaptureLast={},{},{},{}
+local mobs={}
 
-  local function tree(pos,scale)
-    local trunk=part(f,"TreeTrunk",Vector3.new(2.4,8,2.4)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(106,74,48),Enum.Material.Wood)
-    local crown=part(f,"TreeCrown",Vector3.new(8,8,8)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(77,150,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
-  end
-  local function rock(pos,scale,color)
-    local r=part(f,"Rock",Vector3.new(6,4,5)*scale,pos+Vector3.new(0,2*scale,0),color or Color3.fromRGB(104,103,108),Enum.Material.Rock)
-    r.Orientation=Vector3.new(math.random(-8,8),math.random(0,180),math.random(-8,8))
-  end
-  local function hut(pos,accent)
-    local body=part(f,"VillageHut",Vector3.new(12,7,10),pos+Vector3.new(0,3.5,0),Color3.fromRGB(184,150,105),Enum.Material.WoodPlanks)
-    local roof=part(f,"VillageRoof",Vector3.new(14,2,12),body.Position+Vector3.new(0,4.7,0),accent,Enum.Material.WoodPlanks);roof.Orientation=Vector3.new(0,0,5)
-    part(f,"VillageDoor",Vector3.new(2.5,4,1),body.Position+Vector3.new(0,-1,5.2),Color3.fromRGB(91,65,45),Enum.Material.Wood)
-  end
-
-  for index,r in ipairs(Style.Regions)do
-    local island=part(f,r.Name,r.Size,r.Pos,r.Color,r.Material);island.Shape=Enum.PartType.Block;label(island,r.Name)
-    local topY=r.Pos.Y+r.Size.Y/2
-    local base=part(f,"Base_"..index,Vector3.new(22,9,22),Vector3.new(r.Pos.X,topY+4.5,r.Pos.Z),r.Accent,Enum.Material.Brick)
-    local roof=part(f,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
-
-    if index==1 then
-      -- 기본섬: 넓은 생활권 + 채집/성장 시설을 눈으로 구분
-      local beach=part(f,"BeachShelf",Vector3.new(192,2,192),Vector3.new(r.Pos.X,topY-5.2,r.Pos.Z),Color3.fromRGB(220,203,151),Enum.Material.Sand)
-      beach.CanCollide=true
-      part(f,"VillagePlaza",Vector3.new(54,1,54),Vector3.new(0,topY+.55,5),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
-      part(f,"ForestFloor",Vector3.new(62,1,54),Vector3.new(-47,topY+.55,34),Color3.fromRGB(93,153,91),Enum.Material.Grass)
-      for i=1,9 do
-        local x=-70+((i-1)%3)*20
-        local z=16+math.floor((i-1)/3)*18
-        tree(Vector3.new(x,topY,z),.75+(i%3)*.08)
-      end
-      local fountain=part(f,"VillageFountain",Vector3.new(10,2,10),Vector3.new(0,topY+1.6,5),Color3.fromRGB(100,144,160),Enum.Material.SmoothPlastic);fountain.Shape=Enum.PartType.Cylinder
-      part(f,"MarketStallA",Vector3.new(14,7,10),Vector3.new(-26,topY+3.5,12),Color3.fromRGB(183,137,82),Enum.Material.WoodPlanks)
-      part(f,"MarketAwningA",Vector3.new(16,1,12),Vector3.new(-26,topY+7.2,12),Color3.fromRGB(215,102,82),Enum.Material.Fabric)
-      part(f,"MarketStallB",Vector3.new(14,7,10),Vector3.new(26,topY+3.5,12),Color3.fromRGB(183,137,82),Enum.Material.WoodPlanks)
-      part(f,"MarketAwningB",Vector3.new(16,1,12),Vector3.new(26,topY+7.2,12),Color3.fromRGB(92,150,181),Enum.Material.Fabric)
-      part(f,"WatchTower",Vector3.new(8,20,8),Vector3.new(64,topY+10,-58),Color3.fromRGB(126,91,58),Enum.Material.WoodPlanks)
-      part(f,"WatchDeck",Vector3.new(16,2,16),Vector3.new(64,topY+20,-58),Color3.fromRGB(109,77,51),Enum.Material.WoodPlanks)
-      part(f,"WindmillBase",Vector3.new(12,18,12),Vector3.new(-62,topY+9,-54),Color3.fromRGB(200,188,159),Enum.Material.Brick)
-      part(f,"WindmillHub",Vector3.new(3,3,3),Vector3.new(-62,topY+20,-60),Color3.fromRGB(94,72,53),Enum.Material.Wood)
-      for _,offset in ipairs({Vector3.new(0,7,0),Vector3.new(0,-7,0),Vector3.new(7,0,0),Vector3.new(-7,0,0)})do
-        part(f,"WindmillBlade",Vector3.new(offset.X~=0 and 12 or 2,offset.Y~=0 and 12 or 2,1.2),Vector3.new(-62,topY+20,-60)+offset,Color3.fromRGB(230,220,193),Enum.Material.WoodPlanks)
-      end
-      for i=1,18 do
-        local a=i/18*math.pi*2;local radius=44+(i%3)*8
-        tree(r.Pos+Vector3.new(math.cos(a)*radius,topY-r.Pos.Y,math.sin(a)*radius),.85+(i%4)*.08)
-      end
-      for i=1,3 do hut(Vector3.new(-34+i*18,topY+1,24),Color3.fromRGB(116,151,88))end
-      part(f,"FarmPlot",Vector3.new(34,1,24),Vector3.new(-33,topY+.7,-28),Color3.fromRGB(116,91,56),Enum.Material.Ground)
-      for i=1,5 do part(f,"CropRow",Vector3.new(29,.7,2),Vector3.new(-33,topY+1.2,-38+i*4),Color3.fromRGB(122,177,75),Enum.Material.Grass)end
-      part(f,"BarracksYard",Vector3.new(36,1,28),Vector3.new(34,topY+.65,-26),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
-      part(f,"Dock",Vector3.new(16,2,34),Vector3.new(0,topY-1,76),Color3.fromRGB(125,89,56),Enum.Material.WoodPlanks)
-      for _,x in ipairs({-72,-54,-36,-18,0,18,36,54,72})do part(f,"PathStone",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
-      for _,z in ipairs({-66,-44,-22,22,44,66})do part(f,"PathStoneNorth",Vector3.new(6,.5,12),Vector3.new(0,topY+.5,z),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
-    elseif index==2 then
-      for i=1,16 do local a=i/16*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*36,topY-r.Pos.Y,math.sin(a)*36),.7+(i%3)*.15,Color3.fromRGB(86,91,101))end
-      for i=1,6 do part(f,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-30+i*10,topY+3,r.Pos.Z+26),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
-    elseif index==3 then
-      for i=1,10 do tree(r.Pos+Vector3.new(-48+i*9,topY-r.Pos.Y,34+(i%2)*10),.72)end
-      for i=1,7 do
-        local bale=part(f,"HayBale",Vector3.new(6,5,6),Vector3.new(r.Pos.X-38+i*11,topY+2.5,r.Pos.Z-32+(i%2)*8),Color3.fromRGB(214,183,96),Enum.Material.Fabric);bale.Shape=Enum.PartType.Cylinder;bale.Orientation=Vector3.new(0,0,90)
-      end
-      part(f,"RanchFence",Vector3.new(72,3,2),Vector3.new(r.Pos.X,topY+1.5,r.Pos.Z+47),Color3.fromRGB(125,92,61),Enum.Material.WoodPlanks)
-    elseif index==4 then
-      for i=1,22 do local a=i/22*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*(30+(i%3)*9),topY-r.Pos.Y,math.sin(a)*(30+(i%3)*9)),.65+(i%4)*.12)end
-      part(f,"QuarryCut",Vector3.new(48,2,42),Vector3.new(r.Pos.X,topY+1,r.Pos.Z+22),Color3.fromRGB(107,101,96),Enum.Material.Slate)
-    elseif index==5 then
-      for i=1,10 do rock(r.Pos+Vector3.new(-48+i*9,topY-r.Pos.Y,30+(i%2)*13),.62,Color3.fromRGB(159,124,69))end
-      for i=1,5 do part(f,"GoldVein",Vector3.new(4,6,4),Vector3.new(r.Pos.X-28+i*11,topY+3,r.Pos.Z-30),Color3.fromRGB(244,197,71),Enum.Material.Neon)end
-      part(f,"DesertTent",Vector3.new(24,7,18),Vector3.new(r.Pos.X+30,topY+3.5,r.Pos.Z+25),Color3.fromRGB(174,93,65),Enum.Material.Fabric)
-    else
-      for i=1,18 do local a=i/18*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*(34+(i%2)*10),topY-r.Pos.Y,math.sin(a)*(34+(i%2)*10)),.7,Color3.fromRGB(57,55,59))end
-      for i=1,7 do part(f,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-36+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
-      local lava=part(f,"LavaCrack",Vector3.new(64,.7,8),Vector3.new(r.Pos.X,topY+.4,r.Pos.Z-33),Color3.fromRGB(255,91,30),Enum.Material.Neon);lava.CanCollide=false
-    end
-  end
-  workspace:SetAttribute("WorldArtPass","STYLIZED_ISLANDS_AUTO_GATHER_V4")
-end
-buildWorld()
-local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number" and v or d end
+local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function s(p,k,v)p:SetAttribute(k,math.max(0,math.floor(v)))end
+local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
+local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
 local function msg(p,t)p:SetAttribute("LastActivity",t)end
-local function feedback(p,kind)p:SetAttribute("FeedbackEvent",kind..":"..tostring(math.floor(os.clock()*1000)))end
-local function init(p)for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end;p:SetAttribute("SupportReady",false);p:SetAttribute("InBattle",false);p:SetAttribute("AutoGatherZone","");msg(p,"숲과 농장 근처에서 자원이 자동으로 모여")end
-local function load(p)
-  init(p)
-  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
-  if ok and typeof(d)=="table" then for k,v in pairs(C.InitialState)do if typeof(d[k])=="number" then p:SetAttribute(k,d[k])end end;if typeof(d.SupportReady)=="boolean" then p:SetAttribute("SupportReady",d.SupportReady)end;msg(p,"개척 상태 복구")end
+local function feedback(p,k)p:SetAttribute("FeedbackEvent",k..":"..tostring(math.floor(os.clock()*1000)))end
+
+local function part(parent,name,size,pos,color,material)
+ local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+ x.TopSurface=Enum.SurfaceType.Smooth;x.BottomSurface=Enum.SurfaceType.Smooth;x.Parent=parent;return x
 end
-local function save(p)local d={SupportReady=p:GetAttribute("SupportReady")==true};for k,v in pairs(C.InitialState)do d[k]=n(p,k,v)end;pcall(function()store:SetAsync("p:"..p.UserId,d)end)end
+local function attach(rootPart,name,size,offset,color,material,shape)
+ local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.Massless=true;x.Anchored=false
+ x.CFrame=rootPart.CFrame*CFrame.new(offset);if shape then x.Shape=shape end;x.Parent=rootPart
+ local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x;return x
+end
+local function label(target,text,color,maxDist)
+ local g=Instance.new("BillboardGui");g.Name="WorldLabel";g.Size=UDim2.fromOffset(118,24);g.StudsOffset=Vector3.new(0,4.8,0);g.AlwaysOnTop=false;g.MaxDistance=maxDist or 34;g.LightInfluence=.35;g.Parent=target
+ local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,35,31);t.BackgroundTransparency=.3;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextScaled=true;t.Font=Enum.Font.GothamBold;t.TextStrokeTransparency=.7;t.Parent=g
+ local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,6);c.Parent=t
+end
+local function prompt(target,objectText,actionText)
+ local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
+end
+local function figure(parent,name,pos,color,accent,scale)
+ scale=scale or 1
+ local r=part(parent,name,Vector3.new(3,4,2)*scale,pos,color);r.CanCollide=true
+ attach(r,"Head",Vector3.new(2.4,2.4,2.4)*scale,Vector3.new(0,3.1*scale,0),Color3.fromRGB(224,190,154),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ attach(r,"Hair",Vector3.new(2.55,.75,2.55)*scale,Vector3.new(0,4*scale,0),Color3.fromRGB(72,52,38))
+ attach(r,"ArmL",Vector3.new(.85,3.3,.85)*scale,Vector3.new(-1.8*scale,0,0),color)
+ attach(r,"ArmR",Vector3.new(.85,3.3,.85)*scale,Vector3.new(1.8*scale,0,0),color)
+ attach(r,"LegL",Vector3.new(1,3,1)*scale,Vector3.new(-.7*scale,-3.3*scale,0),accent)
+ attach(r,"LegR",Vector3.new(1,3,1)*scale,Vector3.new(.7*scale,-3.3*scale,0),accent)
+ attach(r,"EyeL",Vector3.new(.25,.28,.14)*scale,Vector3.new(-.45*scale,3.25*scale,-1.2*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
+ attach(r,"EyeR",Vector3.new(.25,.28,.14)*scale,Vector3.new(.45*scale,3.25*scale,-1.2*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
+ return r
+end
+local function tree(parent,pos,scale)
+ scale=scale or 1
+ local trunk=part(parent,"TreeTrunk",Vector3.new(2.4,8,2.4)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(106,74,48),Enum.Material.Wood)
+ local crown=part(parent,"TreeCrown",Vector3.new(8,8,8)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(77,150,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
+ return trunk
+end
+local function rock(parent,pos,scale,color)
+ scale=scale or 1;local r=part(parent,"Rock",Vector3.new(6,4,5)*scale,pos+Vector3.new(0,2*scale,0),color or Color3.fromRGB(104,103,108),Enum.Material.Rock)
+ r.Orientation=Vector3.new(math.random(-8,8),math.random(0,180),math.random(-8,8));return r
+end
+
+local function gather(p,key,amount,text)
+ local now=os.clock();gatherCooldown[p]=gatherCooldown[p]or{};local last=gatherCooldown[p][key]or 0
+ if now-last<C.GatherCooldownSeconds then return end;gatherCooldown[p][key]=now
+ s(p,key,n(p,key,0)+amount);msg(p,text.." +"..amount);feedback(p,"RESOURCE")
+end
+
 local function freeResidents(p)return n(p,"Residents",0)-n(p,"WoodWorkers",0)-n(p,"Farmers",0)end
-local function chop(p)s(p,"Wood",n(p,"Wood",0)+3);msg(p,"벌목 +3");feedback(p,"RESOURCE")end
-local function food(p)s(p,"Food",n(p,"Food",0)+3);msg(p,"식량 +3");feedback(p,"RESOURCE")end
-local function hire(p)if n(p,"Coins",0)<10 then msg(p,"고용 코인 부족")return end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용");feedback(p,"BUILD")end
-local function job(p,k)if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return end;s(p,k,n(p,k,0)+1);msg(p,k=="WoodWorkers" and "벌목 주민 배치" or "식량 주민 배치")end
+local function hire(p)if n(p,"Coins",0)<10 then msg(p,"주민 고용 코인 부족")return end;s(p,"Coins",n(p,"Coins",0)-10);s(p,"Residents",n(p,"Residents",0)+1);msg(p,"주민 고용")end
+local function job(p,key)
+ if freeResidents(p)<=0 then msg(p,"배치할 주민 없음")return end
+ s(p,key,n(p,key,0)+1);msg(p,key=="WoodWorkers"and"벌목 주민 배치"or"농장 주민 배치")
+end
 local function barracks(p)
-  local lv=n(p,"BarracksLevel",1);local wc=14+lv*8;local fc=10+lv*6;local ic=math.max(0,(lv-1)*4)
-  if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영재료 부족 나무%d 식량%d 철%d",wc,fc,ic))return end
-  s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD")
+ local lv=n(p,"BarracksLevel",1);local wc=14+lv*8;local fc=10+lv*6;local ic=math.max(0,(lv-1)*4)
+ if n(p,"Wood",0)<wc or n(p,"Food",0)<fc or n(p,"Iron",0)<ic then msg(p,string.format("병영 재료 부족 · 나무%d 식량%d 철%d",wc,fc,ic))return end
+ s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Food",n(p,"Food",0)-fc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"BarracksLevel",lv+1);msg(p,"병영 Lv."..(lv+1));feedback(p,"BUILD")
 end
 local function recruit(p)
-  local lv=n(p,"BarracksLevel",1);local fc=4+lv;local wc=2+math.floor(lv/2);local ic=lv>=3 and 1 or 0
-  if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return end
-  s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD")
+ local lv=n(p,"BarracksLevel",1);local fc=4+lv;local wc=2+math.floor(lv/2);local ic=lv>=3 and 1 or 0
+ if n(p,"Food",0)<fc or n(p,"Wood",0)<wc or n(p,"Iron",0)<ic then msg(p,"병사 모집 자원 부족")return end
+ s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD")
 end
-local function supportPower(p)local x=0;for _,o in ipairs(Players:GetPlayers())do if o~=p and o:GetAttribute("SupportReady")==true then x+=n(o,"Troops",0)*2 end end;return x end
-local function attack(p)
-  if battling[p] then msg(p,"전투 중")return end
-  local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"현재 공개 기지 전부 점령")return end
-  local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return end
-  battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattleEnemy",b.Enemy or"수비대");p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));msg(p,b.Name.." · "..(b.Enemy or"수비대").." 자동전투");feedback(p,"HIT");BattleVisual.start(p,idx,troops,C,Style)
-  task.spawn(function()
-    for i=1,4 do if not p.Parent then battling[p]=nil return end;s(p,"BattleProgress",i*25);task.wait(.5)end
-    local power=troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p);local won=power*(.92+math.random()*.16)>=b.Strength
-    local lost=math.max(1,math.floor(troops*(won and .15 or .35)));s(p,"Troops",math.max(0,n(p,"Troops",0)-lost))
-    if won then s(p,b.Reward,n(p,b.Reward,0)+b.Amount);s(p,"Coins",n(p,"Coins",0)+b.Coins);s(p,"CapturedBases",n(p,"CapturedBases",0)+1);if b.IslandFinal then s(p,"CapturedIslands",n(p,"CapturedIslands",0)+1)end;s(p,"NextBaseIndex",idx+1);msg(p,b.Name.." 점령!");feedback(p,"CAPTURE")
-    else msg(p,b.Name.." 패배 - 병력을 키워");feedback(p,"HIT")end
-    s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won)
-  end)
-end
-local H={
- [C.Actions.HIRE]=hire,
- [C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
- [C.Actions.BARRACKS]=barracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attack,
- [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady") and "원정지원 ON" or "원정지원 OFF")end,
-}
-Players.PlayerAdded:Connect(load);for _,p in ipairs(Players:GetPlayers())do task.defer(load,p)end
-local function broadcastMultiplayerSync(actor)
- local participants=Players:GetPlayers()
- local sharedObjective=0
- for _,participant in ipairs(participants)do sharedObjective+=(participant:GetAttribute("CapturedBases")or 0)end
- for _,participant in ipairs(participants)do participant:SetAttribute("SharedObjective",sharedObjective)end
- remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,SharedObjective=sharedObjective})
-end
-remote.OnServerEvent:Connect(function(p,a)
- if typeof(a)~="string"or not H[a]then return end
- local t=os.clock();if t-(lastRequest[p]or 0)<C.RateLimitSeconds then return end
- lastRequest[p]=t
- H[a](p)
- broadcastMultiplayerSync(p)
-end)
-local function horizontalDistance(a,b)
- local dx=a.X-b.X;local dz=a.Z-b.Z
- return math.sqrt(dx*dx+dz*dz)
-end
-task.spawn(function()
- while true do
-  task.wait(C.AutoGatherTickSeconds)
-  local worldFolder=workspace:FindFirstChild("CozyConquestWorld")
-  local forest=worldFolder and worldFolder:FindFirstChild("ForestFloor")
-  local farm=worldFolder and worldFolder:FindFirstChild("FarmPlot")
-  for _,p in ipairs(Players:GetPlayers())do
-   local root=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
-   local zone=""
-   if root and not battling[p]then
-    if forest and horizontalDistance(root.Position,forest.Position)<=C.AutoGatherWoodRadius then
-     s(p,"Wood",n(p,"Wood",0)+C.AutoGatherAmount);zone="WOOD"
-    end
-    if farm and horizontalDistance(root.Position,farm.Position)<=C.AutoGatherFoodRadius then
-     s(p,"Food",n(p,"Food",0)+C.AutoGatherAmount);zone=zone==""and"FOOD"or"BOTH"
-    end
-   end
-   if p:GetAttribute("AutoGatherZone")~=zone then
-    p:SetAttribute("AutoGatherZone",zone)
-    if zone=="WOOD"then msg(p,"숲 자동채집 · 나무 +"..C.AutoGatherAmount)
-    elseif zone=="FOOD"then msg(p,"농장 자동채집 · 식량 +"..C.AutoGatherAmount)
-    elseif zone=="BOTH"then msg(p,"자동채집 · 나무/식량 +"..C.AutoGatherAmount)end
-   end
-  end
- end
-end)
-task.spawn(function()
- while true do
-  task.wait(C.AutomationTickSeconds)
-  for _,p in ipairs(Players:GetPlayers())do
-   local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0)
-   if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end
-   if f>0 then s(p,"Food",n(p,"Food",0)+f)end
-  end
- end
-end)
-qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
- if C.QACameraEnabled~=true then return end
- if typeof(label)~="string"or #label<1 or #label>48 then return end
- local raw=tostring(value or"")
- if #raw<1 or #raw>160 then return end
- local isStatus=label=="STATUS"
- if not isStatus and not raw:match("^%d+$")then return end
- local now=os.clock();if now-(qaCaptureLast[p]or 0)<.18 then return end;qaCaptureLast[p]=now
- local record={gameId=C.GameId,label=label,userId=p.UserId,capturedAt=os.time()}
- if isStatus then record.status=raw;record.kind="STATUS"else record.assetId=raw;record.kind="CAPTURE"end
- local ok=pcall(function()
-  qaCaptureStore:UpdateAsync("latest",function(old)
-   local data=typeof(old)=="table"and old or{captures={}}
-   data.captures=typeof(data.captures)=="table"and data.captures or{}
-   table.insert(data.captures,record)
-   while #data.captures>30 do table.remove(data.captures,1)end
-   data.updatedAt=os.time();data.gameId=C.GameId
-   return data
-  end)
+local function supportPower(p)local total=0;for _,o in ipairs(Players:GetPlayers())do if o~=p and o:GetAttribute("SupportReady")==true then total+=n(o,"Troops",0)*2 end end;return total end
+local function attackBase(p)
+ if battling[p]then msg(p,"전투 중")return end
+ local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"5개 거점 정복 완료")return end
+ local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return end
+ battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattleEnemy",b.Enemy);p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));feedback(p,"HIT");BattleVisual.start(p,idx,troops,C,Style)
+ task.spawn(function()
+  for i=1,4 do if not p.Parent then battling[p]=nil return end;s(p,"BattleProgress",i*25);task.wait(.55)end
+  local power=troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p);local won=power*(.92+math.random()*.16)>=b.Strength
+  local lost=math.max(1,math.floor(troops*(won and .14 or .34)));s(p,"Troops",math.max(0,n(p,"Troops",0)-lost))
+  if won then s(p,b.Reward,n(p,b.Reward,0)+b.Amount);s(p,"Coins",n(p,"Coins",0)+b.Coins);s(p,"CapturedBases",n(p,"CapturedBases",0)+1);if b.IslandFinal then s(p,"CapturedIslands",n(p,"CapturedIslands",0)+1)end;s(p,"NextBaseIndex",idx+1);msg(p,b.Name.." 점령!");feedback(p,"CAPTURE")
+  else msg(p,b.Name.." 패배 · 병력/병영을 강화해");feedback(p,"HIT")end
+  s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won)
  end)
- if isStatus then p:SetAttribute("QALastCaptureStatus",raw)else p:SetAttribute("QALastCaptureAssetId",raw);p:SetAttribute("QALastCaptureLabel",label)end
- p:SetAttribute("QALastCaptureStored",ok)
+end
+
+local function spawnMob(kind,pos)
+ local folder=world:FindFirstChild("HomeMobs")or Instance.new("Folder");folder.Name="HomeMobs";folder.Parent=world
+ local isRaider=kind=="RAIDER";local hp=isRaider and C.HomeIslandMobs.RaiderHP or C.HomeIslandMobs.BoarHP
+ local damage=isRaider and C.HomeIslandMobs.RaiderDamage or C.HomeIslandMobs.BoarDamage
+ local r=part(folder,isRaider and"IslandRaider"or"WildBoar",isRaider and Vector3.new(3.6,4.2,2.6)or Vector3.new(5,2.8,6),pos,isRaider and Color3.fromRGB(137,75,66)or Color3.fromRGB(113,83,64),Enum.Material.SmoothPlastic)
+ if isRaider then
+  attach(r,"Head",Vector3.new(2.4,2.4,2.4),Vector3.new(0,3,0),Color3.fromRGB(210,172,140),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"ArmL",Vector3.new(.8,3,.8),Vector3.new(-1.8,0,0),r.Color);attach(r,"ArmR",Vector3.new(.8,3,.8),Vector3.new(1.8,0,0),r.Color)
+  attach(r,"LegL",Vector3.new(1,2.8,1),Vector3.new(-.7,-3.2,0),Color3.fromRGB(64,56,55));attach(r,"LegR",Vector3.new(1,2.8,1),Vector3.new(.7,-3.2,0),Color3.fromRGB(64,56,55))
+ else
+  attach(r,"BoarHead",Vector3.new(3.6,2.7,3.1),Vector3.new(0,.3,-3.4),r.Color,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(r,"TuskL",Vector3.new(.35,.35,1.1),Vector3.new(-.9,.1,-5),Color3.fromRGB(235,225,195));attach(r,"TuskR",Vector3.new(.35,.35,1.1),Vector3.new(.9,.1,-5),Color3.fromRGB(235,225,195))
+ end
+ label(r,isRaider and"섬 약탈병"or"멧돼지",isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
+ local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
+ local e={part=r,kind=kind,hp=hp,max=hp,damage=damage,spawn=pos,lastHit=0};table.insert(mobs,e);r:SetAttribute("HP",hp)
+ pr.Triggered:Connect(function(p)
+  if e.hp<=0 then return end;e.hp-=25+n(p,"BarracksLevel",1)*2;r:SetAttribute("HP",math.max(0,e.hp));feedback(p,"HIT")
+  if e.hp<=0 then
+   if kind=="RAIDER"then s(p,"Coins",n(p,"Coins",0)+8);s(p,"Wood",n(p,"Wood",0)+2);msg(p,"약탈병 처치 · 코인+8 나무+2")
+   else s(p,"Food",n(p,"Food",0)+4);msg(p,"멧돼지 처치 · 식량+4")end
+   r:Destroy();task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos)end end)
+  end
+ end)
+ return e
+end
+
+local function buildWorld()
+ local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
+ world=Instance.new("Folder");world.Name="CozyConquestWorld";world.Parent=workspace
+ for k,v in pairs(Style.Lighting)do Lighting[k]=v end
+ local water=part(world,"Sea",Vector3.new(940,2,940),Vector3.new(0,-6,0),Style.Water,Enum.Material.Glass);water.Transparency=.16
+ for index,r in ipairs(Style.Regions)do
+  local island=part(world,r.Name,r.Size,r.Pos,r.Color,r.Material);label(island,r.Name,r.Accent,58)
+  local topY=r.Pos.Y+r.Size.Y/2
+  local base=part(world,"Base_"..index,Vector3.new(22,9,22),Vector3.new(r.Pos.X,topY+4.5,r.Pos.Z),r.Accent,Enum.Material.Brick)
+  part(world,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
+  if index==1 then
+   part(world,"BeachShelf",Vector3.new(196,2,196),Vector3.new(0,topY-5.2,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
+   part(world,"VillagePlaza",Vector3.new(60,1,60),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
+   part(world,"FarmPlot",Vector3.new(38,1,28),Vector3.new(-36,topY+.7,-31),Color3.fromRGB(116,91,56),Enum.Material.Ground)
+   part(world,"BarracksYard",Vector3.new(40,1,30),Vector3.new(39,topY+.65,-29),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
+   part(world,"Dock",Vector3.new(18,2,38),Vector3.new(0,topY-1,78),Color3.fromRGB(125,89,56),Enum.Material.WoodPlanks)
+   for _,x in ipairs({-72,-54,-36,-18,0,18,36,54,72})do part(world,"Path",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+   for _,z in ipairs({-66,-44,-22,22,44,66})do part(world,"Path",Vector3.new(6,.5,12),Vector3.new(0,topY+.5,z),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+
+   local forest=Instance.new("Folder");forest.Name="ManualGatherForest";forest.Parent=world
+   for i=1,14 do
+    local x=-72+((i-1)%4)*18;local z=18+math.floor((i-1)/4)*17
+    local trunk=tree(forest,Vector3.new(x,topY,z),.72+(i%3)*.08);trunk.Name="WoodNode"..i;label(trunk,"나무",Color3.fromRGB(200,238,188),18)
+    prompt(trunk,"나무","벌목").Triggered:Connect(function(p)gather(p,"Wood",C.ManualGatherAmount,"벌목")end)
+   end
+   local farm=Instance.new("Folder");farm.Name="ManualGatherFarm";farm.Parent=world
+   for i=1,10 do
+    local row=math.floor((i-1)/5);local col=(i-1)%5
+    local crop=part(farm,"FoodNode"..i,Vector3.new(5,2.4,5),Vector3.new(-52+col*8,topY+1.9,-38+row*12),Color3.fromRGB(127,182,72),Enum.Material.Grass)
+    crop.Shape=Enum.PartType.Ball;label(crop,"작물",Color3.fromRGB(231,242,163),17)
+    prompt(crop,"작물","수확").Triggered:Connect(function(p)gather(p,"Food",C.ManualGatherAmount,"수확")end)
+   end
+
+   local npcs=Instance.new("Folder");npcs.Name="HomeNPCs";npcs.Parent=world
+   local chief=figure(npcs,"Chief",Vector3.new(0,topY+6,8),Color3.fromRGB(157,109,73),Color3.fromRGB(77,67,57),1);label(chief,"마을 이장",Color3.fromRGB(255,221,145),30);prompt(chief,"마을 이장","주민 고용").Triggered:Connect(hire)
+   local lumber=figure(npcs,"LumberMaster",Vector3.new(-32,topY+6,14),Color3.fromRGB(86,126,78),Color3.fromRGB(67,76,58),.9);label(lumber,"벌목반장",Color3.fromRGB(202,239,189),26);prompt(lumber,"벌목반장","주민 배치").Triggered:Connect(function(p)job(p,"WoodWorkers")end)
+   local farmer=figure(npcs,"Farmer",Vector3.new(-30,topY+6,-12),Color3.fromRGB(168,139,73),Color3.fromRGB(83,76,55),.9);label(farmer,"농장주",Color3.fromRGB(242,226,151),26);prompt(farmer,"농장주","주민 배치").Triggered:Connect(function(p)job(p,"Farmers")end)
+   local captain=figure(npcs,"Captain",Vector3.new(36,topY+6,-12),Color3.fromRGB(111,87,75),Color3.fromRGB(68,66,70),.95);label(captain,"병영대장",Color3.fromRGB(235,194,153),26);prompt(captain,"병영대장","병영 강화").Triggered:Connect(barracks)
+   for i=1,5 do local a=i/5*math.pi*2;local vill=figure(npcs,"Villager"..i,Vector3.new(math.cos(a)*24,topY+6,28+math.sin(a)*17),Color3.fromRGB(100+i*9,120+i*5,93+i*4),Color3.fromRGB(65,70,61),.78);label(vill,"주민",Color3.fromRGB(235,238,225),18)end
+
+   for i=1,5 do spawnMob("BOAR",Vector3.new(-58+i*18,topY+4,62+(i%2)*8))end
+   for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14))end
+  elseif index==2 then
+   for i=1,18 do local a=i/18*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*40,topY-r.Pos.Y,math.sin(a)*40),.7+(i%3)*.14,Color3.fromRGB(86,91,101))end
+   for i=1,7 do part(world,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-35+i*10,topY+3,r.Pos.Z+27),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
+  elseif index==3 then
+   for i=1,14 do tree(world,r.Pos+Vector3.new(-55+i*8,topY-r.Pos.Y,34+(i%3)*9),.7)end
+   for i=1,8 do local bale=part(world,"HayBale",Vector3.new(6,5,6),Vector3.new(r.Pos.X-42+i*10,topY+2.5,r.Pos.Z-31+(i%2)*8),Color3.fromRGB(214,183,96),Enum.Material.Fabric);bale.Shape=Enum.PartType.Cylinder;bale.Orientation=Vector3.new(0,0,90)end
+  elseif index==4 then
+   for i=1,24 do local a=i/24*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*(32+(i%3)*9),topY-r.Pos.Y,math.sin(a)*(32+(i%3)*9)),.65+(i%4)*.12)end
+  elseif index==5 then
+   for i=1,12 do rock(world,r.Pos+Vector3.new(-52+i*8,topY-r.Pos.Y,30+(i%2)*13),.62,Color3.fromRGB(159,124,69))end
+   for i=1,6 do part(world,"GoldVein",Vector3.new(4,6,4),Vector3.new(r.Pos.X-33+i*11,topY+3,r.Pos.Z-30),Color3.fromRGB(244,197,71),Enum.Material.Neon)end
+  else
+   for i=1,20 do local a=i/20*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*(36+(i%2)*11),topY-r.Pos.Y,math.sin(a)*(36+(i%2)*11)),.7,Color3.fromRGB(57,55,59))end
+   for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
+  end
+ end
+ workspace:SetAttribute("WorldArtPass","COZY_MANUAL_GATHER_NPC_MOBS_V5")
+end
+
+local function init(p)
+ for k,v in pairs(C.InitialState)do p:SetAttribute(k,v)end
+ p:SetAttribute("SupportReady",false);p:SetAttribute("InBattle",false);msg(p,"나무/작물에 가까이 가서 직접 채집해.")
+ local h=hum(p);if h then h.MaxHealth=100;h.Health=100 end
+end
+local function load(p)
+ init(p);local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
+ if ok and typeof(d)=="table"then for k,v in pairs(C.InitialState)do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end;if typeof(d.SupportReady)=="boolean"then p:SetAttribute("SupportReady",d.SupportReady)end end
+end
+local function save(p)local d={SupportReady=p:GetAttribute("SupportReady")==true};for k in pairs(C.InitialState)do d[k]=p:GetAttribute(k)end;pcall(function()store:SetAsync("p:"..p.UserId,d)end)end
+
+local H={
+ [C.Actions.HIRE]=hire,[C.Actions.WOOD_JOB]=function(p)job(p,"WoodWorkers")end,[C.Actions.FOOD_JOB]=function(p)job(p,"Farmers")end,
+ [C.Actions.BARRACKS]=barracks,[C.Actions.RECRUIT]=recruit,[C.Actions.ATTACK]=attackBase,
+ [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF")end,
+}
+remote.OnServerEvent:Connect(function(p,a)
+ if typeof(a)~="string"or not H[a]then return end;local now=os.clock();if now-(lastRequest[p]or 0)<C.RateLimitSeconds then return end;lastRequest[p]=now;H[a](p)
 end)
 
-Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;BattleVisual.cleanup(p);qaCaptureLast[p]=nil end)
+Players.PlayerAdded:Connect(function(p)load(p);p.CharacterAdded:Connect(function(c)local h=c:WaitForChild("Humanoid");h.MaxHealth=100;h.Health=100 end)end)
+for _,p in ipairs(Players:GetPlayers())do load(p)end
+Players.PlayerRemoving:Connect(function(p)save(p);lastRequest[p]=nil;battling[p]=nil;gatherCooldown[p]=nil;qaCaptureLast[p]=nil;BattleVisual.cleanup(p)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+
+task.spawn(function()
+ while true do task.wait(C.AutomationTickSeconds)
+  for _,p in ipairs(Players:GetPlayers())do
+   local w=n(p,"WoodWorkers",0);local f=n(p,"Farmers",0)
+   if w>0 then s(p,"Wood",n(p,"Wood",0)+w)end;if f>0 then s(p,"Food",n(p,"Food",0)+f)end
+  end
+ end
+end)
+
+RunService.Heartbeat:Connect(function(dt)
+ local now=os.clock()
+ for i=#mobs,1,-1 do
+  local e=mobs[i]
+  if not e.part or not e.part.Parent or e.hp<=0 then table.remove(mobs,i)
+  else
+   local target,bd=nil,28
+   for _,p in ipairs(Players:GetPlayers())do local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
+   if target then
+    local tr=root(target);local d=Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
+    if d.Magnitude>4 then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.kind=="RAIDER"and 8 or 6)*dt)end
+    if(tr.Position-e.part.Position).Magnitude<=5 and now-e.lastHit>1.4 then e.lastHit=now;local h=hum(target);if h then h:TakeDamage(e.damage)end end
+   else
+    local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z);if back.Magnitude>3 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,6*dt)end
+   end
+   if(e.part.Position-e.spawn).Magnitude>42 then e.part.CFrame=CFrame.new(e.spawn)end
+  end
+ end
+end)
+
+qaCaptureRemote.OnServerEvent:Connect(function(p,labelName,value)
+ if C.QACameraEnabled~=true then return end;local raw=tostring(value or"");if typeof(labelName)~="string"or#raw<1 or#raw>160 then return end
+ local isStatus=labelName=="STATUS";if not isStatus and not raw:match("^%d+$")then return end;local now=os.clock();if now-(qaCaptureLast[p]or 0)<.18 then return end;qaCaptureLast[p]=now
+ local rec={gameId=C.GameId,label=labelName,userId=p.UserId,capturedAt=os.time(),kind=isStatus and"STATUS"or"CAPTURE"};if isStatus then rec.status=raw else rec.assetId=raw end
+ pcall(function()qaCaptureStore:UpdateAsync("latest",function(old)local d=typeof(old)=="table"and old or{captures={}};d.captures=typeof(d.captures)=="table"and d.captures or{};table.insert(d.captures,rec);while#d.captures>30 do table.remove(d.captures,1)end;d.updatedAt=os.time();d.gameId=C.GameId;return d end)end)
+end)
+
+buildWorld()
