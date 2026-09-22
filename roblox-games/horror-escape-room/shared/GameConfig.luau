@@ -43,11 +43,11 @@ local Config={
   RobotSpider=285590061,
  },
  MonsterForms={
-  {Id="DRAK",Name="드라크",UnlockXP=0,Ability="BAT_DASH",Asset="Shade"},
-  {Id="FRANKEN",Name="프랑켄",UnlockXP=250,Ability="POWER_CHARGE",Asset="Skeleton"},
-  {Id="WOLF",Name="울프",UnlockXP=500,Ability="RAGE_RUN",Asset="RobotSpider"},
-  {Id="MIRAA",Name="미이라",UnlockXP=800,Ability="CURSE_SLOW",Asset="Skeleton"},
-  {Id="REAPER",Name="리퍼",UnlockXP=1200,Ability="SHADOW_STEP",Asset="Shade"},
+  {Id="DRACULA",Name="드라큘라",UnlockXP=0,Ability="BAT_DASH",Theme="VAMPIRE"},
+  {Id="FRANKENSTEIN",Name="프랑켄슈타인",UnlockXP=250,Ability="POWER_CHARGE",Theme="FRANKEN"},
+  {Id="WEREWOLF",Name="늑대인간",UnlockXP=500,Ability="RAGE_RUN",Theme="WEREWOLF",ExternalAssetId=155389113},
+  {Id="MUMMY",Name="미라",UnlockXP=800,Ability="CURSE_SLOW",Theme="MUMMY",ExternalAssetId=4012084718},
+  {Id="GRIM_REAPER",Name="사신",UnlockXP=1200,Ability="SHADOW_STEP",Theme="REAPER",ExternalAssetId=49353603},
  },
  Actions={
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
