@@ -99,8 +99,14 @@ test('all eligible internal-release Roblox caretakers are queued in one focus cy
 });
 test('private runtime candidate without internal release is not release-focused',()=>{
   const c=mk();
-  const r=run(c,releasedItem({publishedAt:'2026-09-21T10:00:00Z'}),{
-    games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY',platforms:[{platform:'ROBLOX',internalReleaseReady:false,internalReleaseState:'NOT_READY'}]}]
+  const item={
+    gameId:'g',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+    robloxProjectPath:'roblox-games/g',
+    robloxDedicatedExperiencePublished:false,
+    robloxPublicationTarget:{verified:false}
+  };
+  const r=run(c,item,{
+    games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY',platforms:[{platform:'ROBLOX',internalReleaseReady:false,internalReleasePublished:false,internalReleaseState:'NATIVE_DEVELOPMENT'}]}]
   });
   assert.equal(r.added,false);
   assert.equal(r.reason,'NO_RELEASED_OR_HISTORICAL_ROBLOX');
