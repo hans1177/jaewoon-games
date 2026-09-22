@@ -3524,7 +3524,7 @@
       }
     },
     "sharedWorkerContext": {
-      "version": 4,
+      "version": 5,
       "authority": "OWNER_DIRECTIVE_2026-09-20",
       "requiredForAllWorkers": true,
       "appliesTo": [
@@ -3638,7 +3638,17 @@
       "centralDocumentationContract": "company-learning/platform-release-roadmap.json#centralDocumentation",
       "codeChangeRequiresCentralDocumentationImpactReview": true,
       "documentationChangeRequiresImplementationImpactReview": true,
-      "postCentralDocumentWriteSharedContextResyncRequired": true
+      "postCentralDocumentWriteSharedContextResyncRequired": true,
+      "compiledArchitectureProjection": {
+        "required": true,
+        "source": "CENTRAL_POLICY_RUNTIME_COMPILER",
+        "compiler": "tools/company-shared-context.mjs::compileCentralArchitectureProjection",
+        "architectureMapRole": "STATIC_MACHINE_TOPOLOGY_AND_COMPATIBILITY_REGISTRY_ONLY",
+        "fingerprintBoundToExecutionEvidence": true,
+        "workContractMustUseSameFingerprint": true,
+        "centralPolicySemanticChangeInvalidatesCompiledProjection": true,
+        "manualMirrorSynchronizationRequired": false
+      }
     },
     "primaryAiOrchestration": {
       "version": 3,
@@ -13768,7 +13778,7 @@
     }
   },
   "centralDocumentation": {
-    "version": 1,
+    "version": 2,
     "status": "CANONICAL_MACHINE_DOCUMENTATION_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-22",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -13843,6 +13853,31 @@
       "updateExistingCanonicalSectionBeforeAddingNewDocument": true,
       "centralContractChangeMustRecordChangeRecord": true,
       "postWriteSharedContextResyncRequired": true
+    },
+    "humanReadableArtifactPolicy": {
+      "humanReadablePolicyMirrorRequired": false,
+      "humanArchitectureDocumentRequired": false,
+      "humanWorkDocumentRequired": false,
+      "generatedNarrativeDocumentationForbiddenAsAuthority": true,
+      "machineReadableContractsOnly": true,
+      "ownerNeedNotReadDerivedArtifacts": true
+    },
+    "machineProjectionSynchronization": {
+      "authority": "OWNER_CONSTITUTION_THEN_CENTRAL_POLICY",
+      "mode": "COMPILE_AT_EXECUTION_NO_MANUAL_MIRROR_REQUIRED",
+      "centralPolicyIsOnlyMutablePolicySource": true,
+      "architectureProjectionGeneratedAtRuntime": true,
+      "architectureMapRole": "STATIC_MACHINE_TOPOLOGY_AND_COMPATIBILITY_REGISTRY_ONLY",
+      "architectureMapMayNotOverrideProjection": true,
+      "workContractGeneratedFromSameProjection": true,
+      "sharedContextGeneratedFromSameProjection": true,
+      "policyChangeAutomaticallyChangesArchitectureFingerprint": true,
+      "policyChangeAutomaticallyChangesWorkContractFingerprint": true,
+      "staleArchitectureProjectionMayNotStartWork": true,
+      "staleWorkContractMayNotCompleteWork": true,
+      "manualArchitectureMirrorUpdateNotRequiredForPolicySemanticChange": true,
+      "topologyRegistryChangeStillRequiresArchitectureMapChange": true,
+      "noSeparateDocumentationPipeline": true
     }
   }
 }
