@@ -1,7 +1,7 @@
 {
   "version": 1,
   "revision": 48,
-  "updatedAt": "2026-09-23T00:14:00+09:00",
+  "updatedAt": "2026-09-23T00:18:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -373,11 +373,11 @@
       "gemini-3.5-flash-lite"
     ],
     "departmentLeadModels": {
-      "planning": "gemini-3.8-flash",
-      "graphics": "gemini-3.7-flash",
-      "development": "gemini-3.6-flash",
-      "qa": "gemini-3.5-flash",
-      "balance": "gemini-3.5-flash-lite",
+      "planning": "llama3.2:1b",
+      "graphics": "llama3.2:1b",
+      "development": "llama3.2:1b",
+      "qa": "llama3.2:1b",
+      "balance": "llama3.2:1b",
       "audio": "llama3.2:1b"
     },
     "gameDesigner": {
@@ -528,9 +528,7 @@
     "robloxPreflightModel": "llama3.2:1b",
     "robloxValidationMode": "HEADLESS_FAST_MVP",
     "robloxStudioExecutionAllowed": false,
-    "robloxStudioEvidenceRequired": false,
-    "currentLeadModelSource": ".github/workflows/company-seed-design-runtime.yml#COMPANY_GEMINI_LEAD_MODELS",
-    "leadModelsAreRemappable": true
+    "robloxStudioEvidenceRequired": false
   },
   "classes": {
     "DESIGN_ONLY": {
