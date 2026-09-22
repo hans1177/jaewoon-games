@@ -129,3 +129,14 @@ test('심야 맵 전환은 기존 맵을 유지한 채 완성 후 교체하고 �
   assert.match(server,/arena=existing/);
   assert.match(server,/while workspace:GetAttribute\("MapReady"\)~=true/);
 });
+
+test('심야는 상세 맵 생성 실패 시 안전한 기본맵으로 자동 복구한다',()=>{
+  assert.match(server,/local function recordServerQA\(status\)/);
+  assert.match(server,/local function makeFallbackArena\(map,reason\)/);
+  assert.match(server,/local function ensureArena\(map\)/);
+  assert.match(server,/pcall\(function\(\)return makeArena\(map\)end\)/);
+  assert.match(server,/MIDNIGHT_FALLBACK_SAFE_V1/);
+  assert.match(server,/workspace:SetAttribute\("MapReady",true\)/);
+  assert.match(server,/recordServerQA\("MAP_FALLBACK:"/);
+  assert.match(server,/arena=ensureArena\(C\.Maps\[1\]\)/);
+});
