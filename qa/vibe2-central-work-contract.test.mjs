@@ -116,6 +116,14 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.workRequest.mainSha,'abc123');
   assert.deepEqual(contract.workRequest.scope,['web-games/bug-defense/index.html']);
   assert.ok(contract.workRequest.dedupeKey);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.equal(contract.workLock.stateBranch,'vibe2-work-locks');
+  assert.equal(contract.workLock.statePath,'.vibe2/work-locks.json');
+  assert.equal(contract.workLock.worker,'vibe2');
+  assert.equal(contract.workLock.taskId,'repair-1');
+  assert.equal(contract.workLock.baseSha,'abc123');
+  assert.deepEqual(contract.workLock.files,['web-games/bug-defense/index.html']);
+  assert.equal(contract.workLock.releaseRule,'RELEASE_AFTER_FAN_IN_QA_OR_ABORT');
   assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
   assert.equal(contract.workRequest.authorityBoundary.workerCreationAuthority,false);
   assert.equal(contract.workRequest.authorityBoundary.queueMutationAuthority,false);
