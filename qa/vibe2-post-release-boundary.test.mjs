@@ -60,6 +60,43 @@ test('internal platform release enters focused development as a release',()=>{
   assert.ok(r.task.evidence.includes('focus-release-kind:INTERNAL_PLATFORM_RELEASE'));
   assert.ok(r.task.evidence.includes('internal-release-focused:yes'));
 });
+test('verified private Roblox publication counts as internal release for focus',()=>{
+  const c=mk();
+  const item={
+    gameId:'g',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+    robloxProjectPath:'roblox-games/g',
+    robloxDedicatedExperiencePublished:true,
+    robloxPublicationTarget:{verified:true,placeId:'123'}
+  };
+  const r=run(c,item,{games:[{gameId:'g',externalPublicReleaseState:'INTERNAL_ONLY'}]});
+  assert.equal(r.added,true);
+  assert.equal(r.task.releaseState,'release-confirmed');
+  assert.ok(r.task.evidence.includes('focus-release-kind:INTERNAL_PLATFORM_RELEASE'));
+});
+
+test('all eligible internal-release Roblox caretakers are queued in one focus cycle',()=>{
+  const c=mk();
+  fs.mkdirSync(path.join(c.root,'roblox-games/h/server'),{recursive:true});
+  fs.writeFileSync(path.join(c.root,'roblox-games/h/server/Game.server.luau'),'print("ok-h")\n');
+  const item=id=>({
+    gameId:id,selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+    robloxProjectPath:`roblox-games/${id}`,
+    robloxDedicatedExperiencePublished:true,
+    robloxPublicationTarget:{verified:true,placeId:id==='g'?'123':'456'},
+    ownerPrimaryRank:id==='g'?1:2
+  });
+  fs.writeFileSync(c.files.runtime,JSON.stringify({items:[item('g'),item('h')]}));
+  fs.writeFileSync(c.files.exposure,JSON.stringify({games:[]}));
+  const r=feedPostReleaseFocus({
+    roadmapFile:c.files.roadmap,companyRuntimeQueueFile:c.files.runtime,
+    historicalRegistryFile:c.files.hist,queueFile:c.files.queue,
+    recombinationFile:c.files.recomb,exposureFile:c.files.exposure,repoRoot:c.root
+  });
+  assert.equal(r.added,true);
+  assert.equal(r.tasks.length,2);
+  assert.deepEqual(r.tasks.map(x=>x.gameId),['g','h']);
+  assert.ok(r.tasks.every(x=>x.postReleaseFocused===true&&x.priority==='critical'));
+});
 test('private runtime candidate without internal release is not release-focused',()=>{
   const c=mk();
   const r=run(c,releasedItem({publishedAt:'2026-09-21T10:00:00Z'}),{
