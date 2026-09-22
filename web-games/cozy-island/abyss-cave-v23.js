@@ -25,7 +25,7 @@ const ENEMY_DEFS = [
   { id: 'c4-wizard-a', room: 4, kind: 'abyssWizard', label: '심연 마법사', icon: '🧙', x: 6580, y: -560, hp: 700, attack: 40, interval: 1.45, range: 245, speed: 55 },
   { id: 'c4-wizard-b', room: 4, kind: 'abyssWizard', label: '심연 마법사', icon: '🧙', x: 6840, y: -210, hp: 700, attack: 40, interval: 1.45, range: 245, speed: 55 },
   { id: 'c4-spider', room: 4, kind: 'caveSpider', label: '동굴 거미', icon: '🕷️', x: 6740, y: -410, hp: 450, attack: 30, interval: 1.05, range: 54, speed: 76 },
-  { id: 'c5-boss', room: 5, kind: 'abyssGolem', label: '심연 골렘', icon: '💠', x: 7390, y: -390, hp: 5000, attack: 60, interval: 1.2, range: 72, speed: 46, boss: true }
+  { id: 'c5-boss', room: 5, kind: 'abyssGolem', label: '심연 골렘', icon: '💠', x: 7390, y: -390, hp: 2500, attack: 30, interval: 1.2, range: 72, speed: 46, boss: true }
 ];
 
 const GEAR = {
@@ -520,13 +520,13 @@ function updateCaveCombat(dt) {
   if (!found.unit) return;
   if (found.distance > enemy.range) moveToward(enemy, found.unit.x, found.unit.y, dt);
   else if (enemy.cool <= 0) {
-    const hit = enemy.kind === 'abyssGolem' && Math.random() < .30 ? 110 : enemy.attack;
+    const hit = enemy.kind === 'abyssGolem' && Math.random() < .30 ? 55 : enemy.attack;
     damageTroop(found.unit, hit);
     enemy.cool = enemy.interval;
   }
   if (enemy.kind === 'abyssGolem' && enemy.hp <= enemy.maxHp * .5 && enemy.shardTimer <= 0) {
     const shardTarget = nearest(enemy, troops, true).unit;
-    if (shardTarget) damageTroop(shardTarget, 35);
+    if (shardTarget) damageTroop(shardTarget, 17.5);
     enemy.shardTimer = 2;
   }
   for (let i = currentGame.allies.length - 1; i >= 0; i--) {
