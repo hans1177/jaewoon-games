@@ -46,7 +46,7 @@ test('심야는 이동 가능한 어둠과 지도별 시각 기준점을 가진�
  const client=read('roblox-games/horror-escape-room/client/Game.client.luau');
  const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
  for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId','MidnightArena','MapReady'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
- for(const marker of ['HallGuideStrip','HospitalGuideStrip','ParkLandmarkSign','INFECTION_HORROR_V9','AssetService','ObjectivePrompt','EscapePrompt','LibraryWing','EmergencyWing','ArcadeZone','MapReady','SchoolRoofRim1','ClassDoorGlass','LibraryShelfExtra'])assert.match(server,new RegExp(marker));
+ for(const marker of ['HallGuideStrip','HospitalGuideStrip','ParkLandmarkSign','INFECTION_HORROR_V9','AssetService','ObjectivePrompt','EscapePrompt','LibraryWing','EmergencyWing','ArcadeZone','MapReady','SchoolRoofRim','ClassDoorGlass','LibraryShelfExtra'])assert.match(server,new RegExp(marker));
  assert.match(server,/Vector3\.new\(340,1,340\)/);
  assert.match(server,/Lighting\.Brightness=map\.Id=="SCHOOL"and 1\.82 or 1\.65/);
  assert.match(server,/MainHallCeiling/);
@@ -71,6 +71,6 @@ test('심야 최종 아트 계약은 현실형 인간과 비정상 몬스터를 
  const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
  assert.match(server,/REALISTIC_HUMANS_ABERRANT_MONSTERS/);
  assert.match(server,/PRIMARY_THREE_FINAL_4V4_INFECTION_V1/);
- assert.match(server,/SchoolRoofRim1/);
+ assert.match(server,/SchoolRoofRim/);
  assert.doesNotMatch(server,/SchoolMainRoof/);
 });
