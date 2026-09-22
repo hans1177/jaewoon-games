@@ -62,3 +62,11 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
     fs.rmSync(tmp,{recursive:true,force:true});
   }
 });
+
+test('Unity Web validation publication uses PR instead of direct main write',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  assert.match(workflow,/Create verified Unity Web build PR/);
+  assert.match(workflow,/gh pr create/);
+  assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
+  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+});
