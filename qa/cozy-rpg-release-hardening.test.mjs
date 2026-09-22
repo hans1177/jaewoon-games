@@ -59,7 +59,7 @@ test('Whatever RPG Remote는 allowlist와 rate limit 뒤에만 게임 액션과 
 test('포근섬 모바일 UI는 운영형 컴팩트 HUD와 접이식 자원/성장/정복 조작을 쓴다',()=>{
   for(const marker of ['TopHUD','ActionDock','ActionPopup','채집','마을 성장','정복','기지공격','병영강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
   assert.match(cozyClient,/hud\.Size=UDim2\.fromOffset\(286,58\)/);
-  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(300,48\)/);
+  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(276,44\)/);
   assert.match(cozyClient,/actionPopup\.Visible=false/);
   assert.match(cozyClient,/showGroup\(groupIndex\)/);
 });
