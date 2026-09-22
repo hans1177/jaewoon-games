@@ -1236,7 +1236,7 @@ test('continuous core keeps pending neuron callbacks out of heavy reserve and re
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
-  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_REFILL_RETRY/);
+  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_DEDUP_NO_REFILL/);
   assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS/);
   assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE/);
   assert.match(workflow,/event_type:'vibe2-fanin-refill'/);
