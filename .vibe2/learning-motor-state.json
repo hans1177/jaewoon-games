@@ -12,11 +12,11 @@
       "lastEvidence": "exp_system_ai_33ca28f6ca53ae6c28806b87"
     },
     "STATE_MACHINE": {
-      "xp": 1912,
+      "xp": 1927,
       "level": 15,
       "verifiedSuccesses": 118,
-      "verifiedFailureLessons": 108,
-      "lastEvidence": "capability_ctrace_7203426ac1b5f0818e6a0d53"
+      "verifiedFailureLessons": 111,
+      "lastEvidence": "capability_ctrace_d7de6d6e30f11163f10bab77"
     },
     "COMBAT": {
       "xp": 1320,
@@ -33,11 +33,11 @@
       "lastEvidence": "exp_system_ai_33ca28f6ca53ae6c28806b87"
     },
     "PROGRESSION": {
-      "xp": 1380,
+      "xp": 1395,
       "level": 13,
       "verifiedSuccesses": 95,
-      "verifiedFailureLessons": 48,
-      "lastEvidence": "exp_system_ai_1fe92c217a057b5e299553d1"
+      "verifiedFailureLessons": 51,
+      "lastEvidence": "capability_ctrace_d7de6d6e30f11163f10bab77"
     },
     "ECONOMY": {
       "xp": 1155,
@@ -68,11 +68,11 @@
       "lastEvidence": "capability_ctrace_d88b3fb6a7ce0fd1b13cc918"
     },
     "DEBUGGING": {
-      "xp": 1924,
-      "level": 15,
+      "xp": 1939,
+      "level": 16,
       "verifiedSuccesses": 121,
-      "verifiedFailureLessons": 108,
-      "lastEvidence": "capability_ctrace_7203426ac1b5f0818e6a0d53"
+      "verifiedFailureLessons": 111,
+      "lastEvidence": "capability_ctrace_d7de6d6e30f11163f10bab77"
     },
     "RECOVERY": {
       "xp": 1255,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 1781,
+      "xp": 1796,
       "level": 15,
       "verifiedSuccesses": 108,
-      "verifiedFailureLessons": 97,
-      "lastEvidence": "capability_ctrace_7203426ac1b5f0818e6a0d53"
+      "verifiedFailureLessons": 100,
+      "lastEvidence": "capability_ctrace_d7de6d6e30f11163f10bab77"
     },
     "ROBLOX_STUDIO": {
       "xp": 24,
@@ -487,7 +487,10 @@
     "capability_ctrace_53cddc351499f0a7464c2af4",
     "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
     "capability_ctrace_0966f757d28b32279f69c787",
-    "capability_ctrace_7203426ac1b5f0818e6a0d53"
+    "capability_ctrace_7203426ac1b5f0818e6a0d53",
+    "capability_ctrace_67cbe292d92c17ee1773a10c",
+    "capability_ctrace_9826195dac24dccb5a25672d",
+    "capability_ctrace_d7de6d6e30f11163f10bab77"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -708,8 +711,8 @@
       ]
     },
     "fail_lhx93q": {
-      "count": 14,
-      "lastEvidence": "capability_ctrace_7203426ac1b5f0818e6a0d53",
+      "count": 17,
+      "lastEvidence": "capability_ctrace_d7de6d6e30f11163f10bab77",
       "example": "SOURCE_CANDIDATE_GENERATION:DIAGNOSTIC_POSTCONDITION",
       "domains": [
         "CORE_LOOP",
@@ -8567,7 +8570,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-22T23:26:28.571Z",
+    "lastBuiltAt": "2026-09-22T23:26:59.419Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -12659,5 +12662,5 @@
       "knowledge_1o08lh7"
     ]
   },
-  "updatedAt": "2026-09-22T23:26:28.571Z"
+  "updatedAt": "2026-09-22T23:26:59.419Z"
 }

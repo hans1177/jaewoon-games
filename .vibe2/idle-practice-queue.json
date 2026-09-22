@@ -58,23 +58,6 @@
       "sourceFailure": "fail_wu3qnk"
     },
     {
-      "id": "review-fail_3e38u6",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "PROGRESSION",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME"
-      ],
-      "sourceFailure": "fail_3e38u6"
-    },
-    {
       "id": "review-fail_lhx93q",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -93,6 +76,23 @@
         "ECONOMY"
       ],
       "sourceFailure": "fail_lhx93q"
+    },
+    {
+      "id": "review-fail_3e38u6",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "PROGRESSION",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "QUEST_DESIGN",
+        "WEB_RUNTIME"
+      ],
+      "sourceFailure": "fail_3e38u6"
     },
     {
       "id": "review-fail_17sa11i",
@@ -155,7 +155,7 @@
       "sourceFailure": "fail_wu3qnk"
     },
     {
-      "id": "relearn-fail_3e38u6",
+      "id": "relearn-fail_lhx93q",
       "kind": "RELEARNING_REPLAY_DRILL",
       "priority": "high",
       "productionPreemptible": true,
@@ -163,13 +163,16 @@
       "domains": [
         "CORE_LOOP",
         "STATE_MACHINE",
-        "PROGRESSION",
+        "COMBAT",
+        "SAVE",
         "MOBILE_INPUT",
         "DEBUGGING",
+        "WEB_RUNTIME",
+        "PROGRESSION",
         "QUEST_DESIGN",
-        "WEB_RUNTIME"
+        "ECONOMY"
       ],
-      "sourceFailure": "fail_3e38u6"
+      "sourceFailure": "fail_lhx93q"
     },
     {
       "id": "phase4-generalization-capability_ctrace_7022dd1d29e03580f9fab379-control",
@@ -1178,16 +1181,6 @@
       ]
     },
     {
-      "id": "gap-debugging-l15",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "DEBUGGING"
-      ]
-    },
-    {
       "id": "gap-state_machine-l15",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1205,6 +1198,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "WEB_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-debugging-l16",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "DEBUGGING"
       ]
     }
   ]
