@@ -412,7 +412,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     && task.protectedChange !== true
     && supervisionApproved;
   const learningGuidance = buildLearningGuidance(plan.learning);
-  const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
+  const learnedTournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
+  const speculativeRuntime=runtime?.continuous?.speculativeParallelism||{};
+  const speculativeRuntimeEnabled=speculativeRuntime.enabled===true;
+  const speculativeRuntimeCap=Math.max(1,Math.min(5,Number(speculativeRuntime.variants)||1));
+  const runtimeCandidateCount=speculativeRuntimeEnabled?Math.min(Math.max(1,Number(learnedTournament.candidateCount)||1),speculativeRuntimeCap):1;
+  const tournament=freeze({...learnedTournament,candidateCount:runtimeCandidateCount,reason:runtimeCandidateCount===1&&!speculativeRuntimeEnabled?'runtime-primary-only-rollback':learnedTournament.reason,runtimeSpeculationEnabled:speculativeRuntimeEnabled,runtimeSpeculationCap:speculativeRuntimeCap});
   const normalVerifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
   const phase4BenchmarkVerification=buildPassiveCapabilityBenchmarkContract({
     experienceInput:fullExperienceMemory,

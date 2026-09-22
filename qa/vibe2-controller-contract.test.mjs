@@ -72,7 +72,9 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
-  assert.equal(runtime.continuous.speculativeParallelism.enabled,true);
+  assert.equal(runtime.continuous.speculativeParallelism.enabled,false);
+  assert.equal(runtime.continuous.speculativeParallelism.variants,1);
+  assert.equal(runtime.continuous.slotRefillSingleVariantOnly,true);
   assert.equal(runtime.coordination.sourceRootExclusive,true);
   assert.equal(runtime.coordination.separateFileLocks,true);
   assert.equal(runtime.coordination.fanOutFanIn,true);
@@ -124,6 +126,7 @@ test('graphics presentation uses atomic neuron task micro-fan-in without expandi
   assert.equal(assets.parallelism.phase2NeuralExecutionAuthorityCreated,false);
   assert.match(continuousRunnerSource,/mode:'PER_TASK_MICRO_FANIN'/);
   assert.match(continuousRunnerSource,/maxVariants:3/);
+  assert.match(continuousRunnerSource,/runtime-primary-only-rollback/);
   assert.match(continuousRunnerSource,/task-micro-fanin=required/);
   assert.match(continuousRunnerSource,/placeholderPrimitiveCompletionForbidden:true/);
   assert.match(continuousRunnerSource,/actionStateCoverage:freezeList\(\['IDLE','MOVE','ATTACK','HIT','DEATH'\]\)/);

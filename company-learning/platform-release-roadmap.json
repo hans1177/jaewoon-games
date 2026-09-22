@@ -2837,7 +2837,7 @@
           "centralPolicyContract": "PASS",
           "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL",
           "adaptiveWave": "SELF_ADAPTIVE",
-          "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
+          "speculativePolicy": "PRIMARY_ONLY_RUNTIME_ROLLBACK",
           "wavePolicy": "OWNER_SELF_ADAPTIVE_PRIMARY_FIRST",
           "vibe2CoreQa": "PASS_RUN_35426882175",
           "schedulerPriority": "OWNER_OR_STEWARD_CRITICAL_THEN_RELEASE_THEN_GAME_DEVELOPMENT_THEN_NONBLOCKING_SUPERVISION",
@@ -2908,7 +2908,9 @@
           "fullWebCompletenessContract": "QA_PASS_PENDING_NEXT_REFILL",
           "adaptiveWaveBaseline": 20,
           "adaptiveWaveMin": 4,
-          "adaptiveWaveMax": 256
+          "adaptiveWaveMax": 256,
+          "speculativeCandidateVariants": 1,
+          "speculativeCandidateRollbackReason": "OWNER_REQUEST_RESTORE_PRIMARY_ONLY_2026-09-21"
         },
         "incidentHistory": [
           {
