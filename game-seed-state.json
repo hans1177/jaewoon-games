@@ -3199,8 +3199,8 @@
       "gameId": "insect-survival",
       "gameName": "곤충 생존기",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -3523,9 +3523,9 @@
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -3543,8 +3543,8 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -3603,8 +3603,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-09-21T22:06:21.470Z"
+      }
     },
     {
       "version": 2,
@@ -4084,23 +4083,21 @@
       "gameId": "cozy-island",
       "gameName": "포근섬",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
-        "manual-to-automated economy",
-        "barracks troop progression",
-        "base-by-base auto battle conquest",
-        "geography-specific resources",
-        "solo plus cooperative expedition support"
+        "relaxing daily activity loop",
+        "collection and fishing progression",
+        "small-island personalization"
       ],
       "CORE_LOOP": [
         "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ],
-      "DISTINCT_IDENTITY": "기본섬에서 직접 벌목·식량 수급으로 시작해 주민을 확보하고 병영과 병사를 성장시키며, 섬마다 서로 다른 특수자원을 가진 적 기지를 자동전투로 하나씩 격파해 영토를 넓히는 섬 개척 전략 게임.",
+      "DISTINCT_IDENTITY": "작은 포근한 섬에서 낚시·채집·생활 흔적이 섬의 모습과 다음 활동을 바꾸는 고유의 힐링 생활 게임으로 완전히 처음부터 다시 설계한다.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -4424,11 +4421,11 @@
       "TARGET_AUDIENCE": "낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어",
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
-      "INITIAL_PLAY_MODE": "SINGLE_OR_COOP",
+      "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -4446,11 +4443,17 @@
         "zero blocking runtime or console errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "preserveExistingWebArchive": true,
       "existingWebSourcePath": "web-games/cozy-island",
       "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
+      "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
+      "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
+      "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
+      "OWNER_DIRECT_DEVELOPMENT": true,
+      "OWNER_DIRECT_DEVELOPMENT_AUTHORITY": "OWNER_DIRECTIVE_2026-09-22",
+      "OWNER_DESIGN_ADMISSION_GATE_REQUIRED": false,
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -4509,62 +4512,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "ownerDirectDevelopment": true,
-      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "ownerDirectDevelopmentRequestedAt": "2026-09-22T00:45:00+09:00",
-      "minimumDesignContract": {
-        "version": 1,
-        "pass": true,
-        "source": "design/cozy-island/2026-09-22/design-revised.json",
-        "date": "2026-09-22"
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/cozy-island/2026-09-22/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/cozy-island/2026-09-22/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-09-21T22:06:21.471Z",
-      "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-        "requestedPlatform": "ROBLOX",
-        "concurrentTargetPlatforms": [
-          "ROBLOX",
-          "UNITY"
-        ],
-        "targetSourcePaths": {
-          "ROBLOX": "roblox-games/cozy-island",
-          "UNITY": "unity-games/cozy-island"
-        },
-        "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
-        "designDate": "2026-09-22",
-        "strictDesignReviewRequiredForAdmission": false,
-        "strictDesignReviewContinuesInParallel": true,
-        "promotedAt": "2026-09-22T00:45:00+09:00"
-      },
-      "strictDesignReviewRefreshRequired": true,
-      "ownerPrimaryDevelopment": true,
-      "ownerPrimaryRank": 1,
-      "ROBLOX_VALIDATION_MODE": "HEADLESS_FAST_MVP",
-      "ROBLOX_STUDIO_ALLOWED": false,
-      "DESIGN_BASELINE_SOURCE": "design/cozy-island/2026-09-22/design-revised.json"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
       "gameId": "crystal-defense",
       "gameName": "수정 디펜스",
@@ -4893,13 +4844,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -4956,17 +4907,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-21T22:06:21.405Z"
+      }
     },
     {
       "version": 2,
@@ -4974,8 +4915,8 @@
       "gameId": "human-go",
       "gameName": "휴먼 GO",
       "status": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
       "GAME_CATEGORY": "CASUAL",
       "REFERENCE_GAMES": [],
       "CORE_FUN_TO_LEARN": [
@@ -5314,9 +5255,9 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
+      "TRANSFORMATION_MODE": "FROM_SCRATCH_REINTERPRETATION",
+      "SOURCE_CODE_RULE": "NEW_OWN_IMPLEMENTATION_ONLY",
+      "OWNER_REBUILD_MODE": "FROM_SCRATCH",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
       "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
@@ -5334,8 +5275,8 @@
         "zero blocking runtime console or invalid-resource errors"
       ],
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5394,11 +5335,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "updatedAt": "2026-09-21T22:06:21.471Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
       "gameId": "island-village",
       "gameName": "무인도 마을",
@@ -5740,13 +5680,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5805,20 +5745,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-21T22:06:21.471Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
       "gameId": "egg-heist",
       "gameName": "알 도둑 대작전",
@@ -6160,13 +6090,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-EGG-HEIST-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6225,20 +6155,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-21T22:06:21.471Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
       "gameId": "chess-battle",
       "gameName": "체스 배틀",
@@ -6588,13 +6508,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-CHESS-BATTLE-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6653,20 +6573,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-21T22:06:21.471Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
       "gameId": "survival2",
       "gameName": "숲의 생존자들",
@@ -6992,13 +6902,13 @@
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_COOP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-SURVIVAL2-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7057,20 +6967,10 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-21T22:06:21.471Z"
+      }
     },
     {
-      "version": 2,
+      "version": 1,
       "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
       "gameId": "territory-war",
       "gameName": "영토전쟁",
@@ -7394,15 +7294,21 @@
       "TARGET_AUDIENCE": "짧은 전략 세션과 영토 확장 판단을 선호하는 플레이어",
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
-      "INITIAL_PLAY_MODE": "SINGLE_OR_COMPETITIVE",
+      "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_PVP_EXPANSION_REVIEW",
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
-      "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
-      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
-      "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "lifecycleState": "DESIGN_ONLY",
+      "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
+      "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
+      "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
+      "OWNER_DIRECT_DEVELOPMENT": true,
+      "OWNER_DIRECT_DEVELOPMENT_AUTHORITY": "OWNER_DIRECTIVE_2026-09-22",
+      "OWNER_DESIGN_ADMISSION_GATE_REQUIRED": false,
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7461,65 +7367,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "ownerDirectDevelopment": true,
-      "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "ownerDirectDevelopmentRequestedAt": "2026-09-22T00:45:00+09:00",
-      "minimumDesignContract": {
-        "version": 1,
-        "pass": true,
-        "source": "design/territory-war/2026-09-22/design-revised.json",
-        "date": "2026-09-22"
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/territory-war/2026-09-22/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/territory-war/2026-09-22/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-09-21T22:06:21.471Z",
-      "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-        "requestedPlatform": "ROBLOX",
-        "concurrentTargetPlatforms": [
-          "ROBLOX",
-          "UNITY"
-        ],
-        "targetSourcePaths": {
-          "ROBLOX": "roblox-games/territory-war",
-          "UNITY": "unity-games/territory-war"
-        },
-        "designBaselineSource": "design/territory-war/2026-09-22/design-revised.json",
-        "designDate": "2026-09-22",
-        "strictDesignReviewRequiredForAdmission": false,
-        "strictDesignReviewContinuesInParallel": true,
-        "promotedAt": "2026-09-22T00:45:00+09:00"
-      },
-      "strictDesignReviewRefreshRequired": true,
-      "ownerPrimaryDevelopment": false,
-      "ownerPrimaryRank": null,
-      "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
-      "REUSE_PRIOR_DESIGN_BASELINE": false,
-      "REUSE_PRIOR_ARTBOOK": false,
-      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": false,
-      "LEGACY_BUILD_ROLE": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
-      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
-      "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
-      "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
-      "MOBILE_FIRST": true
+      }
     },
     {
       "version": 2,
@@ -16819,7 +16667,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-21T21:14:26.874Z",
+    "lastReplenishedAt": "2026-09-22T00:16:53.622Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
