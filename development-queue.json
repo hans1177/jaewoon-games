@@ -3271,7 +3271,7 @@
       "status": "ACTIVE",
       "sourcePath": "roblox-games/fantasy-survival",
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T16:51:19.541Z",
       "webInitialCyclePassed": false,
       "webInitialCyclePassedAt": "",
@@ -3295,10 +3295,10 @@
       "vibeWebImplementationReason": null,
       "sourceRootBootstrapRequired": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T00:29:52.485Z",
-      "updatedAt": "2026-09-22T15:34:06.640Z",
+      "updatedAt": "2026-09-22T15:35:24.817Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -3435,9 +3435,9 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "8db64bdf1c0d33597bfafc1536b7ec3797020352",
+      "robloxBuildSourceRevision": "1a964b3538e295ba0b06cb6d69fedac9a1c9a4e1",
       "robloxBuildArtifactIdentity": "sha256:957aeea52922b30a42e528d2b096d1826a21a966a6b196b597a52178e7c26da3",
-      "robloxBuildPassedAt": "2026-09-21T15:39:08.934Z",
+      "robloxBuildPassedAt": "2026-09-22T15:35:24.817Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
@@ -3638,7 +3638,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T15:34:20.617Z",
+  "updatedAt": "2026-09-22T15:35:24.817Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
