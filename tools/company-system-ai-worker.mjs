@@ -7,6 +7,7 @@ import path from 'node:path';
 import http from 'node:http';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 
 const clean=v=>String(v??'').trim();
 const MODEL=process.env.SYSTEM_AI_MODEL||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
@@ -48,6 +49,51 @@ function repairStrategyFingerprint(task={},edits=[],newFiles=[]){
   };
   return strategyHash(JSON.stringify(shape));
 }
+function evidenceValue(task={},prefix=''){
+  const row=[...unique(task.evidence)].reverse().find(x=>x.startsWith(prefix));
+  return row?clean(row.slice(prefix.length)):null;
+}
+function knownGoodReference(task={}){
+  return clean(task.knownGoodRevision||task.knownGoodSourceRevision)
+    ||evidenceValue(task,'known-good-revision:')
+    ||evidenceValue(task,'known-good-source:')
+    ||null;
+}
+function systemAiHypothesisPlan(task={}){
+  const diagnosis=buildNeuralDiagnosis({task,project:{}});
+  const rejected=new Set(unique([
+    ...(task.failedHypothesisIds||[]),
+    ...unique(task.evidence).filter(x=>x.startsWith('hypothesis-rejected:')).map(x=>clean(x.slice('hypothesis-rejected:'.length)))
+  ]));
+  let hypotheses=(diagnosis.hypotheses||[]).map(row=>({
+    id:clean(row.id),
+    system:clean(row.system)||'UNKNOWN',
+    confidence:Number(row.confidence||0),
+    reason:clean(row.reason),
+    rejected:rejected.has(clean(row.id))
+  }));
+  if(hypotheses.length<2){
+    const fallback=[
+      {id:'responsible-source-defect',system:'RESPONSIBLE_SOURCE',confidence:.48,reason:'Assigned responsible implementation may contain the causal defect'},
+      {id:'execution-integration-path-defect',system:'EXECUTION_PATH',confidence:.34,reason:'Execution, runner, integration, or evidence transport may be the causal defect'},
+      {id:'contract-or-evidence-mismatch',system:'CONTRACT_EVIDENCE',confidence:.18,reason:'Observed failure may be caused by a stale contract or evidence mismatch'}
+    ];
+    for(const row of fallback)if(!hypotheses.some(x=>x.id===row.id))hypotheses.push({...row,rejected:rejected.has(row.id)});
+  }
+  hypotheses=hypotheses.slice(0,6);
+  const viable=hypotheses.filter(row=>!row.rejected);
+  const selected=viable[0]||hypotheses[0]||null;
+  const knownGood=knownGoodReference(task);
+  return{
+    hypotheses,
+    selectedHypothesisId:selected?.id||null,
+    rejectedHypothesisIds:[...rejected],
+    knownGoodRevision:knownGood,
+    diagnosisResponsibility:clean(diagnosis.responsibility?.system)||'UNKNOWN',
+    diagnosisFailureStage:clean(diagnosis.actionRecommendation?.failureStage)||null,
+    requiresFalsification:Boolean(task.taskType==='bottleneck-repair'||task.retries>0||task.sourceMutationRequired===true)
+  };
+}
 function causalTaskContext(task={}){
   const evidence=unique(task.evidence);
   const fromEvidence=prefix=>clean([...evidence].reverse().find(x=>x.startsWith(prefix))?.slice(prefix.length));
@@ -59,16 +105,19 @@ function causalTaskContext(task={}){
   return{failureStage,failureSignature,retryCount,priorEvidence,priorFailedStrategyFingerprints};
 }
 function buildPrompt(task,contexts,learningContext={}){
-  const learning=clean(learningContext.guidance),causal=causalTaskContext(task);
+  const learning=clean(learningContext.guidance),causal=causalTaskContext(task),hypothesisPlan=systemAiHypothesisPlan(task);
+  const hypothesisRows=hypothesisPlan.hypotheses.map((row,index)=>`${index+1}. ${row.id} system=${row.system} confidence=${row.confidence.toFixed(2)} rejected=${row.rejected?'YES':'NO'} reason=${row.reason}`);
   return[
     'You are an external system-engineering AI worker supervised by the primary AI.',
     'You may modify ONLY the explicitly listed responsible files. Game source edits are allowed only when those game files are explicitly assigned to this isolated candidate task.',
     'Never modify central policy/log/architecture files. Never weaken QA, runtime, release, security, or regression gates.',
     'Solve the assigned root cause directly; do not add catch-and-ignore bypasses, fake PASS evidence, or wrapper-only patches.',
     'For recovery work, use the exact failure stage and failure signature as causal constraints. Do not repeat a previously failed repair strategy without new causal evidence.',
+    'Before editing, compare multiple causal hypotheses against the supplied evidence. Explicitly reject contradicted hypotheses and repair only the strongest surviving hypothesis.',
+    'If a known-good revision is supplied, compare the failing responsibility area against that known-good reference before choosing a repair. If none is supplied, do not invent one.',
     'Preserve already verified checkpoints and change the responsible source before revalidating the same failure signature when sourceMutationRequired is true.',
     'Return compact JSON only. Do not use markdown or repeat unchanged file content.',
-    'Schema: {"summary":"...","edits":[{"path":"...","find":"small exact unique text","replace":"replacement"}],"newFiles":[{"path":"...","content":"..."}],"recommendedTests":["..."],"risks":["..."]}.',
+    'Schema: {"summary":"...","selectedHypothesisId":"...","falsifiedHypothesisIds":["..."],"knownGoodComparison":"...","edits":[{"path":"...","find":"small exact unique text","replace":"replacement"}],"newFiles":[{"path":"...","content":"..."}],"recommendedTests":["..."],"risks":["..."]}.',
     'Keep find strings to the smallest unique blocks and keep prose concise so JSON cannot be truncated.',
     `TASK ID: ${clean(task.id)}`,
     `GOAL: ${clean(task.goal)}`,
@@ -77,6 +126,11 @@ function buildPrompt(task,contexts,learningContext={}){
     `RETRY COUNT: ${causal.retryCount}`,
     `SOURCE MUTATION REQUIRED: ${task.sourceMutationRequired===true?'YES':'NO'}`,
     `FAILED REPAIR STRATEGY FINGERPRINTS: ${causal.priorFailedStrategyFingerprints.join(',')||'NONE'}`,
+    `KNOWN GOOD REVISION: ${hypothesisPlan.knownGoodRevision||'NONE_DO_NOT_INVENT'}`,
+    `HYPOTHESIS FALSIFICATION REQUIRED: ${hypothesisPlan.requiresFalsification?'YES':'NO'}`,
+    'CAUSAL HYPOTHESES:',
+    ...hypothesisRows,
+    `DETERMINISTIC LEADING HYPOTHESIS: ${hypothesisPlan.selectedHypothesisId||'NONE'}`,
     `ACCEPTANCE: ${unique(task.acceptanceCriteria).join(' | ')}`,
     `RESPONSIBLE FILES: ${unique(task.responsibleFiles).join(', ')}`,
     ...(causal.priorEvidence.length?['RECENT CAUSAL EVIDENCE:',causal.priorEvidence.join(' | ')]:[]),
@@ -85,5 +139,5 @@ function buildPrompt(task,contexts,learningContext={}){
     ...contexts.map(x=>`\n--- ${x.path} ---\n${x.content}`)
   ].join('\n').slice(0,MAX_TOTAL_CONTEXT);
 }
-export async function runSystemAiWorker({taskFile,outputFile='/tmp/company-system-ai-result.json',responseFile='',learningContextFile=''}={}){const task=readJson(taskFile);const preflight=validateSystemAiTaskPreflight(task);const files=preflight.responsibleFiles;const contextFiles=unique([...(task.contextFiles||[]),...files]).map(safeReadPath),focus=task.focusPatterns&&typeof task.focusPatterns==='object'?task.focusPatterns:{},contexts=[];for(const file of contextFiles){if(!fs.existsSync(file)&&!files.includes(file))continue;contexts.push({path:file,content:excerpt(file,Array.isArray(focus[file])?focus[file].map(clean):[])});}const learningContext=learningContextFile&&fs.existsSync(learningContextFile)?readJson(learningContextFile):{};const prompt=buildPrompt(task,contexts,learningContext);let raw;if(responseFile)raw=fs.readFileSync(responseFile,'utf8');else{try{raw=await requestModel(prompt);}catch(firstError){raw=await requestModel(prompt+'\nSTRICT RETRY: the previous model request aborted. Return one compact valid JSON object only, make only necessary assigned-file changes, and avoid repetitive prose.',{maxPredict:4096});}}let answer;try{answer=parseModelJson(raw);}catch(firstError){if(responseFile)throw firstError;raw=await requestModel(prompt+'\nSTRICT RETRY: return exactly one valid JSON object only; no prose, markdown, or reasoning.',{maxPredict:Math.min(16384,NUM_PREDICT+4096)});answer=parseModelJson(raw);}let edits=Array.isArray(answer.edits)?answer.edits:[],newFiles=Array.isArray(answer.newFiles)?answer.newFiles:[];if(!responseFile&&!edits.length&&!newFiles.length){raw=await requestModel(prompt+'\nSTRICT RETRY: the previous response made no change. Produce at least one necessary scoped edit or new assigned file that directly satisfies the acceptance criteria. Do not invent work outside RESPONSIBLE FILES.',{maxPredict:Math.min(16384,NUM_PREDICT+4096)});answer=parseModelJson(raw);edits=Array.isArray(answer.edits)?answer.edits:[];newFiles=Array.isArray(answer.newFiles)?answer.newFiles:[];}const strategyFingerprint=repairStrategyFingerprint(task,edits,newFiles),priorFailedStrategies=failedStrategyFingerprints(task);if(priorFailedStrategies.includes(strategyFingerprint))throw new Error('SYSTEM_AI_REPEATED_FAILED_STRATEGY:'+strategyFingerprint);const rawSha256=crypto.createHash('sha256').update(raw).digest('hex'),allowed=new Set(files);if(edits.length+newFiles.length>MAX_EDITS)throw new Error('SYSTEM_AI_EDIT_LIMIT');const changed=[];for(const edit of edits){const p=safeWritePath(edit.path);if(!allowed.has(p))throw new Error(`SYSTEM_AI_UNASSIGNED_FILE:${p}`);if(!fs.existsSync(p))throw new Error(`SYSTEM_AI_EDIT_FILE_MISSING:${p}`);const find=String(edit.find??''),replace=String(edit.replace??'');if(!find)throw new Error(`SYSTEM_AI_EMPTY_FIND:${p}`);applyExactEdit(p,find,replace);changed.push(p);}for(const row of newFiles){const p=safeWritePath(row.path);if(!allowed.has(p))throw new Error(`SYSTEM_AI_UNASSIGNED_NEW_FILE:${p}`);if(fs.existsSync(p))throw new Error(`SYSTEM_AI_NEW_FILE_EXISTS:${p}`);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,String(row.content??''),'utf8');changed.push(p);}if(!changed.length)throw new Error('SYSTEM_AI_NO_CHANGE');const changedFiles=unique(changed);const gameSourceWrite=changedFiles.some(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)));const causal=causalTaskContext(task);const result={version:3,kind:'company-system-ai-result',taskId:clean(task.id),model:MODEL,summary:clean(answer.summary).slice(0,1200),changedFiles,recommendedTests:unique(answer.recommendedTests).slice(0,12),risks:unique(answer.risks).slice(0,12),failureStage:causal.failureStage,failureSignature:causal.failureSignature,retryCount:causal.retryCount,causalEvidenceCount:causal.priorEvidence.length,causalContextBound:true,sourceMutationRequired:task.sourceMutationRequired===true,repairStrategyFingerprint:strategyFingerprint,previousFailedStrategyCount:priorFailedStrategies.length,repeatedFailedStrategyBlocked:true,rawModelOutputSha256:rawSha256,rawModelOutputStored:false,gameSourceWrite,gameSourceWriteMode:gameSourceWrite?'ISOLATED_ASSIGNED_CANDIDATE_ONLY':'NONE',centralPolicyWrite:false,qaGateWeakening:false,supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,learningRoute:'EXISTING_VIBE_LEARNING_MOTOR',learningKnowledgeIds:unique(learningContext.exactKnowledgeIds).slice(0,20),verifiedLearningApplied:unique(learningContext.exactKnowledgeIds).length>0};writeJson(outputFile,result);return result;}
+export async function runSystemAiWorker({taskFile,outputFile='/tmp/company-system-ai-result.json',responseFile='',learningContextFile=''}={}){const task=readJson(taskFile);const preflight=validateSystemAiTaskPreflight(task);const files=preflight.responsibleFiles;const contextFiles=unique([...(task.contextFiles||[]),...files]).map(safeReadPath),focus=task.focusPatterns&&typeof task.focusPatterns==='object'?task.focusPatterns:{},contexts=[];for(const file of contextFiles){if(!fs.existsSync(file)&&!files.includes(file))continue;contexts.push({path:file,content:excerpt(file,Array.isArray(focus[file])?focus[file].map(clean):[])});}const learningContext=learningContextFile&&fs.existsSync(learningContextFile)?readJson(learningContextFile):{};const prompt=buildPrompt(task,contexts,learningContext);let raw;if(responseFile)raw=fs.readFileSync(responseFile,'utf8');else{try{raw=await requestModel(prompt);}catch(firstError){raw=await requestModel(prompt+'\nSTRICT RETRY: the previous model request aborted. Return one compact valid JSON object only, make only necessary assigned-file changes, and avoid repetitive prose.',{maxPredict:4096});}}let answer;try{answer=parseModelJson(raw);}catch(firstError){if(responseFile)throw firstError;raw=await requestModel(prompt+'\nSTRICT RETRY: return exactly one valid JSON object only; no prose, markdown, or reasoning.',{maxPredict:Math.min(16384,NUM_PREDICT+4096)});answer=parseModelJson(raw);}let edits=Array.isArray(answer.edits)?answer.edits:[],newFiles=Array.isArray(answer.newFiles)?answer.newFiles:[];if(!responseFile&&!edits.length&&!newFiles.length){raw=await requestModel(prompt+'\nSTRICT RETRY: the previous response made no change. Produce at least one necessary scoped edit or new assigned file that directly satisfies the acceptance criteria. Do not invent work outside RESPONSIBLE FILES.',{maxPredict:Math.min(16384,NUM_PREDICT+4096)});answer=parseModelJson(raw);edits=Array.isArray(answer.edits)?answer.edits:[];newFiles=Array.isArray(answer.newFiles)?answer.newFiles:[];}const hypothesisPlan=systemAiHypothesisPlan(task);const validHypothesisIds=new Set(hypothesisPlan.hypotheses.filter(x=>!x.rejected).map(x=>x.id));let selectedHypothesisId=clean(answer.selectedHypothesisId)||hypothesisPlan.selectedHypothesisId;if(selectedHypothesisId&&!validHypothesisIds.has(selectedHypothesisId))throw new Error('SYSTEM_AI_INVALID_OR_REJECTED_HYPOTHESIS:'+selectedHypothesisId);const falsifiedHypothesisIds=unique(answer.falsifiedHypothesisIds).filter(id=>hypothesisPlan.hypotheses.some(x=>x.id===id));const knownGoodComparison=clean(answer.knownGoodComparison)||(hypothesisPlan.knownGoodRevision?'KNOWN_GOOD_REFERENCE_AVAILABLE_NOT_EXPLICITLY_COMPARED':'NO_KNOWN_GOOD_REFERENCE');const strategyFingerprint=repairStrategyFingerprint(task,edits,newFiles),priorFailedStrategies=failedStrategyFingerprints(task);if(priorFailedStrategies.includes(strategyFingerprint))throw new Error('SYSTEM_AI_REPEATED_FAILED_STRATEGY:'+strategyFingerprint);const rawSha256=crypto.createHash('sha256').update(raw).digest('hex'),allowed=new Set(files);if(edits.length+newFiles.length>MAX_EDITS)throw new Error('SYSTEM_AI_EDIT_LIMIT');const changed=[];for(const edit of edits){const p=safeWritePath(edit.path);if(!allowed.has(p))throw new Error(`SYSTEM_AI_UNASSIGNED_FILE:${p}`);if(!fs.existsSync(p))throw new Error(`SYSTEM_AI_EDIT_FILE_MISSING:${p}`);const find=String(edit.find??''),replace=String(edit.replace??'');if(!find)throw new Error(`SYSTEM_AI_EMPTY_FIND:${p}`);applyExactEdit(p,find,replace);changed.push(p);}for(const row of newFiles){const p=safeWritePath(row.path);if(!allowed.has(p))throw new Error(`SYSTEM_AI_UNASSIGNED_NEW_FILE:${p}`);if(fs.existsSync(p))throw new Error(`SYSTEM_AI_NEW_FILE_EXISTS:${p}`);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,String(row.content??''),'utf8');changed.push(p);}if(!changed.length)throw new Error('SYSTEM_AI_NO_CHANGE');const changedFiles=unique(changed);const gameSourceWrite=changedFiles.some(file=>GAME_SOURCE_PREFIXES.some(prefix=>file.startsWith(prefix)));const causal=causalTaskContext(task);const result={version:3,kind:'company-system-ai-result',taskId:clean(task.id),model:MODEL,summary:clean(answer.summary).slice(0,1200),changedFiles,recommendedTests:unique(answer.recommendedTests).slice(0,12),risks:unique(answer.risks).slice(0,12),failureStage:causal.failureStage,failureSignature:causal.failureSignature,retryCount:causal.retryCount,causalEvidenceCount:causal.priorEvidence.length,causalContextBound:true,sourceMutationRequired:task.sourceMutationRequired===true,hypothesisPlanBound:true,hypothesisCandidates:hypothesisPlan.hypotheses.map(x=>({id:x.id,system:x.system,confidence:x.confidence,rejected:x.rejected})),selectedHypothesisId,falsifiedHypothesisIds,knownGoodRevision:hypothesisPlan.knownGoodRevision,knownGoodComparison,repairStrategyFingerprint:strategyFingerprint,previousFailedStrategyCount:priorFailedStrategies.length,repeatedFailedStrategyBlocked:true,rawModelOutputSha256:rawSha256,rawModelOutputStored:false,gameSourceWrite,gameSourceWriteMode:gameSourceWrite?'ISOLATED_ASSIGNED_CANDIDATE_ONLY':'NONE',centralPolicyWrite:false,qaGateWeakening:false,supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,learningRoute:'EXISTING_VIBE_LEARNING_MOTOR',learningKnowledgeIds:unique(learningContext.exactKnowledgeIds).slice(0,20),verifiedLearningApplied:unique(learningContext.exactKnowledgeIds).length>0};writeJson(outputFile,result);return result;}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();if(clean(args.preflight)==='true'){const result=validateSystemAiTaskPreflight(readJson(clean(args.task)));console.log('COMPANY_SYSTEM_AI_PREFLIGHT=PASS');console.log(`COMPANY_SYSTEM_AI_TASK=${result.taskId}`);console.log(`COMPANY_SYSTEM_AI_PREFLIGHT_RESPONSIBLE=${result.responsibleFiles.length}`);console.log(`COMPANY_SYSTEM_AI_PREFLIGHT_CONTEXT=${result.contextFiles.length}`);}else{const result=await runSystemAiWorker({taskFile:clean(args.task),outputFile:clean(args.output)||'/tmp/company-system-ai-result.json',responseFile:clean(args.response),learningContextFile:clean(args['learning-context'])});console.log('COMPANY_SYSTEM_AI_WORKER=PASS');console.log(`COMPANY_SYSTEM_AI_TASK=${result.taskId}`);console.log(`COMPANY_SYSTEM_AI_CHANGED=${result.changedFiles.join(',')}`);console.log(`COMPANY_SYSTEM_AI_GAME_SOURCE_WRITE=${result.gameSourceWrite?'YES':'NO'}`);console.log(`COMPANY_SYSTEM_AI_VERIFIED_LEARNING_APPLIED=${result.verifiedLearningApplied?'YES':'NO'}`);console.log(`COMPANY_SYSTEM_AI_VERIFIED_LEARNING_IDS=${(result.learningKnowledgeIds||[]).join(',')}`);console.log('COMPANY_SYSTEM_AI_SUPERVISOR_REVIEW=REQUIRED');}}
