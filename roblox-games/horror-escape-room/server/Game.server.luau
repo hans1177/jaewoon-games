@@ -31,6 +31,7 @@ local lastValidPosition={}
 local movementGraceUntil={}
 local movementGuardClock=0
 local soloStartRequested=false
+local tagGraceUntil={}
 local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
@@ -42,7 +43,15 @@ local monsterSpawn=Vector3.new(0,3,-62)
 
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
-local function speed(p,v)local h=hum(p);if h then h.WalkSpeed=v end end
+local function restoreMovement(p,v)
+ local h=hum(p);local r=root(p)
+ if r then r.Anchored=false end
+ if h then
+  h.PlatformStand=false;h.Sit=false;h.AutoRotate=true;h.WalkSpeed=v
+  h.JumpPower=50;h.JumpHeight=7.2
+ end
+end
+local function speed(p,v)restoreMovement(p,v)end
 local function form(p)
  local id=p:GetAttribute("MonsterForm")or"DRAK"
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
@@ -346,7 +355,8 @@ local function teleport(p,pos)
  end
 end
 local function setRole(p,r)
- p:SetAttribute("Role",r);p:SetAttribute("Frozen",false);speed(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
+ p:SetAttribute("Role",r);p:SetAttribute("Frozen",false);restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
+ tagGraceUntil[p]=os.clock()+6
 end
 local function active()
  local a={}
@@ -361,13 +371,24 @@ local function frozenCount()
  return n
 end
 local function freezePlayer(p)
+ if os.clock()<(tagGraceUntil[p]or 0)then return end
  if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then
   p:SetAttribute("Frozen",true);p:SetAttribute("FeedbackEvent","FREEZE:"..tostring(math.floor(os.clock()*1000)));speed(p,0)
   local c=p.Character;if c then local h=c:FindFirstChild("RoleHighlight");if h then h.FillColor=Style.Frozen;h.OutlineColor=Color3.fromRGB(220,248,255)end end
+  -- 1인 플레이는 AI 구조 실패로 영구 정지되지 않게 자동 해동 안전장치를 둔다.
+  if #Players:GetPlayers()==1 then
+   task.delay(2.4,function()
+    if p.Parent and p:GetAttribute("Frozen")==true and state=="RUNNING"then
+     p:SetAttribute("Frozen",false);p:SetAttribute("FeedbackEvent","RESCUE:SOLO_AUTO");restoreMovement(p,16);applyRoleVisual(p,"SURVIVOR");tagGraceUntil[p]=os.clock()+4
+    end
+   end)
+  end
  end
 end
 local function thawPlayer(p)
- if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then p:SetAttribute("Frozen",false);p:SetAttribute("FeedbackEvent","RESCUE:"..tostring(math.floor(os.clock()*1000)));speed(p,16);applyRoleVisual(p,"SURVIVOR")end
+ if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then
+  p:SetAttribute("Frozen",false);p:SetAttribute("FeedbackEvent","RESCUE:"..tostring(math.floor(os.clock()*1000)));restoreMovement(p,16);applyRoleVisual(p,"SURVIVOR");tagGraceUntil[p]=os.clock()+3
+ end
 end
 local function monsterPos()
  if monster then local r=root(monster);return r and r.Position end
@@ -482,6 +503,7 @@ local function onCharacter(p)
  while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  if state=="RUNNING"then
   setRole(p,p==monster and"MONSTER"or"SURVIVOR")
+  restoreMovement(p,p==monster and 19 or 16)
  else
   -- 1인 플레이는 맵 복제가 끝난 뒤 실제 맵 안에서 시작한다.
   if #Players:GetPlayers()==1 then
@@ -530,7 +552,7 @@ qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
 end)
 
 Players.PlayerRemoving:Connect(function(p)
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;qaCaptureLast[p]=nil
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
@@ -561,7 +583,7 @@ task.spawn(function()
     while state=="RUNNING"and timeLeft>0 do
      local mp=monsterPos()
      if mp then
-      for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then local r=root(p);if r and(r.Position-mp).Magnitude<=C.TagDistance then freezePlayer(p)end end end
+      for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true and os.clock()>=(tagGraceUntil[p]or 0)then local r=root(p);if r and(r.Position-mp).Magnitude<=C.TagDistance then freezePlayer(p)end end end
       for _,b in ipairs(bots)do if b.role=="SURVIVOR"and not b.frozen and(b.part.Position-mp).Magnitude<=C.TagDistance then b.frozen=true;b.part.Color=Style.Frozen end end
      end
      local alive=#active()
@@ -590,8 +612,20 @@ RunService.Heartbeat:Connect(function(dt)
       if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
      end
      if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end end
-    elseif mp then
-     local away=b.part.Position-mp;if away.Magnitude<38 then local d=Vector3.new(away.X,0,away.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*b.speed*dt end end
+    else
+     local rescueTarget=nil
+     for _,human in ipairs(Players:GetPlayers())do
+      if human:GetAttribute("Role")=="SURVIVOR"and human:GetAttribute("Frozen")==true then
+       local hr=root(human);if hr and(hr.Position-b.part.Position).Magnitude<62 then rescueTarget=human;break end
+      end
+     end
+     if rescueTarget then
+      local hr=root(rescueTarget);local d=hr and Vector3.new(hr.Position.X-b.part.Position.X,0,hr.Position.Z-b.part.Position.Z)
+      if d and d.Magnitude>C.RescueDistance-1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)
+      elseif hr then thawPlayer(rescueTarget)end
+     elseif mp then
+      local away=b.part.Position-mp;if away.Magnitude<38 then local d=Vector3.new(away.X,0,away.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*b.speed*dt end end
+     end
     end
    end
   end
