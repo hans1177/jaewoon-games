@@ -54,3 +54,18 @@ test('Whatever RPG Remote는 allowlist와 rate limit 뒤에만 게임 액션과 
   assert.ok(rpgLaunch.releaseGates.includes('remote action allowlist and spam rejection'));
   assert.equal(rpgLaunch.evidencePolicy.abuseResistancePassRequired,true);
 });
+
+
+test('포근섬 모바일 UI는 자원/성장/정복을 분리한다',()=>{
+  for(const marker of ['TopHUD','ActionDock','채집','마을 성장','정복','기지공격','병영강화'])assert.match(cozyClient,new RegExp(marker));
+  assert.match(cozyClient,/Size=UDim2\.new\(1,-16,0,210\)/);
+  assert.match(cozyClient,/Size=UDim2\.new\(\.305,0,0,50\)/);
+  assert.match(cozyClient,/AnchorPoint=Vector2\.new\(\.5,1\)/);
+});
+
+test('Whatever RPG 모바일 UI는 전투 우선과 보조 메뉴를 분리한다',()=>{
+  for(const marker of ['RPGTopHUD','CombatDock','PartyMenuButton','PartyMenu','공격','스킬','회피','파티/장비'])assert.match(rpgClient,new RegExp(marker));
+  assert.match(rpgClient,/Size=UDim2\.new\(\.31,0,0,80\)/);
+  assert.match(rpgClient,/secondary\.Visible=not secondary\.Visible/);
+  assert.match(rpgClient,/AnchorPoint=Vector2\.new\(\.5,1\)/);
+});
