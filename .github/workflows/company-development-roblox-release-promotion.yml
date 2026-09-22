@@ -608,6 +608,8 @@ jobs:
           echo "ROBLOX_EXISTING_TESTER_FOUNDATION_QA_DISPATCHED=$GAME_ID"
 
       - name: Apply and verify Roblox title description and server size
+        id: metadata
+        continue-on-error: true
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
         working-directory: main
         env:
@@ -659,6 +661,7 @@ jobs:
           SKIP_REASON: ${{ steps.target.outputs.skip_reason }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
           RETRY_DEFERRED: ${{ steps.publish.outputs.deferred }}
+          METADATA_OUTCOME: ${{ steps.metadata.outcome }}
         shell: bash
         run: |
           set -euo pipefail
@@ -683,3 +686,10 @@ jobs:
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'
           echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
+          if [ "$METADATA_OUTCOME" = 'failure' ]; then
+            echo 'ROBLOX_METADATA_SYNC=REPAIR_REQUIRED_NON_BLOCKING'
+            echo 'ROBLOX_METADATA_REQUIRED_OPEN_CLOUD_SCOPE=universe.place:write'
+            echo 'ROBLOX_RUNTIME_CANDIDATE_INVALIDATED_BY_METADATA_FAILURE=NO'
+          else
+            echo 'ROBLOX_METADATA_SYNC=PASS_OR_NOT_REQUIRED'
+          fi

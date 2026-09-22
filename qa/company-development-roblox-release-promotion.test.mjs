@@ -191,6 +191,16 @@ test('F9 binds the promoted candidate to source artifact universe place and exac
   assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
 });
 
+
+test('Roblox metadata scope failure cannot invalidate a successfully published runtime candidate',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(workflow,/name: Apply and verify Roblox title description and server size[\s\S]*?id: metadata[\s\S]*?continue-on-error: true/);
+  assert.match(workflow,/METADATA_OUTCOME: \$\{\{ steps\.metadata\.outcome \}\}/);
+  assert.match(workflow,/ROBLOX_METADATA_SYNC=REPAIR_REQUIRED_NON_BLOCKING/);
+  assert.match(workflow,/ROBLOX_METADATA_REQUIRED_OPEN_CLOUD_SCOPE=universe\.place:write/);
+  assert.match(workflow,/ROBLOX_RUNTIME_CANDIDATE_INVALIDATED_BY_METADATA_FAILURE=NO/);
+});
+
 test('central foundation contract records the implemented atomic repair invariants',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
