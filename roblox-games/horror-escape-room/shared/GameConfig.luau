@@ -43,6 +43,7 @@ local Config={
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
   RESCUE="RESCUE",DASH="DASH",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER"
  },
+ QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,
 }
 return table.freeze(Config)
