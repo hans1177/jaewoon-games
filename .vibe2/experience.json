@@ -8,7 +8,9 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false
+    "mayAutoCopyGameplayValues": false,
+    "rawExternalModelOutputForbidden": true,
+    "systemAiSelfAcceptanceForbidden": true
   },
   "records": [
     {
@@ -199807,6 +199809,576 @@
       "createdAt": null,
       "lastVerifiedAt": null,
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_34373d2f1f6135962e2e0a5d",
+      "fingerprint": "system_ai_34373d2f1f6135962e2e0a5d",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Ad",
+      "goal": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Add a focused contract test that proves SOURCE_MISSING and WEB_REPAIR signals are routed to Vibe work and ordinary unexpected bootstrap failures still fail normally.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-development-web-runtime.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35423438877",
+        "actions-run:35423569068",
+        "actions-run:35423629684",
+        "actions-run:35424046606",
+        "actions-run:35424229113",
+        "actions-run:35424573382",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "actions-run:35426574813",
+        "actions-run:35478923812",
+        "actions-run:35479394982",
+        "actions-run:35479816000",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-web-bootstrap-signal-routing-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_0b0a34e7dbf177b41b7207d9",
+      "fingerprint": "system_ai_0b0a34e7dbf177b41b7207d9",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Make the Vibe autonomous planner consume company-runtime Web repair/bootstrap states explicitly. When a DEVELOPMENT_CONFIRMED game is WEB_VIBE_REPAIR_REQUIRED or has a missing Web source root that central policy allows to bootstrap, enqueue one deduplicated actionable Vibe task with the correct responsible index.html, source-root-bootstrap-required evidence when applicable, and exact-stage resume semantics. Do not weaken source-root candidate-branch restrictions, QA gates, or direct-main-write p",
+      "goal": "Make the Vibe autonomous planner consume company-runtime Web repair/bootstrap states explicitly. When a DEVELOPMENT_CONFIRMED game is WEB_VIBE_REPAIR_REQUIRED or has a missing Web source root that central policy allows to bootstrap, enqueue one deduplicated actionable Vibe task with the correct responsible index.html, source-root-bootstrap-required evidence when applicable, and exact-stage resume semantics. Do not weaken source-root candidate-branch restrictions, QA gates, or direct-main-write prohibitions. Extend existing planner tests for both missing-source and repair-required inputs plus duplicate suppression.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/vibe2-auto-planner.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35423438877",
+        "actions-run:35423569068",
+        "actions-run:35423629684",
+        "actions-run:35424046606",
+        "actions-run:35424229113",
+        "actions-run:35424573382",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "actions-run:35426574813",
+        "actions-run:35478923812",
+        "actions-run:35479394982",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-vibe-planner-web-repair-routing-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_a4960e93b58a431d14b77f9c",
+      "fingerprint": "system_ai_a4960e93b58a431d14b77f9c",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Audit and harden the Vibe source worker Web source-root bootstrap path so an explicitly authorized WEB_BASE_IMPLEMENTATION task can create only the assigned web-games/<gameId>/index.html on an isolated candidate branch, while ordinary missing roots remain forbidden. Preserve Vibe2/Vibe3 game implementation ownership, direct-main-write=false, Codex game-source-write forbidden, and all existing file/path safety checks. Add or refine tests for authorized bootstrap, unauthorized bootstrap rejection,",
+      "goal": "Audit and harden the Vibe source worker Web source-root bootstrap path so an explicitly authorized WEB_BASE_IMPLEMENTATION task can create only the assigned web-games/<gameId>/index.html on an isolated candidate branch, while ordinary missing roots remain forbidden. Preserve Vibe2/Vibe3 game implementation ownership, direct-main-write=false, Codex game-source-write forbidden, and all existing file/path safety checks. Add or refine tests for authorized bootstrap, unauthorized bootstrap rejection, and repair of an existing Web index.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/vibe2-source-worker.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35423438877",
+        "actions-run:35423569068",
+        "actions-run:35423629684",
+        "actions-run:35424046606",
+        "actions-run:35424229113",
+        "actions-run:35424573382",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "actions-run:35426574813",
+        "actions-run:35478923812",
+        "actions-run:35479394982",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_QA_VERIFICATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-vibe-web-source-bootstrap-boundary-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_fbdb1b74ac3437b5e19cbdfc",
+      "fingerprint": "system_ai_fbdb1b74ac3437b5e19cbdfc",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Create an independent end-to-end machine contract test for the portfolio Web repair handoff. The test must inspect the current central policy, bootstrap implementation, confirmed-development workflow, Vibe planner, continuous runner, and source worker as text/code contracts and assert: preserve-only bootstrap emits actionable Vibe signals; workflow does not turn those expected signals into a generic terminal web-gameplay-music dead end; planner consumes WEB_VIBE_REPAIR_REQUIRED/missing-source st",
+      "goal": "Create an independent end-to-end machine contract test for the portfolio Web repair handoff. The test must inspect the current central policy, bootstrap implementation, confirmed-development workflow, Vibe planner, continuous runner, and source worker as text/code contracts and assert: preserve-only bootstrap emits actionable Vibe signals; workflow does not turn those expected signals into a generic terminal web-gameplay-music dead end; planner consumes WEB_VIBE_REPAIR_REQUIRED/missing-source state; authorized bootstrap remains candidate-only; strict runtime/QA/regression gates stay present. This is an independent verifier: do not modify production implementation files.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-web-vibe-handoff-e2e.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35423438877",
+        "actions-run:35423569068",
+        "actions-run:35423629684",
+        "actions-run:35424046606",
+        "actions-run:35424229113",
+        "actions-run:35424573382",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "actions-run:35426574813",
+        "actions-run:35478923812",
+        "actions-run:35479394982",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-web-vibe-handoff-e2e-contract-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_e39cc7323b5abf84760b751f",
+      "fingerprint": "system_ai_e39cc7323b5abf84760b751f",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Independently verify the Web bootstrap expected-signal contract after the signal-routing implementation is accepted. Add a focused black-box contract test that proves VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING and VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_REPAIR:* remain actionable control signals, while unrelated bootstrap exceptions remain real failures. Do not modify implementation files.",
+      "goal": "Independently verify the Web bootstrap expected-signal contract after the signal-routing implementation is accepted. Add a focused black-box contract test that proves VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING and VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_REPAIR:* remain actionable control signals, while unrelated bootstrap exceptions remain real failures. Do not modify implementation files.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-development-web-runtime.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35480075259",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_QA_VERIFICATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-web-bootstrap-signal-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_5d4a32876beb0afe53c867ac",
+      "fingerprint": "system_ai_5d4a32876beb0afe53c867ac",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
+      "goal": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/vibe2-planner-web-repair-fixtures.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35479816000",
+        "actions-run:35480075259",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_QA_VERIFICATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-vibe-planner-repair-fixtures-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_66f247e678e51fa6dbfc877d",
+      "fingerprint": "system_ai_66f247e678e51fa6dbfc877d",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
+      "goal": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/vibe2-source-worker.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35479816000",
+        "actions-run:35480075259",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_QA_VERIFICATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-source-bootstrap-safety-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_ab50b3741e2af6f2be68d302",
+      "fingerprint": "system_ai_ab50b3741e2af6f2be68d302",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Provide a second independent end-to-end verifier after the first E2E verifier is accepted. Validate bootstrap signal -> workflow routing -> development queue state -> planner task -> candidate-only Vibe source worker -> QA/regression chain. Fail if any stage becomes a generic terminal web-gameplay-music dead end.",
+      "goal": "Provide a second independent end-to-end verifier after the first E2E verifier is accepted. Validate bootstrap signal -> workflow routing -> development queue state -> planner task -> candidate-only Vibe source worker -> QA/regression chain. Fail if any stage becomes a generic terminal web-gameplay-music dead end.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-web-vibe-handoff-e2e.test.mjs qa/company-development-web-runtime.test.mjs qa/vibe2-auto-planner.test.mjs qa/vibe2-source-worker.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35480075259",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-web-handoff-e2e-second-opinion-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_06416d2633e98e006dee2c8d",
+      "fingerprint": "system_ai_06416d2633e98e006dee2c8d",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
+      "goal": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-web-independent-promotion-contract.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-web-runtime.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35480075259",
+        "actions-run:35480756748",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-web-strict-gate-integrity-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_1fe92c217a057b5e299553d1",
+      "fingerprint": "system_ai_1fe92c217a057b5e299553d1",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
+      "goal": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-development-queue-reconcile.test.mjs qa/vibe2-auto-planner.test.mjs qa/company-development-web-runtime.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35480075259",
+        "actions-run:35480756748",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-development-queue-transition-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_8e98199837a1f6d92c39a610",
+      "fingerprint": "system_ai_8e98199837a1f6d92c39a610",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
+      "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-machine-development-lifecycle.test.mjs qa/company-web-independent-promotion-contract.test.mjs qa/company-native-score-not-web-score-contract.test.mjs qa/tier1-development-baseline-gate.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35479816000",
+        "actions-run:35480075259",
+        "actions-run:35480756748",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_QA_VERIFICATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-web-platform-handoff-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
+    },
+    {
+      "version": 3,
+      "id": "exp_system_ai_33ca28f6ca53ae6c28806b87",
+      "fingerprint": "system_ai_33ca28f6ca53ae6c28806b87",
+      "gameId": null,
+      "engine": "system-ai",
+      "departments": [
+        "system-ai",
+        "qa",
+        "learning"
+      ],
+      "taskType": "verified-system-ai",
+      "problem": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
+      "goal": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
+      "change": "deterministic current-main contract verified",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "node --test qa/company-system-ai-supervision-loop.test.mjs"
+      ],
+      "build": null,
+      "evidence": [
+        "actions-run:35424229113",
+        "actions-run:35424573382",
+        "actions-run:35424894825",
+        "actions-run:35425932081",
+        "actions-run:35426306171",
+        "actions-run:35426574813",
+        "actions-run:35478923812",
+        "actions-run:35479394982",
+        "deterministic-current-main-satisfied",
+        "system-ai-learning-gate:deterministic-current-main-satisfied"
+      ],
+      "reusablePatterns": [
+        "VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION"
+      ],
+      "avoidPatterns": [
+        "SYSTEM_AI_SELF_ACCEPTANCE",
+        "RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SYSTEM_AI_LEARNING",
+      "sourceSystemAiTaskId": "sys-verify-system-ai-supervision-loop-v1",
+      "sourceRevision": null,
+      "rawModelOutputStored": false,
+      "createdAt": "2026-09-22T22:30:15.875Z",
+      "lastVerifiedAt": "2026-09-22T22:30:15.875Z"
     }
   ]
 }

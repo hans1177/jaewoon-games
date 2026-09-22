@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "gameName": "엘도리아 연대기",
+  "generatedAt": "2026-09-21T03:20:00.000Z",
+  "phase": "PRE_RELEASE",
+  "facts": [
+    {
+      "claim": "현재 productionClass는 DEVELOPMENT_CONFIRMED.",
+      "source": "game-catalog.json"
+    },
+    {
+      "claim": "현재 목표 플랫폼은 UNITY-ANDROID.",
+      "source": "game-catalog.json"
+    },
+    {
+      "claim": "Web playable companion 상태: YES.",
+      "source": "game-catalog.json"
+    },
+    {
+      "claim": "장르: 스토리 / RPG.",
+      "source": "game-catalog.json"
+    },
+    {
+      "claim": "최근 작업: Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "source": "game-catalog.json"
+    }
+  ],
+  "hypotheses": [
+    "스토어 메시지는 실제 핵심 플레이 루프를 첫 문장에서 설명할수록 클릭 후 이탈을 줄일 가능성이 있다.",
+    "아이콘/썸네일은 실제 게임 내 대표 상황과 적/환경 정체성을 강조하되 미구현 기능을 암시하지 않아야 한다.",
+    "출시 전에는 광범위한 홍보보다 실제 플레이 가능한 빌드와 일치하는 소규모 유기적 노출이 적합하다."
+  ],
+  "creative": {
+    "titleOptions": [
+      "엘도리아 연대기",
+      "엘도리아 연대기 — 스토리",
+      "엘도리아 연대기 | 지금 플레이 가능한 핵심 루프"
+    ],
+    "shortDescriptionOptions": [
+      "스토리 · RPG 핵심 플레이를 직접 경험하는 엘도리아 연대기.",
+      "엘도리아 연대기의 현재 구현된 핵심 루프와 성장 흐름을 플레이하세요."
+    ],
+    "thumbnailDirection": "실제 게임 플레이 화면의 대표 캐릭터/적/지역을 중심으로 구성하고, 미구현 콘텐츠·가짜 UI·과장 수치 사용 금지.",
+    "screenshotShotList": [
+      "핵심 플레이 루프 장면",
+      "대표 지역/환경 장면",
+      "전투 또는 주요 상호작용 장면",
+      "진행/보상 UI가 실제로 보이는 장면"
+    ],
+    "trailerShotList": [
+      "게임 정체성 2~3초",
+      "핵심 행동",
+      "진행/보상",
+      "대표 환경",
+      "실제 플레이 CTA"
+    ]
+  },
+  "organicDistribution": [
+    "자사 홈페이지에서 실제 플레이 링크와 최신 상태를 일치시킨다.",
+    "업데이트 단위로 짧은 변경점/플레이 장면을 재사용 가능한 홍보 소재로 만든다.",
+    "커뮤니티/크리에이터 제안은 실제 플레이 가능한 빌드와 검증된 기능만 설명한다."
+  ],
+  "crossPromotion": [
+    "자사 다른 게임 카드/업데이트 영역에서 장르가 겹치는 사용자에게 비강제 추천 슬롯을 사용할 수 있다.",
+    "크로스프로모션 문구는 대상 게임의 실제 플레이 가능 상태를 기준으로 자동 갱신한다."
+  ],
+  "metrics": [
+    "스토어/홈페이지 클릭률",
+    "플레이 시작률",
+    "첫 핵심 루프 도달률",
+    "재방문 신호",
+    "업데이트 후 플레이 시작 변화"
+  ],
+  "stopConditions": [
+    "홍보 문구가 현재 구현과 불일치하면 즉시 중지/수정",
+    "클릭은 증가하지만 플레이 시작 또는 초기 활성화가 악화되면 해당 크리에이티브 중단",
+    "유료 지출 또는 금융 실행이 필요해지면 자동 실행하지 않음"
+  ],
+  "risks": [
+    "현재 실제 유저/리텐션/매출 데이터가 없거나 제한적이면 성과 예측을 사실처럼 표현하면 안 됨"
+  ],
+  "decision": {
+    "primaryAi": "ACCEPT",
+    "vibe": "ACCEPT",
+    "joint": "ACCEPT",
+    "rationale": "현재 저장소 근거만 사용하는 비금융 유기적 마케팅 패키지로 실행 가능. Vibe 검증 후 공동판정 완성.",
+    "ownerApprovalGate": false,
+    "evaluatedAt": "2026-09-22T22:30:14.021Z",
+    "primaryAiStandingApproval": true
+  },
+  "financialExecution": {
+    "available": false,
+    "automaticPaidSpend": false
+  },
+  "learningCandidate": true,
+  "learningRoute": "EXISTING_VIBE_LEARNING_MOTOR"
+}

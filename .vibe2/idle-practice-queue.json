@@ -87,25 +87,25 @@
       "sourceFailure": "fail_17sa11i"
     },
     {
-      "id": "review-fail_c9xvk3",
+      "id": "review-fail_h11jum",
       "kind": "REPRO_DRILL",
       "priority": "high",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE",
+        "AI",
+        "DEBUGGING",
+        "RECOVERY",
+        "ASSET_PRODUCTION",
+        "WEB_RUNTIME",
         "PROGRESSION",
         "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
-        "UI_STATE",
-        "COMBAT",
-        "RECOVERY",
-        "SECURITY",
-        "ANIMATION_FEEL"
+        "ROBLOX_STUDIO",
+        "UNITY_RUNTIME",
+        "CORE_LOOP"
       ],
-      "sourceFailure": "fail_c9xvk3"
+      "sourceFailure": "fail_h11jum"
     },
     {
       "id": "relearn-fail_1agpu1k",
@@ -180,11 +180,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_7022dd1d29e03580f9fab379",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_7022dd1d29e03580f9fab379",
-      "phase4PairId": "phase4-pair-12vkch5",
+      "phase4PairId": "phase4-pair-1lrytwd",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "fantasy-survival",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1k12cf3",
+      "unseenProblemFingerprint": "phase4-unseen-159znwz",
       "mayPromoteGeneralization": false
     },
     {
@@ -199,11 +199,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_7022dd1d29e03580f9fab379",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_7022dd1d29e03580f9fab379",
-      "phase4PairId": "phase4-pair-12vkch5",
+      "phase4PairId": "phase4-pair-1lrytwd",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "fantasy-survival",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1k12cf3",
+      "unseenProblemFingerprint": "phase4-unseen-159znwz",
       "mayPromoteGeneralization": false
     },
     {
@@ -218,11 +218,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_85db81b69282663e194c1627",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
-      "phase4PairId": "phase4-pair-lp4q6k",
+      "phase4PairId": "phase4-pair-1lle0xc",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "daechung-rpg",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-15wip3m",
+      "unseenProblemFingerprint": "phase4-unseen-1mde55i",
       "mayPromoteGeneralization": false
     },
     {
@@ -237,11 +237,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_85db81b69282663e194c1627",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
-      "phase4PairId": "phase4-pair-lp4q6k",
+      "phase4PairId": "phase4-pair-1lle0xc",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "daechung-rpg",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-15wip3m",
+      "unseenProblemFingerprint": "phase4-unseen-1mde55i",
       "mayPromoteGeneralization": false
     },
     {
@@ -256,11 +256,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
-      "phase4PairId": "phase4-pair-1plpckc",
+      "phase4PairId": "phase4-pair-qbo3q8",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "daechung-rpg",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-14us7gi",
+      "unseenProblemFingerprint": "phase4-unseen-skuxie",
       "mayPromoteGeneralization": false
     },
     {
@@ -275,11 +275,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
-      "phase4PairId": "phase4-pair-1plpckc",
+      "phase4PairId": "phase4-pair-qbo3q8",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "daechung-rpg",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-14us7gi",
+      "unseenProblemFingerprint": "phase4-unseen-skuxie",
       "mayPromoteGeneralization": false
     },
     {
@@ -332,11 +332,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_dd1edc1a11a1e7a360dfda28",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28",
-      "phase4PairId": "phase4-pair-1i541j2",
+      "phase4PairId": "phase4-pair-abfg1o",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "fantasy-survival",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1mvt1ns",
+      "unseenProblemFingerprint": "phase4-unseen-1manvmq",
       "mayPromoteGeneralization": false
     },
     {
@@ -351,11 +351,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_dd1edc1a11a1e7a360dfda28",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28",
-      "phase4PairId": "phase4-pair-1i541j2",
+      "phase4PairId": "phase4-pair-abfg1o",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "fantasy-survival",
+      "holdoutGameId": "cozy-island",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1mvt1ns",
+      "unseenProblemFingerprint": "phase4-unseen-1manvmq",
       "mayPromoteGeneralization": false
     },
     {
@@ -969,16 +969,6 @@
       ]
     },
     {
-      "id": "gap-asset_production-l2",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_PRODUCTION"
-      ]
-    },
-    {
       "id": "gap-security-l4",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -999,6 +989,16 @@
       ]
     },
     {
+      "id": "gap-asset_production-l5",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
+      ]
+    },
+    {
       "id": "gap-save-l8",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1009,7 +1009,7 @@
       ]
     },
     {
-      "id": "gap-ai-l9",
+      "id": "gap-ai-l10",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,

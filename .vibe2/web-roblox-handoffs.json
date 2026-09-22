@@ -14,14 +14,14 @@
   ],
   "projects": [
     {
-      "gameId": "bug-defense",
+      "gameId": "cozy-island",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/bug-defense",
+        "sourcePath": "roblox-games/cozy-island",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -37,9 +37,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -63,67 +67,14 @@
       "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     },
     {
-      "gameId": "survival",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
-      "GENRE": null,
-      "WEB_BASELINE": {
-        "required": true,
-        "state": "PENDING",
-        "sourcePath": "web-games/survival",
-        "evidencePath": null,
-        "sourceIndexSha256": null,
-        "designBaselineSha256": null,
-        "validationSchemaVersion": null,
-        "strictScore": null,
-        "promotionRevalidationPassed": false,
-        "CORE_LOOP": null,
-        "STATE_MODEL": null,
-        "PROGRESSION_MODEL": null,
-        "UI_FLOW": null,
-        "INPUT_INTENT": null,
-        "SAVE_MEANING": null,
-        "CONTENT_STRUCTURE": null,
-        "BALANCE_INTENT": null
-      },
-      "ROBLOX_HANDOFF": null,
-      "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
-        "assigned": false,
-        "state": "WAITING_FOR_VERIFIED_RELEASE",
-        "logicalRunnerPerProject": 1,
-        "activeTaskMaxPerProject": 1,
-        "sharedProtectedRunnerSlots": 1,
-        "scheduler": "vibe2-24h-runner",
-        "worker": "vibe2-continuous-core",
-        "continuousRefill": true
-      },
-      "LEARNING_CONTEXT": {
-        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
-        "verifiedSemanticExperienceIds": [
-          "capability_ctrace_1d9be1f71564bdbf830142e8",
-          "capability_ctrace_44fd7d6e2f9274367465034b",
-          "capability_ctrace_f62bcf597b6821f4400c5b04"
-        ],
-        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
-        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "webBaselinePortableToRoblox": true,
-        "rawSourceCopyAllowed": false,
-        "rawAssetCopyAllowed": false,
-        "gateBypass": false,
-        "continuousLearning": true
-      },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
-    },
-    {
       "gameId": "daechung-rpg",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
-        "state": "PENDING",
-        "sourcePath": "web-games/daechung-rpg",
+        "state": "VERIFIED",
+        "sourcePath": "roblox-games/daechung-rpg",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -139,9 +90,47 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "gameId": "daechung-rpg",
+        "selectedPlatform": "ROBLOX",
+        "sourceStage": "WEB_VALIDATED_EXECUTABLE_BLUEPRINT",
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "COMBAT_AI_INTENT": null,
+        "PROGRESSION_MODEL": null,
+        "ECONOMY_MEANING": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null,
+        "VERIFIED_FAILURES": [],
+        "VERIFIED_FIXES": [],
+        "WEB_RUNTIME_EVIDENCE": "2026-09-21T13:51:41.579Z",
+        "discardAsImplementation": [
+          "DOM_STRUCTURE",
+          "CSS_IMPLEMENTATION",
+          "WEB_RENDERING_HACKS",
+          "WEB_ONLY_STORAGE_CODE"
+        ],
+        "robloxNativeReimplementationRequired": true,
+        "webEvidenceSubstitutesRobloxQa": false,
+        "verifiedSemanticExperienceIds": [
+          "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+          "capability_ctrace_f81cb2c64243a4d226f7aebf",
+          "capability_ctrace_0c25d3cd8ea64024889cf42f",
+          "capability_ctrace_cabd54645f7cd0476a6c213e",
+          "capability_ctrace_c77e9012adc1458e5f026af9",
+          "capability_ctrace_c309f6cac4c6972e940e2026",
+          "capability_ctrace_80403bf5ab5774c5d6bb03dc",
+          "capability_ctrace_8384b04814b6ef675cd54829",
+          "capability_ctrace_e59700341fa9fa647ce7b08b",
+          "capability_ctrace_9a8dbd0a7f2d4fcb35be29ed"
+        ],
+        "complete": false
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -176,14 +165,14 @@
       "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     },
     {
-      "gameId": "monster-adventure",
+      "gameId": "horror-escape-room",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/monster-adventure",
+        "sourcePath": "roblox-games/horror-escape-room",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -199,9 +188,176 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "bug-defense",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "ROBLOX",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/bug-defense",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": true,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "survival",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "ROBLOX",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/survival",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": true,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [
+          "capability_ctrace_1d9be1f71564bdbf830142e8",
+          "capability_ctrace_44fd7d6e2f9274367465034b",
+          "capability_ctrace_f62bcf597b6821f4400c5b04"
+        ],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "monster-adventure",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "ROBLOX",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/monster-adventure",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -243,12 +399,12 @@
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -264,9 +420,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -297,12 +457,12 @@
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
+        "sourcePath": "roblox-games/seed-single-defense-strat-celestial-bastion",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -318,9 +478,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -362,12 +526,12 @@
     {
       "gameId": "seed-puzzle-chromatic-cascade",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/seed-puzzle-chromatic-cascade",
+        "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -383,9 +547,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -429,12 +597,12 @@
     {
       "gameId": "seed-casual-realm-weaver",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/seed-casual-realm-weaver",
+        "sourcePath": "roblox-games/seed-casual-realm-weaver",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -450,9 +618,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -481,12 +653,12 @@
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -502,9 +674,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -530,12 +706,12 @@
     {
       "gameId": "village-dungeons",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/village-dungeons",
+        "sourcePath": "roblox-games/village-dungeons",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -551,9 +727,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -585,12 +765,12 @@
     {
       "gameId": "amusement-tycoon",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/amusement-tycoon",
+        "sourcePath": "roblox-games/amusement-tycoon",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -606,9 +786,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -645,12 +829,12 @@
     {
       "gameId": "line-defense",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/line-defense",
+        "sourcePath": "unity-games/line-defense",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -666,9 +850,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -700,12 +888,12 @@
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
-      "PLATFORM": "UNITY",
+      "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
+        "sourcePath": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -721,9 +909,13 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": null,
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": false,
+        "eligibleAfterRelease": true,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -757,7 +949,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "web-games/fantasy-survival",
+        "sourcePath": "roblox-games/fantasy-survival",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -799,9 +991,102 @@
         "continuousLearning": true
       },
       "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "territory-war",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "ROBLOX",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "roblox-games/territory-war",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": {
+        "required": true,
+        "ready": false,
+        "reason": "WEB_BASELINE_NOT_VERIFIED"
+      },
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": true,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     }
   ],
-  "handoffs": [],
+  "handoffs": [
+    {
+      "gameId": "daechung-rpg",
+      "selectedPlatform": "ROBLOX",
+      "sourceStage": "WEB_VALIDATED_EXECUTABLE_BLUEPRINT",
+      "CORE_LOOP": null,
+      "STATE_MODEL": null,
+      "COMBAT_AI_INTENT": null,
+      "PROGRESSION_MODEL": null,
+      "ECONOMY_MEANING": null,
+      "UI_FLOW": null,
+      "INPUT_INTENT": null,
+      "SAVE_MEANING": null,
+      "CONTENT_STRUCTURE": null,
+      "BALANCE_INTENT": null,
+      "VERIFIED_FAILURES": [],
+      "VERIFIED_FIXES": [],
+      "WEB_RUNTIME_EVIDENCE": "2026-09-21T13:51:41.579Z",
+      "discardAsImplementation": [
+        "DOM_STRUCTURE",
+        "CSS_IMPLEMENTATION",
+        "WEB_RENDERING_HACKS",
+        "WEB_ONLY_STORAGE_CODE"
+      ],
+      "robloxNativeReimplementationRequired": true,
+      "webEvidenceSubstitutesRobloxQa": false,
+      "verifiedSemanticExperienceIds": [
+        "capability_ctrace_5dfec906b032e3f9d70dbdf7",
+        "capability_ctrace_f81cb2c64243a4d226f7aebf",
+        "capability_ctrace_0c25d3cd8ea64024889cf42f",
+        "capability_ctrace_cabd54645f7cd0476a6c213e",
+        "capability_ctrace_c77e9012adc1458e5f026af9",
+        "capability_ctrace_c309f6cac4c6972e940e2026",
+        "capability_ctrace_80403bf5ab5774c5d6bb03dc",
+        "capability_ctrace_8384b04814b6ef675cd54829",
+        "capability_ctrace_e59700341fa9fa647ce7b08b",
+        "capability_ctrace_9a8dbd0a7f2d4fcb35be29ed"
+      ],
+      "complete": false
+    }
+  ],
   "gateBypass": false,
   "authority": "verified-handoff-context-only"
 }

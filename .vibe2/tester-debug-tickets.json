@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "kind": "tester-debug-tickets",
+  "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
+  "updatedAt": "2026-09-22T22:30:14.469Z",
+  "tickets": [
+    {
+      "id": "bug-75c7e2ad02f8ebe0d834",
+      "gameId": "fantasy-survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "74d5f694d165da730a1529e59e3c594416c43a749629a81f87e734e7cb4cea42",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":\"2f8da267b03b36cf96c423353c6219cb56703f50\",\"sourceFingerprint\":\"bfd140bf994935e2ebed2534a014baf30389045fb4e5342063a5ee1a9f4a2069\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:28ba21928fb0ed339165249446b77cd80f340612c2d80c4d6d1cd6de372c8951\",\"runtimePassed\":true,\"independentQaPassed\":false,\"regressionPassed\":false,\"exactRevision\":true,\"lastSuccessfulStage\":\"TARGET_PLATFORM_RUNTIME\",\"failureStage\":\"INDEPENDENT_QA\",\"failureSignature\":\"74d5f694d165da730a1529e59e3c594416c43a749629a81f87e734e7cb4cea42\"}"
+      ],
+      "exactFailedStage": "INDEPENDENT_QA",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "status": "OPEN",
+      "createdAt": "2026-09-22T22:30:14.467Z",
+      "updatedAt": "2026-09-22T22:30:14.467Z",
+      "occurrenceCount": 1
+    }
+  ]
+}

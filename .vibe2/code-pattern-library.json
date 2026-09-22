@@ -1,6 +1,18 @@
 {
   "version": 1,
   "kind": "vibe2-verified-code-pattern-library",
+  "policy": {
+    "verifiedEvidenceRequired": true,
+    "rawCodeStored": false,
+    "wholeGameCopyForbidden": true,
+    "unauthorizedExternalCodeForbidden": true,
+    "externalGeneralizedPatternRetrievalOnlyWithoutIndependentQa": true,
+    "recoveryMasteryRequiresPrimaryAiReviewAndIndependentQa": true,
+    "rawUnauthorizedExternalCodeForbidden": true,
+    "rawSecurityPayloadForbidden": true,
+    "verifiedSecurityPatternsAllowed": true,
+    "systemAiPatternRequiresVerifiedAcceptance": true
+  },
   "patterns": [
     {
       "id": "pat_130jf9c",
@@ -1376,16 +1388,5 @@
       "masteryEligible": true,
       "authority": "VERIFIED_SECURITY_IMMUNE_PATTERN"
     }
-  ],
-  "policy": {
-    "verifiedEvidenceRequired": true,
-    "rawCodeStored": false,
-    "wholeGameCopyForbidden": true,
-    "unauthorizedExternalCodeForbidden": true,
-    "externalGeneralizedPatternRetrievalOnlyWithoutIndependentQa": true,
-    "recoveryMasteryRequiresPrimaryAiReviewAndIndependentQa": true,
-    "rawUnauthorizedExternalCodeForbidden": true,
-    "rawSecurityPayloadForbidden": true,
-    "verifiedSecurityPatternsAllowed": true
-  }
+  ]
 }

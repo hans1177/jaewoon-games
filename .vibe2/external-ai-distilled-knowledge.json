@@ -5,15 +5,14 @@
   "policy": {
     "rawExternalAiOutputMayEnterDevelopment": false,
     "independentVerificationRequired": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
     "distilledKnowledgeAdvisoryOnly": true,
     "directSourceWrite": false,
     "directProductionPass": false,
     "directMasteryCredit": false,
     "directTrainingSample": false,
     "verifiedProjectOutcomeRequiredForLaterMasteryOrTraining": true,
-    "authorityExpanded": false,
-    "minimumTraceableVerificationEvidenceItems": 2,
-    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
+    "authorityExpanded": false
   },
   "authorityExpanded": false
 }
