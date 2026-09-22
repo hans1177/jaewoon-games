@@ -158,11 +158,8 @@ function verifiedRobloxDeploymentRows(catalog){
     .sort(catalogOrderCompare);
 }
 function mergeGame(row){
-  const displayMode=String(row?.homepageDisplayMode||'').trim();
-  const identity=identityOf(row),web=sourcesOf(row).web||{};
-  const playable=web.playable===true||row?.homepageWebPlayable===true;
-  const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
-  const webPath=allowWeb?canonicalWebHref(row):'';
+  const identity=identityOf(row);
+  const webPath=canonicalWebHref(row);
   return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
@@ -174,7 +171,8 @@ function platformLinks(game){
   const placeId=String(rp.placeId||target?.placeId||'').trim();
   const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||(/^[1-9][0-9]*$/.test(placeId)?`https://www.roblox.com/games/${placeId}`:'')).trim();
   const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
-  return {roblox,unity};
+  const web=String(game?.webPath||canonicalWebHref(game)||'').trim();
+  return {web,roblox,unity};
 }
 function internalReleaseLinks(game){
   const links=platformLinks(game);
@@ -182,6 +180,7 @@ function internalReleaseLinks(game){
   const state=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
   const roblox=state('ROBLOX'),unity=state('UNITY');
   return {
+    web:links.web,
     roblox:roblox.internalReleaseReady===true||roblox.publicRelease===true?links.roblox:'',
     unity:unity.internalReleaseReady===true||unity.publicRelease===true?links.unity:''
   };
@@ -212,7 +211,7 @@ function recentModificationRows(catalog){
 }
 function platformHref(game){
   const links=platformLinks(game);
-  return links.roblox||links.unity||'';
+  return links.web||links.roblox||links.unity||'';
 }
 function installStyles(){
   document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';
@@ -221,8 +220,9 @@ function installStyles(){
   style.id='homepageEnhancementStyles';
   style.textContent=`
 .foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
+.foldGameActions{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
-@media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
+@media(max-width:420px){.foldGameActions{grid-template-columns:1fr}.foldGameBtn.platformAction,.foldGameBtn.webAction{grid-column:auto}}
 `;
   document.head.appendChild(style);
 }
@@ -244,11 +244,12 @@ function buildCard(row){
   const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return platformReleaseLabel(p);};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
+    button(links.web,'Web 테스트','Web 테스트 준비중','webAction'),
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction')
   ].join('');
-  const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
-  const direct=links.roblox||links.unity||'';
+  const meta=platformExposureMeta(game.id)||'Web / Roblox / Unity 앱 개발 준비';
+  const direct=links.web||links.roblox||links.unity||'';
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
@@ -331,14 +332,14 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,testManifest,portfolio,exposure]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/test-game-candidates.json'),getJson('/homepage-portfolio-status.json'),getJson('/homepage-platform-exposure.json')]);
+    const [catalog,status,portfolio,exposure]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/homepage-portfolio-status.json'),getJson('/homepage-platform-exposure.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
     const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
     const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
-    const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure]);
+    const sig=JSON.stringify([catalog,status,portfolioStatus,platformExposure]);
     if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildGameCenter(catalog,status);buildRecentUpdates(catalog);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
