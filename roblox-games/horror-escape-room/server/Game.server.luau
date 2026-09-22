@@ -9,6 +9,11 @@ local Style=require(Shared:WaitForChild("VisualStyle"))
 local store=DSS:GetDataStore("midnight-tag-v3")
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
+local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
+local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureReport")or Instance.new("RemoteEvent")
+qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
+local qaCaptureLast={}
+
 
 local state="WAITING"
 local timeLeft=0
@@ -401,9 +406,31 @@ local function onCharacter(p)
 end
 Players.PlayerAdded:Connect(function(p)load(p);p.CharacterAdded:Connect(function()onCharacter(p)end)end)
 for _,p in ipairs(Players:GetPlayers())do load(p);p.CharacterAdded:Connect(function()onCharacter(p)end)end
+qaCaptureRemote.OnServerEvent:Connect(function(p,label,assetId)
+ if C.QACameraEnabled~=true then return end
+ if typeof(label)~="string"or #label<1 or #label>48 then return end
+ local id=tostring(assetId or"")
+ if not id:match("^%d+$")then return end
+ local now=os.clock();if now-(qaCaptureLast[p]or 0)<.35 then return end;qaCaptureLast[p]=now
+ local record={gameId=C.GameId,label=label,assetId=id,userId=p.UserId,capturedAt=os.time()}
+ local ok=pcall(function()
+  qaCaptureStore:UpdateAsync("latest",function(old)
+   local data=typeof(old)=="table"and old or{captures={}}
+   data.captures=typeof(data.captures)=="table"and data.captures or{}
+   table.insert(data.captures,record)
+   while #data.captures>18 do table.remove(data.captures,1)end
+   data.updatedAt=os.time();data.gameId=C.GameId
+   return data
+  end)
+ end)
+ p:SetAttribute("QALastCaptureAssetId",id)
+ p:SetAttribute("QALastCaptureLabel",label)
+ p:SetAttribute("QALastCaptureStored",ok)
+end)
+
 Players.PlayerRemoving:Connect(function(p)
  save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil
-end)
+qaCaptureLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 task.spawn(function()
