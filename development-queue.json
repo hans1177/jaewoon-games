@@ -687,10 +687,10 @@
         "roblox-build-package-revalidation-pending"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T05:33:09.215Z",
+      "updatedAt": "2026-09-22T05:53:19.562Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
-      "robloxSourceCommit": "33f5558229f57e6a633de88e92c49da2656218f6",
+      "robloxSourceCommit": "d6d1e1a9d5e941ff1c24dce6a711720b90a9caff",
       "visualArtPass": "STYLIZED_ROBLOX_V1",
       "directImplementationState": "PLAYABLE_ROUND_SPAWN_CHASE_FREEZE_RESCUE_DASH_MONSTER_ABILITIES_AI_FILL",
       "releaseStrategy": "FAST_MVP",
@@ -770,9 +770,9 @@
       "robloxBuildArtifactIdentity": null,
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaPassed": false,
-      "robloxInternalReleaseReady": true,
+      "robloxInternalReleaseReady": false,
       "robloxBuildPassedAt": null,
-      "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
@@ -907,16 +907,16 @@
       },
       "robloxDedicatedExperiencePublished": true,
       "robloxDedicatedExperiencePublishedAt": "2026-09-22T05:33:09.215Z",
-      "robloxFastMvpPublished": true,
-      "robloxFastMvpPublishedAt": "2026-09-22T05:33:09.215Z",
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
       "robloxSourceBootstrapFailedAt": null,
-      "robloxSourceBootstrapPassedAt": "2026-09-22T05:31:41.994Z",
+      "robloxSourceBootstrapPassedAt": "2026-09-22T05:53:19.562Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "f9b14f038b629a41f5a927b13c4d3109b9bbd4a8",
-        "newSourceRevision": "33f5558229f57e6a633de88e92c49da2656218f6",
-        "invalidatedAt": "2026-09-22T05:31:41.994Z"
+        "previousSourceRevision": "33f5558229f57e6a633de88e92c49da2656218f6",
+        "newSourceRevision": "d6d1e1a9d5e941ff1c24dce6a711720b90a9caff",
+        "invalidatedAt": "2026-09-22T05:53:19.562Z"
       }
     },
     {
@@ -3178,7 +3178,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T05:36:13.212Z",
+  "updatedAt": "2026-09-22T05:53:19.562Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
