@@ -14,28 +14,71 @@ local function part(parent,name,size,pos,color,material)
   local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=parent;return x
 end
 local function label(target,text)
-  local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(180,42);g.StudsOffset=Vector3.new(0,7,0);g.AlwaysOnTop=true;g.Parent=target
-  local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundTransparency=.25;t.TextScaled=true;t.Text=text;t.TextColor3=Color3.new(1,1,1);t.Parent=g
+  local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(112,24);g.StudsOffset=Vector3.new(0,5,0);g.AlwaysOnTop=false;g.MaxDistance=78;g.LightInfluence=.35;g.Parent=target
+  local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,35,31);t.BackgroundTransparency=.28;t.TextScaled=true;t.Text=text;t.TextColor3=Color3.new(1,1,1);t.TextStrokeTransparency=.65;t.Parent=g
+  local cr=Instance.new("UICorner");cr.CornerRadius=UDim.new(0,6);cr.Parent=t
 end
 local function buildWorld()
   local old=workspace:FindFirstChild("CozyConquestWorld");if old then old:Destroy()end
   local f=Instance.new("Folder");f.Name="CozyConquestWorld";f.Parent=workspace
   for k,v in pairs(Style.Lighting)do Lighting[k]=v end
-  local water=part(f,"Sea",Vector3.new(360,2,360),Vector3.new(0,-5,0),Style.Water,Enum.Material.Glass);water.Transparency=.22
+  local water=part(f,"Sea",Vector3.new(720,2,720),Vector3.new(0,-6,0),Style.Water,Enum.Material.Glass);water.Transparency=.18
+
+  local function tree(pos,scale)
+    local trunk=part(f,"TreeTrunk",Vector3.new(2.4,8,2.4)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(106,74,48),Enum.Material.Wood)
+    local crown=part(f,"TreeCrown",Vector3.new(8,8,8)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(77,150,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
+  end
+  local function rock(pos,scale,color)
+    local r=part(f,"Rock",Vector3.new(6,4,5)*scale,pos+Vector3.new(0,2*scale,0),color or Color3.fromRGB(104,103,108),Enum.Material.Rock)
+    r.Orientation=Vector3.new(math.random(-8,8),math.random(0,180),math.random(-8,8))
+  end
+  local function hut(pos,accent)
+    local body=part(f,"VillageHut",Vector3.new(12,7,10),pos+Vector3.new(0,3.5,0),Color3.fromRGB(184,150,105),Enum.Material.WoodPlanks)
+    local roof=part(f,"VillageRoof",Vector3.new(14,2,12),body.Position+Vector3.new(0,4.7,0),accent,Enum.Material.WoodPlanks);roof.Orientation=Vector3.new(0,0,5)
+    part(f,"VillageDoor",Vector3.new(2.5,4,1),body.Position+Vector3.new(0,-1,5.2),Color3.fromRGB(91,65,45),Enum.Material.Wood)
+  end
+
   for index,r in ipairs(Style.Regions)do
     local island=part(f,r.Name,r.Size,r.Pos,r.Color,r.Material);island.Shape=Enum.PartType.Block;label(island,r.Name)
-    local base=part(f,"Base_"..index,Vector3.new(15,8,15),r.Pos+Vector3.new(0,r.Size.Y/2+4,0),r.Accent,Enum.Material.Brick)
-    local roof=part(f,"Roof_"..index,Vector3.new(18,2,18),base.Position+Vector3.new(0,5,0),Style.Banner,Enum.Material.WoodPlanks)
+    local topY=r.Pos.Y+r.Size.Y/2
+    local base=part(f,"Base_"..index,Vector3.new(22,9,22),Vector3.new(r.Pos.X,topY+4.5,r.Pos.Z),r.Accent,Enum.Material.Brick)
+    local roof=part(f,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
+
     if index==1 then
-      for i=1,8 do
-        local a=i/8*math.pi*2;local trunk=part(f,"TreeTrunk",Vector3.new(2,7,2),r.Pos+Vector3.new(math.cos(a)*24,6,math.sin(a)*24),Color3.fromRGB(113,79,55),Enum.Material.Wood)
-        local crown=part(f,"TreeCrown",Vector3.new(7,7,7),trunk.Position+Vector3.new(0,5,0),Color3.fromRGB(82,145,78),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
+      -- 기본섬: 넓은 생활권 + 채집/성장 시설을 눈으로 구분
+      for i=1,18 do
+        local a=i/18*math.pi*2;local radius=44+(i%3)*8
+        tree(r.Pos+Vector3.new(math.cos(a)*radius,topY-r.Pos.Y,math.sin(a)*radius),.85+(i%4)*.08)
       end
+      for i=1,3 do hut(Vector3.new(-34+i*18,topY+1,24),Color3.fromRGB(116,151,88))end
+      part(f,"FarmPlot",Vector3.new(34,1,24),Vector3.new(-33,topY+.7,-28),Color3.fromRGB(116,91,56),Enum.Material.Ground)
+      for i=1,5 do part(f,"CropRow",Vector3.new(29,.7,2),Vector3.new(-33,topY+1.2,-38+i*4),Color3.fromRGB(122,177,75),Enum.Material.Grass)end
+      part(f,"BarracksYard",Vector3.new(36,1,28),Vector3.new(34,topY+.65,-26),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
+      part(f,"Dock",Vector3.new(16,2,34),Vector3.new(0,topY-1,76),Color3.fromRGB(125,89,56),Enum.Material.WoodPlanks)
+      for _,x in ipairs({-54,-18,18,54})do part(f,"PathStone",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
+    elseif index==2 then
+      for i=1,16 do local a=i/16*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*36,topY-r.Pos.Y,math.sin(a)*36),.7+(i%3)*.15,Color3.fromRGB(86,91,101))end
+      for i=1,6 do part(f,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-30+i*10,topY+3,r.Pos.Z+26),Color3.fromRGB(145,158,171),Enum.Material.Metal)end
+    elseif index==3 then
+      for i=1,10 do tree(r.Pos+Vector3.new(-48+i*9,topY-r.Pos.Y,34+(i%2)*10),.72)end
+      for i=1,7 do
+        local bale=part(f,"HayBale",Vector3.new(6,5,6),Vector3.new(r.Pos.X-38+i*11,topY+2.5,r.Pos.Z-32+(i%2)*8),Color3.fromRGB(214,183,96),Enum.Material.Fabric);bale.Shape=Enum.PartType.Cylinder;bale.Orientation=Vector3.new(0,0,90)
+      end
+      part(f,"RanchFence",Vector3.new(72,3,2),Vector3.new(r.Pos.X,topY+1.5,r.Pos.Z+47),Color3.fromRGB(125,92,61),Enum.Material.WoodPlanks)
+    elseif index==4 then
+      for i=1,22 do local a=i/22*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*(30+(i%3)*9),topY-r.Pos.Y,math.sin(a)*(30+(i%3)*9)),.65+(i%4)*.12)end
+      part(f,"QuarryCut",Vector3.new(48,2,42),Vector3.new(r.Pos.X,topY+1,r.Pos.Z+22),Color3.fromRGB(107,101,96),Enum.Material.Slate)
+    elseif index==5 then
+      for i=1,10 do rock(r.Pos+Vector3.new(-48+i*9,topY-r.Pos.Y,30+(i%2)*13),.62,Color3.fromRGB(159,124,69))end
+      for i=1,5 do part(f,"GoldVein",Vector3.new(4,6,4),Vector3.new(r.Pos.X-28+i*11,topY+3,r.Pos.Z-30),Color3.fromRGB(244,197,71),Enum.Material.Neon)end
+      part(f,"DesertTent",Vector3.new(24,7,18),Vector3.new(r.Pos.X+30,topY+3.5,r.Pos.Z+25),Color3.fromRGB(174,93,65),Enum.Material.Fabric)
     else
-      local marker=part(f,"ResourceMarker_"..index,Vector3.new(6,10,6),base.Position+Vector3.new(13,1,0),r.Accent,Enum.Material.Neon);marker.Transparency=.15
+      for i=1,18 do local a=i/18*math.pi*2;rock(r.Pos+Vector3.new(math.cos(a)*(34+(i%2)*10),topY-r.Pos.Y,math.sin(a)*(34+(i%2)*10)),.7,Color3.fromRGB(57,55,59))end
+      for i=1,7 do part(f,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-36+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
+      local lava=part(f,"LavaCrack",Vector3.new(64,.7,8),Vector3.new(r.Pos.X,topY+.4,r.Pos.Z-33),Color3.fromRGB(255,91,30),Enum.Material.Neon);lava.CanCollide=false
     end
   end
-  workspace:SetAttribute("WorldArtPass","STYLIZED_DIORAMA_V1")
+  workspace:SetAttribute("WorldArtPass","STYLIZED_ISLANDS_EXPANDED_V2")
 end
 buildWorld()
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number" and v or d end
