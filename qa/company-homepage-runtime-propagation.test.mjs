@@ -92,6 +92,9 @@ test('homepage exposes Unity Web only as a verified validation surface',()=>{
   assert.match(renderer,/unity-web-build\.json/);
   assert.match(renderer,/unity-web-gameplay-validation\.json/);
   assert.match(renderer,/unityWebValidationVerified===true/);
+  assert.match(renderer,/projectPath===\`unity-games\/\$\{id\}\`/);
+  assert.match(renderer,/href=\`\/web-games\/\$\{gameIdOf\(game\)\}\/`/);
+  assert.doesNotMatch(renderer,/Boolean\(canonicalWebHref\(game\)\)\);/);
 });
 
 test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
