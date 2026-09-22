@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {inspectHeadlessSourceTexts} from '../tools/company-development-roblox-headless-fast-mvp.mjs';
 
 const config='local Config={PolicySource = "company-learning/platform-release-roadmap.json", Platform = "ROBLOX", MobileFirst = true, SaveEnabled=true, PlayMode="COOP", MultiplayerRequired=true, Actions={ATTACK="ATTACK"}} return Config';
@@ -52,4 +53,15 @@ test('F0 blocks when actual Luau compiler evidence is missing even if structural
  assert.equal(r.pass,false);
  assert.equal(r.nativeLanguageCompilePassed,false);
  assert.ok(r.blockers.includes('nativeLanguageCompilePassed'));
+});
+
+test('cozy-island creates safe spawn before player binding and core loop evidence requires an accepted action',()=>{
+ const source=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
+ assert.equal((source.match(/local function tree\(parent,pos,scale\)/g)||[]).length,1);
+ const worldBuild=source.indexOf('\nbuildWorld()\n');
+ const playerBinding=source.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
+ assert.ok(worldBuild>0,'buildWorld call missing');
+ assert.ok(playerBinding>worldBuild,'player binding must occur after safe world and spawn creation');
+ assert.match(source,/local accepted=H\[a\]\(p\)/);
+ assert.match(source,/if accepted==true then[\s\S]*foundationCheckpoint\("CORE_LOOP_READY"/);
 });
