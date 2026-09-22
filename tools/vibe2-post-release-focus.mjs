@@ -22,7 +22,10 @@ function robloxExposure(exposure={},gameId=''){return (exposureGame(exposure,gam
 function publicReleaseState(exposure={},gameId=''){return upper(exposureGame(exposure,gameId)?.externalPublicReleaseState);}
 function internalReleaseObserved(item={},exposure={}){
   const platform=robloxExposure(exposure,item.gameId);
-  return upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX'&&(platform.internalReleaseReady===true||['INTERNAL_PLATFORM_RELEASE','PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'].includes(upper(platform.internalReleaseState)));
+  const privatePublished=item.robloxDedicatedExperiencePublished===true&&item.robloxPublicationTarget?.verified===true;
+  const evidencePublished=item.robloxInternalReleaseEvidence?.published===true||(item.robloxReleaseEvidence?.published===true&&item.robloxExternalPublicReleaseConfirmed!==true);
+  const exposurePublished=platform.internalReleasePublished===true||['INTERNAL_PLATFORM_RELEASE','PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE','INTERNAL_PLAYTEST_AND_DEBUG','INTERNAL_PLAYTEST_PASS'].includes(upper(platform.internalReleaseState));
+  return upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX'&&(privatePublished||evidencePublished||exposurePublished);
 }
 function legacyPublicReleaseBeforeGate(item={},roadmap={}){
   if(!releasedRobloxItem(item))return false;
@@ -76,24 +79,35 @@ export function buildPostReleaseFocusTask({item,repoRoot='.',roadmap={},recombin
 export function feedPostReleaseFocus({roadmapFile='company-learning/platform-release-roadmap.json',companyRuntimeQueueFile='',historicalRegistryFile='',queueFile='.vibe2/queue.json',recombinationFile='',exposureFile='',repoRoot='.'}={}){
   const roadmap=readJson(roadmapFile,{}),runtimeQueue=readJson(companyRuntimeQueueFile,{items:[]}),historicalRegistry=readJson(historicalRegistryFile,{assets:[]}),queue=readJson(queueFile,{tasks:[]}),recombination=readJson(recombinationFile,{recipes:[]}),exposure=readJson(exposureFile,{games:[]});
   const activeGames=activeFocusGameIds(queue);
-  const candidates=(runtimeQueue.items||[]).filter(item=>postReleaseEligible(item,exposure,roadmap)&&!permanentlyRemoved(roadmap,item.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
-  let task=null,sawActiveCaretaker=false;
+  const rank=item=>Number(item?.ownerPrimaryRank||Number.MAX_SAFE_INTEGER);
+  const candidates=(runtimeQueue.items||[])
+    .filter(item=>postReleaseEligible(item,exposure,roadmap)&&!permanentlyRemoved(roadmap,item.gameId))
+    .sort((a,b)=>rank(a)-rank(b)||clean(a.gameId).localeCompare(clean(b.gameId)));
+  const addedTasks=[];
+  let sawActiveCaretaker=false;
   for(const item of candidates){
     if(activeGames.has(clean(item.gameId))){sawActiveCaretaker=true;continue;}
-    task=buildPostReleaseFocusTask({item,repoRoot,roadmap,recombination,existingTasks:queue.tasks||[],exposure});
+    const task=buildPostReleaseFocusTask({
+      item,repoRoot,roadmap,recombination,
+      existingTasks:[...(queue.tasks||[]),...addedTasks],
+      exposure
+    });
+    if(task)addedTasks.push(task);
+  }
+  if(addedTasks.length){
+    const next={...queue,tasks:[...(queue.tasks||[]),...addedTasks]};
+    writeJson(queueFile,next);
+    return{added:true,reason:'POST_RELEASE_FOCUS_QUEUED',task:addedTasks[0],tasks:addedTasks,queue:next};
+  }
+  const historical=(historicalRegistry.assets||[]).filter(entry=>historicalMaintenanceItem(entry)&&!permanentlyRemoved(roadmap,entry.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
+  let task=null;
+  for(const entry of historical){
+    if(activeGames.has(clean(entry.gameId))){sawActiveCaretaker=true;continue;}
+    task=buildHistoricalPostReleaseFocusTask({entry,repoRoot,roadmap,recombination,existingTasks:queue.tasks||[]});
     if(task)break;
   }
-  if(!task){
-    const historical=(historicalRegistry.assets||[]).filter(entry=>historicalMaintenanceItem(entry)&&!permanentlyRemoved(roadmap,entry.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
-    for(const entry of historical){
-      if(activeGames.has(clean(entry.gameId))){sawActiveCaretaker=true;continue;}
-      task=buildHistoricalPostReleaseFocusTask({entry,repoRoot,roadmap,recombination,existingTasks:queue.tasks||[]});
-      if(task)break;
-    }
-    if(!task)return{added:false,reason:sawActiveCaretaker?'CARETAKER_ALREADY_ACTIVE_FOR_GAME':candidates.length?'NO_NEW_SOURCE_CYCLE':historical.length?'NO_NEW_HISTORICAL_SOURCE_CYCLE':'NO_RELEASED_OR_HISTORICAL_ROBLOX',queue};
-    const next={...queue,tasks:[...(queue.tasks||[]),task]};writeJson(queueFile,next);return{added:true,reason:'HISTORICAL_ROBLOX_MAINTENANCE_QUEUED',task,queue:next};
-  }
-  const next={...queue,tasks:[...(queue.tasks||[]),task]};writeJson(queueFile,next);return{added:true,reason:'POST_RELEASE_FOCUS_QUEUED',task,queue:next};
+  if(!task)return{added:false,reason:sawActiveCaretaker?'CARETAKER_ALREADY_ACTIVE_FOR_GAME':candidates.length?'NO_NEW_SOURCE_CYCLE':historical.length?'NO_NEW_HISTORICAL_SOURCE_CYCLE':'NO_RELEASED_OR_HISTORICAL_ROBLOX',queue};
+  const next={...queue,tasks:[...(queue.tasks||[]),task]};writeJson(queueFile,next);return{added:true,reason:'HISTORICAL_ROBLOX_MAINTENANCE_QUEUED',task,tasks:[task],queue:next};
 }
-function main(){const a=parseArgs(),result=feedPostReleaseFocus({roadmapFile:clean(a.roadmap)||'company-learning/platform-release-roadmap.json',companyRuntimeQueueFile:clean(a['company-runtime-queue']),historicalRegistryFile:clean(a['historical-registry']),queueFile:clean(a.queue)||'.vibe2/queue.json',recombinationFile:clean(a.recombination),exposureFile:clean(a.exposure),repoRoot:clean(a.root)||'.'});console.log('VIBE2_POST_RELEASE_FOCUS_ADDED='+(result.added?'YES':'NO'));console.log('VIBE2_POST_RELEASE_FOCUS_REASON='+result.reason);console.log('VIBE2_POST_RELEASE_FOCUS_TASK='+(result.task?.id||'NONE'));console.log('VIBE2_POST_RELEASE_HISTORICAL='+(result.task?.historicalDeploymentRecovery===true?'YES':'NO'));}
+function main(){const a=parseArgs(),result=feedPostReleaseFocus({roadmapFile:clean(a.roadmap)||'company-learning/platform-release-roadmap.json',companyRuntimeQueueFile:clean(a['company-runtime-queue']),historicalRegistryFile:clean(a['historical-registry']),queueFile:clean(a.queue)||'.vibe2/queue.json',recombinationFile:clean(a.recombination),exposureFile:clean(a.exposure),repoRoot:clean(a.root)||'.'});console.log('VIBE2_POST_RELEASE_FOCUS_ADDED='+(result.added?'YES':'NO'));console.log('VIBE2_POST_RELEASE_FOCUS_REASON='+result.reason);console.log('VIBE2_POST_RELEASE_FOCUS_TASK='+(result.task?.id||'NONE'));console.log('VIBE2_POST_RELEASE_FOCUS_TASK_COUNT='+Number(result.tasks?.length||result.task?1:0));console.log('VIBE2_POST_RELEASE_HISTORICAL='+(result.task?.historicalDeploymentRecovery===true?'YES':'NO'));}
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);if(isMain)main();
