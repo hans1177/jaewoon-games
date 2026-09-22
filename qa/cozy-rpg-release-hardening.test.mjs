@@ -56,16 +56,18 @@ test('Whatever RPG Remote는 allowlist와 rate limit 뒤에만 게임 액션과 
 });
 
 
-test('포근섬 모바일 UI는 자원/성장/정복을 분리한다',()=>{
-  for(const marker of ['TopHUD','ActionDock','채집','마을 성장','정복','기지공격','병영강화'])assert.match(cozyClient,new RegExp(marker));
-  assert.match(cozyClient,/Size=UDim2\.new\(1,-16,0,210\)/);
-  assert.match(cozyClient,/Size=UDim2\.new\(\.305,0,0,50\)/);
-  assert.match(cozyClient,/AnchorPoint=Vector2\.new\(\.5,1\)/);
+test('포근섬 모바일 UI는 운영형 컴팩트 HUD와 접이식 자원/성장/정복 조작을 쓴다',()=>{
+  for(const marker of ['TopHUD','ActionDock','ActionPopup','채집','마을 성장','정복','기지공격','병영강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
+  assert.match(cozyClient,/hud\.Size=UDim2\.fromOffset\(286,58\)/);
+  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(300,48\)/);
+  assert.match(cozyClient,/actionPopup\.Visible=false/);
+  assert.match(cozyClient,/showGroup\(groupIndex\)/);
 });
 
-test('Whatever RPG 모바일 UI는 전투 우선과 보조 메뉴를 분리한다',()=>{
-  for(const marker of ['RPGTopHUD','CombatDock','PartyMenuButton','PartyMenu','공격','스킬','회피','파티/장비'])assert.match(rpgClient,new RegExp(marker));
-  assert.match(rpgClient,/Size=UDim2\.new\(\.31,0,0,80\)/);
+test('Whatever RPG 모바일 UI는 오른손 전투 스택과 접힌 파티 장비 메뉴를 쓴다',()=>{
+  for(const marker of ['RPGTopHUD','CombatDock','PartyMenuButton','PartyMenu','공격','스킬','회피','파티/장비','CoreUISafeInsets'])assert.match(rpgClient,new RegExp(marker));
+  assert.match(rpgClient,/combatDock\.AnchorPoint=Vector2\.new\(1,\.5\)/);
+  assert.match(rpgClient,/combatDock\.Size=UDim2\.fromOffset\(62,174\)/);
+  assert.match(rpgClient,/b\.Size=UDim2\.fromOffset\(58,50\)/);
   assert.match(rpgClient,/secondary\.Visible=not secondary\.Visible/);
-  assert.match(rpgClient,/AnchorPoint=Vector2\.new\(\.5,1\)/);
 });
