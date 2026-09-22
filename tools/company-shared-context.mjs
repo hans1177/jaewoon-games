@@ -48,6 +48,12 @@ export function compileOwnerCanonicalConstitution(policy={}){
   if(clean(binding?.missingOrInvalidBindingAction)!=='FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE')errors.push('CONSTITUTION_FAIL_CLOSED');
   if(binding?.constitutionChangeInvalidatesActiveWorkerExecutionFingerprint!==true)errors.push('CONSTITUTION_STALE_FINGERPRINT');
   if(binding?.subordinatePolicyCannotWeakenCanonicalRule!==true)errors.push('CONSTITUTION_SUBORDINATE_WEAKENING');
+  if(clean(binding?.executableEnforcer)!=='tools/company-constitution-enforcer.mjs')errors.push('CONSTITUTION_EXECUTABLE_ENFORCER');
+  if(binding?.enforcerRequiredAtPolicyQa!==true)errors.push('CONSTITUTION_POLICY_QA_ENFORCER');
+  if(binding?.enforcerRequiredAt24hPlanner!==true)errors.push('CONSTITUTION_24H_PLANNER_ENFORCER');
+  if(binding?.enforcerRequiredBeforeWorkerSourceWrite!==true)errors.push('CONSTITUTION_WORKER_PREWRITE_ENFORCER');
+  if(binding?.enforcerRequiredAfterWorkerExecution!==true)errors.push('CONSTITUTION_WORKER_POST_ENFORCER');
+  if(binding?.global24hStopOnConstitutionFailureForbidden!==true)errors.push('CONSTITUTION_GLOBAL_24H_CONTINUES');
 
   const discovered=[];
   for(const [key,value] of Object.entries(owner)){
