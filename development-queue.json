@@ -56,8 +56,8 @@
       },
       "ownerDirectDevelopment": true,
       "ownerDirectDevelopmentAuthority": "OWNER_DIRECTIVE_2026-09-22",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
@@ -66,7 +66,7 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "robloxSourceCommit": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxSourceBootstrapPassedAt": "2026-09-22T15:28:18.407Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -74,7 +74,7 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -94,59 +94,14 @@
       "postWebArtbookRequired": false,
       "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:b2da51674268de10187da16fac0651373657a5c919dd90c7355cd83ad38031e6",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:20:45.886Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "cozy-island",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:20:25.446Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:b2da51674268de10187da16fac0651373657a5c919dd90c7355cd83ad38031e6",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:b2da51674268de10187da16fac0651373657a5c919dd90c7355cd83ad38031e6",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -161,9 +116,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
       "multiplayerSupported": true,
       "soloPlayable": true,
       "multiplayerMode": "COOP",
@@ -1142,8 +1097,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/bug-defense",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -1170,10 +1125,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:36.039Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1251,59 +1206,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:8f94084c549923bf1eb8bd780d15f7befaf616b8fac045b5291d3d1cece3e349",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:20:45.886Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "bug-defense",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:20:24.710Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:8f94084c549923bf1eb8bd780d15f7befaf616b8fac045b5291d3d1cece3e349",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:8f94084c549923bf1eb8bd780d15f7befaf616b8fac045b5291d3d1cece3e349",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -1318,9 +1228,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "survival",
@@ -1347,8 +1257,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/survival",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -1375,10 +1285,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:20.726Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1456,59 +1366,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:4e9fc5aea90c276bf22056bac9198ea9129478194803459ebbf9f8beb3655fd5",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:20:45.886Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "survival",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:20:25.507Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:4e9fc5aea90c276bf22056bac9198ea9129478194803459ebbf9f8beb3655fd5",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:4e9fc5aea90c276bf22056bac9198ea9129478194803459ebbf9f8beb3655fd5",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -1523,9 +1388,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "monster-adventure",
@@ -1552,8 +1417,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/monster-adventure",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:51:21.331Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -1580,10 +1445,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:29.091Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1661,59 +1526,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:26fe83f4a3d01c095d04849358b0701bd618112977833dc624636ee4be1959d5",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:20:45.886Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "monster-adventure",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:20:27.018Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:26fe83f4a3d01c095d04849358b0701bd618112977833dc624636ee4be1959d5",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:26fe83f4a3d01c095d04849358b0701bd618112977833dc624636ee4be1959d5",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -1728,9 +1548,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -1756,8 +1576,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -1784,10 +1604,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:23.173Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -1865,59 +1685,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:7d0a189ac9404bb330069150d9d278a4ba2b22fc807166e966d0ec704c83d08e",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:20:45.886Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:20:29.467Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:7d0a189ac9404bb330069150d9d278a4ba2b22fc807166e966d0ec704c83d08e",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:7d0a189ac9404bb330069150d9d278a4ba2b22fc807166e966d0ec704c83d08e",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE"
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -1932,9 +1707,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -1960,8 +1735,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/seed-single-defense-strat-celestial-bastion",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -1988,10 +1763,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:20.399Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -2069,59 +1844,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:90888b14e4d9b145aa15c8b8b0d261287b92df2746db0ab6aaca3d281431b59f",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:20:45.886Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "seed-single-defense-strat-celestial-bastion",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:20:31.937Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:90888b14e4d9b145aa15c8b8b0d261287b92df2746db0ab6aaca3d281431b59f",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:90888b14e4d9b145aa15c8b8b0d261287b92df2746db0ab6aaca3d281431b59f",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -2136,9 +1866,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -2164,8 +1894,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -2192,10 +1922,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:19.110Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -2273,59 +2003,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:42f6f0cfd47f02ec2a21963fa632c9267e1e332a676843a9f80ca91f6a8443c9",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:24:44.539Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "seed-puzzle-chromatic-cascade",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:24:23.485Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:42f6f0cfd47f02ec2a21963fa632c9267e1e332a676843a9f80ca91f6a8443c9",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:42f6f0cfd47f02ec2a21963fa632c9267e1e332a676843a9f80ca91f6a8443c9",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -2340,9 +2025,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -2368,8 +2053,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/seed-casual-realm-weaver",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -2396,10 +2081,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:23.275Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -2477,59 +2162,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:f2d77641111c62dc6f1316f5e8c0edd5e49beb9ebf95db97f11033382d7c7555",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:24:44.539Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "seed-casual-realm-weaver",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:24:18.416Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:f2d77641111c62dc6f1316f5e8c0edd5e49beb9ebf95db97f11033382d7c7555",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:f2d77641111c62dc6f1316f5e8c0edd5e49beb9ebf95db97f11033382d7c7555",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -2544,9 +2184,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -2572,8 +2212,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -2600,10 +2240,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:23.644Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -2681,59 +2321,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:43eba20a39cbaa3938b0e7c6c38869565d05d04fa5aaf98b94c27e3a3b5af8f6",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:24:44.539Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:24:25.246Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:43eba20a39cbaa3938b0e7c6c38869565d05d04fa5aaf98b94c27e3a3b5af8f6",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:43eba20a39cbaa3938b0e7c6c38869565d05d04fa5aaf98b94c27e3a3b5af8f6",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found in BUILD_EVIDENCE."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -2748,9 +2343,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "village-dungeons",
@@ -2777,8 +2372,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/village-dungeons",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "webInitialCyclePassed": false,
@@ -2799,10 +2394,10 @@
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:18.671Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -2883,59 +2478,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:65c89e31fe88ee48e96b099c9e12f6c9b632489ed60f8d0a7f333e3d616ef4bc",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:24:44.539Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "village-dungeons",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:24:20.749Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:65c89e31fe88ee48e96b099c9e12f6c9b632489ed60f8d0a7f333e3d616ef4bc",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:65c89e31fe88ee48e96b099c9e12f6c9b632489ed60f8d0a7f333e3d616ef4bc",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -2950,9 +2500,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "amusement-tycoon",
@@ -2979,8 +2529,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/amusement-tycoon",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:52:58.067Z",
       "lifecycleState": "ACTIVE",
       "webInitialCyclePassed": false,
@@ -3001,10 +2551,10 @@
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:20.624Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -3085,59 +2635,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:699d306e06e925a5cdd41deb0c6c73bd9c9ef5f7e39c1c2bdbae5159ea36771f",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:24:44.539Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "amusement-tycoon",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:24:26.690Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:699d306e06e925a5cdd41deb0c6c73bd9c9ef5f7e39c1c2bdbae5159ea36771f",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:699d306e06e925a5cdd41deb0c6c73bd9c9ef5f7e39c1c2bdbae5159ea36771f",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -3152,9 +2657,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "line-defense",
@@ -3334,8 +2839,8 @@
       "homepageTestVerdict": "WEB_VIBE_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-19T03:53:25.997Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -3362,10 +2867,10 @@
       "homepageTestEligible": false,
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-21T13:53:35.562Z",
-      "updatedAt": "2026-09-22T15:28:54.134Z",
+      "updatedAt": "2026-09-22T15:31:02.240Z",
       "strictImplementationReviewPath": null,
       "strictImplementationVerdict": "REVISE",
       "strictImplementationHardFailures": [],
@@ -3443,59 +2948,14 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
+      "robloxBuildSourceRevision": "b2db55960e5df09cc6835f474e58878e658a947b",
       "robloxBuildArtifactIdentity": "sha256:81286be3608271a97dffb7916b4ab56571d7e996ed950289206436a67d6ec0ce",
-      "robloxBuildPassedAt": "2026-09-22T15:19:36.374Z",
+      "robloxBuildPassedAt": "2026-09-22T15:31:02.240Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-22T15:24:44.539Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": {
-        "version": 2,
-        "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-09-22T15:24:19.237Z",
-        "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-        "artifactIdentity": "sha256:81286be3608271a97dffb7916b4ab56571d7e996ed950289206436a67d6ec0ce",
-        "secondaryOwnerFocus": false,
-        "facts": {
-          "pass": true,
-          "blockers": [],
-          "leads": {
-            "planning": "llama3.2:1b",
-            "graphics": "llama3.2:1b",
-            "development": "llama3.2:1b",
-            "qa": "llama3.2:1b",
-            "balance": "llama3.2:1b"
-          },
-          "sharedModel": "llama3.2:1b",
-          "distinctLeadCount": 1,
-          "secondaryOwnerFocus": false,
-          "build": {
-            "sourceRevision": "4124f2b436242d48b4863f49f4ee748b7ddd0d53",
-            "artifactIdentity": "sha256:81286be3608271a97dffb7916b4ab56571d7e996ed950289206436a67d6ec0ce",
-            "webValidationPassed": false,
-            "musicValidationPassed": false,
-            "nativeWebValidationPassed": false,
-            "nativeMusicValidationPassed": false,
-            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
-            "sourceValidationPassed": true,
-            "buildOrPackagePassed": true
-          }
-        },
-        "leadReviews": [
-          {
-            "role": "shared-review",
-            "model": "llama3.2:1b",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "No concrete build-stage blockers found."
-          }
-        ],
-        "blockers": [],
-        "authority": "roblox-vibe-shared-model-build-preflight"
-      },
+      "robloxBuildPreflightEvidence": null,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
@@ -3510,9 +2970,9 @@
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxPostRuntimeQaEvidence": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING"
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "fantasy-survival",
@@ -3908,7 +3368,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T15:28:54.213Z",
+  "updatedAt": "2026-09-22T15:31:02.240Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
