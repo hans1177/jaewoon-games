@@ -73,8 +73,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     concurrency:
-      group: company-system-ai-control
-      cancel-in-progress: true
+      group: company-system-ai-reserve-control
+      cancel-in-progress: false
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       count: ${{ steps.matrix.outputs.count }}
@@ -566,9 +566,9 @@ jobs:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.count != '0'
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 9
     concurrency:
-      group: company-system-ai-control
+      group: company-system-ai-fanin-${{ github.run_id }}-${{ github.run_attempt }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
@@ -599,14 +599,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin vibe2-unreal-core --quiet
-          rm -rf /tmp/system-ai-control
-          git worktree prune
-          git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
+          mkdir -p /tmp/company-system-ai-results
           reservation="system-ai:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
-          node tools/company-system-ai-queue.mjs --command=fan-in --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
-          node tools/company-system-ai-queue.mjs --command=handoff-missing --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --reservation="$reservation" --results=/tmp/company-system-ai-results
-          node tools/company-recovery-queue.mjs --command=fan-in-system-ai --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
 
           node - <<'NODE' > /tmp/system-ai-security.tsv
           const fs=require('fs'),path=require('path');
@@ -623,29 +617,51 @@ jobs:
           }
           NODE
 
-          while read -r task_id verdict highest report_file; do
-            [ -n "$task_id" ] || continue
-            node tools/company-security-incident.mjs --command=record --store=/tmp/system-ai-control/.vibe2/security-incidents.json --report="$report_file"
-            if [ "$verdict" = 'QUARANTINE' ]; then
-              node tools/company-recovery-queue.mjs --command=enqueue --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --priority=critical --source-queue=security --source-task="$task_id" --stage=SYSTEM_AI_SECURITY_SCAN --signature="system-ai-security-${highest:-HIGH}" --blast-radius=affected-candidate --evidence="system-ai-task:$task_id,actions-run:${GITHUB_RUN_ID}" --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW --verify=RERUN_SECURITY_SCAN,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW --owner=SYSTEM_AI
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/system-ai-control 2>/dev/null || true
+            rm -rf /tmp/system-ai-control
+            git worktree prune
+            git fetch origin vibe2-unreal-core --quiet
+            git worktree add --detach /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+
+            node tools/company-system-ai-queue.mjs --command=fan-in --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
+            node tools/company-system-ai-queue.mjs --command=handoff-missing --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --reservation="$reservation" --results=/tmp/company-system-ai-results
+            node tools/company-recovery-queue.mjs --command=fan-in-system-ai --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
+
+            while read -r task_id verdict highest report_file; do
+              [ -n "$task_id" ] || continue
+              node tools/company-security-incident.mjs --command=record --store=/tmp/system-ai-control/.vibe2/security-incidents.json --report="$report_file"
+              if [ "$verdict" = 'QUARANTINE' ]; then
+                node tools/company-recovery-queue.mjs --command=enqueue --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --priority=critical --source-queue=security --source-task="$task_id" --stage=SYSTEM_AI_SECURITY_SCAN --signature="system-ai-security-${highest:-HIGH}" --blast-radius=affected-candidate --evidence="system-ai-task:$task_id,actions-run:${GITHUB_RUN_ID}" --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW --verify=RERUN_SECURITY_SCAN,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW --owner=SYSTEM_AI
+              fi
+            done < /tmp/system-ai-security.tsv
+
+            cd /tmp/system-ai-control
+            git config user.name 'jaewoon-system-ai-fanin'
+            git config user.email 'system-ai-fanin@users.noreply.github.com'
+            if git diff --quiet -- .vibe2/system-ai-queue.json .vibe2/security-incidents.json .vibe2/recovery-queue.json; then
+              persisted=1
+              echo "COMPANY_SYSTEM_AI_FANIN_WRITE=NO_CHANGE:attempt-$attempt"
+              break
             fi
-          done < /tmp/system-ai-security.tsv
+            git add .vibe2/system-ai-queue.json .vibe2/security-incidents.json .vibe2/recovery-queue.json
+            git commit -m "system-ai: persist supervised results and worker handoff [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              persisted=1
+              echo "COMPANY_SYSTEM_AI_FANIN_WRITE=YES:attempt-$attempt"
+              break
+            fi
+            echo "COMPANY_SYSTEM_AI_FANIN_OPTIMISTIC_RETRY=$attempt"
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force /tmp/system-ai-control 2>/dev/null || true
+            rm -rf /tmp/system-ai-control
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
 
           cd /tmp/system-ai-control
-          git config user.name 'jaewoon-system-ai-fanin'
-          git config user.email 'system-ai-fanin@users.noreply.github.com'
-          if ! git diff --quiet -- .vibe2/system-ai-queue.json .vibe2/security-incidents.json .vibe2/recovery-queue.json; then
-            git add .vibe2/system-ai-queue.json .vibe2/security-incidents.json .vibe2/recovery-queue.json
-            git commit -m "system-ai: persist supervised results and security quarantine [skip ci]"
-            for attempt in 1 2 3; do
-              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then break; fi
-              git rebase --abort 2>/dev/null || true
-              git fetch origin vibe2-unreal-core --quiet
-              sleep $((attempt * 2))
-              test "$attempt" != 3
-            done
-          fi
-
           node "$GITHUB_WORKSPACE/tools/company-system-ai-queue.mjs" --command=summary --queue=.vibe2/system-ai-queue.json | tee /tmp/company-system-ai-summary.log
           queued="$(node -e "const q=require('./.vibe2/system-ai-queue.json');console.log((q.tasks||[]).filter(x=>x.status==='queued').length)")"
           if [ "$TARGETED_SECURITY_RECOVERY" = 'YES' ]; then
