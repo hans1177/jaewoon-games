@@ -10,70 +10,75 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const policy=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));
 const clone=value=>structuredClone(value);
 const run=p=>enforceConstitution({policy:p,root,phase:'test'});
+const ruleEntries=p=>Object.entries(p.ownerCanonicalRules||{})
+  .filter(([key,value])=>/^rule\d+$/i.test(key)&&value?.enabled===true)
+  .sort((a,b)=>Number(a[0].match(/\d+/)?.[0]||0)-Number(b[0].match(/\d+/)?.[0]||0));
 
-test('all canonical constitutional rules are executable and current repository passes',()=>{
+function setAt(source,pathText,value){
+  const parts=String(pathText||'').split('.').filter(Boolean);
+  let node=source;
+  for(const part of parts.slice(0,-1))node=node[part];
+  node[parts.at(-1)]=value;
+}
+
+test('every enabled canonical rule is discovered and declaratively enforced',()=>{
   const result=run(policy);
+  const entries=ruleEntries(policy);
   assert.equal(result.pass,true,result.errors.join('\n'));
-  assert.deepEqual(result.orderedRuleIds.slice(0,4),[
-    'RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT',
-    'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',
-    'RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE',
-    'RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION'
-  ]);
+  assert.equal(result.enforcedRuleCount,entries.length);
+  assert.deepEqual(result.orderedRuleIds,entries.map(([,rule])=>rule.id));
+  assert.ok(entries.every(([,rule])=>Array.isArray(rule.machineEnforcement?.assertions)&&rule.machineEnforcement.assertions.length>0));
 });
 
-test('rule1 cannot regain a global terminal stop state',()=>{
+test('enforcer source has no numbered constitutional rule branches',()=>{
+  const source=fs.readFileSync(path.join(root,'tools/company-constitution-enforcer.mjs'),'utf8');
+  assert.doesNotMatch(source,/owner\.rule\d+/);
+  assert.doesNotMatch(source,/const\s+r\d+\s*=/);
+  assert.match(source,/for\(const row of constitution\.rules\)/);
+});
+
+test('a declared assertion failure is enforced without rule-specific code',()=>{
   const p=clone(policy);
-  p.ownerCanonicalRules.rule1.global24hStopForbidden=false;
-  p.ownerCanonicalRules.rule1.ownerMayStopGlobal24h=true;
+  const [key,rule]=ruleEntries(p).find(([,r])=>r.machineEnforcement.assertions.some(a=>a.operator==='EQ'&&typeof a.expected==='boolean'));
+  const assertion=rule.machineEnforcement.assertions.find(a=>a.operator==='EQ'&&typeof a.expected==='boolean');
+  setAt(p.ownerCanonicalRules[key],assertion.path,!assertion.expected);
   const result=run(p);
   assert.equal(result.pass,false);
-  assert.ok(result.errors.includes('RULE1_GLOBAL_24H_STOP_FORBIDDEN'));
-  assert.ok(result.errors.includes('RULE1_GLOBAL_OWNER_STOP_FORBIDDEN'));
+  assert.ok(result.errors.includes(rule.id+':'+assertion.code));
 });
 
-test('rule2 rejects weakened external AI security capture',()=>{
+test('future enabled rule auto-binds and enforces with no worker or enforcer code change',()=>{
   const p=clone(policy);
-  p.ownerCanonicalRules.rule2.rawExternalAiOutputStored=true;
-  p.ownerCanonicalRules.rule2.securityStewardMonitorsBeforeAcceptance=false;
-  const result=run(p);
-  assert.equal(result.pass,false);
-  assert.ok(result.errors.includes('RULE2_RAW_OUTPUT_FORBIDDEN'));
-  assert.ok(result.errors.includes('RULE2_SECURITY_STEWARD_REQUIRED'));
+  const numbers=ruleEntries(p).map(([key])=>Number(key.match(/\d+/)?.[0]||0));
+  const next=Math.max(0,...numbers)+1;
+  const key='rule'+next;
+  const id='RULE_'+next+'_FUTURE_DYNAMIC_CONSTITUTION';
+  p.ownerCanonicalRules[key]={
+    id,label:'미래규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'DYNAMIC_TEST',
+    sentinel:true,
+    machineEnforcement:{schemaVersion:p.ownerCanonicalRules.constitutionalBinding.ruleEnforcementSchemaVersion,assertions:[
+      {code:'SENTINEL_TRUE',operator:'EQ',path:'sentinel',expected:true}
+    ]}
+  };
+  const pass=run(p);
+  assert.equal(pass.pass,true,pass.errors.join('\n'));
+  assert.equal(pass.orderedRuleIds.at(-1),id);
+
+  p.ownerCanonicalRules[key].sentinel=false;
+  const fail=run(p);
+  assert.equal(fail.pass,false);
+  assert.ok(fail.errors.includes(id+':SENTINEL_TRUE'));
 });
 
-test('rule3 keeps learning signal generation unbounded by policy',()=>{
+test('future enabled rule without declarative enforcement fails closed',()=>{
   const p=clone(policy);
-  p.ownerCanonicalRules.rule3.totalLearningSignalLimit=100;
-  p.ownerCanonicalRules.rule3.signalGenerationAlwaysOn=false;
-  const result=run(p);
-  assert.equal(result.pass,false);
-  assert.ok(result.errors.includes('RULE3_LIMIT_MUST_BE_NULL:totalLearningSignalLimit'));
-  assert.ok(result.errors.includes('RULE3_SIGNAL_GENERATION_ALWAYS_ON'));
-});
-
-test('rule4 cannot weaken QA security release or authority invariants',()=>{
-  const p=clone(policy);
-  p.ownerCanonicalRules.rule4.invariants.qaGateWeakening=true;
-  p.ownerCanonicalRules.rule4.invariants.directMainWrite=true;
-  p.ownerCanonicalRules.rule4.neuralExpansion.autonomousAuthorityExpansion=true;
-  const result=run(p);
-  assert.equal(result.pass,false);
-  assert.ok(result.errors.includes('RULE4_FORBIDDEN:qaGateWeakening'));
-  assert.ok(result.errors.includes('RULE4_FORBIDDEN:directMainWrite'));
-  assert.ok(result.errors.includes('RULE4_NEURAL_AUTHORITY_EXPANSION_FORBIDDEN'));
-});
-
-test('future enabled canonical rules auto-bind without replacing rules 1 through 4',()=>{
-  const p=clone(policy);
-  p.ownerCanonicalRules.rule5={
-    id:'RULE_5_TEST_FUTURE_BINDING',
-    label:'제5규칙',
-    enabled:true,
-    authority:'OWNER_DIRECTIVE_TEST',
-    objective:'TEST_ONLY'
+  const numbers=ruleEntries(p).map(([key])=>Number(key.match(/\d+/)?.[0]||0));
+  const next=Math.max(0,...numbers)+1;
+  p.ownerCanonicalRules['rule'+next]={
+    id:'RULE_'+next+'_MISSING_MACHINE_ENFORCEMENT',
+    label:'미래규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'MUST_FAIL_CLOSED'
   };
   const result=run(p);
-  assert.equal(result.pass,true,result.errors.join('\n'));
-  assert.equal(result.orderedRuleIds.at(-1),'RULE_5_TEST_FUTURE_BINDING');
+  assert.equal(result.pass,false);
+  assert.ok(result.errors.some(error=>error.includes('CONSTITUTION_MACHINE_ENFORCEMENT_MISSING')||error.includes('MACHINE_ENFORCEMENT_MISSING')));
 });
