@@ -3166,7 +3166,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -3191,7 +3191,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-09-21T21:57:01.868Z"
+      "updatedAt": "2026-09-22T02:15:52.385Z"
     },
     {
       "version": 2,
@@ -4050,7 +4050,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -4075,7 +4075,7 @@
         }
       },
       "strictDesignReviewRefreshRequired": true,
-      "updatedAt": "2026-09-21T21:57:01.868Z"
+      "updatedAt": "2026-09-22T02:15:52.385Z"
     },
     {
       "version": 2,
@@ -4442,9 +4442,9 @@
         "relaxing sound music and responsive feedback",
         "zero blocking runtime or console errors"
       ],
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "preserveExistingWebArchive": true,
       "existingWebSourcePath": "web-games/cozy-island",
       "existingWebSourceRole": "PUBLIC_ROLLBACK_REFERENCE_ONLY",
@@ -4512,7 +4512,51 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cozy-island/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-09-22T02:15:52.385Z",
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cozy-island",
+          "UNITY": "unity-games/cozy-island"
+        },
+        "designBaselineSource": "design/cozy-island/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-09-22T02:15:52.463Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     },
     {
       "version": 1,
@@ -7298,8 +7342,8 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "OWNER_IMMEDIATE_DEVELOPMENT_REQUEST": true,
       "OWNER_IMMEDIATE_DEVELOPMENT_REQUESTED_AT": "2026-09-22T00:28:00+09:00",
       "OWNER_REQUESTED_PRIMARY_PLATFORM": "ROBLOX",
@@ -7308,7 +7352,7 @@
       "OWNER_DESIGN_ADMISSION_GATE_REQUIRED": false,
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7367,7 +7411,51 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/territory-war/2026-09-22/design-revised.json",
+        "date": "2026-09-22"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/territory-war/2026-09-22/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "updatedAt": "2026-09-22T02:15:52.385Z",
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/territory-war",
+          "UNITY": "unity-games/territory-war"
+        },
+        "designBaselineSource": "design/territory-war/2026-09-22/design-revised.json",
+        "designDate": "2026-09-22",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-09-22T02:15:52.463Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     },
     {
       "version": 2,
@@ -8249,7 +8337,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -8343,7 +8431,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -8713,7 +8801,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -8816,7 +8904,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -9210,7 +9298,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9304,7 +9392,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -9690,7 +9778,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9784,7 +9872,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -10154,7 +10242,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10256,7 +10344,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:56:36.514Z",
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
@@ -10627,7 +10715,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10721,7 +10809,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -11107,7 +11195,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -11210,7 +11298,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -11596,7 +11684,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -11699,7 +11787,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -12085,7 +12173,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -12188,7 +12276,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -12558,7 +12646,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -12652,7 +12740,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-19T03:57:11.154Z",
@@ -13935,7 +14023,7 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "createdAt": "2026-09-19T16:17:06.466Z",
-      "updatedAt": "2026-09-21T21:57:01.868Z",
+      "updatedAt": "2026-09-22T02:15:52.385Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -13988,7 +14076,7 @@
         ],
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "migratedAt": "2026-09-21T21:57:01.868Z"
+        "migratedAt": "2026-09-22T02:15:52.385Z"
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-20T02:10:41.102Z",
@@ -19970,7 +20058,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-09-21T21:57:01.934Z",
+  "updatedAt": "2026-09-22T02:15:52.463Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
