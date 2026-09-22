@@ -50,25 +50,36 @@ const work=lifecycle.machineWorkInstruction;
 assert.equal(work.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(work.humanDocumentRequired,false);
 assert.equal(work.sourceOfTruth,'company-learning/platform-release-roadmap.json');
-assert.equal(work.objective,'USE_VERIFIED_LEARNING_TO_CONTINUE_ONE_GAME_FROM_WEB_BASE_TO_NATIVE_RELEASE_AND_POST_RELEASE_COMPLETENESS');
+assert.equal(work.version,2);
+assert.equal(work.objective,'USE_VERIFIED_LEARNING_TO_CONTINUE_ONE_GAME_FROM_MINIMUM_SHARED_DESIGN_TO_ROBLOX_AND_UNITY_NATIVE_INTERNAL_RELEASE_PLAYTEST_AND_POST_RELEASE_COMPLETENESS');
 for(const step of [
-  'LOAD_APPROVED_PLATFORM_GENRE_AND_DESIGN_BASELINE',
+  'LOAD_APPROVED_PLATFORM_GENRE_AND_MINIMUM_DESIGN_BASELINE',
+  'LOAD_CURRENT_PROJECT_STATE_AND_EXISTING_NATIVE_SOURCES',
   'LOAD_VERIFIED_LEARNING_CONTEXT',
-  'IMPLEMENT_OR_CONTINUE_WEB_EXECUTABLE_BASE',
-  'PERSIST_WEB_PLATFORM_HANDOFF',
-  'CONTINUE_SELECTED_PLATFORM_NATIVE_IMPLEMENTATION_FROM_WEB_BASE',
-  'VERIFY_NATIVE_RUNTIME_INDEPENDENT_QA_AND_REGRESSION',
-  'IF_ROBLOX_RELEASED_RESERVE_ONE_POST_RELEASE_FOCUSED_RUNNER',
+  'CREATE_OR_CONTINUE_ROBLOX_NATIVE_SOURCE',
+  'CREATE_OR_CONTINUE_UNITY_NATIVE_SOURCE',
+  'VERIFY_EACH_PLATFORM_RUNTIME_INDEPENDENT_QA_AND_REGRESSION',
+  'PROMOTE_EACH_PLATFORM_INTERNAL_RELEASE_ONLY_AFTER_OWN_GATES_PASS',
+  'ENTER_INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+  'REPAIR_OR_EXTEND_FROM_RUNTIME_OWNER_AND_VISUAL_EVIDENCE',
+  'PROMOTE_PUBLIC_RELEASE_ONLY_AFTER_PLATFORM_SPECIFIC_ACCEPTANCE',
   'PERSIST_VERIFIED_LEARNING_AND_CREATE_NEXT_FOCUS_CYCLE'
 ]) assert(work.executionOrder.includes(step),step);
-assert.equal(work.webWorker.instruction,'BUILD_OR_CONTINUE_A_REAL_EXECUTABLE_PORTABLE_GAMEPLAY_BASE_NOT_A_DISPOSABLE_PROTOTYPE');
-assert.equal(work.webWorker.restartFromBlankForbiddenWithoutEvidence,true);
-assert.equal(work.webWorker.output,'webPlatformHandoff');
-assert.equal(work.selectedPlatformWorker.webPortableMeaningMustCarryForward,true);
-assert.equal(work.selectedPlatformWorker.nativeCodeMustRemainPlatformSpecific,true);
-assert.equal(work.selectedPlatformWorker.webEvidenceCannotSubstituteNativePass,true);
+assert.equal(work.webWorker.enabled,false);
+assert.equal(work.webWorker.status,'LEGACY_DISABLED');
+assert.equal(work.webWorker.developmentAdmissionAuthority,false);
+assert.equal(work.webWorker.replacement,'DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT');
+assert.equal(work.selectedPlatformWorker.sharedMinimumDesignMustCarryForward,true);
+assert.equal(work.selectedPlatformWorker.platformSpecificImplementationRequired,true);
+assert.equal(work.selectedPlatformWorker.platformSpecificRuntimeQaRegressionRequired,true);
 assert.equal(work.robloxWorker.verifiedLearningRequired,true);
 assert.equal(work.robloxWorker.bootstrap,'tools/company-development-roblox-bootstrap.mjs');
+assert.equal(work.unityWorker.platformNativeSourceRequired,true);
+assert.equal(work.unityWorker.verifiedLearningRequired,true);
+assert.equal(work.internalPlaytestWorker.stage,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+assert.equal(work.internalPlaytestWorker.activeCoDevelopment,true);
+assert.equal(work.internalPlaytestWorker.ownerInterruptSupported,true);
+assert.equal(work.internalPlaytestWorker.publicPromotionBlockedUntilAcceptance,true);
 assert.equal(work.postReleaseWorker.protectedRunnerSlots,1);
 assert.equal(work.postReleaseWorker.continuousRefill,true);
 assert.equal(work.postReleaseWorker.oneConcreteGapPerCycle,true);
@@ -82,46 +93,45 @@ assert.equal(work.learningInstruction.modelTrainingThresholdsMustNotBeLowered,tr
 assert.equal(work.queueInstruction.postReleaseLongWorkProtected,true);
 assert.equal(work.queueInstruction.postReleaseConcurrentProtectedSlots,1);
 assert.equal(work.queueInstruction.productionWorkPreemptsPractice,true);
-assert.match(work.completionRule,/NEVER_STOP_AT_WEB/);
-assert.match(work.completionRule,/NEVER_STOP_AT_RELEASE/);
+assert.match(work.completionRule,/NEVER_TREAT_INTERNAL_RELEASE_AS_COMPLETION/);
+assert.match(work.completionRule,/CONTINUE_INTERNAL_PLAYTEST_REPAIR_UNTIL_PLATFORM_ACCEPTANCE/);
 
 const continuation=lifecycle.machineOnlyProjectContinuation;
+assert.equal(continuation.version,2);
 assert.equal(continuation.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(continuation.humanDocumentRequired,false);
 assert.equal(continuation.sourceOfTruth,'company-learning/platform-release-roadmap.json');
-assert.equal(continuation.objective,'WEB_BASE_THEN_NATIVE_CONTINUATION_THEN_POST_RELEASE_FOCUSED_DEVELOPMENT');
-assert.equal(continuation.webBaseImplementation.disposablePrototype,false);
-assert.equal(continuation.webBaseImplementation.completionGate,'WEB_DEVELOPMENT_BASELINE_READY');
-for(const system of ['core-loop-runtime','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent']){
-  assert(continuation.webBaseImplementation.requiredBaseSystems.includes(system),system);
-}
-assert.equal(continuation.nativePlatformContinuation.secondImplementationContinuesFromWebBase,true);
-assert.equal(continuation.nativePlatformContinuation.restartFromBlankForbiddenWhenValidWebBaseExists,true);
-assert.equal(continuation.nativePlatformContinuation.handoffRequired,true);
-assert.equal(continuation.nativePlatformContinuation.webEvidenceCannotSubstituteNativePass,true);
-assert.equal(continuation.robloxContinuation.continueFromPortableBase,true);
+assert.equal(continuation.objective,'MINIMUM_SHARED_DESIGN_THEN_CONCURRENT_ROBLOX_UNITY_NATIVE_CONTINUATION_THEN_INTERNAL_PLAYTEST_AND_POST_RELEASE_FOCUSED_DEVELOPMENT');
+assert.equal(continuation.webBaseImplementation.enabled,false);
+assert.equal(continuation.webBaseImplementation.status,'LEGACY_DISABLED');
+assert.equal(continuation.webBaseImplementation.developmentAdmissionAuthority,false);
+assert.equal(continuation.nativePlatformContinuation.startsFromSharedMinimumDesign,true);
+assert.equal(continuation.nativePlatformContinuation.concurrentRobloxUnity,true);
+assert.equal(continuation.nativePlatformContinuation.secondImplementationContinuesFromWebBase,false);
+assert.equal(continuation.nativePlatformContinuation.webHandoffRequired,false);
+assert.deepEqual(continuation.nativePlatformContinuation.supported,['ROBLOX','UNITY']);
+assert.equal(continuation.nativePlatformContinuation.platformProfilesRequired,true);
+assert.equal(continuation.nativePlatformContinuation.nativeRuntimeEvidenceRequired,true);
+assert.equal(continuation.robloxContinuation.continueFromPortableBase,false);
+assert.equal(continuation.robloxContinuation.continueFromSharedMinimumDesign,true);
 assert.equal(continuation.robloxContinuation.verifiedLearningReuseRequired,true);
+assert.equal(continuation.unityContinuation.continueFromSharedMinimumDesign,true);
+assert.equal(continuation.unityContinuation.platformNativeRuntimeEvidenceRequired,true);
 assert.equal(continuation.postReleaseFocusedDevelopment.dedicatedProtectedRunnerSlots,1);
 assert.equal(continuation.postReleaseFocusedDevelopment.continuousRefill,true);
-assert.equal(continuation.postReleaseFocusedDevelopment.worker,'.github/workflows/vibe2-continuous-core.yml');
-assert.equal(continuation.postReleaseFocusedDevelopment.feeder,'tools/vibe2-post-release-focus.mjs');
 assert.equal(continuation.verifiedLearningMaxUse.required,true);
 assert.equal(continuation.verifiedLearningMaxUse.sameGameHighestPriority,true);
 assert.equal(continuation.verifiedLearningMaxUse.crossGameTransformativeRecombinationAllowed,true);
 assert.equal(continuation.verifiedLearningMaxUse.learningMayExpandAuthority,false);
 assert.equal(continuation.verifiedLearningMaxUse.learningMayReplaceNativeVerification,false);
-for(const source of ['.vibe2/experience.json','.vibe2/game-study-knowledge.json','company-learning/vibe3-memory-index.json','company-learning/vibe3-recombination-memory.json','company-learning/vibe3-task-playbooks.json','company-learning/vibe2-code-pattern-library.json']){
-  assert(continuation.verifiedLearningMaxUse.retrievalSources.includes(source),source);
+for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','POST_RELEASE_FOCUSED_DEVELOPMENT']){
+  assert(continuation.verifiedLearningMaxUse.applyAt.includes(stage),stage);
 }
 
-assert.equal(lifecycle.webToPlatformHandoff.required,true);
-assert.equal(lifecycle.webToPlatformHandoff.webIsDisposablePrototype,false);
-assert.equal(lifecycle.webToPlatformHandoff.queueField,'webPlatformHandoff');
-assert.equal(lifecycle.webToPlatformHandoff.manifestVersion,1);
-for(const key of ['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context']){
-  assert(lifecycle.webToPlatformHandoff.carryForward.includes(key),key);
-}
-assert.equal(lifecycle.webToPlatformHandoff.webEvidenceCannotReplaceNativeRuntimeEvidence,true);
+assert.equal(lifecycle.webToPlatformHandoff.required,false);
+assert.equal(lifecycle.webToPlatformHandoff.status,'LEGACY_DISABLED');
+assert.equal(lifecycle.webToPlatformHandoff.webRole,'NONE');
+assert.equal(lifecycle.webToPlatformHandoff.replacement,'MINIMUM_DUAL_PLATFORM_DESIGN_HANDOFF');
 assert.match(webRuntime,/DEVELOPMENT_ROUTE_OWNER_HOLD=/);
 assert.match(webRuntime,/FORTNITE_UEFN_DEVELOPMENT=OWNER_HOLD/);
 assert.match(webRuntime,/FORTNITE_UEFN_LEARNING=CONTINUES/);
@@ -179,6 +189,10 @@ assert.match(queue,/isPostReleaseFocused/);
 assert.match(queue,/postReleaseFocusedTaskId/);
 
 const webFirst=lifecycle.webFirstImplementation;
+assert.equal(webFirst.enabled,false);
+assert.equal(webFirst.status,'LEGACY_DISABLED');
+assert.equal(webFirst.developmentAdmissionAuthority,false);
+assert.equal(webFirst.replacement,'DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT');
 assert.equal(webFirst.authority,'VIBE_IMPLEMENTATION_OWNER');
 assert.equal(webFirst.existingSourceAssessmentRequired,true);
 assert.equal(webFirst.assessmentOwner,'VIBE_EXPLORATION');
