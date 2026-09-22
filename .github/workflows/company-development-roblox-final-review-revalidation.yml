@@ -106,13 +106,21 @@ jobs:
               &&candidate.releaseClaim===false
               &&candidate.sourceRevision===sourceRevision
               &&candidate.artifactIdentity===artifactIdentity
+              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
               &&runtime.sourceRevision===sourceRevision
               &&runtime.artifactIdentity===artifactIdentity
+              &&String(runtime.universeId||'')===String(candidate.universeId||'')
+              &&String(runtime.placeId||'')===String(candidate.placeId||'')
+              &&runtime.exactGame===true
+              &&runtime.exactPlace===true
+              &&runtime.exactVersion===true
               &&runtime.runtimeAcceptancePassed===true
               &&Number(runtime.candidateVersionNumber)===Number(candidate.versionNumber)
               &&post.sourceRevision===sourceRevision
               &&post.artifactIdentity===artifactIdentity
               &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&post.actualRuntimeEvidence===true
               &&post.independentQaPassed===true
               &&post.regressionPassed===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
