@@ -361,7 +361,7 @@ jobs:
               --experience=.vibe2/experience.json \
               --patterns=.vibe2/code-pattern-library.json | tee /tmp/vibe2-system-ai-learning.log
 
-            if grep -Eq '^(RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*
+            if grep -Eq '^(RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*$' /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log /tmp/vibe2-system-ai-learning.log 2>/dev/null; then
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
                 --experience=.vibe2/experience.json \
                 --code-patterns=.vibe2/code-pattern-library.json \
@@ -479,7 +479,8 @@ jobs:
               exit 0
             fi
 
-            if grep -Eq '^(RECOVERY_ESCALATION_ADDED|RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*
+            if grep -Eq '^(RECOVERY_ESCALATION_ADDED|RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED|SYSTEM_AI_LEARNING_EXPERIENCE_ADDED|SYSTEM_AI_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*$' /tmp/vibe2-recovery-escalation.log /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log /tmp/vibe2-system-ai-learning.log 2>/dev/null; then
+              commit_message='vibe2: persist recovery and verified learning state [skip ci]'
             elif test -f /tmp/vibe2-system-steward.log && ! grep -Eq '^VIBE2_SYSTEM_STEWARD_ACTION=(HEALTHY_NO_SCOPED_REPAIR|NO_RUNNABLE_WORK_FOR_PLANNER_REFILL)$' /tmp/vibe2-system-steward.log; then
               commit_message='vibe2: repair machine state with system steward [skip ci]'
             elif test -f /tmp/vibe2-platform-exposure.log && grep -Eq '^PLATFORM_INTERNAL_RELEASES=[1-9][0-9]*$|^PLATFORM_SECOND_GATE_READY=[1-9][0-9]*$' /tmp/vibe2-platform-exposure.log; then
@@ -488,7 +489,8 @@ jobs:
               commit_message='vibe2: queue post-release focused development [skip ci]'
             elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
               commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
-            elif test -f /tmp/vibe2-external-ai-distillation.log && grep -Eq '^VIBE2_EXTERNAL_AI_ACCEPTED=[1-9][0-9]*
+            elif test -f /tmp/vibe2-external-ai-distillation.log && grep -Eq '^VIBE2_EXTERNAL_AI_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-external-ai-distillation.log; then
+              commit_message='vibe2: persist distilled external ai knowledge [skip ci]'
             elif grep -Eq '^VIBE2_MASTERY_NEW_(EXPERIENCE|CODE_PATTERNS)=[1-9][0-9]*$' /tmp/vibe2-learning-motor.log; then
               commit_message='vibe2: absorb verified development mastery [skip ci]'
             elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
