@@ -1658,7 +1658,7 @@ function attack(){
  if(hit){playCombatAudio('hit',audioWeight);state.dirty=true}updateHud()
 }
 function knockoutPlayer(message='쓰러져 숲 중앙에서 부활했어'){
- const p=state.player;if(state.pet.mounted)dismountPet(false);const resp=state.respawnPos||START;p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=resp.x;p.y=resp.y;p.restingBedId=null;state.area='surface';if(petAlive()){state.pet.x=resp.x+55;state.pet.y=resp.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.poisonUntil=0;p.poisonNext=0;p.mudSlowUntil=0;p.templeSlowUntil=0;p.attackBlockedUntil=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;p.grabbedUntil=0;p.grabbedBy=null;p.vulnerableUntil=0;p.oxygen=40000;p.oxygenEndsAt=0;showNotice(message);state.dirty=true;updateHud()
+ const p=state.player;if(state.pet.mounted)dismountPet(false);const resp=state.respawnPos||START;p.hp=Math.max(1,p.maxHp*.5);p.hunger=50;p.x=resp.x;p.y=resp.y;p.restingBedId=null;state.area='surface';if(petAlive()){state.pet.x=resp.x+55;state.pet.y=resp.y+25;state.pet.targetId=null}p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.poisonUntil=0;p.poisonNext=0;p.mudSlowUntil=0;p.templeSlowUntil=0;p.attackBlockedUntil=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;p.weakenedUntil=0;p.grabbedUntil=0;p.grabbedBy=null;p.vulnerableUntil=0;p.oxygen=40000;p.oxygenEndsAt=0;showNotice(state.respawnPos?'쓰러져 침대에서 부활했어':message);state.dirty=true;updateHud()
 }
 function enemyDamageTarget(e,n,force=false){
  const remoteId=multiplayer.connected&&multiIsHost()&&e?.playerTargetId&&e.playerTargetId!==multiplayer.playerId?e.playerTargetId:null;
@@ -3260,7 +3260,14 @@ function drawProjectiles(cx,cy){
  }
 }
 function drawPlayer(cx,cy,now){
- const p=state.player,x=p.x-cx,y=p.y-cy,moveInput=(state.stick&&Math.hypot(state.stick.x||0,state.stick.y||0)>.12)||['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].some(k=>state.keys.has(k));
+ const p=state.player,x=p.x-cx,y=p.y-cy;
+ if(p.restingBedId){
+  const image=fantasyPlayerVisualAsset();ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/2);ctx.globalAlpha=.92;
+  if(image.complete&&image.naturalWidth>0)ctx.drawImage(image,-30,-33,60,66);
+  else{ctx.fillStyle='#355f63';roundRect(-22,-30,44,60,10);ctx.fill()}
+  ctx.restore();return
+ }
+ const moveInput=(state.stick&&Math.hypot(state.stick.x||0,state.stick.y||0)>.12)||['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].some(k=>state.keys.has(k));
  const attackActive=now<p.attackFx,angle=Math.atan2(p.faceY||0,p.faceX||1),motion=fantasyLivingMotion(p,now,angle,moveInput),attackPose=fantasyPlayerAttackPose(p,now,attackActive);
  const bob=Math.sin(now*(.0105+motion.moveBlend*.0065))*(.7+motion.moveBlend*1.9)+Math.abs(motion.stride)*.7;
  ctx.save();
