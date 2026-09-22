@@ -4942,7 +4942,17 @@
         "exactArtifactBound": true,
         "missingCheckpointFailsClosed": true,
         "markerPresenceCannotSubstituteCheckpoint": true,
-        "sourceCodeRegexCannotEmitRuntimeCheckpoint": true
+        "sourceCodeRegexCannotEmitRuntimeCheckpoint": true,
+        "openCloudEvidenceRead": {
+          "endpointFamily": "ROBLOX_OPEN_CLOUD_V2_DATA_STORES",
+          "dataStoreId": "native-foundation-sentinel-v1",
+          "entryId": "latest",
+          "requiredApiKeyScopes": [
+            "universe-datastores.objects:read"
+          ],
+          "missingPermissionAction": "FAIL_CLOSED_EXTERNAL_EXECUTION_BLOCKER_NO_RUNTIME_PASS",
+          "secret": "ROBLOX_OPEN_CLOUD_API_KEY"
+        }
       },
       "robloxContract": {
         "sourcePreflight": "HEADLESS_FAST_MVP_RECLASSIFIED_AS_SOURCE_PREFLIGHT_ONLY",
