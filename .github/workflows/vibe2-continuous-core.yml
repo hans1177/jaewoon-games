@@ -267,6 +267,19 @@ jobs:
             if [ "$callback_kind" = 'fanin' ]; then
               git fetch origin company-runtime --quiet
               git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+
+              # Released Roblox caretakers are primary 24H work. Refill them here too,
+              # not only in the outer 24H planner, so a delayed outer cycle cannot idle them.
+              node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
+              node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
+                --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+                --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
+                --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+                --queue="$control_root/.vibe2/queue.json" \
+                --exposure="$control_root/.vibe2/platform-exposure-state.json" \
+                --root=/tmp/vibe2-main | tee /tmp/vibe2-fanin-post-release-focus.log
+              echo 'VIBE2_FANIN_FOCUSED_CARETAKER_REFILL=PASS'
+
               node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
                 --runtime=/tmp/vibe2-main/vibe2-runtime.json \
                 --status=/tmp/vibe2-main/company-status.json \
