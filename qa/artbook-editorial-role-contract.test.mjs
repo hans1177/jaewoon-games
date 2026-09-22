@@ -129,7 +129,8 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.implementationOwner,true);
-  assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,true);
+  assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
+  assert.equal(directive.ai.vibe2.ownsInternalPlaytestRepair,true);
   const authority=machinePolicy.developmentLifecycleMachine?.gameDevelopmentAuthority||{};
   assert.equal(authority.implementationOwner,'VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS');
   assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
@@ -140,33 +141,27 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
-test('DEVELOPMENT_CONFIRMED requires full approved-scope Web companion gameplay and music before selected-platform validation',()=>{
+test('DEVELOPMENT_CONFIRMED starts Roblox and Unity directly from minimum shared design without a Web gate',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
-  assert.equal(dev.executionMode,'GATED_DIRECT');
+  assert.equal(dev.executionMode,'DIRECT_NATIVE_DUAL_PLATFORM');
   assert.equal(dev.resumeFromLatestEvidence,true);
-  assert.equal(dev.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');
-  assert.equal(dev.targetPlatformPurpose,'TECHNICAL_AND_GAMEPLAY_VALIDATION');
-  assert.equal(dev.webBeforeTargetPlatformByDefault,true);
-  assert.equal(dev.targetPlatformMayRunImmediately,false);
-  assert.equal(dev.webGameplayValidationRequired,true);
-  assert.equal(dev.webCompanionValidationRequired,true);
+  assert.equal(dev.webPurpose,'LEGACY_OPTIONAL_COMPANION_ONLY');
+  assert.equal(dev.targetPlatformPurpose,'PRIMARY_NATIVE_IMPLEMENTATION_AND_VALIDATION');
+  assert.equal(dev.webBeforeTargetPlatformByDefault,false);
+  assert.equal(dev.targetPlatformMayRunImmediately,true);
+  assert.equal(dev.webGameplayValidationRequired,false);
+  assert.equal(dev.webCompanionValidationRequired,false);
   assert.equal(dev.approvedScopeCompletionRequired,true);
-  assert.equal(dev.musicValidationRequired,true);
-  assert.equal(dev.webCandidateMustPassBeforeTargetPlatformDispatch,true);
-  assert.equal(dev.webCandidatePublicPromotionRequiresValidationPass,true);
+  assert.equal(dev.musicValidationRequired,false);
+  assert.equal(dev.webCandidateMustPassBeforeTargetPlatformDispatch,false);
   assert.equal(dev.platformSpecificValidationRequired,true);
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
-  assert.equal(dev.artbookRevisionOnlyAfterBaselineReady,true);
-  assert.deepEqual(dev.waitingStates,['WAITING_WEB_PLAYABLE','WAITING_WEB_GAMEPLAY_VALIDATION','WAITING_WEB_GAMEPLAY_REVALIDATION','WAITING_POST_WEB_ARTBOOK','WAITING_WEB_STRICT_IMPROVEMENT','WAITING_TARGET_PLATFORM_VALIDATION','WAITING_TARGET_PLATFORM_REVALIDATION','WAITING_REVALIDATION']);
-  for(const token of ['WEB_PLAYABLE_QUEUE','FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','WEB_EVIDENCE_DEPARTMENT_MEETING','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION','TARGET_PLATFORM_EVIDENCE_DEPARTMENT_MEETING'])assert.ok(dev.requiredFlow.includes(token));
-  assert.match(flow,/webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION/);
-  assert.match(flow,/targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION/);
+  assert.deepEqual(dev.waitingStates,[]);
+  for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'])assert.ok(dev.requiredFlow.includes(token));
+  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,true);
+  assert.deepEqual(machinePolicy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.doesNotMatch(JSON.stringify(dev),/ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
-  assert.match(JSON.stringify(dev),/WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION/);
-  assert.match(devCycle,/DEVELOPMENT_DIRECT_STATE=/);
-  assert.match(pipeline,/DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT/);
 });
-
 test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   const release=directive.classes.RELEASE_CONFIRMED;
   assert.equal(release.target,'PROJECT_SELECTED_PLATFORM');
@@ -176,7 +171,7 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   assert.equal(release.buildPreflightIsNotFinalApproval,true);
   assert.equal(release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence,true);
   assert.equal(release.independentQaSeparatedFromVibe2SelfCheck,true);
-  assert.deepEqual(release.waitingStates,['BUILDING','WAITING_WEB_COMPANION_VALIDATION','WAITING_BUILD','WAITING_RUNTIME_VALIDATION']);
+  assert.deepEqual(release.waitingStates,['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION']);
   for(const token of ['BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE','TARGET_PLATFORM_BUILD_OR_PACKAGE','TARGET_PLATFORM_RUNTIME_VALIDATION','INDEPENDENT_QA_AND_REGRESSION'])assert.ok(release.requiredFlow.includes(token));
   assert.doesNotMatch(JSON.stringify(release),/UNITY_ANDROID/);
   assert.doesNotMatch(JSON.stringify(release),/BIND_CURRENT_UNITY_SOURCE_TREE/);
@@ -188,27 +183,25 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
 
-test('platform priority is focus order only and cannot create entry gates',()=>{
+test('Roblox and Unity are the active equal tier while UEFN remains owner-held',()=>{
   const strategy=directive.platformStrategy;
   assert.equal(strategy.primaryPlatform,'ROBLOX');
-  assert.deepEqual(strategy.priority,['UNITY','ROBLOX','FORTNITE_UEFN']);
-  assert.equal(strategy.priorityMeaning,'UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK');
-  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'ALWAYS_ALLOWED'});
-  assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,true);
+  assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
+  assert.equal(strategy.priorityMeaning,'ROBLOX_UNITY_ACTIVE_EQUAL_TIER_UEFN_OWNER_HOLD');
+  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'OWNER_HOLD'});
+  assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
-  assert.equal(strategy.roadmapPhaseEntryGatesForbidden,true);
   assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
-  assert.equal(strategy.focusMilestones.ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE.entryGate,false);
-  assert.equal(strategy.focusMilestones.FORTNITE_UEFN_EXPANSION.entryGate,false);
   assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
+  assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX']]);
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
-  assert.match(flow,/allThreePlatformsMayBeDevelopedConcurrently: true/);
-  assert.match(flow,/roadmapPhaseEntryGatesForbidden: true/);
+  assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
+  assert.equal(strategy.FORTNITE_UEFN.role,'OWNER_HOLD_SUPPORTED_PLATFORM');
+  assert.equal(machinePolicy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
 });
-
 test('artbook authorship and provenance rules remain unchanged',()=>{
   assert.equal(directive.ai.artbookEditor.singleEditor,true);
   assert.equal(directive.ai.artbookEditor.departmentPageAuthorship,false);
