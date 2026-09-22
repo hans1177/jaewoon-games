@@ -64,6 +64,10 @@ local function humanoidFigure(name,pos,color,accent,scale)
  attach(root,"LegL",Vector3.new(1.2,3.2,1.2)*scale,Vector3.new(-.85*scale,-3.55*scale,0),accent or color)
  attach(root,"LegR",Vector3.new(1.2,3.2,1.2)*scale,Vector3.new(.85*scale,-3.55*scale,0),accent or color)
  attach(root,"ShoulderGlow",Vector3.new(3.7,.35,2.6)*scale,Vector3.new(0,1.4*scale,0),accent or color,Enum.Material.Neon)
+ attach(root,"Hair",Vector3.new(2.7,.9,2.7)*scale,Vector3.new(0,4.05*scale,.05*scale),Color3.fromRGB(58,48,46),Enum.Material.SmoothPlastic)
+ attach(root,"EyeL",Vector3.new(.32,.32,.18)*scale,Vector3.new(-.48*scale,3.35*scale,-1.24*scale),Color3.fromRGB(35,40,48),Enum.Material.SmoothPlastic)
+ attach(root,"EyeR",Vector3.new(.32,.32,.18)*scale,Vector3.new(.48*scale,3.35*scale,-1.24*scale),Color3.fromRGB(35,40,48),Enum.Material.SmoothPlastic)
+ attach(root,"Belt",Vector3.new(3.35,.35,2.3)*scale,Vector3.new(0,-.9*scale,0),Color3.fromRGB(65,54,49),Enum.Material.Leather)
  return root
 end
 local function treeProp(pos,scale)
@@ -80,6 +84,15 @@ local function makeWorld()
  ppart("NorthRoad",Vector3.new(18,1.1,130),Vector3.new(0,1.1,-88),Color3.fromRGB(116,104,91),Enum.Material.Cobblestone)
  ppart("EastRoad",Vector3.new(130,1.1,15),Vector3.new(88,1.1,12),Color3.fromRGB(108,99,88),Enum.Material.Cobblestone)
  ppart("WestRoad",Vector3.new(122,1.1,15),Vector3.new(-84,1.1,-8),Color3.fromRGB(108,99,88),Enum.Material.Cobblestone)
+ ppart("VillageFountain",Vector3.new(13,2,13),Vector3.new(0,2,0),Color3.fromRGB(91,105,119),Enum.Material.Slate)
+ local fountainWater=ppart("VillageFountainWater",Vector3.new(9,.5,9),Vector3.new(0,3.1,0),Color3.fromRGB(92,161,190),Enum.Material.Glass);fountainWater.Transparency=.2
+ ppart("QuestBoard",Vector3.new(12,8,1.5),Vector3.new(-27,5,-24),Color3.fromRGB(116,82,57),Enum.Material.WoodPlanks)
+ ppart("QuestBoardRoof",Vector3.new(15,1.2,4),Vector3.new(-27,9.2,-24),Color3.fromRGB(76,61,58),Enum.Material.Slate)
+ for _,x in ipairs({-52,-26,26,52})do
+  ppart("VillageLampPost",Vector3.new(1.2,9,1.2),Vector3.new(x,5,-28),Color3.fromRGB(67,64,73),Enum.Material.Metal)
+  local lantern=ppart("VillageLantern",Vector3.new(2.6,2.6,2.6),Vector3.new(x,9.5,-28),Color3.fromRGB(255,204,118),Enum.Material.Neon)
+  local light=Instance.new("PointLight");light.Color=lantern.Color;light.Range=20;light.Brightness=1.3;light.Parent=lantern
+ end
  for i=1,8 do
   local a=i/8*math.pi*2;local pos=Vector3.new(math.cos(a)*31,3,math.sin(a)*31)
   ppart("RunePillar",Vector3.new(3,8,3),pos,Style.Stone,Enum.Material.Slate)
@@ -111,6 +124,18 @@ local function makeWorld()
   local a=i/12*math.pi*2
   treeProp(Vector3.new(math.cos(a)*(88+(i%3)*12),1,math.sin(a)*(82+(i%2)*18)),.8+(i%3)*.12)
  end
+ for i=1,18 do
+  local a=i/18*math.pi*2
+  local radius=58+(i%4)*15
+  local patch=ppart("FieldGrassPatch",Vector3.new(8,.35,5),Vector3.new(math.cos(a)*radius,.75,math.sin(a)*radius),Color3.fromRGB(74+(i%3)*7,108+(i%4)*6,72),Enum.Material.Grass)
+  patch.Orientation=Vector3.new(0,i*37,0)
+ end
+ for i=1,6 do
+  local x=-115+i*34
+  ppart("FieldFence",Vector3.new(26,3,1.2),Vector3.new(x,2,72+(i%2)*8),Color3.fromRGB(102,76,55),Enum.Material.WoodPlanks)
+ end
+ local stream=ppart("FieldStream",Vector3.new(210,.45,12),Vector3.new(18,.7,104),Color3.fromRGB(74,129,157),Enum.Material.Glass);stream.Transparency=.22
+ ppart("StoneBridge",Vector3.new(18,2,19),Vector3.new(18,2,104),Color3.fromRGB(111,106,105),Enum.Material.Cobblestone)
  for i=1,5 do
   local x=-56+i*22
   local house=ppart("VillageHouse",Vector3.new(15,9,13),Vector3.new(x,5,42+(i%2)*8),Color3.fromRGB(128,94,73),Enum.Material.WoodPlanks)
@@ -130,7 +155,7 @@ local function makeWorld()
  end
  ppart("BossArena",Vector3.new(58,1.2,58),Vector3.new(0,1,-128),Color3.fromRGB(67,54,77),Enum.Material.Slate)
  for i=1,8 do local a=i/8*math.pi*2;ppart("BossObelisk",Vector3.new(4,13,4),Vector3.new(math.cos(a)*24,7,-128+math.sin(a)*24),Color3.fromRGB(76,61,91),Enum.Material.Slate)end
- workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_WORLD_ART_V3")
+ workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_LIVING_WORLD_V4")
 end
 
 local function enemyColor(id)
@@ -149,10 +174,14 @@ local function unit(def,pos,kind)
  if def.Id=="HOUND"then
   p.Size=Vector3.new(3.8,2.7,6);p.Position=pos
   attach(p,"HoundHead",Vector3.new(3.1,2.6,3),Vector3.new(0,.55,-3.8),baseColor,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  attach(p,"HoundEyeL",Vector3.new(.4,.4,.25),Vector3.new(-.65,.8,-5.25),Color3.fromRGB(255,183,83),Enum.Material.Neon)
+  attach(p,"HoundEyeR",Vector3.new(.4,.4,.25),Vector3.new(.65,.8,-5.25),Color3.fromRGB(255,183,83),Enum.Material.Neon)
   for _,x in ipairs({-1.25,1.25})do for _,z in ipairs({-1.7,1.7})do attach(p,"HoundLeg",Vector3.new(.8,2.4,.8),Vector3.new(x,-2,z),Color3.fromRGB(91,67,57))end end
  elseif def.Id=="SLIME"then
   p.Shape=Enum.PartType.Ball;p.Size=Vector3.new(5.5,4.5,5.5);p.Position=pos
   attach(p,"SlimeCore",Vector3.new(1.6,1.6,1.6),Vector3.new(0,.2,-2.1),Style.Crystal,Enum.Material.Neon,Enum.PartType.Ball)
+  attach(p,"SlimeEyeL",Vector3.new(.45,.6,.25),Vector3.new(-.75,.65,-2.55),Color3.fromRGB(236,239,255),Enum.Material.Neon)
+  attach(p,"SlimeEyeR",Vector3.new(.45,.6,.25),Vector3.new(.75,.65,-2.55),Color3.fromRGB(236,239,255),Enum.Material.Neon)
  elseif def.Id=="GOBLIN"then
   attach(p,"GoblinHead",Vector3.new(2.6,2.6,2.6),Vector3.new(0,3.15,0),Color3.fromRGB(111,154,80),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
   attach(p,"GoblinEarL",Vector3.new(1.5,.6,.7),Vector3.new(-1.7,3.2,0),Color3.fromRGB(111,154,80))
