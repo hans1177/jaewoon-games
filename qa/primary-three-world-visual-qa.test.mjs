@@ -51,3 +51,14 @@ test('심야 술래잡기는 실제 좌표 미니맵과 맵별 가독성 바닥/
  assert.match(style,/Brightness=2\.05/);
  assert.match(style,/FogEnd=270/);
 });
+
+test('QA 캡처는 갤러리 저장 뒤에 읽기 업로드 권한을 요청한다',()=>{
+ for(const id of games){
+  const qa=read(`roblox-games/${id}/shared/QACamera.luau`);
+  const saveIndex=qa.indexOf('PromptSaveCapturesToGallery');
+  const permissionIndex=qa.lastIndexOf('PromptCaptureGalleryPermissionAsync');
+  const readIndex=qa.indexOf('ReadCapturesFromGalleryAsync');
+  assert.ok(saveIndex>=0 && permissionIndex>saveIndex, id+' permission must follow save');
+  assert.ok(readIndex>permissionIndex, id+' gallery read must follow permission');
+ }
+});
