@@ -342,7 +342,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   };
 }
 
-export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa', expectedReservationId = '' } = {}) {
+export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa', expectedReservationId = '', responsibleFiles = null } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
   const expected = clean(expectedReservationId);
@@ -360,10 +360,15 @@ export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], b
       ...(evidence || []).map(clean).filter(Boolean),
       ...(reconcileQueued ? [`fan-in-reconciled-reservation:${expected}`] : [])
     ];
+    const existingResponsibleFiles=Array.isArray(task.responsibleFiles)?task.responsibleFiles.map(clean).filter(Boolean):[];
+    const narrowedResponsibleFiles=existingResponsibleFiles.length
+      ?existingResponsibleFiles
+      :Array.isArray(responsibleFiles)?[...new Set(responsibleFiles.map(clean).filter(Boolean))]:[];
     return {
       ...task,
       status: 'running',
       blocker: clean(blocker) || 'awaiting-qa',
+      responsibleFiles:narrowedResponsibleFiles,
       evidence: [...new Set(mergedEvidence)]
     };
   });
@@ -617,11 +622,28 @@ export function applyVibeFanInResults(queueInput, results = []) {
         .filter(row=>row!==winner&&clean(row?.outcome).toUpperCase()==='FAIL')
         .flatMap(codingStrategyFailureEvidence);
       const variantSummary = variants.map((row) => `speculative-result:${clean(row.variant) || 'primary'}:${clean(row.outcome).toUpperCase() || 'UNKNOWN'}`);
+      const sourceRoot=clean(currentTask.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
+      const candidateChangedFiles=Array.isArray(winner.changedFiles)
+        ?[...new Set(winner.changedFiles.map(file=>clean(file).replaceAll('\\','/').replace(/^\.\//,'')).filter(Boolean))]
+        :[];
+      const scopedChangedFiles=candidateChangedFiles.filter(file=>sourceRoot==='.'||!sourceRoot||file===sourceRoot||file.startsWith(sourceRoot+'/'));
+      const lockScopeCanNarrow=!(currentTask.responsibleFiles||[]).length
+        &&candidateChangedFiles.length>0
+        &&scopedChangedFiles.length===candidateChangedFiles.length;
       queue = markVibeTaskAwaiting(queue, {
         taskId,
         blocker: clean(winner.blocker) || 'candidate-awaiting-qa-and-deployment',
         expectedReservationId,
-        evidence: [...winnerEvidence, ...losingStrategyFailureEvidence, ...neuralVariantEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
+        responsibleFiles:lockScopeCanNarrow?scopedChangedFiles:null,
+        evidence: [
+          ...winnerEvidence,
+          ...losingStrategyFailureEvidence,
+          ...neuralVariantEvidence,
+          ...variantSummary,
+          `speculative-variants:${variants.length}`,
+          `speculative-winner:${clean(winner.variant) || 'primary'}`,
+          ...(lockScopeCanNarrow?[`fan-in-lock-scope:actual-changed-files:${scopedChangedFiles.length}`]:[])
+        ]
       });
       applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary', neuralFeedback:neuralVariantFeedback });
       continue;

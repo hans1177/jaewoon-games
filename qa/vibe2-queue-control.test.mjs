@@ -1296,3 +1296,66 @@ test('shared reserve state stays serialized while fan-in uses run-unique pending
   assert.match(fanInHeader,/cancel-in-progress: false/);
   assert.doesNotMatch(fanInHeader,/group: vibe2-control-state-vibe2-unreal-core/);
 });
+
+
+test('fan-in narrows an empty release lock to verified candidate changed files and unlocks disjoint same-root work',()=>{
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'legacy-release',gameId:'same',target:'unity',department:'development',type:'implementation',
+      executionLane:'GAME_PRIMARY',goal:'legacy candidate',status:'running',
+      sourceRoot:'unity-games/same',responsibleFiles:[],
+      reservationId:'legacy-run:1',reservationRunId:'legacy-run',reservedAt:'2026-09-20T10:00:00Z'
+    },
+    {
+      id:'disjoint-next',gameId:'same',target:'unity',department:'development',type:'implementation',
+      executionLane:'GAME_PRIMARY',goal:'next file',status:'queued',
+      sourceRoot:'unity-games/same',responsibleFiles:['unity-games/same/Assets/B.cs']
+    }
+  ]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'legacy-release',reservationId:'legacy-run:1',variant:'primary',outcome:'PASS',
+    blocker:'candidate-awaiting-qa-and-deployment',
+    changedFiles:['unity-games/same/Assets/A.cs'],
+    evidence:['candidate-sha:test']
+  }]);
+  const release=merged.queue.tasks.find(row=>row.id==='legacy-release');
+  assert.deepEqual(release.responsibleFiles,['unity-games/same/Assets/A.cs']);
+  assert.ok(release.evidence.includes('fan-in-lock-scope:actual-changed-files:1'));
+  const selection=selectVibeQueueBatch(merged.queue,{maxConcurrentTasks:4,lane:'game-primary'});
+  assert.ok(selection.selected.some(row=>row.id==='disjoint-next'));
+});
+
+test('fan-in never narrows a release lock when candidate changed files escape the task source root',()=>{
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[{
+    id:'unsafe-release',gameId:'same',target:'unity',department:'development',type:'implementation',
+    executionLane:'GAME_PRIMARY',goal:'unsafe candidate',status:'running',
+    sourceRoot:'unity-games/same',responsibleFiles:[],
+    reservationId:'unsafe-run:1',reservationRunId:'unsafe-run',reservedAt:'2026-09-20T10:00:00Z'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'unsafe-release',reservationId:'unsafe-run:1',variant:'primary',outcome:'PASS',
+    blocker:'candidate-awaiting-qa-and-deployment',
+    changedFiles:['other-root/file.cs'],
+    evidence:['candidate-sha:test']
+  }]);
+  const release=merged.queue.tasks.find(row=>row.id==='unsafe-release');
+  assert.deepEqual(release.responsibleFiles,[]);
+  assert.equal(release.evidence.some(value=>value.startsWith('fan-in-lock-scope:actual-changed-files:')),false);
+});
+
+test('fan-in preserves declared responsible files even when the candidate reports a narrower changed set',()=>{
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[{
+    id:'declared-release',gameId:'same',target:'unity',department:'development',type:'implementation',
+    executionLane:'GAME_PRIMARY',goal:'declared candidate',status:'running',
+    sourceRoot:'unity-games/same',responsibleFiles:['unity-games/same/Assets/A.cs','unity-games/same/Assets/B.cs'],
+    reservationId:'declared-run:1',reservationRunId:'declared-run',reservedAt:'2026-09-20T10:00:00Z'
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'declared-release',reservationId:'declared-run:1',variant:'primary',outcome:'PASS',
+    blocker:'candidate-awaiting-qa-and-deployment',
+    changedFiles:['unity-games/same/Assets/A.cs'],
+    evidence:['candidate-sha:test']
+  }]);
+  const release=merged.queue.tasks.find(row=>row.id==='declared-release');
+  assert.deepEqual(release.responsibleFiles,['unity-games/same/Assets/A.cs','unity-games/same/Assets/B.cs']);
+});
