@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runSystemAiWorker } from '../tools/company-system-ai-worker.mjs';
-import { normalizeSystemAiQueue,reserveSystemAiBatch,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask } from '../tools/company-system-ai-queue.mjs';
+import { normalizeSystemAiQueue,reserveSystemAiBatch,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask,systemAiImpactProfile } from '../tools/company-system-ai-queue.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
 function write(file,text){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,'utf8');}
@@ -192,4 +192,130 @@ test('batch reservation reclaims stale running tasks before selecting work',()=>
   ]},{max:8,reservationId:'new',leaseMinutes:30,at});
   assert.equal(result.reclaimed,1);
   assert.deepEqual(result.reserved.map(x=>x.id).sort(),['queued','stale']);
+});
+
+
+test('System AI binds exact failure stage signature retries and causal evidence into repair context',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'causal-repair',status:'running',goal:'repair exact failure',responsibleFiles:['tools/demo.mjs'],
+      acceptanceCriteria:['failure signature clears'],failureStage:'SOURCE_CANDIDATE_GENERATION',
+      failureSignature:'EDIT_MATCH_TIMEOUT',retries:3,sourceMutationRequired:true,
+      evidence:['failure-stage:SOURCE_CANDIDATE_GENERATION','failure-cause:EDIT_MATCH_TIMEOUT','prior-strategy:wide-context-retry']
+    }));
+    write('response.json',JSON.stringify({summary:'causal edit',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]}));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.equal(result.version,3);
+    assert.equal(result.failureStage,'SOURCE_CANDIDATE_GENERATION');
+    assert.equal(result.failureSignature,'EDIT_MATCH_TIMEOUT');
+    assert.equal(result.retryCount,3);
+    assert.equal(result.sourceMutationRequired,true);
+    assert.equal(result.causalContextBound,true);
+    assert.ok(result.causalEvidenceCount>=3);
+    const worker=fs.readFileSync(path.resolve(prev,'tools/company-system-ai-worker.mjs'),'utf8');
+    assert.match(worker,/FAILURE STAGE:/);
+    assert.match(worker,/FAILURE SIGNATURE:/);
+    assert.match(worker,/Do not repeat a previously failed repair strategy without new causal evidence/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+
+test('System AI blocks a repair strategy that already failed for the same failure signature',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    const baseTask={id:'first',status:'running',goal:'repair exact failure',responsibleFiles:['tools/demo.mjs'],failureSignature:'SAME_FAILURE',acceptanceCriteria:['value becomes 2']};
+    write('task.json',JSON.stringify(baseTask));
+    write('response.json',JSON.stringify({summary:'same strategy',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]}));
+    const first=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.match(first.repairStrategyFingerprint,/^[a-f0-9]{64}$/);
+    assert.equal(first.repeatedFailedStrategyBlocked,true);
+
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({...baseTask,id:'retry',failedStrategyFingerprints:[first.repairStrategyFingerprint]}));
+    await assert.rejects(
+      runSystemAiWorker({taskFile:'task.json',outputFile:'result-2.json',responseFile:'response.json'}),
+      /SYSTEM_AI_REPEATED_FAILED_STRATEGY/
+    );
+    assert.match(fs.readFileSync('tools/demo.mjs','utf8'),/value=1/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+
+test('System AI reservation prioritizes the repair with the largest downstream bottleneck impact',()=>{
+  const at=Date.parse('2026-09-23T00:00:00.000Z');
+  const queue=normalizeSystemAiQueue({tasks:[
+    {id:'static-critical',status:'queued',priority:'critical',responsibleFiles:['tools/a.mjs'],createdAt:'2026-09-22T23:50:00.000Z'},
+    {id:'portfolio-bottleneck',status:'queued',priority:'normal',responsibleFiles:['tools/b.mjs'],failureSignature:'SHARED_SOURCE_FAILURE',blockedTaskIds:['g1','g2','g3','g4','g5','g6','g7','g8'],recurrenceCount:4,createdAt:'2026-09-22T22:00:00.000Z'}
+  ]});
+  const impact=systemAiImpactProfile(queue.tasks[1],queue,{at});
+  assert.equal(impact.blockedTaskCount,8);
+  assert.equal(impact.commonBottleneck,true);
+  assert.ok(impact.score>systemAiImpactProfile(queue.tasks[0],queue,{at}).score);
+  const reserved=reserveSystemAiBatch(queue,{max:1,reservationId:'impact',at});
+  assert.deepEqual(reserved.reserved.map(x=>x.id),['portfolio-bottleneck']);
+  assert.equal(reserved.reserved[0].impactScore,impact.score);
+  assert.ok(reserved.reserved[0].evidence.some(x=>x.startsWith('system-ai-impact-score:')));
+});
+
+test('System AI detects a repeated failure-signature cohort as a common bottleneck',()=>{
+  const at=Date.parse('2026-09-23T00:00:00.000Z');
+  const queue=normalizeSystemAiQueue({tasks:[
+    {id:'a',status:'queued',priority:'high',responsibleFiles:['tools/a.mjs'],failureSignature:'SAME_SHARED_FAILURE'},
+    {id:'b',status:'queued',priority:'high',responsibleFiles:['tools/b.mjs'],failureSignature:'SAME_SHARED_FAILURE'},
+    {id:'c',status:'queued',priority:'normal',responsibleFiles:['tools/c.mjs'],failureSignature:'OTHER'}
+  ]});
+  const impact=systemAiImpactProfile(queue.tasks[0],queue,{at});
+  assert.equal(impact.commonBottleneck,true);
+  assert.equal(impact.cohortSize,2);
+  assert.ok(impact.blockedTaskIds.includes('b'));
+});
+
+test('System AI repair result carries multi-hypothesis falsification and known-good comparison metadata',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'hypothesis-repair',status:'running',taskType:'bottleneck-repair',priority:'critical',
+      goal:'repair source generation failure',responsibleFiles:['tools/demo.mjs'],
+      acceptanceCriteria:['failure clears'],failureStage:'SOURCE_CANDIDATE_GENERATION',
+      failureSignature:'EDIT_MATCH',knownGoodRevision:'known-good-sha',
+      evidence:['failure-cause:EDIT_MATCH','hypothesis-rejected:pipeline-or-runner']
+    }));
+    write('response.json',JSON.stringify({
+      summary:'repair selected surviving hypothesis',
+      selectedHypothesisId:'source-generation-path',
+      falsifiedHypothesisIds:['pipeline-or-runner'],
+      knownGoodComparison:'Compared assigned source responsibility against known-good-sha before selecting the source-generation hypothesis.',
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],
+      newFiles:[],recommendedTests:['node --check tools/demo.mjs'],risks:[]
+    }));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.equal(result.hypothesisPlanBound,true);
+    assert.equal(result.selectedHypothesisId,'source-generation-path');
+    assert.ok(result.falsifiedHypothesisIds.includes('pipeline-or-runner'));
+    assert.equal(result.knownGoodRevision,'known-good-sha');
+    assert.match(result.knownGoodComparison,/known-good-sha/);
+    assert.ok(result.hypothesisCandidates.length>=2);
+    assert.equal(result.hypothesisCandidates.find(x=>x.id==='pipeline-or-runner')?.rejected,true);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('System AI refuses a hypothesis that prior evidence already rejected',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('task.json',JSON.stringify({
+      id:'bad-hypothesis',status:'running',taskType:'bottleneck-repair',goal:'repair',responsibleFiles:['tools/demo.mjs'],
+      failureSignature:'WORKFLOW_FAILURE',evidence:['failure-cause:WORKFLOW_FAILURE','hypothesis-rejected:pipeline-or-runner']
+    }));
+    write('response.json',JSON.stringify({
+      summary:'bad choice',selectedHypothesisId:'pipeline-or-runner',
+      edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:[],risks:[]
+    }));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',responseFile:'response.json'}),/SYSTEM_AI_INVALID_OR_REJECTED_HYPOTHESIS/);
+    assert.match(fs.readFileSync('tools/demo.mjs','utf8'),/value=1/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });

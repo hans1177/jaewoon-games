@@ -4391,14 +4391,17 @@
       }
     },
     "autonomousBottleneckRecovery": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
       "enabled": true,
       "objective": "PIPELINE_OPEN_THEN_VIBE_AUTONOMOUSLY_DETECT_REPAIR_REVERIFY_AND_RESUME_BOTTLENECKS",
       "canonicalSequence": [
         "DETECT_FAILURE_OR_STALL",
         "CAPTURE_EXACT_FAILURE_STAGE_SIGNATURE_AND_CHECKPOINT",
+        "CALCULATE_COMPANY_WIDE_BOTTLENECK_IMPACT",
         "CLASSIFY_SCOPE_AND_AUTHORITY",
+        "GENERATE_MULTIPLE_CAUSAL_HYPOTHESES",
+        "FALSIFY_WITH_CURRENT_EVIDENCE_AND_KNOWN_GOOD_WHEN_AVAILABLE",
         "ROUTE_TO_VIBE2_VIBE3_OR_SUPERVISED_SYSTEM_AI",
         "DIRECTLY_REPAIR_RESPONSIBLE_IMPLEMENTATION",
         "RERUN_EXACT_FAILED_STAGE",
@@ -4455,7 +4458,10 @@
         ],
         "allowVerificationAfterMutationOnly": true,
         "objective": "STOP_VERIFY_ONLY_LOOPS_AND_FORCE_CAUSAL_IMPLEMENTATION_PROGRESS"
-      }
+      },
+      "companyWideImpactPriorityRequired": true,
+      "multiHypothesisFalsificationRequiredForRepeatedOrBottleneckRepair": true,
+      "failedRepairStrategyFingerprintMustPersistAcrossRetry": true
     },
     "systemAiVerifiedLearningFanIn": {
       "version": 1,
@@ -5208,7 +5214,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -5287,7 +5293,161 @@
     "externalLinksPublicOnlyWhenExplicitPublicEvidencePasses": true,
     "homepageRenderer": "assets/homepage-enhancements.js",
     "edgeRuntime": "_worker.js",
-    "managerWorkflow": ".github/workflows/homepage-manager.yml"
+    "managerWorkflow": ".github/workflows/homepage-manager.yml",
+    "managerContractAuthority": "CENTRAL_ROADMAP_ONLY_DIRECTIVE_IS_COMPATIBILITY_MIRROR",
+    "managerContract": {
+      "mode": "SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR",
+      "manager": "HOMEPAGE",
+      "supervisor": "DIRECTOR",
+      "managerCount": 1,
+      "supervisorCount": 1,
+      "centralPolicyAndEvidenceDrivenSync": true,
+      "managerAutonomousScope": [
+        "HERO_AND_FRONT_PAGE_COMPOSITION",
+        "LAYOUT_AND_TEMPLATE",
+        "CARD_GRID_AND_SECTION_ORDER",
+        "RESPONSIVE_MOBILE_PRESENTATION",
+        "FILTER_NAVIGATION_DISPLAY",
+        "REPRESENTATIVE_IMAGE_PRESENTATION",
+        "ARTBOOK_ENTRY_PRESENTATION",
+        "CANONICAL_STATUS_DISPLAY_SYNC"
+      ],
+      "evidenceBoundPromotionRequired": true,
+      "fixedFunctionProtection": {
+        "ownerLocked": true,
+        "protectedFunctions": [
+          "PWA_APP_INSTALL_AND_OFFLINE_RUNTIME",
+          "PWA_COMMAND_CHAT_WINDOW",
+          "OWNER_FIXED_EXISTING_HOMEPAGE_FUNCTIONS"
+        ],
+        "canonicalPwaFiles": [
+          "manifest.webmanifest",
+          "install.html",
+          "sw.js",
+          "offline.html",
+          "command.html"
+        ],
+        "preserveContracts": [
+          "BEHAVIOR",
+          "USER_ENTRY_POINT",
+          "DOM_OR_API_CONTRACT",
+          "DATA_SOURCE_CONTRACT",
+          "INSTALL_AND_OFFLINE_RUNTIME",
+          "CHAT_INPUT_ATTACHMENT_SEND_AND_DEVICE_REGISTRATION_FLOW"
+        ],
+        "changeRequiresLatestOwnerDirectInstruction": true
+      },
+      "forbiddenAutonomousChanges": [
+        "COMPANY_POLICY_TRUTH",
+        "GAME_PRODUCTION_OR_RELEASE_TRUTH",
+        "UNVERIFIED_DOWNLOAD_OR_PLAY_CLAIM",
+        "GAME_SOURCE_OR_GAMEPLAY",
+        "MONETIZATION_PRIVACY_OR_PAID_SERVICE",
+        "FIXED_FUNCTION_REMOVAL_DISABLEMENT_OR_BEHAVIOR_CHANGE"
+      ],
+      "afterWorkFlow": [
+        "HOMEPAGE_MANAGER_APPLY",
+        "HOMEPAGE_MANAGER_SELF_QA",
+        "DIRECTOR_SINGLE_POST_WORK_SUPERVISION_AND_PUBLICATION",
+        "LIVE_STATUS_CONFIRMATION"
+      ],
+      "secondHomepageManagerForbidden": true,
+      "secondHomepageSupervisorForbidden": true,
+      "supervisorMayVerifyAndBlockButMustNotSilentlyRewriteManagerOutput": true,
+      "developmentProgressDisplay": {
+        "source": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+        "autoRegisterProductionClass": "DEVELOPMENT_CONFIRMED",
+        "requiresHomepageTestEligible": false,
+        "requiresWebValidation": false,
+        "requiresFinalThirtyMinuteContentDepth": false,
+        "requiresArtbook": false,
+        "displayFields": [
+          "status",
+          "currentStep",
+          "concurrentTargetPlatforms",
+          "platformReleaseState"
+        ],
+        "separateFromTop30Promotion": true,
+        "mustNotClaimValidationOrRelease": true,
+        "webTestButtonEnabled": false,
+        "webTestButtonLabel": null,
+        "platformTestButtonEnabled": true,
+        "platformTestButtonLabelMode": "PLATFORM_NAME",
+        "webAndPlatformTestButtonsMustBeSeparate": false,
+        "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
+        "scoreDisplayEnabled": false,
+        "ranking": "CATALOG_ORDER",
+        "unratedGamesLast": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "scoreRequiresInitialCyclePass": false,
+        "scoreRequiresMusicPass": false,
+        "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
+        "reworkOrRevalidationScoresNotShownAsCurrent": false,
+        "scoreRequiresSchema15": false
+      },
+      "autoClassification": {
+        "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
+        "enabled": true,
+        "webGameOnly": false,
+        "explicitOwnerOrCatalogValueWins": true,
+        "overwriteExplicitValue": false,
+        "missingPlatform": "VIBE_AUTO_CLASSIFY",
+        "missingGenre": "VIBE_AUTO_CLASSIFY",
+        "executionPath": "tools/game-catalog-normalization.mjs",
+        "runsInsideExistingCompanyStatusSync": true,
+        "humanDocumentRequired": false,
+        "activePlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ]
+      },
+      "executionPipeline": {
+        "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
+        "jobCount": 2,
+        "separatePublishJobForbidden": true,
+        "duplicateCandidateApplyForbidden": true
+      }
+    },
+    "testingContract": {
+      "minimumWebStrictScore": 80,
+      "hardGatesMustPass": true,
+      "maxVisibleTestCandidates": 30,
+      "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
+      "artbookRequiredForHomepageRegistration": true,
+      "officialCardRequiresPromotion": true
+    },
+    "documentationSyncContract": {
+      "centralPolicyFirst": true,
+      "workDocumentsMustMirrorCurrentCentralPolicy": true,
+      "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
+      "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
+      "workDocumentsCannotOverrideCentralPolicy": true,
+      "centralPolicyPath": "company-learning/platform-release-roadmap.json",
+      "legacyHumanPolicyMirror": "COMPANY_FLOW.md",
+      "legacyMirrorAuthoritative": false,
+      "genrePresentationAndCommercialReadinessMirrored": true,
+      "syncTargets": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
+        "COMPANY_FLOW.md",
+        ".github/agents/planning.agent.md",
+        ".github/agents/development.agent.md",
+        ".github/agents/graphics.agent.md",
+        ".github/agents/qa.agent.md",
+        ".github/agents/balance.agent.md",
+        "tools/vibe2-auto-planner.mjs",
+        "tools/company-selected-platform-router.mjs",
+        "assets/homepage-enhancements.js",
+        "_worker.js"
+      ]
+    },
+    "directiveMirrorRequired": true,
+    "directiveMirrorMayNotOverrideCentral": true,
+    "homepageWorkerMustConsumeCompiledCentralProjection": true,
+    "homepagePolicyFingerprintRequiredAtManagerStart": true,
+    "homepagePolicyFingerprintRequiredAtDirectorStart": true,
+    "homepagePolicyFingerprintMustMatchBeforePublication": true,
+    "staleHomepagePolicyAction": "FAIL_CLOSED_BLOCK_PUBLICATION_AND_REQUEUE_HOMEPAGE_MANAGER"
   },
   "longHorizonVision": {
     "version": 2,
@@ -12648,7 +12808,7 @@
     "objective": "MINIMIZE_MODEL_SERIALIZATION_AND_LATENCY_WHILE_PRESERVING_ROLE_LEVEL_REVIEW_AND_DETERMINISTIC_QA",
     "qualityGateWeakeningForbidden": true,
     "systemAiBottleneckResilience": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-21",
       "existingArchitectureOnly": true,
       "objective": "MAXIMIZE_24H_SYSTEM_AI_BOTTLENECK_RECOVERY_SUCCESS_WITHOUT_GATE_WEAKENING",
@@ -12679,6 +12839,88 @@
         "retryBudgetConsumed": false,
         "learningPenalty": false,
         "executor": "tools/company-system-ai-queue.mjs::reclaimStaleSystemAiReservations"
+      },
+      "impactAwareScheduling": {
+        "enabled": true,
+        "executor": "tools/company-system-ai-queue.mjs::systemAiImpactProfile",
+        "reserveOrder": "BOTTLENECK_IMPACT_SCORE_DESC_THEN_STATIC_PRIORITY_THEN_CREATED_AT",
+        "components": [
+          "STATIC_SEVERITY",
+          "BLOCKED_DOWNSTREAM_TASK_COUNT",
+          "FAILURE_RECURRENCE_COUNT",
+          "DEPENDENCY_CENTRALITY",
+          "QUEUE_AGE",
+          "REPAIR_RISK_PENALTY"
+        ],
+        "commonFailureSignatureCohortIncluded": true,
+        "blockedTaskIdsIncluded": true,
+        "impactScorePersistedIntoReservedTask": true,
+        "objective": "REPAIR_THE_CAUSE_THAT_RESTORES_THE_MOST_COMPANY_THROUGHPUT_FIRST",
+        "authorityChange": "NONE"
+      },
+      "multiHypothesisCausalRepair": {
+        "enabled": true,
+        "reusesExistingNeuralDiagnosis": true,
+        "diagnosisBinding": "tools/vibe2-neural-diagnosis.mjs::buildNeuralDiagnosis",
+        "workerBinding": "tools/company-system-ai-worker.mjs",
+        "multipleHypothesesComparedBeforeRepair": true,
+        "rejectedHypothesesExcludedFromSelection": true,
+        "knownGoodComparisonRequiredWhenReferenceExists": true,
+        "knownGoodMustNotBeInventedWhenMissing": true,
+        "genericFallbackHypothesesUsedWhenEvidenceProducesFewerThanTwo": true,
+        "selectedHypothesisPersistedInImmutableResult": true,
+        "falsifiedHypothesesPersistedToQueueEvidence": true,
+        "failedRepairStrategyFingerprintPersisted": true,
+        "repeatedFailedRepairStrategyBlocked": true,
+        "sameFailureSignatureRequiresNewCausalEvidenceOrDifferentStrategy": true,
+        "preservesVerifiedCheckpoint": true,
+        "automaticWritableScopeExpansion": false,
+        "deterministicQaAndSupervisorRemainAuthoritative": true,
+        "objective": "FALSIFY_CAUSAL_ALTERNATIVES_BEFORE_MUTATING_RESPONSIBLE_SOURCE",
+        "authorityChange": "NONE"
+      },
+      "implementationBindings": [
+        "tools/company-system-ai-queue.mjs",
+        "tools/company-system-ai-worker.mjs",
+        "tools/company-recovery-dispatch.mjs",
+        "tools/vibe2-neural-diagnosis.mjs",
+        ".github/workflows/company-system-ai-workers.yml",
+        "qa/company-system-ai-worker.test.mjs",
+        "qa/company-system-ai-supervision-loop.test.mjs"
+      ],
+      "implementationState": "IMPLEMENTED_QA_PASS",
+      "verification": {
+        "verifiedHead": "d50698df3e998b1a9d15ba7a65bf76c5fe1c66c7",
+        "vibe2CoreQa": {
+          "runId": 35757618764,
+          "result": "PASS"
+        },
+        "integratedRegression": {
+          "runId": 35757618765,
+          "result": "PASS"
+        },
+        "centralPolicyContract": {
+          "runId": 35757618713,
+          "result": "PASS"
+        },
+        "vibeQa": {
+          "runId": 35757618597,
+          "result": "PASS"
+        },
+        "vibe3EngineContract": {
+          "runId": 35757618715,
+          "result": "PASS"
+        },
+        "companyEvolutionQa": {
+          "runId": 35757618647,
+          "result": "PASS"
+        },
+        "homepageSelfQaPreviousEquivalentHomepageHead": {
+          "runId": 35757463696,
+          "result": "PASS",
+          "note": "Homepage files unchanged after this validated homepage head; subsequent commits only changed System AI queue/tests."
+        },
+        "deterministicEvidenceOnly": true
       }
     }
   },
