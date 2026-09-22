@@ -85,6 +85,14 @@ p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
 end)
 
+remote.OnClientEvent:Connect(function(kind,snapshot)
+ if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
+ if tonumber(snapshot.RoomCode)~=(p:GetAttribute("RoomCode")or 1)then return end
+ p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
+ render()
+end)
+
 QACamera.install(C,gui,function()
  local shots={{label="rpg-village",position=Vector3.new(0,120,170),lookAt=Vector3.new(0,2,0)}}
  for _,z in ipairs(C.Portals)do table.insert(shots,{label="rpg-portal-"..z.Id,position=z.Center+Vector3.new(0,95,150),lookAt=z.Center})end
