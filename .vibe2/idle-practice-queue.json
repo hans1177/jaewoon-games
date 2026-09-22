@@ -1111,16 +1111,6 @@
       ]
     },
     {
-      "id": "gap-animation_feel-l11",
-      "kind": "ANIMATION_FEEL_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ANIMATION_FEEL"
-      ]
-    },
-    {
       "id": "gap-core_loop-l11",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1131,13 +1121,13 @@
       ]
     },
     {
-      "id": "gap-combat-l12",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-animation_feel-l12",
+      "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "COMBAT"
+        "ANIMATION_FEEL"
       ]
     },
     {
@@ -1168,6 +1158,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "RECOVERY"
+      ]
+    },
+    {
+      "id": "gap-combat-l13",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "COMBAT"
       ]
     },
     {
