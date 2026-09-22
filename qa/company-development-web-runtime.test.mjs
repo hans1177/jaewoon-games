@@ -188,152 +188,66 @@ test('legacy frozen implementation context requires an exact canonical game and 
   assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_DEVELOPMENT_QUEUE/);
 });
 
-test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to Vibe development before retrying depth',()=>{
+test('canonical DEVELOPMENT_CONFIRMED runtime dispatches direct native lanes and keeps Unity Web non-blocking',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
-  const initialAt=source.indexOf('if(!finalStage){');
-  const finalStageMarker=source.indexOf('if(item.webInitialCyclePassed!==true',initialAt);
-  const finalAt=source.lastIndexOf('}else{',finalStageMarker);
-  const catchAt=source.indexOf('}catch(error){',finalAt);
-  const resultWriteAt=source.indexOf('fs.writeFileSync(path.join(resultsRoot',catchAt);
-  assert.ok(initialAt>0);assert.ok(finalStageMarker>initialAt);assert.ok(finalAt>initialAt);assert.ok(catchAt>finalAt);assert.ok(resultWriteAt>catchAt);
-  const initialBlock=source.slice(initialAt,finalAt),finalBlock=source.slice(finalAt,catchAt),failureBlock=source.slice(catchAt,resultWriteAt);
-
-  // A: initial PASS is persisted before final depth and is not homepage eligible yet.
-  assert.match(initialBlock,/--validation-stage=initial-cycle/);
-  assert.doesNotMatch(initialBlock,/--validation-stage=final-content-depth/);
-  assert.match(source,/web-initial-cycle-validation\.json/);
-  assert.match(initialBlock,/canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH'/);
-  assert.match(initialBlock,/webInitialCyclePassed:true/);
-  assert.match(initialBlock,/webInitialCycleEvidencePath:initialEvidenceRelative/);
-  assert.match(initialBlock,/webInitialCycleSourcePath:stableSource/);
-  assert.match(initialBlock,/homepageTestEligible:false/);
-  assert.match(initialBlock,/strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null/);
-  assert.match(initialBlock,/webValidationSchemaVersion:null,webSourceIndexSha256:null,webDesignBaselineSha256:null/);
-  assert.match(initialBlock,/WEB_INITIAL_CANONICAL_PERSIST/);
-  assert.match(initialBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
-
-  // B: all initial failures return directly to active repair, preserving prior context when present.
-  assert.match(initialBlock,/if\(item\.existingWebValidated===true\)/);
-  assert.match(initialBlock,/materialize\(`\$\{stableSource\}\/index\.html`\)/);
-  assert.match(initialBlock,/WEB_EXISTING_GAME_FRESH_REVALIDATION/);
-  assert.match(failureBlock,/item\.webInitialCyclePassed===true\|\|item\.existingWebValidated===true/);
-  assert.match(failureBlock,/const repairState='WEB_VIBE_REPAIR_REQUIRED'/);
-  assert.match(failureBlock,/canonicalState:repairState/);
-  assert.doesNotMatch(failureBlock,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
-  assert.doesNotMatch(failureBlock,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
-  assert.match(failureBlock,/webInitialCyclePassed:rework/);
-  assert.match(failureBlock,/WEB_CONTENT_REWORK_RETRY_PRESERVED=YES/);
-  assert.match(source,/WEB_FAILURE_STALE_FULL_SCORE_INVALIDATED=YES/);
-  assert.match(source,/strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null/);
-  assert.match(source,/webValidationEvidencePath:null,homepageTestScore:null/);
-  assert.match(failureBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
-
-  // B2: expected bootstrap signals are structured for Vibe; unexpected errors retain generic traceable routing.
-  assert.match(failureBlock,/VIBE_WEB_IMPLEMENTATION_REQUIRED:\(WEB_BASE_IMPLEMENTATION\|WEB_REPAIR\)/);
-  assert.match(failureBlock,/vibeRequestedStage==='WEB_REPAIR'\?'VIBE_WEB_REPAIR'/);
-  assert.match(failureBlock,/vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'\?'VIBE_WEB_BASE_IMPLEMENTATION'/);
-  assert.match(failureBlock,/vibe-web-implementation-required:\$\{vibeRequestedStage\}:\$\{vibeRequestedReason\}/);
-  assert.match(failureBlock,/sourceRootBootstrapRequired=vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'/);
-  assert.match(failureBlock,/web-gameplay-music/);
-  assert.match(failureBlock,/vibeWebImplementationRequired:Boolean\(vibeImplementationSignal\)/);
-  assert.match(failureBlock,/WEB_VIBE_IMPLEMENTATION_SIGNAL/);
-
-  // C: final run consumes exact persisted source/evidence and verifies hashes.
-  assert.match(source,/canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'\?'final-content-depth':'initial-cycle'/);
-  assert.match(finalBlock,/materialize\(item\.webInitialCycleEvidencePath\)/);
-  assert.match(finalBlock,/materialize\(`\$\{item\.webInitialCycleSourcePath\}\/index\.html`\)/);
-  assert.match(finalBlock,/persistedInitial\.sourceIndexSha256!==item\.webInitialCycleSourceIndexSha256/);
-  assert.match(finalBlock,/persistedInitial\.designBaselineSha256!==item\.webInitialCycleDesignBaselineSha256/);
-  assert.match(finalBlock,/WEB_FINAL_CONTENT_DEPTH_RESUME/);
-
-  // D: only meaningful final gameplay time can become homepage/strict/promotion eligible.
-  assert.match(finalBlock,/--validation-stage=final-content-depth/);
-  assert.match(finalBlock,/contentDepthValidation\?\.validationMode!==\'REAL_ELAPSED_GAMEPLAY\'/);
-  assert.match(finalBlock,/meaningfulGameplayMilliseconds\)<1800000/);
-  assert.match(finalBlock,/homepageTestEligible:true/);
-  assert.match(finalBlock,/PENDING_SELECTED_PLATFORM_BIND/);
-  assert.match(finalBlock,/WEB_VIBE_REPAIR_REQUIRED/);
-
-  // E: final depth failure returns directly to active development repair, and next initial cycle forces Vibe source repair.
-  assert.doesNotMatch(finalBlock,/company-development-web-bootstrap\.mjs/);
-  assert.match(failureBlock,/canonicalState:'WEB_VIBE_REPAIR_REQUIRED'/);
-  assert.match(failureBlock,/currentStep:'VIBE_WEB_REPAIR'/);
-  assert.match(failureBlock,/webInitialCycleEvidencePath:item\.webInitialCycleEvidencePath/);
-  assert.match(failureBlock,/webInitialCycleSourcePath:item\.webInitialCycleSourcePath/);
-  assert.match(failureBlock,/WEB_CONTENT_RETURN_TO_DEVELOPMENT=YES/);
-  assert.match(source,/--force-repair=true/);
-  assert.match(source,/WEB_RETURN_TO_VIBE=YES/);
-  assert.match(source,/WEB_VIBE_24H_DISPATCH=YES/);
-  assert.match(source,/--repair-reason=FINAL_CONTENT_DEPTH_REWORK_REQUIRED/);
-  assert.match(source,/vibe-web-development-required:web-worker-result-missing/);
-  assert.doesNotMatch(source,/Confirm lazy optional AI runtime policy/);
-  assert.match(source,/COMPANY_WEB_ROLE=VALIDATE_ROUTE_FAN_IN/);
-
-  // F: direct time-stage/test-harness controls stay forbidden.
-  assert.match(validator,/DIRECT_TIME_STAGE_CONTROL_FORBIDDEN/);
-  assert.match(validator,/FAKE_TIME_PROGRESS_MARKERS_FORBIDDEN/);
-  assert.match(validator,/GENERIC_OR_TIME_PROXY_MARKERS_FORBIDDEN/);
-
-  // G: existing source feeds development bootstrap, while final validates only the freshly revalidated persisted source.
-  assert.match(initialBlock,/`--source-path=\$\{item\.webSourcePath\}`/);
-  assert.match(finalBlock,/`--source=\$\{item\.webInitialCycleSourcePath\}`/);
-
-  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION/);
-  assert.match(source,/webValidationEvidenceSchemaMinimum=WEB_VALIDATION_SCHEMA_VERSION/);
-  assert.doesNotMatch(source,/WEB_VALIDATION_SCHEMA_MINIMUM=13/);
-  assert.doesNotMatch(source,/webValidationEvidenceSchemaMinimum=13/);
-  assert.doesNotMatch(source,/Number\(item\.webValidationSchemaVersion\)!==13/);
-  assert.match(source,/timeout-minutes: 85/);
-  assert.match(source,/cancel-in-progress: false/);
-  assert.match(source,/max-parallel: 20/);
-  assert.match(source,/WEB_PILOT_TARGET/);
+  assert.match(source,/native-plan:/);
+  assert.match(source,/String\(item\.productionClass\|\|''\)\.toUpperCase\(\)==='DEVELOPMENT_CONFIRMED'/);
+  assert.match(source,/platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
+  assert.match(source,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
+  assert.match(source,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(source,/DUAL_NATIVE_TARGETS_REQUIRED/);
+  assert.match(source,/LEGACY_WEB_GATE_ACTIVE/);
+  assert.match(source,/discoverBuildWeb/);
+  assert.match(source,/gh workflow run company-development-roblox-runtime\.yml/);
+  assert.match(source,/gh workflow run company-development-unity-runtime\.yml/);
+  assert.match(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.match(source,/INTERNAL_RELEASE_FIRST=YES/);
 });
 
-test('platform routing does not wait for optional post-Web artbook',()=>{
+test('native routing does not wait for optional Unity Web build',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(source,/\n  route:\n[\s\S]{0,600}needs: \[web-gate\]/);
-  assert.doesNotMatch(source,/\n  route:\n[\s\S]{0,600}needs: \[web-gate, post-web-artbook\]/);
-  assert.match(source,/ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES/);
-  assert.match(source,/post-web-artbook:[\s\S]{0,400}continue-on-error: true/);
-  assert.match(source,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
+  assert.match(source,/\n  dispatch-native:\n[\s\S]{0,500}needs: native-plan/);
+  assert.doesNotMatch(source,/needs:.*web-gate/);
+  const robloxAt=source.indexOf('gh workflow run company-development-roblox-runtime.yml');
+  const unityAt=source.indexOf('gh workflow run company-development-unity-runtime.yml');
+  const webAt=source.indexOf('if [ "$GITHUB_REF" = \'refs\/heads\/main\' ] && [ -n "$UNITY_WEB_IDS" ]');
+  assert.ok(robloxAt>0);
+  assert.ok(unityAt>robloxAt);
+  assert.ok(webAt>unityAt);
+  assert.match(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
 });
 
-
-test('target platform failures use repair states while missing executors block explicitly',()=>{
-  const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.doesNotMatch(source,/state==='WAITING_REVALIDATION'/);
-  assert.doesNotMatch(source,/state==='WAITING_TARGET_PLATFORM_REVALIDATION'/);
-  assert.doesNotMatch(source,/state==='WAITING_TARGET_PLATFORM_VALIDATION'/);
-  assert.match(source,/state==='DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED'/);
-  assert.match(source,/state==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
-  assert.match(source,/status:'BLOCKED'[\s\S]{0,300}canonicalState:'DEVELOPMENT_BLOCKED'/);
-  assert.match(source,/routingBlockers:\['platform-runtime-executor-not-configured'\]/);
-  assert.match(source,/DEVELOPMENT_ROUTE_EXTERNAL_BLOCKED=/);
+test('target platform failures stay in repair states in native workers',()=>{
+  const router=fs.readFileSync('tools/company-selected-platform-router.mjs','utf8');
+  const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+  assert.doesNotMatch(router,/WAITING_REVALIDATION|WAITING_TARGET_PLATFORM_REVALIDATION|WAITING_TARGET_PLATFORM_VALIDATION/);
+  assert.match(router,/return 'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(roblox,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(roblox,/BUILD_REPAIR_REQUIRED/);
+  assert.match(unity,/failure='TARGET_PLATFORM_RUNTIME'/);
+  assert.match(unity,/failure='INDEPENDENT_QA'/);
+  assert.match(unity,/failure='REGRESSION'/);
 });
 
-
-test('development runtime ignores queue entries outside canonical active catalog',()=>{
+test('development runtime uses company-runtime queue authority and canonical native eligibility',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.ok((source.match(/const canonicalGameIds=new Set\(/g)||[]).length>=3);
-  assert.ok((source.match(/const ownerResetIds=new Set\(/g)||[]).length>=3);
-  assert.ok((source.match(/const resetPassIds=new Set\(/g)||[]).length>=3);
-  assert.ok((source.match(/updatedAt>=ownerResetAt/g)||[]).length>=3);
-  assert.ok((source.match(/!ownerResetIds\.has\(gameId\)\|\|resetPassIds\.has\(gameId\)/g)||[]).length>=3);
-  assert.ok((source.match(/\['ACTIVE','REBUILD'\]\.includes\(String\(game\.lifecycleState\|\|'ACTIVE'\)\.toUpperCase\(\)\)&&String\(game\.productionClass\|\|''\)\.toUpperCase\(\)==='DEVELOPMENT_CONFIRMED'/g)||[]).length>=3);
-  assert.ok((source.match(/if\(!canonicalGameIds\.has\(String\(item\.gameId\|\|''\)\.trim\(\)\)\)/g)||[]).length>=3);
-  assert.match(source,/requestedItem=requestedGameId\?\(q\.items\|\|\[\]\)\.find\(item=>item\.gameId===requestedGameId&&canonicalGameIds\.has/);
+  assert.match(source,/git show "origin\/\$COMPANY_RUNTIME_BRANCH:development-queue\.json"/);
+  assert.match(source,/String\(item\.productionClass\|\|''\)\.toUpperCase\(\)==='DEVELOPMENT_CONFIRMED'/);
+  assert.match(source,/String\(item\.status\|\|''\)\.toUpperCase\(\)!=='DISABLED'/);
+  assert.match(source,/platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
+  assert.match(source,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
 });
 
-test('owner pause keeps DEVELOPMENT_CONFIRMED at pre-Web boundary',()=>{
+test('direct native runtime has no legacy Web pause stop switch',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED: 'false'/);
-  assert.match(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED=YES/);
-  assert.match(workflow,/WEB_DEVELOPMENT_TARGET_COUNT=0/);
-  assert.match(workflow,/printf 'target_count=0\\n' >> "\$GITHUB_OUTPUT"/);
-  assert.match(workflow,/printf 'matrix=%s\\n' '\{"include":\[\]\}' >> "\$GITHUB_OUTPUT"/);
+  assert.doesNotMatch(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED/);
+  assert.doesNotMatch(workflow,/WEB_DEVELOPMENT_TARGET_COUNT=0/);
+  assert.doesNotMatch(workflow,/web-gate/);
+  assert.match(workflow,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
+  assert.match(workflow,/ROBLOX_RUNTIME_DISPATCH=YES/);
+  assert.match(workflow,/UNITY_APP_RUNTIME_DISPATCH=YES/);
 });
-
 
 test('presentation runtime observation measures frame continuity and living motion',()=>{
   const frameDeltas=Array.from({length:29},()=>16.7);
