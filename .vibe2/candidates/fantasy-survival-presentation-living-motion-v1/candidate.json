@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "     const [gx,gy]=key.split(',').map(Number);",
+      "replace": "  for(const [id,pos] of [['bench',state.bench],['furnace',state.furnace],['iron-bench',state.ironBench],['gold-bench',state.goldBench],['jungle-bench',state.jungleBench],['cooking-station',state.cookingStation],['shadow-wolf-incubator',state.incubator]])if(pos)rememberItem(id);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
