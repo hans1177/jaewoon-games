@@ -200,6 +200,14 @@ jobs:
               item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
               item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
               item.routingBlockers=['roblox-final-review-pending'];
+              if(item.executionEvidence){
+                item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+                item.executionEvidence.runtimePassed=true;
+                item.executionEvidence.independentQaPassed=true;
+                item.executionEvidence.regressionPassed=true;
+                item.executionEvidence.failureStage=null;
+                item.executionEvidence.failureSignature=null;
+              }
               passed++;
             }else{
               const cp=result.checkpointPass||{};
