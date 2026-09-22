@@ -1,3 +1,4 @@
+-- 대충 RPG: 마을 허브 + 5포탈 + 대형 사냥터/던전 + AI 파티
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
@@ -6,7 +7,8 @@ local Lighting=game:GetService("Lighting")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
-local store=DSS:GetDataStore("daechung-rpg-party-v2")
+
+local store=DSS:GetDataStore("daechung-rpg-portal-v1")
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
 remote.Name=C.RemoteName;remote.Parent=RS
 local qaCaptureStore=DSS:GetDataStore("qa-camera-captures-v1")
@@ -14,360 +16,394 @@ local qaCaptureRemote=RS:FindFirstChild(C.QACaptureRemoteName or "QACaptureRepor
 qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.Parent=RS
 local qaCaptureLast={}
 
-
-local world=nil
+local world
 local enemies={}
-local companionParts={}
-local lastHit={}
+local aiUsers={}
+local parties={}
+local clickTimes={}
 local lastRequest={}
-local allowedActions={}
-for _,action in pairs(C.Actions)do allowedActions[action]=true end
+local lastCombat={}
 
-local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
-local function feedback(p,kind)p:SetAttribute("FeedbackEvent",kind..":"..tostring(math.floor(os.clock()*1000)))end
-local function class(p)local id=p:GetAttribute("ClassId")or C.Classes[1].Id;for _,x in ipairs(C.Classes)do if x.Id==id then return x end end;return C.Classes[1]end
-local function unlocked(p,id)return p:GetAttribute("Companion_"..id)==true end
-local function unlock(p,id,msg)
- if not unlocked(p,id)then p:SetAttribute("Companion_"..id,true);p:SetAttribute("LastAction",msg or(id.." 합류"))end
-end
-local function saveKeys()
- local t={"Gold","XP","Level","WeaponTier","ClassId","AIStyle","Relic","PartyMemory","Kills","StoryStage","BossesDefeated","HiddenCompanionUnlocked"}
- for _,x in ipairs(C.Companions)do table.insert(t,"Companion_"..x.Id)end
- return t
-end
-local SAVE_KEYS=saveKeys()
+local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
+local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
+local function feedback(p,k)p:SetAttribute("FeedbackEvent",k..":"..tostring(math.floor(os.clock()*1000)))end
+local function msg(p,t)p:SetAttribute("LastAction",t)end
+local function portalDef(id)for _,z in ipairs(C.Portals)do if z.Id==id then return z end end end
 
-local function ppart(name,size,pos,color,material)
- local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.Parent=world;return x
-end
-local function nameplate(target,text,color)
- local g=Instance.new("BillboardGui");g.Size=UDim2.fromOffset(120,24);g.StudsOffset=Vector3.new(0,4.2,0);g.AlwaysOnTop=false;g.MaxDistance=42;g.LightInfluence=.25;g.Parent=target
- local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,22,31);t.BackgroundTransparency=.35;t.TextScaled=true;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.65;t.Parent=g
- local cr=Instance.new("UICorner");cr.CornerRadius=UDim.new(0,5);cr.Parent=t
-end
-local function prompt(target,text,action)
- local pr=Instance.new("ProximityPrompt");pr.ActionText=action;pr.ObjectText=text;pr.HoldDuration=.15;pr.MaxActivationDistance=10;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
-end
-local function attach(root,name,size,offset,color,material,shape)
- local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.Massless=true
- x.Anchored=false;x.CFrame=root.CFrame*CFrame.new(offset);if shape then x.Shape=shape end;x.Parent=root
- local w=Instance.new("WeldConstraint");w.Part0=root;w.Part1=x;w.Parent=x
+local function ppart(parent,name,size,pos,color,material)
+ local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.Size=size;x.Position=pos;x.Color=color
+ x.Material=material or Enum.Material.SmoothPlastic;x.TopSurface=Enum.SurfaceType.Smooth;x.BottomSurface=Enum.SurfaceType.Smooth;x.Parent=parent
  return x
 end
-local function humanoidFigure(name,pos,color,accent,scale)
+local function attach(rootPart,name,size,offset,color,material,shape)
+ local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+ x.CanCollide=false;x.Massless=true;x.Anchored=false;x.CFrame=rootPart.CFrame*CFrame.new(offset);if shape then x.Shape=shape end;x.Parent=rootPart
+ local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
+ return x
+end
+local function label(target,text,color,maxDistance)
+ local g=Instance.new("BillboardGui");g.Name="WorldLabel";g.Size=UDim2.fromOffset(128,24);g.StudsOffset=Vector3.new(0,4.8,0)
+ g.AlwaysOnTop=false;g.MaxDistance=maxDistance or 34;g.LightInfluence=.35;g.Parent=target
+ local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(22,24,29);t.BackgroundTransparency=.28
+ t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextStrokeTransparency=.72;t.TextScaled=true;t.Font=Enum.Font.GothamBold;t.Parent=g
+ local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,5);c.Parent=t
+ return g
+end
+local function prompt(target,objectText,actionText)
+ local p=Instance.new("ProximityPrompt");p.ObjectText=objectText;p.ActionText=actionText;p.MaxActivationDistance=11;p.HoldDuration=.12
+ p.RequiresLineOfSight=false;p.Parent=target;return p
+end
+local function humanoidFigure(parent,name,pos,color,accent,scale)
  scale=scale or 1
- local root=ppart(name,Vector3.new(3.2,4.2,2.2)*scale,pos,color,Enum.Material.SmoothPlastic);root.CanCollide=true
- attach(root,"Head",Vector3.new(2.5,2.5,2.5)*scale,Vector3.new(0,3.15*scale,0),Color3.fromRGB(224,190,154),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- attach(root,"ArmL",Vector3.new(1.1,3.8,1.1)*scale,Vector3.new(-2.05*scale,0,0),color)
- attach(root,"ArmR",Vector3.new(1.1,3.8,1.1)*scale,Vector3.new(2.05*scale,0,0),color)
- attach(root,"LegL",Vector3.new(1.2,3.2,1.2)*scale,Vector3.new(-.85*scale,-3.55*scale,0),accent or color)
- attach(root,"LegR",Vector3.new(1.2,3.2,1.2)*scale,Vector3.new(.85*scale,-3.55*scale,0),accent or color)
- attach(root,"ShoulderGlow",Vector3.new(3.7,.35,2.6)*scale,Vector3.new(0,1.4*scale,0),accent or color,Enum.Material.Neon)
- attach(root,"Hair",Vector3.new(2.7,.9,2.7)*scale,Vector3.new(0,4.05*scale,.05*scale),Color3.fromRGB(58,48,46),Enum.Material.SmoothPlastic)
- attach(root,"EyeL",Vector3.new(.32,.32,.18)*scale,Vector3.new(-.48*scale,3.35*scale,-1.24*scale),Color3.fromRGB(35,40,48),Enum.Material.SmoothPlastic)
- attach(root,"EyeR",Vector3.new(.32,.32,.18)*scale,Vector3.new(.48*scale,3.35*scale,-1.24*scale),Color3.fromRGB(35,40,48),Enum.Material.SmoothPlastic)
- attach(root,"Belt",Vector3.new(3.35,.35,2.3)*scale,Vector3.new(0,-.9*scale,0),Color3.fromRGB(65,54,49),Enum.Material.Fabric)
- return root
+ local r=ppart(parent,name,Vector3.new(3.1,4.2,2.1)*scale,pos,color,Enum.Material.SmoothPlastic);r.CanCollide=true
+ attach(r,"Head",Vector3.new(2.45,2.45,2.45)*scale,Vector3.new(0,3.15*scale,0),Color3.fromRGB(224,190,154),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ attach(r,"Hair",Vector3.new(2.65,.8,2.65)*scale,Vector3.new(0,4.05*scale,.05*scale),Color3.fromRGB(55,43,38))
+ attach(r,"ArmL",Vector3.new(.9,3.5,.9)*scale,Vector3.new(-1.9*scale,0,0),color)
+ attach(r,"ArmR",Vector3.new(.9,3.5,.9)*scale,Vector3.new(1.9*scale,0,0),color)
+ attach(r,"LegL",Vector3.new(1.05,3.1,1.05)*scale,Vector3.new(-.75*scale,-3.45*scale,0),accent)
+ attach(r,"LegR",Vector3.new(1.05,3.1,1.05)*scale,Vector3.new(.75*scale,-3.45*scale,0),accent)
+ attach(r,"EyeL",Vector3.new(.28,.3,.16)*scale,Vector3.new(-.48*scale,3.3*scale,-1.25*scale),Color3.fromRGB(25,28,34),Enum.Material.Neon)
+ attach(r,"EyeR",Vector3.new(.28,.3,.16)*scale,Vector3.new(.48*scale,3.3*scale,-1.25*scale),Color3.fromRGB(25,28,34),Enum.Material.Neon)
+ attach(r,"Belt",Vector3.new(3.2,.3,2.2)*scale,Vector3.new(0,-.9*scale,0),Color3.fromRGB(74,57,45),Enum.Material.Fabric)
+ return r
 end
-local function treeProp(pos,scale)
+local function tree(parent,pos,scale)
  scale=scale or 1
- local trunk=ppart("WorldTree",Vector3.new(2.2,7,2.2)*scale,pos+Vector3.new(0,3.5*scale,0),Color3.fromRGB(92,68,51),Enum.Material.Wood)
- local crown=ppart("WorldTreeCrown",Vector3.new(7,7,7)*scale,trunk.Position+Vector3.new(0,5*scale,0),Color3.fromRGB(67,112,73),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
+ local trunk=ppart(parent,"TreeTrunk",Vector3.new(2.2,8,2.2)*scale,pos+Vector3.new(0,4*scale,0),Color3.fromRGB(91,67,47),Enum.Material.Wood)
+ local crown=ppart(parent,"TreeCrown",Vector3.new(7.5,7.5,7.5)*scale,trunk.Position+Vector3.new(0,6*scale,0),Color3.fromRGB(62,120,68),Enum.Material.Grass);crown.Shape=Enum.PartType.Ball
 end
-local function makeWorld()
- local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end
- world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
- for k,v in pairs(Style.Lighting)do Lighting[k]=v end
- ppart("Field",Vector3.new(320,1,320),Vector3.new(0,0,0),Style.Ground,Enum.Material.Grass)
- ppart("VillagePlaza",Vector3.new(78,2,78),Vector3.new(0,1,0),Style.Stone,Enum.Material.Slate)
- ppart("NorthRoad",Vector3.new(18,1.1,130),Vector3.new(0,1.1,-88),Color3.fromRGB(116,104,91),Enum.Material.Cobblestone)
- ppart("EastRoad",Vector3.new(130,1.1,15),Vector3.new(88,1.1,12),Color3.fromRGB(108,99,88),Enum.Material.Cobblestone)
- ppart("WestRoad",Vector3.new(122,1.1,15),Vector3.new(-84,1.1,-8),Color3.fromRGB(108,99,88),Enum.Material.Cobblestone)
- ppart("VillageFountain",Vector3.new(13,2,13),Vector3.new(0,2,0),Color3.fromRGB(91,105,119),Enum.Material.Slate)
- local fountainWater=ppart("VillageFountainWater",Vector3.new(9,.5,9),Vector3.new(0,3.1,0),Color3.fromRGB(92,161,190),Enum.Material.Glass);fountainWater.Transparency=.2
- ppart("QuestBoard",Vector3.new(12,8,1.5),Vector3.new(-27,5,-24),Color3.fromRGB(116,82,57),Enum.Material.WoodPlanks)
- ppart("QuestBoardRoof",Vector3.new(15,1.2,4),Vector3.new(-27,9.2,-24),Color3.fromRGB(76,61,58),Enum.Material.Slate)
- for _,x in ipairs({-52,-26,26,52})do
-  ppart("VillageLampPost",Vector3.new(1.2,9,1.2),Vector3.new(x,5,-28),Color3.fromRGB(67,64,73),Enum.Material.Metal)
-  local lantern=ppart("VillageLantern",Vector3.new(2.6,2.6,2.6),Vector3.new(x,9.5,-28),Color3.fromRGB(255,204,118),Enum.Material.Neon)
-  local light=Instance.new("PointLight");light.Color=lantern.Color;light.Range=20;light.Brightness=1.3;light.Parent=lantern
- end
- for i=1,8 do
-  local a=i/8*math.pi*2;local pos=Vector3.new(math.cos(a)*31,3,math.sin(a)*31)
-  ppart("RunePillar",Vector3.new(3,8,3),pos,Style.Stone,Enum.Material.Slate)
-  local crystal=ppart("RuneCrystal",Vector3.new(2,4,2),pos+Vector3.new(0,6,0),Style.Crystal,Enum.Material.Neon);crystal.Orientation=Vector3.new(0,i*23,45)
- end
- local gate=ppart("Gate",Vector3.new(28,18,4),Vector3.new(0,9,-36),Style.Stone,Enum.Material.Slate);nameplate(gate,"마을 · 4인 파티 거점",Style.Gold)
- local chief=humanoidFigure("VillageChief",Vector3.new(-15,5,6),Color3.fromRGB(142,104,68),Color3.fromRGB(218,174,92),1);nameplate(chief,"이장 · 카일",Style.Gold)
- prompt(chief,"이장","이야기 듣기").Triggered:Connect(function(p)
-  if n(p,"StoryStage",0)==0 then p:SetAttribute("StoryStage",1);unlock(p,"KYLE","폐광 수호자 카일이 합류했다.")
-  else p:SetAttribute("LastAction","카일과 함께 필드 몬스터 5마리를 처치해.")end
- end)
- local sera=humanoidFigure("SeraNPC",Vector3.new(0,5,12),Style.CompanionColors.SERA,Color3.fromRGB(116,171,193),.95);nameplate(sera,"세라 · 추적자",Style.Gold)
- prompt(sera,"세라","동료 영입").Triggered:Connect(function(p)
-  if unlocked(p,"KYLE")and n(p,"Kills",0)>=5 then unlock(p,"SERA","카일과 함께 도적단을 밀어내 세라가 합류했다.");p:SetAttribute("StoryStage",math.max(2,n(p,"StoryStage",0)))
-  else p:SetAttribute("LastAction","세라: 먼저 카일과 합류하고 몬스터 5마리를 쓰러뜨려.")end
- end)
- local iris=humanoidFigure("IrisNPC",Vector3.new(15,5,6),Style.CompanionColors.IRIS,Style.Crystal,.95);nameplate(iris,"이리스 · 룬술사",Style.Gold)
- prompt(iris,"이리스","룬 해방").Triggered:Connect(function(p)
-  if unlocked(p,"SERA")and n(p,"BossesDefeated",0)>=1 then unlock(p,"IRIS","세라의 추적 끝에 보스의 룬을 깨고 이리스가 합류했다.");p:SetAttribute("StoryStage",math.max(3,n(p,"StoryStage",0)))
-  else p:SetAttribute("LastAction","이리스: 세라와 합류한 뒤 지역보스를 쓰러뜨려.")end
- end)
- local noa=humanoidFigure("NoaNPC",Vector3.new(0,5,-13),Color3.fromRGB(83,125,148),Color3.fromRGB(131,211,219),.95);nameplate(noa,"노아 · 영혼소환사",Style.Gold)
- prompt(noa,"노아","영혼 이야기").Triggered:Connect(function(p)
-  if unlocked(p,"IRIS")and n(p,"PartyMemory",0)>=12 then unlock(p,"NOA","완성된 파티의 기억을 본 노아가 합류했다.")
-  else p:SetAttribute("LastAction","노아: 이리스와 합류하고 전투의 기억 12를 모아.")end
- end)
- -- 마을 외곽과 사냥터를 구역처럼 읽히게 하는 배경 디테일
- for i=1,12 do
-  local a=i/12*math.pi*2
-  treeProp(Vector3.new(math.cos(a)*(88+(i%3)*12),1,math.sin(a)*(82+(i%2)*18)),.8+(i%3)*.12)
- end
- for i=1,18 do
-  local a=i/18*math.pi*2
-  local radius=58+(i%4)*15
-  local patch=ppart("FieldGrassPatch",Vector3.new(8,.35,5),Vector3.new(math.cos(a)*radius,.75,math.sin(a)*radius),Color3.fromRGB(74+(i%3)*7,108+(i%4)*6,72),Enum.Material.Grass)
-  patch.Orientation=Vector3.new(0,i*37,0)
- end
- for i=1,6 do
-  local x=-115+i*34
-  ppart("FieldFence",Vector3.new(26,3,1.2),Vector3.new(x,2,72+(i%2)*8),Color3.fromRGB(102,76,55),Enum.Material.WoodPlanks)
- end
- local stream=ppart("FieldStream",Vector3.new(210,.45,12),Vector3.new(18,.7,104),Color3.fromRGB(74,129,157),Enum.Material.Glass);stream.Transparency=.22
- ppart("StoneBridge",Vector3.new(18,2,19),Vector3.new(18,2,104),Color3.fromRGB(111,106,105),Enum.Material.Cobblestone)
- for i=1,5 do
-  local x=-56+i*22
-  local house=ppart("VillageHouse",Vector3.new(15,9,13),Vector3.new(x,5,42+(i%2)*8),Color3.fromRGB(128,94,73),Enum.Material.WoodPlanks)
-  ppart("VillageHouseRoof",Vector3.new(18,2,16),house.Position+Vector3.new(0,5.4,0),Color3.fromRGB(83,68,74),Enum.Material.Slate)
-  ppart("VillageWindow",Vector3.new(3,3,.5),house.Position+Vector3.new(0,1,6.7),Color3.fromRGB(179,217,225),Enum.Material.Neon)
- end
- for i=1,9 do
-  local a=i/9*math.pi*2
-  local pos=Vector3.new(math.cos(a)*126,2,math.sin(a)*118)
-  local ruin=ppart("FieldRuin",Vector3.new(8,math.random(5,11),5),pos,Color3.fromRGB(81,78,88),Enum.Material.Slate)
-  ruin.Orientation=Vector3.new(0,i*31,math.random(-7,7))
- end
- for i=1,7 do
-  local a=i/7*math.pi*2
-  local crystal=ppart("FieldCrystal",Vector3.new(3,9,3),Vector3.new(math.cos(a)*105,5,math.sin(a)*105),Style.Crystal,Enum.Material.Neon)
-  crystal.Orientation=Vector3.new(0,i*23,18)
- end
- ppart("BossArena",Vector3.new(58,1.2,58),Vector3.new(0,1,-128),Color3.fromRGB(67,54,77),Enum.Material.Slate)
- for i=1,8 do local a=i/8*math.pi*2;ppart("BossObelisk",Vector3.new(4,13,4),Vector3.new(math.cos(a)*24,7,-128+math.sin(a)*24),Color3.fromRGB(76,61,91),Enum.Material.Slate)end
- workspace:SetAttribute("WorldArtPass","FANTASY_PARTY_LIVING_WORLD_V4")
+local function rock(parent,pos,scale,color)
+ scale=scale or 1
+ local r=ppart(parent,"Rock",Vector3.new(5,4,5)*scale,pos+Vector3.new(0,2*scale,0),color or Color3.fromRGB(92,91,96),Enum.Material.Rock)
+ r.Orientation=Vector3.new(math.random(-10,10),math.random(0,180),math.random(-10,10))
 end
-
-local function enemyColor(id)
- if id=="HOUND"then return Color3.fromRGB(137,92,73)end
- if id=="GOBLIN"then return Color3.fromRGB(91,132,76)end
- if id=="SLIME"then return Color3.fromRGB(101,91,190)end
- if id=="BANDIT"then return Color3.fromRGB(76,83,104)end
- return Style.Enemy
+local function teleportPlayer(p,pos)
+ local r=root(p);if r then r.AssemblyLinearVelocity=Vector3.zero;r.CFrame=CFrame.new(pos+Vector3.new(0,4,0))end
 end
-local function unit(def,pos,kind)
- local boss=kind=="BOSS";local elite=kind=="ELITE"
- local baseColor=boss and Style.Boss or elite and Color3.fromRGB(125,91,52)or enemyColor(def.Id)
- local p=Instance.new("Part");p.Name=def.Name;p.Anchored=true;p.CanCollide=true
- p.Size=boss and Vector3.new(6,8,4)or elite and Vector3.new(5.2,6.5,3.5)or Vector3.new(3.6,4.5,3);p.Position=pos
- p.Color=baseColor;p.Material=(boss or elite)and Enum.Material.Slate or Enum.Material.SmoothPlastic;p.Parent=world
- if def.Id=="HOUND"then
-  p.Size=Vector3.new(3.8,2.7,6);p.Position=pos
-  attach(p,"HoundHead",Vector3.new(3.1,2.6,3),Vector3.new(0,.55,-3.8),baseColor,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(p,"HoundEyeL",Vector3.new(.4,.4,.25),Vector3.new(-.65,.8,-5.25),Color3.fromRGB(255,183,83),Enum.Material.Neon)
-  attach(p,"HoundEyeR",Vector3.new(.4,.4,.25),Vector3.new(.65,.8,-5.25),Color3.fromRGB(255,183,83),Enum.Material.Neon)
-  for _,x in ipairs({-1.25,1.25})do for _,z in ipairs({-1.7,1.7})do attach(p,"HoundLeg",Vector3.new(.8,2.4,.8),Vector3.new(x,-2,z),Color3.fromRGB(91,67,57))end end
- elseif def.Id=="SLIME"then
-  p.Shape=Enum.PartType.Ball;p.Size=Vector3.new(5.5,4.5,5.5);p.Position=pos
-  attach(p,"SlimeCore",Vector3.new(1.6,1.6,1.6),Vector3.new(0,.2,-2.1),Style.Crystal,Enum.Material.Neon,Enum.PartType.Ball)
-  attach(p,"SlimeEyeL",Vector3.new(.45,.6,.25),Vector3.new(-.75,.65,-2.55),Color3.fromRGB(236,239,255),Enum.Material.Neon)
-  attach(p,"SlimeEyeR",Vector3.new(.45,.6,.25),Vector3.new(.75,.65,-2.55),Color3.fromRGB(236,239,255),Enum.Material.Neon)
- elseif def.Id=="GOBLIN"then
-  attach(p,"GoblinHead",Vector3.new(2.6,2.6,2.6),Vector3.new(0,3.15,0),Color3.fromRGB(111,154,80),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(p,"GoblinEarL",Vector3.new(1.5,.6,.7),Vector3.new(-1.7,3.2,0),Color3.fromRGB(111,154,80))
-  attach(p,"GoblinEarR",Vector3.new(1.5,.6,.7),Vector3.new(1.7,3.2,0),Color3.fromRGB(111,154,80))
-  attach(p,"GoblinBlade",Vector3.new(.45,4,.8),Vector3.new(2.5,0,-.4),Color3.fromRGB(175,181,182),Enum.Material.Metal)
- elseif def.Id=="BANDIT"then
-  attach(p,"BanditHead",Vector3.new(2.5,2.5,2.5),Vector3.new(0,3.2,0),Color3.fromRGB(171,135,107),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(p,"BanditHood",Vector3.new(3.1,1.4,2.8),Vector3.new(0,4,0),Color3.fromRGB(45,48,61),Enum.Material.Fabric)
-  attach(p,"BanditBlade",Vector3.new(.45,4.5,.8),Vector3.new(2.5,-.2,0),Color3.fromRGB(183,187,194),Enum.Material.Metal)
- else
-  attach(p,"StoneHead",Vector3.new(3.8,3.5,3.6),Vector3.new(0,5.2,0),baseColor,Enum.Material.Slate)
- end
- if elite then
-  attach(p,"EliteShoulderL",Vector3.new(3.4,2.4,3),Vector3.new(-3.7,1.5,0),Color3.fromRGB(100,82,64),Enum.Material.Slate)
-  attach(p,"EliteShoulderR",Vector3.new(3.4,2.4,3),Vector3.new(3.7,1.5,0),Color3.fromRGB(100,82,64),Enum.Material.Slate)
-  attach(p,"EliteCore",Vector3.new(2,2,1),Vector3.new(0,1,-2.1),Style.Gold,Enum.Material.Neon)
- end
- if boss then
-  attach(p,"BossHead",Vector3.new(5,4,4),Vector3.new(0,6.2,0),Color3.fromRGB(54,31,69),Enum.Material.Slate)
-  attach(p,"BossHornL",Vector3.new(1,4,1),Vector3.new(-2.1,9,0),Style.Crystal,Enum.Material.Neon)
-  attach(p,"BossHornR",Vector3.new(1,4,1),Vector3.new(2.1,9,0),Style.Crystal,Enum.Material.Neon)
-  attach(p,"BossCore",Vector3.new(2.5,3,1),Vector3.new(0,1,-2.6),Style.Crystal,Enum.Material.Neon)
- end
- if boss or elite then local l=Instance.new("PointLight");l.Color=boss and Style.Crystal or Style.Gold;l.Range=boss and 26 or 16;l.Brightness=boss and 3 or 1.5;l.Parent=p end
- nameplate(p,(elite and"ELITE · "or"")..def.Name,boss and Style.Gold or elite and Style.Gold or Color3.new(1,1,1))
- local e={part=p,hp=def.HP,max=def.HP,boss=boss,elite=elite,gold=def.Gold,xp=def.XP,id=def.Id}
- p:SetAttribute("HP",def.HP);p:SetAttribute("EnemyId",def.Id);p:SetAttribute("Elite",elite);p:SetAttribute("Boss",boss);table.insert(enemies,e);return e
-end
-local function spawnEnemy(kind)
- local a=math.random()*6.28
- if kind=="BOSS"then return unit(C.FinalBoss,Vector3.new(math.cos(a)*76,6,math.sin(a)*76),"BOSS")end
- if kind=="ELITE"then return unit(C.Elite,Vector3.new(math.cos(a)*62,5,math.sin(a)*62),"ELITE")end
- local def=C.EnemyTypes[math.random(1,#C.EnemyTypes)]
- local r=math.random(45,90)
- return unit(def,Vector3.new(math.cos(a)*r,3,math.sin(a)*r),"NORMAL")
-end
-
-local function load(p)
- p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1)
- p:SetAttribute("ClassId","BREAKER");p:SetAttribute("AIStyle","PROTECT");p:SetAttribute("Relic","FURY")
- p:SetAttribute("PartyMemory",0);p:SetAttribute("Kills",0);p:SetAttribute("StoryStage",0);p:SetAttribute("BossesDefeated",0);p:SetAttribute("HiddenCompanionUnlocked",0)
- for _,x in ipairs(C.Companions)do p:SetAttribute("Companion_"..x.Id,false)end
- local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
- if ok and typeof(d)=="table"then
-  for _,k in ipairs(SAVE_KEYS)do local v=d[k];if typeof(v)=="number"or typeof(v)=="string"or typeof(v)=="boolean"then p:SetAttribute(k,v)end end
- end
- p:SetAttribute("LastAction","마을 이장에게 가서 첫 동료를 만나.")
-end
-local function save(p)
- local d={};for _,k in ipairs(SAVE_KEYS)do d[k]=p:GetAttribute(k)end
- pcall(function()store:SetAsync("p:"..p.UserId,d)end)
+local function setStats(p,heal)
+ local level=n(p,"Level",1);local wt=n(p,"WeaponTier",1);local at=n(p,"ArmorTier",1)
+ local maxHP=C.BaseMaxHP+(level-1)*C.LevelHPGain+(C.ArmorBonus[at]or 0)
+ local attack=C.BaseAttack+(level-1)*C.LevelAttackGain+(C.WeaponBonus[wt]or 0)
+ p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack)
+ local h=hum(p);if h then h.MaxHealth=maxHP;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
 end
 local function grantXP(p,amount)
- local xp=n(p,"XP",0)+amount;local lv=n(p,"Level",1);local before=lv
- while xp>=lv*100 do xp-=lv*100;lv+=1 end
- p:SetAttribute("XP",xp);p:SetAttribute("Level",lv)
- if lv>before then p:SetAttribute("LastAction","레벨 "..lv.." 달성!");feedback(p,"LEVEL_UP")end
+ local xp=n(p,"XP",0)+amount;local level=n(p,"Level",1);local leveled=false
+ while xp>=level*100 do xp-=level*100;level+=1;leveled=true end
+ p:SetAttribute("XP",xp);p:SetAttribute("Level",level)
+ if leveled then setStats(p,true);msg(p,"레벨 "..level.." · 최대체력/공격력 +10");feedback(p,"LEVEL_UP")end
 end
-local function nearest(pos,range)
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","QuestPortal","QuestKills","QuestNeed","RoomCode"}
+local function init(p)
+ p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1)
+ p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
+ p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
+ msg(p,"마을 이장에게 퀘스트를 받고 포탈로 이동해.")
+ parties[p]={};clickTimes[p]={};setStats(p,true)
+end
+local function load(p)
+ init(p)
+ local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
+ if ok and typeof(d)=="table"then for _,k in ipairs(SAVE)do if d[k]~=nil then p:SetAttribute(k,d[k])end end end
+ setStats(p,true)
+end
+local function save(p)
+ local d={};for _,k in ipairs(SAVE)do d[k]=p:GetAttribute(k)end
+ pcall(function()store:SetAsync("p:"..p.UserId,d)end)
+end
+local function updatePartyCount(p)
+ local count=0;for _ in pairs(parties[p]or{})do count+=1 end;p:SetAttribute("PartyCount",count)
+end
+local function partyHas(p,id)return parties[p]and parties[p][id]==true end
+
+local function makeVillage()
+ local f=Instance.new("Folder");f.Name="Village";f.Parent=world
+ ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
+ ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
+ for _,z in ipairs({-112,-84,-56,56,84,112})do ppart(f,"MainRoad",Vector3.new(16,1,36),Vector3.new(0,1.15,z),Color3.fromRGB(119,105,88),Enum.Material.Cobblestone)end
+ for i=1,12 do local a=i/12*math.pi*2;tree(f,Vector3.new(math.cos(a)*126,1,math.sin(a)*126),.9+(i%3)*.08)end
+ for i=1,10 do
+  local a=i/10*math.pi*2;local pos=Vector3.new(math.cos(a)*72,6,math.sin(a)*72)
+  local h=ppart(f,"VillageHouse",Vector3.new(20,11,17),pos,Color3.fromRGB(145,108,76),Enum.Material.WoodPlanks)
+  ppart(f,"VillageRoof",Vector3.new(23,2,20),h.Position+Vector3.new(0,6.5,0),Color3.fromRGB(78,68,73),Enum.Material.Slate)
+ end
+ local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
+
+ local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
+ prompt(chief,"마을 이장","퀘스트 받기").Triggered:Connect(function(p)
+  local level=n(p,"Level",1);local id=math.clamp(math.floor((level-1)/3)+1,1,5);local need=5+id
+  p:SetAttribute("QuestPortal",id);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",need)
+  msg(p,string.format("%s 몬스터 %d마리 처치",C.Portals[id].Name,need))
+ end)
+
+ local weapon=humanoidFigure(f,"WeaponMerchant",Vector3.new(22,6,8),Color3.fromRGB(85,92,112),Color3.fromRGB(170,120,65),.95);label(weapon,"무기상인",Color3.fromRGB(255,215,140),28)
+ prompt(weapon,"무기상인","다음 무기 구매").Triggered:Connect(function(p)
+  local tier=n(p,"WeaponTier",1);if tier>=5 then msg(p,"최고급 무기 보유")return end
+  local cost=C.WeaponPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"무기 구매 골드 부족 · "..cost)return end
+  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",tier+1);setStats(p,false);msg(p,"무기 "..(tier+1).."단계 구매")
+ end)
+ local armor=humanoidFigure(f,"ArmorMerchant",Vector3.new(22,6,-10),Color3.fromRGB(92,112,102),Color3.fromRGB(80,91,77),.95);label(armor,"방어구상인",Color3.fromRGB(180,235,190),28)
+ prompt(armor,"방어구상인","다음 방어구 구매").Triggered:Connect(function(p)
+  local tier=n(p,"ArmorTier",1);if tier>=5 then msg(p,"최고급 방어구 보유")return end
+  local cost=C.ArmorPrices[tier+1];if n(p,"Gold",0)<cost then msg(p,"방어구 구매 골드 부족 · "..cost)return end
+  p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("ArmorTier",tier+1);setStats(p,true);msg(p,"방어구 "..(tier+1).."단계 구매")
+ end)
+ local healer=humanoidFigure(f,"VillageHealer",Vector3.new(-18,6,-10),Color3.fromRGB(208,221,235),Color3.fromRGB(116,169,193),.95);label(healer,"치유사",Color3.fromRGB(180,232,255),28)
+ prompt(healer,"치유사","회복").Triggered:Connect(function(p)local h=hum(p);if h then h.Health=h.MaxHealth;msg(p,"체력 완전 회복")end end)
+
+ for i=1,6 do
+  local a=i/6*math.pi*2;local npc=humanoidFigure(f,"Resident"..i,Vector3.new(math.cos(a)*43,6,math.sin(a)*43),Color3.fromRGB(110+i*8,105+i*5,96+i*4),Color3.fromRGB(72,70,68),.82)
+  label(npc,"주민",Color3.fromRGB(225,225,218),22)
+ end
+
+ local portalAngles={-80,-40,0,40,80}
+ for i,z in ipairs(C.Portals)do
+  local x=(i-3)*46
+  local pad=ppart(f,"Portal"..i,Vector3.new(28,2,20),Vector3.new(x,2,-112),z.Color,Enum.Material.Neon)
+  ppart(f,"PortalArchL"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(-11,10,0),z.Color,Enum.Material.Slate)
+  ppart(f,"PortalArchR"..i,Vector3.new(3,18,3),pad.Position+Vector3.new(11,10,0),z.Color,Enum.Material.Slate)
+  label(pad,i.." · "..z.Name,z.Color,48)
+  prompt(pad,z.Name,"포탈 입장").Triggered:Connect(function(p)
+   p:SetAttribute("CurrentZone",z.Id);p:SetAttribute("InCombat",false);lastCombat[p]=0
+   teleportPlayer(p,z.Center+Vector3.new(0,0,170));msg(p,z.Name.." 입장")
+   if n(p,"PartyCount",0)>0 then p:SetAttribute("PartyHuntActive",true);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0)end
+  end)
+ end
+end
+
+local function themedProp(f,z,i)
+ local a=i/24*math.pi*2;local r=115+(i%5)*17;local pos=z.Center+Vector3.new(math.cos(a)*r,0,math.sin(a)*r)
+ if z.Theme=="MEADOW"then tree(f,pos,.8+(i%3)*.12)
+ elseif z.Theme=="CANYON"then rock(f,pos,1+(i%3)*.2,Color3.fromRGB(147,86,63))
+ elseif z.Theme=="RUINS"then
+  local p=ppart(f,"RuinPillar",Vector3.new(5,8+(i%4)*4,5),pos+Vector3.new(0,6,0),Color3.fromRGB(86,82,99),Enum.Material.Slate)
+  if i%4==0 then local c=ppart(f,"RuneCrystal",Vector3.new(2.5,7,2.5),p.Position+Vector3.new(0,8,0),z.Color,Enum.Material.Neon);c.Orientation=Vector3.new(0,i*17,20)end
+ elseif z.Theme=="SNOW"then
+  tree(f,pos,.72+(i%2)*.1);local s=ppart(f,"SnowPatch",Vector3.new(12,.5,9),pos+Vector3.new(4,.7,3),Color3.fromRGB(221,235,241),Enum.Material.Snow)
+ elseif z.Theme=="ABYSS"then
+  local ob=ppart(f,"AbyssObelisk",Vector3.new(5,13+(i%3)*4,5),pos+Vector3.new(0,7,0),Color3.fromRGB(58,48,72),Enum.Material.Slate)
+  local glow=ppart(f,"AbyssRune",Vector3.new(2,4,.6),ob.Position+Vector3.new(0,1,-2.8),z.Color,Enum.Material.Neon);glow.CanCollide=false
+ end
+end
+local function makeZone(z)
+ local f=Instance.new("Folder");f.Name="Zone"..z.Id;f.Parent=world
+ local groundColor=z.Theme=="MEADOW"and Color3.fromRGB(75,126,67)or z.Theme=="CANYON"and Color3.fromRGB(136,83,60)or z.Theme=="RUINS"and Color3.fromRGB(74,70,86)or z.Theme=="SNOW"and Color3.fromRGB(188,211,220)or Color3.fromRGB(49,43,62)
+ local material=z.Theme=="MEADOW"and Enum.Material.Grass or z.Theme=="CANYON"and Enum.Material.Sand or z.Theme=="SNOW"and Enum.Material.Snow or Enum.Material.Slate
+ ppart(f,"ZoneGround",Vector3.new(440,2,440),z.Center+Vector3.new(0,0,0),groundColor,material)
+ ppart(f,"ZoneInnerRoad",Vector3.new(22,1,330),z.Center+Vector3.new(0,1,0),Color3.fromRGB(105,100,94),Enum.Material.Cobblestone)
+ for i=1,28 do themedProp(f,z,i)end
+ for i=1,8 do
+  local a=i/8*math.pi*2;local lamp=ppart(f,"Guide"..i,Vector3.new(1.2,8,1.2),z.Center+Vector3.new(math.cos(a)*86,5,math.sin(a)*86),Color3.fromRGB(75,73,76),Enum.Material.Metal)
+  local glow=ppart(f,"GuideGlow"..i,Vector3.new(2.2,2.2,2.2),lamp.Position+Vector3.new(0,5,0),z.Color,Enum.Material.Neon);glow.CanCollide=false
+ end
+ local ret=ppart(f,"ReturnPortal",Vector3.new(26,2,18),z.Center+Vector3.new(0,2,190),Color3.fromRGB(112,180,205),Enum.Material.Neon);label(ret,"마을 귀환",Color3.fromRGB(180,235,255),36)
+ prompt(ret,"마을","귀환").Triggered:Connect(function(p)
+  local combat=os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds
+  if combat or p:GetAttribute("InCombat")==true then msg(p,"전투 중에는 마을로 돌아갈 수 없어")return end
+  p:SetAttribute("CurrentZone",0);p:SetAttribute("PartyHuntActive",false);teleportPlayer(p,C.VillageCenter);local h=hum(p);if h then h.Health=h.MaxHealth end;msg(p,"마을 귀환 · 체력 회복")
+ end)
+ if z.Boss then
+  local arena=ppart(f,"BossArena",Vector3.new(96,1,96),z.Center+Vector3.new(0,1,-86),Color3.fromRGB(73,60,82),Enum.Material.Slate)
+  for i=1,8 do local a=i/8*math.pi*2;ppart(f,"BossPillar",Vector3.new(4,15,4),arena.Position+Vector3.new(math.cos(a)*39,8,math.sin(a)*39),z.Color,Enum.Material.Slate)end
+ end
+end
+
+local function enemyModel(parent,z,pos,boss)
+ local rootPart=ppart(parent,boss and(z.Boss.Name)or z.Enemy,boss and Vector3.new(7,8,5)or Vector3.new(4.2,4.8,3.2),pos,boss and Color3.fromRGB(66,44,82)or z.Color,boss and Enum.Material.Slate or Enum.Material.SmoothPlastic)
+ local scale=boss and 1.35 or 1
+ attach(rootPart,"EnemyHead",Vector3.new(2.8,2.5,2.8)*scale,Vector3.new(0,3.5*scale,-.25),boss and Color3.fromRGB(100,72,120)or z.Color,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ attach(rootPart,"EnemyEyeL",Vector3.new(.35,.4,.2)*scale,Vector3.new(-.55,3.65*scale,-1.62*scale),Color3.fromRGB(255,208,96),Enum.Material.Neon)
+ attach(rootPart,"EnemyEyeR",Vector3.new(.35,.4,.2)*scale,Vector3.new(.55,3.65*scale,-1.62*scale),Color3.fromRGB(255,208,96),Enum.Material.Neon)
+ attach(rootPart,"EnemyArmL",Vector3.new(.9,3.5,.9)*scale,Vector3.new(-2.35*scale,0,0),rootPart.Color)
+ attach(rootPart,"EnemyArmR",Vector3.new(.9,3.5,.9)*scale,Vector3.new(2.35*scale,0,0),rootPart.Color)
+ attach(rootPart,"EnemyLegL",Vector3.new(1,3,1)*scale,Vector3.new(-.8*scale,-3.6*scale,0),Color3.fromRGB(50,50,55))
+ attach(rootPart,"EnemyLegR",Vector3.new(1,3,1)*scale,Vector3.new(.8*scale,-3.6*scale,0),Color3.fromRGB(50,50,55))
+ if boss then
+  attach(rootPart,"BossHornL",Vector3.new(.8,4,.8),Vector3.new(-1.7,7,0),z.Color,Enum.Material.Neon)
+  attach(rootPart,"BossHornR",Vector3.new(.8,4,.8),Vector3.new(1.7,7,0),z.Color,Enum.Material.Neon)
+ end
+ label(rootPart,boss and("BOSS · "..z.Boss.Name)or z.Enemy,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
+ return rootPart
+end
+local function spawnEnemy(z,boss,index)
+ local parent=world:FindFirstChild("Zone"..z.Id);if not parent then return end
+ local a=(index or math.random(1,100))/10*math.pi*2
+ local radius=boss and 86 or 55+((index or math.random(1,8))%5)*24
+ local spawn=z.Center+Vector3.new(math.cos(a)*radius,boss and 6 or 4,math.sin(a)*radius)
+ if boss then spawn=z.Center+Vector3.new(0,6,-86)end
+ local part=enemyModel(parent,z,spawn,boss)
+ local hp=boss and z.Boss.HP or z.EnemyHP
+ local e={part=part,zone=z.Id,hp=hp,max=hp,damage=boss and z.Boss.Damage or z.EnemyDamage,gold=boss and z.Boss.Gold or z.RewardGold,xp=boss and z.Boss.XP or z.RewardXP,spawn=spawn,boss=boss,lastAttack=0,target=nil}
+ part:SetAttribute("HP",hp);part:SetAttribute("MaxHP",hp);part:SetAttribute("Zone",z.Id);table.insert(enemies,e);return e
+end
+local function nearestEnemy(pos,zone,range)
  local best,bd=nil,range
- for _,e in ipairs(enemies)do if e.hp>0 and e.part.Parent then local d=(e.part.Position-pos).Magnitude;if d<=bd then bd=d;best=e end end end
+ for _,e in ipairs(enemies)do if e.hp>0 and e.zone==zone and e.part.Parent then local d=(e.part.Position-pos).Magnitude;if d<bd then best=e;bd=d end end end
  return best
 end
-local function afterKill(p,e)
- p:SetAttribute("Gold",n(p,"Gold",0)+(e.gold or(e.boss and 100 or e.elite and 35 or 10)))
- grantXP(p,e.xp or(e.boss and 140 or e.elite and 55 or 18))
- p:SetAttribute("PartyMemory",n(p,"PartyMemory",0)+(e.boss and 4 or e.elite and 2 or 1))
- if e.boss then
-  p:SetAttribute("BossEngaged",false);p:SetAttribute("BossesDefeated",n(p,"BossesDefeated",0)+1);unlock(p,"WARDEN","심연의 간수의 의지를 꺾어 보스 동료 루트가 열렸다.");feedback(p,"VICTORY")
- else p:SetAttribute("Kills",n(p,"Kills",0)+1);feedback(p,e.elite and"ELITE_KILL"or"KILL")end
- if n(p,"PartyMemory",0)>=20 and p:GetAttribute("Relic")=="CONTROL"then unlock(p,"NAMELESS","숨겨진 조건을 만족해 무명의 동료가 나타났다.");p:SetAttribute("HiddenCompanionUnlocked",1)end
-end
-local function hit(p,amount,range,kind)
- local now=os.clock();if now-(lastHit[p]or 0)<.18 then return end;lastHit[p]=now
- local r=root(p);if not r then return end;local e=nearest(r.Position,range);if not e then p:SetAttribute("LastAction","사거리 안에 적이 없어.");return end
- local firstBoss=e.boss and p:GetAttribute("BossEngaged")~=true
- p:SetAttribute("InCombat",true);p:SetAttribute("CombatStamp",now);p:SetAttribute("BossEngaged",e.boss==true)
- if firstBoss then p:SetAttribute("LastAction","심연의 간수 등장!");feedback(p,"BOSS_APPEAR")else feedback(p,kind or"ATTACK")end
- local original=e.part.Color;e.part.Color=Color3.fromRGB(245,245,255)
- task.delay(.08,function()if e.part and e.part.Parent then e.part.Color=original end end)
- if kind=="SKILL"then
-  local pulse=Instance.new("PointLight");pulse.Color=Style.Crystal;pulse.Range=18;pulse.Brightness=3;pulse.Parent=e.part
-  task.delay(.18,function()if pulse.Parent then pulse:Destroy()end end)
+
+local function completeQuestIfNeeded(p,zone)
+ if n(p,"QuestPortal",0)~=zone then return end
+ local kills=n(p,"QuestKills",0)+1;p:SetAttribute("QuestKills",kills)
+ local need=n(p,"QuestNeed",0)
+ if need>0 and kills>=need then
+  local rewardGold=C.QuestBaseGold+(zone-1)*25;local rewardXP=C.QuestBaseXP+(zone-1)*30
+  p:SetAttribute("Gold",n(p,"Gold",0)+rewardGold);grantXP(p,rewardXP);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestNeed",0)
+  msg(p,string.format("퀘스트 완료 · 골드 %d / 경험치 %d",rewardGold,rewardXP));feedback(p,"QUEST")
  end
- e.hp-=amount;e.part:SetAttribute("HP",math.max(0,e.hp))
- local stamp=now
- task.delay(4,function()if p.Parent and p:GetAttribute("CombatStamp")==stamp and p:GetAttribute("BossEngaged")~=true then p:SetAttribute("InCombat",false)end end)
- if e.hp<=0 then if e.part.Parent then e.part:Destroy()end;afterKill(p,e);p:SetAttribute("LastAction",e.boss and"최종 보스 격파!"or e.elite and"엘리트 격파!"or(e.part.Name.." 처치"))end
+end
+local function partyKill(p,contribution)
+ if p:GetAttribute("PartyHuntActive")~=true then return end
+ local kills=n(p,"PartyKills",0)+1;p:SetAttribute("PartyKills",kills);p:SetAttribute("Contribution",n(p,"Contribution",0)+contribution)
+ if kills>=C.PartyHuntTarget then
+  local c=n(p,"Contribution",0);local rewardGold=80+c*5;local rewardXP=80+c*6
+  p:SetAttribute("Gold",n(p,"Gold",0)+rewardGold);grantXP(p,rewardXP);p:SetAttribute("PartyHuntActive",false)
+  msg(p,string.format("파티 사냥 완료 · 기여도 %d · 골드 %d / 경험치 %d",c,rewardGold,rewardXP));feedback(p,"PARTY_COMPLETE")
+ end
+end
+local function killEnemy(p,e,contribution)
+ if e.hp>0 then return end
+ local z=portalDef(e.zone);if e.part.Parent then e.part:Destroy()end
+ p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2)
+ msg(p,(e.boss and"보스 격파 · "or"처치 · ")..(e.boss and z.Boss.Name or z.Enemy));feedback(p,e.boss and"BOSS_KILL"or"KILL")
+ task.delay(e.boss and 18 or 8,function()if world and world.Parent then spawnEnemy(z,e.boss,math.random(1,80))end end)
+end
+local function playerAttack(p,skill)
+ local zone=n(p,"CurrentZone",0);if zone==0 then msg(p,"포탈을 타고 사냥터로 이동해")return end
+ local r=root(p);if not r then return end;local range=skill and 25 or 15;local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어")return end
+ local damage=n(p,"AttackPower",10)*(skill and 2.15 or 1);e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));lastCombat[p]=os.clock();p:SetAttribute("InCombat",true);feedback(p,skill and"SKILL"or"ATTACK")
+ if e.hp<=0 then killEnemy(p,e,skill and 3 or 2)end
+ local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
 end
 
-local function cycle(p,key,list)
- local cur=p:GetAttribute(key);local idx=1
- for i,v in ipairs(list)do local id=typeof(v)=="table"and v.Id or v;if id==cur then idx=i end end
- local nextv=list[idx%#list+1];p:SetAttribute(key,typeof(nextv)=="table"and nextv.Id or nextv)
+local function makeAI()
+ local f=Instance.new("Folder");f.Name="AIUsers";f.Parent=world
+ local colors={NONE=Color3.fromRGB(128,128,133),HEALER=Color3.fromRGB(191,222,234),WARRIOR=Color3.fromRGB(164,91,67),ARCHER=Color3.fromRGB(80,145,88)}
+ for i,def in ipairs(C.AIUsers)do
+  local angle=i/#C.AIUsers*math.pi*2;local part=humanoidFigure(f,"AI_"..def.Name,Vector3.new(math.cos(angle)*58,6,math.sin(angle)*58),colors[def.Class],Color3.fromRGB(62,58,55),.82)
+  label(part,def.Name.." · "..(def.Class=="NONE"and"무직"or def.Class=="HEALER"and"힐러"or def.Class=="WARRIOR"and"전사"or"궁수"),Color3.fromRGB(240,240,234),26)
+  local cd=Instance.new("ClickDetector");cd.MaxActivationDistance=18;cd.Parent=part
+  local ai={id=i,def=def,part=part,zone=0,gold=70,weaponTier=1,hp=100,lastAttack=0}
+  table.insert(aiUsers,ai)
+  cd.MouseClick:Connect(function(p)
+   clickTimes[p]=clickTimes[p]or{};local now=os.clock();local last=clickTimes[p][i]or 0;clickTimes[p][i]=now
+   if now-last>.55 then msg(p,def.Name.." · 한 번 더 눌러 파티 초대/제외")return end
+   parties[p]=parties[p]or{}
+   if parties[p][i]then parties[p][i]=nil;msg(p,def.Name.." 파티에서 제외")
+   else
+    local count=0;for _ in pairs(parties[p])do count+=1 end
+    if count>=C.PartySlots-1 then msg(p,"AI 파티 슬롯이 가득 찼어")return end
+    parties[p][i]=true;msg(p,def.Name.." 파티 참가")
+   end
+   updatePartyCount(p)
+  end)
+ end
 end
-local function broadcastMultiplayerSync(actor)
- local participants=Players:GetPlayers()
- local sharedObjective=0
- for _,participant in ipairs(participants)do sharedObjective+=(participant:GetAttribute("PartyMemory")or 0)end
- for _,participant in ipairs(participants)do participant:SetAttribute("SharedObjective",sharedObjective)end
- remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor.UserId,ParticipantCount=#participants,SharedObjective=sharedObjective})
+
+local function buildWorld()
+ local old=workspace:FindFirstChild("DaechungRPGWorld");if old then old:Destroy()end
+ world=Instance.new("Folder");world.Name="DaechungRPGWorld";world.Parent=workspace
+ Lighting.Brightness=2.2;Lighting.ClockTime=13.5;Lighting.FogEnd=1400;Lighting.Ambient=Color3.fromRGB(132,136,145);Lighting.OutdoorAmbient=Color3.fromRGB(145,150,160)
+ makeVillage();for _,z in ipairs(C.Portals)do makeZone(z)end;makeAI()
+ for _,z in ipairs(C.Portals)do for i=1,10 do spawnEnemy(z,false,i)end;if z.Boss then spawnEnemy(z,true,1)end end
+ workspace:SetAttribute("WorldArtPass","RPG_FIVE_PORTAL_WORLD_V1")
 end
+
 remote.OnServerEvent:Connect(function(p,a)
- if typeof(a)~="string"or allowedActions[a]~=true then return end
- local now=os.clock();if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end
- lastRequest[p]=now
- if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3+n(p,"Level",1),15,"ATTACK")
- elseif a==C.Actions.SKILL then local x=class(p);local bonus=p:GetAttribute("Relic")=="FURY"and 10 or 0;hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4+bonus,26,"SKILL")
- elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*48+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
- elseif a==C.Actions.NEXT_CLASS then cycle(p,"ClassId",C.Classes)
- elseif a==C.Actions.NEXT_AI then cycle(p,"AIStyle",C.AIStyles)
- elseif a==C.Actions.NEXT_RELIC then cycle(p,"Relic",C.Relics)
- elseif a==C.Actions.UPGRADE_WEAPON then local cost=40+n(p,"WeaponTier",1)*30;if n(p,"Gold",0)>=cost then p:SetAttribute("Gold",n(p,"Gold",0)-cost);p:SetAttribute("WeaponTier",n(p,"WeaponTier",1)+1);p:SetAttribute("LastAction","무기 강화 완료")else p:SetAttribute("LastAction","강화 골드 부족")end end
- broadcastMultiplayerSync(p)
-end)
-
-makeWorld();for i=1,10 do spawnEnemy("NORMAL")end;spawnEnemy("ELITE");spawnEnemy("BOSS")
-
-local function unlockedList(p)
- local list={}
- for _,def in ipairs(C.Companions)do if unlocked(p,def.Id)then table.insert(list,def)end end
- return list
-end
-local function rebuildCompanions()
- for _,x in ipairs(companionParts)do if x.part then x.part:Destroy()elseif x.Destroy then x:Destroy()end end;companionParts={}
- local humans=Players:GetPlayers();if #humans==0 then return end
- local leader=humans[1];local needed=math.max(0,C.PartySlots-#humans);local choices=unlockedList(leader)
- for i=1,math.min(needed,#choices)do
-  local def=choices[i];local col=Style.CompanionColors[def.Id]or Style.Gold
-  local p=humanoidFigure("AI동료_"..def.Name,Vector3.new(0,5,0),col,Style.Gold,.78);p.CanCollide=false;nameplate(p,def.Name.." · "..def.Class,Style.Gold)
-  table.insert(companionParts,{part=p,def=def})
+ if typeof(a)~="string"then return end
+ local now=os.clock();if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
+ if a==C.Actions.ATTACK then playerAttack(p,false)
+ elseif a==C.Actions.SKILL then playerAttack(p,true)
+ elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
+ elseif a==C.Actions.RETURN_VILLAGE then
+  if os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds or p:GetAttribute("InCombat")==true then msg(p,"전투 중에는 마을 귀환 불가")return end
+  p:SetAttribute("CurrentZone",0);p:SetAttribute("PartyHuntActive",false);teleportPlayer(p,C.VillageCenter);setStats(p,true);msg(p,"마을 귀환 · 체력 완전 회복")
+ elseif a==C.Actions.NEXT_ROOM_CODE then local code=n(p,"RoomCode",1)%10+1;p:SetAttribute("RoomCode",code);msg(p,"멀티 코드 "..code)
  end
- for _,h in ipairs(humans)do h:SetAttribute("HumanPartyMembers",#humans);h:SetAttribute("AIPartyMembers",#companionParts);h:SetAttribute("PartySize",math.min(C.PartySlots,#humans+#companionParts))end
-end
+end)
 
 Players.PlayerAdded:Connect(function(p)
- load(p);p.CharacterAdded:Connect(function()task.delay(.4,rebuildCompanions)end)
- for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end
- task.defer(rebuildCompanions)
-end)
-for _,p in ipairs(Players:GetPlayers())do load(p);for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end end
-qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
- if C.QACameraEnabled~=true then return end
- if typeof(label)~="string"or #label<1 or #label>48 then return end
- local raw=tostring(value or"")
- if #raw<1 or #raw>160 then return end
- local isStatus=label=="STATUS"
- if not isStatus and not raw:match("^%d+$")then return end
- local now=os.clock();if now-(qaCaptureLast[p]or 0)<.18 then return end;qaCaptureLast[p]=now
- local record={gameId=C.GameId,label=label,userId=p.UserId,capturedAt=os.time()}
- if isStatus then record.status=raw;record.kind="STATUS"else record.assetId=raw;record.kind="CAPTURE"end
- local ok=pcall(function()
-  qaCaptureStore:UpdateAsync("latest",function(old)
-   local data=typeof(old)=="table"and old or{captures={}}
-   data.captures=typeof(data.captures)=="table"and data.captures or{}
-   table.insert(data.captures,record)
-   while #data.captures>30 do table.remove(data.captures,1)end
-   data.updatedAt=os.time();data.gameId=C.GameId
-   return data
-  end)
+ load(p)
+ p.CharacterAdded:Connect(function()
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);teleportPlayer(p,C.VillageCenter)
  end)
- if isStatus then p:SetAttribute("QALastCaptureStatus",raw)else p:SetAttribute("QALastCaptureAssetId",raw);p:SetAttribute("QALastCaptureLabel",label)end
- p:SetAttribute("QALastCaptureStored",ok)
+ if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter)end)end
 end)
-
-Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;lastRequest[p]=nil;task.defer(rebuildCompanions);qaCaptureLast[p]=nil end)
+for _,p in ipairs(Players:GetPlayers())do load(p)end
+Players.PlayerRemoving:Connect(function(p)save(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
+qaCaptureRemote.OnServerEvent:Connect(function(p,labelName,value)
+ if C.QACameraEnabled~=true then return end;if typeof(labelName)~="string"then return end
+ local raw=tostring(value or"");if #raw<1 or #raw>160 then return end;local isStatus=labelName=="STATUS";if not isStatus and not raw:match("^%d+$")then return end
+ local now=os.clock();if now-(qaCaptureLast[p]or 0)<.18 then return end;qaCaptureLast[p]=now
+ local rec={gameId=C.GameId,label=labelName,userId=p.UserId,capturedAt=os.time(),kind=isStatus and"STATUS"or"CAPTURE"}
+ if isStatus then rec.status=raw else rec.assetId=raw end
+ pcall(function()qaCaptureStore:UpdateAsync("latest",function(old)local d=typeof(old)=="table"and old or{captures={}};d.captures=typeof(d.captures)=="table"and d.captures or{};table.insert(d.captures,rec);while #d.captures>30 do table.remove(d.captures,1)end;d.updatedAt=os.time();d.gameId=C.GameId;return d end)end)
+end)
+
+buildWorld()
+
 RunService.Heartbeat:Connect(function(dt)
- local humans=Players:GetPlayers();if #humans==0 then return end;local leader=humans[1];local lr=root(leader);if not lr then return end
- local style=leader:GetAttribute("AIStyle")or"PROTECT";local relic=leader:GetAttribute("Relic")or"FURY"
- for i,entry in ipairs(companionParts)do
-  local p=entry.part
-  if p.Parent then
-   local distance=style=="PROTECT"and 4 or 7;local target=lr.Position+Vector3.new((i-2)*distance,0,6)
-   local d=Vector3.new(target.X-p.Position.X,0,target.Z-p.Position.Z);if d.Magnitude>.5 then p.Position+=d.Unit*math.min(d.Magnitude,(style=="AGGRESSIVE"and 17 or 14)*dt)end
-   local range=style=="CONTROL"and 18 or 13;local e=nearest(p.Position,range)
-   if e then
-    local damage=(relic=="FURY"and 9 or 6)*dt;e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp))
-    if e.hp<=0 and e.part.Parent then e.part:Destroy();afterKill(leader,e)end
+ local now=os.clock()
+ -- 몬스터: 같은 지역 플레이어만 추적, 일정 거리 밖이면 원위치로 돌아간다.
+ for _,e in ipairs(enemies)do
+  if e.hp>0 and e.part.Parent then
+   local z=portalDef(e.zone);local target,bd=nil,z.Aggro
+   for _,p in ipairs(Players:GetPlayers())do
+    if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
+   end
+   if target then
+    local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
+    if d and d.Magnitude>4 then e.part.CFrame=e.part.CFrame+ d.Unit*math.min(d.Magnitude,(e.boss and 9 or 7)*dt)end
+    if tr and(tr.Position-e.part.Position).Magnitude<=5.5 and now-e.lastAttack>1.15 then
+     e.lastAttack=now;local h=hum(target);if h then h:TakeDamage(e.damage)end;lastCombat[target]=now;target:SetAttribute("InCombat",true)
+    end
+   else
+    local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
+    if back.Magnitude>2 then e.part.CFrame=e.part.CFrame+back.Unit*math.min(back.Magnitude,9*dt)end
+   end
+   if (e.part.Position-e.spawn).Magnitude>z.Leash then e.part.CFrame=CFrame.new(e.spawn)end
+  end
+ end
+
+ -- AI 유저 10명: 파티 AI는 플레이어를 따라가고, 나머지는 사냥터를 순환한다.
+ for _,ai in ipairs(aiUsers)do
+  if ai.part.Parent then
+   local leader=nil
+   for _,p in ipairs(Players:GetPlayers())do if partyHas(p,ai.id)then leader=p;break end end
+   if leader then
+    local zone=n(leader,"CurrentZone",0);ai.zone=zone
+    local lr=root(leader);if lr then
+     local desired=lr.Position+Vector3.new((ai.id%3-1)*5,0,7+(ai.id%2)*3);local d=Vector3.new(desired.X-ai.part.Position.X,0,desired.Z-ai.part.Position.Z)
+     if d.Magnitude>2 then ai.part.CFrame=ai.part.CFrame+d.Unit*math.min(d.Magnitude,13*dt)end
+    end
+    if ai.def.Class=="HEALER"then
+     local h=hum(leader);if h and h.Health<h.MaxHealth and now-ai.lastAttack>1.3 then ai.lastAttack=now;h.Health=math.min(h.MaxHealth,h.Health+10)end
+    elseif zone>0 then
+     local range=ai.def.Class=="ARCHER"and 24 or 11;local e=nearestEnemy(ai.part.Position,zone,range)
+     if e and now-ai.lastAttack>(ai.def.Class=="WARRIOR"and .7 or 1.0)then
+      ai.lastAttack=now;local dmg=ai.def.Class=="WARRIOR"and 18 or ai.def.Class=="ARCHER"and 15 or 8;e.hp-=dmg;e.part:SetAttribute("HP",math.max(0,e.hp))
+      if e.hp<=0 then killEnemy(leader,e,1)end
+     end
+    end
+   else
+    if ai.zone==0 and math.random()<.002 then ai.zone=math.random(1,5);local z=portalDef(ai.zone);ai.part.CFrame=CFrame.new(z.Center+Vector3.new(math.random(-120,120),5,math.random(-120,120)))end
+    if ai.zone>0 then
+     local e=nearestEnemy(ai.part.Position,ai.zone,20)
+     if e and ai.def.Class~="HEALER" and now-ai.lastAttack>1.1 then ai.lastAttack=now;e.hp-=8+ai.weaponTier*3;e.part:SetAttribute("HP",math.max(0,e.hp));if e.hp<=0 then e.part:Destroy()end end
+     ai.gold+=dt*.3;if ai.weaponTier<5 and ai.gold>=C.WeaponPrices[ai.weaponTier+1]then ai.gold-=C.WeaponPrices[ai.weaponTier+1];ai.weaponTier+=1 end
+     if math.random()<.001 then ai.zone=0;ai.part.CFrame=CFrame.new(math.random(-60,60),6,math.random(-60,60))end
+    end
    end
   end
  end
+
+ for _,p in ipairs(Players:GetPlayers())do
+  local zone=n(p,"CurrentZone",0)
+  if zone==0 then local h=hum(p);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+25*dt)end end
+  if p:GetAttribute("InCombat")==true and now-(lastCombat[p]or 0)>=C.CombatLockSeconds then p:SetAttribute("InCombat",false)end
+ end
  for i=#enemies,1,-1 do if enemies[i].hp<=0 or not enemies[i].part.Parent then table.remove(enemies,i)end end
- if #enemies<7 then spawnEnemy("NORMAL")end
- local eliteAlive=false
- for _,enemy in ipairs(enemies)do if enemy.elite and enemy.hp>0 and enemy.part.Parent then eliteAlive=true;break end end
- if not eliteAlive then spawnEnemy("ELITE")end
 end)
