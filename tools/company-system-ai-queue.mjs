@@ -97,7 +97,7 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
     signature,
     commonBottleneck:Boolean(signature&&(signatureCohort.length>0||explicitCohort>1||task.relatedTaskIds?.length>1||task.blockedTaskIds?.length>1)),
     blockedTaskCount,
-    blockedTaskIds,
+    blockedTaskIds:blockedIds,
     recurrenceCount,
     dependencyCentrality,
     ageHours:Number(ageHours.toFixed(2)),
