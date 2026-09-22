@@ -97,3 +97,13 @@ test('심야 술래잡기는 첫 라운드 전에도 학교 맵을 프리로드�
   assert.match(client,/workspace:GetAttribute\("MapReady"\)~=true/);
   assert.match(client,/workspace:FindFirstChild\("MidnightArena"\)/);
 });
+
+test('1인 플레이는 로비부터 맵 안에서 시작하고 역할 선택 시 즉시 라운드 시작을 요청한다',()=>{
+  assert.match(server,/if #Players:GetPlayers\(\)==1 then/);
+  assert.match(server,/teleport\(p,survivorSpawns\[1\]\)/);
+  assert.match(server,/SOLO_MONSTER.*soloStartRequested=true/);
+  assert.match(server,/SOLO_SURVIVOR.*soloStartRequested=true/);
+  assert.match(server,/if #Players:GetPlayers\(\)==1 and soloStartRequested then break end/);
+  assert.match(config,/SoloPlayable=true/);
+  assert.match(config,/TargetPopulation=6/);
+});
