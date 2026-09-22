@@ -22,7 +22,7 @@ export const SYSTEM_AI_FAILURE_CLASSES=Object.freeze([
 
 function textOf(task={},result={},qaReview={}){
   return [
-    task.failureStage,task.failureSignature,task.blocker,task.lastOutcome,task.goal,
+    task.failureStage,task.failureSignature,task.failureClass,task.blocker,task.lastOutcome,task.goal,
     result.failureStage,result.failureSignature,result.failureClass,result.blocker,result.outcome,
     qaReview.reason,
     ...(task.evidence||[]),...(result.evidence||[])
@@ -37,7 +37,7 @@ function explicitClass(result={}){
 }
 
 export function classifySystemAiFailure({task={},result={},qaReview={}}={}){
-  const explicit=explicitClass(result);
+  const explicit=explicitClass(result)||explicitClass(task);
   const text=textOf(task,result,qaReview);
   const security=upper(result?.security?.verdict);
   let failureClass=explicit;
