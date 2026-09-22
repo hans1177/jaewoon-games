@@ -51,7 +51,7 @@ function webTickets(item={},stamp=''){
   return sigs.map(sig=>({
     id:'bug-'+hash([gameId,'WEB',stage,sig]),gameId,surface:'WEB',phase:'DEVELOPMENT_IN_PROGRESS',
     severity:severity(sig),category:category(sig),signature:sig,reproduction:'RERUN_WEB_GAMEPLAY_VALIDATION_AND_TRIGGER_THE_SAME_REAL_PLAYER_PATH',
-    responsibleFiles:responsibleFiles(item,'WEB'),evidence:uniq([...(item.routingBlockers||[]),\`web-current-step:\${stage}\`,\`web-last-attempt:\${clean(item.webValidationLastAttemptAt)}\`]),
+    responsibleFiles:responsibleFiles(item,'WEB'),evidence:uniq([...(item.routingBlockers||[]),`web-current-step:${stage}`,`web-last-attempt:${clean(item.webValidationLastAttemptAt)}`]),
     exactFailedStage:stage,route:'FOCUSED_REPAIR_AND_RECOVERY',status:'OPEN',createdAt:stamp,updatedAt:stamp
   }));
 }
@@ -126,7 +126,7 @@ export function ingestTesterDebug({developmentQueue={},ticketQueue={},recoveryQu
       id:'recovery-ticket-'+t.id,priority:['CRITICAL','HIGH'].includes(t.severity)?'critical':'high',
       sourceQueue:'tester-debug',sourceTaskId:t.id,gameId:t.gameId,responsibleFiles:t.responsibleFiles,
       failureStage:t.exactFailedStage,failureSignature:t.signature,blastRadius:'single-ticket',
-      evidence:uniq([...(t.evidence||[]),\`tester-debug-ticket:\${t.id}\`,\`tester-debug-category:\${t.category}\`,\`tester-debug-severity:\${t.severity}\`]),
+      evidence:uniq([...(t.evidence||[]),`tester-debug-ticket:${t.id}`,`tester-debug-category:${t.category}`,`tester-debug-severity:${t.severity}`]),
       recoveryStrategy:'REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE',
       verificationPlan:['RERUN_EXACT_FAILED_STAGE','INDEPENDENT_QA_WHEN_APPLICABLE','REGRESSION_WHEN_APPLICABLE','CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING'],
       recoveryOwner:t.responsibleFiles.length?'SYSTEM_AI':'VIBE2_VIBE3'
