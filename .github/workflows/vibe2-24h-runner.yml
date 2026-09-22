@@ -131,10 +131,6 @@ jobs:
       game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
       recovery_fast_queued: ${{ steps.queue_state.outputs.recovery_fast_queued }}
-    concurrency:
-      group: vibe2-control-state-vibe2-unreal-core
-      cancel-in-progress: false
-      queue: max
     steps:
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
@@ -170,8 +166,8 @@ jobs:
           git config user.name 'jaewoon-vibe2-planner'
           git config user.email 'vibe2-planner@users.noreply.github.com'
 
-          for attempt in 1 2 3; do
-            echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
+          for attempt in 1 2 3 4 5; do
+            echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/5"
             git fetch origin main vibe2-unreal-core company-runtime --quiet
             git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --quiet || true
             git reset --hard origin/vibe2-unreal-core
