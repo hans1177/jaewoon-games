@@ -432,7 +432,7 @@ local function makeArena(map)
  end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_INDOOR_VISUAL_V8")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_ASSET_ESCAPE_V7")
  workspace:SetAttribute("EscapeUnlocked",false)
  workspace:SetAttribute("SurvivorEscapeTriggered",false)
  decorateArenaWithOfficialAssets(f,map)
