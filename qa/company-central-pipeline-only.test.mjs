@@ -64,7 +64,9 @@ test('central production runtime keeps one direct-native Roblox and Unity chain 
   assert.match(roblox,/company-development-roblox-bootstrap\.mjs/);
   assert.match(roblox,/ROBLOX_RUNTIME_PASS=NO/);
   assert.match(roblox,/ROBLOX_RELEASE_CLAIM=NO/);
-  assert.match(unity,/fromJSON\(needs\.prepare\.outputs\.parallel\)/);
+  assert.match(unity,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
+  assert.match(unity,/selectTargetPlatformDevelopmentWindow/);
+  assert.match(unity,/selectRepresentativeCanary/);
   assert.match(unity,/company-development-unity-bootstrap\.mjs/);
   assert.match(unity,/company-development-unity-evidence\.mjs/);
   assert.match(unity,/unity-cloud-android-test\.yml/);
