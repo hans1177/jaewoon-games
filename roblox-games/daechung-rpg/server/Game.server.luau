@@ -294,25 +294,27 @@ Players.PlayerAdded:Connect(function(p)
  task.defer(rebuildCompanions)
 end)
 for _,p in ipairs(Players:GetPlayers())do load(p);for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end end
-qaCaptureRemote.OnServerEvent:Connect(function(p,label,assetId)
+qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
  if typeof(label)~="string"or #label<1 or #label>48 then return end
- local id=tostring(assetId or"")
- if not id:match("^%d+$")then return end
- local now=os.clock();if now-(qaCaptureLast[p]or 0)<.35 then return end;qaCaptureLast[p]=now
- local record={gameId=C.GameId,label=label,assetId=id,userId=p.UserId,capturedAt=os.time()}
+ local raw=tostring(value or"")
+ if #raw<1 or #raw>160 then return end
+ local isStatus=label=="STATUS"
+ if not isStatus and not raw:match("^%d+$")then return end
+ local now=os.clock();if now-(qaCaptureLast[p]or 0)<.18 then return end;qaCaptureLast[p]=now
+ local record={gameId=C.GameId,label=label,userId=p.UserId,capturedAt=os.time()}
+ if isStatus then record.status=raw;record.kind="STATUS"else record.assetId=raw;record.kind="CAPTURE"end
  local ok=pcall(function()
   qaCaptureStore:UpdateAsync("latest",function(old)
    local data=typeof(old)=="table"and old or{captures={}}
    data.captures=typeof(data.captures)=="table"and data.captures or{}
    table.insert(data.captures,record)
-   while #data.captures>18 do table.remove(data.captures,1)end
+   while #data.captures>30 do table.remove(data.captures,1)end
    data.updatedAt=os.time();data.gameId=C.GameId
    return data
   end)
  end)
- p:SetAttribute("QALastCaptureAssetId",id)
- p:SetAttribute("QALastCaptureLabel",label)
+ if isStatus then p:SetAttribute("QALastCaptureStatus",raw)else p:SetAttribute("QALastCaptureAssetId",raw);p:SetAttribute("QALastCaptureLabel",label)end
  p:SetAttribute("QALastCaptureStored",ok)
 end)
 
