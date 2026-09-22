@@ -91,8 +91,18 @@ function QACamera.install(config,screenGui,pointProvider)
    task.delay(2,function()if not busy then status.Visible=false end end)
    return
   end
-  busy=true;button.Text="촬영중";status.Visible=true
+  busy=true;button.Text="권한확인";status.Visible=true
   task.spawn(function()
+   local permissionOk,permissionGranted=pcall(function()
+    return CaptureService:PromptCaptureGalleryPermissionAsync(Enum.CaptureGalleryPermission.ReadAndUpload)
+   end)
+   if not permissionOk or permissionGranted~=true then
+    status.Text="캡처 권한 허용 필요"
+    busy=false;button.Text="QA촬영"
+    task.delay(3,function()if not busy then status.Visible=false end end)
+    return
+   end
+   button.Text="촬영중"
    local camera=Workspace.CurrentCamera
    if not camera then busy=false;button.Text="QA촬영";return end
    local saved={cameraType=camera.CameraType,cframe=camera.CFrame,focus=camera.Focus,fov=camera.FieldOfView,subject=camera.CameraSubject}
