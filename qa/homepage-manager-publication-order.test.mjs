@@ -226,7 +226,7 @@ test('homepage has one canonical runtime data renderer',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(index,/\nloadData\(\);/);
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
-  assert.match(runtime,/updateLiveSummary\(catalog,status\);buildFocus/);
+  assert.match(runtime,/updateLiveSummary\((?:boundCatalog|catalog),status\);buildFocus/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
 });
