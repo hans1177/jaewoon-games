@@ -19,8 +19,10 @@ local remote=RS:WaitForChild(C.RemoteName)
 local function makeSound(name,id,volume,looped)
  local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
 end
-local bgm=makeSound("MidnightBackground",C.Audio.Background,.18,true)
-local chase=makeSound("MidnightChase",C.Audio.Chase,.22,true)
+local bgm=makeSound("MidnightBackground",C.Audio.Background,.11,true)
+local chase=makeSound("MidnightChase",C.Audio.Chase,.14,true)
+bgm.PlaybackSpeed=1.035
+chase.PlaybackSpeed=1.04
 local actionSfx=makeSound("MidnightAction",C.Audio.Action,.32,false)
 local warningSfx=makeSound("MidnightWarning",C.Audio.Warning,.26,false)
 local resultSfx=makeSound("MidnightResult",C.Audio.Result,.34,false)
@@ -310,9 +312,9 @@ local function render()
  abilityButton.Visible=running and role=="MONSTER"
 
  if running then
-  if bgm.IsPlaying then bgm:Stop()end
-  if not chase.IsPlaying then chase:Play()end
-  chaseTint.BackgroundTransparency=role=="SURVIVOR"and .94 or .975
+  -- 라운드 시작 자체는 추격이 아니다. 평상시엔 가벼운 서스펜스만 유지한다.
+  if not bgm.IsPlaying then bgm:Play()end
+  chaseTint.BackgroundTransparency=1
  else
   chaseTint.BackgroundTransparency=1
   if chase.IsPlaying then chase:Stop()end
@@ -330,6 +332,50 @@ end
 for _,k in ipairs({"RoundState","TimeLeft","Role","Frozen","MonsterForm","MonsterXP","Coins","AliveCount","FrozenCount","CurrentMap","CurrentMapEvent"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
+
+-- 강한 추격곡은 괴물이 실제로 가까울 때만 재생한다.
+local tensionClock=0
+local function nearestMonsterDistance()
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if not root then return math.huge end
+ local best=math.huge
+ for _,other in ipairs(Players:GetPlayers())do
+  if other~=p and other:GetAttribute("Role")=="MONSTER"then
+   local oc=other.Character
+   local oroot=oc and oc:FindFirstChild("HumanoidRootPart")
+   if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude)end
+  end
+ end
+ local arena=workspace:FindFirstChild("MidnightArena")
+ local ai=arena and arena:FindFirstChild("AI_MONSTER",true)
+ if ai and ai:IsA("BasePart")then best=math.min(best,(ai.Position-root.Position).Magnitude)end
+ return best
+end
+
+RunService.Heartbeat:Connect(function(dt)
+ tensionClock+=dt
+ if tensionClock<.2 then return end
+ tensionClock=0
+ local running=p:GetAttribute("RoundState")=="RUNNING"
+ if not running then
+  if chase.IsPlaying then chase:Stop()end
+  bgm.Volume=.11
+  return
+ end
+ local distance=nearestMonsterDistance()
+ local near=distance<=32
+ local danger=distance<=17
+ bgm.Volume=near and .045 or .105
+ chase.Volume=danger and .15 or .115
+ if near then
+  if not chase.IsPlaying then chase:Play()end
+  chaseTint.BackgroundTransparency=danger and .94 or .975
+ else
+  if chase.IsPlaying then chase:Stop()end
+  chaseTint.BackgroundTransparency=1
+ end
+end)
 
 -- 발소리
 local function bindFootsteps(character)
