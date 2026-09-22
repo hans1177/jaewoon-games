@@ -3,51 +3,21 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-chatgpt-native-foundation-validation",
-      "worker": "chatgpt",
-      "taskId": "native-game-foundation-validation-stack",
-      "gameId": "cozy-island",
+      "id": "wl-mpm8y5",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-b6e6cadf9046-v1",
+      "gameId": "__vibe_system__",
       "files": [
-        "company-learning/platform-release-roadmap.json",
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "tools/company-development-roblox-headless-fast-mvp.mjs",
-        "qa/company-development-roblox-headless-fast-mvp.test.mjs",
-        ".github/workflows/company-development-roblox-runtime-continuation.yml",
-        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
-        ".github/workflows/company-development-roblox-final-review-revalidation.yml",
-        ".github/workflows/company-development-roblox-release-promotion.yml",
-        "qa/company-development-roblox-runtime.test.mjs",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
-        "tools/company-development-roblox-runtime-foundation.mjs",
-        "qa/company-development-roblox-runtime-foundation.test.mjs",
-        "qa/company-development-roblox-release-promotion.test.mjs",
-        "tools/company-tester-debug-intake.mjs",
-        "qa/company-tester-debug-intake.test.mjs",
-        "company-learning/company-architecture-map.json",
-        "tools/company-shared-context.mjs",
-        "tools/vibe2-central-work-contract.mjs",
-        "tools/company-central-architecture-sync.mjs",
-        "qa/company-shared-context.test.mjs",
-        "qa/vibe2-central-work-contract.test.mjs",
-        "qa/company-central-policy-contract.test.mjs",
-        "tools/vibe3-roblox-platform.mjs",
-        "qa/vibe3-roblox-platform.test.mjs",
-        ".github/workflows/company-development-roblox-runtime.yml",
-        ".github/workflows/vibe3-engine-contract.yml"
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
       ],
-      "baseSha": "cc2562025335c3e11a48f836f05098e72f930992",
-      "acquiredAt": "2026-09-22T17:10:35.039Z",
-      "expiresAt": "2026-09-22T18:42:46.629Z",
+      "baseSha": "eaf7cf02c0af2374336b57b6755c17d14f388f0c",
+      "acquiredAt": "2026-09-22T22:38:33.212Z",
+      "expiresAt": "2026-09-22T23:23:33.212Z",
       "status": "active",
       "evidence": [
-        "owner-directive:design-central-contract-before-implementation",
-        "runtime-report:cozy-island-character-floating",
-        "root-cause:headless-marker-check-falsely-claimed-game-start",
-        "foundation-validation-stack-required",
-        "owner-directive:continue-implementation",
-        "machine-only-central-architecture-auto-sync",
-        "existing-game-tester-qa-reuse"
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-b6e6cadf9046-v1"
       ]
     }
   ]
