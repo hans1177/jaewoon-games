@@ -25,6 +25,7 @@ on:
       - 'artbook-viewer.html'
       - 'artbook-submissions/**'
       - 'web-games/**'
+      - 'roblox-games/**/default.project.json'
       - 'assets/**'
       - 'manifest.webmanifest'
       - 'install.html'
@@ -62,6 +63,7 @@ on:
       - 'artbook-viewer.html'
       - 'artbook-submissions/**'
       - 'web-games/**'
+      - 'roblox-games/**/default.project.json'
       - 'assets/**'
       - 'manifest.webmanifest'
       - 'install.html'
@@ -77,6 +79,7 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/homepage-manager-publication-order.test.mjs'
+      - 'qa/company-homepage-runtime-propagation.test.mjs'
       - '.github/workflows/homepage-manager.yml'
   workflow_dispatch:
 
