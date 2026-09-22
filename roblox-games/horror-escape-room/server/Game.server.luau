@@ -195,14 +195,16 @@ local function applyMapEvent(f,map,event)
  workspace:SetAttribute("CurrentMapEventName",event.Name)
  if event.Id=="LIGHTS_OUT"or event.Id=="POWER_OUTAGE"or event.Id=="RIDE_BLACKOUT"then
   -- 정전은 긴장감만 주고 플레이 경로 자체는 읽혀야 한다.
-  Lighting.Brightness=1.18
-  Lighting.FogEnd=map.Id=="HOSPITAL"and 118 or 165
-  Lighting.Ambient=Color3.fromRGB(66,72,82)
+  Lighting.Brightness=1.55
+  Lighting.FogEnd=map.Id=="HOSPITAL"and 150 or 205
+  Lighting.Ambient=Color3.fromRGB(86,91,103)
   for _,x in ipairs(f:GetDescendants())do
-   if x:IsA("Part")and(x.Name=="CeilingLight"or x.Name=="ParkLight")then x.Transparency=.68 end
+   if x:IsA("Part")and(x.Name=="CeilingLight"or x.Name=="ParkLight")then x.Transparency=.42
+   elseif x:IsA("Part")and(x.Name=="HallGuideStrip"or x.Name=="EdgeGuide")then x.Transparency=.08 end
   end
  elseif event.Id=="RED_HALL"then
-  Lighting.Ambient=Color3.fromRGB(72,22,28)
+  Lighting.Brightness=1.62
+  Lighting.Ambient=Color3.fromRGB(88,34,40)
   for _,x in ipairs(f:GetDescendants())do if x:IsA("Part")and x.Name=="CeilingLight"then x.Color=Color3.fromRGB(255,70,70);x.Transparency=.05 end end
  elseif event.Id=="FIRE_DRILL"then
   local door=f:FindFirstChild("GymDoor",true)
@@ -212,10 +214,10 @@ local function applyMapEvent(f,map,event)
   for _,x in ipairs(f:GetDescendants())do
    if x:IsA("Part")and x.Name=="WardDoor"then x.CanCollide=true;x.Transparency=.08;x.Color=Color3.fromRGB(138,52,52)end
   end
-  Lighting.Brightness=.9
+  Lighting.Brightness=1.3
   workspace:SetAttribute("MapEventGameplay","WARD_SHORTCUTS_CLOSED")
  elseif event.Id=="BASEMENT_FOG"then
-  Lighting.Brightness=1.02;Lighting.FogEnd=92;Lighting.FogColor=Color3.fromRGB(75,82,78)
+  Lighting.Brightness=1.38;Lighting.FogEnd=110;Lighting.FogColor=Color3.fromRGB(75,82,78)
   workspace:SetAttribute("MapEventGameplay","HOSPITAL_SHORT_SIGHT")
  elseif event.Id=="CAROUSEL_START"then
   local rotor=f:FindFirstChild("CarouselRotor",true)
@@ -229,7 +231,7 @@ local function applyMapEvent(f,map,event)
   end
   workspace:SetAttribute("MapEventGameplay","MOVING_CAROUSEL_HAZARD")
  elseif event.Id=="TUNNEL_FOG"then
-  Lighting.FogEnd=108;Lighting.Brightness=1.05
+  Lighting.FogEnd=126;Lighting.Brightness=1.42
   workspace:SetAttribute("MapEventGameplay","UNDERPASS_LOW_VISIBILITY")
  end
 end
@@ -261,6 +263,11 @@ local function makeArena(map)
   local exitLight=arenaPart(f,"SchoolExitLight",Vector3.new(8,2,.7),Vector3.new(0,7,-67),Color3.fromRGB(91,231,158),Enum.Material.Neon);glow(exitLight,exitLight.Color,18,1.8)
   arenaPart(f,"MainHallLeft",Vector3.new(3,12,112),Vector3.new(-18,6,0),Style.Wall,Enum.Material.Concrete)
   arenaPart(f,"MainHallRight",Vector3.new(3,12,112),Vector3.new(18,6,0),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"MainHallCeiling",Vector3.new(39,1,126),Vector3.new(0,12.2,0),Color3.fromRGB(104,109,118),Enum.Material.Concrete)
+  arenaPart(f,"ClassWingCeilingL",Vector3.new(58,1,84),Vector3.new(-48,12.2,-6),Color3.fromRGB(108,111,117),Enum.Material.Concrete)
+  arenaPart(f,"ClassWingCeilingR",Vector3.new(58,1,84),Vector3.new(48,12.2,-6),Color3.fromRGB(108,111,117),Enum.Material.Concrete)
+  arenaPart(f,"CafeteriaCeiling",Vector3.new(58,1,52),Vector3.new(-51,12.2,43),Color3.fromRGB(104,101,98),Enum.Material.Concrete)
+  arenaPart(f,"GymCeiling",Vector3.new(56,1,50),Vector3.new(50,12.2,48),Color3.fromRGB(102,101,105),Enum.Material.Concrete)
   for _,z in ipairs({-40,-12,16})do
    for _,side in ipairs({-1,1})do
     local x=side*48
@@ -270,7 +277,7 @@ local function makeArena(map)
      arenaPart(f,"ClassDesk",Vector3.new(7,2,4),Vector3.new(side*(31+(desk%2)*12),1.5,z+6+math.floor((desk-1)/2)*9),Color3.fromRGB(121,91,67),Enum.Material.WoodPlanks)
     end
    end
-   local lamp=arenaPart(f,"CeilingLight",Vector3.new(12,.5,2),Vector3.new(0,10,z+7),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.04;glow(lamp,Style.SafeLight,24,1.25)
+   local lamp=arenaPart(f,"CeilingLight",Vector3.new(12,.5,2),Vector3.new(0,10,z+7),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.12;glow(lamp,Style.SafeLight,18,.72)
   end
   -- 급식실
   arenaPart(f,"CafeteriaSign",Vector3.new(22,8,2),Vector3.new(-52,4,48),Style.Locker,Enum.Material.Metal)
@@ -295,6 +302,14 @@ local function makeArena(map)
   zoneFloor(f,"SchoolWestConnector",Vector3.new(94,.35,16),Vector3.new(-72,.7,-28),Color3.fromRGB(128,130,132),Enum.Material.Marble)
   zoneFloor(f,"SchoolEastConnector",Vector3.new(94,.35,16),Vector3.new(72,.7,-28),Color3.fromRGB(128,130,132),Enum.Material.Marble)
   zoneFloor(f,"SchoolSouthConnector",Vector3.new(16,.35,92),Vector3.new(0,.7,108),Color3.fromRGB(128,130,132),Enum.Material.Marble)
+  arenaPart(f,"LibraryCeiling",Vector3.new(80,1,74),Vector3.new(-118,12.2,-70),Color3.fromRGB(96,92,89),Enum.Material.Concrete)
+  arenaPart(f,"ScienceCeiling",Vector3.new(80,1,74),Vector3.new(118,12.2,-70),Color3.fromRGB(98,106,112),Enum.Material.Concrete)
+  arenaPart(f,"AuditoriumCeiling",Vector3.new(94,1,80),Vector3.new(108,12.2,104),Color3.fromRGB(90,76,77),Enum.Material.Concrete)
+  for _,spec in ipairs({
+   {Vector3.new(-157,6,-70),Vector3.new(3,12,72)},{Vector3.new(-118,6,-106),Vector3.new(78,12,3)},
+   {Vector3.new(157,6,-70),Vector3.new(3,12,72)},{Vector3.new(118,6,-106),Vector3.new(78,12,3)},
+   {Vector3.new(154,6,104),Vector3.new(3,12,78)},{Vector3.new(108,6,143),Vector3.new(92,12,3)}
+  })do arenaPart(f,"SchoolWingWall",spec[2],spec[1],Style.Wall,Enum.Material.Concrete)end
   for i=1,8 do
    arenaPart(f,"LibraryShelf",Vector3.new(12,7,3),Vector3.new(-146+(i%4)*18,3.5,-92+math.floor((i-1)/4)*32),Color3.fromRGB(94,72,54),Enum.Material.WoodPlanks)
    arenaPart(f,"ScienceBench",Vector3.new(12,3,5),Vector3.new(90+(i%4)*18,1.7,-92+math.floor((i-1)/4)*32),Color3.fromRGB(110,119,123),Enum.Material.Metal)
@@ -417,7 +432,7 @@ local function makeArena(map)
  end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_ASSET_ESCAPE_V7")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_INDOOR_VISUAL_V8")
  workspace:SetAttribute("EscapeUnlocked",false)
  workspace:SetAttribute("SurvivorEscapeTriggered",false)
  decorateArenaWithOfficialAssets(f,map)
