@@ -248,7 +248,7 @@ function installStyles(){
   style.textContent=`
 .foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
 @media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
-@media(max-width:700px){.foldGameActions{grid-template-columns:1fr}.foldGameBtn.platformAction{grid-column:auto}}
+@media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
 `;
   document.head.appendChild(style);
 }
@@ -277,7 +277,7 @@ function buildCard(row){
       :''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
-  const direct=links.roblox||links.unity||links.unityWeb||'';
+  const direct=links.roblox||links.unity||'';
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
