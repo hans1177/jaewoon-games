@@ -32,7 +32,7 @@ jobs:
         with:
           ref: main
           path: main
-          fetch-depth: 0
+          fetch-depth: 1
           fetch-tags: false
 
       - name: Checkout canonical runtime state
