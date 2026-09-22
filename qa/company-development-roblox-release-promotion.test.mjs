@@ -146,6 +146,64 @@ test('F9 final review promotes the same tested candidate without republishing it
 });
 
 
+
+test('cozy island foundation ordering and successful core-loop proof stay fail-closed',()=>{
+  const server=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
+  const buildIndex=server.indexOf('\nbuildWorld()\n');
+  const bindIndex=server.indexOf('Players.PlayerAdded:Connect(bindPlayer)');
+  assert.ok(buildIndex>=0,'cozy island must build world before binding players');
+  assert.ok(bindIndex>buildIndex,'safe spawn and world foundation must exist before player binding');
+  assert.match(server,/local accepted=H\[a\]\(p\)/);
+  assert.match(server,/if accepted==true then\s+foundationCheckpoint\("CORE_LOOP_READY"/);
+  assert.match(server,/if battling\[p\]then msg\(p,"전투 중"\)return false end/);
+  assert.match(server,/if troops<=0 then msg\(p,"병사가 필요해"\)return false end/);
+  assert.match(server,/task\.spawn\(function\(\)[\s\S]*?end\)\s+return true\s+end/);
+});
+
+test('new Roblox runtime candidate atomically invalidates stale release and QA pass state',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  for(const pattern of [
+    /item\.robloxInternalReleaseEvidence=null/,
+    /item\.robloxReleaseEvidence=null/,
+    /item\.robloxFinalReviewPassed=false/,
+    /item\.robloxF9ReleaseRegressionPassed=false/,
+    /item\.robloxPostRuntimeQaEvidence=null/,
+    /item\.robloxRuntimeEvidence=null/,
+    /item\.robloxRuntimeFoundationEvidence=null/,
+    /item\.robloxIndependentQaPassed=false/,
+    /item\.robloxRegressionPassed=false/,
+    /item\.robloxMultiplayerQaPassed=false/,
+    /item\.robloxRuntimePassed=false/,
+    /item\.robloxRuntimeFoundationPassed=false/,
+  ]) assert.match(candidate,pattern);
+});
+
+test('F9 binds the promoted candidate to source artifact universe place and exact version runtime evidence',()=>{
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  assert.match(finalReview,/candidate\.sourceRevision===sourceRevision/);
+  assert.match(finalReview,/candidate\.artifactIdentity===artifactIdentity/);
+  assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
+  assert.match(finalReview,/String\(runtime\.placeId\|\|''\)===String\(candidate\.placeId\|\|''\)/);
+  assert.match(finalReview,/runtime\.exactGame===true/);
+  assert.match(finalReview,/runtime\.exactPlace===true/);
+  assert.match(finalReview,/runtime\.exactVersion===true/);
+  assert.match(finalReview,/Number\(runtime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+  assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
+});
+
+test('central foundation contract records the implemented atomic repair invariants',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
+  assert.equal(stack.governingPrinciples.safeSpawnMustExistBeforePlayerBinding,true);
+  assert.equal(stack.governingPrinciples.coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition,true);
+  assert.equal(stack.governingPrinciples.newRuntimeCandidateInvalidatesPriorReleasePassState,true);
+  assert.equal(stack.governingPrinciples.f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.cozyIslandSpawnBeforePlayerBinding,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.coreLoopCheckpointRequiresSuccessfulTransition,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.newCandidateClearsPriorReleasePassState,true);
+  assert.equal(stack.verification.designAndImplementationEvidence.f9BindsUniversePlaceVersion,true);
+});
+
 test('central F0 contract pins official Luau compiler and exact source workflow requires compile evidence',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const f0=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack.f0NativeCompiler;
