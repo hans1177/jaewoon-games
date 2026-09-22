@@ -136,12 +136,13 @@ export function assembleRobloxTechnicalEvidence({build={},runtime={},independent
 }
 
 export function assembleRobloxDevelopmentReleaseEvidence(item={}){
-  if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(upper(item.robloxValidationMode))){
-    const sourceRevision=clean(item.robloxSourceCommit);
-    const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
-    const f0=item.robloxFoundationF0Evidence||item.robloxHeadlessFastMvpEvidence||{};
+  const validationMode=upper(item.robloxValidationMode);
+  const sourceRevision=clean(item.robloxSourceCommit);
+  const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+  const f0=item.robloxFoundationF0Evidence||item.robloxHeadlessFastMvpEvidence||{};
+  if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(validationMode)){
     return Object.freeze({
-      version:3,
+      version:4,
       platform:'ROBLOX',
       target:'ROBLOX_DEVELOPMENT_FINAL_RELEASE',
       validationMode:'HEADLESS_SOURCE_PREFLIGHT_F0',
@@ -150,6 +151,7 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
       artifactIdentity:artifactIdentity||null,
       sourcePreflightPassed:item.robloxFoundationF0Passed===true&&f0.sourcePreflightPassed===true,
       actualRuntimeEvidence:false,
+      runtimeFoundationPassed:false,
       runtimePassed:false,
       independentQaPassed:false,
       regressionPassed:false,
@@ -163,74 +165,97 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
       authority:'roblox-f0-cannot-authorize-release'
     });
   }
-  const sourceRevision=clean(item.robloxSourceCommit);
-    const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
-    const preflight=item.robloxBuildPreflightEvidence||{};
-    const headless=item.robloxHeadlessFastMvpEvidence||{};
-    const artifactRunId=Number(headless.artifactRunId||0);
-    const sourceValidated=item.robloxBuildPreflightPassed===true
-      &&preflight.pass===true
-      &&clean(preflight.sourceRevision)===sourceRevision
-      &&clean(preflight.artifactIdentity)===artifactIdentity;
-    const buildOrPackagePassed=item.robloxBuildOrPackagePassed===true&&clean(item.robloxBuildSourceRevision)===sourceRevision&&sourceValidated;
-    const sameRevision=COMMIT40.test(sourceRevision)&&clean(headless.sourceRevision)===sourceRevision;
-    const sameArtifact=ARTIFACT_SHA256.test(artifactIdentity)&&clean(headless.artifactIdentity)===artifactIdentity;
-    const serverClientBoundaryPassed=headless.serverClientBoundaryPassed===true;
-    const saveExists=headless.saveExists===true;
-    const datastoreRejoinPassed=!saveExists||headless.datastoreRejoinPassed===true;
-    const mobileControlUiPassed=headless.mobileControlUiPassed===true;
-    const multiplayerApplicable=headless.multiplayerApplicable===true;
-    const multiplayerQaPassed=!multiplayerApplicable||headless.multiplayerStateSyncPassed===true;
-    const regressionPassed=headless.headlessRegressionPassed===true;
-    const finalReviewPassed=true; // legacy compatibility field; separate final review is not required for private/restricted FAST_MVP
-    const exactRevision=headless.exactRevision===true&&sameRevision&&sameArtifact&&Number.isInteger(artifactRunId)&&artifactRunId>0;
-    const headlessFastMvpPassed=item.robloxHeadlessFastMvpPassed===true&&headless.pass===true;
-    const protectedStatePreserved=headlessFastMvpPassed&&serverClientBoundaryPassed&&datastoreRejoinPassed&&mobileControlUiPassed&&multiplayerQaPassed&&exactRevision;
-    const evidence={version:2,platform:'ROBLOX',target:'ROBLOX_HEADLESS_FAST_MVP_RELEASE',validationMode:'HEADLESS_FAST_MVP',checkedAt:new Date().toISOString(),sourceRevision,sourceFingerprint:clean(item.robloxSourceFingerprint)||null,artifactIdentity:artifactIdentity||null,artifactRunId,buildOrPackagePassed,luauOrSourceValidationPassed:sourceValidated,headlessFastMvpPassed,serverClientBoundaryPassed,saveExists,datastoreRejoinPassed,mobileControlUiPassed,multiplayerApplicable,multiplayerMode:upper(item.robloxMultiplayerMode)||null,multiplayerQaPassed,independentQaPassed:false,regressionPassed,protectedStatePreserved,finalReviewPassed,exactRevision,sameRevision,sameArtifact,sameArtifactRun:true,browserQa:'NOT_APPLICABLE',provenance:{buildPreflight:preflight.authority||null,headless:headless.authority||null,finalReview:'roblox-headless-fast-mvp'}};
-    const gate=validateRobloxReleaseEvidence(evidence,sourceRevision);
-    evidence.pass=gate.pass;evidence.validated=gate.pass;evidence.state=gate.pass?'PASS':'FAIL';evidence.blockedReasons=[...gate.blockedReasons];evidence.authority='roblox-headless-fast-mvp-internal-release-evidence';
-    return Object.freeze(evidence);
-  }
-  const sourceRevision=clean(item.robloxSourceCommit);
-  const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+
   const preflight=item.robloxBuildPreflightEvidence||{};
   const runtime=item.robloxRuntimeEvidence||{};
+  const foundation=item.robloxRuntimeFoundationEvidence||{};
   const post=item.robloxPostRuntimeQaEvidence||{};
   const multiplayer=item.robloxMultiplayerQaEvidence||{};
-  const mode=upper(item.robloxMultiplayerMode);
   const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
-  const requiredBindings=[preflight,runtime,post,...(multiplayerApplicable?[multiplayer]:[])];
+  const mode=upper(item.robloxMultiplayerMode);
+  const actualRuntimeEvidence=
+    runtime.actualPlatformRuntime===true
+    ||runtime.actualRuntimeEvidence===true
+    ||foundation.actualRuntimeEvidence===true
+    ||/roblox-real-studio-runtime/i.test(clean(runtime.authority));
+  const actualPostRuntimeEvidence=
+    post.actualRuntimeEvidence===true
+    ||/real-studio-post-runtime-qa/i.test(clean(post.authority))
+    ||/existing-independent-qa-native-foundation/i.test(clean(post.authority));
+
+  const requiredBindings=[preflight,runtime,post];
+  if(multiplayerApplicable&&Object.keys(multiplayer).length)requiredBindings.push(multiplayer);
   const sameRevision=COMMIT40.test(sourceRevision)&&requiredBindings.every(row=>clean(row?.sourceRevision)===sourceRevision);
   const sameArtifact=ARTIFACT_SHA256.test(artifactIdentity)&&requiredBindings.every(row=>clean(row?.artifactIdentity)===artifactIdentity);
-  const runIds=[runtime.artifactRunId,post.artifactRunId,...(multiplayerApplicable?[multiplayer.artifactRunId]:[])]
-    .map(value=>Number(value)).filter(value=>Number.isInteger(value)&&value>0);
+  const runIds=[
+    runtime.artifactRunId,
+    post.artifactRunId,
+    ...(multiplayerApplicable&&Object.keys(multiplayer).length?[multiplayer.artifactRunId]:[])
+  ].map(value=>Number(value)).filter(value=>Number.isInteger(value)&&value>0);
   const sameArtifactRun=runIds.length>0&&runIds.every(value=>value===runIds[0]);
-  const sourceValidated=Boolean(item.robloxSourceBootstrapPassedAt)&&item.robloxBuildPreflightPassed===true&&preflight.pass===true;
-  const buildOrPackagePassed=item.robloxBuildOrPackagePassed===true&&clean(item.robloxBuildSourceRevision)===sourceRevision&&sourceValidated;
-  const runtimePassed=item.robloxRuntimePassed===true&&runtime.runtimePassed===true&&runtime.serverClientBoundaryPassed===true;
+
+  const sourceValidated=
+    Boolean(item.robloxSourceBootstrapPassedAt)
+    &&item.robloxBuildPreflightPassed===true
+    &&preflight.pass===true
+    &&clean(preflight.sourceRevision)===sourceRevision
+    &&clean(preflight.artifactIdentity)===artifactIdentity;
+  const buildOrPackagePassed=
+    item.robloxBuildOrPackagePassed===true
+    &&clean(item.robloxBuildSourceRevision)===sourceRevision
+    &&sourceValidated;
+  const runtimeFoundationPassed=
+    Object.keys(foundation).length
+      ? item.robloxRuntimeFoundationPassed===true&&foundation.runtimeFoundationPassed===true&&foundation.actualRuntimeEvidence===true
+      : actualRuntimeEvidence;
+  const runtimePassed=
+    item.robloxRuntimePassed===true
+    &&runtime.runtimePassed===true
+    &&runtime.serverClientBoundaryPassed===true
+    &&actualRuntimeEvidence;
   const serverClientBoundaryPassed=item.robloxServerClientBoundaryPassed===true&&runtime.serverClientBoundaryPassed===true;
-  const saveExists=runtime.saveExists===true;
-  const datastoreRejoinPassed=!saveExists||(item.robloxDatastoreRejoinPassed===true&&runtime.datastoreRejoinPassed===true);
-  const mobileControlUiPassed=item.robloxMobileControlUiPassed===true&&post.mobileControlUiPassed===true;
-  const independentQaPassed=item.robloxIndependentQaPassed===true&&post.independentQaPassed===true;
-  const regressionPassed=item.robloxRegressionPassed===true&&post.regressionPassed===true&&post.exactRevision===true;
+  const saveExists=runtime.saveExists===true||runtime.requirements?.saveEnabled===true||foundation.requirements?.saveEnabled===true;
+  const datastoreRejoinPassed=!saveExists||(item.robloxDatastoreRejoinPassed===true&&(runtime.datastoreRejoinPassed===true||runtime.f6CoreServicesPassed===true));
+  const mobileControlUiPassed=
+    item.robloxMobileControlUiPassed===true
+    &&(post.mobileControlUiPassed===true||post.runtimeFoundationEvidence?.f5InputCameraUiPassed===true||runtime.f5InputCameraUiPassed===true);
+  const independentQaPassed=item.robloxIndependentQaPassed===true&&post.independentQaPassed===true&&actualPostRuntimeEvidence;
+  const regressionPassed=item.robloxRegressionPassed===true&&post.regressionPassed===true&&(post.exactRevision===true||sameRevision);
+  const runtimeMultiplayerPassed=
+    runtime.f7MultiplayerFoundationPassed===true
+    ||foundation.f7MultiplayerFoundationPassed===true;
+  const legacyMultiplayerPassed=
+    item.robloxMultiplayerQaPassed===true
+    &&multiplayer.multiplayerQaPassed===true
+    &&multiplayer.actualStudioRuntime===true
+    &&Number(multiplayer.multiplayerClients)>=2
+    &&multiplayer.distinctPlayersPassed===true
+    &&multiplayer.serverAuthoritativeRoundtripPassed===true
+    &&multiplayer.peerVisibilityPassed===true;
   const multiplayerQaPassed=!multiplayerApplicable||(
     ['COOP','COMPETITIVE','HYBRID'].includes(mode)
     &&item.robloxMultiplayerQaPassed===true
-    &&multiplayer.multiplayerQaPassed===true
-    &&multiplayer.actualStudioRuntime===true
-    &&Number(multiplayer.multiplayerClients)===2
-    &&multiplayer.distinctPlayersPassed===true
-    &&multiplayer.serverAuthoritativeRoundtripPassed===true
-    &&multiplayer.peerVisibilityPassed===true
+    &&(runtimeMultiplayerPassed||legacyMultiplayerPassed)
   );
   const finalReviewPassed=item.robloxFinalReviewPassed===true;
   const exactRevision=item.robloxExactRevisionPassed===true&&sameRevision&&sameArtifact&&sameArtifactRun;
-  const protectedStatePreserved=runtimePassed&&serverClientBoundaryPassed&&datastoreRejoinPassed&&mobileControlUiPassed&&independentQaPassed&&regressionPassed&&multiplayerQaPassed&&finalReviewPassed&&exactRevision;
+  const protectedStatePreserved=
+    runtimeFoundationPassed
+    &&runtimePassed
+    &&serverClientBoundaryPassed
+    &&datastoreRejoinPassed
+    &&mobileControlUiPassed
+    &&independentQaPassed
+    &&regressionPassed
+    &&multiplayerQaPassed
+    &&finalReviewPassed
+    &&exactRevision;
+
   const evidence={
-    version:1,
+    version:4,
     platform:'ROBLOX',
     target:'ROBLOX_DEVELOPMENT_FINAL_RELEASE',
+    validationMode:validationMode||'ACTUAL_PLATFORM_RUNTIME',
     checkedAt:new Date().toISOString(),
     sourceRevision,
     sourceFingerprint:clean(item.robloxSourceFingerprint)||null,
@@ -238,6 +263,9 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
     artifactRunId:runIds[0]||null,
     buildOrPackagePassed,
     luauOrSourceValidationPassed:sourceValidated,
+    sourcePreflightPassed:item.robloxFoundationF0Passed===true||f0.sourcePreflightPassed===true,
+    actualRuntimeEvidence,
+    runtimeFoundationPassed,
     runtimePassed,
     runtime:runtimePassed?'PASS':'FAIL',
     serverClientBoundaryPassed,
@@ -258,11 +286,13 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
     sameArtifactRun,
     browserQa:'NOT_APPLICABLE',
     provenance:{
+      f0:f0.authority||null,
       buildPreflight:preflight.authority||null,
       runtime:runtime.authority||null,
+      foundation:foundation.authority||null,
       postRuntime:post.authority||null,
-      multiplayer:multiplayerApplicable?(multiplayer.authority||null):'NOT_APPLICABLE',
-      finalReview:'company-development-roblox-final-review',
+      multiplayer:multiplayerApplicable?(runtimeMultiplayerPassed?(foundation.authority||runtime.authority||null):(multiplayer.authority||null)):'NOT_APPLICABLE',
+      finalReview:item.robloxF9ReleaseRegressionEvidence?.authority||'company-development-roblox-final-review',
     },
   };
   const gate=validateRobloxReleaseEvidence(evidence,sourceRevision);
@@ -284,28 +314,21 @@ export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   const blocked=[];
   const revision=clean(sourceRevision||evidence.sourceRevision);
   if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(upper(evidence.validationMode))){
-    blocked.push('headless-source-preflight-cannot-satisfy-runtime-release');
-    return Object.freeze({pass:false,sourceRevision:revision,blockedReasons:Object.freeze(blocked),browserQa:'NOT_APPLICABLE',authority:'roblox-f0-release-block'});
-  }
-  if(!SHA.test(revision))blocked.push('source-revision-invalid');
-    if(clean(evidence.sourceRevision)!==revision)blocked.push('exact-source-revision-mismatch');
-    if(evidence.buildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
-    if(!clean(evidence.artifactIdentity))blocked.push('artifact-identity-missing');
-    if(evidence.luauOrSourceValidationPassed!==true)blocked.push('luau-or-source-validation-not-passed');
-    if(evidence.headlessFastMvpPassed!==true)blocked.push('headless-fast-mvp-not-passed');
-    if(evidence.serverClientBoundaryPassed!==true)blocked.push('server-client-boundary-not-passed');
-    if(evidence.saveExists===true&&evidence.datastoreRejoinPassed!==true)blocked.push('datastore-rejoin-not-passed');
-    if(evidence.mobileControlUiPassed!==true)blocked.push('mobile-control-ui-not-passed');
-    if(evidence.multiplayerApplicable===true&&evidence.multiplayerQaPassed!==true)blocked.push('multiplayer-state-sync-not-passed');
-    if(evidence.protectedStatePreserved!==true)blocked.push('core-headless-qa-not-passed');
-    if(evidence.exactRevision!==true)blocked.push('exact-revision-unproven');
-    return Object.freeze({pass:blocked.length===0,sourceRevision:revision,blockedReasons:Object.freeze(blocked),browserQa:'NOT_APPLICABLE',authority:'roblox-headless-release-evidence-gate'});
+    return Object.freeze({
+      pass:false,
+      sourceRevision:revision,
+      blockedReasons:Object.freeze(['headless-source-preflight-cannot-satisfy-runtime-release']),
+      browserQa:'NOT_APPLICABLE',
+      authority:'roblox-f0-release-block'
+    });
   }
   if(!SHA.test(revision))blocked.push('source-revision-invalid');
   if(clean(evidence.sourceRevision)!==revision)blocked.push('exact-source-revision-mismatch');
   if(evidence.buildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
   if(!clean(evidence.artifactIdentity))blocked.push('artifact-identity-missing');
   if(evidence.luauOrSourceValidationPassed!==true)blocked.push('luau-or-source-validation-not-passed');
+  if(evidence.actualRuntimeEvidence!==true)blocked.push('actual-runtime-evidence-missing');
+  if(evidence.runtimeFoundationPassed!==true)blocked.push('runtime-foundation-not-passed');
   if(evidence.runtimePassed!==true&&upper(evidence.runtime)!=='PASS')blocked.push('runtime-not-passed');
   if(evidence.serverClientBoundaryPassed!==true)blocked.push('server-client-boundary-not-passed');
   if(evidence.saveExists===true&&evidence.datastoreRejoinPassed!==true)blocked.push('datastore-rejoin-not-passed');
@@ -315,7 +338,13 @@ export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   if(evidence.regressionPassed!==true)blocked.push('regression-not-passed');
   if(evidence.protectedStatePreserved!==true)blocked.push('protected-state-unproven');
   if(evidence.exactRevision!==true)blocked.push('exact-revision-unproven');
-  return Object.freeze({pass:blocked.length===0,sourceRevision:revision,blockedReasons:Object.freeze(blocked),browserQa:'NOT_APPLICABLE',authority:'roblox-release-evidence-gate'});
+  return Object.freeze({
+    pass:blocked.length===0,
+    sourceRevision:revision,
+    blockedReasons:Object.freeze(blocked),
+    browserQa:'NOT_APPLICABLE',
+    authority:'roblox-release-evidence-gate'
+  });
 }
 
 function contentTypeForPlaceFile(placeFile=''){
