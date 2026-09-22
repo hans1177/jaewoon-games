@@ -178,9 +178,11 @@ jobs:
       - name: Verify central policy and selected-platform production authority
         run: |
           node --check tools/company-shared-context.mjs
+          node --check tools/company-constitution-enforcer.mjs
           node --test qa/company-shared-context.test.mjs
           node --test qa/company-long-horizon-vision.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
+          node tools/company-constitution-enforcer.mjs --phase=policy-qa
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
           node --check tools/company-selected-platform-router.mjs
