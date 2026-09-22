@@ -4972,6 +4972,7 @@
         "previousInvalidRule": "HEADLESS_FAST_MVP_PASS_MAY_ENABLE_INTERNAL_RELEASE",
         "canonicalSequence": [
           "F0_SOURCE_PREFLIGHT_PASS",
+          "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
           "F1_SERVER_BOOT_PASS",
           "F2_WORLD_FOUNDATION_PASS",
           "F3_CHARACTER_FOUNDATION_PASS",
@@ -5033,6 +5034,8 @@
         ],
         "phase2": [
           "ADD_ROBLOX_RUNTIME_SENTINEL_CONTRACT",
+          "RECLASSIFY_PRIVATE_UPLOAD_AS_RUNTIME_CANDIDATE_NOT_INTERNAL_RELEASE",
+          "FETCH_EXACT_RUNTIME_SENTINEL_EVIDENCE",
           "BLOCK_INTERNAL_RELEASE_WITHOUT_F1_TO_F4_RUNTIME_EVIDENCE",
           "WIRE_FAILURE_TO_SYSTEM_AI"
         ],
@@ -5042,6 +5045,18 @@
         "implementationMayNotStartBeforeCentralDesignCommit": true,
         "noNewDepartment": true,
         "reuseExistingRuntimeQaReleaseAndRecoveryPipelines": true
+      },
+      "runtimeCandidateDeployment": {
+        "requiredBeforeActualRuntimeProbe": true,
+        "state": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "purpose": "ALLOW_ACTUAL_PLATFORM_EXECUTION_WITHOUT_CLAIMING_INTERNAL_RELEASE_OR_RUNTIME_PASS",
+        "externalDiscoveryForbidden": true,
+        "releaseClaimForbidden": true,
+        "publicReleaseClaimForbidden": true,
+        "sameExactArtifactMustBeUsedForRuntimeProbe": true,
+        "candidateDeploymentMayOccurAfterF0BeforeF1": true,
+        "candidateDeploymentDoesNotSatisfyAnyOfF1ThroughF9": true,
+        "promotionAfterFoundationPassMayReuseSameExactArtifact": true
       }
     }
   },
