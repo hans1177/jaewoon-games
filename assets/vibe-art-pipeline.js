@@ -15,6 +15,64 @@ const V3_VARIANT_PROFILES = Object.freeze([
   Object.freeze({id:'mobile-performance',transforms:Object.freeze(['crop','scale','outline','shadow','mobile-simplification'])}),
 ]);
 
+
+export const VIBE_ASSET_ACQUISITION_ORDER = Object.freeze([
+  'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY',
+  'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
+  'LICENSE_VERIFIED_EXTERNAL_ASSET',
+  'RECONSTRUCT_OR_DERIVE_WHEN_RIGHTS_ALLOW',
+  'CREATE_NEW_ASSET',
+  'PROTOTYPE_PRIMITIVE_FALLBACK_ONLY',
+]);
+export const VIBE_GOLDEN_SCENE_ROLES = Object.freeze([
+  'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
+  'PRIMARY_ENEMY_OR_CREATURE_CLOSEUP',
+  'CORE_GAMEPLAY_ACTION',
+  'WORLD_OR_REGION_WIDE',
+  'MOBILE_GAMEPLAY_HUD',
+]);
+
+export function createVibeAssetAcquisitionPlan({ companyAssets = [], repositoryAssets = [], externalAssets = [], stage = 'INTERNAL_PLAYTEST' } = {}) {
+  const normalizedStage = String(stage || 'INTERNAL_PLAYTEST').trim().toUpperCase();
+  const rows = [
+    { source: VIBE_ASSET_ACQUISITION_ORDER[0], assets: companyAssets },
+    { source: VIBE_ASSET_ACQUISITION_ORDER[1], assets: repositoryAssets },
+    { source: VIBE_ASSET_ACQUISITION_ORDER[2], assets: externalAssets },
+  ].map((row) => ({ ...row, assets: Array.isArray(row.assets) ? row.assets.filter(Boolean) : [] }));
+  const selected = rows.find((row) => row.assets.length) || null;
+  const primitiveFallbackAllowed = normalizedStage === 'PROTOTYPE';
+  return Object.freeze({
+    version: 1,
+    stage: normalizedStage,
+    order: VIBE_ASSET_ACQUISITION_ORDER,
+    selectedSource: selected?.source || 'CREATE_NEW_ASSET',
+    candidates: Object.freeze(selected ? selected.assets.slice() : []),
+    rightsVerificationRequired: selected?.source === 'LICENSE_VERIFIED_EXTERNAL_ASSET' || selected?.source === 'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
+    createNewAssetWhenNoVerifiedCandidate: true,
+    primitiveFallbackAllowed,
+    primitiveFallbackCreatesVisualDebt: true,
+    primaryActorPrimitiveFallbackAllowed: primitiveFallbackAllowed,
+    authority: 'asset-acquisition-plan-only',
+  });
+}
+
+export function createVibeVisualDebtEntry({ id = '', role = '', reason = '', source = '', stage = 'PROTOTYPE', severity = 'high' } = {}) {
+  const debtId = String(id || `visual-debt-${stableHash([role, reason, source, stage].join('|'))}`);
+  return Object.freeze({
+    version: 1,
+    id: debtId,
+    role: String(role || '').trim(),
+    reason: String(reason || '').trim() || 'temporary-visual-fallback',
+    source: String(source || '').trim() || 'temporary-fallback',
+    stage: String(stage || 'PROTOTYPE').trim().toUpperCase(),
+    severity: String(severity || 'high').trim().toLowerCase(),
+    status: 'OPEN',
+    automaticCompletionForbidden: true,
+    requiresRuntimeVisualReplacementOrExplicitApproval: true,
+    authority: 'visual-debt-record',
+  });
+}
+
 function clean(value) { return String(value ?? '').trim(); }
 function has(value, words) { const text = clean(value).toLowerCase(); return words.some((word) => text.includes(String(word).toLowerCase())); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
@@ -172,15 +230,17 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
     target: godot ? 'godot' : web ? 'web' : target,
     quality: Object.freeze({ art: artLevel, animation: animationLevel, vfx: vfxLevel, audio: audioLevel }),
     style: style || '프로젝트 기존 스타일 분석 후 일관된 스타일로 확정',
+    assetAcquisition: Object.freeze({ order: VIBE_ASSET_ACQUISITION_ORDER, preferVerifiedCompanyAssets:true, rightsVerifiedRepositoryOrExternalBeforeUse:true, reconstructWhenRightsAllow:true, createWhenNoVerifiedCandidate:true, primitiveFallbackPrototypeOnly:true, fallbackCreatesVisualDebt:true }),
+    runtimeVisualAcceptance: Object.freeze({ required:needsArt, goldenSceneRoles:VIBE_GOLDEN_SCENE_ROLES, actualRuntimeCaptureRequired:needsArt, compareAgainstLastPassingPresentation:true, markerOnlyPassForbidden:true, primaryActorPrimitivePlaceholderForbiddenAfterPrototype:true }),
     art: Object.freeze({ required: needsArt, layers: Object.freeze(layers), replaceableAssets: true, silhouetteRequired: true, reconstructionSupported: true, transforms: ASSET_TRANSFORMS, derivativeGateRequired: true, artBibleNormalization: true, variantGeneration: true, selfTransformExistingAssets:true, nonDestructiveVariants:true, variantTournament:true, defaultVariantCount:3, originalOverwriteForbidden:true }),
     animation: Object.freeze({ required: animationLevel > 0 || needsArt, states: Object.freeze(states), partSeparated: animationLevel >= 2, motionSyncRequired: true }),
     vfx: Object.freeze({ required: vfxLevel > 0 || animationLevel >= 2, hit: true, skill: true, death: true, screenFeedback: true }),
     audio: Object.freeze({ required: audioLevel > 0, bgm: audioLevel >= 2, sfx: true, eventDriven: true, mobileSafe: true }),
-    agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, gameplayAuthority:false, saveAuthority:false }),
+    agentRole: Object.freeze({ mode:'active-art-direction-v3', inspectWithoutPrompting:true, identifyMissingAssets:true, chooseReuseReconstructOrCreate:true, preferVerifiedCompanyAssetLibrary:true, followAssetAcquisitionOrder:true, createVisualDebtForFallback:true, requireGoldenSceneRuntimeEvidence:true, selfTransformExistingAssets:true, generateIndependentVariants:true, compareVariantsInActualPresentation:true, keepOriginalImmutable:true, prepareAnimationParts:true, connectAnimationAndVfx:true, compareActualPresentation:true, iteratePresentationDefects:true, gameplayAuthority:false, saveAuthority:false }),
     implementation: Object.freeze(implementation),
     steps: Object.freeze(unique(steps)),
-    qa: Object.freeze(['에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','성능/메모리']),
-    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true }),
+    qa: Object.freeze(['에셋 경로/라이선스/파생 허용','원본 불변/derived 경로 분리','변형 이력/부모 에셋 provenance','출처/귀속 메타데이터 보존','스타일 일관성','실루엣 식별성','파츠 분해/재조합 무결성','스프라이트/프레임 정상 로드','애니메이션 상태 전환','모션-판정 동기화','VFX 생명주기/중복 생성','오디오 이벤트 중복/누락','모바일 터치와 UI 겹침','실제 화면 표현 비교','Golden Scene 5종 런타임 캡처','주요 캐릭터/몹 primitive placeholder 제거','Visual Debt 해소','성능/메모리']),
+    policy: Object.freeze({ preserveGameplay: true, preserveSave: true, directEditPreferred: true, noPlaceholderArtForFinal: true, licenseBeforeDerivative: true, noUnverifiedDerivativeUse: true, proactiveArtIntervention:true, actualPresentationVerification:true, originalAssetImmutable:true, transformedAssetsUseDerivedPaths:true, assetVariantTournamentRequired:true, assetAcquisitionOrderEnforced:true, primitiveFallbackPrototypeOnly:true, visualDebtForFallbackRequired:true, goldenSceneRuntimeEvidenceRequired:true, markerOnlyPresentationPassForbidden:true }),
   });
 }
 

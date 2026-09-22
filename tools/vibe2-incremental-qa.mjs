@@ -218,6 +218,7 @@ function checkHtmlInlineScriptSyntax(text, file) {
   }
   return checked;
 }
+const GOLDEN_SCENE_RUNTIME_ROLES=Object.freeze(['PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP','PRIMARY_ENEMY_OR_CREATURE_CLOSEUP','CORE_GAMEPLAY_ACTION','WORLD_OR_REGION_WIDE','MOBILE_GAMEPLAY_HUD']);
 function presentationContract(data = {}) {
   const contract=data?.presentationQuality;
   return contract&&contract.required===true?contract:null;
@@ -357,6 +358,10 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     checks,
     runtimeStillRequired:true,
     runtimeChecks:Array.isArray(contract.runtimeChecks)?contract.runtimeChecks.map(clean).filter(Boolean):[],
+    goldenSceneRuntimeEvidenceRequired:target==='roblox'&&['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE'].includes(pass),
+    goldenSceneRoles:Object.freeze(GOLDEN_SCENE_RUNTIME_ROLES.slice()),
+    markerOnlyPresentationPassForbidden:true,
+    primaryActorPrimitivePlaceholderForbiddenAfterPrototype:target==='roblox',
     gameplaySemanticsPreservationRequired:true,
     authorityExpanded:false
   };
@@ -515,6 +520,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_PRESENTATION_QA_STATUS=${result.presentationQa?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_PRESENTATION_QA_PASS=${result.presentationQa?.pass||'NONE'}`);
     console.log(`VIBE2_PRESENTATION_RUNTIME_REQUIRED=${result.presentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
+    console.log(`VIBE2_GOLDEN_SCENE_RUNTIME_REQUIRED=${result.presentationQa?.goldenSceneRuntimeEvidenceRequired===true?'YES':'NO'}`);
+    console.log(`VIBE2_GOLDEN_SCENE_ROLES=${(result.presentationQa?.goldenSceneRoles||[]).join(',')||'NONE'}`);
     console.log(`VIBE2_WEATHER_PRESENTATION_QA_STATUS=${result.weatherPresentationQa?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_WEATHER_PRESENTATION_RUNTIME_REQUIRED=${result.weatherPresentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
     console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');

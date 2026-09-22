@@ -60,6 +60,9 @@ jobs:
           console.log('PASS art asset rights gate');
           NODE
 
+      - name: Validate Vibe runtime visual quality contract
+        run: node --test qa/vibe-visual-runtime-quality.test.mjs
+
       - name: Test gameplay quantitative analysis
         run: |
           node --input-type=module <<'NODE'
