@@ -1,240 +1,93 @@
--- roblox-games/daechung-rpg/client/Game.client.luau
--- Whatever RPG 모바일 전투 HUD / 전투 우선 조작
-
--- 서비스
+-- 대충 RPG 모바일 HUD: 마을 허브 + 포탈 사냥터 + 전투 UI
 local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
-
--- 참조
-local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 
--- 사운드
-local function sound(name,id,volume,looped)
- local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
+local function sound(name,id,volume)
+ local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s
 end
-local bgm=sound("RPGBackground",C.Audio.Background,.17,true)
-local battleBgm=sound("RPGBattleBGM",C.Audio.Battle,.18,true)
-local bossBgm=sound("RPGBossBGM",C.Audio.Boss,.2,true)
-local actionSfx=sound("RPGAction",C.Audio.Action,.28,false)
-local hitSfx=sound("RPGHit",C.Audio.Hit,.26,false)
-local skillSfx=sound("RPGSkill",C.Audio.Skill,.3,false)
-local levelSfx=sound("RPGLevelUp",C.Audio.LevelUp,.34,false)
-local bossAppearSfx=sound("RPGBossAppear",C.Audio.BossAppear,.34,false)
-local victorySfx=sound("RPGVictory",C.Audio.Victory,.34,false)
-local lastBosses=p:GetAttribute("BossesDefeated")or 0
-bgm:Play()
+local actionSfx=sound("RPGAction",C.Audio.Action,.22)
+local hitSfx=sound("RPGHit",C.Audio.Hit,.2)
+local skillSfx=sound("RPGSkill",C.Audio.Skill,.24)
+local levelSfx=sound("RPGLevel",C.Audio.LevelUp,.26)
 
--- UI 공통
-local gui=Instance.new("ScreenGui")
-gui.Name="DaechungRPGHUD"
-gui.ResetOnSpawn=false
-gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
-gui.Parent=p:WaitForChild("PlayerGui")
-
-local function roundify(target,radius)
- local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,radius or 12);corner.Parent=target
+local gui=Instance.new("ScreenGui");gui.Name="RPGHUD";gui.ResetOnSpawn=false;gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui.Parent=p:WaitForChild("PlayerGui")
+local function corner(x,r)local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,r or 10);c.Parent=x end
+local function stroke(x,t)local s=Instance.new("UIStroke");s.Thickness=1.3;s.Transparency=t or .5;s.Parent=x end
+local function button(parent,text,color)
+ local b=Instance.new("TextButton");b.Text=text;b.TextScaled=true;b.Font=Enum.Font.GothamBold;b.TextColor3=Color3.new(1,1,1);b.BackgroundColor3=color;b.Parent=parent;corner(b,11);stroke(b,.48);return b
 end
 
-local function outline(target,transparency)
- local stroke=Instance.new("UIStroke");stroke.Thickness=1.5;stroke.Transparency=transparency or .4;stroke.Parent=target
+local stats=Instance.new("Frame");stats.Name="RPGTopHUD";stats.Size=UDim2.fromOffset(254,72);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.BackgroundTransparency=.1;stats.Parent=gui;corner(stats,13);stroke(stats,.5)
+local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
+local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,39);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
+
+local objective=Instance.new("TextLabel");objective.Name="QuestObjective";objective.AnchorPoint=Vector2.new(.5,0);objective.Position=UDim2.new(.5,0,0,8);objective.Size=UDim2.fromOffset(330,38);objective.BackgroundColor3=Color3.fromRGB(31,34,43);objective.BackgroundTransparency=.12;objective.TextColor3=Color3.fromRGB(255,220,146);objective.TextWrapped=true;objective.TextSize=13;objective.Font=Enum.Font.GothamBold;objective.Parent=gui;corner(objective,11);stroke(objective,.52)
+
+local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
+local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-12,1,-10);partyText.Position=UDim2.fromOffset(6,5);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,232,241);partyText.TextSize=11;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
+
+local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,.5);combat.Position=UDim2.new(1,-12,.5,30);combat.Size=UDim2.fromOffset(62,174);combat.BackgroundTransparency=1;combat.Parent=gui
+local attack=button(combat,"공격",Color3.fromRGB(166,65,55));attack.Size=UDim2.fromOffset(58,50);attack.Position=UDim2.fromOffset(2,0)
+local skill=button(combat,"스킬",Color3.fromRGB(100,69,166));skill.Size=UDim2.fromOffset(58,50);skill.Position=UDim2.fromOffset(2,58)
+local dodge=button(combat,"회피",Color3.fromRGB(54,115,139));dodge.Size=UDim2.fromOffset(58,50);dodge.Position=UDim2.fromOffset(2,116)
+attack.Activated:Connect(function()actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
+skill.Activated:Connect(function()skillSfx:Play();remote:FireServer(C.Actions.SKILL)end)
+dodge.Activated:Connect(function()remote:FireServer(C.Actions.DODGE)end)
+
+local returnButton=button(gui,"마을 귀환",Color3.fromRGB(61,111,86));returnButton.Name="ReturnVillage";returnButton.AnchorPoint=Vector2.new(.5,1);returnButton.Position=UDim2.new(.5,0,1,-10);returnButton.Size=UDim2.fromOffset(116,36)
+returnButton.Activated:Connect(function()remote:FireServer(C.Actions.RETURN_VILLAGE)end)
+
+local multi=button(gui,"멀티 코드 1",Color3.fromRGB(55,76,119));multi.Name="MultiplayerCode";multi.AnchorPoint=Vector2.new(1,0);multi.Position=UDim2.new(1,-8,0,80);multi.Size=UDim2.fromOffset(112,32)
+multi.Activated:Connect(function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end)
+
+local hint=Instance.new("TextLabel");hint.Name="WorldHint";hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,8,1,-10);hint.Size=UDim2.fromOffset(220,34);hint.BackgroundColor3=Color3.fromRGB(25,28,35);hint.BackgroundTransparency=.3;hint.TextColor3=Color3.fromRGB(226,230,235);hint.TextSize=11;hint.Font=Enum.Font.Gotham;hint.TextWrapped=true;hint.Text="마을 포탈로 이동 · AI는 두 번 터치해 파티 초대";hint.Parent=gui;corner(hint,9)
+
+local function zoneName(id)
+ if id==0 then return"마을"end
+ local z=C.Portals[id];return z and z.Name or"지역"
 end
-
-local function makeButton(parent,text,color)
- local b=Instance.new("TextButton")
- b.BackgroundColor3=color
- b.TextColor3=Color3.fromRGB(255,255,255)
- b.Text=text
- b.TextScaled=true
- b.Font=Enum.Font.GothamBold
- b.Parent=parent
- roundify(b,12);outline(b,.48)
- return b
-end
-
-local flash=Instance.new("Frame")
-flash.Size=UDim2.fromScale(1,1)
-flash.BackgroundTransparency=1
-flash.BorderSizePixel=0
-flash.ZIndex=20
-flash.Parent=gui
-local function pulse(color)
- flash.BackgroundColor3=color;flash.BackgroundTransparency=.78
- task.delay(.14,function()if flash.Parent then flash.BackgroundTransparency=1 end end)
-end
-
--- 상단 캐릭터/파티 HUD
-local hud=Instance.new("Frame")
-hud.Name="RPGTopHUD"
-hud.AnchorPoint=Vector2.new(0,0)
-hud.Position=UDim2.fromOffset(8,8)
-hud.Size=UDim2.fromOffset(230,54)
-hud.BackgroundColor3=Color3.fromRGB(31,29,43)
-hud.BackgroundTransparency=.06
-hud.Parent=gui
-roundify(hud,14);outline(hud,.38)
-
-local status=Instance.new("TextLabel")
-status.Size=UDim2.new(1,-16,0,46)
-status.Position=UDim2.fromOffset(8,3)
-status.BackgroundTransparency=1
-status.TextColor3=Color3.fromRGB(240,236,255)
-status.TextWrapped=true
-status.TextScaled=false
-status.TextSize=13
-status.Font=Enum.Font.Gotham
-status.Parent=hud
-
-local note=Instance.new("TextLabel")
-note.Size=UDim2.fromOffset(260,26)
-note.AnchorPoint=Vector2.new(.5,0)
-note.Position=UDim2.new(.5,0,0,8)
-note.BackgroundColor3=Color3.fromRGB(52,46,70)
-note.BackgroundTransparency=.1
-note.TextColor3=Color3.fromRGB(255,215,115)
-note.TextWrapped=true
-note.TextScaled=true
-note.Font=Enum.Font.GothamBold
-note.Parent=gui
-roundify(note,9)
-
--- 전투 버튼: 오른손/왼손 모두 닿는 하단 중앙
-local combatDock=Instance.new("Frame")
-combatDock.Name="CombatDock"
-combatDock.AnchorPoint=Vector2.new(1,.5)
-combatDock.Position=UDim2.new(1,-12,.62,0)
-combatDock.Size=UDim2.fromOffset(62,174)
-combatDock.BackgroundTransparency=1
-combatDock.Parent=gui
-
-local combatActions={
- {C.Actions.ATTACK,"공격",Color3.fromRGB(167,67,63)},
- {C.Actions.SKILL,"스킬",Color3.fromRGB(105,72,184)},
- {C.Actions.DODGE,"회피",Color3.fromRGB(55,111,145)},
-}
-for i,a in ipairs(combatActions)do
- local b=makeButton(combatDock,a[2],a[3])
- b.Size=UDim2.fromOffset(58,50)
- b.Position=UDim2.fromOffset(2,(i-1)*58)
- b.Activated:Connect(function()
-  if a[1]==C.Actions.SKILL then skillSfx.TimePosition=0;skillSfx:Play()else actionSfx.TimePosition=0;actionSfx:Play()end
-  remote:FireServer(a[1])
- end)
-end
-
--- 보조 설정은 접어서 전투 화면을 가리지 않음
-local menuButton=makeButton(gui,"파티/장비",Color3.fromRGB(68,61,92))
-menuButton.Name="PartyMenuButton"
-menuButton.AnchorPoint=Vector2.new(1,0)
-menuButton.Position=UDim2.new(1,-10,0,8)
-menuButton.Size=UDim2.fromOffset(88,32)
-
-local secondary=Instance.new("Frame")
-secondary.Name="PartyMenu"
-secondary.AnchorPoint=Vector2.new(1,0)
-secondary.Position=UDim2.new(1,-10,0,46)
-secondary.Size=UDim2.fromOffset(168,154)
-secondary.BackgroundColor3=Color3.fromRGB(35,32,48)
-secondary.BackgroundTransparency=.05
-secondary.Visible=false
-secondary.Parent=gui
-roundify(secondary,14);outline(secondary,.4)
-
-local secondaryActions={
- {C.Actions.NEXT_CLASS,"직업 변경"},
- {C.Actions.NEXT_AI,"AI 성향"},
- {C.Actions.NEXT_RELIC,"장비 효과"},
- {C.Actions.UPGRADE_WEAPON,"무기 강화"},
-}
-for i,a in ipairs(secondaryActions)do
- local b=makeButton(secondary,a[2],Color3.fromRGB(77,68,104))
- b.Size=UDim2.new(1,-16,0,30)
- b.Position=UDim2.fromOffset(8,8+(i-1)*35)
- b.Activated:Connect(function()remote:FireServer(a[1])end)
-end
-
-menuButton.Activated:Connect(function()
- secondary.Visible=not secondary.Visible
- menuButton.Text=secondary.Visible and"메뉴 닫기"or"파티/장비"
-end)
-
--- 상태
-local function className()
- local id=p:GetAttribute("ClassId")or"BREAKER"
- for _,x in ipairs(C.Classes)do if x.Id==id then return x.Name end end
- return id
-end
-
-local function companionNames()
- local t={}
- for _,x in ipairs(C.Companions)do if p:GetAttribute("Companion_"..x.Id)==true then table.insert(t,x.Name)end end
- return #t>0 and table.concat(t,", ")or"없음"
-end
-
 local function render()
- status.Text=string.format("%s  Lv.%d  XP %d  골드 %d\n무기 T%d · 파티 %d/4 · 처치 %d",
-  className(),p:GetAttribute("Level")or 1,p:GetAttribute("XP")or 0,p:GetAttribute("Gold")or 0,
-  p:GetAttribute("WeaponTier")or 1,p:GetAttribute("PartySize")or 1,p:GetAttribute("Kills")or 0)
- note.Text=p:GetAttribute("LastAction")or"이장에게 가서 첫 동료를 만나."
-
- local bossEngaged=p:GetAttribute("BossEngaged")==true
- local inCombat=p:GetAttribute("InCombat")==true
- if bossEngaged then
-  if bgm.IsPlaying then bgm:Stop()end
-  if battleBgm.IsPlaying then battleBgm:Stop()end
-  if not bossBgm.IsPlaying then bossBgm:Play()end
-  note.BackgroundColor3=Color3.fromRGB(91,37,102)
- elseif inCombat then
-  if bgm.IsPlaying then bgm:Stop()end
-  if bossBgm.IsPlaying then bossBgm:Stop()end
-  if not battleBgm.IsPlaying then battleBgm:Play()end
-  note.BackgroundColor3=Color3.fromRGB(82,48,53)
- else
-  if battleBgm.IsPlaying then battleBgm:Stop()end
-  if bossBgm.IsPlaying then bossBgm:Stop()end
-  if not bgm.IsPlaying then bgm:Play()end
-  note.BackgroundColor3=Color3.fromRGB(52,46,70)
- end
-
- local bosses=p:GetAttribute("BossesDefeated")or 0
- if bosses>lastBosses then victorySfx.TimePosition=0;victorySfx:Play();pulse(Color3.fromRGB(245,200,90))end
- lastBosses=bosses
+ local level=p:GetAttribute("Level")or 1
+ local xp=p:GetAttribute("XP")or 0
+ local hp=0;local maxHP=p:GetAttribute("MaxHP")or 100
+ local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid");if h then hp=math.floor(h.Health)end
+ statLine.Text=string.format("Lv.%d  HP %d/%d  공격 %d
+골드 %d · 무기 T%d · 방어구 T%d",level,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1)
+ local zone=p:GetAttribute("CurrentZone")or 0
+ local qp=p:GetAttribute("QuestPortal")or 0
+ local qk=p:GetAttribute("QuestKills")or 0
+ local qn=p:GetAttribute("QuestNeed")or 0
+ if qp>0 then objective.Text=string.format("퀘스트 · %s 몬스터 %d/%d",zoneName(qp),qk,qn)else objective.Text=(p:GetAttribute("LastAction")or"마을 이장에게 퀘스트를 받아.")end
+ local pc=p:GetAttribute("PartyCount")or 0
+ local pk=p:GetAttribute("PartyKills")or 0
+ local contrib=p:GetAttribute("Contribution")or 0
+ partyText.Text=(p:GetAttribute("PartyHuntActive")==true)and string.format("파티 %d/4
+사냥 %d/%d · 기여 %d",pc+1,pk,C.PartyHuntTarget,contrib)or string.format("파티 %d/4
+AI 두번 터치",pc+1)
+ local combatLocked=p:GetAttribute("InCombat")==true
+ returnButton.Visible=zone>0
+ returnButton.Text=combatLocked and"전투 중 귀환 불가"or"마을 귀환"
+ returnButton.BackgroundColor3=combatLocked and Color3.fromRGB(104,65,65)or Color3.fromRGB(61,111,86)
+ multi.Text="멀티 코드 "..tostring(p:GetAttribute("RoomCode")or 1)
+ hint.Text=zone==0 and"포탈 1~5 선택 · AI 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")
 end
-
-local keys={"ClassId","Level","XP","Gold","WeaponTier","AIStyle","Relic","PartyMemory","Kills","PartySize","LastAction","BossesDefeated","InCombat","BossEngaged"}
-for _,x in ipairs(C.Companions)do table.insert(keys,"Companion_"..x.Id)end
-for _,k in ipairs(keys)do p:GetAttributeChangedSignal(k):Connect(render)end
-
+for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode"})do p:GetAttributeChangedSignal(k):Connect(render)end
+local function bindChar(c)local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
+if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
- local value=tostring(p:GetAttribute("FeedbackEvent")or"")
- if value:find("^ATTACK:")then hitSfx.TimePosition=0;hitSfx:Play();pulse(Color3.fromRGB(245,235,220))
- elseif value:find("^SKILL:")then skillSfx.TimePosition=0;skillSfx:Play();pulse(Color3.fromRGB(150,115,255))
- elseif value:find("^LEVEL_UP:")then levelSfx.TimePosition=0;levelSfx:Play();pulse(Color3.fromRGB(255,220,100))
- elseif value:find("^BOSS_APPEAR:")then bossAppearSfx.TimePosition=0;bossAppearSfx:Play();pulse(Color3.fromRGB(160,70,190))
- elseif value:find("^ELITE_KILL:")or value:find("^KILL:")then hitSfx.TimePosition=0;hitSfx:Play()
- elseif value:find("^VICTORY:")then victorySfx.TimePosition=0;victorySfx:Play();pulse(Color3.fromRGB(255,205,90))end
-end)
-
-remote.OnClientEvent:Connect(function(kind,snapshot)
- if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
- p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
- p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
+ local v=tostring(p:GetAttribute("FeedbackEvent")or"")
+ if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
 end)
 
 QACamera.install(C,gui,function()
- return{
-  {label="rpg-village-overview",position=Vector3.new(0,105,125),lookAt=Vector3.new(0,4,0)},
-  {label="rpg-village-ground",position=Vector3.new(0,18,62),lookAt=Vector3.new(0,5,0)},
-  {label="rpg-field-art",position=Vector3.new(120,32,105),lookAt=Vector3.new(72,5,58)},
-  {label="rpg-enemy-field",position=Vector3.new(-118,27,92),lookAt=Vector3.new(-70,4,45)},
-  {label="rpg-boss-arena",position=Vector3.new(0,38,-190),lookAt=Vector3.new(0,6,-128)},
- }
+ local shots={{label="rpg-village",position=Vector3.new(0,120,170),lookAt=Vector3.new(0,2,0)}}
+ for _,z in ipairs(C.Portals)do table.insert(shots,{label="rpg-portal-"..z.Id,position=z.Center+Vector3.new(0,95,150),lookAt=z.Center})end
+ return shots
 end)
-
-
 render()
