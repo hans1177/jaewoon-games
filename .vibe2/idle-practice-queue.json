@@ -37,6 +37,26 @@
       "sourceFailure": "fail_1agpu1k"
     },
     {
+      "id": "review-fail_lhx93q",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "SAVE",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "WEB_RUNTIME",
+        "PROGRESSION",
+        "QUEST_DESIGN",
+        "ECONOMY"
+      ],
+      "sourceFailure": "fail_lhx93q"
+    },
+    {
       "id": "review-fail_wu3qnk",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -56,26 +76,6 @@
         "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_wu3qnk"
-    },
-    {
-      "id": "review-fail_lhx93q",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "COMBAT",
-        "SAVE",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "WEB_RUNTIME",
-        "PROGRESSION",
-        "QUEST_DESIGN",
-        "ECONOMY"
-      ],
-      "sourceFailure": "fail_lhx93q"
     },
     {
       "id": "review-fail_3e38u6",
@@ -134,6 +134,26 @@
       "sourceFailure": "fail_1agpu1k"
     },
     {
+      "id": "relearn-fail_lhx93q",
+      "kind": "RELEARNING_REPLAY_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "SAVE",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "WEB_RUNTIME",
+        "PROGRESSION",
+        "QUEST_DESIGN",
+        "ECONOMY"
+      ],
+      "sourceFailure": "fail_lhx93q"
+    },
+    {
       "id": "relearn-fail_wu3qnk",
       "kind": "RELEARNING_REPLAY_DRILL",
       "priority": "high",
@@ -153,26 +173,6 @@
         "ANIMATION_FEEL"
       ],
       "sourceFailure": "fail_wu3qnk"
-    },
-    {
-      "id": "relearn-fail_lhx93q",
-      "kind": "RELEARNING_REPLAY_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CORE_LOOP",
-        "STATE_MACHINE",
-        "COMBAT",
-        "SAVE",
-        "MOBILE_INPUT",
-        "DEBUGGING",
-        "WEB_RUNTIME",
-        "PROGRESSION",
-        "QUEST_DESIGN",
-        "ECONOMY"
-      ],
-      "sourceFailure": "fail_lhx93q"
     },
     {
       "id": "phase4-generalization-capability_ctrace_7022dd1d29e03580f9fab379-control",
@@ -1181,16 +1181,6 @@
       ]
     },
     {
-      "id": "gap-state_machine-l15",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE"
-      ]
-    },
-    {
       "id": "gap-web_runtime-l15",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1208,6 +1198,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "DEBUGGING"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l16",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE"
       ]
     }
   ]
