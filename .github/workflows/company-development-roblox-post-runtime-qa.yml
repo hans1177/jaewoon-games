@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: company-development-roblox-runtime-foundation-qa
@@ -94,6 +95,7 @@ jobs:
               &&['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
           });
           let changed=false,passed=0,pending=0,failed=0;
+          const f9Ids=[];
           const stamp=new Date().toISOString();
 
           for(const item of candidates){
@@ -208,6 +210,7 @@ jobs:
                 item.executionEvidence.failureStage=null;
                 item.executionEvidence.failureSignature=null;
               }
+              f9Ids.push(item.gameId);
               passed++;
             }else{
               const cp=result.checkpointPass||{};
@@ -241,6 +244,7 @@ jobs:
           console.log(`ROBLOX_FOUNDATION_CANDIDATES=${candidates.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
+          fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
           console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
           NODE
 
@@ -267,3 +271,17 @@ jobs:
           done
           test "$pushed" = '1'
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
+
+      - name: Dispatch F9 review for runtime-accepted candidates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-f9-ids || exit 0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            echo "ROBLOX_F9_DISPATCHED=$id"
+          done < /tmp/roblox-f9-ids
+
