@@ -18,6 +18,7 @@ local Config={
     {Id="VOLCANO",Name="화산 유황요새",Enemy="화산 군단",BossName="유황 장군",Boss=true,Strength=105,Reward="Sulfur",Amount=8,Coins=45,IslandFinal=true},
   },
   Actions={CHOP="CHOP",FOOD="FOOD",HIRE="HIRE",WOOD_JOB="WOOD_JOB",FOOD_JOB="FOOD_JOB",BARRACKS="BARRACKS",RECRUIT="RECRUIT",ATTACK="ATTACK",SUPPORT="SUPPORT"},
+  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
   OwnerDirectDevelopment=true,
 }
 return table.freeze(Config)
