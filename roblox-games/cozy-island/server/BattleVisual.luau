@@ -15,7 +15,8 @@ end
 function BattleVisual.start(player,index,troops,config,style)
  BattleVisual.cleanup(player)
  local region=style.Regions[index+1]
- if not region then return end
+ local base=config.Bases[index]
+ if not region or not base then return end
  local world=workspace:FindFirstChild("CozyConquestWorld")or workspace
  local folder=Instance.new("Folder");folder.Name="Battle_"..player.UserId;folder.Parent=world;Active[player]=folder
  local start=style.Regions[1].Pos+Vector3.new(0,5,-18)
@@ -26,13 +27,26 @@ function BattleVisual.start(player,index,troops,config,style)
   local goal=target+Vector3.new(((i%4)-2)*3,0,math.floor((i-1)/4)*3)
   TweenService:Create(soldier,TweenInfo.new(1.8,Enum.EasingStyle.Linear),{Position=goal}):Play()
  end
- local strength=config.Bases[index].Strength or 20
- for i=1,math.min(8,math.max(3,math.floor(strength/15)))do
-  makePart(folder,"수비병",Vector3.new(2,4,2),target+Vector3.new((i%4)*4-8,0,-7+math.floor((i-1)/4)*4),Color3.fromRGB(157,73,62))
+ local defenderColor=index==1 and Color3.fromRGB(120,112,105)
+  or index==2 and Color3.fromRGB(151,126,76)
+  or index==3 and Color3.fromRGB(105,100,96)
+  or index==4 and Color3.fromRGB(170,120,58)
+  or Color3.fromRGB(118,47,38)
+ local strength=base.Strength or 20
+ local defenders=base.Boss and 9 or math.min(8,math.max(3,math.floor(strength/15)))
+ for i=1,defenders do
+  local d=makePart(folder,base.Enemy or"수비병",Vector3.new(base.Boss and 2.8 or 2,base.Boss and 5 or 4,base.Boss and 2.8 or 2),target+Vector3.new((i%4)*4-8,0,-7+math.floor((i-1)/4)*4),defenderColor)
+  d.Material=base.Boss and Enum.Material.Slate or Enum.Material.SmoothPlastic
+ end
+ if base.Boss then
+  local boss=makePart(folder,"Boss_"..(base.BossName or"최종수비대"),Vector3.new(9,12,9),target+Vector3.new(0,5,-2),Color3.fromRGB(79,39,34),Enum.Material.Basalt)
+  local light=Instance.new("PointLight");light.Color=region.Accent;light.Range=26;light.Brightness=3;light.Parent=boss
+  local gui=Instance.new("BillboardGui");gui.Size=UDim2.fromOffset(220,48);gui.StudsOffset=Vector3.new(0,8,0);gui.AlwaysOnTop=true;gui.Parent=boss
+  local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=1;label.TextScaled=true;label.Text=(base.BossName or"최종 보스").." · "..base.Name;label.TextColor3=Color3.fromRGB(255,195,110);label.TextStrokeTransparency=.2;label.Parent=gui
  end
  local pulse=makePart(folder,"BattlePulse",Vector3.new(3,3,3),target+Vector3.new(0,5,0),region.Accent,Enum.Material.Neon)
  pulse.Shape=Enum.PartType.Ball;pulse.Transparency=.25
- TweenService:Create(pulse,TweenInfo.new(2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=Vector3.new(18,18,18),Transparency=1}):Play()
+ TweenService:Create(pulse,TweenInfo.new(base.Boss and 2.8 or 2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=base.Boss and Vector3.new(30,30,30)or Vector3.new(18,18,18),Transparency=1}):Play()
 end
 
 function BattleVisual.finish(player,won)
