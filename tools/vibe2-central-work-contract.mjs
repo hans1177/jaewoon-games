@@ -232,6 +232,10 @@ function compileFailureRoute(task={},responsibleFiles=[]){
   };
 }
 
+function taskEvidenceValue(task={},prefixes=[]){return taggedValue(uniq(task?.evidence||[]),prefixes)}
+function compileCurrentTruth({task={},source={},mainSha='',responsibleFiles=[]}={}){return{gameId:clean(task.gameId)||null,approvedDesignRevision:clean(task.designRevision||taskEvidenceValue(task,['design-revision:']))||null,currentSourceRevision:clean(task.sourceRevision||task.robloxSourceCommit||mainSha)||null,currentInternalRobloxVersion:Number(task.internalRobloxVersion||task.robloxInternalReleaseVersion||taskEvidenceValue(task,['internal-roblox-version:']))||null,currentKnownGoodSourceRevision:clean(task.knownGoodSourceRevision||taskEvidenceValue(task,['known-good-source:']))||null,currentKnownGoodArtifact:clean(task.knownGoodArtifact||taskEvidenceValue(task,['known-good-artifact:']))||null,activeChangeSetId:clean(task.changeSet?.id||task.changeSetId)||null,openFailureEvidence:uniq([...(task.failureEvidence||[]),...(task.evidence||[]).filter(row=>/(?:failure|blocker|repair|required)/i.test(row))]).slice(0,24),styleLock:clean(task.styleLock||taskEvidenceValue(task,['style-lock:']))||null,policyVersion:source.version||null,mainSha:clean(mainSha)||null,responsibleFiles:uniq(responsibleFiles),compiledNotPersisted:true}}
+function compileAcceptanceContract(task={},plan={}){const explicit=task.acceptanceContract||task.changeSet?.acceptanceContract||{},observable=uniq([...(explicit.observable||[]),...(task.completionCriteria||[]),...(plan.qa||[])]);return{observable,markerOnlyPassForbidden:explicit.markerOnlyPassForbidden!==false,preserveExistingBehaviorRequired:explicit.preserveExistingBehaviorRequired!==false,exactRevisionRequired:explicit.exactRevisionRequired!==false,runtimeObservationRequired:clean(task.target).toLowerCase()==='roblox'||task.presentationQuality?.required===true||explicit.runtimeObservationRequired===true}}
+
 export function compileVibeCentralWorkContract({
   snapshot=null,
   task={},
@@ -278,6 +282,9 @@ export function compileVibeCentralWorkContract({
   const nextGate=clean(task?.nextGate||failureRoute.failureStage||orchestration?.implementationState?.nextGate)||null;
   const required=source.required===true||Number(orchestration?.version||0)>0;
   const dedupeKey=workKey&&source.fingerprint?sha256([workKey,source.version,source.fingerprint,uniq(responsibleFiles).join('|')].join(':')):null;
+  const currentTruth=compileCurrentTruth({task,source,mainSha:resolvedMainSha,responsibleFiles});
+  const acceptanceContract=compileAcceptanceContract(task,plan);
+  const changeSet=task.changeSet&&typeof task.changeSet==='object'?task.changeSet:{id:clean(task.changeSetId)||workKey,baseSourceRevision:clean(task.baseSourceRevision||resolvedMainSha)||null,status:clean(task.changeSetStatus)||'ACTIVE'};
   return{
     version:2,
     required,
@@ -315,6 +322,9 @@ export function compileVibeCentralWorkContract({
       target:clean(plan.target||task.target).toLowerCase()||null,
       executionRoute:clean(route.route)||null
     },
+    currentTruth,
+    changeSet,
+    acceptanceContract,
     writableScope:{
       exactResponsibleFiles:uniq(responsibleFiles),
       automaticExpansionAllowed:false,
@@ -374,6 +384,8 @@ export function compiledWorkContractGuidance(contract={}){
     contract.freshness?.liveMainRequired===true?`live-main-ref=${contract.freshness?.liveMainRef||'origin/main'}; refresh-before-check=YES`:'',
     `work-key=${request.workKey||'NONE'}; next-gate=${request.nextGate||'NONE'}; dedupe-key=${request.dedupeKey||'NONE'}`,
     `exact-writable-files=${(contract.writableScope?.exactResponsibleFiles||[]).join(', ')||'NONE'}`,
+    `current-truth-source=${contract.currentTruth?.currentSourceRevision||'UNKNOWN'}; change-set=${contract.changeSet?.id||'NONE'}`,
+    `acceptance=${(contract.acceptanceContract?.observable||[]).join(' | ')||'NONE'}`,
     `preserve=${(contract.invariants?.protectedSemantics||[]).join(', ')}`,
     `forbidden=${(contract.invariants?.forbiddenChanges||[]).join(', ')}`,
     `failure-stage=${failure.failureStage||'TASK_RESPONSIBILITY'}; last-passed-stage=${failure.lastPassedStage||'UNKNOWN'}; blocker=${failure.blocker||'NONE'}`,
