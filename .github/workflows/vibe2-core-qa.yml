@@ -241,6 +241,7 @@ jobs:
           node --check qa/vibe2-web-experience-ingest.test.mjs
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
+          node --check qa/vibe-roblox-co-development.test.mjs
           node --check qa/vibe2-native-asset-production.test.mjs
           node --check qa/vibe2-neural-diagnosis.test.mjs
           node --check qa/vibe2-neural-feedback.test.mjs
@@ -282,6 +283,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
