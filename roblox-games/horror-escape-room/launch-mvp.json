@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "gameId": "horror-escape-room",
   "gameName": "심야 술래잡기",
   "releaseStrategy": "FAST_MVP",
@@ -7,15 +7,18 @@
   "unityParallelNotBlockingRobloxMvp": true,
   "scopeFreeze": true,
   "launchCore": [
-    "three chase maps: school, abandoned hospital, abandoned theme park",
-    "map-specific random events",
+    "three distinct chase maps: beginner school, chase-heavy abandoned hospital, route-complex abandoned theme park",
+    "school areas: classrooms, corridor, cafeteria, gym and lockers",
+    "hospital areas: narrow corridor, wards, surgery room and basement zone",
+    "theme park areas: carousel, haunted house, ticket booths, hide booths and underground-passage zone",
+    "three map-specific random events per map",
     "player monster role selection",
     "fair forced monster rotation",
     "freeze/rescue",
     "survivor dash",
-    "five classic monsters",
+    "five classic monsters with distinct abilities",
     "solo AI fill",
-    "server-authoritative action validation and movement abuse guards"
+    "server-authoritative action validation, multiplayer sync and movement abuse guards"
   ],
   "deferredUntilAfterMvp": [
     "extra monsters",
@@ -25,6 +28,10 @@
   "releaseGates": [
     "3-map round rotation",
     "map event visibility",
+    "three map-specific events per map",
+    "theme-park carousel/haunted-house/ticket/underpass layout",
+    "hospital narrow-corridor/ward/surgery/basement layout",
+    "distinct school/classroom/cafeteria/gym layout",
     "1-player AI fill",
     "2+ player real monster assignment",
     "freeze/rescue sync",
@@ -48,7 +55,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-22T08:12:00+09:00",
+  "updatedAt": "2026-09-22T11:35:00+09:00",
   "externalReleaseCandidate": true,
-  "candidateScopeVersion": 3
+  "candidateScopeVersion": 4
 }
