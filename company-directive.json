@@ -1,7 +1,7 @@
 {
   "version": 1,
   "revision": 48,
-  "updatedAt": "2026-09-23T00:08:00+09:00",
+  "updatedAt": "2026-09-23T00:14:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -373,11 +373,11 @@
       "gemini-3.5-flash-lite"
     ],
     "departmentLeadModels": {
-      "planning": "llama3.2:1b",
-      "graphics": "llama3.2:1b",
-      "development": "llama3.2:1b",
-      "qa": "llama3.2:1b",
-      "balance": "llama3.2:1b",
+      "planning": "gemini-3.8-flash",
+      "graphics": "gemini-3.7-flash",
+      "development": "gemini-3.6-flash",
+      "qa": "gemini-3.5-flash",
+      "balance": "gemini-3.5-flash-lite",
       "audio": "llama3.2:1b"
     },
     "gameDesigner": {
@@ -528,7 +528,9 @@
     "robloxPreflightModel": "llama3.2:1b",
     "robloxValidationMode": "HEADLESS_FAST_MVP",
     "robloxStudioExecutionAllowed": false,
-    "robloxStudioEvidenceRequired": false
+    "robloxStudioEvidenceRequired": false,
+    "currentLeadModelSource": ".github/workflows/company-seed-design-runtime.yml#COMPANY_GEMINI_LEAD_MODELS",
+    "leadModelsAreRemappable": true
   },
   "classes": {
     "DESIGN_ONLY": {
@@ -607,16 +609,7 @@
         "DROP",
         "HOLD"
       ],
-      "waitingStates": [
-        "WAITING_WEB_PLAYABLE",
-        "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "WAITING_WEB_GAMEPLAY_REVALIDATION",
-        "WAITING_POST_WEB_ARTBOOK",
-        "WAITING_WEB_STRICT_IMPROVEMENT",
-        "WAITING_TARGET_PLATFORM_VALIDATION",
-        "WAITING_TARGET_PLATFORM_REVALIDATION",
-        "WAITING_REVALIDATION"
-      ],
+      "waitingStates": [],
       "terminalStates": [
         "DEVELOPMENT_BASELINE_READY",
         "DEVELOPMENT_BLOCKED"
@@ -669,7 +662,11 @@
       ],
       "preWebArtbookForbidden": true,
       "postWebArtbookRequiredForHomepage": true,
-      "legacyWebGateStatus": "LEGACY_DISABLED"
+      "legacyWebGateStatus": "LEGACY_DISABLED",
+      "repairStates": [
+        "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED"
+      ]
     },
     "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
@@ -696,7 +693,6 @@
       "finalArtbookOnlyAfterReleaseReady": true,
       "waitingStates": [
         "BUILDING",
-        "WAITING_WEB_COMPANION_VALIDATION",
         "WAITING_BUILD",
         "WAITING_RUNTIME_VALIDATION"
       ],
@@ -736,7 +732,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "priorityMeaning": "UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK",
+    "priorityMeaning": "ROBLOX_UNITY_ACTIVE_EQUAL_TIER_UEFN_OWNER_HOLD",
     "developmentAccess": {
       "ROBLOX": "ALWAYS_ALLOWED",
       "UNITY": "ALWAYS_ALLOWED",
