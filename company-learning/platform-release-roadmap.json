@@ -1,5 +1,5 @@
 {
-  "version": 266,
+  "version": 267,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -1024,11 +1024,12 @@
         "ROBLOX"
       ],
       "entryRequires": [
-        "PUBLIC_RELEASE_STATE",
-        "published-release-evidence",
-        "exact-release-source-revision",
-        "release-claim-pass"
+        "INTERNAL_OR_PUBLIC_RELEASE_STATE",
+        "release-evidence-or-verified-internal-release-exposure",
+        "exact-release-source-revision-when-available"
       ],
+      "internalPlatformReleaseCountsAsReleaseForFocusedDevelopment": true,
+      "publicReleaseStillRequiredForExternalPublicExposure": true,
       "state": "POST_RELEASE_FOCUSED_DEVELOPMENT",
       "scheduler": "vibe2-continuous-core",
       "queue": ".vibe2/queue.json",
@@ -4534,6 +4535,8 @@
         "daechung-rpg"
       ],
       "includeAllReleaseConfirmed": true,
+      "includeAllInternalPlatformRelease": true,
+      "internalPlatformReleaseCountsAsRelease": true,
       "caretakerMode": "PER_GAME_PERSISTENT",
       "oneLogicalCaretakerPerEligibleGame": true,
       "caretakerStickyOwnership": true,
@@ -4550,7 +4553,7 @@
       },
       "appliesBeforePublicRelease": true,
       "preservesExistingPostReleaseCaretaker": true,
-      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_RELEASE_CONFIRMED"
+      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_INTERNAL_OR_PUBLIC_RELEASED"
     },
     "directNativeDualPlatformDevelopment": {
       "required": true,
