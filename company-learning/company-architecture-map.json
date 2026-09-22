@@ -1,5 +1,5 @@
 {
-  "version": 92,
+  "version": 93,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -32,6 +32,29 @@
     "VERIFIED_RUNTIME_EVIDENCE",
     "RUNTIME_STATE"
   ],
+  "constitutionalEnforcement": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#ownerCanonicalRules",
+    "enforcer": "tools/company-constitution-enforcer.mjs",
+    "mode": "EXECUTABLE_FAIL_CLOSED_PER_SCOPE_GLOBAL_24H_CONTINUES",
+    "rules": [
+      "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
+      "RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION",
+      "RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE",
+      "RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION"
+    ],
+    "futureEnabledRulesAutoBind": true,
+    "policyQaRequired": true,
+    "plannerPreflightRequired": true,
+    "workerBeforeSourceWriteRequired": true,
+    "workerAfterExecutionRequired": true,
+    "constitutionFingerprintRequired": true,
+    "subordinateOverrideForbidden": true,
+    "globalTerminalStopState": null,
+    "global24hStopForbidden": true,
+    "specificScopeFailureAction": "QUARANTINE_OR_REQUEUE_RECOVER_REPLAN",
+    "unrelated24hWorkContinues": true
+  },
   "executionTopology": {
     "design": [
       "COMMON_CORE_DESIGN",
