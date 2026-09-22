@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "gameId": "horror-escape-room",
   "gameName": "심야 술래잡기",
   "releaseStrategy": "FAST_MVP",
@@ -46,7 +46,9 @@
     "footstep feedback",
     "freeze/rescue audio feedback",
     "result music",
-    "chase screen feedback"
+    "chase screen feedback",
+    "contextual survivor/monster action dock",
+    "lobby role selection separated from chase HUD"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -59,7 +61,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-22T12:05:00+09:00",
+  "updatedAt": "2026-09-22T12:20:00+09:00",
   "externalReleaseCandidate": true,
   "candidateScopeVersion": 4
 }
