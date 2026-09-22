@@ -11,6 +11,7 @@ local SoundService=game:GetService("SoundService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 
 -- 사운드
@@ -224,5 +225,16 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
  p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
 end)
+
+QACamera.install(C,gui,function()
+ return{
+  {label="rpg-village-overview",position=Vector3.new(0,105,125),lookAt=Vector3.new(0,4,0)},
+  {label="rpg-village-ground",position=Vector3.new(0,18,62),lookAt=Vector3.new(0,5,0)},
+  {label="rpg-field-art",position=Vector3.new(120,32,105),lookAt=Vector3.new(72,5,58)},
+  {label="rpg-enemy-field",position=Vector3.new(-118,27,92),lookAt=Vector3.new(-70,4,45)},
+  {label="rpg-boss-arena",position=Vector3.new(0,38,-190),lookAt=Vector3.new(0,6,-128)},
+ }
+end)
+
 
 render()
