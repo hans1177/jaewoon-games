@@ -245,6 +245,58 @@ local function makeArena(map)
  workspace:SetAttribute("MapBuilding",false)
  return f
 end
+local function recordServerQA(status)
+ pcall(function()
+  qaCaptureStore:UpdateAsync("latest",function(old)
+   local data=typeof(old)=="table"and old or{captures={}}
+   data.captures=typeof(data.captures)=="table"and data.captures or{}
+   table.insert(data.captures,{
+    gameId=C.GameId,label="SERVER",kind="STATUS",status=tostring(status):sub(1,160),
+    userId=0,capturedAt=os.time(),
+   })
+   while #data.captures>30 do table.remove(data.captures,1)end
+   data.updatedAt=os.time();data.gameId=C.GameId
+   return data
+  end)
+ end)
+end
+
+local function makeFallbackArena(map,reason)
+ local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
+ local nextArena=workspace:FindFirstChild("MidnightArenaNext");if nextArena then nextArena:Destroy()end
+ local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
+ Lighting.Brightness=2.05;Lighting.ClockTime=.35;Lighting.FogEnd=270
+ Lighting.Ambient=Color3.fromRGB(72,78,90);Lighting.OutdoorAmbient=Color3.fromRGB(58,64,76)
+ arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete)
+ for _,x in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(2,18,160),Vector3.new(x,9,0),Style.Wall,Enum.Material.Concrete)end
+ for _,z in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(160,18,2),Vector3.new(0,9,z),Style.Wall,Enum.Material.Concrete)end
+ zoneFloor(f,"SafeHall",Vector3.new(28,.35,126),Vector3.new(0,.68,0),Color3.fromRGB(125,130,139),Enum.Material.Concrete)
+ for _,z in ipairs({-48,-16,16,48})do
+  local lamp=arenaPart(f,"CeilingLight",Vector3.new(10,.5,2),Vector3.new(0,10,z),Style.SafeLight,Enum.Material.Neon)
+  lamp.CanCollide=false;glow(lamp,Style.SafeLight,22,1.1)
+ end
+ local chosen=map or C.Maps[1]
+ workspace:SetAttribute("CurrentMapId",chosen.Id)
+ workspace:SetAttribute("CurrentMapName",chosen.Name)
+ workspace:SetAttribute("CurrentMapEvent","")
+ workspace:SetAttribute("CurrentMapEventName","")
+ workspace:SetAttribute("MapEventGameplay","FALLBACK_SAFE_MAP")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_FALLBACK_SAFE_V1")
+ workspace:SetAttribute("MapBuilding",false)
+ workspace:SetAttribute("MapReady",true)
+ arena=f
+ recordServerQA("MAP_FALLBACK:"..tostring(reason or"unknown"))
+ return f
+end
+
+local function ensureArena(map)
+ local ok,result=pcall(function()return makeArena(map)end)
+ if ok and result and result.Parent and workspace:GetAttribute("MapReady")==true then
+  return result
+ end
+ return makeFallbackArena(map,ok and"NO_READY"or result)
+end
+
 local function clearBots()
  for _,b in ipairs(bots)do if b.part then b.part:Destroy()end end
  bots={};monsterBot=nil
@@ -335,8 +387,9 @@ local function startRound()
   -- 첫 라운드 학교 맵은 이미 프리로드되어 있으므로 절대 다시 지우지 않는다.
   arena=existing
  else
-  arena=makeArena(map)
+  arena=ensureArena(map)
  end
+ if not arena or workspace:GetAttribute("MapReady")~=true then arena=makeFallbackArena(map,"START_ROUND_NOT_READY")end
  monster,forced=choose(h);if monster then lastMonster=monster.UserId end
  for _,p in ipairs(h)do p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")end
  local si=1
@@ -483,7 +536,10 @@ game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end 
 
 -- 로비에서도 맵이 즉시 보여야 한다. 첫 라운드 전 학교 맵을 프리로드한다.
 if not workspace:FindFirstChild("MidnightArena")then
- arena=makeArena(C.Maps[1])
+ arena=ensureArena(C.Maps[1])
+end
+if not arena or workspace:GetAttribute("MapReady")~=true then
+ arena=makeFallbackArena(C.Maps[1],"BOOT_NOT_READY")
 end
 for _,p in ipairs(Players:GetPlayers())do
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
