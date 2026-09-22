@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-chatgpt-cozy-island-floating-runtime-hotfix",
+      "worker": "chatgpt",
+      "taskId": "cozy-island-floating-runtime-hotfix",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "tools/company-development-roblox-headless-fast-mvp.mjs",
+        "qa/company-development-roblox-headless-fast-mvp.test.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "baseSha": "93ab6139dd991cc4685e9bbe7de72c0a0cb5cc46",
+      "acquiredAt": "2026-09-22T17:06:31.969Z",
+      "expiresAt": "2026-09-22T17:51:31.969Z",
+      "status": "active",
+      "evidence": [
+        "owner-runtime-report:character-floating-on-game-start",
+        "source-regression:duplicate-tree-function-declaration",
+        "headless-game-start-false-positive"
+      ]
+    }
+  ]
 }
