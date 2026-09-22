@@ -1,0 +1,14 @@
+{
+  "summary": "Recovery attempt: found one actual source change",
+  "expectedEffect": "Preserve gameplay values, save meaning, approved multiplayer transport and existing behavior",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local inBattle=p:GetAttribute(\"InBattle\")==true",
+      "replace": "local inBattle = p:GetAttribute(\"InBattle\") == true"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

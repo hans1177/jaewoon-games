@@ -238,7 +238,7 @@ local function render()
   p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,
   p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
 
- local inBattle=p:GetAttribute("InBattle")==true
+ local inBattle = p:GetAttribute("InBattle") == true
  local activity=p:GetAttribute("LastActivity")or"나무/작물에 가까이 가서 직접 채집"
  objective.Text=inBattle and ("⚔ "..target.." · 전투 "..(p:GetAttribute("BattleProgress")or 0).."%") or (activity.."  |  다음: "..target)
 
