@@ -6,6 +6,7 @@ let refreshInFlight=false;
 let lastSignature='';
 let portfolioStatus={games:[],counts:{}};
 let platformExposure={games:[]};
+let unityWebValidationLinks=new Map();
 
 
 const getJson=async path=>{
@@ -165,6 +166,23 @@ function mergeGame(row){
   const webPath=allowWeb?canonicalWebHref(row):'';
   return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
+async function probeUnityWebValidation(catalog){
+  unityWebValidationLinks=new Map();
+  if(platformExposure?.unityWebEnabled!==true)return;
+  const ids=[...new Set((Array.isArray(catalog?.games)?catalog.games:[]).filter(activeLifecycle).map(gameIdOf).filter(Boolean))];
+  const rows=await Promise.all(ids.map(async id=>{
+    const manifest=await getJson(`/web-games/${id}/unity-web-build.json`);
+    const valid=manifest?.engine==='UNITY_WEB'
+      &&manifest?.gameId===id
+      &&manifest?.buildOutputRoot===`web-games/${id}`
+      &&manifest?.bootSmoke==='PASS'
+      &&manifest?.initialRealGameplayQa==='PASS'
+      &&manifest?.validationSurface===true
+      &&manifest?.releasePlatform===false;
+    return valid?[id,`/web-games/${id}/`]:null;
+  }));
+  for(const row of rows)if(row)unityWebValidationLinks.set(row[0],row[1]);
+}
 function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
   const platform=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
@@ -243,9 +261,11 @@ function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
   const state=platform=>{const p=(exposure?.platforms||[]).find(x=>normalizePlatform(x.platform)===platform);return platformReleaseLabel(p);};
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
+  const unityWeb=platformExposure?.unityWebEnabled===true?String(unityWebValidationLinks.get(game.id)||''):'';
   const actions=[
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
-    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction')
+    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'),
+    unityWeb?button(unityWeb,'Unity Web 테스트','Unity Web · 준비 중','webAction unityWebAction'):''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
   const direct=links.roblox||links.unity||'';
@@ -338,7 +358,8 @@ async function refresh(){
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
-    const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure]);
+    await probeUnityWebValidation(catalog);
+    const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure,[...unityWebValidationLinks.entries()]]);
     if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildGameCenter(catalog,status);buildRecentUpdates(catalog);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
