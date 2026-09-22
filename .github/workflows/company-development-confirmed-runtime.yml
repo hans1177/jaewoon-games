@@ -126,8 +126,9 @@ jobs:
             for(const file of files){
               const source=fs.readFileSync(file,'utf8');
               if(!/public\s+static\s+void\s+BuildWeb\s*\(/.test(source))continue;
+              const namespaceName=source.match(/\bnamespace\s+([A-Za-z_][A-Za-z0-9_.]*)/)?.[1]||'';
               const classes=[...source.matchAll(/(?:public\s+)?static\s+class\s+([A-Za-z_][A-Za-z0-9_]*)/g)].map(m=>m[1]);
-              if(classes.length===1)methods.push(`${classes[0]}.BuildWeb`);
+              if(classes.length===1)methods.push([namespaceName,classes[0],'BuildWeb'].filter(Boolean).join('.'));
             }
             const unique=[...new Set(methods)];
             return unique.length===1?unique[0]:null;
