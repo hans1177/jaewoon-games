@@ -321,7 +321,7 @@ function buildGameCenter(catalog,status){
   const available=internalReleaseRows(catalog,status);
   const availableIds=new Set(available.map(gameIdOf));
   const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
-  buildShelf(hub,'homePlatformAvailableGameCenter','게임 가능','플랫폼 내부 출시가 확인된 게임',available);
+  buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','현재 플레이 가능한 출시 게임',available);
   buildShelf(hub,'homeDevelopmentGameCenter','개발 중','플랫폼 개발이 진행 중인 게임',development);
   document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
   document.documentElement.dataset.homeDevelopmentCount=String(development.length);
