@@ -4,90 +4,101 @@ import fs from 'node:fs';
 
 const read=p=>fs.readFileSync(p,'utf8');
 const json=p=>JSON.parse(read(p));
-
 const cozyConfig=read('roblox-games/cozy-island/shared/GameConfig.luau');
 const cozyClient=read('roblox-games/cozy-island/client/Game.client.luau');
 const cozyServer=read('roblox-games/cozy-island/server/Game.server.luau');
 const cozyLaunch=json('roblox-games/cozy-island/launch-mvp.json');
-
 const rpgConfig=read('roblox-games/daechung-rpg/shared/GameConfig.luau');
 const rpgClient=read('roblox-games/daechung-rpg/client/Game.client.luau');
 const rpgServer=read('roblox-games/daechung-rpg/server/Game.server.luau');
 const rpgLaunch=json('roblox-games/daechung-rpg/launch-mvp.json');
 
-test('포근섬은 검증된 Creator Store BGM과 전투/승리 효과음을 런타임에 연결한다',()=>{
-  for(const id of ['1837169004','1847075059','7171761940','1839321582'])assert.match(cozyConfig,new RegExp(id));
-  assert.match(cozyClient,/SoundService/);
-  assert.match(cozyClient,/CozyBackground/);
-  assert.match(cozyClient,/CozyBattle/);
-  assert.match(cozyClient,/victorySfx:Play\(\)/);
-  assert.ok(cozyLaunch.releaseGates.includes('Creator Store BGM and gameplay SFX'));
-  assert.equal(cozyLaunch.evidencePolicy.audioFeedbackPassRequired,true);
+test('포근섬은 자동채집이 아니라 월드 자원 노드를 직접 채집한다',()=>{
+ assert.match(cozyConfig,/ManualGatherAmount=3/);
+ assert.match(cozyServer,/ManualGatherForest/);
+ assert.match(cozyServer,/ManualGatherFarm/);
+ assert.match(cozyServer,/ObjectText/);
+ assert.match(cozyServer,/"벌목"/);
+ assert.match(cozyServer,/"수확"/);
+ assert.doesNotMatch(cozyConfig,/AutoGatherTickSeconds/);
+ assert.doesNotMatch(cozyServer,/AutoGatherZone/);
+ assert.ok(cozyLaunch.launchCore.includes('manual world-node wood and food gathering'));
+ assert.ok(cozyLaunch.releaseGates.includes('no passive proximity gathering'));
 });
 
-test('Whatever RPG는 필드 음악 액션음 보스 승리음을 런타임에 연결한다',()=>{
-  for(const id of ['1839010065','1837821768','7171761940','1839321582'])assert.match(rpgConfig,new RegExp(id));
-  assert.match(rpgClient,/SoundService/);
-  assert.match(rpgClient,/RPGBackground/);
-  assert.match(rpgClient,/actionSfx:Play\(\)/);
-  assert.match(rpgClient,/victorySfx:Play\(\)/);
-  assert.ok(rpgLaunch.releaseGates.includes('Creator Store BGM and gameplay SFX'));
-  assert.equal(rpgLaunch.evidencePolicy.audioFeedbackPassRequired,true);
+test('포근섬 기본섬에는 NPC와 실제 공격 가능한 몹이 존재한다',()=>{
+ for(const marker of ['HomeNPCs','마을 이장','벌목반장','농장주','병영대장','HomeMobs','WildBoar','IslandRaider','멧돼지','섬 약탈병'])assert.match(cozyServer,new RegExp(marker));
+ assert.match(cozyServer,/Humanoid.*TakeDamage|h:TakeDamage/);
+ assert.match(cozyServer,/RespawnSeconds/);
+ assert.ok(cozyLaunch.releaseGates.includes('home-island NPC population'));
+ assert.ok(cozyLaunch.releaseGates.includes('home-island roaming mobs'));
 });
 
-test('포근섬 Remote는 한 서버 핸들러에서 허용 액션만 처리한다',()=>{
-  assert.equal((cozyServer.match(/remote\.OnServerEvent:Connect/g)||[]).length,1);
-  assert.match(cozyServer,/typeof\(a\)~="string"or not H\[a\]then return/);
-  assert.match(cozyServer,/C\.RateLimitSeconds/);
-  assert.match(cozyServer,/broadcastMultiplayerSync\(p\)/);
-  assert.ok(cozyLaunch.releaseGates.includes('remote action allowlist and spam rejection'));
-  assert.equal(cozyLaunch.evidencePolicy.abuseResistancePassRequired,true);
+test('포근섬은 주민 자동생산과 5거점 정복 루프를 유지한다',()=>{
+ assert.match(cozyServer,/AutomationTickSeconds/);
+ assert.match(cozyServer,/WoodWorkers/);
+ assert.match(cozyServer,/Farmers/);
+ assert.match(cozyServer,/BattleVisual\.start/);
+ assert.match(cozyServer,/NextBaseIndex/);
+ assert.match(cozyConfig,/Id="VOLCANO"/);
+ assert.match(cozyConfig,/Boss=true/);
 });
 
-test('Whatever RPG Remote는 allowlist와 rate limit 뒤에만 게임 액션과 동기화를 실행한다',()=>{
-  assert.equal((rpgServer.match(/remote\.OnServerEvent:Connect/g)||[]).length,1);
-  assert.match(rpgServer,/local allowedActions=\{\}/);
-  assert.match(rpgServer,/allowedActions\[a\]~=true then return/);
-  assert.match(rpgServer,/C\.RemoteMinInterval/);
-  assert.match(rpgServer,/broadcastMultiplayerSync\(p\)/);
-  assert.doesNotMatch(rpgServer,/if typeof\(action\)=="string" then broadcastMultiplayerSync/);
-  assert.ok(rpgLaunch.releaseGates.includes('remote action allowlist and spam rejection'));
-  assert.equal(rpgLaunch.evidencePolicy.abuseResistancePassRequired,true);
+test('포근섬 모바일 UI는 채집 버튼 없이 마을 운영과 정복만 배치한다',()=>{
+ for(const marker of ['TopHUD','ActionDock','ActionPopup','ManualGatherHint','마을','정복','기지 공격','병영 강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
+ assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,42\)/);
+ assert.match(cozyClient,/나무\/작물에 가까이 가서 직접 채집/);
+ assert.doesNotMatch(cozyClient,/AutoGatherStatus/);
 });
 
-
-test('포근섬 모바일 UI는 자동채집과 작은 마을/정복 운영 조작을 쓴다',()=>{
-  for(const marker of ['TopHUD','ActionDock','ActionPopup','AutoGatherStatus','자동채집','마을','정복','기지 공격','병영 강화','CoreUISafeInsets'])assert.match(cozyClient,new RegExp(marker));
-  assert.match(cozyClient,/hud\.Size=UDim2\.fromOffset\(286,58\)/);
-  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,42\)/);
-  assert.match(cozyClient,/actionPopup\.Visible=false/);
-  assert.match(cozyClient,/showGroup\(groupIndex\)/);
-  assert.doesNotMatch(cozyClient,/C\.Actions\.CHOP/);
-  assert.doesNotMatch(cozyClient,/C\.Actions\.FOOD[\s,})]/);
+test('대충 RPG는 마을 허브와 포탈 5개, 440x440 독립 지역을 가진다',()=>{
+ assert.match(rpgConfig,/Portals=\{/);
+ for(const id of [1,2,3,4,5])assert.match(rpgConfig,new RegExp('Id='+id+',Name='));
+ assert.equal((rpgServer.match(/"Portal"\.\./g)||[]).length>=1,true);
+ assert.match(rpgServer,/Vector3\.new\(440,2,440\)/);
+ assert.match(rpgServer,/makeVillage\(\)/);
+ assert.match(rpgServer,/for _,z in ipairs\(C\.Portals\)do makeZone\(z\)end/);
+ assert.ok(rpgLaunch.releaseGates.includes('five visible village portals'));
+ assert.ok(rpgLaunch.releaseGates.includes('five distinct large zones'));
 });
 
-test('Whatever RPG 모바일 UI는 오른손 전투 스택과 접힌 파티 장비 메뉴를 쓴다',()=>{
-  for(const marker of ['RPGTopHUD','CombatDock','PartyMenuButton','PartyMenu','공격','스킬','회피','파티/장비','CoreUISafeInsets'])assert.match(rpgClient,new RegExp(marker));
-  assert.match(rpgClient,/combatDock\.AnchorPoint=Vector2\.new\(1,\.5\)/);
-  assert.match(rpgClient,/combatDock\.Size=UDim2\.fromOffset\(62,174\)/);
-  assert.match(rpgClient,/b\.Size=UDim2\.fromOffset\(58,50\)/);
-  assert.match(rpgClient,/secondary\.Visible=not secondary\.Visible/);
+test('대충 RPG는 3번과 5번 지역 보스, 어그로/복귀 거리, 전투중 귀환 금지를 구현한다',()=>{
+ assert.match(rpgConfig,/Id=3,Name="룬 유적".*Boss=/s);
+ assert.match(rpgConfig,/Id=5,Name="심연 던전".*Boss=/s);
+ assert.match(rpgConfig,/Aggro=/);
+ assert.match(rpgConfig,/Leash=/);
+ assert.match(rpgServer,/if \(e\.part\.Position-e\.spawn\)\.Magnitude>z\.Leash/);
+ assert.match(rpgServer,/전투 중에는 마을로 돌아갈 수 없어/);
+ assert.match(rpgServer,/p:SetAttribute\("CurrentZone",0\)/);
 });
 
-test('포근섬 모바일 액션 팝업은 화면을 오래 가리지 않고 자동으로 닫힌다',()=>{
-  assert.match(cozyClient,/local popupToken=0/);
-  assert.match(cozyClient,/task\.delay\(4\.5/);
-  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,42\)/);
+test('대충 RPG 성장/상점은 레벨당 체력+10 공격+10과 장비 5단계를 가진다',()=>{
+ assert.match(rpgConfig,/LevelHPGain=10/);
+ assert.match(rpgConfig,/LevelAttackGain=10/);
+ assert.match(rpgConfig,/WeaponPrices=\{50,120,240,420,700\}/);
+ assert.match(rpgConfig,/ArmorPrices=\{45,110,220,390,650\}/);
+ assert.match(rpgServer,/WeaponMerchant/);
+ assert.match(rpgServer,/ArmorMerchant/);
+ assert.match(rpgServer,/while xp>=level\*100/);
 });
 
-test('포근섬은 수동 채집 Remote 없이 근처 자원을 자동으로 수확한다',()=>{
-  assert.match(cozyConfig,/AutoGatherTickSeconds=1\.5/);
-  assert.match(cozyConfig,/AutoGatherWoodRadius=34/);
-  assert.match(cozyConfig,/AutoGatherFoodRadius=28/);
-  assert.match(cozyServer,/ForestFloor/);
-  assert.match(cozyServer,/horizontalDistance\(root\.Position,forest\.Position\)<=C\.AutoGatherWoodRadius/);
-  assert.match(cozyServer,/horizontalDistance\(root\.Position,farm\.Position\)<=C\.AutoGatherFoodRadius/);
-  assert.match(cozyServer,/p:SetAttribute\("AutoGatherZone",zone\)/);
-  assert.doesNotMatch(cozyServer,/\[C\.Actions\.CHOP\]=chop/);
-  assert.doesNotMatch(cozyServer,/\[C\.Actions\.FOOD\]=food/);
+test('대충 RPG에는 지정된 10명 AI와 파티사냥 기여도 시스템이 있다',()=>{
+ for(const pair of [['NONE',2],['HEALER',2],['WARRIOR',3],['ARCHER',3]]){
+  const re=new RegExp('Class="'+pair[0]+'"','g');assert.equal((rpgConfig.match(re)||[]).length,pair[1]);
+ }
+ assert.match(rpgServer,/ClickDetector/);
+ assert.match(rpgServer,/한 번 더 눌러 파티 초대\/제외/);
+ assert.match(rpgConfig,/PartyHuntTarget=15/);
+ assert.match(rpgServer,/Contribution/);
+ assert.match(rpgServer,/파티 사냥 완료/);
+ assert.match(rpgServer,/ai\.def\.Class=="HEALER"/);
+ assert.match(rpgServer,/h\.Health=math\.min\(h\.MaxHealth,h\.Health\+10\)/);
+});
+
+test('대충 RPG UI는 포탈 이동을 월드에 맡기고 전투/귀환/파티 상태를 직관적으로 분리한다',()=>{
+ for(const marker of ['RPGTopHUD','QuestObjective','PartyStatus','CombatDock','ReturnVillage','MultiplayerCode','공격','스킬','회피','마을 귀환','AI 두번 터치'])assert.match(rpgClient,new RegExp(marker));
+ assert.match(rpgClient,/combat\.Size=UDim2\.fromOffset\(62,174\)/);
+ assert.match(rpgClient,/returnButton\.Visible=zone>0/);
+ assert.match(rpgClient,/전투 중 귀환 불가/);
+ assert.match(rpgClient,/멀티 코드 /);
 });
