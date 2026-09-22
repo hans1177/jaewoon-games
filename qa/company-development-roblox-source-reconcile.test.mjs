@@ -116,7 +116,16 @@ test('bound Roblox games re-enter reconciliation only when their own source tree
 test('Roblox runtime source rebind atomically invalidates stale downstream evidence',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   assert.match(workflow,/Revalidate exact-main Roblox source already merged/);
-  assert.match(workflow,/fetch-depth: 0/);
+  assert.match(workflow,/fetch-depth: 1/);
+  assert.match(workflow,/roblox-bound-source-revisions/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$revision"/);
+  assert.match(workflow,/mkdir -p \/tmp\/roblox-homepage-sync\/tools \/tmp\/roblox-homepage-sync\/company-learning/);
+  assert.match(workflow,/origin\/main:tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.match(workflow,/origin\/main:tools\/company-shared-context\.mjs/);
+  assert.match(workflow,/origin\/main:company-learning\/platform-release-roadmap\.json/);
+  assert.match(workflow,/node \/tmp\/roblox-homepage-sync\/tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.doesNotMatch(workflow,/git checkout origin\/main -- tools\/company-homepage-platform-exposure-sync\.mjs/);
+  assert.doesNotMatch(workflow,/homepage-platform-exposure\.json homepage-platform-exposure\.json/);
   for(const pattern of [
     /robloxBuildOrPackagePassed:false/,
     /robloxBuildArtifactIdentity:null/,
