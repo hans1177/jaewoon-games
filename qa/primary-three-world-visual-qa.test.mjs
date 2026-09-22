@@ -35,7 +35,8 @@ test('대충 RPG는 작은 단일 필드가 아니라 5개 대형 지역과 인�
  assert.match(server,/for i=1,10 do spawnEnemy/);
  assert.match(server,/AIUsers/);
  assert.match(server,/VillageHouse/);
- assert.match(server,/EnemyHead/);
+ assert.match(server,/CreateHumanoidModelFromDescription/);
+ assert.match(server,/Enemy_/);
  for(const marker of ['RPG_FIVE_PORTAL_ASSET_WORLD_V2','ChiefCape','SwordGuard','HealerHood','MarketStall','BeastFur','BeastMuzzle','BeastClawL'])assert.match(server,new RegExp(marker));
  assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
  assert.equal((config.match(/Class="(?:NONE|HEALER|WARRIOR|ARCHER)"/g)||[]).length,10);
