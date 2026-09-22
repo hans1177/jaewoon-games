@@ -1,5 +1,5 @@
 {
-  "version": 263,
+  "version": 264,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -5085,6 +5085,16 @@
           "retain": [
             "ROBLOX_PUBLICATION_TARGET_IDENTITY"
           ]
+        },
+        "robloxMetadataSync": {
+          "scope": "TITLE_DESCRIPTION_SERVER_SIZE",
+          "requiredOpenCloudScope": "universe.place:write",
+          "requiredForPrivateRuntimeCandidate": false,
+          "requiredForF1ToF8RuntimeFoundation": false,
+          "requiredForF9ExactCandidatePromotion": false,
+          "missingScopeAction": "METADATA_REPAIR_REQUIRED_WITHOUT_INVALIDATING_PUBLISHED_CANDIDATE_OR_RUNTIME_EVIDENCE",
+          "candidateDeploymentJobMustNotFailAfterSuccessfulExactPublishForMetadataOnlyFailure": true,
+          "metadataFailureMustRemainObservable": true
         }
       },
       "failureRouting": {
@@ -5220,7 +5230,8 @@
         "cozyIslandCoreLoopSuccessfulTransitionProof": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "robloxMainSourceDriftRebind": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "cozyIslandGroundContactTimeoutProbe": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
-        "robloxFoundationSentinelSequenceOrder": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED"
+        "robloxFoundationSentinelSequenceOrder": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
+        "robloxMetadataScopeIsolation": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5293,7 +5304,8 @@
           "f9BindsUniversePlaceVersion": true,
           "robloxMainSourceDriftRebind": true,
           "cozyIslandGroundContactTimeoutProbe": true,
-          "robloxFoundationSentinelSequenceOrder": true
+          "robloxFoundationSentinelSequenceOrder": true,
+          "robloxMetadataScopeIsolation": false
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
