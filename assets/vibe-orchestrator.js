@@ -16,7 +16,7 @@ if(detected.some(x=>['visual','ui'].includes(x))||hasAny(prompt,WORDS.graphics))
 if(detected.some(x=>['combat','wave','inventory','crafting','quest','skill','economy','save','mobile','multiplayer','ui'].includes(x))||hasAny(prompt,WORDS.create)||hasAny(prompt,WORDS.edit)){modules.push('assets/vibe-development-ai.js');departments.push('development')}
 if(hasAny(prompt,WORDS.repair)){modules.push('assets/vibe-quality-intelligence.js','assets/vibe-development-ai.js');departments.push('qa','development')}
 if(detected.includes('balance'))departments.push('balance');
-return Object.freeze({version:1,target:resolvedTarget,systems:Object.freeze(detected),departments:Object.freeze(unique(departments)),modules:Object.freeze(unique(modules)),authority:'existing-capability-router-only',newBrainCreated:false})
+const routed=Object.freeze(unique(modules));return Object.freeze({version:1,target:resolvedTarget,systems:Object.freeze(detected),departments:Object.freeze(unique(departments)),modules:routed,capabilities:routed,authority:'existing-capability-router-only',newBrainCreated:false})
 }
 export function classifyVibeOwnerInterrupt({request='',activeRequest='',activeSystems=[]}={}){
 const prompt=clean(request),systems=detectSystems(prompt),shared=systems.filter(x=>(activeSystems||[]).includes(x));let classification='LOCAL_FEATURE_CHANGE';
