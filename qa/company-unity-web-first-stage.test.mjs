@@ -29,7 +29,10 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     const req=JSON.parse(fs.readFileSync(path.join(tmp,'.build-requests','unity-web','sample-game.json'),'utf8'));
     assert.equal(req.projectPath,'unity-games/sample-game');
     assert.equal(req.outputRoot,'web-games/sample-game');
+    assert.equal(req.kind,'UNITY_WEB_VALIDATION_BUILD');
     assert.equal(req.fullGameplayPassAuthority,false);
+    assert.equal(req.nativeGateAuthority,false);
+    assert.equal(req.homepageTestSurface,true);
     assert.equal(req.postGatePlatformPipelineChanged,false);
   } finally {
     process.chdir(old);
