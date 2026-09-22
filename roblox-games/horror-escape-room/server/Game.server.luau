@@ -240,12 +240,12 @@ local function makeArena(map)
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local floorColor=map.Id=="SCHOOL"and Color3.fromRGB(96,102,111)or map.Id=="HOSPITAL"and Color3.fromRGB(78,92,91)or Color3.fromRGB(70,69,81)
  local floorMaterial=map.Id=="THEME_PARK"and Enum.Material.Asphalt or Enum.Material.Concrete
- arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),floorColor,floorMaterial)
- for _,x in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(2,18,160),Vector3.new(x,9,0),Style.Wall,Enum.Material.Concrete)end
- for _,z in ipairs({-79,79})do arenaPart(f,"OuterWall",Vector3.new(160,18,2),Vector3.new(0,9,z),Style.Wall,Enum.Material.Concrete)end
- -- 모든 맵 공통: 가장자리와 주요 동선을 눈으로 읽을 수 있게 약한 유도등 배치
- for _,x in ipairs({-62,-31,0,31,62})do
-  local edge=arenaPart(f,"EdgeGuide",Vector3.new(10,.25,1),Vector3.new(x,.62,-76),Color3.fromRGB(95,152,167),Enum.Material.Neon);edge.CanCollide=false
+ arenaPart(f,"Floor",Vector3.new(340,1,340),Vector3.new(0,0,0),floorColor,floorMaterial)
+ for _,x in ipairs({-169,169})do arenaPart(f,"OuterWall",Vector3.new(2,22,340),Vector3.new(x,11,0),Style.Wall,Enum.Material.Concrete)end
+ for _,z in ipairs({-169,169})do arenaPart(f,"OuterWall",Vector3.new(340,22,2),Vector3.new(0,11,z),Style.Wall,Enum.Material.Concrete)end
+ -- 대형 맵의 가장자리와 주요 동선을 읽을 수 있는 낮은 유도등
+ for _,x in ipairs({-145,-108,-72,-36,0,36,72,108,145})do
+  local edge=arenaPart(f,"EdgeGuide",Vector3.new(12,.18,1),Vector3.new(x,.62,-164),Color3.fromRGB(72,132,146),Enum.Material.Neon);edge.CanCollide=false;edge.Transparency=.28
  end
 
  if map.Id=="SCHOOL"then
@@ -282,6 +282,24 @@ local function makeArena(map)
   end
   arenaPart(f,"SchoolNoticeBoard",Vector3.new(12,6,.8),Vector3.new(-16,5,-28),Color3.fromRGB(126,89,54),Enum.Material.WoodPlanks)
   arenaPart(f,"SchoolClock",Vector3.new(4,4,.6),Vector3.new(16,7,-6),Color3.fromRGB(215,220,222),Enum.Material.SmoothPlastic)
+  -- 확장 구역: 도서관 / 과학동 / 운동장 / 강당
+  zoneFloor(f,"LibraryWing",Vector3.new(78,.35,72),Vector3.new(-118,.68,-70),Color3.fromRGB(105,99,92),Enum.Material.WoodPlanks)
+  zoneFloor(f,"ScienceWing",Vector3.new(78,.35,72),Vector3.new(118,.68,-70),Color3.fromRGB(103,112,118),Enum.Material.Concrete)
+  zoneFloor(f,"SchoolCourtyard",Vector3.new(92,.35,78),Vector3.new(-108,.68,104),Color3.fromRGB(79,112,79),Enum.Material.Grass)
+  zoneFloor(f,"Auditorium",Vector3.new(92,.35,78),Vector3.new(108,.68,104),Color3.fromRGB(103,74,67),Enum.Material.WoodPlanks)
+  zoneFloor(f,"SchoolWestConnector",Vector3.new(94,.35,16),Vector3.new(-72,.7,-28),Color3.fromRGB(128,130,132),Enum.Material.Marble)
+  zoneFloor(f,"SchoolEastConnector",Vector3.new(94,.35,16),Vector3.new(72,.7,-28),Color3.fromRGB(128,130,132),Enum.Material.Marble)
+  zoneFloor(f,"SchoolSouthConnector",Vector3.new(16,.35,92),Vector3.new(0,.7,108),Color3.fromRGB(128,130,132),Enum.Material.Marble)
+  for i=1,8 do
+   arenaPart(f,"LibraryShelf",Vector3.new(12,7,3),Vector3.new(-146+(i%4)*18,3.5,-92+math.floor((i-1)/4)*32),Color3.fromRGB(94,72,54),Enum.Material.WoodPlanks)
+   arenaPart(f,"ScienceBench",Vector3.new(12,3,5),Vector3.new(90+(i%4)*18,1.7,-92+math.floor((i-1)/4)*32),Color3.fromRGB(110,119,123),Enum.Material.Metal)
+  end
+  for i=1,5 do arenaPart(f,"AuditoriumSeat",Vector3.new(13,3,5),Vector3.new(78+i*12,1.7,86+(i%2)*18),Color3.fromRGB(118,61,57),Enum.Material.Fabric)end
+  addObjectiveStation(f,"도서관 단말",-Vector3.new(118,-3,70),1)
+  addObjectiveStation(f,"과학실 전원",Vector3.new(118,3,-70),2)
+  addObjectiveStation(f,"운동장 방송",Vector3.new(-108,3,104),3)
+  addObjectiveStation(f,"강당 비상패널",Vector3.new(108,3,104),4)
+  addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="HOSPITAL"then
   -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
   Lighting.FogEnd=132
@@ -312,6 +330,23 @@ local function makeArena(map)
   for _,z in ipairs({-56,-28,0,28,56})do
    local strip=arenaPart(f,"HospitalGuideStrip",Vector3.new(8,.18,1),Vector3.new(0,.78,z),Color3.fromRGB(111,215,190),Enum.Material.Neon);strip.CanCollide=false
   end
+  -- 확장 구역: 응급실 / 약국 / 영안실 / 하역장
+  zoneFloor(f,"EmergencyWing",Vector3.new(82,.35,76),Vector3.new(-118,.68,-82),Color3.fromRGB(102,116,113),Enum.Material.Concrete)
+  zoneFloor(f,"PharmacyWing",Vector3.new(82,.35,76),Vector3.new(118,.68,-82),Color3.fromRGB(98,112,108),Enum.Material.Concrete)
+  zoneFloor(f,"MorgueWing",Vector3.new(86,.35,76),Vector3.new(-118,.68,108),Color3.fromRGB(65,71,72),Enum.Material.Concrete)
+  zoneFloor(f,"LoadingDock",Vector3.new(86,.35,76),Vector3.new(118,.68,108),Color3.fromRGB(76,77,78),Enum.Material.Concrete)
+  zoneFloor(f,"HospitalCrossA",Vector3.new(120,.35,14),Vector3.new(-70,.7,-20),Color3.fromRGB(109,122,119),Enum.Material.Concrete)
+  zoneFloor(f,"HospitalCrossB",Vector3.new(120,.35,14),Vector3.new(70,.7,-20),Color3.fromRGB(109,122,119),Enum.Material.Concrete)
+  for i=1,8 do
+   arenaPart(f,"EmergencyBed",Vector3.new(10,2,5),Vector3.new(-148+(i%4)*19,1.5,-104+math.floor((i-1)/4)*30),Color3.fromRGB(167,180,181),Enum.Material.Metal)
+   arenaPart(f,"PharmacyShelf",Vector3.new(12,7,3),Vector3.new(88+(i%4)*19,3.5,-104+math.floor((i-1)/4)*30),Color3.fromRGB(126,137,135),Enum.Material.Metal)
+  end
+  for i=1,6 do arenaPart(f,"MorgueDrawer",Vector3.new(8,5,3),Vector3.new(-150+i*11,2.5,116+(i%2)*15),Color3.fromRGB(97,106,107),Enum.Material.Metal)end
+  addObjectiveStation(f,"응급실 발전기",Vector3.new(-118,3,-82),1)
+  addObjectiveStation(f,"약국 보안패널",Vector3.new(118,3,-82),2)
+  addObjectiveStation(f,"영안실 퓨즈",Vector3.new(-118,3,108),3)
+  addObjectiveStation(f,"하역장 셔터",Vector3.new(118,3,108),4)
+  addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
   zoneFloor(f,"ParkMainPath",Vector3.new(20,.3,142),Vector3.new(0,.66,0),Color3.fromRGB(92,82,103),Enum.Material.Concrete)
@@ -348,6 +383,23 @@ local function makeArena(map)
   arenaPart(f,"UnderpassWallR",Vector3.new(72,8,2),Vector3.new(0,4,-58),Color3.fromRGB(62,63,70),Enum.Material.Concrete)
   local sign=arenaPart(f,"ParkLandmarkSign",Vector3.new(18,5,1),Vector3.new(0,9,-30),Color3.fromRGB(222,105,178),Enum.Material.Neon);glow(sign,sign.Color,26,1.4)
   for _,x in ipairs({-45,45})do local guide=arenaPart(f,"ParkRouteGuide",Vector3.new(12,.18,1.2),Vector3.new(x,.8,-30),Color3.fromRGB(111,201,225),Enum.Material.Neon);guide.CanCollide=false end
+  -- 확장 구역: 아케이드 / 범퍼카 / 푸드코트 / 정비구역
+  zoneFloor(f,"ArcadeZone",Vector3.new(86,.35,74),Vector3.new(-118,.68,-92),Color3.fromRGB(73,58,82),Enum.Material.Slate)
+  zoneFloor(f,"BumperCarZone",Vector3.new(86,.35,74),Vector3.new(118,.68,-92),Color3.fromRGB(84,70,88),Enum.Material.Asphalt)
+  zoneFloor(f,"FoodCourtZone",Vector3.new(88,.35,76),Vector3.new(-118,.68,108),Color3.fromRGB(94,77,76),Enum.Material.Concrete)
+  zoneFloor(f,"MaintenanceYard",Vector3.new(88,.35,76),Vector3.new(118,.68,108),Color3.fromRGB(64,65,72),Enum.Material.Concrete)
+  for i=1,10 do
+   local arcade=arenaPart(f,"ArcadeCabinet",Vector3.new(4,7,4),Vector3.new(-151+(i%5)*16,3.5,-112+math.floor((i-1)/5)*28),Color3.fromRGB(104,64+(i%3)*15,130),Enum.Material.Metal)
+   local scr=arenaPart(f,"ArcadeGlow",Vector3.new(2.8,2,.2),arcade.Position+Vector3.new(0,1,-2.1),Color3.fromRGB(89,183,214),Enum.Material.Neon);scr.CanCollide=false
+  end
+  for i=1,8 do arenaPart(f,"BumperCar",Vector3.new(7,3,9),Vector3.new(86+(i%4)*20,2,-112+math.floor((i-1)/4)*30),Color3.fromRGB(140+(i%2)*45,69,92+(i%3)*28),Enum.Material.Metal)end
+  for i=1,8 do arenaPart(f,"FoodTable",Vector3.new(9,2,6),Vector3.new(-151+(i%4)*19,1.5,88+math.floor((i-1)/4)*30),Color3.fromRGB(124,94,72),Enum.Material.WoodPlanks)end
+  for i=1,8 do arenaPart(f,"MaintenanceCrate",Vector3.new(7,6,7),Vector3.new(88+(i%4)*19,3,88+math.floor((i-1)/4)*30),Color3.fromRGB(78,72,68),Enum.Material.WoodPlanks)end
+  addObjectiveStation(f,"아케이드 전력",Vector3.new(-118,3,-92),1)
+  addObjectiveStation(f,"범퍼카 제어반",Vector3.new(118,3,-92),2)
+  addObjectiveStation(f,"푸드코트 셔터",Vector3.new(-118,3,108),3)
+  addObjectiveStation(f,"정비실 발전기",Vector3.new(118,3,108),4)
+  addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
 
  local events=map.Events or {}
@@ -360,7 +412,10 @@ local function makeArena(map)
  end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_PLAYABLE_ART_V6")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_ASSET_ESCAPE_V7")
+ workspace:SetAttribute("EscapeUnlocked",false)
+ workspace:SetAttribute("SurvivorEscapeTriggered",false)
+ decorateArenaWithOfficialAssets(f,map)
  workspace:SetAttribute("MapReady",true)
  workspace:SetAttribute("MapBuilding",false)
  return f
