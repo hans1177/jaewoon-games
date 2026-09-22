@@ -16,7 +16,7 @@ function fixtures(){
   const launchers=[launcher];
   return{
     policy,log,arch,security,launcher,launchers,
-    policyJson:{version:36,developmentLifecycleMachine:{
+    policyJson:{version:36,ownerCanonicalRules:{"version":5,"authority":"OWNER_DIRECTIVE_TEST","constitutionalAuthority":"HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY","rule1Handling":"RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES","constitutionalBinding":{"version":1,"authority":"OWNER_DIRECTIVE_TEST","mode":"DYNAMIC_CANONICAL_RULE_AUTO_BIND","automaticContractBinding":true,"appliesToAllCurrentAndFutureRegisteredVibeWorkers":true,"appliesToAllInternalAiDepartmentsAndAutonomousSubsystems":true,"workerMayNotOptOut":true,"childContractMayNotOverride":true,"runtimeMayNotSilentlyAmend":true,"onlyOwnerDirectiveMayCreateAmendDisableOrRemoveCanonicalRule":true,"ruleDiscoveryKeyPattern":"rule<N>","ruleIdentityPattern":"RULE_<N>_*","orderResolution":"IMPLEMENTATION_ORDER_FIRST_THEN_NUMERIC_AUTO_APPEND","futureCanonicalRulesAutoBindWithoutWorkerCodeChange":true,"executionFingerprintMustIncludeEveryEnabledCanonicalRule":true,"sharedContextMustCompileEveryEnabledCanonicalRule":true,"centralWorkContractMustEmbedEveryEnabledCanonicalRule":true,"workerInstructionMustExposeOrderedCanonicalRules":true,"beforeWorkValidationRequired":true,"afterWorkValidationRequired":true,"staleConstitutionMayNotStartWork":true,"staleConstitutionMayNotCompleteWork":true,"missingOrInvalidBindingAction":"FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE","constitutionChangeInvalidatesActiveWorkerExecutionFingerprint":true,"subordinatePolicyCannotWeakenCanonicalRule":true},"rule1":{"id":"RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT","label":"제1규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"CONTINUE"},"rule2":{"id":"RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION","label":"제2규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"SECURE_AND_VERIFY"},"rule3":{"id":"RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE","label":"제3규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"LEARN"},"rule4":{"id":"RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION","label":"제4규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"EVOLVE"},"implementationOrder":["RULE_1","RULE_2","RULE_3","RULE_4"],"orderedImplementationRequired":true},developmentLifecycleMachine:{
       sharedWorkerContext:{version:2,requiredForAllWorkers:true,centralPolicy:policy,logMap:log,architectureMap:arch,securityPolicy:security,documentIsCode:true,roadmapIsExecutableContract:true,workerLauncherSyncRequired:true,workerLauncherWorkflows:launchers,staleContextMayNotStartWork:true,staleContextMayNotCompleteWork:true,syncMode:'ROADMAP_FIRST_FAIL_CLOSED',completionRequiresSharedContextSync:true,mismatchAction:'BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE'},
       securityImmuneSystem:{policyFile:security},
       primaryAiOrchestration:{orchestrator:'CHATGPT_PRIMARY_AI',role:'PRIMARY_AI_NON_BLOCKING_SUPERVISOR',presenceRequiredForAutonomousWork:false,absenceBlocksWorkerProgress:false,workersContinue24hFromCentralContract:true,reviewRequiredForWorkerCompletion:false,deterministicEvidenceCreatesVerifiedCheckpoint:true,verifiedCheckpointDoesNotStopBrain:true,gameSourceAuthoring:false,gameImplementationOwner:['VIBE2','VIBE3'],externalAiWorkerPolicy:{maySelfPromoteToOrchestrator:false,mayIssueFinalSystemCompletionVerdict:false},internalVibeAiCollaboration:{scope:'ALL_VIBE_INTERNAL_AI_AUTONOMOUS_WORKERS_NEURAL_DIAGNOSIS_CRITIC_ROOT_CAUSE_RECOVERY_PLANNER_IMPLEMENTATION_QA_RELEASE_SECURITY_AND_LEARNING_SYSTEMS',collaborationMode:'PRIMARY_AI_NON_BLOCKING_COPILOT_OVERLAY',autonomous24hExecutionContinuesWithoutPrimaryAi:true,primaryAiPresenceIsRuntimeGate:false,appliesToExistingAndFutureRegisteredInternalAi:true,directMainWriteGrantedByCollaboration:false,policyMutationAuthorityGrantedByCollaboration:false,selfAcceptanceGrantedByCollaboration:false,capabilityGrowthRoleLock:{primaryAiRoleAfterCapabilityGrowth:'NON_BLOCKING_ASSISTANT_AND_COLLABORATOR',capabilityMayIncrease:true,authorityMayAutoIncrease:false,primaryAiMayBecomeRuntimeOwner:false,primaryAiMayReplaceDeterministicQa:false,primaryAiMayReplaceVibeImplementationOwnership:false}}}
@@ -43,6 +43,9 @@ test('roadmap-first shared context validates registered worker launcher',()=>{
     assert.equal(result.documentIsCode,true);
     assert.equal(result.roadmapSynchronized,true);
     assert.equal(result.workerLaunchersValidated,1);
+    assert.equal(result.constitution.automaticContractBinding,true);
+    assert.deepEqual(result.constitution.orderedRuleIds,['RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT','RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION','RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE','RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION']);
+    assert.equal(result.constitution.ruleCount,4);
   }finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
@@ -83,5 +86,25 @@ test('Vibe capability growth cannot auto-promote Primary AI or worker authority'
   f.policyJson.developmentLifecycleMachine.primaryAiOrchestration.internalVibeAiCollaboration.capabilityGrowthRoleLock.authorityMayAutoIncrease=true;
   setup(cwd,f);const previous=process.cwd();process.chdir(cwd);
   try{assert.throws(()=>validateSharedWorkerContext(),/VIBE_CAPABILITY_AUTHORITY_SEPARATION/);}
+  finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+
+test('future owner canonical rule auto-binds without worker code change',()=>{
+  const cwd=root(),f=fixtures();
+  f.policyJson.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
+  setup(cwd,f);const previous=process.cwd();process.chdir(cwd);
+  try{
+    const result=validateSharedWorkerContext();
+    assert.equal(result.constitution.ruleCount,5);
+    assert.equal(result.constitution.orderedRuleIds.at(-1),'RULE_5_FUTURE_OWNER_CONSTITUTION');
+  }finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('worker context fails closed when constitutional auto-binding is weakened',()=>{
+  const cwd=root(),f=fixtures();
+  f.policyJson.ownerCanonicalRules.constitutionalBinding.automaticContractBinding=false;
+  setup(cwd,f);const previous=process.cwd();process.chdir(cwd);
+  try{assert.throws(()=>validateSharedWorkerContext(),/OWNER_CANONICAL_CONSTITUTION:CONSTITUTION_AUTO_BIND/);}
   finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
 });
