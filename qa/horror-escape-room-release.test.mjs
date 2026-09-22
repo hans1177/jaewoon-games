@@ -55,7 +55,7 @@ test('서버가 순간이동 속도조작 맵밖 이동을 되돌린다',()=>{
 });
 
 test('검증된 Creator Store 오디오가 실제 런타임에 연결된다',()=>{
-  for(const id of ['9044889073','9042664292','1837829181','9043346574'])assert.match(config,new RegExp(id));
+  for(const id of ['9043557976','9042664292','1837829181','9043346574'])assert.match(config,new RegExp(id));
   assert.match(client,/local SoundService=game:GetService\("SoundService"\)/);
   assert.match(client,/bgm:Play\(\)/);
   assert.match(client,/chase:Play\(\)/);
@@ -106,4 +106,15 @@ test('1인 플레이는 로비부터 맵 안에서 시작하고 역할 선택 �
   assert.match(server,/if #Players:GetPlayers\(\)==1 and soloStartRequested then break end/);
   assert.match(config,/SoloPlayable=true/);
   assert.match(config,/TargetPopulation=6/);
+});
+
+test('심야 BGM은 평상시 가벼운 서스펜스이고 강한 추격곡은 괴물이 가까울 때만 재생한다',()=>{
+  assert.match(config,/Background="rbxassetid:\/\/9043557976"/);
+  assert.match(client,/MidnightBackground",C\.Audio\.Background,\.11,true/);
+  assert.match(client,/MidnightChase",C\.Audio\.Chase,\.14,true/);
+  assert.match(client,/local function nearestMonsterDistance\(\)/);
+  assert.match(client,/local near=distance<=32/);
+  assert.match(client,/local danger=distance<=17/);
+  assert.match(client,/if near then/);
+  assert.match(client,/bgm\.Volume=near and \.045 or \.105/);
 });
