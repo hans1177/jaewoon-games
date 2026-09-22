@@ -56,6 +56,7 @@ export async function fetchRobloxRuntimeFoundationEvidence({universeId='',apiKey
   const url=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/data-stores/${encodeURIComponent(store)}/entries/${encodeURIComponent(entry)}`;
   const response=await fetch(url,{headers:{'x-api-key':key}});
   const text=await response.text();
+  if(response.status===401||response.status===403)throw new Error(`ROBLOX_FOUNDATION_DATASTORE_PERMISSION_DENIED:requires universe-datastores.objects:read:HTTP_${response.status}:${text.slice(0,220)}`);
   if(!response.ok)throw new Error(`ROBLOX_FOUNDATION_DATASTORE_HTTP_${response.status}:${text.slice(0,300)}`);
   let body;try{body=JSON.parse(text);}catch{throw new Error('ROBLOX_FOUNDATION_DATASTORE_INVALID_JSON');}
   return body&&typeof body.value==='object'&&body.value!==null?body.value:body;
