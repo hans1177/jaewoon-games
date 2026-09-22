@@ -1280,17 +1280,20 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-test('shared reserve state stays serialized while fan-in uses run-unique pending slots',()=>{
+test('24H plan uses optimistic writes while reserve stays serialized and fan-in stays run-unique',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const core=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
-  assert.match(runner,/concurrency:\n\s+group: vibe2-24h-cycle-main\n\s+cancel-in-progress: false\n\s+queue: max/);
+  assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
 
   const planStart=runner.indexOf('\n  plan:');
-  const planSteps=runner.indexOf('\n    steps:',planStart);
-  assert.ok(planStart>=0&&planSteps>planStart);
-  const planHeader=runner.slice(planStart,planSteps);
-  assert.match(planHeader,/group: vibe2-control-state-vibe2-unreal-core\n\s+cancel-in-progress: false\n\s+queue: max/);
+  const recoveryStart=runner.indexOf('\n  recovery_fast:',planStart);
+  assert.ok(planStart>=0&&recoveryStart>planStart);
+  const planBlock=runner.slice(planStart,recoveryStart);
+  assert.doesNotMatch(planBlock,/group: vibe2-control-state-vibe2-unreal-core/);
+  assert.match(planBlock,/VIBE2_AUTOPLAN_ATTEMPT=\$attempt\/5/);
+  assert.match(planBlock,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(planBlock,/if git push origin HEAD:vibe2-unreal-core; then/);
 
   const reserveStart=core.indexOf('\n  reserve:');
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
