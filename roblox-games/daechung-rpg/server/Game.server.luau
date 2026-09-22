@@ -14,7 +14,7 @@ local world=nil
 local enemies={}
 local companionParts={}
 local lastHit={}
-local remoteLast={}
+local lastRequest={}
 local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
@@ -142,8 +142,8 @@ local function broadcastMultiplayerSync(actor)
 end
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return end
- local now=os.clock();if now-(remoteLast[p]or 0)<C.RemoteMinInterval then return end
- remoteLast[p]=now
+ local now=os.clock();if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end
+ lastRequest[p]=now
  if a==C.Actions.ATTACK then local x=class(p);hit(p,(x.Damage or 10)+n(p,"WeaponTier",1)*3+n(p,"Level",1),15)
  elseif a==C.Actions.SKILL then local x=class(p);local bonus=p:GetAttribute("Relic")=="FURY"and 10 or 0;hit(p,(x.Skill or 25)+n(p,"WeaponTier",1)*4+bonus,26)
  elseif a==C.Actions.DODGE then local r=root(p);if r then r.AssemblyLinearVelocity=r.CFrame.LookVector*48+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
@@ -179,7 +179,7 @@ Players.PlayerAdded:Connect(function(p)
  task.defer(rebuildCompanions)
 end)
 for _,p in ipairs(Players:GetPlayers())do load(p);for _,x in ipairs(C.Companions)do p:GetAttributeChangedSignal("Companion_"..x.Id):Connect(rebuildCompanions)end end
-Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;remoteLast[p]=nil;task.defer(rebuildCompanions)end)
+Players.PlayerRemoving:Connect(function(p)save(p);lastHit[p]=nil;lastRequest[p]=nil;task.defer(rebuildCompanions)end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 RunService.Heartbeat:Connect(function(dt)
