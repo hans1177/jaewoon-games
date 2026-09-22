@@ -26,10 +26,28 @@ export function hasVerifiedVibe2SourceHandoff(item={}){
   );
 }
 
-export function eligibleForRobloxSourceReconciliation(item={}){
+function robloxReconciliationAdmission(item={}){
+  return platformDevelopmentEligible({...item,currentStep:'TARGET_PLATFORM_SOURCE_BIND'},'ROBLOX');
+}
+
+export function eligibleForRobloxSourceReconciliation(item={}, {sourceChanged=false}={}){
   if(!clean(item.gameId))return false;
-  if(clean(item.currentStep).toUpperCase()!=='TARGET_PLATFORM_SOURCE_BIND')return false;
-  return platformDevelopmentEligible(item,'ROBLOX');
+  if(!robloxReconciliationAdmission(item))return false;
+  const step=clean(item.currentStep).toUpperCase();
+  return step==='TARGET_PLATFORM_SOURCE_BIND'||sourceChanged===true;
+}
+
+export function sourcePathChangedBetweenRevisions({repoRoot='.',baseRevision='',headRevision='',sourcePath=''}={}){
+  const base=clean(baseRevision),head=clean(headRevision),target=clean(sourcePath);
+  if(!sha40(base)||!sha40(head)||!target)throw new Error('ROBLOX_SOURCE_DIFF_BINDING_INVALID');
+  if(base===head)return false;
+  try{
+    execFileSync('git',['diff','--quiet',base,head,'--',target],{cwd:repoRoot,stdio:['ignore','pipe','pipe']});
+    return false;
+  }catch(error){
+    if(Number(error?.status)===1)return true;
+    throw new Error('ROBLOX_SOURCE_DIFF_UNAVAILABLE:'+clean(error?.stderr||error?.message||error));
+  }
 }
 
 export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
@@ -73,8 +91,15 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
   const results=[];
   for(const item of queue.items||[]){
-    if(!eligibleForRobloxSourceReconciliation(item))continue;
     const sourcePath=`roblox-games/${item.gameId}`;
+    const boundRevision=clean(item.robloxSourceCommit);
+    let sourceChanged=false;
+    if(sha40(boundRevision)&&sha40(sourceRevision)){
+      sourceChanged=sourcePathChangedBetweenRevisions({repoRoot,baseRevision:boundRevision,headRevision:sourceRevision,sourcePath});
+    }else if(clean(item.currentStep).toUpperCase()!=='TARGET_PLATFORM_SOURCE_BIND'){
+      continue;
+    }
+    if(!eligibleForRobloxSourceReconciliation(item,{sourceChanged}))continue;
     const root=path.join(repoRoot,sourcePath);
     if(!fs.existsSync(root))continue;
     const handoffVerified=hasVerifiedVibe2SourceHandoff(item);
