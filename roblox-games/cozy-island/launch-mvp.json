@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "gameId": "cozy-island",
   "gameName": "포근섬",
   "releaseStrategy": "FAST_MVP",
@@ -7,13 +7,14 @@
   "unityParallelNotBlockingRobloxMvp": true,
   "scopeFreeze": true,
   "launchCore": [
-    "manual wood/food gathering",
-    "resident hiring and automation",
+    "manual world-node wood and food gathering",
+    "home-island NPC village services",
+    "home-island roaming wildlife and raiders",
+    "resident hiring and worker automation",
     "barracks and troop recruitment",
     "visible automatic base battles",
     "five resource bases with distinct defenders/rewards",
-    "fifth-base boss presentation",
-    "peace/combat music and action feedback"
+    "fifth-base boss presentation"
   ],
   "deferredUntilAfterMvp": [
     "new troop classes",
@@ -25,19 +26,15 @@
     "additional biomes"
   ],
   "releaseGates": [
-    "solo core loop",
-    "2+ player support semantics",
-    "mobile controls",
-    "save/rejoin",
-    "no fishing remnants",
+    "manual tree and crop prompts",
+    "no passive proximity gathering",
+    "home-island NPC population",
+    "home-island roaming mobs",
+    "resident worker automation",
     "five-base completion regression",
-    "Creator Store BGM and gameplay SFX",
-    "remote action allowlist and spam rejection",
-    "five distinct base defenders and rewards",
-    "fifth-base boss presentation",
-    "resource/build/hit/capture feedback",
-    "mobile top-status and bottom-action dock",
-    "resource/growth/conquest UI separation"
+    "mobile village/conquest controls",
+    "save/rejoin",
+    "remote action allowlist and spam rejection"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -49,5 +46,5 @@
     "audioFeedbackPassRequired": true,
     "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-22T12:20:00+09:00"
+  "updatedAt": "2026-09-22T14:20:00+09:00"
 }
