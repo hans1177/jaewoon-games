@@ -16511,11 +16511,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_dd8c522cf0f7e807b3c0bfda",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-2569",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7a95e7c32c2a58a965002d11015bbb6d7388aa43",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2569,
+        "baseBranch": "main",
+        "headBranch": "assistant/direct-native-stale-qa-sync",
+        "baseSha": "7a95e7c32c2a58a965002d11015bbb6d7388aa43",
+        "headSha": "ce1d48f3a9f42a59c196a8de912e9eed59bef765",
+        "mergeCommitSha": "9eaa5495c9e84962aa4d0220bd263cd0074fce46",
+        "mergedAt": "2026-09-22T16:36:04Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ec3c191c15528de37a7a1df39251fb37d7720920125180ad236604ca8dc9654f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assistant/direct-native-stale-qa-sync",
+        "candidateSha": "ce1d48f3a9f42a59c196a8de912e9eed59bef765"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 79,
+        "deletedLineCount": 79,
+        "changedFiles": [
+          ".github/workflows/homepage-manager.yml",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "roblox-games/cozy-island/default.project.json",
+          "roblox-games/daechung-rpg/default.project.json",
+          "roblox-games/horror-escape-room/default.project.json"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/homepage-manager.yml",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "roblox-games/cozy-island/default.project.json",
+          "roblox-games/daechung-rpg/default.project.json",
+          "roblox-games/horror-escape-room/default.project.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2569",
+        "merge-commit:9eaa5495c9e84962aa4d0220bd263cd0074fce46",
+        "base-main:7a95e7c32c2a58a965002d11015bbb6d7388aa43"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 135
+    "total": 136
   }
 }
