@@ -264,12 +264,12 @@ local function frozenCount()
 end
 local function freezePlayer(p)
  if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true then
-  p:SetAttribute("Frozen",true);speed(p,0)
+  p:SetAttribute("Frozen",true);p:SetAttribute("FeedbackEvent","FREEZE:"..tostring(math.floor(os.clock()*1000)));speed(p,0)
   local c=p.Character;if c then local h=c:FindFirstChild("RoleHighlight");if h then h.FillColor=Style.Frozen;h.OutlineColor=Color3.fromRGB(220,248,255)end end
  end
 end
 local function thawPlayer(p)
- if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then p:SetAttribute("Frozen",false);speed(p,16);applyRoleVisual(p,"SURVIVOR")end
+ if p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")==true then p:SetAttribute("Frozen",false);p:SetAttribute("FeedbackEvent","RESCUE:"..tostring(math.floor(os.clock()*1000)));speed(p,16);applyRoleVisual(p,"SURVIVOR")end
 end
 local function monsterPos()
  if monster then local r=root(monster);return r and r.Position end
@@ -301,7 +301,7 @@ local function endRound(winner)
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   else p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
-  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("Frozen",false);speed(p,16)
+  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);speed(p,16)
  end
  clearBots();monster=nil;monsterBot=nil;task.wait(4)
 end
@@ -309,7 +309,7 @@ local function rescue(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or p:GetAttribute("Frozen")==true then return end
  local r=root(p);if not r then return end
  for _,o in ipairs(Players:GetPlayers())do
-  if o~=p and o:GetAttribute("Frozen")==true then local q=root(o);if q and(q.Position-r.Position).Magnitude<=C.RescueDistance then thawPlayer(o);return end end
+  if o~=p and o:GetAttribute("Frozen")==true then local q=root(o);if q and(q.Position-r.Position).Magnitude<=C.RescueDistance then thawPlayer(o);p:SetAttribute("FeedbackEvent","RESCUE:"..tostring(math.floor(os.clock()*1000)));return end end
  end
  for _,b in ipairs(bots)do
   if b.role=="SURVIVOR"and b.frozen and(b.part.Position-r.Position).Magnitude<=C.RescueDistance then b.frozen=false;b.part.Color=Style.Survivor;return end
