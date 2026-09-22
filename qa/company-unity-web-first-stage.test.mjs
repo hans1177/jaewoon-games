@@ -10,7 +10,7 @@ import {execFileSync} from 'node:child_process';
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 
-test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
+test('Unity Web validation request binds canonical Unity source and Web output',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-first-stage-'));
   const old=process.cwd();
   try{
@@ -29,6 +29,9 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     const req=JSON.parse(fs.readFileSync(path.join(tmp,'.build-requests','unity-web','sample-game.json'),'utf8'));
     assert.equal(req.projectPath,'unity-games/sample-game');
     assert.equal(req.outputRoot,'web-games/sample-game');
+    assert.equal(req.validationSurface,true);
+    assert.equal(req.releasePlatform,false);
+    assert.equal(req.nativeGateAuthority,false);
     assert.equal(req.fullGameplayPassAuthority,false);
     assert.equal(req.postGatePlatformPipelineChanged,false);
   } finally {
@@ -58,4 +61,23 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+
+test('Unity Web is a non-release validation surface and homepage link requires verified build manifest',()=>{
+  const policy=JSON.parse(fs.readFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),'utf8'));
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebEnabled,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebValidationSurface.releasePlatform,false);
+  assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','company-development-confirmed-runtime.yml'),'utf8');
+  assert.match(workflow,/UNITY_WEB_VALIDATION_DISPATCHED/);
+  assert.match(workflow,/unity-web-first-stage-build\.yml/);
+  const buildWorkflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  assert.match(buildWorkflow,/UNITY_WEB_VALIDATION_SURFACE_CONTRACT=PASS/);
+  const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
+  assert.match(homepage,/unity-web-build\.json/);
+  assert.match(homepage,/manifest\?\.validationSurface===true/);
+  assert.match(homepage,/Unity Web 테스트/);
 });
