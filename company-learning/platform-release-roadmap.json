@@ -5068,8 +5068,8 @@
         "implementationMayNotStartBeforeCentralDesignCommit": true,
         "noNewDepartment": true,
         "reuseExistingRuntimeQaReleaseAndRecoveryPipelines": true,
-        "phase1State": "IMPLEMENTED",
-        "phase2State": "IMPLEMENTED_AWAITING_ACTUAL_RUNTIME_OBSERVATION",
+        "phase1State": "IMPLEMENTED_QA_PASS",
+        "phase2State": "IMPLEMENTED_QA_PASS_AWAITING_ACTUAL_RUNTIME_OBSERVATION",
         "phase3State": "PENDING_PLATFORM_ADAPTERS_NO_FALSE_PASS"
       },
       "runtimeCandidateDeployment": {
@@ -5131,51 +5131,66 @@
         "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS"
       },
       "verification": {
-        "verifiedHead": "c16b9b46e49a5e3111b79cbf5c65a06d49f7e514",
+        "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
         "deterministicOnly": true,
         "actualRuntimeFoundationClaimed": false,
         "actualRuntimeAcceptanceClaimed": false,
-        "runs": {
-          "vibeIntegratedRegression": {
-            "runId": 35763305251,
-            "result": "PASS"
-          },
-          "vibe3EngineContract": {
-            "runId": 35763305391,
-            "result": "PASS"
-          },
-          "vibeQa": {
-            "runId": 35763305360,
-            "result": "PASS"
-          },
-          "vibe2CoreQa": {
-            "runId": 35763305344,
-            "result": "PASS"
-          },
-          "centralPolicyContract": {
-            "runId": 35763305523,
-            "result": "PASS"
-          },
-          "companyEvolutionQa": {
-            "runId": 35763305366,
+        "exactHeadChecks": {
+          "securityImmuneSystem": {
+            "runId": 35764231992,
             "result": "PASS"
           },
           "recordsGovernance": {
-            "runId": 35763305275,
+            "runId": 35764232095,
+            "result": "PASS"
+          },
+          "vibe2CoreQa": {
+            "runId": 35764231869,
+            "result": "PASS"
+          },
+          "companyEvolutionQa": {
+            "runId": 35764231882,
+            "result": "PASS"
+          },
+          "vibeIntegratedRegression": {
+            "runId": 35764232005,
+            "result": "PASS"
+          },
+          "vibe3EngineContract": {
+            "runId": 35764232137,
+            "result": "PASS"
+          },
+          "centralPolicyContract": {
+            "runId": 35764232033,
+            "result": "PASS"
+          },
+          "primaryThreeReleasePolish": {
+            "runId": 35764232015,
+            "result": "PASS"
+          },
+          "vibeQa": {
+            "runId": 35764232120,
             "result": "PASS"
           },
           "mainWriteGuard": {
-            "runId": 35763305278,
+            "runId": 35764231949,
             "result": "PASS"
           },
           "homepageManager": {
-            "runId": 35763305252,
+            "runId": 35764231922,
             "result": "PASS"
-          },
-          "securityImmuneSystem": {
-            "runId": 35763305291,
-            "result": "PASS_AFTER_EXACT_HEAD_PRIMARY_AI_REVIEW"
           }
+        },
+        "designAndImplementationEvidence": {
+          "centralDesignCommittedBeforeImplementation": true,
+          "machineOnlyArchitectureProjection": true,
+          "existingTesterQaCapabilityReused": true,
+          "duplicateFoundationDepartmentCreated": false,
+          "headlessRuntimeAuthorityRemoved": true,
+          "privateRuntimeCandidateSeparatedFromInternalRelease": true,
+          "f9ExactCandidatePromotionRequired": true,
+          "cozyIslandDuplicateTreeRegressionRemoved": true,
+          "cozyIslandSafeSpawnAndRuntimeSentinelAdded": true
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
