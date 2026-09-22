@@ -93,6 +93,13 @@ test('candidate deployment workflow stops at private runtime candidate and never
   assert.match(candidate,/item\.robloxInternalReleaseReady=false/);
   assert.match(candidate,/item\.robloxRuntimePassed=false/);
   assert.match(candidate,/item\.robloxRuntimeFoundationPassed=false/);
+  assert.match(candidate,/item\.robloxInternalReleaseEvidence=null/);
+  assert.match(candidate,/item\.robloxReleaseEvidence=null/);
+  assert.match(candidate,/item\.robloxFinalReviewPassed=false/);
+  assert.match(candidate,/item\.robloxPostRuntimeQaEvidence=null/);
+  assert.match(candidate,/item\.robloxRuntimeFoundationEvidence=null/);
+  assert.match(candidate,/item\.robloxIndependentQaPassed=false/);
+  assert.match(candidate,/item\.robloxRegressionPassed=false/);
   assert.match(candidate,/item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/);
   assert.match(candidate,/item\.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
   assert.doesNotMatch(candidate,/const legacyCanonical=/);
@@ -122,7 +129,12 @@ test('F9 final review promotes the same tested candidate without republishing it
   assert.match(finalReview,/item\.robloxRuntimePassed===true/);
   assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
   assert.match(finalReview,/item\.robloxRegressionPassed===true/);
+  assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
+  assert.match(finalReview,/String\(runtime\.placeId\|\|''\)===String\(candidate\.placeId\|\|''\)/);
+  assert.match(finalReview,/runtime\.exactPlace===true/);
+  assert.match(finalReview,/runtime\.exactVersion===true/);
   assert.match(finalReview,/Number\(runtime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
+  assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
   assert.match(finalReview,/currentBlockingTickets/);
   assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
