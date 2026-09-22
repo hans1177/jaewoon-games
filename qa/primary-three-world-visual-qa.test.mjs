@@ -28,17 +28,17 @@ test('3개 내부 빌드는 공식 CaptureService QA 카메라와 안전한 서�
 test('포근섬 월드는 확장된 섬과 시야 비가림 지역 라벨을 가진다',()=>{
  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
  const server=read('roblox-games/cozy-island/server/Game.server.luau');
- assert.match(style,/Size=Vector3\.new\(132,8,132\)/);
+ assert.match(style,/Size=Vector3\.new\(176,10,176\)/);
  assert.match(style,/Pos=Vector3\.new\(0,12,-232\)/);
  assert.match(server,/MaxDistance=78/);
- for(const marker of ['FarmPlot','BarracksYard','Dock','IronVein','HayBale','QuarryCut','GoldVein','SulfurVent','STYLIZED_ISLANDS_EXPANDED_V2'])assert.match(server,new RegExp(marker));
+ for(const marker of ['FarmPlot','BarracksYard','Dock','MarketStallA','WatchTower','WindmillBase','IronVein','HayBale','QuarryCut','GoldVein','SulfurVent','STYLIZED_ISLANDS_LIVING_WORLD_V3'])assert.match(server,new RegExp(marker));
 });
 
 test('Whatever RPG는 블록 NPC/몹 대신 캐릭터 실루엣과 지역 아트를 생성한다',()=>{
  const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
  assert.match(server,/local function humanoidFigure/);
  assert.match(server,/MaxDistance=42/);
- for(const marker of ['VillageHouse','NorthRoad','FieldRuin','FieldCrystal','BossArena','GoblinHead','SlimeCore','HoundHead','BanditHood','BossCore','FANTASY_PARTY_WORLD_ART_V3'])assert.match(server,new RegExp(marker));
+ for(const marker of ['VillageHouse','VillageFountain','QuestBoard','VillageLantern','FieldStream','StoneBridge','NorthRoad','FieldRuin','FieldCrystal','BossArena','GoblinHead','SlimeCore','HoundHead','BanditHood','BossCore','FANTASY_PARTY_LIVING_WORLD_V4'])assert.match(server,new RegExp(marker));
 });
 
 test('심야 술래잡기는 실제 좌표 미니맵과 맵별 가독성 바닥/조명을 가진다',()=>{
