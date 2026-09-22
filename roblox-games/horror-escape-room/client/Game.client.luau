@@ -12,6 +12,7 @@ local RunService=game:GetService("RunService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 
 -- 사운드
@@ -361,5 +362,29 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
  p:SetAttribute("SyncedRoundScore",tonumber(snapshot.RoundScore)or 0)
 end)
+
+QACamera.install(C,gui,function()
+ if p:GetAttribute("RoundState")~="RUNNING"then return{}end
+ local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
+ if id=="HOSPITAL"then
+  return{
+   {label="horror-hospital-hall",position=Vector3.new(0,12,-62),lookAt=Vector3.new(0,5,34)},
+   {label="horror-hospital-surgery",position=Vector3.new(-75,20,72),lookAt=Vector3.new(-48,4,52)},
+   {label="horror-hospital-basement",position=Vector3.new(78,14,76),lookAt=Vector3.new(47,3,57)},
+  }
+ elseif id=="THEME_PARK"then
+  return{
+   {label="horror-park-overview",position=Vector3.new(0,88,112),lookAt=Vector3.new(0,2,0)},
+   {label="horror-park-carousel",position=Vector3.new(-67,22,35),lookAt=Vector3.new(-32,5,8)},
+   {label="horror-park-haunted",position=Vector3.new(78,21,72),lookAt=Vector3.new(34,5,38)},
+  }
+ end
+ return{
+  {label="horror-school-hall",position=Vector3.new(0,13,-64),lookAt=Vector3.new(0,5,34)},
+  {label="horror-school-cafeteria",position=Vector3.new(-76,21,68),lookAt=Vector3.new(-51,3,43)},
+  {label="horror-school-gym",position=Vector3.new(76,22,72),lookAt=Vector3.new(50,4,48)},
+ }
+end)
+
 
 render()
