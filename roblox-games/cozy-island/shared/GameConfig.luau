@@ -2,7 +2,7 @@ local Config={
   PolicySource = "company-learning/platform-release-roadmap.json",
   Platform = "ROBLOX",
   MobileFirst = true,
-  GameId="cozy-island",GameName="포근섬",SaveEnabled=true,TargetSessionMinutes={20,30},
+  GameId="cozy-island",GameName="포근섬: 작은 왕국 키우기",GameNameKorean="포근섬: 작은 왕국 키우기",GameNameEnglish="Cozy Island: Build a Tiny Kingdom",SaveEnabled=true,TargetSessionMinutes={20,30},
   Genre = "Simulation",
   PlayMode = "COOP",
   MultiplayerRequired = true,
