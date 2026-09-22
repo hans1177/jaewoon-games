@@ -306,7 +306,7 @@ test('new canonical rule automatically changes execution fingerprint and binds i
   const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
   const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
   const document=JSON.parse(fs.readFileSync(file,'utf8'));
-  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
+  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE',machineEnforcement:{schemaVersion:document.ownerCanonicalRules.constitutionalBinding.ruleEnforcementSchemaVersion,assertions:[{code:'RULE_ENABLED',path:'enabled',operator:'EQ',expected:true}]}};
   fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
   const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
   assert.equal(after.valid,true);
@@ -323,7 +323,7 @@ test('active compiled work becomes stale when owner adds a constitutional rule',
   const contract=compileVibeCentralWorkContract({snapshot,task:{id:'stale-on-new-law',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
   const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
   const document=JSON.parse(fs.readFileSync(file,'utf8'));
-  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
+  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE',machineEnforcement:{schemaVersion:document.ownerCanonicalRules.constitutionalBinding.ruleEnforcementSchemaVersion,assertions:[{code:'RULE_ENABLED',path:'enabled',operator:'EQ',expected:true}]}};
   fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
   assert.throws(()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),/CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/);
 });
