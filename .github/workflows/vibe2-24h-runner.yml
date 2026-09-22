@@ -332,8 +332,16 @@ jobs:
               [ -n "$file" ] || continue
               game_id="$(node -p "require('$file').gameId")"
               decision_file=".vibe2/marketing-decisions/${game_id}.json"
-              node /tmp/vibe2-main/tools/company-growth-marketing-decision.mjs --file="$file" --output="$decision_file" | tee -a /tmp/vibe2-marketing-decision.log
-              node /tmp/vibe2-main/tools/company-growth-marketing-qa.mjs --file="$decision_file" --game-id="$game_id"
+              if ! node /tmp/vibe2-main/tools/company-growth-marketing-decision.mjs --file="$file" --output="$decision_file" | tee -a /tmp/vibe2-marketing-decision.log; then
+                echo "MARKETING_AUXILIARY_DECISION_FAILED=$game_id" | tee -a /tmp/vibe2-marketing-decision.log
+                rm -f "$decision_file"
+                continue
+              fi
+              if ! node /tmp/vibe2-main/tools/company-growth-marketing-qa.mjs --file="$decision_file" --game-id="$game_id"; then
+                echo "MARKETING_AUXILIARY_QA_BLOCKED=$game_id" | tee -a /tmp/vibe2-marketing-decision.log
+                rm -f "$decision_file"
+                continue
+              fi
             done < <(find /tmp/vibe2-main/company-learning/marketing -mindepth 2 -maxdepth 2 -name latest.json -type f 2>/dev/null | sort)
 
             node --check /tmp/vibe2-main/tools/company-tester-debug-intake.mjs
