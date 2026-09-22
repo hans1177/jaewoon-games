@@ -46,7 +46,7 @@ test('심야 술래잡기는 실제 좌표 미니맵과 맵별 가독성 바닥/
  const server=read('roblox-games/horror-escape-room/server/Game.server.luau');
  const style=read('roblox-games/horror-escape-room/shared/VisualStyle.luau');
  for(const marker of ['MiniMap','PlayerDot','mapLayouts','RunService.RenderStepped','CurrentMapId','MidnightArena','MapReady'])assert.match(client,new RegExp(marker.replaceAll('.','\\.')));
- for(const marker of ['SchoolHallFloor','SchoolCafeteriaFloor','HospitalHallFloor','HospitalBasementFloor','ParkMainPath','CarouselCanopy','READABLE_ART_V4','MapReady'])assert.match(server,new RegExp(marker));
+ for(const marker of ['SchoolHallFloor','SchoolCafeteriaFloor','HospitalHallFloor','HospitalBasementFloor','ParkMainPath','CarouselCanopy','READABLE_ART_V5','MapReady'])assert.match(server,new RegExp(marker));
  assert.match(server,/arena=makeArena\(C\.Maps\[1\]\)/);
  assert.match(style,/Brightness=2\.05/);
  assert.match(style,/FogEnd=270/);
