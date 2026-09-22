@@ -135,7 +135,7 @@ function canonicalWebHref(row){
   const expected=`web-games/${id}`;
   return raw===expected?`/${expected}/`:'';
 }
-async function bindVerifiedUnityWebSurfaces(catalog){
+async function bindAvailableUnityWebSurfaces(catalog){
   if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
   const candidates=catalog.games.filter(game=>{
     const id=gameIdOf(game);
@@ -143,22 +143,19 @@ async function bindVerifiedUnityWebSurfaces(catalog){
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
     return Boolean(id)&&projectPath===`unity-games/${id}`;
   });
-  const verified=new Map();
+  const available=new Map();
   await Promise.all(candidates.map(async game=>{
-    const id=gameIdOf(game),href=`/web-games/${gameIdOf(game)}/`;
+    const id=gameIdOf(game),href=`/web-games/${id}/`;
     if(!id)return;
-    const [build,qa]=await Promise.all([
-      getJson(`${href}unity-web-build.json`),
-      getJson(`${href}unity-web-gameplay-validation.json`)
-    ]);
-    const pass=build?.engine==='UNITY_WEB'&&build?.gameId===id&&build?.bootSmoke==='PASS'&&build?.initialRealGameplayQa==='PASS'&&
-      qa?.engine==='UNITY_WEB'&&qa?.gameId===id&&qa?.pass===true&&qa?.boot?.pass===true&&qa?.gameplay?.pass===true&&qa?.noCriticalRuntimeError===true;
-    if(pass)verified.set(id,href);
+    try{
+      const response=await fetch(`${href}index.html?ts=${Date.now()}`,{cache:'no-store'});
+      if(response.ok)available.set(id,href);
+    }catch{}
   }));
   return{
     ...catalog,
-    games:catalog.games.map(game=>verified.has(gameIdOf(game))
-      ?{...game,unityWebTestUrl:verified.get(gameIdOf(game)),unityWebValidationVerified:true}
+    games:catalog.games.map(game=>available.has(gameIdOf(game))
+      ?{...game,unityWebTestUrl:available.get(gameIdOf(game)),unityWebAvailable:true}
       :game)
   };
 }
@@ -201,7 +198,7 @@ function platformLinks(game){
   const placeId=String(rp.placeId||target?.placeId||'').trim();
   const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||(/^[1-9][0-9]*$/.test(placeId)?`https://www.roblox.com/games/${placeId}`:'')).trim();
   const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
-  const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebValidationVerified===true?String(game?.unityWebTestUrl||'').trim():'';
+  const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebAvailable===true?String(game?.unityWebTestUrl||'').trim():'';
   return {roblox,unity,unityWeb};
 }
 function internalReleaseLinks(game){
@@ -251,7 +248,7 @@ function installStyles(){
   style.textContent=`
 .foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
 @media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
-@media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
+@media(max-width:700px){.foldGameActions{grid-template-columns:1fr}.foldGameBtn.platformAction{grid-column:auto}}
 `;
   document.head.appendChild(style);
 }
@@ -276,7 +273,7 @@ function buildCard(row){
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'),
     platformExposure?.unityWebEnabled===true
-      ?button(links.unityWeb,'Unity Web 테스트','Unity Web · 준비중','webAction unityWebAction')
+      ?button(links.unityWeb,'Unity Web · 개발중','Unity Web · 빌드없음','webAction unityWebAction')
       :''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
@@ -370,7 +367,7 @@ async function refresh(){
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
-    const boundCatalog=await bindVerifiedUnityWebSurfaces(catalog);
+    const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
     const sig=JSON.stringify([boundCatalog,status,testManifest,portfolioStatus,platformExposure]);
     if(sig!==lastSignature){updateLiveSummary(boundCatalog,status);buildFocus(boundCatalog,status);buildGameCenter(boundCatalog,status);buildRecentUpdates(boundCatalog);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
