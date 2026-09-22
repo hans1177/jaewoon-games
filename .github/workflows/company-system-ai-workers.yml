@@ -37,6 +37,9 @@ on:
       - '.vibe2/system-ai-queue.json'
       - 'tools/company-system-ai-worker.mjs'
       - 'tools/company-system-ai-queue.mjs'
+      - 'tools/company-system-ai-failure-classifier.mjs'
+      - 'tools/company-system-ai-bottleneck-sensor.mjs'
+      - 'tools/company-system-ai-qa-contract-review.mjs'
       - 'tools/company-system-ai-learning.mjs'
       - 'tools/company-system-ai-learning-context.mjs'
       - 'tools/vibe2-learning-motor.mjs'
@@ -46,6 +49,7 @@ on:
       - 'tools/company-recovery-queue.mjs'
       - 'qa/company-recovery-learning.test.mjs'
       - 'qa/company-system-ai-worker.test.mjs'
+      - 'qa/company-system-ai-evolution.test.mjs'
       - 'qa/company-system-ai-learning.test.mjs'
       - 'qa/company-system-ai-external-learning-feed.test.mjs'
       - 'qa/company-system-ai-supervision-loop.test.mjs'
@@ -89,13 +93,16 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-system-ai-worker.mjs
+          node --check tools/company-system-ai-failure-classifier.mjs
+          node --check tools/company-system-ai-bottleneck-sensor.mjs
+          node --check tools/company-system-ai-qa-contract-review.mjs
           node --check tools/company-system-ai-learning-context.mjs
           node --check tools/company-system-ai-external-learning-feed.mjs
           node --check tools/company-system-ai-queue.mjs
           node --check tools/company-recovery-dispatch.mjs
           node --check tools/company-recovery-escalation.mjs
           node --check tools/company-recovery-queue.mjs
-          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-learning.test.mjs qa/company-system-ai-external-learning-feed.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs qa/company-recovery-learning.test.mjs qa/vibe2-external-ai-distillation.test.mjs
+          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-evolution.test.mjs qa/company-system-ai-learning.test.mjs qa/company-system-ai-external-learning-feed.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs qa/company-recovery-learning.test.mjs qa/vibe2-external-ai-distillation.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/system-ai-shared-context.json
 
       - name: Reserve disjoint supervised assignments
@@ -135,6 +142,17 @@ jobs:
             fi
             node tools/company-recovery-dispatch.mjs "${dispatch_args[@]}" | tee /tmp/system-ai-recovery-dispatch.log
 
+            adaptive_max="$SYSTEM_AI_MAX_BATCH"
+            if [ -z "$SECURITY_RECOVERY_TASK_ID" ] && [ -z "$MARKETING_TASK_IDS" ]; then
+              node tools/company-system-ai-bottleneck-sensor.mjs \
+                --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
+                --game-queue=/tmp/system-ai-control/.vibe2/queue.json \
+                --max="$SYSTEM_AI_MAX_BATCH" \
+                --output=/tmp/system-ai-bottleneck.json | tee /tmp/system-ai-bottleneck.log
+              adaptive_max="$(node -p "require('/tmp/system-ai-bottleneck.json').recommendedBatch")"
+              echo "SYSTEM_AI_ADAPTIVE_RESERVE_MAX=$adaptive_max"
+            fi
+
             if [ -n "$SECURITY_RECOVERY_TASK_ID" ]; then
               node tools/company-system-ai-queue.mjs \
                 --command=reserve-security-recovery \
@@ -153,7 +171,7 @@ jobs:
               node tools/company-system-ai-queue.mjs \
                 --command=reserve \
                 --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
-                --max="$SYSTEM_AI_MAX_BATCH" \
+                --max="$adaptive_max" \
                 --reservation="$reservation" \
                 --output=/tmp/system-ai-reserved.json
             fi
@@ -268,6 +286,7 @@ jobs:
       - name: Load reserved assignment
         env:
           TASK_ID: ${{ matrix.taskId }}
+          EXPECTED_RESERVATION_ID: system-ai:${{ github.run_id }}:${{ github.run_attempt }}
         shell: bash
         run: |
           set -euo pipefail
@@ -280,6 +299,7 @@ jobs:
           const task=(q.tasks||[]).find(x=>x.id===id);
           if(!task)throw new Error('assignment missing: '+id);
           if(task.status!=='running')throw new Error('assignment not reserved: '+id+':'+task.status);
+          if(String(task.reservationId||'')!==String(process.env.EXPECTED_RESERVATION_ID||''))throw new Error('assignment reservation changed: '+id+':'+String(task.reservationId||''));
           process.stdout.write(JSON.stringify(task,null,2));
           NODE
           git show origin/vibe2-unreal-core:.vibe2/experience.json > /tmp/system-ai-experience.json 2>/dev/null || printf '%s\n' '{"version":3,"records":[]}' > /tmp/system-ai-experience.json
@@ -498,7 +518,7 @@ jobs:
             selectedHypothesisId:clean(worker.selectedHypothesisId)||null,
             falsifiedHypothesisIds:Array.isArray(worker.falsifiedHypothesisIds)?worker.falsifiedHypothesisIds:[],
             knownGoodRevision:clean(worker.knownGoodRevision)||null,
-            failureClass:infrastructureFailure?'INFRASTRUCTURE_CONTRACT_FAILURE':null,
+            failureClass:clean(task.failureClass)||(infrastructureFailure?'INFRASTRUCTURE_CONTRACT_FAILURE':null),
             ownerRule2:{id:'RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION',automaticBinding:true,executionDisposition,candidatePublicationAllowed:!infrastructureFailure&&security.verdict==='PASS',learningCandidate:!infrastructureFailure,reusableLearning:false,requiresIndependentVerification:true,rawExternalOutputStored:false,verifiedDefensiveAbsorptionOnly:true},
             candidateBranch:candidateOk?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:candidateOk?(process.env.PR_URL||null):null,
             evidence:[
@@ -515,6 +535,8 @@ jobs:
               clean(worker.model)&&`external-ai-model:${clean(worker.model)}`,
               clean(worker.rawModelOutputSha256)&&`external-ai-raw-output-sha256:${clean(worker.rawModelOutputSha256)}`,
               ...(worker.learningKnowledgeIds||[]).map(x=>`learning-knowledge-id:${x}`),
+              ...(worker.qaContractReview?.evidence||[]),
+              ...(worker.verifiedLearningApplied?['system-ai-knowledge-outcome:PENDING_VERIFIED_FANIN']:[]),
               clean(worker.selectedHypothesisId)&&`selected-hypothesis:${clean(worker.selectedHypothesisId)}`,
               ...(worker.falsifiedHypothesisIds||[]).map(x=>`hypothesis-rejected:${clean(x)}`),
               clean(worker.knownGoodRevision)&&`known-good-revision:${clean(worker.knownGoodRevision)}`,
@@ -559,10 +581,16 @@ jobs:
           node-version: '22'
 
       - uses: actions/download-artifact@v4
+        id: result_download
+        continue-on-error: true
         with:
           pattern: company-system-ai-result-*
           path: /tmp/company-system-ai-results
           merge-multiple: true
+
+      - name: Ensure result directory exists for worker handoff
+        if: always()
+        run: mkdir -p /tmp/company-system-ai-results
 
       - name: Persist results for primary AI supervision
         env:
@@ -575,7 +603,9 @@ jobs:
           rm -rf /tmp/system-ai-control
           git worktree prune
           git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
+          reservation="system-ai:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           node tools/company-system-ai-queue.mjs --command=fan-in --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
+          node tools/company-system-ai-queue.mjs --command=handoff-missing --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --reservation="$reservation" --results=/tmp/company-system-ai-results
           node tools/company-recovery-queue.mjs --command=fan-in-system-ai --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
 
           node - <<'NODE' > /tmp/system-ai-security.tsv
