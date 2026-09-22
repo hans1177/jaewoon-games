@@ -274,7 +274,7 @@ local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
 setupPanel.Position=UDim2.fromScale(.5,.62)
-setupPanel.Size=UDim2.fromOffset(286,164)
+setupPanel.Size=UDim2.fromOffset(286,118)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -285,7 +285,7 @@ local setupTitle=Instance.new("TextLabel")
 setupTitle.Size=UDim2.new(1,-16,0,28)
 setupTitle.Position=UDim2.fromOffset(8,8)
 setupTitle.BackgroundTransparency=1
-setupTitle.Text="이번 판 역할 선호"
+setupTitle.Text="5인 · 인간 4 / 귀신 1"
 setupTitle.TextColor3=Color3.fromRGB(255,255,255)
 setupTitle.TextScaled=true
 setupTitle.Font=Enum.Font.GothamBold
@@ -294,18 +294,15 @@ setupTitle.Parent=setupPanel
 
 local setupChosen=false
 local setupButtons={
- {C.Actions.PREFER_SURVIVOR,"생존자 선호",Color3.fromRGB(50,112,145)},
- {C.Actions.PREFER_MONSTER,"괴물 선호",Color3.fromRGB(145,48,59)},
- {C.Actions.SOLO_SURVIVOR,"1인 생존자",Color3.fromRGB(63,91,118)},
- {C.Actions.SOLO_MONSTER,"1인 괴물",Color3.fromRGB(112,48,65)},
+ {C.Actions.PREFER_SURVIVOR,"인간 선호",Color3.fromRGB(50,112,145)},
+ {C.Actions.PREFER_MONSTER,"귀신 선호",Color3.fromRGB(145,48,59)},
 }
 for i,a in ipairs(setupButtons)do
  local b=makeButton(setupPanel,a[2],a[3])
  b.ZIndex=11
  local col=(i-1)%2
- local row=math.floor((i-1)/2)
  b.Size=UDim2.new(.465,0,0,46)
- b.Position=UDim2.new(.025+col*.485,0,0,41+row*52)
+ b.Position=UDim2.new(.025+col*.485,0,0,41)
  b.Activated:Connect(function()
   actionSfx.TimePosition=0;actionSfx:Play()
   remote:FireServer(a[1])
@@ -317,7 +314,7 @@ end
 local monsterCycle=makeButton(setupPanel,"괴물 변경",Color3.fromRGB(76,58,96))
 monsterCycle.ZIndex=11
 monsterCycle.Size=UDim2.new(.45,0,0,28)
-monsterCycle.Position=UDim2.new(.275,0,1,-32)
+monsterCycle.Position=UDim2.new(.275,0,1,-30)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -479,7 +476,10 @@ end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
  if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
- p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedHumanParticipants",tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedParticipants",tonumber(snapshot.ActivePopulation)or tonumber(snapshot.ParticipantCount)or 1)
+ p:SetAttribute("SyncedAICount",tonumber(snapshot.AICount)or 0)
+ p:SetAttribute("SyncedAIMonster",snapshot.AIMonster==true)
  p:SetAttribute("SyncedRoundScore",tonumber(snapshot.RoundScore)or 0)
 end)
 

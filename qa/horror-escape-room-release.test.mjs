@@ -68,8 +68,9 @@ test('검증된 Creator Store 오디오가 실제 런타임에 연결된다',()=
 
 test('기존 출시 핵심 게이트는 유지된다',()=>{
   for(const gate of [
-    '1-player AI fill',
-    '2+ player real monster assignment',
+    'five-slot 4-survivor 1-monster composition',
+    'AI ghost when no real player selects ghost',
+    'AI survivor fill for all missing human slots',
     'freeze/rescue sync',
     'monster abilities',
     'mobile controls',
@@ -98,14 +99,19 @@ test('심야 술래잡기는 첫 라운드 전에도 학교 맵을 프리로드�
   assert.match(client,/workspace:FindFirstChild\("MidnightArena"\)/);
 });
 
-test('1인 플레이는 로비부터 맵 안에서 시작하고 역할 선택 시 즉시 라운드 시작을 요청한다',()=>{
+test('5인 역할 구성은 1인에서도 AI로 빈자리를 채우고 역할 선택 시 즉시 시작을 요청한다',()=>{
   assert.match(server,/if #Players:GetPlayers\(\)==1 then/);
   assert.match(server,/teleport\(p,survivorSpawns\[1\]\)/);
   assert.match(server,/SOLO_MONSTER.*soloStartRequested=true/);
   assert.match(server,/SOLO_SURVIVOR.*soloStartRequested=true/);
   assert.match(server,/if #Players:GetPlayers\(\)==1 and soloStartRequested then break end/);
   assert.match(config,/SoloPlayable=true/);
-  assert.match(config,/TargetPopulation=6/);
+  assert.match(config,/TargetPopulation=5/);
+  assert.match(config,/SurvivorSlots=4/);
+  assert.match(config,/MonsterSlots=1/);
+  assert.match(server,/if #volunteers==0 and #h<C\.TargetPopulation then return nil,false end/);
+  assert.match(server,/if not monster then monsterBot=bot\("MONSTER",monsterSpawn\)end/);
+  assert.match(server,/survivorNeed=math\.max\(0,survivorSlots-humanSurvivors\)/);
 });
 
 test('심야 BGM은 평상시 가벼운 서스펜스이고 강한 추격곡은 괴물이 가까울 때만 재생한다',()=>{

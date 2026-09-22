@@ -603,8 +603,13 @@ local function weightPick(list)
  return list[#list]
 end
 local function choose(h)
- if #h==1 then return h[1]:GetAttribute("SoloRole")=="MONSTER"and h[1]or nil,false end
- local volunteers={};for _,p in ipairs(h)do if p:GetAttribute("MonsterPreference")=="MONSTER"then table.insert(volunteers,p)end end
+ local volunteers={}
+ for _,p in ipairs(h)do
+  if p:GetAttribute("MonsterPreference")=="MONSTER"or(#h==1 and p:GetAttribute("SoloRole")=="MONSTER")then
+   table.insert(volunteers,p)
+  end
+ end
+ if #volunteers==0 and #h<C.TargetPopulation then return nil,false end
  local pool=#volunteers>0 and volunteers or h
  local filtered={};for _,p in ipairs(pool)do if p.UserId~=lastMonster then table.insert(filtered,p)end end
  if #filtered>0 then pool=filtered end
@@ -709,9 +714,19 @@ local function monsterPos()
  if monsterBot then return monsterBot.part.Position end
 end
 local function configure(h)
- clearBots();local need=math.max(0,C.TargetPopulation-#h)
- if #h==1 and not monster then monsterBot=bot("MONSTER",monsterSpawn);need=math.max(0,need-1)end
- for i=1,need do bot("SURVIVOR",survivorSpawns[((i-1)%#survivorSpawns)+1])end
+ clearBots()
+ local survivorSlots=C.SurvivorSlots or 4
+ local humanSurvivors=0
+ for _,p in ipairs(h)do if p~=monster then humanSurvivors+=1 end end
+ if not monster then monsterBot=bot("MONSTER",monsterSpawn)end
+ local survivorNeed=math.max(0,survivorSlots-humanSurvivors)
+ for i=1,survivorNeed do
+  local spawnIndex=((humanSurvivors+i-1)%#survivorSpawns)+1
+  bot("SURVIVOR",survivorSpawns[spawnIndex])
+ end
+ workspace:SetAttribute("ActivePopulation",#h+#bots)
+ workspace:SetAttribute("AIBotCount",#bots)
+ workspace:SetAttribute("AIMonsterActive",monster==nil)
 end
 local function startRound()
  local h=Players:GetPlayers();if #h==0 then return false end
@@ -799,6 +814,9 @@ local function broadcastMultiplayerSync(actor)
  remote:FireAllClients("MULTIPLAYER_SYNC",{
   ActorUserId=actor and actor.UserId or 0,
   ParticipantCount=#participants,
+  ActivePopulation=state=="RUNNING"and(#participants+#bots)or #participants,
+  AICount=#bots,
+  AIMonster=monsterBot~=nil,
   RoundScore=roundScore,
   FrozenCount=frozenCount(),
   TimeLeft=math.max(0,math.ceil(timeLeft)),
@@ -806,10 +824,12 @@ local function broadcastMultiplayerSync(actor)
 end
 remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
- if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER")
- elseif a==C.Actions.PREFER_SURVIVOR and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR")
- elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("SoloRole","MONSTER");soloStartRequested=true
- elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("SoloRole","SURVIVOR");soloStartRequested=true
+ if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
+  p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");if #Players:GetPlayers()==1 then soloStartRequested=true end
+ elseif a==C.Actions.PREFER_SURVIVOR and state~="RUNNING"then
+  p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");if #Players:GetPlayers()==1 then soloStartRequested=true end
+ elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");soloStartRequested=true
+ elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");soloStartRequested=true
  elseif a==C.Actions.RESCUE then rescue(p)
  elseif a==C.Actions.DASH then survivorDash(p)
  elseif a==C.Actions.ABILITY then ability(p)

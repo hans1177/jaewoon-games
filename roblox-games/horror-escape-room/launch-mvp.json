@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "gameId": "horror-escape-room",
   "gameName": "심야 술래잡기",
   "releaseStrategy": "FAST_MVP",
@@ -12,12 +12,12 @@
     "hospital areas: narrow corridor, wards, surgery room and basement zone",
     "theme park areas: carousel, haunted house, ticket booths, hide booths and underground-passage zone",
     "three map-specific random events per map",
-    "player monster role selection",
-    "fair forced monster rotation",
+    "fixed five-slot round composition: four humans/survivors and one ghost/monster",
+    "human or ghost role preference with AI ghost when no player selects ghost",
+    "AI fills every missing survivor slot so active round population reaches five",
     "freeze/rescue",
     "survivor dash",
     "five classic monsters with distinct abilities",
-    "solo AI fill",
     "server-authoritative action validation, multiplayer sync and movement abuse guards",
     "340x340 expanded map footprint for each map",
     "four survivor objectives and unlocked escape gate",
@@ -39,8 +39,9 @@
     "theme-park carousel/haunted-house/ticket/underpass layout",
     "hospital narrow-corridor/ward/surgery/basement layout",
     "distinct school/classroom/cafeteria/gym layout",
-    "1-player AI fill",
-    "2+ player real monster assignment",
+    "five-slot 4-survivor 1-monster composition",
+    "AI ghost when no real player selects ghost",
+    "AI survivor fill for all missing human slots",
     "freeze/rescue sync",
     "monster abilities",
     "mobile controls",
@@ -78,7 +79,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-22T15:10:00+09:00",
+  "updatedAt": "2026-09-22T17:00:00+09:00",
   "externalReleaseCandidate": true,
-  "candidateScopeVersion": 4
+  "candidateScopeVersion": 5
 }
