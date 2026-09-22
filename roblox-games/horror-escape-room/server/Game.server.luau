@@ -119,9 +119,14 @@ local function applyMapEvent(f,map,event)
  end
 end
 local function makeArena(map)
- workspace:SetAttribute("MapReady",false)
- local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
- local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
+ local old=workspace:FindFirstChild("MidnightArena")
+ local hadReady=old~=nil and workspace:GetAttribute("MapReady")==true
+ workspace:SetAttribute("MapBuilding",true)
+ if not hadReady then workspace:SetAttribute("MapReady",false)end
+ local stale=workspace:FindFirstChild("MidnightArenaNext");if stale then stale:Destroy()end
+ local f=Instance.new("Folder")
+ f.Name=old and"MidnightArenaNext"or"MidnightArena"
+ f.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local floorColor=map.Id=="SCHOOL"and Color3.fromRGB(96,102,111)or map.Id=="HOSPITAL"and Color3.fromRGB(78,92,91)or Color3.fromRGB(70,69,81)
  local floorMaterial=map.Id=="THEME_PARK"and Enum.Material.Asphalt or Enum.Material.Concrete
@@ -227,11 +232,17 @@ local function makeArena(map)
 
  local events=map.Events or {}
  local event=events[math.random(1,math.max(1,#events))]or{Id="NONE",Name="평온"}
+ applyMapEvent(f,map,event)
+ -- 새 맵을 끝까지 만든 뒤 기존 맵과 원자적으로 교체한다.
+ if old and old.Parent then
+  old:Destroy()
+  f.Name="MidnightArena"
+ end
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
- applyMapEvent(f,map,event)
- workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_READABLE_ART_V4")
+ workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_READABLE_ART_V5")
  workspace:SetAttribute("MapReady",true)
+ workspace:SetAttribute("MapBuilding",false)
  return f
 end
 local function clearBots()
@@ -319,7 +330,14 @@ local function startRound()
  local h=Players:GetPlayers();if #h==0 then return false end
  currentMapIndex=(currentMapIndex%#C.Maps)+1
  local map=C.Maps[currentMapIndex]
- arena=makeArena(map);monster,forced=choose(h);if monster then lastMonster=monster.UserId end
+ local existing=workspace:FindFirstChild("MidnightArena")
+ if existing and workspace:GetAttribute("MapReady")==true and workspace:GetAttribute("CurrentMapId")==map.Id then
+  -- 첫 라운드 학교 맵은 이미 프리로드되어 있으므로 절대 다시 지우지 않는다.
+  arena=existing
+ else
+  arena=makeArena(map)
+ end
+ monster,forced=choose(h);if monster then lastMonster=monster.UserId end
  for _,p in ipairs(h)do p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")end
  local si=1
  for _,p in ipairs(h)do
@@ -406,11 +424,13 @@ remote.OnServerEvent:Connect(function(p,a)
  broadcastMultiplayerSync(p)
 end)
 local function onCharacter(p)
- task.wait(.25)
+ task.wait(.1)
+ local readyDeadline=os.clock()+10
+ while workspace:GetAttribute("MapReady")~=true and os.clock()<readyDeadline do task.wait(.1)end
  if state=="RUNNING"then
   setRole(p,p==monster and"MONSTER"or"SURVIVOR")
  else
-  -- 1인 플레이는 로비에서도 실제 맵 안에서 시작한다.
+  -- 1인 플레이는 맵 복제가 끝난 뒤 실제 맵 안에서 시작한다.
   if #Players:GetPlayers()==1 then
    p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
    p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
