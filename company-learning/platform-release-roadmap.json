@@ -1,5 +1,5 @@
 {
-  "version": 268,
+  "version": 269,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-23",
@@ -12090,7 +12090,7 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 6,
+    "version": 7,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
@@ -12151,6 +12151,79 @@
         "otherAiMergedPrDurablyCapturedWhenObservable": true,
         "mergeDoesNotEqualCapabilityVerification": true,
         "freshIndependentQaRequiredBeforeReuse": true
+      },
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "ALL_EXTERNAL_AI_BOUND",
+            "operator": "EQ",
+            "path": "allExternalAiWorkersBound",
+            "expected": true
+          },
+          {
+            "code": "ALL_CODING_ACTIONS_INCLUDED",
+            "operator": "EQ",
+            "path": "allCodingActionsIncluded",
+            "expected": true
+          },
+          {
+            "code": "SECURITY_STEWARD_REQUIRED",
+            "operator": "EQ",
+            "path": "securityStewardMonitorsBeforeAcceptance",
+            "expected": true
+          },
+          {
+            "code": "INDEPENDENT_VERIFICATION_REQUIRED",
+            "operator": "EQ",
+            "path": "reusableLearningRequiresIndependentVerification",
+            "expected": true
+          },
+          {
+            "code": "RAW_EXTERNAL_OUTPUT_NOT_STORED",
+            "operator": "EQ",
+            "path": "rawExternalAiOutputStored",
+            "expected": false
+          },
+          {
+            "code": "RAW_HOSTILE_PAYLOAD_NOT_LEARNED",
+            "operator": "EQ",
+            "path": "rawHostilePayloadMayEnterLearning",
+            "expected": false
+          },
+          {
+            "code": "NO_AUTHORITY_EXPANSION",
+            "operator": "EQ",
+            "path": "authorityExpansion",
+            "expected": false
+          },
+          {
+            "code": "NO_GATE_WEAKENING",
+            "operator": "EQ",
+            "path": "gateWeakening",
+            "expected": false
+          },
+          {
+            "code": "DISTILLATION_BINDING_EXISTS",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "externalAiDistillation"
+          },
+          {
+            "code": "SECURITY_STEWARD_BINDING_EXISTS",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "securitySteward"
+          },
+          {
+            "code": "SECURITY_LEARNING_BINDING_EXISTS",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "securityLearning"
+          },
+          {
+            "code": "PROVENANCE_BINDING_EXISTS",
+            "operator": "FILE_EXISTS_FROM_PATH",
+            "path": "mergedPrProvenanceCapture"
+          }
+        ]
       }
     },
     "rule4": {
@@ -12254,7 +12327,78 @@
       "completionIsCheckpointNotStop": true,
       "operationalStatus": "SELF_ARCHITECTURE_PIPELINE_IMPLEMENTED_NEURAL_EXPANSION_EVIDENCE_GATED",
       "currentNeuralExpansionAuthorization": "EVIDENCE_GATED_SELF_ACTIVATION",
-      "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITH_EVIDENCE_GATED_FINAL_NEURAL_EXPANSION"
+      "currentPhase": "SELF_ARCHITECTURE_EVOLUTION_WITH_EVIDENCE_GATED_FINAL_NEURAL_EXPANSION",
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "COMPLETION_NOT_STOP",
+            "operator": "EQ",
+            "path": "completionIsCheckpointNotStop",
+            "expected": true
+          },
+          {
+            "code": "FAILURE_CONTINUES",
+            "operator": "EQ",
+            "path": "failureBehavior",
+            "expected": "ROLLBACK_OR_REQUEUE_EXACT_FAILURE_STAGE_AND_CONTINUE_LEARNING"
+          },
+          {
+            "code": "NO_AUTHORITY_EXPANSION",
+            "operator": "EQ",
+            "path": "invariants.authorityExpansion",
+            "expected": false
+          },
+          {
+            "code": "NO_QA_GATE_WEAKENING",
+            "operator": "EQ",
+            "path": "invariants.qaGateWeakening",
+            "expected": false
+          },
+          {
+            "code": "NO_SECURITY_GATE_WEAKENING",
+            "operator": "EQ",
+            "path": "invariants.securityGateWeakening",
+            "expected": false
+          },
+          {
+            "code": "NO_RELEASE_GATE_BYPASS",
+            "operator": "EQ",
+            "path": "invariants.releaseGateBypass",
+            "expected": false
+          },
+          {
+            "code": "NO_DIRECT_MAIN_WRITE",
+            "operator": "EQ",
+            "path": "invariants.directMainWrite",
+            "expected": false
+          },
+          {
+            "code": "FABRICATED_PASS_FORBIDDEN",
+            "operator": "EQ",
+            "path": "invariants.fabricatedPassForbidden",
+            "expected": true
+          },
+          {
+            "code": "VERIFIED_LEARNING_DELETION_FORBIDDEN",
+            "operator": "EQ",
+            "path": "invariants.verifiedLearningDeletionForbidden",
+            "expected": true
+          },
+          {
+            "code": "NEURAL_AUTHORITY_EXPANSION_FORBIDDEN",
+            "operator": "EQ",
+            "path": "neuralExpansion.autonomousAuthorityExpansion",
+            "expected": false
+          },
+          {
+            "code": "UNGATED_ACTIVATION_FORBIDDEN",
+            "operator": "EQ",
+            "path": "neuralExpansion.ungatedAutomaticActivationForbidden",
+            "expected": true
+          }
+        ]
+      }
     },
     "rule1": {
       "id": "RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT",
@@ -12295,6 +12439,59 @@
         "paidResourceAutoUse": false,
         "unsafeWorkGenerationForbidden": true,
         "busyLoopWithoutUsefulPlanningForbidden": true
+      },
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "TERMINAL_DONE_FORBIDDEN",
+            "operator": "EQ",
+            "path": "terminalDoneStateForbidden",
+            "expected": true
+          },
+          {
+            "code": "CHECKPOINT_MUST_REFILL",
+            "operator": "EQ",
+            "path": "verifiedCheckpointMustGenerateNextCausalInput",
+            "expected": true
+          },
+          {
+            "code": "COMPLETION_NOT_STOP",
+            "operator": "EQ",
+            "path": "completionIsCheckpointNotStop",
+            "expected": true
+          },
+          {
+            "code": "GLOBAL_24H_STOP_FORBIDDEN",
+            "operator": "EQ",
+            "path": "global24hStopForbidden",
+            "expected": true
+          },
+          {
+            "code": "GLOBAL_OWNER_STOP_FORBIDDEN",
+            "operator": "EQ",
+            "path": "ownerMayStopGlobal24h",
+            "expected": false
+          },
+          {
+            "code": "EMPTY_QUEUE_MUST_TRIGGER",
+            "operator": "CONTAINS",
+            "path": "emptyQueueMeaning",
+            "expected": "TRIGGER"
+          },
+          {
+            "code": "NEXT_CYCLE_DISPATCH_REQUIRED",
+            "operator": "ARRAY_INCLUDES",
+            "path": "continuousCycle",
+            "expected": "DISPATCH_NEXT_CYCLE"
+          },
+          {
+            "code": "FAILURE_MUST_NOT_STOP_UNRELATED_24H",
+            "operator": "EQ",
+            "path": "specificFailureMustNotStopUnrelated24hWork",
+            "expected": true
+          }
+        ]
       }
     },
     "rule3": {
@@ -12394,7 +12591,95 @@
       "benchmarkAloneCountsAsProductionPass": false,
       "practiceAloneCountsAsProductionPass": false,
       "authorityExpansion": false,
-      "gateWeakening": false
+      "gateWeakening": false,
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "UNBOUNDED_TOTALLEARNINGSIGNALLIMIT",
+            "operator": "EQ",
+            "path": "totalLearningSignalLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_PRACTICEQUEUEITEMLIMIT",
+            "operator": "EQ",
+            "path": "practiceQueueItemLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_PRACTICEGENERATIONLIMIT",
+            "operator": "EQ",
+            "path": "practiceGenerationLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_RELEARNINGGENERATIONLIMIT",
+            "operator": "EQ",
+            "path": "relearningGenerationLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_BENCHMARKGENERATIONLIMIT",
+            "operator": "EQ",
+            "path": "benchmarkGenerationLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_HYPOTHESISGENERATIONLIMIT",
+            "operator": "EQ",
+            "path": "hypothesisGenerationLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_CROSSPROJECTTRANSFERGENERATIONLIMIT",
+            "operator": "EQ",
+            "path": "crossProjectTransferGenerationLimit",
+            "expected": null
+          },
+          {
+            "code": "UNBOUNDED_MULTIVERSEPROJECTVARIANTLIMIT",
+            "operator": "EQ",
+            "path": "multiverseProjectVariantLimit",
+            "expected": null
+          },
+          {
+            "code": "SIGNAL_GENERATION_ALWAYS_ON",
+            "operator": "EQ",
+            "path": "signalGenerationAlwaysOn",
+            "expected": true
+          },
+          {
+            "code": "RESULT_GENERATES_NEXT_SIGNAL",
+            "operator": "EQ",
+            "path": "everyNewVerifiedOrFailedResultGeneratesNextLearningCandidate",
+            "expected": true
+          },
+          {
+            "code": "RESOURCE_BOUNDED_SIGNAL_UNBOUNDED",
+            "operator": "EQ",
+            "path": "executionResourceBoundedSignalExistenceUnbounded",
+            "expected": true
+          },
+          {
+            "code": "NO_AUTHORITY_EXPANSION",
+            "operator": "EQ",
+            "path": "authorityExpansion",
+            "expected": false
+          },
+          {
+            "code": "NO_GATE_WEAKENING",
+            "operator": "EQ",
+            "path": "gateWeakening",
+            "expected": false
+          },
+          {
+            "code": "LEARNING_MOTOR_EXISTS",
+            "operator": "FILE_EXISTS",
+            "expected": "tools/vibe2-learning-motor.mjs"
+          }
+        ]
+      }
     },
     "implementationOrder": [
       "RULE_1",
@@ -12436,7 +12721,44 @@
       "enforcerRequiredBeforeWorkerSourceWrite": true,
       "enforcerRequiredAfterWorkerExecution": true,
       "global24hStopOnConstitutionFailureForbidden": true,
-      "constitutionViolationAction": "QUARANTINE_OR_REQUEUE_AFFECTED_SCOPE_RECOVER_REPLAN_CONTINUE_GLOBAL_24H"
+      "constitutionViolationAction": "QUARANTINE_OR_REQUEUE_AFFECTED_SCOPE_RECOVER_REPLAN_CONTINUE_GLOBAL_24H",
+      "declarativeRuleEnforcementRequired": true,
+      "ruleEnforcementSchemaVersion": 1,
+      "futureRuleWithoutMachineEnforcementAction": "FAIL_CLOSED_UNTIL_DECLARATIVE_ASSERTIONS_ARE_DEFINED",
+      "hardcodedRuleNumberBranchesForbidden": true,
+      "genericRuleIterationRequired": true,
+      "repositoryAssertions": [
+        {
+          "code": "CONSTITUTION_24H_WORKFLOW_MISSING",
+          "operator": "FILE_CONTAINS",
+          "file": ".github/workflows/vibe2-24h-runner.yml",
+          "expected": "name: Vibe2 24H Runner"
+        },
+        {
+          "code": "CONSTITUTION_24H_REFILL_NOT_UNCONDITIONAL",
+          "operator": "FILE_REGEX",
+          "file": ".github/workflows/vibe2-24h-runner.yml",
+          "expected": "\\n\\s*refill:\\n[\\s\\S]*?if:\\s*\\$\\{\\{\\s*always\\(\\)\\s*\\}\\}"
+        },
+        {
+          "code": "CONSTITUTION_24H_ENFORCER_NOT_WIRED",
+          "operator": "FILE_CONTAINS",
+          "file": ".github/workflows/vibe2-24h-runner.yml",
+          "expected": "company-constitution-enforcer.mjs"
+        },
+        {
+          "code": "CONSTITUTION_CONTINUOUS_ENFORCER_NOT_WIRED",
+          "operator": "FILE_CONTAINS",
+          "file": ".github/workflows/vibe2-continuous-core.yml",
+          "expected": "company-constitution-enforcer.mjs"
+        },
+        {
+          "code": "CONSTITUTION_PINNED_WORK_CONTRACT_SHA",
+          "operator": "FILE_CONTAINS",
+          "file": ".github/workflows/vibe2-continuous-core.yml",
+          "expected": "VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}"
+        }
+      ]
     }
   },
   "planningGrowthMarketingDepartment": {
