@@ -113,6 +113,19 @@ export function compileHomepageCentralPolicy(policy={}){
   for(const required of ['development-queue.json','game-catalog.json','company-status.json','homepage-platform-exposure.json']){
     if(!runtimeFiles.includes(required))errors.push('HOMEPAGE_RUNTIME_FILE:'+required);
   }
+  const managerContract=source.managerContract||{};
+  const testingContract=source.testingContract||{};
+  const documentationSyncContract=source.documentationSyncContract||{};
+  if(clean(source.managerContractAuthority)!=='CENTRAL_ROADMAP_ONLY_DIRECTIVE_IS_COMPATIBILITY_MIRROR')errors.push('HOMEPAGE_MANAGER_CONTRACT_AUTHORITY');
+  if(source.directiveMirrorMayNotOverrideCentral!==true)errors.push('HOMEPAGE_DIRECTIVE_OVERRIDE_FORBIDDEN');
+  if(source.homepageWorkerMustConsumeCompiledCentralProjection!==true)errors.push('HOMEPAGE_WORKER_PROJECTION_REQUIRED');
+  if(source.homepagePolicyFingerprintRequiredAtManagerStart!==true||source.homepagePolicyFingerprintRequiredAtDirectorStart!==true||source.homepagePolicyFingerprintMustMatchBeforePublication!==true)errors.push('HOMEPAGE_FINGERPRINT_GATES');
+  if(clean(source.staleHomepagePolicyAction)!=='FAIL_CLOSED_BLOCK_PUBLICATION_AND_REQUEUE_HOMEPAGE_MANAGER')errors.push('HOMEPAGE_STALE_POLICY_ACTION');
+  if(clean(managerContract.mode)!=='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'||clean(managerContract.manager)!=='HOMEPAGE'||clean(managerContract.supervisor)!=='DIRECTOR')errors.push('HOMEPAGE_MANAGER_ROLE_CONTRACT');
+  if(Number(managerContract.managerCount)!==1||Number(managerContract.supervisorCount)!==1||managerContract.secondHomepageManagerForbidden!==true||managerContract.secondHomepageSupervisorForbidden!==true)errors.push('HOMEPAGE_SINGLE_MANAGER_CONTRACT');
+  if(managerContract.fixedFunctionProtection?.ownerLocked!==true)errors.push('HOMEPAGE_FIXED_FUNCTION_OWNER_LOCK');
+  if(Number(testingContract.minimumWebStrictScore)!==80||testingContract.hardGatesMustPass!==true||Number(testingContract.maxVisibleTestCandidates)!==30)errors.push('HOMEPAGE_TESTING_CONTRACT');
+  if(documentationSyncContract.centralPolicyFirst!==true||clean(documentationSyncContract.centralPolicyPath)!==DEFAULT_POLICY||documentationSyncContract.workDocumentsCannotOverrideCentralPolicy!==true)errors.push('HOMEPAGE_DOCUMENTATION_SYNC_CONTRACT');
   const contract={
     version:Number(source.version)||null,
     authority:clean(source.authority)||null,
@@ -136,7 +149,14 @@ export function compileHomepageCentralPolicy(policy={}){
       exactCandidateHashBound:pipeline.exactCandidateHashBound===true,
       deterministicQaPreserved:pipeline.deterministicQaPreserved===true,
       directUnsupervisedPublicWriteForbidden:pipeline.directUnsupervisedPublicWriteForbidden===true
-    }
+    },
+    managerContract,
+    testingContract,
+    documentationSyncContract,
+    managerContractAuthority:clean(source.managerContractAuthority)||null,
+    directiveMirrorRequired:source.directiveMirrorRequired===true,
+    directiveMirrorMayNotOverrideCentral:source.directiveMirrorMayNotOverrideCentral===true,
+    staleHomepagePolicyAction:clean(source.staleHomepagePolicyAction)||null
   };
   return{valid:errors.length===0,errors,fingerprint:textSha256(JSON.stringify(contract)),supportedPlatforms,contract};
 }
