@@ -23,7 +23,8 @@ test('포근섬은 넓은 기본섬과 채집/NPC/몹 밀도를 가진다',()=>{
  const style=read('roblox-games/cozy-island/shared/VisualStyle.luau');
  const server=read('roblox-games/cozy-island/server/Game.server.luau');
  assert.match(style,/Size=Vector3\.new\(176,10,176\)/);
- for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_ASSET_GATHER_WORLD_V6','terrain:FillBlock','Enum.Material.Water','water.CanCollide=false','ChiefHat','StrawHat','VillageBoat'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
+ for(const marker of ['ManualGatherForest','ManualGatherFarm','WoodNode','FoodNode','HomeNPCs','HomeMobs','WildBoar','IslandRaider','COZY_ASSET_GATHER_WORLD_V6','terrain:FillBlock','Enum.Material.Water','seaLevel','ChiefHat','StrawHat','VillageBoat'])assert.match(server,new RegExp(marker.replaceAll('.','\\.')));
+ assert.doesNotMatch(server,/part\(world,"Sea"/);
 });
 
 test('대충 RPG는 작은 단일 필드가 아니라 5개 대형 지역과 인구/몬스터 밀도를 가진다',()=>{
