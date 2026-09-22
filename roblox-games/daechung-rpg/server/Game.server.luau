@@ -67,7 +67,7 @@ local function humanoidFigure(name,pos,color,accent,scale)
  attach(root,"Hair",Vector3.new(2.7,.9,2.7)*scale,Vector3.new(0,4.05*scale,.05*scale),Color3.fromRGB(58,48,46),Enum.Material.SmoothPlastic)
  attach(root,"EyeL",Vector3.new(.32,.32,.18)*scale,Vector3.new(-.48*scale,3.35*scale,-1.24*scale),Color3.fromRGB(35,40,48),Enum.Material.SmoothPlastic)
  attach(root,"EyeR",Vector3.new(.32,.32,.18)*scale,Vector3.new(.48*scale,3.35*scale,-1.24*scale),Color3.fromRGB(35,40,48),Enum.Material.SmoothPlastic)
- attach(root,"Belt",Vector3.new(3.35,.35,2.3)*scale,Vector3.new(0,-.9*scale,0),Color3.fromRGB(65,54,49),Enum.Material.Leather)
+ attach(root,"Belt",Vector3.new(3.35,.35,2.3)*scale,Vector3.new(0,-.9*scale,0),Color3.fromRGB(65,54,49),Enum.Material.Fabric)
  return root
 end
 local function treeProp(pos,scale)
