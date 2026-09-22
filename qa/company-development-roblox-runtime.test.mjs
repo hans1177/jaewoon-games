@@ -380,7 +380,7 @@ test('central development orchestrator dispatches both native lanes without Web 
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/company-development-roblox-runtime\.yml/);
   assert.match(workflow,/company-development-unity-runtime\.yml/);
-  assert.match(workflow,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(workflow,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
   assert.doesNotMatch(workflow,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 

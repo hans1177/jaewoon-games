@@ -48,7 +48,7 @@ jobs:
           if(dual?.platformRuntimeEvidenceIndependent!==true||dual?.onePlatformFailureDoesNotCancelOther!==true||dual?.internalReleaseFirst!==true||dual?.externalReleaseIndependent!==true) throw new Error('dual-native evidence/release isolation missing');
           if(!fs.existsSync(dual.centralSyncDocument)||!fs.existsSync('tools/company-minimum-design-contract.mjs')||!fs.existsSync('qa/company-minimum-design-contract.test.mjs')) throw new Error('dual-native executable/document bindings missing');
           const uw=c.unityWebFirstStage;
-          if(uw?.enabled!==false||uw?.scope!=='DISABLED'||uw?.status!=='DISABLED_BY_OWNER_DIRECTIVE'||uw?.developmentAdmissionAuthority!==false) throw new Error('Unity Web must remain disabled');
+          if(uw?.enabled!==true||uw?.scope!=='VALIDATION_SURFACE_ONLY'||uw?.status!=='OWNER_DIRECT_LOCKED'||uw?.developmentAdmissionAuthority!==false||uw?.validationSurfaceOnly!==true||uw?.nativeGateAuthority!==false) throw new Error('Unity Web validation surface contract changed');
           if(c.portableWebLearning?.enabled!==false||c.portableWebLearning?.sourceEngine!=='DISABLED') throw new Error('portable Web learning must remain disabled');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
           console.log('PASS Vibe3 Pump machine contract with direct Roblox Unity native pairing');
@@ -66,7 +66,7 @@ jobs:
           if(dual.verifiedPatternsFeedSharedV3Memory!==true||dual.separatePlatformShadowPipelineForbidden!==true)throw new Error('dual-native canonical memory boundary changed');
           const playbooks=JSON.parse(fs.readFileSync('company-learning/vibe3-task-playbooks.json','utf8'));
           const ctx=playbooks.directNativePlatformContext||{};
-          if(ctx.unityWeb!=='DISABLED'||ctx.requestEitherStartsBoth!==true||ctx.platformEvidenceIndependent!==true)throw new Error('department playbooks not synced to dual-native context');
+          if(ctx.unityWeb!=='VALIDATION_SURFACE_ONLY'||ctx.unityWebRequired!==false||ctx.unityWebNativeGateAuthority!==false||ctx.requestEitherStartsBoth!==true||ctx.platformEvidenceIndependent!==true)throw new Error('department playbooks not synced to dual-native context');
           const audio=playbooks?.taskTypes?.audio||playbooks?.playbooks?.audio||{};
           if((audio.checklist||[]).includes('unlock-web-audio-after-first-user-gesture'))throw new Error('legacy Web audio lifecycle remains active');
           console.log('PASS canonical dual-native learning and department playbooks');
@@ -86,7 +86,7 @@ jobs:
           if(dual?.design?.required!==true||dual?.design?.sharedCoreRequired!==true||dual?.design?.oneIdenticalPlatformDesignForbidden!==true||dual?.design?.strictDesignReviewRunsInParallel!==true) throw new Error('dual-native design contract changed');
           if(dual?.internalRelease?.ROBLOX!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE'||dual?.internalRelease?.UNITY!=='INTERNAL_OR_CLOSED_APP_TEST_BUILD') throw new Error('internal release targets changed');
           if(dual?.externalRelease?.platformIndependent!==true||dual?.externalRelease?.onePlatformMayPublishWithoutWaitingForOther!==true) throw new Error('platform-independent public release changed');
-          if(r.unityWebFirstStage?.enabled!==false||r.unityWebFirstStage?.scope!=='DISABLED'||r.webCompanion?.engine!=='DISABLED') throw new Error('Unity Web/Web companion must remain disabled');
+          if(r.unityWebFirstStage?.enabled!==true||r.unityWebFirstStage?.scope!=='VALIDATION_SURFACE_ONLY'||r.unityWebFirstStage?.developmentAdmissionAuthority!==false||r.unityWebFirstStage?.nativeReleaseMayRunWithoutWebBuild!==true||r.webCompanion?.engine!=='DISABLED') throw new Error('Unity Web validation surface or legacy Web companion contract changed');
           if(JSON.stringify(r.developmentLifecycleMachine?.targetPlatformDevelopment?.allowedPlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||r.developmentLifecycleMachine?.targetPlatformDevelopment?.bidirectionalAutoPair!==true||r.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate!=='MINIMUM_DESIGN_CONTRACT_READY') throw new Error('native development admission changed');
           if(!fs.existsSync('company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md')) throw new Error('dual-native central sync document missing');
           console.log('PASS platform release roadmap contract');

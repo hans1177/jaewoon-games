@@ -29,7 +29,10 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     const req=JSON.parse(fs.readFileSync(path.join(tmp,'.build-requests','unity-web','sample-game.json'),'utf8'));
     assert.equal(req.projectPath,'unity-games/sample-game');
     assert.equal(req.outputRoot,'web-games/sample-game');
+    assert.equal(req.kind,'UNITY_WEB_VALIDATION_BUILD');
     assert.equal(req.fullGameplayPassAuthority,false);
+    assert.equal(req.nativeGateAuthority,false);
+    assert.equal(req.homepageTestSurface,true);
     assert.equal(req.postGatePlatformPipelineChanged,false);
   } finally {
     process.chdir(old);
@@ -58,4 +61,12 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
     process.chdir(old);
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('Unity Web validation publication uses PR instead of direct main write',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  assert.match(workflow,/Create verified Unity Web build PR/);
+  assert.match(workflow,/gh pr create/);
+  assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
+  assert.equal(workflow.includes(['git','push','origin','HEAD:main'].join(' ')),false);
 });

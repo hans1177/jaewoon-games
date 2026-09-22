@@ -62,10 +62,15 @@ test('complete Unity Web child evidence produces public build and first-stage pa
     ]);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,true);
-    assert.equal(result.update.unityWebFirstStagePassed,true);
-    assert.equal(result.update.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
+    assert.equal(result.update.unityWebValidationSurfacePassed,true);
+    assert.equal(result.update.unityWebTestAvailable,true);
+    assert.equal(result.update.unityWebTestUrl,`/web-games/${gameId}/`);
+    assert.equal(result.update.webValidationRequired,false);
+    assert.equal(result.update.currentStep,undefined);
+    assert.equal(result.update.canonicalState,undefined);
+    assert.equal(result.update.routingBlockers,undefined);
     assert.ok(fs.existsSync(path.join(output,'public','web-games',gameId,'index.html')));
-    assert.ok(fs.existsSync(path.join(output,'persist','design',gameId,'2026-09-21','unity-web-first-stage-validation.json')));
+    assert.ok(fs.existsSync(path.join(output,'persist','design',gameId,'2026-09-21','unity-web-validation-surface.json')));
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
@@ -93,7 +98,9 @@ test('boolean-only Unity Web evidence cannot satisfy the final gate',()=>{
     ]);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,false);
-    assert.match(result.update.vibeWebImplementationReason,/input|coreFun|mobile|gameplay/);
+    assert.match(result.update.unityWebValidationSurfaceFailureReason,/input|coreFun|mobile|gameplay/);
+    assert.equal(result.update.currentStep,undefined);
+    assert.equal(result.update.routingBlockers,undefined);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
@@ -122,8 +129,12 @@ test('incomplete Unity Web gate fails closed and does not publish build',()=>{
     ]);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,false);
-    assert.equal(result.update.canonicalState,'WEB_VIBE_REPAIR_REQUIRED');
-    assert.match(result.update.vibeWebImplementationReason,/coreFun/);
+    assert.equal(result.update.unityWebValidationSurfacePassed,false);
+    assert.equal(result.update.unityWebTestAvailable,false);
+    assert.match(result.update.unityWebValidationSurfaceFailureReason,/coreFun/);
+    assert.equal(result.update.currentStep,undefined);
+    assert.equal(result.update.canonicalState,undefined);
+    assert.equal(result.update.routingBlockers,undefined);
     assert.equal(fs.existsSync(path.join(output,'public','web-games',gameId)),false);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

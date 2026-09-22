@@ -1,5 +1,5 @@
 // 파일명: tools/company-development-unity-web-worker.mjs
-// 역할: DEVELOPMENT_CONFIRMED의 1차 Unity Web 소스 준비와 child build 결과를 fail-closed로 판정한다.
+// 역할: DEVELOPMENT_CONFIRMED Unity 원본의 비차단 WebGL validation surface 준비와 child build 결과를 판정한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,7 +18,7 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'game';
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const contract=policy?.unityWebFirstStage;
-if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='FIRST_WEB_GAME_STAGE_ONLY')throw new Error('UNITY_WEB_FIRST_STAGE_POLICY_MISSING');
+if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='VALIDATION_SURFACE_ONLY'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==false)throw new Error('UNITY_WEB_VALIDATION_SURFACE_POLICY_MISSING');
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
 if(contract?.postUnityWebGatePipelineUnchanged!==true)throw new Error('POST_UNITY_WEB_PIPELINE_MUST_REMAIN_UNCHANGED');
 
@@ -66,31 +66,21 @@ function findFiles(root){
   walk(root);
   return rows;
 }
-function failureResult({gameId,sourceRoot,baselineSha='',sourceTree='',buildRunId=null,reason,bootstrap=false}){
+function failureResult({gameId,sourceRoot,baselineSha='',sourceTree='',buildRunId=null,reason}){
   const stamp=new Date().toISOString();
   return{
     gameId,pass:false,update:{
-      status:'ACTIVE',
-      currentStep:bootstrap?'VIBE_WEB_BASE_IMPLEMENTATION':'VIBE_WEB_REPAIR',
-      canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
-      sourcePath:sourceRoot,
-      webSourcePath:`web-games/${gameId}`,
-      webValidationRequired:true,
-      unityWebFirstStagePassed:false,
-      unityWebFirstStagePassedAt:null,
-      unityWebFirstStageEvidencePath:null,
-      unityWebFirstStageBuildRunId:buildRunId,
-      unityWebFirstStageSourceTreeSha:sourceTree||null,
-      unityWebFirstStageDesignBaselineSha256:baselineSha||null,
-      vibeWebImplementationRequired:true,
-      vibeWebRequestedStage:bootstrap?'WEB_BASE_IMPLEMENTATION':'WEB_REPAIR',
-      vibeWebImplementationReason:reason,
-      sourceRootBootstrapRequired:bootstrap,
-      homepageTestEligible:false,
-      homepageTestCandidate:false,
-      formalImplementationPassed:false,
-      routingBlockers:[`unity-web-first-stage:${reason}`],
-      webValidationLastAttemptAt:stamp,
+      unityWebValidationSurfacePassed:false,
+      unityWebValidationSurfacePassedAt:null,
+      unityWebValidationSurfaceEvidencePath:null,
+      unityWebValidationSurfaceBuildRunId:buildRunId,
+      unityWebValidationSurfaceSourceTreeSha:sourceTree||null,
+      unityWebValidationSurfaceDesignBaselineSha256:baselineSha||null,
+      unityWebValidationSurfaceFailureReason:reason,
+      unityWebTestAvailable:false,
+      unityWebTestUrl:null,
+      webValidationRequired:false,
+      unityWebValidationSurfaceLastAttemptAt:stamp,
       updatedAt:stamp
     }
   };
@@ -155,7 +145,6 @@ if(mode==='result'){
   const explicitFailure=clean(args.failure);
   if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
   const baselineSha=baselineFile&&fs.existsSync(baselineFile)?sha256File(baselineFile):'';
-  const bootstrap=explicitFailure==='UNITY_WEB_CANONICAL_SOURCE_MISSING';
   let result;
   const persistRoot=path.join(outputRoot,'persist');
   const publicRoot=path.join(outputRoot,'public');
@@ -165,7 +154,7 @@ if(mode==='result'){
   fs.mkdirSync(publicRoot,{recursive:true});
   fs.mkdirSync(resultsRoot,{recursive:true});
   if(explicitFailure){
-    result=failureResult({gameId,sourceRoot,baselineSha,sourceTree,buildRunId,reason:explicitFailure,bootstrap});
+    result=failureResult({gameId,sourceRoot,baselineSha,sourceTree,buildRunId,reason:explicitFailure});
   }else{
     const files=findFiles(childRoot);
     const buildFile=files.find(file=>path.basename(file)==='unity-web-build.json');
@@ -212,7 +201,7 @@ if(mode==='result'){
         result=failureResult({gameId,sourceRoot,baselineSha,sourceTree,buildRunId,reason:`UNITY_WEB_GATE_INCOMPLETE:${missing}`});
       }else{
         const stamp=new Date().toISOString();
-        const evidenceRelative=baselineSource.replace(/[^/]+$/,'unity-web-first-stage-validation.json');
+        const evidenceRelative=baselineSource.replace(/[^/]+$/,'unity-web-validation-surface.json');
         const combined={
           version:1,
           engine:'UNITY_WEB',
@@ -228,6 +217,8 @@ if(mode==='result'){
           buildRunId,
           buildEvidence:build,
           gameplayEvidence:qa,
+          validationSurfaceOnly:true,
+          nativeGateAuthority:false,
           postUnityWebGatePipelineUnchanged:true,
           generatedAt:stamp,
         };
@@ -238,39 +229,25 @@ if(mode==='result'){
         fs.mkdirSync(publicOut,{recursive:true});
         fs.cpSync(path.dirname(indexFile),publicOut,{recursive:true});
         result={gameId,pass:true,update:{
-          status:'PENDING',
-          currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-          canonicalState:'PENDING_SELECTED_PLATFORM_BIND',
-          sourcePath:sourceRoot,
-          webSourcePath:`web-games/${gameId}`,
-          webValidationRequired:true,
-          webValidationPassedAt:stamp,
-          webValidationEvidencePath:evidenceRelative,
-          unityWebFirstStagePassed:true,
-          unityWebFirstStagePassedAt:stamp,
-          unityWebFirstStageEvidencePath:evidenceRelative,
-          unityWebFirstStageBuildRunId:buildRunId,
-          unityWebFirstStageSourceTreeSha:sourceTree,
-          unityWebFirstStageDesignBaselineSha256:baselineSha,
-          unityWebFirstStageGate:gate,
-          vibeWebImplementationRequired:false,
-          vibeWebRequestedStage:null,
-          vibeWebImplementationReason:null,
-          sourceRootBootstrapRequired:false,
-          homepageTestEligible:true,
-          homepageTestCandidate:false,
-          homepageTestVerdict:'UNITY_WEB_GATE_PASS',
-          formalImplementationPassed:false,
-          formalImplementationVerdict:'UNITY_WEB_GATE_PASS',
-          routingBlockers:[],
-          webValidationLastAttemptAt:stamp,
+          unityWebValidationSurfacePassed:true,
+          unityWebValidationSurfacePassedAt:stamp,
+          unityWebValidationSurfaceEvidencePath:evidenceRelative,
+          unityWebValidationSurfaceBuildRunId:buildRunId,
+          unityWebValidationSurfaceSourceTreeSha:sourceTree,
+          unityWebValidationSurfaceDesignBaselineSha256:baselineSha,
+          unityWebValidationSurfaceGate:gate,
+          unityWebValidationSurfaceFailureReason:null,
+          unityWebTestAvailable:true,
+          unityWebTestUrl:`/web-games/${gameId}/`,
+          webValidationRequired:false,
+          unityWebValidationSurfaceLastAttemptAt:stamp,
           updatedAt:stamp,
         }};
       }
     }
   }
   writeJson(path.join(resultsRoot,`${safeId(gameId)}.json`),result);
-  console.log(`UNITY_WEB_RUNTIME_RESULT=${gameId}:${result.pass?'PASS':'REPAIR_REQUIRED'}`);
+  console.log(`UNITY_WEB_VALIDATION_SURFACE_RESULT=${gameId}:${result.pass?'PASS':'UNAVAILABLE'}`);
   process.exit(0);
 }
 

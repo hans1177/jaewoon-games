@@ -1,4 +1,4 @@
-name: Unity Web First Stage Build
+name: Unity WebGL Validation Surface Build
 run-name: Unity Web ${{ inputs.game_id || inputs.request_file || github.event.head_commit.message }}
 
 on:
@@ -35,13 +35,14 @@ on:
         default: ''
         type: string
       publish_to_main:
-        description: 'Publish verified output to web-games on main'
+        description: 'Create a PR containing verified output for web-games'
         required: false
         default: false
         type: boolean
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   build:
@@ -103,6 +104,23 @@ jobs:
               raise SystemExit('invalid gameId')
           if project != f'unity-games/{game_id}':
               raise SystemExit('projectPath must equal unity-games/<gameId>')
+          if not method:
+              editor = pathlib.Path(project) / 'Assets' / 'Editor'
+              candidates = []
+              if editor.is_dir():
+                  for file in editor.rglob('*.cs'):
+                      source = file.read_text(encoding='utf-8', errors='ignore')
+                      if not re.search(r'public\s+static\s+void\s+BuildWeb\s*\(', source):
+                          continue
+                      namespace = re.search(r'\bnamespace\s+([A-Za-z_][A-Za-z0-9_.]*)', source)
+                      classes = re.findall(r'(?:public\s+)?static\s+class\s+([A-Za-z_][A-Za-z0-9_]*)', source)
+                      if len(classes) == 1:
+                          prefix = f'{namespace.group(1)}.' if namespace else ''
+                          candidates.append(f'{prefix}{classes[0]}.BuildWeb')
+              candidates = sorted(set(candidates))
+              if len(candidates) != 1:
+                  raise SystemExit(f'BuildWeb method unresolved: {candidates}')
+              method = candidates[0]
           if not re.fullmatch(r'[A-Za-z0-9_.]+', method):
               raise SystemExit('invalid buildMethod')
           version_file = pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt'
@@ -125,7 +143,7 @@ jobs:
           print(f'UNITY_WEB_BUILD_METHOD={method}')
           PY
 
-      - name: Verify Unity Web first-stage contract
+      - name: Verify Unity WebGL validation-surface contract
         shell: bash
         run: |
           set -euo pipefail
@@ -134,11 +152,11 @@ jobs:
           const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const c=policy.unityWebFirstStage;
           if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
-          if(c?.scope!=='FIRST_WEB_GAME_STAGE_ONLY') throw new Error('Unity Web scope changed');
+          if(c?.scope!=='VALIDATION_SURFACE_ONLY'||c?.enabled!==true||c?.developmentAdmissionAuthority!==false) throw new Error('Unity Web validation surface contract changed');
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
           if(c?.postUnityWebGatePipelineUnchanged!==true) throw new Error('post gate pipeline changed');
-          console.log('UNITY_WEB_FIRST_STAGE_CONTRACT=PASS');
+          console.log('UNITY_WEB_VALIDATION_SURFACE_CONTRACT=PASS');
           NODE
 
       - name: Verify Unity credentials
@@ -311,7 +329,9 @@ jobs:
             buildTreeSha256:process.env.TREE_SHA,
             bootSmoke:'PASS',
             initialRealGameplayQa:'PASS',
-            fullGameplayGate:'NOT_ASSERTED',
+            fullGameplayGate:'NOT_NATIVE_GATE',
+            validationSurfaceOnly:true,
+            nativeGateAuthority:false,
             postGatePlatformPipelineChanged:false,
             generatedAt:new Date().toISOString()
           },null,2)+'\n');
@@ -326,34 +346,30 @@ jobs:
           retention-days: 7
 
 
-      - name: Publish verified Unity Web build
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.publish_to_main == true)
+      - name: Create verified Unity Web build PR
+        if: github.event_name == 'push' || inputs.publish_to_main == true
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for attempt in 1 2 3 4 5; do
-            git fetch --no-tags origin main
-            git checkout -B unity-web-publish origin/main
-            rm -rf "web-games/$GAME_ID"
-            mkdir -p "web-games/$GAME_ID"
-            cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
-            git add "web-games/$GAME_ID"
-            git diff --cached --check
-            if git diff --cached --quiet; then
-              echo "UNITY_WEB_PUBLICATION=NO_CHANGE"
-              exit 0
-            fi
-            git commit -m "build: publish $GAME_ID Unity Web [skip ci]"
-            if git push origin HEAD:main; then
-              echo "UNITY_WEB_PUBLICATION=PASS"
-              exit 0
-            fi
-            echo "UNITY_WEB_PUBLICATION_RETRY=$attempt"
-            sleep 2
-          done
-          echo "UNITY_WEB_PUBLICATION=FAILED_AFTER_RETRY"
-          exit 1
+          git fetch --no-tags origin main
+          branch="unity-web/${GAME_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -B "$branch" origin/main
+          rm -rf "web-games/$GAME_ID"
+          mkdir -p "web-games/$GAME_ID"
+          cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "web-games/$GAME_ID"/
+          git add "web-games/$GAME_ID"
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
+            exit 0
+          fi
+          git commit -m "build: publish $GAME_ID Unity Web validation"
+          git push --force-with-lease origin HEAD:"$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web validation"             --body "Verified Unity WebGL validation-surface build from workflow run $GITHUB_RUN_ID. This is a homepage test artifact only and does not satisfy Unity native release gates.")"
+          echo "UNITY_WEB_PUBLICATION_PR=$pr_url"
+          echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'

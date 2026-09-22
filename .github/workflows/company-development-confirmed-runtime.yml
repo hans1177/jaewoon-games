@@ -46,6 +46,7 @@ jobs:
     outputs:
       eligible_count: ${{ steps.plan.outputs.eligible_count }}
       eligible_ids: ${{ steps.plan.outputs.eligible_ids }}
+      unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,7 +73,7 @@ jobs:
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const d=r.directNativeDualPlatformDevelopment||{};
           if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('DIRECT_NATIVE_OWNER_LOCK_REQUIRED');
-          if(d.unityWebEnabled!==false||d.unityWebRequired!==false||d.unityWebGateRequired!==false)throw new Error('UNITY_WEB_MUST_BE_DISABLED');
+          if(d.unityWebEnabled!==true||d.unityWebRequired!==false||d.unityWebGateRequired!==false||d.unityWebMode!=='VALIDATION_SURFACE_ONLY')throw new Error('UNITY_WEB_VALIDATION_SURFACE_CONTRACT_REQUIRED');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
           if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY,ROBLOX')throw new Error('BIDIRECTIONAL_AUTO_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
@@ -93,6 +94,7 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import path from 'node:path';
           import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=(q.items||[]).filter(item=>
@@ -108,12 +110,37 @@ jobs:
             if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error('DUAL_NATIVE_TARGETS_REQUIRED:'+item.gameId);
             if(item.webValidationRequired===true)throw new Error('LEGACY_WEB_GATE_ACTIVE:'+item.gameId);
           }
+          const discoverBuildWeb=gameId=>{
+            const editor=path.join('unity-games',gameId,'Assets','Editor');
+            if(!fs.existsSync(editor))return null;
+            const files=[];
+            const walk=dir=>{
+              for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+                const full=path.join(dir,entry.name);
+                if(entry.isDirectory())walk(full);
+                else if(entry.isFile()&&entry.name.endsWith('.cs'))files.push(full);
+              }
+            };
+            walk(editor);
+            const methods=[];
+            for(const file of files){
+              const source=fs.readFileSync(file,'utf8');
+              if(!/public\s+static\s+void\s+BuildWeb\s*\(/.test(source))continue;
+              const namespaceName=source.match(/\bnamespace\s+([A-Za-z_][A-Za-z0-9_.]*)/)?.[1]||'';
+              const classes=[...source.matchAll(/(?:public\s+)?static\s+class\s+([A-Za-z_][A-Za-z0-9_]*)/g)].map(m=>m[1]);
+              if(classes.length===1)methods.push([namespaceName,classes[0],'BuildWeb'].filter(Boolean).join('.'));
+            }
+            const unique=[...new Set(methods)];
+            return unique.length===1?unique[0]:null;
+          };
           const ids=rows.map(row=>row.gameId);
+          const webIds=ids.filter(id=>discoverBuildWeb(id));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible_count=${ids.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible_ids=${ids.join(',')}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`unity_web_ids=${webIds.join(',')}\n`);
           console.log(`DIRECT_NATIVE_ELIGIBLE_COUNT=${ids.length}`);
           console.log(`DIRECT_NATIVE_ELIGIBLE_IDS=${ids.join(',')||'NONE'}`);
-          console.log('UNITY_WEB_EXECUTION=DISABLED');
+          console.log(`UNITY_WEB_VALIDATION_READY_IDS=${webIds.join(',')||'NONE'}`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
 
@@ -128,14 +155,29 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           ELIGIBLE_IDS: ${{ needs.native-plan.outputs.eligible_ids }}
+          UNITY_WEB_IDS: ${{ needs.native-plan.outputs.unity_web_ids }}
         shell: bash
         run: |
           set -euo pipefail
           gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
           gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          web_count=0
+          if [ "$GITHUB_REF" = 'refs/heads/main' ] && [ -n "$UNITY_WEB_IDS" ]; then
+            IFS=',' read -ra web_ids <<< "$UNITY_WEB_IDS"
+            for id in "${web_ids[@]}"; do
+              [ -n "$id" ] || continue
+              gh workflow run unity-web-first-stage-build.yml --repo "$GITHUB_REPOSITORY" --ref main \
+                -f game_id="$id" \
+                -f project_path="unity-games/$id" \
+                -f source_commit="$GITHUB_SHA" \
+                -f publish_to_main=true
+              web_count=$((web_count+1))
+            done
+          fi
           echo "DIRECT_NATIVE_IDS=$ELIGIBLE_IDS"
           echo 'ROBLOX_RUNTIME_DISPATCH=YES'
           echo 'UNITY_APP_RUNTIME_DISPATCH=YES'
-          echo 'UNITY_WEB_RUNTIME_DISPATCH=NO'
+          echo "UNITY_WEB_RUNTIME_DISPATCH_COUNT=$web_count"
+          echo 'UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE'
           echo 'BIDIRECTIONAL_AUTO_PAIR=YES'
           echo 'INTERNAL_RELEASE_FIRST=YES'

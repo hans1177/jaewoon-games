@@ -135,6 +135,33 @@ function canonicalWebHref(row){
   const expected=`web-games/${id}`;
   return raw===expected?`/${expected}/`:'';
 }
+async function bindVerifiedUnityWebSurfaces(catalog){
+  if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
+  const candidates=catalog.games.filter(game=>{
+    const id=gameIdOf(game);
+    const unity=sourcesOf(game).unity||{};
+    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
+    return Boolean(id)&&projectPath===`unity-games/${id}`;
+  });
+  const verified=new Map();
+  await Promise.all(candidates.map(async game=>{
+    const id=gameIdOf(game),href=`/web-games/${gameIdOf(game)}/`;
+    if(!id)return;
+    const [build,qa]=await Promise.all([
+      getJson(`${href}unity-web-build.json`),
+      getJson(`${href}unity-web-gameplay-validation.json`)
+    ]);
+    const pass=build?.engine==='UNITY_WEB'&&build?.gameId===id&&build?.bootSmoke==='PASS'&&build?.initialRealGameplayQa==='PASS'&&
+      qa?.engine==='UNITY_WEB'&&qa?.gameId===id&&qa?.pass===true&&qa?.boot?.pass===true&&qa?.gameplay?.pass===true&&qa?.noCriticalRuntimeError===true;
+    if(pass)verified.set(id,href);
+  }));
+  return{
+    ...catalog,
+    games:catalog.games.map(game=>verified.has(gameIdOf(game))
+      ?{...game,unityWebTestUrl:verified.get(gameIdOf(game)),unityWebValidationVerified:true}
+      :game)
+  };
+}
 function webPublishedRows(catalog){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>{
@@ -174,7 +201,8 @@ function platformLinks(game){
   const placeId=String(rp.placeId||target?.placeId||'').trim();
   const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||(/^[1-9][0-9]*$/.test(placeId)?`https://www.roblox.com/games/${placeId}`:'')).trim();
   const unity=String((up.publicRelease===true?up.publicUrl:up.internalUrl)||(game?.unityBuildVerified===true?game?.unityBuildUrl:'')||'').trim();
-  return {roblox,unity};
+  const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebValidationVerified===true?String(game?.unityWebTestUrl||'').trim():'';
+  return {roblox,unity,unityWeb};
 }
 function internalReleaseLinks(game){
   const links=platformLinks(game);
@@ -183,7 +211,8 @@ function internalReleaseLinks(game){
   const roblox=state('ROBLOX'),unity=state('UNITY');
   return {
     roblox:roblox.internalReleaseReady===true||roblox.publicRelease===true?links.roblox:'',
-    unity:unity.internalReleaseReady===true||unity.publicRelease===true?links.unity:''
+    unity:unity.internalReleaseReady===true||unity.publicRelease===true?links.unity:'',
+    unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:''
   };
 }
 function hasInternalRelease(game){
@@ -245,10 +274,13 @@ function buildCard(row){
   const button=(href,label,offLabel,extra='')=>href?`<a class="foldGameBtn ${extra}" href="${esc(href)}">${label}</a>`:`<span class="foldGameBtn off">${offLabel}</span>`;
   const actions=[
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
-    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction')
+    button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'),
+    platformExposure?.unityWebEnabled===true
+      ?button(links.unityWeb,'Unity Web 테스트','Unity Web · 준비중','webAction unityWebAction')
+      :''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
-  const direct=links.roblox||links.unity||'';
+  const direct=links.roblox||links.unity||links.unityWeb||'';
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
@@ -338,8 +370,9 @@ async function refresh(){
     if(exposureAuthority!=='company-runtime'||JSON.stringify(exposurePlatforms)!==JSON.stringify(['ROBLOX','UNITY'])||!Array.isArray(exposure?.games))return;
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
-    const sig=JSON.stringify([catalog,status,testManifest,portfolioStatus,platformExposure]);
-    if(sig!==lastSignature){updateLiveSummary(catalog,status);buildFocus(catalog,status);buildGameCenter(catalog,status);buildRecentUpdates(catalog);lastSignature=sig;}
+    const boundCatalog=await bindVerifiedUnityWebSurfaces(catalog);
+    const sig=JSON.stringify([boundCatalog,status,testManifest,portfolioStatus,platformExposure]);
+    if(sig!==lastSignature){updateLiveSummary(boundCatalog,status);buildFocus(boundCatalog,status);buildGameCenter(boundCatalog,status);buildRecentUpdates(boundCatalog);lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
   }finally{refreshInFlight=false;}
