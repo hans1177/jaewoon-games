@@ -96,16 +96,35 @@ local function prompt(target,objectText,actionText)
  local pr=Instance.new("ProximityPrompt");pr.ObjectText=objectText;pr.ActionText=actionText;pr.MaxActivationDistance=10;pr.HoldDuration=.15;pr.RequiresLineOfSight=false;pr.Parent=target;return pr
 end
 local function figure(parent,name,pos,color,accent,scale)
- scale=scale or 1
- local r=part(parent,name,Vector3.new(3,4,2)*scale,pos,color);r.CanCollide=true
- attach(r,"Head",Vector3.new(2.4,2.4,2.4)*scale,Vector3.new(0,3.1*scale,0),Color3.fromRGB(224,190,154),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- attach(r,"Hair",Vector3.new(2.55,.75,2.55)*scale,Vector3.new(0,4*scale,0),Color3.fromRGB(72,52,38))
- attach(r,"ArmL",Vector3.new(.85,3.3,.85)*scale,Vector3.new(-1.8*scale,0,0),color)
- attach(r,"ArmR",Vector3.new(.85,3.3,.85)*scale,Vector3.new(1.8*scale,0,0),color)
- attach(r,"LegL",Vector3.new(1,3,1)*scale,Vector3.new(-.7*scale,-3.3*scale,0),accent)
- attach(r,"LegR",Vector3.new(1,3,1)*scale,Vector3.new(.7*scale,-3.3*scale,0),accent)
- attach(r,"EyeL",Vector3.new(.25,.28,.14)*scale,Vector3.new(-.45*scale,3.25*scale,-1.2*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
- attach(r,"EyeR",Vector3.new(.25,.28,.14)*scale,Vector3.new(.45*scale,3.25*scale,-1.2*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
+ scale=math.clamp(scale or 1,.72,1.05)
+ local skin=Color3.fromRGB(224,190,154)
+ local r=part(parent,name,Vector3.new(2.65,3.75,1.7)*scale,pos,color);r.CanCollide=true
+ attach(r,"Neck",Vector3.new(.75,.45,.75)*scale,Vector3.new(0,2.15*scale,0),skin)
+ attach(r,"Head",Vector3.new(2.15,2.15,2.15)*scale,Vector3.new(0,3.15*scale,0),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ attach(r,"Hair",Vector3.new(2.3,.62,2.3)*scale,Vector3.new(0,4.02*scale,.05*scale),Color3.fromRGB(72,52,38))
+ attach(r,"ArmL",Vector3.new(.72,2.9,.72)*scale,Vector3.new(-1.65*scale,-.05*scale,0),color)
+ attach(r,"ArmR",Vector3.new(.72,2.9,.72)*scale,Vector3.new(1.65*scale,-.05*scale,0),color)
+ attach(r,"LegL",Vector3.new(.86,2.75,.86)*scale,Vector3.new(-.62*scale,-3.05*scale,0),accent)
+ attach(r,"LegR",Vector3.new(.86,2.75,.86)*scale,Vector3.new(.62*scale,-3.05*scale,0),accent)
+ attach(r,"EyeL",Vector3.new(.22,.24,.12)*scale,Vector3.new(-.4*scale,3.28*scale,-1.08*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
+ attach(r,"EyeR",Vector3.new(.22,.24,.12)*scale,Vector3.new(.4*scale,3.28*scale,-1.08*scale),Color3.fromRGB(30,35,38),Enum.Material.Neon)
+ attach(r,"Belt",Vector3.new(2.8,.28,1.82)*scale,Vector3.new(0,-.75*scale,0),Color3.fromRGB(74,57,45),Enum.Material.Fabric)
+ if name=="Chief"then
+  attach(r,"ChiefHat",Vector3.new(2.9,.35,2.9)*scale,Vector3.new(0,4.55*scale,0),Color3.fromRGB(96,65,45),Enum.Material.Fabric)
+  attach(r,"ChiefSash",Vector3.new(.42,3.1,1.82)*scale,Vector3.new(.55*scale,.2*scale,-.03),Color3.fromRGB(214,176,91),Enum.Material.Fabric)
+ elseif name=="LumberMaster"then
+  attach(r,"LumberCap",Vector3.new(2.55,.35,2.45)*scale,Vector3.new(0,4.42*scale,0),Color3.fromRGB(64,94,58),Enum.Material.Fabric)
+  attach(r,"AxeHandle",Vector3.new(.25,3.2,.25)*scale,Vector3.new(2.05*scale,-.2*scale,0),Color3.fromRGB(112,78,48),Enum.Material.Wood)
+  attach(r,"AxeHead",Vector3.new(1.1,.8,.35)*scale,Vector3.new(2.05*scale,1.15*scale,0),Color3.fromRGB(132,139,145),Enum.Material.Metal)
+ elseif name=="Farmer"then
+  attach(r,"StrawHat",Vector3.new(3.15,.3,3.15)*scale,Vector3.new(0,4.45*scale,0),Color3.fromRGB(205,174,91),Enum.Material.Fabric)
+  attach(r,"Apron",Vector3.new(2.2,2.6,.18)*scale,Vector3.new(0,-.05*scale,-.95*scale),Color3.fromRGB(201,188,151),Enum.Material.Fabric)
+ elseif name=="Captain"then
+  attach(r,"ShoulderL",Vector3.new(1.2,.55,1.8)*scale,Vector3.new(-1.45*scale,1.2*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
+  attach(r,"ShoulderR",Vector3.new(1.2,.55,1.8)*scale,Vector3.new(1.45*scale,1.2*scale,0),Color3.fromRGB(86,88,96),Enum.Material.Metal)
+ elseif string.find(name,"Villager",1,true)then
+  attach(r,"Vest",Vector3.new(2.25,2.5,.2)*scale,Vector3.new(0,.1*scale,-.96*scale),accent,Enum.Material.Fabric)
+ end
  return r
 end
 local function tree(parent,pos,scale)
@@ -168,7 +187,11 @@ local function spawnMob(kind,pos)
   attach(r,"LegL",Vector3.new(1,2.8,1),Vector3.new(-.7,-3.2,0),Color3.fromRGB(64,56,55));attach(r,"LegR",Vector3.new(1,2.8,1),Vector3.new(.7,-3.2,0),Color3.fromRGB(64,56,55))
  else
   attach(r,"BoarHead",Vector3.new(3.6,2.7,3.1),Vector3.new(0,.3,-3.4),r.Color,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
-  attach(r,"TuskL",Vector3.new(.35,.35,1.1),Vector3.new(-.9,.1,-5),Color3.fromRGB(235,225,195));attach(r,"TuskR",Vector3.new(.35,.35,1.1),Vector3.new(.9,.1,-5),Color3.fromRGB(235,225,195))
+  attach(r,"BoarSnout",Vector3.new(2.4,1.25,1.35),Vector3.new(0,.15,-5),Color3.fromRGB(139,96,72),Enum.Material.SmoothPlastic)
+  attach(r,"BoarEarL",Vector3.new(.8,1.2,.45),Vector3.new(-1.25,1.85,-3.4),Color3.fromRGB(88,62,52),Enum.Material.Fabric)
+  attach(r,"BoarEarR",Vector3.new(.8,1.2,.45),Vector3.new(1.25,1.85,-3.4),Color3.fromRGB(88,62,52),Enum.Material.Fabric)
+  for _,x in ipairs({-1.45,1.45})do for _,z in ipairs({-1.7,1.7})do attach(r,"BoarLeg",Vector3.new(.72,1.9,.72),Vector3.new(x,-2,z),Color3.fromRGB(79,61,51))end end
+  attach(r,"TuskL",Vector3.new(.35,.35,1.1),Vector3.new(-.9,.1,-5.65),Color3.fromRGB(235,225,195));attach(r,"TuskR",Vector3.new(.35,.35,1.1),Vector3.new(.9,.1,-5.65),Color3.fromRGB(235,225,195))
  end
  label(r,isRaider and"섬 약탈병"or"멧돼지",isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
  local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
@@ -208,6 +231,8 @@ local function buildWorld()
    part(world,"FarmPlot",Vector3.new(38,1,28),Vector3.new(-36,topY+.7,-31),Color3.fromRGB(116,91,56),Enum.Material.Ground)
    part(world,"BarracksYard",Vector3.new(40,1,30),Vector3.new(39,topY+.65,-29),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
    part(world,"Dock",Vector3.new(18,2,38),Vector3.new(0,topY-1,78),Color3.fromRGB(125,89,56),Enum.Material.WoodPlanks)
+   for _,x in ipairs({-7,7})do for _,z in ipairs({62,78,94})do part(world,"DockPost",Vector3.new(1.2,7,1.2),Vector3.new(x,topY-4,z),Color3.fromRGB(91,63,42),Enum.Material.Wood)end end
+   local boat=part(world,"VillageBoat",Vector3.new(9,1.4,15),Vector3.new(23,topY-4.2,82),Color3.fromRGB(116,78,49),Enum.Material.WoodPlanks);boat.Orientation=Vector3.new(0,18,4);boat.CanCollide=false
    for _,x in ipairs({-72,-54,-36,-18,0,18,36,54,72})do part(world,"Path",Vector3.new(12,.5,6),Vector3.new(x,topY+.5,0),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
    for _,z in ipairs({-66,-44,-22,22,44,66})do part(world,"Path",Vector3.new(6,.5,12),Vector3.new(0,topY+.5,z),Color3.fromRGB(174,165,139),Enum.Material.Cobblestone)end
 
