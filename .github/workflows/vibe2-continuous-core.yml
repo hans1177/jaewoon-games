@@ -607,10 +607,60 @@ jobs:
           put('target',order.target||'');
           put('route',order.executionRoute||'');
           put('source_root',order.source?.root||'');
+          put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
+          put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
           put('release_state',order.releaseState||'other');
           put('cache_namespace',order.incrementalQa?.cacheNamespace||`${order.target||'unknown'}:${order.gameId||'global'}`);
           put('variant',process.env.VARIANT||'primary');
           NODE
+
+      - name: Acquire shared Work Lock before source write
+        id: work_lock
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node <<'NODE' > /tmp/vibe2-work-lock-request.env
+          const fs=require('fs');
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const lock=order?.compiledWorkContract?.workLock||{};
+          if(lock.requiredBeforeSourceWrite!==true)throw new Error('WORK_LOCK_REQUIRED_CONTRACT_MISSING');
+          if(!lock.taskId||!lock.baseSha||!Array.isArray(lock.files)||!lock.files.length)throw new Error('WORK_LOCK_IDENTITY_INCOMPLETE');
+          const emit=(key,value)=>process.stdout.write(key+'='+JSON.stringify(String(value??''))+'\n');
+          emit('LOCK_TASK',lock.taskId);
+          emit('LOCK_GAME',lock.gameId||order.gameId||'');
+          emit('LOCK_FILES',lock.files.join(','));
+          emit('LOCK_BASE_SHA',lock.baseSha);
+          emit('LOCK_CHANGE_SET',order?.compiledWorkContract?.changeSet?.id||lock.taskId);
+          NODE
+          source /tmp/vibe2-work-lock-request.env
+          test -n "$LOCK_TASK"
+          test -n "$LOCK_FILES"
+          test -n "$LOCK_BASE_SHA"
+          test "$LOCK_BASE_SHA" = "$CONTRACT_SHA"
+          node "$contract_root/tools/vibe2-remote-work-lock.mjs" acquire \
+            --worker=vibe2 \
+            --task="$LOCK_TASK" \
+            --game="$LOCK_GAME" \
+            --files="$LOCK_FILES" \
+            --base-sha="$LOCK_BASE_SHA" \
+            --evidence="compiled-central-work-contract,change-set:$LOCK_CHANGE_SET" | tee /tmp/vibe2-work-lock-acquire.log
+          acquired="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ACQUIRED=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          lock_id="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ID=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          reason="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_REASON=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          if [ "$acquired" = 'YES' ]; then
+            echo 'acquired=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'acquired=false' >> "$GITHUB_OUTPUT"
+          fi
+          echo "lock_id=$lock_id" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=${acquired:-NO}"
+          echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
 
       - name: Run isolated learning practice
         id: practice
@@ -723,7 +773,7 @@ jobs:
 
       - name: Generate isolated candidate from pinned main contract
         id: candidate
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == 'true'
         continue-on-error: true
         env:
           TASK_ID: ${{ steps.order.outputs.task_id }}
@@ -956,6 +1006,10 @@ jobs:
           ORDER_RUN: ${{ steps.order.outputs.run }}
           ORDER_REASON: ${{ steps.order.outputs.reason }}
           ROUTE: ${{ steps.order.outputs.route }}
+          WORK_LOCK_REQUIRED: ${{ steps.order.outputs.work_lock_required }}
+          WORK_LOCK_ACQUIRED: ${{ steps.work_lock.outputs.acquired }}
+          WORK_LOCK_ID: ${{ steps.work_lock.outputs.lock_id }}
+          WORK_LOCK_REASON: ${{ steps.work_lock.outputs.reason }}
           CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
           CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
           CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
@@ -1009,9 +1063,12 @@ jobs:
           const candidateOk=process.env.CANDIDATE_OUTCOME==='success';
           const testOk=process.env.IQA_OUTCOME==='success';
           const performanceOk=process.env.PERFORMANCE_OUTCOME==='success';
+          const workLockRequired=process.env.WORK_LOCK_REQUIRED==='true';
+          const workLockAcquired=!workLockRequired||process.env.WORK_LOCK_ACQUIRED==='true';
           let outcome='BLOCKED', blocker=clean(process.env.ORDER_REASON)||'work-order-not-runnable';
           if(process.env.ORDER_RUN==='true' && route==='text-source-worker'){
-            if(candidateOk&&testOk&&performanceOk){outcome='PASS';blocker='candidate-awaiting-qa-and-deployment';}
+            if(!workLockAcquired){outcome='BLOCKED';blocker='work-lock-conflict:'+clean(process.env.WORK_LOCK_REASON||'not-acquired');}
+            else if(candidateOk&&testOk&&performanceOk){outcome='PASS';blocker='candidate-awaiting-qa-and-deployment';}
             else if(!candidateOk){outcome='FAIL';blocker='source-candidate-generation-failed';}
             else if(!testOk){outcome='FAIL';blocker='incremental-qa-failed';}
             else{outcome='FAIL';blocker='performance-sanity-failed';}
@@ -1261,7 +1318,8 @@ jobs:
             infrastructureFailurePenalizesKnowledge:false,
             authorityExpanded:false
           }:null;
-          const result={version:13,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,metrics};
+          const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
+          const result={version:14,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
@@ -1562,6 +1620,36 @@ jobs:
             echo 'refill=0' >> "$GITHUB_OUTPUT"
           fi
           echo "VIBE2_HIERARCHICAL_FAN_IN=PASS:$VIBE2_EXECUTION_LANE"
+
+      - name: Release shared Work Locks after fan-in or abort
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          results_dir="/tmp/vibe2-results"
+          [ -d "$results_dir" ] || { echo 'VIBE2_SHARED_WORK_LOCK_RELEASED=NONE'; exit 0; }
+          node <<'NODE' > /tmp/vibe2-work-lock-release-ids.txt
+          const fs=require('fs'),path=require('path');
+          const dir='/tmp/vibe2-results';
+          const ids=new Set();
+          for(const name of fs.readdirSync(dir).filter(name=>name.endsWith('.json'))){
+            const row=JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+            if(row?.workLock?.acquired===true&&row?.workLock?.id)ids.add(String(row.workLock.id));
+          }
+          for(const id of ids)process.stdout.write(id+'\n');
+          NODE
+          released=0
+          while IFS= read -r lock_id; do
+            [ -n "$lock_id" ] || continue
+            node "$contract_root/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee "/tmp/vibe2-work-lock-release-$released.log"
+            grep -q '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$' "/tmp/vibe2-work-lock-release-$released.log"
+            released=$((released+1))
+          done < /tmp/vibe2-work-lock-release-ids.txt
+          echo "VIBE2_SHARED_WORK_LOCK_RELEASED=$released"
 
       - name: Dispatch reviewed winner candidates to release gate
         if: env.VIBE2_EXECUTION_LANE == 'game-primary'

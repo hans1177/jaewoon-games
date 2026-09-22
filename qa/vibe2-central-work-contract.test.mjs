@@ -25,6 +25,7 @@ function writePolicy(root,version=196,overrides={}){
     version,
     status:'OWNER_DIRECT_LOCKED',
     policySource:CANONICAL_VIBE_POLICY_PATH,
+    ownerCanonicalRules:{"version":5,"authority":"OWNER_DIRECTIVE_TEST","constitutionalAuthority":"HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY","rule1Handling":"RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES","constitutionalBinding":{"version":1,"authority":"OWNER_DIRECTIVE_TEST","mode":"DYNAMIC_CANONICAL_RULE_AUTO_BIND","automaticContractBinding":true,"appliesToAllCurrentAndFutureRegisteredVibeWorkers":true,"appliesToAllInternalAiDepartmentsAndAutonomousSubsystems":true,"workerMayNotOptOut":true,"childContractMayNotOverride":true,"runtimeMayNotSilentlyAmend":true,"onlyOwnerDirectiveMayCreateAmendDisableOrRemoveCanonicalRule":true,"ruleDiscoveryKeyPattern":"rule<N>","ruleIdentityPattern":"RULE_<N>_*","orderResolution":"IMPLEMENTATION_ORDER_FIRST_THEN_NUMERIC_AUTO_APPEND","futureCanonicalRulesAutoBindWithoutWorkerCodeChange":true,"executionFingerprintMustIncludeEveryEnabledCanonicalRule":true,"sharedContextMustCompileEveryEnabledCanonicalRule":true,"centralWorkContractMustEmbedEveryEnabledCanonicalRule":true,"workerInstructionMustExposeOrderedCanonicalRules":true,"beforeWorkValidationRequired":true,"afterWorkValidationRequired":true,"staleConstitutionMayNotStartWork":true,"staleConstitutionMayNotCompleteWork":true,"missingOrInvalidBindingAction":"FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE","constitutionChangeInvalidatesActiveWorkerExecutionFingerprint":true,"subordinatePolicyCannotWeakenCanonicalRule":true},"rule1":{"id":"RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT","label":"제1규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"CONTINUE"},"rule2":{"id":"RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION","label":"제2규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"SECURE_AND_VERIFY"},"rule3":{"id":"RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE","label":"제3규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"LEARN"},"rule4":{"id":"RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION","label":"제4규칙","enabled":true,"authority":"OWNER_DIRECTIVE_TEST","objective":"EVOLVE"},"implementationOrder":["RULE_1","RULE_2","RULE_3","RULE_4"],"orderedImplementationRequired":true},
     developmentLifecycleMachine:{
       sharedWorkerContext:{
         requiredForAllWorkers:true,
@@ -111,11 +112,23 @@ test('current central roadmap compiles a complete Vibe work request without auth
   assert.equal(contract.required,true);
   assert.equal(contract.validAtCompile,true);
   assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(contract.constitution.automaticContractBinding,true);
+  assert.equal(contract.constitution.appliesToAllCurrentAndFutureRegisteredVibeWorkers,true);
+  assert.deepEqual(contract.constitution.orderedRuleIds,['RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT','RULE_2_EXTERNAL_AI_SECURITY_CAPTURE_AND_VERIFIED_ABSORPTION','RULE_3_SELF_GENERATED_UNBOUNDED_VERIFIED_LEARNING_MULTIVERSE','RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION']);
+  assert.equal(contract.constitution.rules.length,4);
   assert.equal(contract.workRequest.workKey,'repair-1');
   assert.equal(contract.workRequest.roadmapVersion,196);
   assert.equal(contract.workRequest.mainSha,'abc123');
   assert.deepEqual(contract.workRequest.scope,['web-games/bug-defense/index.html']);
   assert.ok(contract.workRequest.dedupeKey);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.equal(contract.workLock.stateBranch,'vibe2-work-locks');
+  assert.equal(contract.workLock.statePath,'.vibe2/work-locks.json');
+  assert.equal(contract.workLock.worker,'vibe2');
+  assert.equal(contract.workLock.taskId,'repair-1');
+  assert.equal(contract.workLock.baseSha,'abc123');
+  assert.deepEqual(contract.workLock.files,['web-games/bug-defense/index.html']);
+  assert.equal(contract.workLock.releaseRule,'RELEASE_AFTER_FAN_IN_QA_OR_ABORT');
   assert.equal(contract.workRequest.authorityBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
   assert.equal(contract.workRequest.authorityBoundary.workerCreationAuthority,false);
   assert.equal(contract.workRequest.authorityBoundary.queueMutationAuthority,false);
@@ -282,4 +295,33 @@ test('capability growth role lock participates in Vibe execution fingerprint',()
   assert.equal(after.valid,false);
   assert.ok(after.errors.includes('VIBE_CAPABILITY_AUTHORITY_SEPARATION'));
   assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+});
+
+
+test('new canonical rule automatically changes execution fingerprint and binds into work contract',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const before=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(after.valid,true);
+  assert.notEqual(after.executionFingerprint,before.executionFingerprint);
+  const contract=compileVibeCentralWorkContract({snapshot:after,task:{id:'future-rule',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
+  assert.equal(contract.constitution.rules.length,5);
+  assert.equal(contract.constitution.orderedRuleIds.at(-1),'RULE_5_FUTURE_OWNER_CONSTITUTION');
+});
+
+test('active compiled work becomes stale when owner adds a constitutional rule',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const contract=compileVibeCentralWorkContract({snapshot,task:{id:'stale-on-new-law',gameId:'demo',target:'web'},plan:{target:'web'},route:{route:'text-source-worker'},responsibleFiles:['web-games/demo/index.html'],mainSha:'abc123'});
+  const file=path.join(root,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(file,'utf8'));
+  document.ownerCanonicalRules.rule5={id:'RULE_5_FUTURE_OWNER_CONSTITUTION',label:'제5규칙',enabled:true,authority:'OWNER_DIRECTIVE_TEST',objective:'FUTURE_RULE'};
+  fs.writeFileSync(file,JSON.stringify(document,null,2)+'\n','utf8');
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),/CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/);
 });

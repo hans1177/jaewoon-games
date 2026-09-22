@@ -326,7 +326,10 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes('actions/upload-artifact@v4'));
   assert(workflow.includes('actions/download-artifact@v4'));
   assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
-  assert(!workflow.includes('vibe2-remote-work-lock.mjs'));
+  assert(workflow.includes('Acquire shared Work Lock before source write'));
+  assert(workflow.includes('vibe2-remote-work-lock.mjs" acquire'));
+  assert(workflow.includes('Release shared Work Locks after fan-in or abort'));
+  assert(workflow.includes('vibe2-remote-work-lock.mjs" release'));
 });
 
 test('controller allows approved source root but enforces candidate boundary',()=>{
@@ -642,7 +645,8 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:13'));
+  assert(resultStep.includes('version:14'));
+  assert(resultStep.includes('workLock'));
   assert(resultStep.includes('phase4BenchmarkVerification'));
   assert(resultStep.includes('knowledgeApplication'));
   assert(resultStep.includes('neuralDiagnosis'));

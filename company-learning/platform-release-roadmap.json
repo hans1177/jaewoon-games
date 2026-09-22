@@ -4544,11 +4544,40 @@
       "globalGameDevelopmentWindow": null
     },
     "internalPlatformPlaytestDevelopment": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-22",
-      "implementationState": "DOCUMENTED_DESIGN_PENDING",
+      "implementationState": "PHASE1_IMPLEMENTED",
       "stage": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "objective": "USE_THE_EXISTING_INTERNAL_PLATFORM_RELEASE_AS_A_REAL_PLAYABLE_CO_DEVELOPMENT_SURFACE_WHERE_VIBE_REPAIRS_AND_EXTENDS_THE_CURRENT_GAME_WITHOUT_CREATING_A_SHADOW_PIPELINE",
+      "phase1Implementation": {
+        "status": "IMPLEMENTED",
+        "noNewPipeline": true,
+        "noNewDepartment": true,
+        "bindings": [
+          "assets/vibe-change-set.js",
+          "assets/vibe-orchestrator.js",
+          "assets/vibe-quality-intelligence.js",
+          "assets/vibe-work-lock.js",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-central-work-contract.mjs",
+          "tools/vibe2-remote-work-lock.mjs",
+          ".github/workflows/vibe2-continuous-core.yml"
+        ],
+        "workLock": {
+          "existingStateBranch": "vibe2-work-locks",
+          "existingStatePath": ".vibe2/work-locks.json",
+          "acquireBeforeSourceWrite": true,
+          "sameTaskSpeculativeVariantsMayReuse": true,
+          "releaseAfterFanInOrAbort": true,
+          "authority": "EDIT_EXCLUSIVITY_ONLY"
+        },
+        "repair": {
+          "unlimitedCausalRepair": true,
+          "repeatedFailureThreshold": 3,
+          "repeatedFailureMode": "ROOT_CAUSE_MODE",
+          "resumeExactFailureStage": true
+        }
+      },
       "principles": {
         "internalReleaseIsDevelopmentSurface": true,
         "internalReleaseIsNotCompletion": true,
@@ -11273,7 +11302,7 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 4,
+    "version": 5,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
@@ -11579,7 +11608,35 @@
       "RULE_3",
       "RULE_4"
     ],
-    "orderedImplementationRequired": true
+    "orderedImplementationRequired": true,
+    "constitutionalAuthority": "HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY",
+    "constitutionalBinding": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-22",
+      "mode": "DYNAMIC_CANONICAL_RULE_AUTO_BIND",
+      "automaticContractBinding": true,
+      "appliesToAllCurrentAndFutureRegisteredVibeWorkers": true,
+      "appliesToAllInternalAiDepartmentsAndAutonomousSubsystems": true,
+      "workerMayNotOptOut": true,
+      "childContractMayNotOverride": true,
+      "runtimeMayNotSilentlyAmend": true,
+      "onlyOwnerDirectiveMayCreateAmendDisableOrRemoveCanonicalRule": true,
+      "ruleDiscoveryKeyPattern": "rule<N>",
+      "ruleIdentityPattern": "RULE_<N>_*",
+      "orderResolution": "IMPLEMENTATION_ORDER_FIRST_THEN_NUMERIC_AUTO_APPEND",
+      "futureCanonicalRulesAutoBindWithoutWorkerCodeChange": true,
+      "executionFingerprintMustIncludeEveryEnabledCanonicalRule": true,
+      "sharedContextMustCompileEveryEnabledCanonicalRule": true,
+      "centralWorkContractMustEmbedEveryEnabledCanonicalRule": true,
+      "workerInstructionMustExposeOrderedCanonicalRules": true,
+      "beforeWorkValidationRequired": true,
+      "afterWorkValidationRequired": true,
+      "staleConstitutionMayNotStartWork": true,
+      "staleConstitutionMayNotCompleteWork": true,
+      "missingOrInvalidBindingAction": "FAIL_CLOSED_BLOCK_WORK_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "constitutionChangeInvalidatesActiveWorkerExecutionFingerprint": true,
+      "subordinatePolicyCannotWeakenCanonicalRule": true
+    }
   },
   "planningGrowthMarketingDepartment": {
     "version": 1,
@@ -12549,9 +12606,9 @@
       "noNewShadowTrainer": true
     },
     "changeSetCollaboration": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-22",
-      "implementationState": "DOCUMENTED_DESIGN_PENDING",
+      "implementationState": "PHASE1_IMPLEMENTED",
       "sharedChangeSetAcrossDepartments": true,
       "requiredHandoffFields": [
         "DECISION",

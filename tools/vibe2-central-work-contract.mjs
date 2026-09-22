@@ -5,6 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from '../assets/vibe-work-lock.js';
+import { compileOwnerCanonicalConstitution } from './company-shared-context.mjs';
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
@@ -13,6 +15,7 @@ const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');
 
 function workerExecutionPolicyProjection(policy={}){
+  const constitution=compileOwnerCanonicalConstitution(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const live=shared?.liveMainFreshness||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
@@ -22,6 +25,15 @@ function workerExecutionPolicyProjection(policy={}){
   return{
     status:clean(policy.status)||null,
     policySource:clean(policy.policySource)||null,
+    ownerCanonicalConstitution:{
+      version:constitution.version,
+      authority:constitution.authority,
+      constitutionalAuthority:constitution.constitutionalAuthority,
+      automaticContractBinding:constitution.binding?.automaticContractBinding===true,
+      fingerprint:constitution.fingerprint,
+      orderedRuleIds:constitution.orderedRuleIds,
+      ruleFingerprints:constitution.rules.map(row=>({number:row.number,id:row.id,fingerprint:row.fingerprint}))
+    },
     sharedWorkerContext:{
       requiredForAllWorkers:shared.requiredForAllWorkers===true,
       centralPolicy:clean(shared.centralPolicy)||null,
@@ -92,12 +104,14 @@ function workerExecutionPolicyProjection(policy={}){
 function workerExecutionPolicyFingerprint(policy={}){return sha256(JSON.stringify(workerExecutionPolicyProjection(policy)));}
 
 function policyValidationErrors(policy={}){
+  const constitution=compileOwnerCanonicalConstitution(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const collaboration=policy?.developmentLifecycleMachine?.primaryAiOrchestration?.internalVibeAiCollaboration||{};
   const role=orchestration?.assistantRole||{};
   const boundary=orchestration?.executionBoundary||{};
   const errors=[];
+  if(!constitution.valid)errors.push(...constitution.errors.map(error=>`OWNER_CANONICAL_${error}`));
   if(clean(policy.status)!=='OWNER_DIRECT_LOCKED')errors.push('STATUS');
   if(clean(policy.policySource)!==CANONICAL_VIBE_POLICY_PATH)errors.push('POLICY_SOURCE');
   if(shared.requiredForAllWorkers!==true)errors.push('SHARED_CONTEXT_REQUIRED');
@@ -249,6 +263,7 @@ export function compileVibeCentralWorkContract({
 }={}){
   const source=snapshot||{required:false,present:false,valid:true,path:CANONICAL_VIBE_POLICY_PATH,document:null};
   const policy=source.document||{};
+  const constitution=compileOwnerCanonicalConstitution(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
   const orchestration=policy?.assistantRoadmapOrchestration||{};
   const boundary=orchestration?.executionBoundary||{};
@@ -282,13 +297,40 @@ export function compileVibeCentralWorkContract({
   const nextGate=clean(task?.nextGate||failureRoute.failureStage||orchestration?.implementationState?.nextGate)||null;
   const required=source.required===true||Number(orchestration?.version||0)>0;
   const dedupeKey=workKey&&source.fingerprint?sha256([workKey,source.version,source.fingerprint,uniq(responsibleFiles).join('|')].join(':')):null;
-  const currentTruth=compileCurrentTruth({task,source,mainSha:resolvedMainSha,responsibleFiles});
+  const exactResponsibleFiles=uniq(responsibleFiles);
+  const currentTruth=compileCurrentTruth({task,source,mainSha:resolvedMainSha,responsibleFiles:exactResponsibleFiles});
   const acceptanceContract=compileAcceptanceContract(task,plan);
   const changeSet=task.changeSet&&typeof task.changeSet==='object'?task.changeSet:{id:clean(task.changeSetId)||workKey,baseSourceRevision:clean(task.baseSourceRevision||resolvedMainSha)||null,status:clean(task.changeSetStatus)||'ACTIVE'};
+  const workLockRequired=clean(route?.route).toLowerCase()==='text-source-worker'&&exactResponsibleFiles.length>0;
+  const workLock={
+    requiredBeforeSourceWrite:workLockRequired,
+    stateBranch:VIBE_WORK_LOCK_STATE_BRANCH,
+    statePath:VIBE_WORK_LOCK_STATE_PATH,
+    worker:'vibe2',
+    taskId:workKey,
+    gameId:clean(task.gameId)||null,
+    files:exactResponsibleFiles,
+    baseSha:resolvedMainSha,
+    acquisitionState:workLockRequired?'WORKER_MUST_ACQUIRE_BEFORE_SOURCE_WRITE':'NOT_REQUIRED',
+    releaseRule:workLockRequired?'RELEASE_AFTER_FAN_IN_QA_OR_ABORT':'NOT_REQUIRED',
+    sameTaskSpeculativeVariantsMayReuse:true,
+    authority:'EDIT_EXCLUSIVITY_ONLY_NO_OWNER_GATE_EXPANSION'
+  };
   return{
     version:2,
     required,
     validAtCompile:source.valid===true,
+    constitution:{
+      version:constitution.version,
+      authority:constitution.authority,
+      constitutionalAuthority:constitution.constitutionalAuthority,
+      fingerprint:constitution.fingerprint,
+      automaticContractBinding:constitution.binding?.automaticContractBinding===true,
+      appliesToAllCurrentAndFutureRegisteredVibeWorkers:constitution.binding?.appliesToAllCurrentAndFutureRegisteredVibeWorkers===true,
+      childContractMayNotOverride:constitution.binding?.childContractMayNotOverride===true,
+      orderedRuleIds:constitution.orderedRuleIds,
+      rules:constitution.rules.map(row=>({key:row.key,number:row.number,id:row.id,label:row.label,authority:row.authority,objective:row.objective,fingerprint:row.fingerprint,contract:row.contract}))
+    },
     policy:{
       path:source.path||CANONICAL_VIBE_POLICY_PATH,
       version:source.version||null,
@@ -302,7 +344,7 @@ export function compileVibeCentralWorkContract({
       workKey,
       roadmapVersion:source.version||null,
       mainSha:resolvedMainSha,
-      scope:uniq(responsibleFiles),
+      scope:exactResponsibleFiles,
       nextGate,
       requiredEvidence:passConditions,
       authorityBoundary:{
@@ -325,8 +367,9 @@ export function compileVibeCentralWorkContract({
     currentTruth,
     changeSet,
     acceptanceContract,
+    workLock,
     writableScope:{
-      exactResponsibleFiles:uniq(responsibleFiles),
+      exactResponsibleFiles,
       automaticExpansionAllowed:false,
       directResponsibleSystemModificationPreferred:true
     },
@@ -380,11 +423,16 @@ export function compiledWorkContractGuidance(contract={}){
   const request=contract.workRequest||{};
   return[
     '[CENTRAL ROADMAP WORK CONTRACT]',
+    '[OWNER CANONICAL CONSTITUTION - HIGHEST WORKER AUTHORITY]',
+    `constitution-sha256=${contract.constitution?.fingerprint||'missing'}; automatic-bind=${contract.constitution?.automaticContractBinding===true?'YES':'NO'}; ordered-rules=${(contract.constitution?.orderedRuleIds||[]).join(' > ')||'NONE'}`,
+    ...(contract.constitution?.rules||[]).map(rule=>`${rule.id} ${rule.label||''}: ${rule.objective||'FULL_CANONICAL_RULE_CONTRACT_BOUND'}`),
+    'Every current and future registered Vibe worker is automatically bound to every enabled canonical rule. No worker, department, child contract, runtime learning, or subordinate policy may opt out or weaken it.',
     `policy=${contract.policy?.path||CANONICAL_VIBE_POLICY_PATH}; version=${contract.policy?.version??'unknown'}; sha256=${contract.policy?.fingerprint||'missing'}; execution-sha256=${contract.policy?.executionFingerprint||'missing'}`,
     contract.freshness?.liveMainRequired===true?`live-main-ref=${contract.freshness?.liveMainRef||'origin/main'}; refresh-before-check=YES`:'',
     `work-key=${request.workKey||'NONE'}; next-gate=${request.nextGate||'NONE'}; dedupe-key=${request.dedupeKey||'NONE'}`,
     `exact-writable-files=${(contract.writableScope?.exactResponsibleFiles||[]).join(', ')||'NONE'}`,
     `current-truth-source=${contract.currentTruth?.currentSourceRevision||'UNKNOWN'}; change-set=${contract.changeSet?.id||'NONE'}`,
+    contract.workLock?.requiredBeforeSourceWrite===true?`work-lock=REQUIRED; worker=${contract.workLock.worker}; base=${contract.workLock.baseSha||'UNKNOWN'}; files=${(contract.workLock.files||[]).join(', ')||'NONE'}`:'work-lock=NOT_REQUIRED',
     `acceptance=${(contract.acceptanceContract?.observable||[]).join(' | ')||'NONE'}`,
     `preserve=${(contract.invariants?.protectedSemantics||[]).join(', ')}`,
     `forbidden=${(contract.invariants?.forbiddenChanges||[]).join(', ')}`,

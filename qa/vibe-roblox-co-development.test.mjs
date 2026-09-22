@@ -40,13 +40,16 @@ test('three repeated failures on same responsibility escalate to root cause mode
 
 test('central work contract exposes compiled current truth and observable acceptance',()=>{
   const snapshot={required:true,present:true,valid:true,path:'company-learning/platform-release-roadmap.json',version:257,fingerprint:'fp',document:{developmentLifecycleMachine:{sharedWorkerContext:{}},assistantRoadmapOrchestration:{}}};
-  const contract=compileVibeCentralWorkContract({snapshot,task:{id:'demo-task',gameId:'demo',target:'roblox',sourceRevision:'b'.repeat(40),internalRobloxVersion:7,changeSetId:'change-demo',acceptanceContract:{observable:['CORE_LOOP_OBSERVED']}},plan:{target:'roblox',qa:['REMOTE_SECURITY']},responsibleFiles:['roblox-games/demo/server/Game.server.luau'],mainSha:'b'.repeat(40)});
+  const contract=compileVibeCentralWorkContract({snapshot,task:{id:'demo-task',gameId:'demo',target:'roblox',sourceRevision:'b'.repeat(40),internalRobloxVersion:7,changeSetId:'change-demo',acceptanceContract:{observable:['CORE_LOOP_OBSERVED']}},plan:{target:'roblox',qa:['REMOTE_SECURITY']},route:{route:'text-source-worker'},responsibleFiles:['roblox-games/demo/server/Game.server.luau'],mainSha:'b'.repeat(40)});
   assert.equal(contract.currentTruth.gameId,'demo');
   assert.equal(contract.currentTruth.currentSourceRevision,'b'.repeat(40));
   assert.equal(contract.currentTruth.currentInternalRobloxVersion,7);
   assert.equal(contract.changeSet.id,'change-demo');
   assert.ok(contract.acceptanceContract.observable.includes('CORE_LOOP_OBSERVED'));
   assert.equal(contract.acceptanceContract.runtimeObservationRequired,true);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.equal(contract.workLock.stateBranch,'vibe2-work-locks');
+  assert.deepEqual(contract.workLock.files,['roblox-games/demo/server/Game.server.luau']);
 });
 
 test('development queue internal Roblox release becomes one co-development playtest task with unlimited repair',()=>{
@@ -66,4 +69,27 @@ test('development queue internal Roblox release becomes one co-development playt
   assert.equal(task.internalRobloxVersion,9);
   assert.equal(task.acceptanceContract.runtimeObservationRequired,true);
   assert.ok(task.evidence.includes('internal-playtest-co-development:yes'));
+});
+
+
+test('continuous core acquires shared Work Lock before source mutation and releases it after fan-in',()=>{
+  const workflow=fs.readFileSync(path.join(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const acquire=workflow.indexOf('Acquire shared Work Lock before source write');
+  const candidate=workflow.indexOf('Generate isolated candidate from pinned main contract');
+  const release=workflow.indexOf('Release shared Work Locks after fan-in or abort');
+  assert.ok(acquire>=0&&candidate>acquire);
+  assert.ok(release>candidate);
+  assert.match(workflow,/vibe2-remote-work-lock\.mjs\" acquire/);
+  assert.match(workflow,/steps\.work_lock\.outputs\.acquired == 'true'/);
+  assert.match(workflow,/VIBE2_SHARED_WORK_LOCK_RELEASED=/);
+});
+
+test('central roadmap marks Roblox co-development Phase 1 implemented without a shadow pipeline',()=>{
+  const roadmap=JSON.parse(fs.readFileSync(path.join(process.cwd(),'company-learning/platform-release-roadmap.json'),'utf8'));
+  const phase=roadmap.developmentLifecycleMachine.internalPlatformPlaytestDevelopment;
+  assert.equal(phase.implementationState,'PHASE1_IMPLEMENTED');
+  assert.equal(phase.phase1Implementation.noNewPipeline,true);
+  assert.equal(phase.phase1Implementation.noNewDepartment,true);
+  assert.equal(phase.phase1Implementation.workLock.acquireBeforeSourceWrite,true);
+  assert.equal(phase.phase1Implementation.workLock.releaseAfterFanInOrAbort,true);
 });
