@@ -150,6 +150,7 @@ jobs:
         run: |
           set -euo pipefail
           node -e "const fs=require('fs'); for (const file of ['.vibe2/queue.json','.vibe2/parallelism-control.json']) JSON.parse(fs.readFileSync(file,'utf8')); console.log('VIBE2_CONTROL_STATE_JSON=VALID')"
+          node --check tools/company-constitution-enforcer.mjs
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
@@ -181,8 +182,10 @@ jobs:
             (
               cd /tmp/vibe2-main
               node --check tools/company-shared-context.mjs
+              node --check tools/company-constitution-enforcer.mjs
               node --test qa/company-shared-context.test.mjs
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
+              node tools/company-constitution-enforcer.mjs --phase=24h-planner | tee /tmp/vibe2-constitution-enforcer.log
               node --check tools/vibe2-learning-motor.mjs
               node --check tools/vibe2-auto-planner.mjs
               node --check tools/vibe2-continuous-runner.mjs
@@ -765,11 +768,11 @@ jobs:
 
   refill:
     needs: [plan, recovery_fast, continuous, learning_idle, game_study]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0' && needs.game_study.result == 'success')) }}
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Dispatch next cycle when work remains
+      - name: Dispatch next cycle unconditionally
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
