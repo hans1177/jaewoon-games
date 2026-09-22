@@ -70426,7 +70426,7 @@
         "roblox-games/survival/client/Game.client.luau"
       ],
       "dependencies": [],
-      "priority": "normal",
+      "priority": "high",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -70471,7 +70471,9 @@
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "35793415011:1",
@@ -70544,7 +70546,7 @@
         "roblox-games/village-dungeons/client/Game.client.luau"
       ],
       "dependencies": [],
-      "priority": "normal",
+      "priority": "high",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -70589,7 +70591,9 @@
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "35793415011:1",
@@ -70763,11 +70767,11 @@
         "architecture-system-construction-allowed",
         "architecture-authority-expansion:NO",
         "architecture-gate-weakening:NO",
+        "learning-motor-candidate-tournament:repeated-verified-failure",
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
         "architecture-neural-expansion-readiness:PASS",
-        "architecture-neural-expansion-allowed:YES",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -70874,7 +70878,9 @@
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "35793415011:1",
@@ -70994,7 +71000,9 @@
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "35793415011:1",
@@ -71067,7 +71075,7 @@
         "web-games/ant-simulator/index.html"
       ],
       "dependencies": [],
-      "priority": "normal",
+      "priority": "high",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -71160,7 +71168,9 @@
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "35793415011:1",
@@ -71233,7 +71243,7 @@
         "web-games/cozy-island/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "high",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -71313,7 +71323,9 @@
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
         "package-quantity-goal:FEATURE_COMPLETION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": "35793415011:1",
@@ -71353,6 +71365,122 @@
           "web-games/cozy-island/index.html"
         ],
         "diagnosticEvidence": [],
+        "roles": {
+          "owner": "work-package-owner",
+          "exploration": "read-only-exploration-worker",
+          "implementation": "parallel-implementation-workers",
+          "test": "incremental-qa-worker",
+          "performance": "performance-sanity-worker",
+          "regression": "single-fan-in-regression-worker",
+          "review": "fan-in-package-review-worker"
+        }
+      },
+      "completionCriteria": [
+        "task-local-exploration-handoff-produced-and-reused",
+        "functional-scope-implemented",
+        "all-package-task-incremental-qa-pass",
+        "performance-sanity-pass",
+        "full-core-regression-once-at-fan-in",
+        "fan-in-package-review-pass",
+        "machine-contract-and-central-doc-synced-when-architecture-changes"
+      ],
+      "shard": "web"
+    },
+    {
+      "id": "cozy-island-diagnostic-bundle-AL-CLEANUP-RISK-bounty-fix-v10-js-INTERVAL-CLEANUP-RISK-bounty-tax-v6-js",
+      "gameId": "cozy-island",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "executionLane": "GAME_PRIMARY",
+      "goal": "[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n1. abyss-cave-v23.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n2. balance-resume-v20.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n3. bounty-fix-v10.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n4. bounty-tax-v6.js에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.",
+      "responsibleFiles": [
+        "web-games/cozy-island/abyss-cave-v23.js",
+        "web-games/cozy-island/balance-resume-v20.js",
+        "web-games/cozy-island/bounty-fix-v10.js",
+        "web-games/cozy-island/bounty-tax-v6.js"
+      ],
+      "dependencies": [],
+      "priority": "high",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "productionMode": "AUTONOMOUS_VIBE",
+      "supervisionApproved": false,
+      "supervisionContract": null,
+      "supervisionReview": null,
+      "blocker": null,
+      "evidence": [
+        "central-policy:company-learning/platform-release-roadmap.json",
+        "vibe2-auto-planner:game-catalog",
+        "release-state:development-confirmed",
+        "source-root:web-games/cozy-island",
+        "diagnostic:INTERVAL_CLEANUP_RISK",
+        "diagnostic-key:INTERVAL_CLEANUP_RISK:abyss-cave-v23.js",
+        "diagnostic-severity:medium",
+        "repair-mode:MODEL",
+        "diagnostic-key:INTERVAL_CLEANUP_RISK:balance-resume-v20.js",
+        "diagnostic-key:INTERVAL_CLEANUP_RISK:bounty-fix-v10.js",
+        "diagnostic-key:INTERVAL_CLEANUP_RISK:bounty-tax-v6.js",
+        "work-package:cozy-island-wp-fszkik",
+        "task-work-units:5",
+        "package-work-units:5",
+        "package-related-improvements:0",
+        "package-role-separation:exploration|implementation|test|performance|regression|review",
+        "package-quantity-goal:FEATURE_COMPLETION",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
+      ],
+      "lastOutcome": null,
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
+      "neuronExpectedVariants": 0,
+      "neuronResults": [],
+      "companyContext": null,
+      "sourceRoot": "web-games/cozy-island",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "atomicNeuronMode": null,
+      "atomicCompletionRequired": false,
+      "taskWorkUnits": 5,
+      "packageId": "cozy-island-wp-fszkik",
+      "packageGoal": "포근섬: 작은 왕국 키우기: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.",
+      "packageRole": "implementation-owner",
+      "packageOwner": "feature-owner:cozy-island",
+      "packageWorkUnits": 5,
+      "packageSize": 1,
+      "packageMinWorkUnits": 4,
+      "packageLongWorkProtected": true,
+      "postReleaseFocused": false,
+      "historicalDeploymentRecovery": false,
+      "focusCycle": 0,
+      "focusPolicyRef": null,
+      "recoveryGeneration": 0,
+      "systemSteward": false,
+      "ownerFocusedCaretaker": false,
+      "packageContext": {
+        "explorationMode": "task-local-exploration-handoff",
+        "explorationRequired": true,
+        "sharedPreparation": false,
+        "sourceRoot": "web-games/cozy-island",
+        "responsibleFiles": [
+          "web-games/cozy-island/abyss-cave-v23.js",
+          "web-games/cozy-island/balance-resume-v20.js",
+          "web-games/cozy-island/bounty-fix-v10.js",
+          "web-games/cozy-island/bounty-tax-v6.js"
+        ],
+        "diagnosticEvidence": [
+          "diagnostic:INTERVAL_CLEANUP_RISK",
+          "repair-mode:MODEL"
+        ],
         "roles": {
           "owner": "work-package-owner",
           "exploration": "read-only-exploration-worker",
