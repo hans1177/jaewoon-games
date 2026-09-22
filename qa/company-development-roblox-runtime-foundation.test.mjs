@@ -7,6 +7,14 @@ const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-isl
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
 const good={gameId:'cozy-island',placeId:116850096561713,placeVersion:21,requirements:{saveEnabled:true,multiplayerRequired:true},checkpoints:Object.fromEntries(names.map((x,index)=>[x,checkpoint(x,index+1)]))};
 
+
+test('recurring Roblox runtime foundation QA does not require full git history',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/schedule:\s*\n\s*- cron: '\*\/15 \* \* \* \*'/);
+ assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+ assert.match(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*1/);
+});
+
 test('actual Roblox sentinel passes F1 through F8 only for the exact deployed place version',()=>{
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
  assert.equal(r.runtimeFoundationPassed,true);
