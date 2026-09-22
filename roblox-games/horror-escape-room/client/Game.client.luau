@@ -6,6 +6,7 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
+local RunService=game:GetService("RunService")
 
 -- 참조
 local touchEnabled=UserInputService.TouchEnabled
@@ -108,6 +109,101 @@ roundLine.Font=Enum.Font.GothamBold
 roundLine.Parent=hud
 roundify(roundLine,9)
 
+-- 실제 플레이 좌표를 보여주는 소형 미니맵
+local mapPanel=Instance.new("Frame")
+mapPanel.Name="MiniMap"
+mapPanel.AnchorPoint=Vector2.new(1,0)
+mapPanel.Position=UDim2.new(1,-10,0,8)
+mapPanel.Size=UDim2.fromOffset(132,108)
+mapPanel.BackgroundColor3=Color3.fromRGB(16,18,24)
+mapPanel.BackgroundTransparency=.18
+mapPanel.ZIndex=10
+mapPanel.Visible=false
+mapPanel.Parent=gui
+roundify(mapPanel,12);outline(mapPanel,.45)
+
+local miniTitle=Instance.new("TextLabel")
+miniTitle.Size=UDim2.new(1,-12,0,20)
+miniTitle.Position=UDim2.fromOffset(6,3)
+miniTitle.BackgroundTransparency=1
+miniTitle.TextColor3=Color3.fromRGB(225,230,238)
+miniTitle.TextSize=11
+miniTitle.Font=Enum.Font.GothamBold
+miniTitle.TextXAlignment=Enum.TextXAlignment.Left
+miniTitle.ZIndex=11
+miniTitle.Parent=mapPanel
+
+local mapCanvas=Instance.new("Frame")
+mapCanvas.Size=UDim2.fromOffset(116,78)
+mapCanvas.Position=UDim2.fromOffset(8,25)
+mapCanvas.BackgroundColor3=Color3.fromRGB(36,39,48)
+mapCanvas.BackgroundTransparency=.08
+mapCanvas.ClipsDescendants=true
+mapCanvas.ZIndex=11
+mapCanvas.Parent=mapPanel
+roundify(mapCanvas,8)
+
+local playerDot=Instance.new("Frame")
+playerDot.Name="PlayerDot"
+playerDot.AnchorPoint=Vector2.new(.5,.5)
+playerDot.Size=UDim2.fromOffset(7,7)
+playerDot.BackgroundColor3=Color3.fromRGB(102,220,255)
+playerDot.BorderSizePixel=0
+playerDot.ZIndex=14
+playerDot.Parent=mapCanvas
+roundify(playerDot,8)
+
+local mapLayouts={
+ SCHOOL={
+  {p={.44,.08},s={.12,.84}},
+  {p={.05,.14},s={.32,.22}},{p={.63,.14},s={.32,.22}},
+  {p={.05,.58},s={.32,.30}},{p={.63,.58},s={.32,.30}},
+ },
+ HOSPITAL={
+  {p={.46,.05},s={.08,.90}},
+  {p={.08,.12},s={.30,.17}},{p={.62,.12},s={.30,.17}},
+  {p={.08,.39},s={.30,.17}},{p={.62,.39},s={.30,.17}},
+  {p={.08,.68},s={.30,.22}},{p={.62,.68},s={.30,.22}},
+ },
+ THEME_PARK={
+  {p={.45,.05},s={.10,.90}},{p={.06,.34},s={.88,.10}},
+  {p={.08,.48},s={.28,.38}},{p={.62,.52},s={.30,.34}},
+  {p={.08,.08},s={.24,.18}},{p={.62,.08},s={.28,.18}},
+ },
+}
+local drawnMapId=""
+local function drawMiniMap(id)
+ if id==drawnMapId then return end
+ drawnMapId=id
+ for _,x in ipairs(mapCanvas:GetChildren())do if x~=playerDot and not x:IsA("UICorner")then x:Destroy()end end
+ local layout=mapLayouts[id]or mapLayouts.SCHOOL
+ for n,seg in ipairs(layout)do
+  local piece=Instance.new("Frame")
+  piece.Name="MapSegment"..n
+  piece.Position=UDim2.fromScale(seg.p[1],seg.p[2])
+  piece.Size=UDim2.fromScale(seg.s[1],seg.s[2])
+  piece.BackgroundColor3=id=="HOSPITAL"and Color3.fromRGB(91,119,113)or id=="THEME_PARK"and Color3.fromRGB(108,73,117)or Color3.fromRGB(110,119,128)
+  piece.BackgroundTransparency=.18
+  piece.BorderSizePixel=0
+  piece.ZIndex=12
+  piece.Parent=mapCanvas
+  roundify(piece,3)
+ end
+ playerDot.Parent=mapCanvas
+end
+
+RunService.RenderStepped:Connect(function()
+ if not mapPanel.Visible then return end
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if not root then return end
+ local limit=C.ArenaLimit
+ local x=math.clamp(.5+root.Position.X/(limit*2),.04,.96)
+ local z=math.clamp(.5+root.Position.Z/(limit*2),.04,.96)
+ playerDot.Position=UDim2.fromScale(x,z)
+ playerDot.BackgroundColor3=p:GetAttribute("Frozen")==true and Color3.fromRGB(117,210,255)or p:GetAttribute("Role")=="MONSTER"and Color3.fromRGB(255,83,97)or Color3.fromRGB(105,225,255)
+end)
+
 -- 로비 선택 패널
 local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
@@ -164,21 +260,21 @@ local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
 actionDock.Position=UDim2.new(.5,0,1,-12)
-actionDock.Size=UDim2.fromOffset(224,54)
+actionDock.Size=UDim2.fromOffset(194,48)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"친구 구출",Color3.fromRGB(42,126,151))
-rescueButton.Size=UDim2.fromOffset(106,44);rescueButton.Position=UDim2.fromOffset(4,5);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(91,40);rescueButton.Position=UDim2.fromOffset(4,4);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.RESCUE)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
-dashButton.Size=UDim2.fromOffset(106,44);dashButton.Position=UDim2.fromOffset(114,5);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(91,40);dashButton.Position=UDim2.fromOffset(99,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
-abilityButton.Size=UDim2.fromOffset(124,44);abilityButton.Position=UDim2.fromOffset(50,5);abilityButton.ZIndex=11
+abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOffset(41,4);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
@@ -195,6 +291,10 @@ local function render()
  local mapName=p:GetAttribute("CurrentMap")or"맵 준비"
  local eventName=p:GetAttribute("CurrentMapEvent")or""
  local seconds=math.max(0,math.floor((p:GetAttribute("TimeLeft")or 0)+.5))
+ local mapId=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
+ drawMiniMap(mapId)
+ miniTitle.Text="지도 · "..mapName
+ mapPanel.Visible=running
 
  mapLine.Text=mapName..(eventName~=""and(" · "..eventName)or"")
  roleLine.Text=string.format("%s · %s · 생존 %d / 얼음 %d",role,frozen and"얼음"or"정상",p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
@@ -203,6 +303,7 @@ local function render()
  if round:find("^RESULT_") then setupChosen=false end
  setupPanel.Visible=not setupChosen and not running and not round:find("^RESULT_")
  actionDock.Visible=running
+ mapPanel.Visible=running
  rescueButton.Visible=running and role=="SURVIVOR"and not frozen
  dashButton.Visible=running and role=="SURVIVOR"and not frozen
  abilityButton.Visible=running and role=="MONSTER"
