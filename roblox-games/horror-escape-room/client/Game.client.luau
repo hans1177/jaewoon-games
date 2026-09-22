@@ -364,7 +364,8 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
 end)
 
 QACamera.install(C,gui,function()
- if p:GetAttribute("RoundState")~="RUNNING"then return{}end
+ local arena=workspace:FindFirstChild("MidnightArena")
+ if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
  if id=="HOSPITAL"then
   return{
