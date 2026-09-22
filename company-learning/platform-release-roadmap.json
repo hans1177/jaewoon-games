@@ -1,5 +1,5 @@
 {
-  "version": 264,
+  "version": 265,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -4563,7 +4563,9 @@
       "bidirectionalAutoPair": true,
       "webStageSkipped": true,
       "webGateSkipped": true,
-      "globalGameDevelopmentWindow": null
+      "globalGameDevelopmentWindow": null,
+      "webValidationSurfaceEnabled": true,
+      "webValidationSurfaceRole": "OPTIONAL_HOMEPAGE_TEST_LINK"
     },
     "internalPlatformPlaytestDevelopment": {
       "version": 3,
@@ -5409,7 +5411,6 @@
       "platformButtonUsesVerifiedPlaceId": true
     },
     "releaseShelfUnchanged": true,
-    "top30ShelfUnchanged": true,
     "developmentShelfUnchanged": true,
     "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true,
     "departmentPortfolioControl": {
@@ -5444,7 +5445,8 @@
         "renderer": "assets/homepage-enhancements.js"
       },
       "pendingBehavior": "SHOW_PENDING_NOT_FALSE_DECISION"
-    }
+    },
+    "top30Removed": true
   },
   "catalogNormalization": {
     "version": 1,
@@ -5645,15 +5647,13 @@
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "webGameShelf": {
       "enabled": false,
-      "source": "LEGACY_ARCHIVE_ONLY",
+      "removedAsSeparateShelf": true,
+      "replacement": "PER_GAME_DEVELOPMENT_WEB_ACTION",
       "visibleLimit": null,
       "unbounded": true,
-      "mustExposeAllEligible": false,
+      "mustExposeAllCanonicalWebPaths": true,
       "eligibility": [
-        "ACTIVE_OR_REBUILD",
-        "WEB_PLAYABLE_TRUE",
-        "WEB_ARCHIVE_TRUE",
-        "WEB_PATH_PRESENT"
+        "CANONICAL_WEB_PATH_PRESENT"
       ],
       "ordering": "CATALOG_ORDER_ASC",
       "duplicatePerGameForbidden": true,
@@ -5662,20 +5662,15 @@
         "entryFile": "index.html",
         "canonicalHrefTemplate": "/web-games/<gameId>/",
         "cardAndWebButtonMustUseSameCanonicalHref": true,
-        "catalogPathMustEqualGameIdDirectory": true,
-        "missingEntryFileIsGateFailure": true,
-        "mismatchedPathIsGateFailure": true,
-        "directCardLaunchMustUseCanonicalHref": true
-      },
-      "legacyArchiveOnly": true,
-      "frontDoorVisible": false
+        "catalogPathMustEqualGameIdDirectory": true
+      }
     },
     "top30Shelf": {
+      "removed": true,
       "enabled": false,
-      "removalReason": "DUPLICATE_OF_UNBOUNDED_WEB_GAME_SHELF",
       "mustNotRender": true,
-      "testCandidateManifestRetainedForValidationEvidence": true,
-      "testCandidateManifestIsHomepageShelf": false
+      "manifestAuthority": false,
+      "replacement": "UNBOUNDED_DEVELOPMENT_WEB_ACTION"
     },
     "frontDoor": {
       "version": 2,
@@ -5779,28 +5774,34 @@
         "safetyBypassForbidden": true
       },
       "gameCardPlatforms": {
-        "web": "DISABLED_FOR_NEW_DEVELOPMENT",
+        "web": "DEVELOPMENT_TEST_SURFACE",
         "concurrent": [
           "ROBLOX",
           "UNITY"
         ],
-        "visibility": "ROBLOX_UNITY_ONLY",
+        "visibility": "WEB_ROBLOX_UNITY",
         "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
         "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
         "selectedPlatformDoesNotHideOtherTracks": true
       },
       "gameCardActions": {
         "order": [
+          "WEB",
           "ROBLOX",
           "UNITY"
         ],
-        "webAlwaysVisible": false,
+        "webAlwaysVisible": true,
         "concurrentPlatformSlotsVisible": true,
         "verifiedReleaseLinksActivateAutomatically": true,
         "platformAvailableShelfRequiresInternalRelease": true,
         "unavailablePlatformState": "DEVELOPMENT_DISABLED_BUTTON",
         "verifiedTestBuildAloneIsNotInternalRelease": true,
-        "staleOrPrePropagationPlatformBuildMustNotActivate": true
+        "staleOrPrePropagationPlatformBuildMustNotActivate": true,
+        "webVisibleWhenCanonicalPathPresent": true,
+        "webRequiresValidation": false,
+        "webRequiresScore": false,
+        "webRequiresQa": false,
+        "webRequiresPromotion": false
       },
       "recentUpdates": {
         "enabled": true,
@@ -5879,8 +5880,8 @@
       "ROBLOX",
       "UNITY"
     ],
-    "showWebPlay": false,
-    "showUnityWeb": false,
+    "showWebPlay": true,
+    "showUnityWeb": true,
     "showInternalReleaseState": true,
     "showPublicReleaseState": true,
     "perGamePlatformStates": [
@@ -5965,13 +5966,12 @@
           "concurrentTargetPlatforms",
           "platformReleaseState"
         ],
-        "separateFromTop30Promotion": true,
         "mustNotClaimValidationOrRelease": true,
-        "webTestButtonEnabled": false,
-        "webTestButtonLabel": null,
+        "webTestButtonEnabled": true,
+        "webTestButtonLabel": "Web 테스트",
         "platformTestButtonEnabled": true,
         "platformTestButtonLabelMode": "PLATFORM_NAME",
-        "webAndPlatformTestButtonsMustBeSeparate": false,
+        "webAndPlatformTestButtonsMustBeSeparate": true,
         "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
         "scoreDisplayEnabled": false,
         "ranking": "CATALOG_ORDER",
@@ -5981,7 +5981,14 @@
         "scoreRequiresMusicPass": false,
         "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": false,
         "reworkOrRevalidationScoresNotShownAsCurrent": false,
-        "scoreRequiresSchema15": false
+        "scoreRequiresSchema15": false,
+        "independentOfPromotion": true,
+        "webTestEligibility": "CANONICAL_WEB_PATH_PRESENT_ONLY",
+        "webTestRequiresScore": false,
+        "webTestRequiresQa": false,
+        "webTestRequiresArtbook": false,
+        "webTestRequiresPromotion": false,
+        "webTestRequiresRuntimePass": false
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -6007,11 +6014,13 @@
       }
     },
     "testingContract": {
-      "minimumWebStrictScore": 80,
-      "hardGatesMustPass": true,
-      "maxVisibleTestCandidates": 30,
-      "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
-      "artbookRequiredForHomepageRegistration": true,
+      "version": 2,
+      "top30Removed": true,
+      "developmentWebExposureGate": "NONE",
+      "developmentWebRequiresScore": false,
+      "developmentWebRequiresQa": false,
+      "developmentWebRequiresArtbook": false,
+      "developmentWebRequiresPromotion": false,
       "officialCardRequiresPromotion": true
     },
     "documentationSyncContract": {
@@ -13610,9 +13619,9 @@
   },
   "unityWebFirstStage": {
     "version": 1,
-    "status": "DISABLED_BY_OWNER_DIRECTIVE",
+    "status": "OWNER_DIRECT_LOCKED",
     "authority": "OWNER_DIRECTIVE_2026-09-21",
-    "scope": "DISABLED",
+    "scope": "DEVELOPMENT_VALIDATION_SURFACE",
     "appliesToAllGames": false,
     "replacesFirstStageWebAuthoringOnly": false,
     "postUnityWebGatePipelineUnchanged": true,
@@ -13853,15 +13862,18 @@
       ],
       "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     },
-    "enabled": false,
-    "disabledReason": "DIRECT_NATIVE_ROBLOX_UNITY_APP_DEVELOPMENT",
-    "developmentAdmissionAuthority": false
+    "enabled": true,
+    "disabledReason": null,
+    "developmentAdmissionAuthority": false,
+    "firstStageRequired": false,
+    "releaseGateAuthority": false,
+    "homepageDevelopmentLinkExposure": "CANONICAL_WEB_PATH_ONLY_NO_SCORE_QA_GATE"
   },
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
     "recordedAt": "2026-09-22",
     "mode": "ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR",
-    "unityWebEnabled": false,
+    "unityWebEnabled": true,
     "unityWebRequired": false,
     "unityWebGateRequired": false,
     "supportedDevelopmentPlatforms": [
@@ -13985,7 +13997,10 @@
       "onePlatformFailureDoesNotCancelOther": true,
       "noArtificialGlobalGameCountCap": true,
       "globalGameDevelopmentWindow": null,
-      "executionBatchIsCapacityOnly": true
+      "executionBatchIsCapacityOnly": true,
+      "webValidationSurfaceEnabled": true,
+      "webValidationSurfaceIsGate": false,
+      "webValidationSurfaceBlocksNativeDevelopment": false
     },
     "internalRelease": {
       "firstReleaseGoal": true,
@@ -14012,7 +14027,8 @@
       "regressionMeaning": "HEADLESS_EXACT_ARTIFACT_REGRESSION",
       "openCloudPublishRequiredForInternalRelease": true,
       "authority": "OWNER_DIRECTIVE_2026-09-22"
-    }
+    },
+    "unityWebRole": "OPTIONAL_DEVELOPMENT_VALIDATION_SURFACE"
   },
   "centralDocumentation": {
     "version": 2,
