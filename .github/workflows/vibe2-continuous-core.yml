@@ -581,6 +581,7 @@ jobs:
           TASK_ID: ${{ matrix.taskId }}
           VARIANT: ${{ matrix.variant }}
           SAFE_TASK: ${{ matrix.safeTask }}
+          VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}
         shell: bash
         run: |
           set -euo pipefail
