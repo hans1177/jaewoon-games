@@ -5,6 +5,7 @@ import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-b
 
 const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
 const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
+const headlessEvaluator=fs.readFileSync(new URL('../tools/company-development-roblox-headless-fast-mvp.mjs',import.meta.url),'utf8');
 const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
@@ -42,7 +43,7 @@ test('preflight persistence promotes only exact source and artifact',()=>{
 
 test('headless fast path validates mobile, save/rejoin, multiplayer and exact artifact',()=>{
   for(const token of ['mobileControlUiPassed','datastoreRejoinPassed','multiplayerStateSyncPassed','exactRevision']){
-    assert.ok(headless.includes(token),token);
+    assert.ok(headlessEvaluator.includes(token),token);
   }
   assert.ok(headless.includes('rebuilt'));
   assert.ok(headless.includes('EXPECTED_ARTIFACT'));
