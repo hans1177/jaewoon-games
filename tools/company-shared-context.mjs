@@ -54,6 +54,10 @@ export function compileOwnerCanonicalConstitution(policy={}){
   if(binding?.enforcerRequiredBeforeWorkerSourceWrite!==true)errors.push('CONSTITUTION_WORKER_PREWRITE_ENFORCER');
   if(binding?.enforcerRequiredAfterWorkerExecution!==true)errors.push('CONSTITUTION_WORKER_POST_ENFORCER');
   if(binding?.global24hStopOnConstitutionFailureForbidden!==true)errors.push('CONSTITUTION_GLOBAL_24H_CONTINUES');
+  if(binding?.declarativeRuleEnforcementRequired!==true)errors.push('CONSTITUTION_DECLARATIVE_ENFORCEMENT');
+  if(Number(binding?.ruleEnforcementSchemaVersion)<=0)errors.push('CONSTITUTION_ENFORCEMENT_SCHEMA');
+  if(binding?.hardcodedRuleNumberBranchesForbidden!==true)errors.push('CONSTITUTION_HARDCODED_RULE_BRANCHES');
+  if(binding?.genericRuleIterationRequired!==true)errors.push('CONSTITUTION_GENERIC_RULE_ITERATION');
 
   const discovered=[];
   for(const [key,value] of Object.entries(owner)){
@@ -66,7 +70,17 @@ export function compileOwnerCanonicalConstitution(policy={}){
     discovered.push({key,number,id,label:clean(value.label)||`제${number}규칙`,authority:clean(value.authority)||clean(owner.authority)||null,objective:clean(value.objective)||null,fingerprint:textSha256(JSON.stringify(value)),contract:value});
   }
   const byNumber=new Map(discovered.map(row=>[row.number,row]));
-  for(const required of [1,2,3,4])if(!byNumber.has(required))errors.push(`CONSTITUTION_REQUIRED_RULE_MISSING:${required}`);
+  if(!byNumber.size)errors.push('CONSTITUTION_NO_ENABLED_RULES');
+  for(const row of discovered){
+    const enforcement=row.contract?.machineEnforcement;
+    if(binding?.declarativeRuleEnforcementRequired===true){
+      if(!enforcement||typeof enforcement!=='object')errors.push(`CONSTITUTION_MACHINE_ENFORCEMENT_MISSING:${row.number}`);
+      else{
+        if(Number(enforcement.schemaVersion)!==Number(binding?.ruleEnforcementSchemaVersion))errors.push(`CONSTITUTION_MACHINE_ENFORCEMENT_SCHEMA:${row.number}`);
+        if(!Array.isArray(enforcement.assertions)||!enforcement.assertions.length)errors.push(`CONSTITUTION_MACHINE_ASSERTIONS_MISSING:${row.number}`);
+      }
+    }
+  }
   const explicit=[];
   for(const item of Array.isArray(owner.implementationOrder)?owner.implementationOrder:[]){
     const match=OWNER_RULE_ORDER.exec(clean(item));
