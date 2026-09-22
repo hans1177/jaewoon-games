@@ -90,3 +90,10 @@ test('발소리 얼리기 구출 결과 음악과 추격 화면 피드백이 연
   assert.match(server,/FeedbackEvent","RESULT:/);
   for(const gate of ['footstep feedback','freeze/rescue audio feedback','result music','chase screen feedback'])assert.ok(launch.releaseGates.includes(gate),gate);
 });
+
+test('심야 술래잡기는 첫 라운드 전에도 학교 맵을 프리로드한다',()=>{
+  assert.match(server,/arena=makeArena\(C\.Maps\[1\]\)/);
+  assert.match(server,/workspace:SetAttribute\("MapReady",true\)/);
+  assert.match(client,/workspace:GetAttribute\("MapReady"\)~=true/);
+  assert.match(client,/workspace:FindFirstChild\("MidnightArena"\)/);
+});
