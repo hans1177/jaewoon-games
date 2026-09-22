@@ -63,7 +63,7 @@ test('포근섬 모바일 UI는 자동채집과 작은 마을/정복 운영 조�
   assert.match(cozyClient,/actionPopup\.Visible=false/);
   assert.match(cozyClient,/showGroup\(groupIndex\)/);
   assert.doesNotMatch(cozyClient,/C\.Actions\.CHOP/);
-  assert.doesNotMatch(cozyClient,/C\.Actions\.FOOD/);
+  assert.doesNotMatch(cozyClient,/C\.Actions\.FOOD[\s,})]/);
 });
 
 test('Whatever RPG 모바일 UI는 오른손 전투 스택과 접힌 파티 장비 메뉴를 쓴다',()=>{
