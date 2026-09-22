@@ -116,12 +116,26 @@ objective.Font=Enum.Font.GothamBold
 objective.Parent=gui
 roundify(objective,9)
 
+local autoGather=Instance.new("TextLabel")
+autoGather.Name="AutoGatherStatus"
+autoGather.Size=UDim2.fromOffset(160,24)
+autoGather.AnchorPoint=Vector2.new(.5,0)
+autoGather.Position=UDim2.new(.5,0,0,40)
+autoGather.BackgroundColor3=Color3.fromRGB(33,58,47)
+autoGather.BackgroundTransparency=.26
+autoGather.TextColor3=Color3.fromRGB(211,239,213)
+autoGather.TextSize=11
+autoGather.Font=Enum.Font.GothamBold
+autoGather.Text="자동채집 · 숲/농장 근처"
+autoGather.Parent=gui
+roundify(autoGather,8)
+
 -- 하단 조작: 평소에는 카테고리 3개만 표시하고, 탭한 카테고리의 액션만 잠깐 노출
 local controls=Instance.new("Frame")
 controls.Name="ActionDock"
 controls.AnchorPoint=Vector2.new(.5,1)
 controls.Position=UDim2.new(.5,0,1,-10)
-controls.Size=UDim2.fromOffset(276,44)
+controls.Size=UDim2.fromOffset(196,42)
 controls.BackgroundColor3=Color3.fromRGB(26,43,39)
 controls.BackgroundTransparency=.12
 controls.Parent=gui
@@ -130,8 +144,8 @@ roundify(controls,14);outline(controls,.5)
 local actionPopup=Instance.new("Frame")
 actionPopup.Name="ActionPopup"
 actionPopup.AnchorPoint=Vector2.new(.5,1)
-actionPopup.Position=UDim2.new(.5,0,1,-58)
-actionPopup.Size=UDim2.fromOffset(276,44)
+actionPopup.Position=UDim2.new(.5,0,1,-56)
+actionPopup.Size=UDim2.fromOffset(252,82)
 actionPopup.BackgroundColor3=Color3.fromRGB(26,43,39)
 actionPopup.BackgroundTransparency=.08
 actionPopup.Visible=false
@@ -140,16 +154,12 @@ roundify(actionPopup,14);outline(actionPopup,.5)
 
 local groups={
  {
-  title="채집",color=Color3.fromRGB(63,133,84),
-  actions={{C.Actions.CHOP,"벌목"},{C.Actions.FOOD,"식량"},{C.Actions.HIRE,"주민"}},
- },
- {
-  title="마을 성장",color=Color3.fromRGB(139,104,48),
-  actions={{C.Actions.WOOD_JOB,"벌목배치"},{C.Actions.FOOD_JOB,"식량배치"},{C.Actions.BARRACKS,"병영강화"}},
+  title="마을",color=Color3.fromRGB(126,96,48),
+  actions={{C.Actions.HIRE,"주민 고용"},{C.Actions.WOOD_JOB,"벌목 배치"},{C.Actions.FOOD_JOB,"농장 배치"},{C.Actions.BARRACKS,"병영 강화"}},
  },
  {
   title="정복",color=Color3.fromRGB(150,67,52),
-  actions={{C.Actions.RECRUIT,"병사모집"},{C.Actions.ATTACK,"기지공격"},{C.Actions.SUPPORT,"원정지원"}},
+  actions={{C.Actions.RECRUIT,"병사 모집"},{C.Actions.ATTACK,"기지 공격"},{C.Actions.SUPPORT,"원정 지원"}},
  },
 }
 
@@ -165,8 +175,10 @@ local function showGroup(index)
  openGroup=index
  for _,b in ipairs(actionButtons)do b.Visible=false end
  local group=groups[index]
- for row,a in ipairs(group.actions)do
-  local b=actionButtons[(index-1)*3+row]
+ local offset=0
+ for i=1,index-1 do offset+=#groups[i].actions end
+ for row,_ in ipairs(group.actions)do
+  local b=actionButtons[offset+row]
   b.Visible=true
  end
  actionPopup.Visible=true
@@ -182,14 +194,16 @@ end
 
 for groupIndex,group in ipairs(groups)do
  local tab=makeButton(controls,group.title,group.color)
- tab.Size=UDim2.new(.31,0,0,34)
- tab.Position=UDim2.new(.015+(groupIndex-1)*.33,0,0,5)
+ tab.Size=UDim2.new(.46,0,0,32)
+ tab.Position=UDim2.new(.035+(groupIndex-1)*.49,0,0,5)
  tab.Activated:Connect(function()showGroup(groupIndex)end)
 
  for row,a in ipairs(group.actions)do
   local b=makeButton(actionPopup,a[2],group.color)
-  b.Size=UDim2.new(.31,0,0,34)
-  b.Position=UDim2.new(.015+(row-1)*.33,0,0,5)
+  b.Size=UDim2.fromOffset(116,32)
+  local col=(row-1)%2
+  local line=math.floor((row-1)/2)
+  b.Position=UDim2.fromOffset(7+col*122,7+line*36)
   b.Visible=false
   b.Activated:Connect(function()
    if a[1]==C.Actions.ATTACK or a[1]==C.Actions.RECRUIT or a[1]==C.Actions.BARRACKS then actionSfx.TimePosition=0;actionSfx:Play()end
@@ -211,8 +225,10 @@ local function render()
   p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
 
  local inBattle=p:GetAttribute("InBattle")==true
- local activity=p:GetAttribute("LastActivity")or"채집해서 병력을 키우고 다음 거점을 정복해"
+ local activity=p:GetAttribute("LastActivity")or"숲·농장 가까이 가면 자동채집"
  objective.Text=inBattle and ("⚔ "..target.." · 전투 "..(p:GetAttribute("BattleProgress")or 0).."%") or (activity.."  |  다음: "..target)
+ local zone=p:GetAttribute("AutoGatherZone")or""
+ autoGather.Text=zone=="WOOD"and"자동채집 · 숲 +나무"or zone=="FOOD"and"자동채집 · 농장 +식량"or zone=="BOTH"and"자동채집 · 나무+식량"or"자동채집 · 숲/농장 근처"
 
  if inBattle then
   if bgm.IsPlaying then bgm:Stop()end
@@ -227,7 +243,7 @@ local function render()
  lastCaptured=captured
 end
 
-for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do
+for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle","AutoGatherZone"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
