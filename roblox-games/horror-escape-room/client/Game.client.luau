@@ -34,6 +34,7 @@ bgm:Play()
 local gui=Instance.new("ScreenGui")
 gui.Name="MidnightTagHUD"
 gui.ResetOnSpawn=false
+gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
 gui.Parent=p:WaitForChild("PlayerGui")
 
 local function roundify(target,radius)
@@ -69,7 +70,7 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.new(1,-16,0,70)
+hud.Size=UDim2.fromOffset(320,46)
 hud.BackgroundColor3=Color3.fromRGB(22,24,31)
 hud.BackgroundTransparency=.12
 hud.ZIndex=10
@@ -77,7 +78,7 @@ hud.Parent=gui
 roundify(hud,14);outline(hud,.5)
 
 local mapLine=Instance.new("TextLabel")
-mapLine.Size=UDim2.new(1,-16,0,22)
+mapLine.Size=UDim2.new(.6,-8,0,18)
 mapLine.Position=UDim2.fromOffset(8,3)
 mapLine.BackgroundTransparency=1
 mapLine.TextColor3=Color3.fromRGB(235,237,244)
@@ -86,21 +87,23 @@ mapLine.Font=Enum.Font.GothamBold
 mapLine.Parent=hud
 
 local roleLine=Instance.new("TextLabel")
-roleLine.Size=UDim2.new(1,-16,0,20)
-roleLine.Position=UDim2.fromOffset(8,25)
+roleLine.Size=UDim2.new(1,-16,0,16)
+roleLine.Position=UDim2.fromOffset(8,24)
 roleLine.BackgroundTransparency=1
 roleLine.TextColor3=Color3.fromRGB(212,218,230)
-roleLine.TextScaled=true
+roleLine.TextScaled=false
+roleLine.TextSize=11
 roleLine.Font=Enum.Font.Gotham
 roleLine.Parent=hud
 
 local roundLine=Instance.new("TextLabel")
-roundLine.Size=UDim2.new(1,-16,0,20)
-roundLine.Position=UDim2.fromOffset(8,47)
+roundLine.Size=UDim2.new(.38,-8,0,38)
+roundLine.Position=UDim2.new(.62,0,0,4)
 roundLine.BackgroundColor3=Color3.fromRGB(46,49,61)
 roundLine.BackgroundTransparency=.12
 roundLine.TextColor3=Color3.fromRGB(255,203,121)
-roundLine.TextScaled=true
+roundLine.TextScaled=false
+roundLine.TextSize=13
 roundLine.Font=Enum.Font.GothamBold
 roundLine.Parent=hud
 roundify(roundLine,9)
@@ -110,7 +113,7 @@ local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
 setupPanel.Position=UDim2.fromScale(.5,.56)
-setupPanel.Size=UDim2.new(1,-52,0,176)
+setupPanel.Size=UDim2.fromOffset(286,164)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -161,21 +164,21 @@ local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
 actionDock.Position=UDim2.new(.5,0,1,-12)
-actionDock.Size=UDim2.new(1,-28,0,64)
+actionDock.Size=UDim2.fromOffset(224,54)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"친구 구출",Color3.fromRGB(42,126,151))
-rescueButton.Size=UDim2.new(.48,0,0,52);rescueButton.Position=UDim2.new(.01,0,0,6);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(106,44);rescueButton.Position=UDim2.fromOffset(4,5);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.RESCUE)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
-dashButton.Size=UDim2.new(.48,0,0,52);dashButton.Position=UDim2.new(.51,0,0,6);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(106,44);dashButton.Position=UDim2.fromOffset(114,5);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
-abilityButton.Size=UDim2.new(.56,0,0,52);abilityButton.Position=UDim2.new(.22,0,0,6);abilityButton.ZIndex=11
+abilityButton.Size=UDim2.fromOffset(124,44);abilityButton.Position=UDim2.fromOffset(50,5);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
@@ -194,8 +197,8 @@ local function render()
  local seconds=math.max(0,math.floor((p:GetAttribute("TimeLeft")or 0)+.5))
 
  mapLine.Text=mapName..(eventName~=""and(" · "..eventName)or"")
- roleLine.Text=string.format("%s · %s · 괴물 %s · 생존 %d / 얼음 %d",role,frozen and"얼음 상태"or"이동 가능",monsterName(),p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
- roundLine.Text=running and(string.format("남은 시간 %d초 · XP %d · 코인 %d",seconds,p:GetAttribute("MonsterXP")or 0,p:GetAttribute("Coins")or 0))or round
+ roleLine.Text=string.format("%s · %s · 생존 %d / 얼음 %d",role,frozen and"얼음"or"정상",p:GetAttribute("AliveCount")or 0,p:GetAttribute("FrozenCount")or 0)
+ roundLine.Text=running and(string.format("%d초",seconds))or round
 
  if round:find("^RESULT_") then setupChosen=false end
  setupPanel.Visible=not setupChosen and not running and not round:find("^RESULT_")
