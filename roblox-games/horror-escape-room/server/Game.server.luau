@@ -281,7 +281,15 @@ local function makeArena(map)
 
  if map.Id=="SCHOOL"then
   -- 초보용 학교: 중앙 복도 + 교실 + 급식실 + 체육관. 시야가 길고 우회로가 단순하다.
-   arenaPart(f,"SchoolMainRoof",Vector3.new(336,1.2,336),Vector3.new(0,14.2,0),Color3.fromRGB(82,87,96),Enum.Material.Concrete)
+   -- 실제 실내 구역 천장만 사용하고 전체 맵을 덮는 단일 지붕판은 두지 않는다.
+   for i,spec in ipairs({
+    {Vector3.new(0,13.8,-163),Vector3.new(336,1,10)},
+    {Vector3.new(0,13.8,163),Vector3.new(336,1,10)},
+    {Vector3.new(-163,13.8,0),Vector3.new(10,1,336)},
+    {Vector3.new(163,13.8,0),Vector3.new(10,1,336)}
+   })do
+    arenaPart(f,"SchoolRoofRim"..i,spec[2],spec[1],Color3.fromRGB(72,76,84),Enum.Material.Concrete)
+   end
    for _,roofZ in ipairs({-144,-120,-96,-72,-48,-24,0,24,48,72,96,120,144})do
     local hallLamp=arenaPart(f,"CeilingLight",Vector3.new(11,.45,2),Vector3.new(0,12.3,roofZ),Style.SafeLight,Enum.Material.Neon)
     hallLamp.CanCollide=false;hallLamp.Transparency=.08;glow(hallLamp,Style.SafeLight,17,.58)
@@ -489,6 +497,8 @@ local function makeArena(map)
  workspace:SetAttribute("CurrentMapId",map.Id)
  workspace:SetAttribute("CurrentMapName",map.Name)
  workspace:SetAttribute("WorldArtPass","MIDNIGHT_"..map.Id.."_INFECTION_HORROR_V9")
+ workspace:SetAttribute("CharacterArtDirection","REALISTIC_HUMANS_ABERRANT_MONSTERS")
+ workspace:SetAttribute("DesignCodeSync","PRIMARY_THREE_FINAL_4V4_INFECTION_V1")
  workspace:SetAttribute("EscapeUnlocked",false)
  workspace:SetAttribute("SurvivorEscapeTriggered",false)
  decorateArenaWithOfficialAssets(f,map)
