@@ -8,6 +8,7 @@ on:
       - 'roblox-games/horror-escape-room/**'
       - 'qa/cozy-rpg-release-hardening.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
+      - 'qa/primary-three-world-visual-qa.test.mjs'
       - '.github/workflows/primary-three-release-polish-qa.yml'
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - 'roblox-games/horror-escape-room/**'
       - 'qa/cozy-rpg-release-hardening.test.mjs'
       - 'qa/horror-escape-room-release.test.mjs'
+      - 'qa/primary-three-world-visual-qa.test.mjs'
       - '.github/workflows/primary-three-release-polish-qa.yml'
 
 permissions:
@@ -32,4 +34,4 @@ jobs:
           node-version: '22'
       - name: Validate primary-three release polish
         run: |
-          node --test qa/horror-escape-room-release.test.mjs qa/cozy-rpg-release-hardening.test.mjs
+          node --test qa/horror-escape-room-release.test.mjs qa/cozy-rpg-release-hardening.test.mjs qa/primary-three-world-visual-qa.test.mjs
