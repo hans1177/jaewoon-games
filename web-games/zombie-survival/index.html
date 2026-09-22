@@ -45,6 +45,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 <body>
 <div id="game">
 <canvas id="c"></canvas>
+
 <div class="hud">
   <div class="card stats">
     <span>체력</span><b id="hp">100/100</b>
@@ -55,15 +56,21 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   </div>
   <div class="card weapon"><b id="weapon">권총 Lv.1</b><span id="ammo">12 / 48</span></div>
 </div>
-<div class="tip" id="tip">왼쪽 이동 · 오른쪽 조준/사격 · 건물 상자를 찾아봐</div>
+
+<div class="tip" id="tip">왼쪽 이동 · 오른쪽 스틱 360도 조준/사격 · 건물은 드물게 보여</div>
 <div class="loot" id="loot"></div>
+
 <div class="controls">
   <div class="joy left" id="moveJoy"><div class="knob"></div></div>
   <div class="joy right" id="aimJoy"><div class="knob"></div></div>
-  <div class="actionStack"><button id="interact" type="button">상자 열기</button><button id="upgrade" type="button">총 업글</button></div>
+  <div class="actionStack">
+    <button id="interact" type="button">상자 열기</button>
+    <button id="upgrade" type="button">총 업글</button>
+  </div>
   <button class="reloadBtn" id="reload" type="button">재장전</button>
-  <div class="desktopHelp">WASD 이동 · 마우스 조준 · 클릭 사격 · E 상호작용 · R 재장전</div>
+  <div class="desktopHelp">WASD 이동 · 마우스 360도 조준 · 클릭 사격 · E 상자 · R 재장전</div>
 </div>
+
 <div class="panel" id="upgradePanel">
   <h2>총 업그레이드</h2>
   <p>좀비 처치로 부품을 모아 현재 총을 강화해.</p>
@@ -74,21 +81,35 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   </div>
   <button class="close" id="closeUpgrade" type="button">닫기</button>
 </div>
-<div class="overlay" id="dead"><div class="box"><h1>감염됐다</h1><p id="result"></p><button id="restart" type="button">다시 생존</button></div></div>
+
+<div class="overlay" id="dead">
+  <div class="box">
+    <h1>감염됐다</h1>
+    <p id="result"></p>
+    <button id="restart" type="button">다시 생존</button>
+  </div>
 </div>
+</div>
+
 <script>
 (() => {
 'use strict';
 
 // 파일명: web-games/zombie-survival/index.html
-// 메인: 실시간 좀비 생존 / 실제 직선 투사체 / 건물 상자 파밍 / 총 업그레이드
+// 메인: 5배 맵 / 360도 조준 / 야외 좀비 2종 / 건물 전용 좀비 2종 / 건물 5종
 
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d',{alpha:false});
 const $=id=>document.getElementById(id);
 let W=0,H=0,dpr=1,last=performance.now(),running=true;
-const world={w:2200,h:1600},camera={x:0,y:0},keys=new Set(),pointer={x:0,y:0,down:false,active:false};
-const moveInput={x:0,y:0},aimInput={x:0,y:0};
+
+// 기존 약 352만 면적 -> 약 1750만 면적으로 약 5배 확장
+const world={w:5000,h:3500};
+const camera={x:0,y:0};
+const keys=new Set();
+const pointer={x:0,y:0,down:false,active:false};
+const moveInput={x:0,y:0};
+const aimInput={x:0,y:0};
 let lootTimer=0,tipTimer=0,waveClock=0,spawnClock=0;
 
 const WEAPONS={
@@ -97,21 +118,82 @@ const WEAPONS={
   rifle:{name:'소총',damage:35,rate:5.2,mag:20,reserve:80,speed:1250,spread:.018,pellets:1,reload:1.45,color:'#ffef9b'},
   shotgun:{name:'산탄총',damage:14,rate:1.45,mag:6,reserve:36,speed:900,spread:.22,pellets:7,reload:1.65,color:'#ffd07b'}
 };
-function makeGun(id){const b=WEAPONS[id];return{id,level:1,damageLv:0,rateLv:0,magLv:0,ammo:b.mag,reserve:b.reserve,lastShot:0,reloading:0}}
-const player={x:1100,y:800,r:16,hp:100,maxHp:100,speed:230,gun:makeGun('pistol'),parts:0,kills:0,invuln:0};
-const bullets=[],zombies=[],particles=[],buildings=[],chests=[];
 
-function addBuilding(x,y,w,h,doorSide='bottom'){
-  const b={x,y,w,h,doorSide};buildings.push(b);
-  let cx=x+w/2,cy=y+h/2;
-  if(doorSide==='bottom')cy=y+h-42;if(doorSide==='top')cy=y+42;if(doorSide==='left')cx=x+42;if(doorSide==='right')cx=x+w-42;
-  chests.push({x:cx,y:cy,r:18,opened:false,building:b});
+const ZOMBIE_TYPES={
+  walker:{name:'떠돌이 좀비',source:'field',hp:82,speed:72,damage:12,r:17,color:'#678858'},
+  runner:{name:'질주 좀비',source:'field',hp:58,speed:122,damage:10,r:15,color:'#789f62'},
+  infected:{name:'병원 감염자',source:'building',hp:118,speed:82,damage:17,r:18,color:'#9a7a62'},
+  armored:{name:'방탄 좀비',source:'building',hp:205,speed:56,damage:24,r:23,color:'#566a62'}
+};
+
+const BUILDING_TYPES={
+  house:{name:'주택',wall:'#3b443d',floor:'#202822',trim:'#758078'},
+  store:{name:'편의점',wall:'#465044',floor:'#252c25',trim:'#d6bc68'},
+  warehouse:{name:'창고',wall:'#414643',floor:'#232725',trim:'#88928c'},
+  clinic:{name:'병원',wall:'#48544e',floor:'#252d29',trim:'#d8e2dc',spawns:'infected'},
+  station:{name:'경찰서',wall:'#35434b',floor:'#1f272c',trim:'#86a8bf',spawns:'armored'}
+};
+
+function makeGun(id){
+  const b=WEAPONS[id];
+  return{id,level:1,damageLv:0,rateLv:0,magLv:0,ammo:b.mag,reserve:b.reserve,lastShot:0,reloading:0};
 }
-addBuilding(210,180,300,220,'right');addBuilding(760,140,340,240,'bottom');addBuilding(1440,190,330,230,'left');
-addBuilding(260,690,330,250,'top');addBuilding(1460,680,360,260,'left');addBuilding(430,1190,320,220,'right');addBuilding(1120,1150,350,240,'top');
 
-function resize(){dpr=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
-addEventListener('resize',resize);resize();
+const player={
+  x:2500,y:1750,r:16,hp:100,maxHp:100,speed:230,
+  gun:makeGun('pistol'),parts:0,kills:0,invuln:0,
+  aimX:1,aimY:0
+};
+
+const bullets=[];
+const zombies=[];
+const particles=[];
+const buildings=[];
+const chests=[];
+
+function addBuilding(id,type,x,y,w,h,doorSide='bottom'){
+  const config=BUILDING_TYPES[type];
+  const b={id,type,x,y,w,h,doorSide,spawnType:config.spawns||null,spawnCooldown:rand(3,6)};
+  buildings.push(b);
+
+  let doorX=x+w/2,doorY=y+h/2;
+  if(doorSide==='bottom')doorY=y+h-14;
+  if(doorSide==='top')doorY=y+14;
+  if(doorSide==='left')doorX=x+14;
+  if(doorSide==='right')doorX=x+w-14;
+  b.doorX=doorX;
+  b.doorY=doorY;
+
+  chests.push({
+    x:x+w/2+(doorSide==='left'?60:doorSide==='right'?-60:0),
+    y:y+h/2+(doorSide==='top'?55:doorSide==='bottom'?-55:0),
+    r:18,opened:false,buildingId:id
+  });
+}
+
+// 건물 5종. 넓은 맵에 10개만 배치해서 듬성듬성 보이게 함.
+// 좀비를 직접 내보내는 건물은 병원 1개 + 경찰서 1개, 정확히 2개.
+addBuilding('house-a','house',420,420,320,230,'right');
+addBuilding('store-a','store',1500,360,340,240,'bottom');
+addBuilding('station-a','station',4060,470,360,260,'left');
+addBuilding('warehouse-a','warehouse',2250,1020,390,270,'bottom');
+addBuilding('house-b','house',4550,1580,310,225,'left');
+addBuilding('store-b','store',720,1650,350,240,'right');
+addBuilding('warehouse-b','warehouse',3350,2080,410,280,'top');
+addBuilding('clinic-a','clinic',1130,2820,370,260,'right');
+addBuilding('house-c','house',4130,2920,320,230,'left');
+addBuilding('warehouse-c','warehouse',2360,3030,400,275,'top');
+
+function resize(){
+  dpr=Math.min(2,window.devicePixelRatio||1);
+  W=innerWidth;H=innerHeight;
+  canvas.width=Math.floor(W*dpr);
+  canvas.height=Math.floor(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener('resize',resize);
+resize();
+
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dist2(a,b){const dx=a.x-b.x,dy=a.y-b.y;return dx*dx+dy*dy}
 function len(x,y){return Math.hypot(x,y)||1}
@@ -120,171 +202,672 @@ function rand(a,b){return a+Math.random()*(b-a)}
 
 function gunStats(){
   const g=player.gun,b=WEAPONS[g.id];
-  return{damage:b.damage*(1+g.damageLv*.22),rate:b.rate*(1+g.rateLv*.16),mag:b.mag+g.magLv*4,speed:b.speed,spread:b.spread,pellets:b.pellets,reload:Math.max(.55,b.reload*(1-g.rateLv*.035)),color:b.color};
+  return{
+    damage:b.damage*(1+g.damageLv*.22),
+    rate:b.rate*(1+g.rateLv*.16),
+    mag:b.mag+g.magLv*4,
+    speed:b.speed,
+    spread:b.spread,
+    pellets:b.pellets,
+    reload:Math.max(.55,b.reload*(1-g.rateLv*.035)),
+    color:b.color
+  };
 }
-function showLoot(text){const el=$('loot');el.textContent=text;el.classList.add('show');clearTimeout(lootTimer);lootTimer=setTimeout(()=>el.classList.remove('show'),1800)}
-function showTip(text,ms=1800){const el=$('tip');el.textContent=text;el.style.opacity='1';clearTimeout(tipTimer);tipTimer=setTimeout(()=>el.style.opacity='.18',ms)}
 
-function spawnZombie(){
-  if(zombies.length>70)return;
-  const side=Math.floor(Math.random()*4);let x,y;
-  if(side===0){x=rand(20,world.w-20);y=20}else if(side===1){x=world.w-20;y=rand(20,world.h-20)}else if(side===2){x=rand(20,world.w-20);y=world.h-20}else{x=20;y=rand(20,world.h-20)}
-  if(Math.hypot(x-player.x,y-player.y)<480)return;
-  const wave=Math.max(1,Math.floor(waveClock/35)+1);
-  const type=Math.random()<Math.min(.25,wave*.025)?'runner':(Math.random()<Math.min(.18,wave*.016)?'brute':'normal');
-  const hp=(type==='brute'?150:type==='runner'?58:82)*(1+(wave-1)*.12);
-  zombies.push({x,y,r:type==='brute'?23:17,hp,maxHp:hp,speed:type==='runner'?118:type==='brute'?54:73,damage:type==='brute'?24:12,hit:0,type});
+function showLoot(text){
+  const el=$('loot');
+  el.textContent=text;
+  el.classList.add('show');
+  clearTimeout(lootTimer);
+  lootTimer=setTimeout(()=>el.classList.remove('show'),1800);
 }
+
+function showTip(text,ms=1800){
+  const el=$('tip');
+  el.textContent=text;
+  el.style.opacity='1';
+  clearTimeout(tipTimer);
+  tipTimer=setTimeout(()=>el.style.opacity='.18',ms);
+}
+
+function spawnZombieAt(type,x,y,sourceId=null){
+  if(zombies.length>=82)return false;
+  const base=ZOMBIE_TYPES[type];
+  const wave=Math.max(1,Math.floor(waveClock/35)+1);
+  const hp=base.hp*(1+(wave-1)*.1);
+  zombies.push({
+    type,source:base.source,sourceId,x,y,
+    r:base.r,hp,maxHp:hp,speed:base.speed,damage:base.damage,
+    hit:0,name:base.name
+  });
+  return true;
+}
+
+function spawnFieldZombie(){
+  if(zombies.length>=82)return;
+  const side=Math.floor(Math.random()*4);
+  let x,y;
+
+  if(side===0){x=rand(40,world.w-40);y=40}
+  else if(side===1){x=world.w-40;y=rand(40,world.h-40)}
+  else if(side===2){x=rand(40,world.w-40);y=world.h-40}
+  else{x=40;y=rand(40,world.h-40)}
+
+  if(Math.hypot(x-player.x,y-player.y)<620)return;
+
+  // 야외 자연 스폰은 정확히 2종: 떠돌이 / 질주
+  const wave=Math.max(1,Math.floor(waveClock/35)+1);
+  const runnerChance=Math.min(.42,.12+wave*.018);
+  spawnZombieAt(Math.random()<runnerChance?'runner':'walker',x,y,null);
+}
+
+function updateBuildingSpawners(dt){
+  for(const b of buildings){
+    if(!b.spawnType)continue;
+
+    const distance=Math.hypot(player.x-b.doorX,player.y-b.doorY);
+    if(distance>1150)continue;
+
+    b.spawnCooldown-=dt;
+    if(b.spawnCooldown>0)continue;
+
+    const aliveFromThisBuilding=zombies.filter(z=>z.sourceId===b.id).length;
+    if(aliveFromThisBuilding>=4){
+      b.spawnCooldown=2.2;
+      continue;
+    }
+
+    const angle=Math.atan2(player.y-b.doorY,player.x-b.doorX);
+    const sx=b.doorX+Math.cos(angle)*46;
+    const sy=b.doorY+Math.sin(angle)*46;
+    spawnZombieAt(b.spawnType,sx,sy,b.id);
+    b.spawnCooldown=rand(5.5,8.5);
+  }
+}
+
+function setAim(x,y){
+  if(Math.hypot(x,y)<.1)return;
+  const n=norm(x,y);
+  player.aimX=n.x;
+  player.aimY=n.y;
+}
+
 function tryShoot(){
   const g=player.gun,s=gunStats(),now=performance.now()/1000;
   if(g.reloading>0||g.ammo<=0||now-g.lastShot<1/s.rate)return;
-  let ax=aimInput.x,ay=aimInput.y;
-  if(pointer.active){ax=pointer.x+camera.x-player.x;ay=pointer.y+camera.y-player.y}
-  if(Math.hypot(ax,ay)<.1)return;
-  const n=norm(ax,ay);g.lastShot=now;g.ammo--;
+
+  const n=norm(player.aimX,player.aimY);
+  g.lastShot=now;
+  g.ammo--;
+
   for(let i=0;i<s.pellets;i++){
     const a=Math.atan2(n.y,n.x)+rand(-s.spread,s.spread);
-    bullets.push({x:player.x+n.x*24,y:player.y+n.y*24,vx:Math.cos(a)*s.speed,vy:Math.sin(a)*s.speed,r:4,life:1.25,damage:s.damage,color:s.color});
+    bullets.push({
+      x:player.x+n.x*24,
+      y:player.y+n.y*24,
+      vx:Math.cos(a)*s.speed,
+      vy:Math.sin(a)*s.speed,
+      r:4,life:1.45,damage:s.damage,color:s.color
+    });
   }
-  for(let i=0;i<3;i++)particles.push({x:player.x+n.x*22,y:player.y+n.y*22,vx:n.x*rand(30,95)+rand(-35,35),vy:n.y*rand(30,95)+rand(-35,35),life:.18,size:rand(2,4),color:s.color});
+
+  for(let i=0;i<3;i++){
+    particles.push({
+      x:player.x+n.x*22,y:player.y+n.y*22,
+      vx:n.x*rand(30,95)+rand(-35,35),
+      vy:n.y*rand(30,95)+rand(-35,35),
+      life:.18,size:rand(2,4),color:s.color
+    });
+  }
+
   if(g.ammo===0&&g.reserve>0)setTimeout(startReload,150);
 }
+
 function startReload(){
   const g=player.gun,s=gunStats();
   if(g.reloading>0||g.reserve<=0||g.ammo>=s.mag)return;
-  g.reloading=s.reload;showTip('재장전 중…',700);
+  g.reloading=s.reload;
+  showTip('재장전 중…',700);
 }
+
 function openNearestChest(){
-  let best=null,bd=70*70;
-  for(const c of chests){if(c.opened)continue;const d=dist2(player,c);if(d<bd){bd=d;best=c}}
-  if(!best){showTip('상자 가까이 가야 해');return}
-  best.opened=true;const roll=Math.random();
+  let best=null,bd=78*78;
+  for(const c of chests){
+    if(c.opened)continue;
+    const d=dist2(player,c);
+    if(d<bd){bd=d;best=c}
+  }
+
+  if(!best){
+    showTip('건물 안 상자 가까이 가야 해');
+    return;
+  }
+
+  best.opened=true;
+  const roll=Math.random();
+
   if(roll<.58){
-    const ids=['smg','rifle','shotgun'],id=ids[Math.floor(Math.random()*ids.length)];
-    player.gun=makeGun(id);showLoot(WEAPONS[id].name+' 획득!');
-  }else if(roll<.82){const gain=8+Math.floor(Math.random()*9);player.parts+=gain;showLoot('총기 부품 +'+gain)}
-  else{const heal=35;player.hp=Math.min(player.maxHp,player.hp+heal);showLoot('응급치료 +'+heal)}
+    const ids=['smg','rifle','shotgun'];
+    const id=ids[Math.floor(Math.random()*ids.length)];
+    player.gun=makeGun(id);
+    showLoot(WEAPONS[id].name+' 획득!');
+  }else if(roll<.82){
+    const gain=8+Math.floor(Math.random()*9);
+    player.parts+=gain;
+    showLoot('총기 부품 +'+gain);
+  }else{
+    const heal=35;
+    player.hp=Math.min(player.maxHp,player.hp+heal);
+    showLoot('응급치료 +'+heal);
+  }
+
   updateHud();
 }
-function upgradeCost(kind){const g=player.gun,l=kind==='damage'?g.damageLv:kind==='rate'?g.rateLv:g.magLv;return 8+l*7}
+
+function upgradeCost(kind){
+  const g=player.gun;
+  const l=kind==='damage'?g.damageLv:kind==='rate'?g.rateLv:g.magLv;
+  return 8+l*7;
+}
+
 function refreshUpgradePanel(){
   $('damageCost').textContent='부품 '+upgradeCost('damage')+' · 현재 +'+Math.round(player.gun.damageLv*22)+'%';
   $('rateCost').textContent='부품 '+upgradeCost('rate')+' · 현재 +'+Math.round(player.gun.rateLv*16)+'%';
   $('magCost').textContent='부품 '+upgradeCost('mag')+' · 현재 +'+(player.gun.magLv*4)+'발';
 }
+
 function buyUpgrade(kind){
-  const cost=upgradeCost(kind);if(player.parts<cost){showLoot('부품이 부족해');return}
-  player.parts-=cost;if(kind==='damage')player.gun.damageLv++;if(kind==='rate')player.gun.rateLv++;
-  if(kind==='mag'){player.gun.magLv++;player.gun.ammo=Math.min(gunStats().mag,player.gun.ammo+4)}
+  const cost=upgradeCost(kind);
+  if(player.parts<cost){
+    showLoot('부품이 부족해');
+    return;
+  }
+
+  player.parts-=cost;
+  if(kind==='damage')player.gun.damageLv++;
+  if(kind==='rate')player.gun.rateLv++;
+  if(kind==='mag'){
+    player.gun.magLv++;
+    player.gun.ammo=Math.min(gunStats().mag,player.gun.ammo+4);
+  }
+
   player.gun.level=1+player.gun.damageLv+player.gun.rateLv+player.gun.magLv;
-  refreshUpgradePanel();updateHud();showLoot('업그레이드 완료');
+  refreshUpgradePanel();
+  updateHud();
+  showLoot('업그레이드 완료');
 }
+
 function updateHud(){
-  $('hp').textContent=Math.ceil(player.hp)+'/'+player.maxHp;$('hpBar').style.width=clamp(player.hp/player.maxHp*100,0,100)+'%';
-  $('wave').textContent=Math.max(1,Math.floor(waveClock/35)+1);$('kills').textContent=player.kills;$('parts').textContent=player.parts;
-  const s=gunStats(),g=player.gun;$('weapon').textContent=WEAPONS[g.id].name+' Lv.'+g.level;
+  $('hp').textContent=Math.ceil(player.hp)+'/'+player.maxHp;
+  $('hpBar').style.width=clamp(player.hp/player.maxHp*100,0,100)+'%';
+  $('wave').textContent=Math.max(1,Math.floor(waveClock/35)+1);
+  $('kills').textContent=player.kills;
+  $('parts').textContent=player.parts;
+
+  const s=gunStats(),g=player.gun;
+  $('weapon').textContent=WEAPONS[g.id].name+' Lv.'+g.level;
   $('ammo').textContent=(g.reloading>0?'재장전 ':g.ammo+' / '+g.reserve)+' · 탄창 '+s.mag;
 }
+
 function update(dt){
   if(!running)return;
-  waveClock+=dt;spawnClock-=dt;const wave=Math.max(1,Math.floor(waveClock/35)+1);
-  if(spawnClock<=0){spawnZombie();spawnClock=Math.max(.32,1.35-wave*.055)}
+
+  waveClock+=dt;
+  spawnClock-=dt;
+  const wave=Math.max(1,Math.floor(waveClock/35)+1);
+
+  if(spawnClock<=0){
+    spawnFieldZombie();
+    spawnClock=Math.max(.42,1.55-wave*.05);
+  }
+
+  updateBuildingSpawners(dt);
+
   let mx=moveInput.x,my=moveInput.y;
-  if(keys.has('KeyW')||keys.has('ArrowUp'))my-=1;if(keys.has('KeyS')||keys.has('ArrowDown'))my+=1;if(keys.has('KeyA')||keys.has('ArrowLeft'))mx-=1;if(keys.has('KeyD')||keys.has('ArrowRight'))mx+=1;
-  if(mx||my){const n=norm(mx,my);player.x+=n.x*player.speed*dt;player.y+=n.y*player.speed*dt}
-  player.x=clamp(player.x,player.r,world.w-player.r);player.y=clamp(player.y,player.r,world.h-player.r);player.invuln=Math.max(0,player.invuln-dt);
-  if(Math.hypot(aimInput.x,aimInput.y)>.38||pointer.down)tryShoot();
+  if(keys.has('KeyW')||keys.has('ArrowUp'))my-=1;
+  if(keys.has('KeyS')||keys.has('ArrowDown'))my+=1;
+  if(keys.has('KeyA')||keys.has('ArrowLeft'))mx-=1;
+  if(keys.has('KeyD')||keys.has('ArrowRight'))mx+=1;
+
+  if(mx||my){
+    const n=norm(mx,my);
+    player.x+=n.x*player.speed*dt;
+    player.y+=n.y*player.speed*dt;
+  }
+
+  player.x=clamp(player.x,player.r,world.w-player.r);
+  player.y=clamp(player.y,player.r,world.h-player.r);
+  player.invuln=Math.max(0,player.invuln-dt);
+
+  // 오른쪽 스틱은 현재 방향으로 연사. 놓아도 마지막 방향은 유지됨.
+  if(Math.hypot(aimInput.x,aimInput.y)>.38){
+    setAim(aimInput.x,aimInput.y);
+    tryShoot();
+  }
+  if(pointer.down)tryShoot();
+
   const g=player.gun;
-  if(g.reloading>0){g.reloading-=dt;if(g.reloading<=0){const need=gunStats().mag-g.ammo,take=Math.min(need,g.reserve);g.ammo+=take;g.reserve-=take;g.reloading=0}}
+  if(g.reloading>0){
+    g.reloading-=dt;
+    if(g.reloading<=0){
+      const need=gunStats().mag-g.ammo;
+      const take=Math.min(need,g.reserve);
+      g.ammo+=take;
+      g.reserve-=take;
+      g.reloading=0;
+    }
+  }
+
   for(let i=bullets.length-1;i>=0;i--){
-    const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;let hit=b.x<0||b.x>world.w||b.y<0||b.y>world.h||b.life<=0;
+    const b=bullets[i];
+    b.x+=b.vx*dt;
+    b.y+=b.vy*dt;
+    b.life-=dt;
+
+    let hit=b.x<0||b.x>world.w||b.y<0||b.y>world.h||b.life<=0;
+
     if(!hit){
       for(let j=zombies.length-1;j>=0;j--){
-        const z=zombies[j],rr=z.r+b.r,dx=b.x-z.x,dy=b.y-z.y;
+        const z=zombies[j];
+        const rr=z.r+b.r;
+        const dx=b.x-z.x,dy=b.y-z.y;
+
         if(dx*dx+dy*dy<=rr*rr){
-          z.hp-=b.damage;z.hit=.09;hit=true;
-          for(let p=0;p<4;p++)particles.push({x:b.x,y:b.y,vx:rand(-75,75),vy:rand(-75,75),life:.25,size:rand(2,5),color:'#a7d27e'});
-          if(z.hp<=0){zombies.splice(j,1);player.kills++;player.parts+=Math.random()<.28?2:1}break;
+          z.hp-=b.damage;
+          z.hit=.09;
+          hit=true;
+
+          for(let p=0;p<4;p++){
+            particles.push({
+              x:b.x,y:b.y,vx:rand(-75,75),vy:rand(-75,75),
+              life:.25,size:rand(2,5),color:'#a7d27e'
+            });
+          }
+
+          if(z.hp<=0){
+            zombies.splice(j,1);
+            player.kills++;
+            player.parts+=Math.random()<.28?2:1;
+          }
+          break;
         }
       }
     }
+
     if(hit)bullets.splice(i,1);
   }
+
   for(let i=zombies.length-1;i>=0;i--){
-    const z=zombies[i];z.hit=Math.max(0,z.hit-dt);const dx=player.x-z.x,dy=player.y-z.y,d=Math.hypot(dx,dy)||1;
-    z.x+=dx/d*z.speed*dt;z.y+=dy/d*z.speed*dt;
+    const z=zombies[i];
+    z.hit=Math.max(0,z.hit-dt);
+
+    const dx=player.x-z.x,dy=player.y-z.y;
+    const d=Math.hypot(dx,dy)||1;
+
+    z.x+=dx/d*z.speed*dt;
+    z.y+=dy/d*z.speed*dt;
+
     const pd=Math.hypot(player.x-z.x,player.y-z.y);
     if(pd<player.r+z.r+3&&player.invuln<=0){
-      player.hp-=z.damage;player.invuln=.55;const push=norm(player.x-z.x,player.y-z.y);player.x+=push.x*18;player.y+=push.y*18;
-      if(player.hp<=0){player.hp=0;gameOver();break}
+      player.hp-=z.damage;
+      player.invuln=.55;
+
+      const push=norm(player.x-z.x,player.y-z.y);
+      player.x+=push.x*18;
+      player.y+=push.y*18;
+
+      if(player.hp<=0){
+        player.hp=0;
+        gameOver();
+        break;
+      }
     }
   }
-  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;if(p.life<=0)particles.splice(i,1)}
-  camera.x=clamp(player.x-W/2,0,Math.max(0,world.w-W));camera.y=clamp(player.y-H/2,0,Math.max(0,world.h-H));updateHud();
+
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx*dt;
+    p.y+=p.vy*dt;
+    p.life-=dt;
+    if(p.life<=0)particles.splice(i,1);
+  }
+
+  camera.x=clamp(player.x-W/2,0,Math.max(0,world.w-W));
+  camera.y=clamp(player.y-H/2,0,Math.max(0,world.h-H));
+  updateHud();
 }
+
 function drawGrid(){
-  ctx.fillStyle='#202821';ctx.fillRect(0,0,W,H);const size=80,ox=-(camera.x%size),oy=-(camera.y%size);
-  ctx.strokeStyle='rgba(255,255,255,.035)';ctx.lineWidth=1;
-  for(let x=ox;x<W;x+=size){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
-  for(let y=oy;y<H;y+=size){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+  ctx.fillStyle='#202821';
+  ctx.fillRect(0,0,W,H);
+
+  const size=100;
+  const ox=-(camera.x%size),oy=-(camera.y%size);
+  ctx.strokeStyle='rgba(255,255,255,.028)';
+  ctx.lineWidth=1;
+
+  for(let x=ox;x<W;x+=size){
+    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+  }
+  for(let y=oy;y<H;y+=size){
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
 }
+
+function drawBuilding(b){
+  const config=BUILDING_TYPES[b.type];
+
+  ctx.fillStyle=config.wall;
+  ctx.fillRect(b.x,b.y,b.w,b.h);
+
+  ctx.fillStyle=config.floor;
+  ctx.fillRect(b.x+12,b.y+12,b.w-24,b.h-24);
+
+  ctx.strokeStyle=config.trim;
+  ctx.lineWidth=4;
+  ctx.strokeRect(b.x+2,b.y+2,b.w-4,b.h-4);
+
+  ctx.fillStyle=config.trim;
+  if(b.doorSide==='bottom')ctx.fillRect(b.x+b.w/2-25,b.y+b.h-10,50,16);
+  if(b.doorSide==='top')ctx.fillRect(b.x+b.w/2-25,b.y-6,50,16);
+  if(b.doorSide==='left')ctx.fillRect(b.x-6,b.y+b.h/2-25,16,50);
+  if(b.doorSide==='right')ctx.fillRect(b.x+b.w-10,b.y+b.h/2-25,16,50);
+
+  ctx.fillStyle='rgba(240,245,241,.8)';
+  ctx.font='bold 15px system-ui';
+  ctx.fillText(config.name,b.x+18,b.y+28);
+
+  if(b.spawnType){
+    ctx.fillStyle='rgba(197,72,72,.16)';
+    ctx.fillRect(b.x+8,b.y+8,b.w-16,b.h-16);
+
+    ctx.strokeStyle='rgba(224,95,84,.72)';
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(b.doorX,b.doorY,30,0,Math.PI*2);
+    ctx.stroke();
+  }
+}
+
+function drawZombie(z){
+  const base=ZOMBIE_TYPES[z.type];
+
+  ctx.fillStyle=z.hit>0?'#d6e9c6':base.color;
+  ctx.beginPath();
+  ctx.arc(z.x,z.y,z.r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#20261f';
+  ctx.beginPath();
+  ctx.arc(z.x-5,z.y-4,2.5,0,Math.PI*2);
+  ctx.arc(z.x+5,z.y-4,2.5,0,Math.PI*2);
+  ctx.fill();
+
+  if(z.type==='runner'){
+    ctx.strokeStyle='#bed59e';
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(z.x-z.r-6,z.y+4);
+    ctx.lineTo(z.x-z.r-15,z.y+4);
+    ctx.stroke();
+  }else if(z.type==='infected'){
+    ctx.strokeStyle='#c67e6e';
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.arc(z.x,z.y,z.r+4,0,Math.PI*2);
+    ctx.stroke();
+  }else if(z.type==='armored'){
+    ctx.strokeStyle='#9cb5c0';
+    ctx.lineWidth=5;
+    ctx.beginPath();
+    ctx.arc(z.x,z.y,z.r-3,Math.PI*.15,Math.PI*.85);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle='#141914';
+  ctx.fillRect(z.x-z.r,z.y-z.r-9,z.r*2,4);
+  ctx.fillStyle='#85c96b';
+  ctx.fillRect(z.x-z.r,z.y-z.r-9,z.r*2*(z.hp/z.maxHp),4);
+}
+
 function draw(){
-  drawGrid();ctx.save();ctx.translate(-camera.x,-camera.y);
-  ctx.fillStyle='#29362d';ctx.fillRect(930,670,340,260);ctx.fillStyle='#39463c';ctx.fillRect(950,690,300,220);
-  ctx.fillStyle='#d6b35a';ctx.fillRect(1080,735,40,110);ctx.fillStyle='#131916';ctx.font='bold 16px system-ui';ctx.fillText('안전 작업장',1040,720);
-  for(const b of buildings){
-    ctx.fillStyle='#303833';ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle='#1a211d';ctx.fillRect(b.x+12,b.y+12,b.w-24,b.h-24);
-    ctx.strokeStyle='#55625a';ctx.lineWidth=4;ctx.strokeRect(b.x+2,b.y+2,b.w-4,b.h-4);ctx.fillStyle='#b9c7bc';
-    for(let wx=b.x+36;wx<b.x+b.w-30;wx+=72)ctx.fillRect(wx,b.y+24,32,20);
-  }
+  drawGrid();
+
+  ctx.save();
+  ctx.translate(-camera.x,-camera.y);
+
+  // 시작 지점 표식
+  ctx.fillStyle='#2d3a31';
+  ctx.fillRect(2380,1640,240,220);
+  ctx.strokeStyle='#78867d';
+  ctx.lineWidth=3;
+  ctx.strokeRect(2380,1640,240,220);
+  ctx.fillStyle='#d8e3dc';
+  ctx.font='bold 15px system-ui';
+  ctx.fillText('시작 대피소',2440,1680);
+
+  for(const b of buildings)drawBuilding(b);
+
   for(const c of chests){
-    ctx.fillStyle=c.opened?'#4a4d47':'#b87932';ctx.fillRect(c.x-18,c.y-14,36,28);ctx.fillStyle=c.opened?'#242824':'#e2b65f';ctx.fillRect(c.x-18,c.y-4,36,5);
-    if(!c.opened&&dist2(player,c)<85*85){ctx.strokeStyle='#f7e7a8';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,30,0,Math.PI*2);ctx.stroke()}
+    ctx.fillStyle=c.opened?'#4a4d47':'#b87932';
+    ctx.fillRect(c.x-18,c.y-14,36,28);
+    ctx.fillStyle=c.opened?'#242824':'#e2b65f';
+    ctx.fillRect(c.x-18,c.y-4,36,5);
+
+    if(!c.opened&&dist2(player,c)<95*95){
+      ctx.strokeStyle='#f7e7a8';
+      ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.arc(c.x,c.y,30,0,Math.PI*2);
+      ctx.stroke();
+    }
   }
-  for(const p of particles){ctx.globalAlpha=clamp(p.life*5,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+
+  for(const p of particles){
+    ctx.globalAlpha=clamp(p.life*5,0,1);
+    ctx.fillStyle=p.color;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
   for(const b of bullets){
-    const n=norm(b.vx,b.vy);ctx.strokeStyle=b.color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(b.x-n.x*15,b.y-n.y*15);ctx.lineTo(b.x+n.x*4,b.y+n.y*4);ctx.stroke();
-    ctx.fillStyle='#fff8cf';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();
+    const n=norm(b.vx,b.vy);
+    ctx.strokeStyle=b.color;
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(b.x-n.x*16,b.y-n.y*16);
+    ctx.lineTo(b.x+n.x*5,b.y+n.y*5);
+    ctx.stroke();
+
+    ctx.fillStyle='#fff8cf';
+    ctx.beginPath();
+    ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    ctx.fill();
   }
-  for(const z of zombies){
-    ctx.fillStyle=z.hit>0?'#d6e9c6':z.type==='runner'?'#789f62':z.type==='brute'?'#557047':'#678858';ctx.beginPath();ctx.arc(z.x,z.y,z.r,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#20261f';ctx.beginPath();ctx.arc(z.x-5,z.y-4,2.5,0,Math.PI*2);ctx.arc(z.x+5,z.y-4,2.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#141914';ctx.fillRect(z.x-z.r,z.y-z.r-9,z.r*2,4);ctx.fillStyle='#85c96b';ctx.fillRect(z.x-z.r,z.y-z.r-9,z.r*2*(z.hp/z.maxHp),4);
-  }
-  const face=pointer.active?norm(pointer.x+camera.x-player.x,pointer.y+camera.y-player.y):norm(aimInput.x||1,aimInput.y);
-  ctx.save();ctx.translate(player.x,player.y);ctx.rotate(Math.atan2(face.y,face.x));ctx.fillStyle=player.invuln>0?'#f2e2d4':'#d9e2dd';ctx.beginPath();ctx.arc(0,0,player.r,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#1b211d';ctx.fillRect(5,-4,25,8);ctx.fillStyle='#9da9a0';ctx.fillRect(18,-3,16,6);ctx.restore();ctx.restore();
-  $('interact').style.opacity=chests.some(c=>!c.opened&&dist2(player,c)<70*70)?'1':'.55';
+
+  for(const z of zombies)drawZombie(z);
+
+  ctx.save();
+  ctx.translate(player.x,player.y);
+  ctx.rotate(Math.atan2(player.aimY,player.aimX));
+
+  ctx.fillStyle=player.invuln>0?'#f2e2d4':'#d9e2dd';
+  ctx.beginPath();
+  ctx.arc(0,0,player.r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle='#1b211d';
+  ctx.fillRect(5,-4,25,8);
+  ctx.fillStyle='#9da9a0';
+  ctx.fillRect(18,-3,16,6);
+
+  // 총이 향하는 방향을 눈으로 확인할 수 있게 짧은 조준선
+  ctx.strokeStyle='rgba(255,238,160,.72)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(35,0);
+  ctx.lineTo(76,0);
+  ctx.stroke();
+
+  ctx.restore();
+  ctx.restore();
+
+  $('interact').style.opacity=chests.some(c=>!c.opened&&dist2(player,c)<78*78)?'1':'.55';
 }
-function loop(t){const dt=Math.min(.033,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}
+
+function loop(t){
+  const dt=Math.min(.033,(t-last)/1000);
+  last=t;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
 requestAnimationFrame(loop);
-function gameOver(){running=false;$('result').textContent='웨이브 '+Math.max(1,Math.floor(waveClock/35)+1)+' · 좀비 '+player.kills+'마리 처치';$('dead').classList.add('show')}
-function restart(){
-  player.x=1100;player.y=800;player.hp=100;player.parts=0;player.kills=0;player.gun=makeGun('pistol');player.invuln=0;
-  bullets.length=0;zombies.length=0;particles.length=0;chests.forEach(c=>c.opened=false);waveClock=0;spawnClock=0;running=true;$('dead').classList.remove('show');showTip('새 생존 시작');
+
+function gameOver(){
+  running=false;
+  $('result').textContent='웨이브 '+Math.max(1,Math.floor(waveClock/35)+1)+' · 좀비 '+player.kills+'마리 처치';
+  $('dead').classList.add('show');
 }
+
+function restart(){
+  player.x=2500;
+  player.y=1750;
+  player.hp=100;
+  player.parts=0;
+  player.kills=0;
+  player.gun=makeGun('pistol');
+  player.invuln=0;
+  player.aimX=1;
+  player.aimY=0;
+
+  bullets.length=0;
+  zombies.length=0;
+  particles.length=0;
+  chests.forEach(c=>c.opened=false);
+  buildings.forEach(b=>{if(b.spawnType)b.spawnCooldown=rand(3,6)});
+
+  waveClock=0;
+  spawnClock=0;
+  running=true;
+
+  $('dead').classList.remove('show');
+  showTip('새 생존 시작 · 오른쪽 스틱으로 어느 방향이든 조준 가능');
+}
+
 function setupJoy(el,target,onAim=false){
-  const knob=el.querySelector('.knob');let pid=null;
-  const reset=()=>{target.x=0;target.y=0;knob.style.transform='translate(0px,0px)';pid=null};
-  el.addEventListener('pointerdown',e=>{pid=e.pointerId;el.setPointerCapture(pid);move(e)});
-  el.addEventListener('pointermove',e=>{if(e.pointerId===pid)move(e)});
-  el.addEventListener('pointerup',e=>{if(e.pointerId===pid)reset()});el.addEventListener('pointercancel',reset);
+  const knob=el.querySelector('.knob');
+  let pid=null;
+
+  const reset=()=>{
+    target.x=0;
+    target.y=0;
+    knob.style.transform='translate(0px,0px)';
+    pid=null;
+  };
+
+  el.addEventListener('pointerdown',e=>{
+    pid=e.pointerId;
+    el.setPointerCapture(pid);
+    move(e);
+  });
+
+  el.addEventListener('pointermove',e=>{
+    if(e.pointerId===pid)move(e);
+  });
+
+  el.addEventListener('pointerup',e=>{
+    if(e.pointerId===pid)reset();
+  });
+
+  el.addEventListener('pointercancel',reset);
+
   function move(e){
-    const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy,l=Math.hypot(dx,dy),max=r.width*.34;
-    if(l>max){dx=dx/l*max;dy=dy/l*max;l=max}target.x=dx/max;target.y=dy/max;knob.style.transform='translate('+dx+'px,'+dy+'px)';if(onAim&&l>max*.38)pointer.active=false;
+    const r=el.getBoundingClientRect();
+    const cx=r.left+r.width/2;
+    const cy=r.top+r.height/2;
+    let dx=e.clientX-cx;
+    let dy=e.clientY-cy;
+    let l=Math.hypot(dx,dy);
+    const max=r.width*.34;
+
+    if(l>max){
+      dx=dx/l*max;
+      dy=dy/l*max;
+      l=max;
+    }
+
+    target.x=dx/max;
+    target.y=dy/max;
+    knob.style.transform='translate('+dx+'px,'+dy+'px)';
+
+    if(onAim&&l>max*.18){
+      pointer.active=false;
+      setAim(target.x,target.y);
+    }
   }
 }
-setupJoy($('moveJoy'),moveInput,false);setupJoy($('aimJoy'),aimInput,true);
-canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;pointer.active=true});
-canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;pointer.down=true;pointer.active=true;const r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;tryShoot()});
-addEventListener('pointerup',e=>{if(e.pointerType==='mouse')pointer.down=false});
-addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='KeyE')openNearestChest();if(e.code==='KeyR')startReload();if(e.code==='KeyU'){$('upgradePanel').classList.add('open');refreshUpgradePanel()}});
+
+setupJoy($('moveJoy'),moveInput,false);
+setupJoy($('aimJoy'),aimInput,true);
+
+canvas.addEventListener('pointermove',e=>{
+  if(e.pointerType!=='mouse')return;
+
+  const r=canvas.getBoundingClientRect();
+  pointer.x=e.clientX-r.left;
+  pointer.y=e.clientY-r.top;
+  pointer.active=true;
+
+  setAim(pointer.x+camera.x-player.x,pointer.y+camera.y-player.y);
+});
+
+canvas.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse')return;
+
+  pointer.down=true;
+  pointer.active=true;
+
+  const r=canvas.getBoundingClientRect();
+  pointer.x=e.clientX-r.left;
+  pointer.y=e.clientY-r.top;
+
+  setAim(pointer.x+camera.x-player.x,pointer.y+camera.y-player.y);
+  tryShoot();
+});
+
+addEventListener('pointerup',e=>{
+  if(e.pointerType==='mouse')pointer.down=false;
+});
+
+addEventListener('keydown',e=>{
+  keys.add(e.code);
+  if(e.code==='KeyE')openNearestChest();
+  if(e.code==='KeyR')startReload();
+  if(e.code==='KeyU'){
+    $('upgradePanel').classList.add('open');
+    refreshUpgradePanel();
+  }
+});
+
 addEventListener('keyup',e=>keys.delete(e.code));
-$('interact').addEventListener('click',openNearestChest);$('reload').addEventListener('click',startReload);
-$('upgrade').addEventListener('click',()=>{$('upgradePanel').classList.add('open');refreshUpgradePanel()});
+
+$('interact').addEventListener('click',openNearestChest);
+$('reload').addEventListener('click',startReload);
+$('upgrade').addEventListener('click',()=>{
+  $('upgradePanel').classList.add('open');
+  refreshUpgradePanel();
+});
 $('closeUpgrade').addEventListener('click',()=>$('upgradePanel').classList.remove('open'));
-document.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>buyUpgrade(b.dataset.up)));$('restart').addEventListener('click',restart);
-showTip('왼쪽 이동 · 오른쪽 조준/사격 · 건물 안 상자를 찾아봐',3500);updateHud();
+document.querySelectorAll('[data-up]').forEach(button=>{
+  button.addEventListener('click',()=>buyUpgrade(button.dataset.up));
+});
+$('restart').addEventListener('click',restart);
+
+showTip('맵 약 5배 확장 · 오른쪽 스틱은 360도 조준/사격 · 건물은 듬성듬성 있어',4200);
+updateHud();
 })();
 </script>
 </body>
