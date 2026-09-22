@@ -18,16 +18,21 @@ export function inspectHeadlessSourceTexts({gameId='',sourcePath='',sourceRevisi
   checks.exactArtifact=SHA.test(clean(artifactIdentity))&&clean(artifactIdentity).toLowerCase()===clean(rebuiltArtifactIdentity).toLowerCase();
   checks.projectContract=/"\$className"\s*:\s*"DataModel"/.test(project)&&/"\$path"\s*:\s*"server"/.test(project)&&/"\$path"\s*:\s*"client"/.test(project);
   checks.robloxPolicy=/PolicySource\s*=\s*["']company-learning\/platform-release-roadmap\.json["']/i.test(config)&&/Platform\s*=\s*["']ROBLOX["']/i.test(config);
+  checks.gameStart=/Players\.PlayerAdded:Connect/.test(server)&&/ScreenGui/.test(client);
   checks.mobileFirst=/MobileFirst\s*=\s*true/i.test(config)&&/UserInputService/.test(client)&&/TouchEnabled/.test(client)&&/\.Activated:Connect/.test(client);
   checks.serverClientBoundary=/RemoteEvent/.test(server)&&/OnServerEvent/.test(server)&&/FireServer/.test(client);
-  checks.remoteSecurity=/typeof\s*\(\s*action\s*\)/i.test(server)||/rateLimit|cooldown|lastActionRequest|lastHit/i.test(server);
+  checks.remoteSecurity=/typeof\s*\(/i.test(server)&&/rateLimit|cooldown|lastActionRequest|lastRequest|lastHit/i.test(server);
+  checks.coreProgression=/SetAttribute\s*\(/.test(server)&&/Actions\s*=/.test(config)&&/FireServer\s*\(/.test(client);
+  checks.combatOrRound=/ATTACK|SKILL|InBattle|BattleProgress|RoundState|endRound|freezePlayer/i.test(config+'\n'+server);
   const save=saveEnabled(config);
-  checks.saveRejoin=!save||(/DataStoreService/.test(server)&&/GetAsync/.test(server)&&/SetAsync/.test(server));
+  checks.saveRejoin=!save||(/DataStoreService/.test(server)&&/GetAsync/.test(server)&&/(SetAsync|UpdateAsync)/.test(server));
   const multi=multiplayerRequired(config);
-  checks.multiplayerSync=!multi||(/FireAllClients/.test(server)&&/OnClientEvent/.test(client));
-  checks.headlessRegression=checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.saveRejoin&&checks.multiplayerSync;
+  checks.multiplayerSync=!multi||(/Players:GetPlayers\s*\(\)/.test(server)&&/FireAllClients/.test(server)&&/OnClientEvent/.test(client));
+  checks.sessionEndRestart=/Players\.PlayerRemoving:Connect/.test(server)&&/Players\.PlayerAdded:Connect/.test(server)&&(!save||/BindToClose/.test(server));
+  checks.errorGuards=/pcall\s*\(/.test(server)&&/typeof\s*\(/.test(server);
+  checks.headlessRegression=checks.exactArtifact&&checks.projectContract&&checks.robloxPolicy&&checks.gameStart&&checks.mobileFirst&&checks.serverClientBoundary&&checks.remoteSecurity&&checks.coreProgression&&checks.combatOrRound&&checks.saveRejoin&&checks.multiplayerSync&&checks.sessionEndRestart&&checks.errorGuards;
   const pass=Object.values(checks).every(Boolean)&&Number.isInteger(Number(artifactRunId))&&Number(artifactRunId)>0;
-  return Object.freeze({version:1,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_FAST_MVP',checkedAt:new Date().toISOString(),sourcePath:clean(sourcePath),sourceRevision:clean(sourceRevision),artifactIdentity:clean(artifactIdentity),rebuiltArtifactIdentity:clean(rebuiltArtifactIdentity),artifactRunId:Number(artifactRunId),playMode:parsePlayMode(config)||null,saveExists:save,multiplayerApplicable:multi,serverClientBoundaryPassed:checks.serverClientBoundary,remoteSecurityPassed:checks.remoteSecurity,mobileControlUiPassed:checks.mobileFirst,datastoreRejoinPassed:checks.saveRejoin,multiplayerStateSyncPassed:checks.multiplayerSync,headlessRegressionPassed:checks.headlessRegression,protectedStatePreserved:checks.headlessRegression,exactRevision:checks.exactSourceRevision&&checks.exactArtifact,checks:Object.freeze(checks),pass,state:pass?'PASS':'BLOCKED',blockers:Object.freeze(Object.entries(checks).filter(([,v])=>!v).map(([k])=>k)),authority:'roblox-headless-fast-mvp'});
+  return Object.freeze({version:2,gameId:clean(gameId),platform:'ROBLOX',validationMode:'HEADLESS_FAST_MVP',checkedAt:new Date().toISOString(),sourcePath:clean(sourcePath),sourceRevision:clean(sourceRevision),artifactIdentity:clean(artifactIdentity),rebuiltArtifactIdentity:clean(rebuiltArtifactIdentity),artifactRunId:Number(artifactRunId),playMode:parsePlayMode(config)||null,saveExists:save,multiplayerApplicable:multi,serverClientBoundaryPassed:checks.serverClientBoundary,remoteSecurityPassed:checks.remoteSecurity,gameStartPassed:checks.gameStart,mobileControlUiPassed:checks.mobileFirst,coreProgressionPassed:checks.coreProgression,combatOrRoundPassed:checks.combatOrRound,datastoreRejoinPassed:checks.saveRejoin,multiplayerStateSyncPassed:checks.multiplayerSync,sessionEndRestartPassed:checks.sessionEndRestart,errorGuardPassed:checks.errorGuards,headlessRegressionPassed:checks.headlessRegression,protectedStatePreserved:checks.headlessRegression,exactRevision:checks.exactSourceRevision&&checks.exactArtifact,checks:Object.freeze(checks),pass,state:pass?'PASS':'BLOCKED',blockers:Object.freeze(Object.entries(checks).filter(([,v])=>!v).map(([k])=>k)),authority:'roblox-headless-fast-mvp'});
 }
 
 export function inspectHeadlessExactRevision({repoRoot='.',gameId='',sourcePath='',sourceRevision='',artifactIdentity='',rebuiltArtifactIdentity='',artifactRunId=0}={}){
