@@ -577,6 +577,17 @@ jobs:
           fi
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
+      - name: Dispatch existing game tester runtime foundation QA
+        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.target.outputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+          echo "ROBLOX_EXISTING_TESTER_FOUNDATION_QA_DISPATCHED=$GAME_ID"
+
       - name: Apply and verify Roblox title description and server size
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
         working-directory: main
