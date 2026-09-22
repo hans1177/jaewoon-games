@@ -37,13 +37,16 @@
       ],
       "baseSha": "cc2562025335c3e11a48f836f05098e72f930992",
       "acquiredAt": "2026-09-22T17:10:35.039Z",
-      "expiresAt": "2026-09-22T18:10:35.039Z",
+      "expiresAt": "2026-09-22T18:42:46.629Z",
       "status": "active",
       "evidence": [
         "owner-directive:design-central-contract-before-implementation",
         "runtime-report:cozy-island-character-floating",
         "root-cause:headless-marker-check-falsely-claimed-game-start",
-        "foundation-validation-stack-required"
+        "foundation-validation-stack-required",
+        "owner-directive:continue-implementation",
+        "machine-only-central-architecture-auto-sync",
+        "existing-game-tester-qa-reuse"
       ]
     }
   ]
