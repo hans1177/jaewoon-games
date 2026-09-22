@@ -4,6 +4,7 @@ local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local Lighting=game:GetService("Lighting")
 local RunService=game:GetService("RunService")
+local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -19,6 +20,8 @@ qaCaptureRemote.Name=C.QACaptureRemoteName or "QACaptureReport";qaCaptureRemote.
 local world
 local lastRequest,battling,gatherCooldown,qaCaptureLast={},{},{},{}
 local mobs={}
+local assetCache={}
+local ASSETS={Nature=6933438443,City=6933556508,Forest=6432306802}
 
 local function n(p,k,d)local v=p:GetAttribute(k);return typeof(v)=="number"and v or d end
 local function s(p,k,v)p:SetAttribute(k,math.max(0,math.floor(v)))end
@@ -36,6 +39,54 @@ local function attach(rootPart,name,size,offset,color,material,shape)
  x.CFrame=rootPart.CFrame*CFrame.new(offset);if shape then x.Shape=shape end;x.Parent=rootPart
  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x;return x
 end
+local function stripAsset(root)
+ for _,d in ipairs(root:GetDescendants())do
+  if d:IsA("LuaSourceContainer")or d:IsA("Tool")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")then d:Destroy()
+  elseif d:IsA("BasePart")then d.Anchored=true;d.CanTouch=false end
+ end
+ return root
+end
+local function loadAsset(id)
+ if assetCache[id]then return assetCache[id]end
+ local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
+ if not ok or not result then return nil end
+ stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
+end
+local function assetProp(parent,assetId,keywords,pos,scale,seed)
+ local asset=loadAsset(assetId);if not asset then return nil end
+ local preferred,all={},{}
+ for _,d in ipairs(asset:GetDescendants())do
+  if d:IsA("MeshPart")then
+   table.insert(all,d);local low=string.lower(d.Name)
+   for _,k in ipairs(keywords)do if string.find(low,string.lower(k),1,true)then table.insert(preferred,d);break end end
+  end
+ end
+ local pool=#preferred>0 and preferred or all;if #pool==0 then return nil end
+ local t=pool[((seed or 1)-1)%#pool+1];local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=false;x.CanTouch=false;x.Size=x.Size*(scale or 1)
+ x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*43)%360),0);x.Parent=parent;return x
+end
+local function decorateHomeAssets(parent,topY)
+ task.spawn(function()
+  for i=1,28 do
+   local a=i/28*math.pi*2;local r=58+(i%5)*19
+   assetProp(parent,ASSETS.Nature,{"tree","bush","flower","rock","log","stump"},Vector3.new(math.cos(a)*r,topY+1,math.sin(a)*r),.62+(i%4)*.08,i)
+  end
+  for i=1,12 do
+   local a=i/12*math.pi*2
+   assetProp(parent,ASSETS.City,{"bench","lamp","fence","table","trash","sign"},Vector3.new(math.cos(a)*44,topY+1,math.sin(a)*44),.62,i)
+  end
+ end)
+end
+local function decorateRemoteIsland(parent,r,topY,index)
+ task.spawn(function()
+  local pack=index==3 and ASSETS.Forest or ASSETS.Nature
+  for i=1,16 do
+   local a=i/16*math.pi*2;local radius=34+(i%4)*14
+   assetProp(parent,pack,{"tree","bush","rock","log","plant"},Vector3.new(r.Pos.X+math.cos(a)*radius,topY+1,r.Pos.Z+math.sin(a)*radius),.6+(i%3)*.1,index*30+i)
+  end
+ end)
+end
+
 local function label(target,text,color,maxDist)
  local g=Instance.new("BillboardGui");g.Name="WorldLabel";g.Size=UDim2.fromOffset(118,24);g.StudsOffset=Vector3.new(0,4.8,0);g.AlwaysOnTop=false;g.MaxDistance=maxDist or 34;g.LightInfluence=.35;g.Parent=target
  local t=Instance.new("TextLabel");t.Size=UDim2.fromScale(1,1);t.BackgroundColor3=Color3.fromRGB(25,35,31);t.BackgroundTransparency=.3;t.Text=text;t.TextColor3=color or Color3.new(1,1,1);t.TextScaled=true;t.Font=Enum.Font.GothamBold;t.TextStrokeTransparency=.7;t.Parent=g
@@ -143,6 +194,7 @@ local function buildWorld()
   local topY=r.Pos.Y+r.Size.Y/2
   local base=part(world,"Base_"..index,Vector3.new(22,9,22),Vector3.new(r.Pos.X,topY+4.5,r.Pos.Z),r.Accent,Enum.Material.Brick)
   part(world,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
+  if index~=1 then decorateRemoteIsland(world,r,topY,index)end
   if index==1 then
    part(world,"BeachShelf",Vector3.new(196,2,196),Vector3.new(0,topY-5.2,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
    part(world,"VillagePlaza",Vector3.new(60,1,60),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
@@ -166,6 +218,7 @@ local function buildWorld()
     prompt(crop,"작물","수확").Triggered:Connect(function(p)gather(p,"Food",C.ManualGatherAmount,"수확")end)
    end
 
+   decorateHomeAssets(world,topY)
    local npcs=Instance.new("Folder");npcs.Name="HomeNPCs";npcs.Parent=world
    local chief=figure(npcs,"Chief",Vector3.new(0,topY+6,8),Color3.fromRGB(157,109,73),Color3.fromRGB(77,67,57),1);label(chief,"마을 이장",Color3.fromRGB(255,221,145),30);prompt(chief,"마을 이장","주민 고용").Triggered:Connect(hire)
    local lumber=figure(npcs,"LumberMaster",Vector3.new(-32,topY+6,14),Color3.fromRGB(86,126,78),Color3.fromRGB(67,76,58),.9);label(lumber,"벌목반장",Color3.fromRGB(202,239,189),26);prompt(lumber,"벌목반장","주민 배치").Triggered:Connect(function(p)job(p,"WoodWorkers")end)
@@ -191,7 +244,7 @@ local function buildWorld()
    for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
   end
  end
- workspace:SetAttribute("WorldArtPass","COZY_MANUAL_GATHER_NPC_MOBS_V5")
+ workspace:SetAttribute("WorldArtPass","COZY_ASSET_GATHER_WORLD_V6")
 end
 
 local function init(p)
