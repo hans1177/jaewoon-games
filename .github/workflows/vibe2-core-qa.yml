@@ -15,6 +15,11 @@ on:
       - 'assets/vibe-motion-core.js'
       - 'assets/vibe-experience-memory.js'
       - 'assets/vibe-continuous-queue.js'
+      - 'assets/vibe-orchestrator.js'
+      - 'assets/vibe-change-set.js'
+      - 'assets/vibe-quality-intelligence.js'
+      - 'assets/vibe-art-pipeline.js'
+      - 'assets/vibe-visual-quality-gate.js'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
@@ -61,6 +66,8 @@ on:
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe-roblox-co-development.test.mjs'
+      - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
@@ -242,6 +249,7 @@ jobs:
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe-roblox-co-development.test.mjs
+          node --check qa/vibe-visual-runtime-quality.test.mjs
           node --check qa/vibe2-native-asset-production.test.mjs
           node --check qa/vibe2-neural-diagnosis.test.mjs
           node --check qa/vibe2-neural-feedback.test.mjs
@@ -284,6 +292,7 @@ jobs:
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe-roblox-co-development.test.mjs
+          node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
