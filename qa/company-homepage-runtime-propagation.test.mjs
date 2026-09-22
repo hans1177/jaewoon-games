@@ -60,7 +60,9 @@ test('visible game titles stay aligned with Roblox project titles',()=>{
 
 
 test('homepage Roblox link prefers the dedicated canonical publication target over stale release evidence',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({
+    policy,
     catalog:{games:[{id:'cozy-island',name:'포근섬'}]},
     queue:{items:[{
       gameId:'cozy-island',
@@ -74,4 +76,14 @@ test('homepage Roblox link prefers the dedicated canonical publication target ov
   const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
   assert.equal(roblox.placeId,'116850096561713');
   assert.equal(roblox.internalUrl,'https://www.roblox.com/games/116850096561713');
+  assert.deepEqual(snap.supportedPlatforms,policy.serverHomepageIntegration.supportedPlatforms);
+  assert.match(snap.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
+});
+
+test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const changed=structuredClone(policy);
+  changed.serverHomepageIntegration.supportedPlatforms=[...changed.serverHomepageIntegration.supportedPlatforms,'FORTNITE_UEFN'];
+  changed.serverHomepageIntegration.perGamePlatformStates=[...changed.serverHomepageIntegration.perGamePlatformStates,'FORTNITE_UEFN'];
+  assert.throws(()=>buildHomepagePlatformExposure({policy:changed,catalog:{games:[]},queue:{items:[]}}),/HOMEPAGE_PLATFORM_ADAPTER_MISSING:FORTNITE_UEFN/);
 });
