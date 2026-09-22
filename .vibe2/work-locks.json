@@ -3,24 +3,30 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-chatgpt-cozy-island-floating-runtime-hotfix",
+      "id": "wl-chatgpt-native-foundation-validation",
       "worker": "chatgpt",
-      "taskId": "cozy-island-floating-runtime-hotfix",
+      "taskId": "native-game-foundation-validation-stack",
       "gameId": "cozy-island",
       "files": [
+        "company-learning/platform-release-roadmap.json",
         "roblox-games/cozy-island/server/Game.server.luau",
         "tools/company-development-roblox-headless-fast-mvp.mjs",
         "qa/company-development-roblox-headless-fast-mvp.test.mjs",
-        "company-learning/platform-release-roadmap.json"
+        ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+        ".github/workflows/company-development-roblox-release-promotion.yml",
+        "qa/company-development-roblox-runtime.test.mjs"
       ],
-      "baseSha": "93ab6139dd991cc4685e9bbe7de72c0a0cb5cc46",
-      "acquiredAt": "2026-09-22T17:06:31.969Z",
-      "expiresAt": "2026-09-22T17:51:31.969Z",
+      "baseSha": "cc2562025335c3e11a48f836f05098e72f930992",
+      "acquiredAt": "2026-09-22T17:10:35.039Z",
+      "expiresAt": "2026-09-22T18:10:35.039Z",
       "status": "active",
       "evidence": [
-        "owner-runtime-report:character-floating-on-game-start",
-        "source-regression:duplicate-tree-function-declaration",
-        "headless-game-start-false-positive"
+        "owner-directive:design-central-contract-before-implementation",
+        "runtime-report:cozy-island-character-floating",
+        "root-cause:headless-marker-check-falsely-claimed-game-start",
+        "foundation-validation-stack-required"
       ]
     }
   ]
