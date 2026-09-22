@@ -276,7 +276,7 @@ local function buildWorld()
    for i=1,8 do part(world,"SulfurVent",Vector3.new(4,8,4),Vector3.new(r.Pos.X-40+i*10,topY+4,r.Pos.Z+28),Color3.fromRGB(239,163,53),Enum.Material.Neon)end
   end
  end
- workspace:SetAttribute("WorldArtPass","COZY_ASSET_GATHER_SWIM_WORLD_V7")
+ workspace:SetAttribute("WorldArtPass","COZY_ASSET_GATHER_WORLD_V6")
 end
 
 local function init(p)
