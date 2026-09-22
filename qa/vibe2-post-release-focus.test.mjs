@@ -75,7 +75,11 @@ function setup(){
 {
   const {root,roadmap,item,recombination,exposure}=setup();
   const task=buildPostReleaseFocusTask({item:{...item,robloxReleaseClaim:false},repoRoot:root,roadmap,recombination,existingTasks:[],exposure});
-  assert.equal(task,null);
+  assert(task);
+  assert.equal(task.postReleaseFocused,true);
+  assert(task.evidence.includes('focus-release-kind:INTERNAL_PLATFORM_RELEASE'));
+  assert(task.evidence.includes('internal-release-focused:yes'));
+  assert.match(task.goal,/현재 내부 Roblox 릴리스/);
 }
 
 {
