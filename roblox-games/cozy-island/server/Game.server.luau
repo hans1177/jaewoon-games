@@ -161,18 +161,33 @@ local function recruit(p)
  s(p,"Food",n(p,"Food",0)-fc);s(p,"Wood",n(p,"Wood",0)-wc);s(p,"Iron",n(p,"Iron",0)-ic);s(p,"Troops",n(p,"Troops",0)+1);msg(p,"병사 +1");feedback(p,"BUILD")
 end
 local function supportPower(p)local total=0;for _,o in ipairs(Players:GetPlayers())do if o~=p and o:GetAttribute("SupportReady")==true then total+=n(o,"Troops",0)*2 end end;return total end
+local function broadcastMultiplayerSync(actor)
+ local participants=Players:GetPlayers()
+ local sharedObjective=0
+ local sharedSupportPower=0
+ for _,o in ipairs(participants)do
+  sharedObjective=math.max(sharedObjective,n(o,"CapturedBases",0))
+  if o:GetAttribute("SupportReady")==true then sharedSupportPower+=n(o,"Troops",0)*2 end
+ end
+ remote:FireAllClients("MULTIPLAYER_SYNC",{
+  ActorUserId=actor and actor.UserId or 0,
+  ParticipantCount=#participants,
+  SharedObjective=sharedObjective,
+  SharedSupportPower=sharedSupportPower,
+ })
+end
 local function attackBase(p)
  if battling[p]then msg(p,"전투 중")return end
  local idx=n(p,"NextBaseIndex",1);local b=C.Bases[idx];if not b then msg(p,"5개 거점 정복 완료")return end
  local troops=n(p,"Troops",0);if troops<=0 then msg(p,"병사가 필요해")return end
- battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattleEnemy",b.Enemy);p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));feedback(p,"HIT");BattleVisual.start(p,idx,troops,C,Style)
+ battling[p]=true;p:SetAttribute("InBattle",true);p:SetAttribute("BattleTarget",b.Name);p:SetAttribute("BattleEnemy",b.Enemy);p:SetAttribute("BattlePower",troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p));feedback(p,"HIT");BattleVisual.start(p,idx,troops,C,Style);broadcastMultiplayerSync(p)
  task.spawn(function()
   for i=1,4 do if not p.Parent then battling[p]=nil return end;s(p,"BattleProgress",i*25);task.wait(.55)end
   local power=troops*(6+n(p,"BarracksLevel",1)*2)+supportPower(p);local won=power*(.92+math.random()*.16)>=b.Strength
   local lost=math.max(1,math.floor(troops*(won and .14 or .34)));s(p,"Troops",math.max(0,n(p,"Troops",0)-lost))
   if won then s(p,b.Reward,n(p,b.Reward,0)+b.Amount);s(p,"Coins",n(p,"Coins",0)+b.Coins);s(p,"CapturedBases",n(p,"CapturedBases",0)+1);if b.IslandFinal then s(p,"CapturedIslands",n(p,"CapturedIslands",0)+1)end;s(p,"NextBaseIndex",idx+1);msg(p,b.Name.." 점령!");feedback(p,"CAPTURE")
   else msg(p,b.Name.." 패배 · 병력/병영을 강화해");feedback(p,"HIT")end
-  s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won)
+  s(p,"BattleProgress",0);p:SetAttribute("InBattle",false);p:SetAttribute("BattleTarget","");battling[p]=nil;BattleVisual.finish(p,won);broadcastMultiplayerSync(p)
  end)
 end
 
@@ -212,13 +227,12 @@ local function buildWorld()
  world=Instance.new("Folder");world.Name="CozyConquestWorld";world.Parent=workspace
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local terrain=workspace.Terrain
+ local seaLevel=Style.SeaLevel or 2
  terrain.WaterColor=Style.Water
- terrain.WaterTransparency=.28
- terrain.WaterWaveSize=.12
+ terrain.WaterTransparency=.22
+ terrain.WaterWaveSize=.14
  terrain.WaterWaveSpeed=9
- terrain:FillBlock(CFrame.new(0,-4,0),Vector3.new(940,8,940),Enum.Material.Water)
- local water=part(world,"Sea",Vector3.new(940,1,940),Vector3.new(0,-8.5,0),Style.Water,Enum.Material.Glass)
- water.Transparency=.72;water.CanCollide=false;water.CanTouch=false
+ terrain:FillBlock(CFrame.new(0,seaLevel-5,0),Vector3.new(940,10,940),Enum.Material.Water)
  for index,r in ipairs(Style.Regions)do
   local island=part(world,r.Name,r.Size,r.Pos,r.Color,r.Material);label(island,r.Name,r.Accent,58)
   local topY=r.Pos.Y+r.Size.Y/2
@@ -226,7 +240,7 @@ local function buildWorld()
   part(world,"Roof_"..index,Vector3.new(26,2,26),base.Position+Vector3.new(0,5.5,0),Style.Banner,Enum.Material.WoodPlanks)
   if index~=1 then decorateRemoteIsland(world,r,topY,index)end
   if index==1 then
-   part(world,"BeachShelf",Vector3.new(196,2,196),Vector3.new(0,topY-5.2,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
+   part(world,"BeachShelf",Vector3.new(196,1.6,196),Vector3.new(0,seaLevel-4.8,0),Color3.fromRGB(220,203,151),Enum.Material.Sand)
    part(world,"VillagePlaza",Vector3.new(60,1,60),Vector3.new(0,topY+.55,4),Color3.fromRGB(166,154,128),Enum.Material.Cobblestone)
    part(world,"FarmPlot",Vector3.new(38,1,28),Vector3.new(-36,topY+.7,-31),Color3.fromRGB(116,91,56),Enum.Material.Ground)
    part(world,"BarracksYard",Vector3.new(40,1,30),Vector3.new(39,topY+.65,-29),Color3.fromRGB(132,121,103),Enum.Material.Cobblestone)
@@ -296,7 +310,11 @@ local H={
  [C.Actions.SUPPORT]=function(p)p:SetAttribute("SupportReady",not(p:GetAttribute("SupportReady")==true));msg(p,p:GetAttribute("SupportReady")and"원정지원 ON"or"원정지원 OFF")end,
 }
 remote.OnServerEvent:Connect(function(p,a)
- if typeof(a)~="string"or not H[a]then return end;local now=os.clock();if now-(lastRequest[p]or 0)<C.RateLimitSeconds then return end;lastRequest[p]=now;H[a](p)
+ if typeof(a)~="string"or not H[a]then return end
+ local now=os.clock();if now-(lastRequest[p]or 0)<C.RateLimitSeconds then return end
+ lastRequest[p]=now
+ H[a](p)
+ broadcastMultiplayerSync(p)
 end)
 
 Players.PlayerAdded:Connect(function(p)load(p);p.CharacterAdded:Connect(function(c)local h=c:WaitForChild("Humanoid");h.MaxHealth=100;h.Health=100 end)end)
