@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
   "releaseStrategy": "FAST_MVP",
@@ -7,39 +7,44 @@
   "unityParallelNotBlockingRobloxMvp": true,
   "scopeFreeze": true,
   "launchCore": [
-    "four fixed party slots",
-    "player plus AI companions",
-    "progressive story NPC recruitment",
-    "four player classes",
-    "four normal enemy types",
-    "one elite enemy",
-    "one final boss",
-    "equipment/AI-style tuning",
-    "field/battle/boss music and combat feedback"
+    "village hub spawn and full-heal return",
+    "five portal-separated hunting grounds/dungeons",
+    "large 440x440 combat zones with distinct themes",
+    "third-zone boss and fifth-zone final boss",
+    "village chief quests with scaling gold/xp rewards",
+    "five weapon tiers and five armor tiers",
+    "level scaling: max HP +10 and attack +10",
+    "combat-locked village return",
+    "monster aggro and leash reset",
+    "ten AI users: 2 none, 2 healer, 3 warrior, 3 archer",
+    "double-click AI party invite/remove",
+    "15-kill party hunts with contribution rewards",
+    "mobile combat UI and room code 1-10"
   ],
   "deferredUntilAfterMvp": [
-    "multiple regions",
-    "rival-party seasons",
-    "large companion roster expansion",
-    "party-specific endings",
-    "advanced relationship quest chains"
+    "advanced cross-server room matchmaking",
+    "additional portals beyond five",
+    "large quest-chain expansion"
   ],
   "releaseGates": [
-    "solo 1+3 party",
-    "2+ player replaces AI slots",
-    "mobile combat",
-    "companion unlock persistence",
+    "five visible village portals",
+    "five distinct large zones",
+    "portal travel and return",
+    "third-zone boss",
+    "fifth-zone boss",
+    "village full heal",
+    "no return during combat",
+    "level HP/attack growth",
+    "five weapon tiers",
+    "five armor tiers",
+    "enemy aggro leash",
+    "10 AI users with required class distribution",
+    "AI double-click party toggle",
+    "AI healer heals instead of attacking",
+    "15-kill party hunt contribution rewards",
+    "mobile three-button combat dock",
     "save/rejoin",
-    "boss progression regression",
-    "Creator Store BGM and gameplay SFX",
-    "remote action allowlist and spam rejection",
-    "four normal enemy types",
-    "one elite enemy",
-    "final boss encounter",
-    "field/battle/boss music states",
-    "attack/hit/skill/level-up/boss feedback",
-    "mobile combat-first three-button dock",
-    "collapsible party/equipment secondary menu"
+    "remote action allowlist and spam rejection"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -51,5 +56,5 @@
     "audioFeedbackPassRequired": true,
     "abuseResistancePassRequired": true
   },
-  "updatedAt": "2026-09-22T12:20:00+09:00"
+  "updatedAt": "2026-09-22T14:20:00+09:00"
 }
