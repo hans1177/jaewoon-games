@@ -840,17 +840,17 @@
       "multiplayerMode": "ASYMMETRIC_COMPETITIVE_WITH_SOLO_AI",
       "multiplayerQaRequired": true,
       "minimumParticipantsForRequiredQa": 2,
-      "currentStep": "INTERNAL_PLATFORM_RELEASE",
-      "canonicalState": "HEADLESS_FAST_MVP_PASSED",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "internalReleaseTarget": {
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "routingBlockers": [
-        "roblox-internal-release-pending"
+        "roblox-source-drift:SERVER_COMPETITIVE_SCORE_REQUIRED"
       ],
       "enqueuedAt": "2026-09-22T01:05:00+09:00",
-      "updatedAt": "2026-09-22T09:56:32.928Z",
+      "updatedAt": "2026-09-22T10:01:20.117Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "f736cb13a07039bdab572d00be3f684c5d208b9b",
@@ -860,8 +860,8 @@
       "releasePrimaryPlatform": "ROBLOX",
       "unityParallelNotBlockingRobloxMvp": true,
       "newFeatureExpansionFrozen": true,
-      "robloxFailureStage": "INTERNAL_PLATFORM_RELEASE",
-      "robloxFailureSignature": "ROBLOX_INTERNAL_RELEASE_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
       "fastLaunchPriority": true,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "f736cb13a07039bdab572d00be3f684c5d208b9b",
@@ -939,7 +939,7 @@
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 2,
         "gameId": "horror-escape-room",
@@ -1079,7 +1079,7 @@
       "robloxDedicatedExperiencePublishedAt": "2026-09-22T06:05:40.331Z",
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
-      "robloxSourceBootstrapFailedAt": "2026-09-22T09:49:57.837Z",
+      "robloxSourceBootstrapFailedAt": "2026-09-22T10:01:20.117Z",
       "robloxSourceBootstrapPassedAt": "2026-09-22T08:52:34.834Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -3889,7 +3889,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T09:58:00.421Z",
+  "updatedAt": "2026-09-22T10:01:20.117Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
