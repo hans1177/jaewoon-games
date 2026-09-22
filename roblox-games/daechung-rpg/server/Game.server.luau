@@ -401,7 +401,7 @@ local function partyKill(p,contribution)
    if kills>=C.PartyHuntTarget then
     local c=n(member,"Contribution",0);local rewardGold=80+c*5;local rewardXP=80+c*6
     member:SetAttribute("Gold",n(member,"Gold",0)+rewardGold);grantXP(member,rewardXP);member:SetAttribute("PartyHuntActive",false)
-    msg(member,string.format("공동 사냥 완료 · 기여도 %d · 골드 %d / 경험치 %d",c,rewardGold,rewardXP));feedback(member,"PARTY_COMPLETE")
+    msg(member,string.format("파티 사냥 완료 · 공동 목표 · 기여도 %d · 골드 %d / 경험치 %d",c,rewardGold,rewardXP));feedback(member,"PARTY_COMPLETE")
    end
   end
  end
