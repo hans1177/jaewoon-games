@@ -1,5 +1,5 @@
 {
-  "version": 259,
+  "version": 260,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-22",
@@ -4789,7 +4789,11 @@
         "anyNativeSourceChangeAlwaysRerunsF0ThroughF4": true,
         "f5ThroughF9MayUseImpactScopedSelectionWhenUnaffected": true,
         "fabricatedRuntimePassForbidden": true,
-        "failClosedOnMissingExecutorOrEvidence": true
+        "failClosedOnMissingExecutorOrEvidence": true,
+        "safeSpawnMustExistBeforePlayerBinding": true,
+        "coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition": true,
+        "newRuntimeCandidateInvalidatesPriorReleasePassState": true,
+        "f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion": true
       },
       "layers": [
         {
@@ -4988,7 +4992,18 @@
           "FINITE_ROOT_POSITION",
           "VALID_CAMERA_SUBJECT"
         ],
-        "swimmingGuard": "SWIMMING_STATE_ALLOWED_ONLY_WITH_VERIFIED_WATER_CONTACT"
+        "swimmingGuard": "SWIMMING_STATE_ALLOWED_ONLY_WITH_VERIFIED_WATER_CONTACT",
+        "spawnOrdering": {
+          "safeSpawnLocationRequiredBeforePlayerBinding": true,
+          "existingCharacterMustBeRepositionedToSafeSpawn": true,
+          "characterFoundationMayNotRunBeforeSpawnFoundationReady": true,
+          "missingSafeSpawnAction": "F2_F3_BLOCKED"
+        },
+        "coreLoopProof": {
+          "validRemoteReceiptAloneIsInsufficient": true,
+          "failedOrRejectedActionMayNotEmitCoreLoopReady": true,
+          "successfulGameStateTransitionRequired": true
+        }
       },
       "releaseGate": {
         "previousInvalidRule": "HEADLESS_FAST_MVP_PASS_MAY_ENABLE_INTERNAL_RELEASE",
@@ -5007,7 +5022,25 @@
         "runtimeFoundationRequiredForInternalRelease": true,
         "runtimeFoundationRequiredForPublicReleaseReady": true,
         "internalPublishWithoutRuntimeFoundationAction": "REPAIR_REQUIRED",
-        "staleFoundationEvidenceMayNotPromote": true
+        "staleFoundationEvidenceMayNotPromote": true,
+        "newCandidateInvalidation": {
+          "clearPriorInternalReleaseReady": true,
+          "clearPriorFinalReviewPass": true,
+          "clearPriorPostRuntimeQaEvidence": true,
+          "clearPriorRuntimeFoundationEvidence": true,
+          "clearPriorRuntimePass": true,
+          "clearPriorIndependentQaAndRegressionPass": true,
+          "retainPublicationTargetIdentityForExactTargetReuse": true
+        },
+        "f9ExactBinding": [
+          "SOURCE_REVISION",
+          "ARTIFACT_IDENTITY",
+          "UNIVERSE_ID",
+          "PLACE_ID",
+          "CANDIDATE_VERSION_NUMBER",
+          "ACTUAL_RUNTIME_SENTINEL",
+          "POST_RUNTIME_QA"
+        ]
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,
@@ -5044,9 +5077,13 @@
           "ADD_SAFE_NATIVE_SPAWN_FOUNDATION",
           "ADD_RUNTIME_FOUNDATION_SENTINEL",
           "INVALIDATE_HEADLESS_RUNTIME_CLAIMS",
-          "REVALIDATE_F0_THROUGH_F9_AS_APPLICABLE"
+          "REVALIDATE_F0_THROUGH_F9_AS_APPLICABLE",
+          "CREATE_SAFE_SPAWN_BEFORE_PLAYER_BINDING",
+          "EMIT_CORE_LOOP_READY_ONLY_AFTER_SUCCESSFUL_GAME_STATE_TRANSITION",
+          "INVALIDATE_PRIOR_RELEASE_PASS_STATE_ON_NEW_RUNTIME_CANDIDATE"
         ],
-        "currentRepairState": "SOURCE_REPAIRED_AND_SENTINEL_INSTRUMENTED_AWAITING_EXACT_RUNTIME_CANDIDATE_OBSERVATION"
+        "currentRepairState": "SOURCE_REPAIRED_AND_SENTINEL_INSTRUMENTED_AWAITING_EXACT_RUNTIME_CANDIDATE_OBSERVATION",
+        "secondaryRuntimeRisk": "SAFE_SPAWN_CREATED_AFTER_PLAYER_BINDING_COULD_ALLOW_EARLY_CHARACTER_VALIDATION_BEFORE_SPAWN_FOUNDATION"
       },
       "implementationPlan": {
         "phase1": [
@@ -5060,7 +5097,9 @@
           "RECLASSIFY_PRIVATE_UPLOAD_AS_RUNTIME_CANDIDATE_NOT_INTERNAL_RELEASE",
           "FETCH_EXACT_RUNTIME_SENTINEL_EVIDENCE",
           "BLOCK_INTERNAL_RELEASE_WITHOUT_F1_TO_F4_RUNTIME_EVIDENCE",
-          "WIRE_FAILURE_TO_SYSTEM_AI"
+          "WIRE_FAILURE_TO_SYSTEM_AI",
+          "INVALIDATE_STALE_RELEASE_EVIDENCE_ON_EACH_NEW_RUNTIME_CANDIDATE",
+          "BIND_F9_TO_SOURCE_ARTIFACT_UNIVERSE_PLACE_AND_VERSION"
         ],
         "phase3": [
           "GENERALIZE_PLATFORM_ADAPTER_INTERFACE_FOR_UNITY_AND_UEFN_WITHOUT_FALSE_PASS"
@@ -5129,7 +5168,10 @@
         "cozyIslandSourceAndSpawnRepair": "IMPLEMENTED",
         "unityFoundationAdapter": "PENDING_NO_FALSE_PASS",
         "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS",
-        "robloxF0NativeLanguageCompile": "IMPLEMENTED_PINNED_OFFICIAL_LUAU_0_739"
+        "robloxF0NativeLanguageCompile": "IMPLEMENTED_PINNED_OFFICIAL_LUAU_0_739",
+        "cozyIslandSpawnOrderingRaceRepair": "DESIGNED_IMPLEMENTATION_IN_PROGRESS",
+        "runtimeCandidateStaleEvidenceInvalidation": "DESIGNED_IMPLEMENTATION_IN_PROGRESS",
+        "f9UniversePlaceVersionExactBinding": "DESIGNED_IMPLEMENTATION_IN_PROGRESS"
       },
       "verification": {
         "verifiedHead": "36a19b3e909ad0079556eab7505edd3321a8e061",
@@ -5195,7 +5237,11 @@
           "officialLuauCompilerPinned": true,
           "officialLuauCompilerSha256Verified": true,
           "cozyIslandLuauFilesCompiled": 6,
-          "missingCompileEvidenceBlocksF0": true
+          "missingCompileEvidenceBlocksF0": true,
+          "cozyIslandSpawnBeforePlayerBinding": false,
+          "coreLoopCheckpointRequiresSuccessfulTransition": false,
+          "newCandidateClearsPriorReleasePassState": false,
+          "f9BindsUniversePlaceVersion": false
         },
         "actualRuntimeNextRequiredEvidence": [
           "EXACT_PRIVATE_RUNTIME_CANDIDATE_VERSION",
