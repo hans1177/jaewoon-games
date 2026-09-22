@@ -56,28 +56,30 @@ local function restoreMovement(p,v)
  end
 end
 local function speed(p,v)restoreMovement(p,v)end
+local legacyMonsterIds={DRAK="DRACULA",FRANKEN="FRANKENSTEIN",WOLF="WEREWOLF",MIRAA="MUMMY",REAPER="GRIM_REAPER"}
 local function form(p)
- local id=p:GetAttribute("MonsterForm")or"DRAK"
+ local id=p:GetAttribute("MonsterForm")or"DRACULA"
+ id=legacyMonsterIds[id]or id
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f end end
  return C.MonsterForms[1]
 end
 local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR")
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
- p:SetAttribute("MonsterForm","DRAK");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false)
+ p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비")
  local ok,d=pcall(function()return store:GetAsync("p:"..p.UserId)end)
  if ok and typeof(d)=="table"then
   for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"})do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end
-  if typeof(d.MonsterForm)=="string"then p:SetAttribute("MonsterForm",d.MonsterForm)end
+  if typeof(d.MonsterForm)=="string"then p:SetAttribute("MonsterForm",legacyMonsterIds[d.MonsterForm]or d.MonsterForm)end
  end
 end
 local function save(p)
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
-  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRAK"
+  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA"
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -476,10 +478,52 @@ local function clearBots()
  for _,b in ipairs(bots)do if b.part then b.part:Destroy()end end
  bots={};monsterBot=nil
 end
+local function botVisualPart(rootPart,name,size,offset,color,material,shape)
+ local x=Instance.new("Part");x.Name=name;x.Anchored=true;x.CanCollide=false;x.CanTouch=false;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+ if shape then x.Shape=shape end;x.CFrame=rootPart.CFrame*CFrame.new(offset);x.Parent=rootPart.Parent
+ return x
+end
+local function decorateClassicMonster(anchor,id)
+ local style=Style.Monsters[id]or Style.Monsters.DRACULA
+ anchor.Color=style.Color;anchor.Transparency=.15
+ local visuals={}
+ local function add(name,size,offset,color,material,shape)local x=botVisualPart(anchor,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset});return x end
+ if id=="DRACULA"then
+  add("Cape",Vector3.new(5.5,6,.45),Vector3.new(0,0,1.7),Color3.fromRGB(28,16,23),Enum.Material.Fabric)
+  add("Collar",Vector3.new(5.8,1.2,1),Vector3.new(0,2.2,.4),Color3.fromRGB(102,18,35),Enum.Material.Fabric)
+  add("Head",Vector3.new(2.6,2.6,2.6),Vector3.new(0,3.4,0),Color3.fromRGB(224,209,196),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  add("FangL",Vector3.new(.25,.8,.25),Vector3.new(-.45,2.9,-1.25),Color3.fromRGB(245,245,235),Enum.Material.SmoothPlastic)
+  add("FangR",Vector3.new(.25,.8,.25),Vector3.new(.45,2.9,-1.25),Color3.fromRGB(245,245,235),Enum.Material.SmoothPlastic)
+ elseif id=="FRANKENSTEIN"then
+  add("Head",Vector3.new(3.2,3,2.8),Vector3.new(0,3.4,0),Color3.fromRGB(117,146,103),Enum.Material.SmoothPlastic)
+  add("ShoulderL",Vector3.new(2.2,1.4,2.5),Vector3.new(-2.4,1,0),Color3.fromRGB(62,70,62),Enum.Material.Metal)
+  add("ShoulderR",Vector3.new(2.2,1.4,2.5),Vector3.new(2.4,1,0),Color3.fromRGB(62,70,62),Enum.Material.Metal)
+  add("BoltL",Vector3.new(.5,.5,1.3),Vector3.new(-1.8,3.3,0),Color3.fromRGB(155,160,160),Enum.Material.Metal)
+  add("BoltR",Vector3.new(.5,.5,1.3),Vector3.new(1.8,3.3,0),Color3.fromRGB(155,160,160),Enum.Material.Metal)
+ elseif id=="WEREWOLF"then
+  add("Head",Vector3.new(3,2.8,3.2),Vector3.new(0,3.3,-.2),Color3.fromRGB(105,78,60),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  add("Muzzle",Vector3.new(2.1,1.4,2.4),Vector3.new(0,3,-2),Color3.fromRGB(122,91,69),Enum.Material.SmoothPlastic)
+  local earL=add("EarL",Vector3.new(1.1,2,1),Vector3.new(-1,5,0),Color3.fromRGB(91,65,50),Enum.Material.SmoothPlastic);earL.Shape=Enum.PartType.Wedge
+  local earR=add("EarR",Vector3.new(1.1,2,1),Vector3.new(1,5,0),Color3.fromRGB(91,65,50),Enum.Material.SmoothPlastic);earR.Shape=Enum.PartType.Wedge
+  add("ClawL",Vector3.new(.7,2.8,.7),Vector3.new(-2.3,-.6,-.3),Color3.fromRGB(55,48,43),Enum.Material.SmoothPlastic)
+  add("ClawR",Vector3.new(.7,2.8,.7),Vector3.new(2.3,-.6,-.3),Color3.fromRGB(55,48,43),Enum.Material.SmoothPlastic)
+ elseif id=="MUMMY"then
+  add("Head",Vector3.new(2.7,2.9,2.7),Vector3.new(0,3.4,0),Color3.fromRGB(203,190,148),Enum.Material.Fabric,Enum.PartType.Ball)
+  for i=-2,2 do add("Bandage"..i,Vector3.new(4.6,.65,2.6),Vector3.new(0,i*.75,0),i%2==0 and Color3.fromRGB(213,202,164)or Color3.fromRGB(187,176,141),Enum.Material.Fabric)end
+ elseif id=="GRIM_REAPER"then
+  add("Cloak",Vector3.new(5.4,6,2.8),Vector3.new(0,0,.4),Color3.fromRGB(28,24,35),Enum.Material.Fabric)
+  add("Hood",Vector3.new(3.7,3.7,3.7),Vector3.new(0,3.6,0),Color3.fromRGB(24,20,30),Enum.Material.Fabric,Enum.PartType.Ball)
+  add("FaceVoid",Vector3.new(2.2,2.1,.5),Vector3.new(0,3.45,-1.75),Color3.fromRGB(6,6,8),Enum.Material.Neon)
+  add("ScytheStaff",Vector3.new(.45,7,.45),Vector3.new(3,0,0),Color3.fromRGB(72,64,59),Enum.Material.Wood)
+  local blade=add("ScytheBlade",Vector3.new(.5,3.8,2.5),Vector3.new(3,3.3,-1.2),Color3.fromRGB(184,190,198),Enum.Material.Metal);blade.Orientation=Vector3.new(0,0,60)
+ end
+ return visuals
+end
 local function bot(role,pos)
  local p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.Size=Vector3.new(3,5,3);p.Position=pos
- p.Color=role=="MONSTER"and Style.Monsters.DRAK.Color or Style.Survivor;p.Material=Enum.Material.SmoothPlastic;p.Parent=arena
- local b={part=p,role=role,frozen=false,speed=role=="MONSTER"and 18 or 13};table.insert(bots,b);return b
+ p.Color=role=="MONSTER"and Style.Monsters.DRACULA.Color or Style.Survivor;p.Material=Enum.Material.SmoothPlastic;p.Parent=arena
+ local monsterId="DRACULA";local visuals=role=="MONSTER"and decorateClassicMonster(p,monsterId)or{}
+ local b={part=p,role=role,frozen=false,speed=role=="MONSTER"and 18 or 13,monsterId=monsterId,visuals=visuals};table.insert(bots,b);return b
 end
 local function weightPick(list)
  local total=0;for _,p in ipairs(list)do total+=math.max(1,(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
@@ -497,14 +541,47 @@ local function choose(h)
 end
 local function clearRoleVisual(p)
  local c=p.Character;if not c then return end
- for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"then d:Destroy()end end
+ for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"or d:GetAttribute("MonsterCostume")==true then d:Destroy()end end
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
+end
+local function costumePart(character,base,name,size,offset,color,material,shape)
+ local x=Instance.new("Part");x.Name=name;x:SetAttribute("MonsterCostume",true);x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.CanTouch=false;x.Massless=true
+ if shape then x.Shape=shape end;x.CFrame=base.CFrame*CFrame.new(offset);x.Parent=character
+ local w=Instance.new("WeldConstraint");w.Part0=base;w.Part1=x;w.Parent=x;return x
+end
+local function applyClassicCostume(character,id)
+ local torso=character:FindFirstChild("HumanoidRootPart")or character:FindFirstChild("UpperTorso")or character:FindFirstChild("Torso")
+ local head=character:FindFirstChild("Head")or torso;if not torso or not head then return end
+ if id=="DRACULA"then
+  costumePart(character,torso,"Cape",Vector3.new(5.2,6,.35),Vector3.new(0,0,1.8),Color3.fromRGB(25,14,21),Enum.Material.Fabric)
+  costumePart(character,torso,"Collar",Vector3.new(5.6,1,1),Vector3.new(0,2.2,.5),Color3.fromRGB(112,18,38),Enum.Material.Fabric)
+  costumePart(character,head,"FangL",Vector3.new(.22,.7,.22),Vector3.new(-.38,-.45,-.72),Color3.fromRGB(248,248,238))
+  costumePart(character,head,"FangR",Vector3.new(.22,.7,.22),Vector3.new(.38,-.45,-.72),Color3.fromRGB(248,248,238))
+ elseif id=="FRANKENSTEIN"then
+  costumePart(character,head,"FrankenBrow",Vector3.new(2.5,.45,.45),Vector3.new(0,.55,-.65),Color3.fromRGB(54,60,52),Enum.Material.SmoothPlastic)
+  costumePart(character,head,"BoltL",Vector3.new(.4,.4,1.2),Vector3.new(-1.35,-.15,0),Color3.fromRGB(158,164,164),Enum.Material.Metal)
+  costumePart(character,head,"BoltR",Vector3.new(.4,.4,1.2),Vector3.new(1.35,-.15,0),Color3.fromRGB(158,164,164),Enum.Material.Metal)
+  costumePart(character,torso,"Shoulders",Vector3.new(6,1.1,2.2),Vector3.new(0,1.2,0),Color3.fromRGB(70,82,67),Enum.Material.Metal)
+ elseif id=="WEREWOLF"then
+  local earL=costumePart(character,head,"WolfEarL",Vector3.new(.9,1.8,.8),Vector3.new(-.8,1.5,0),Color3.fromRGB(96,69,53));earL.Shape=Enum.PartType.Wedge
+  local earR=costumePart(character,head,"WolfEarR",Vector3.new(.9,1.8,.8),Vector3.new(.8,1.5,0),Color3.fromRGB(96,69,53));earR.Shape=Enum.PartType.Wedge
+  costumePart(character,head,"WolfMuzzle",Vector3.new(1.8,1,1.8),Vector3.new(0,-.1,-1),Color3.fromRGB(122,90,67),Enum.Material.SmoothPlastic)
+ elseif id=="MUMMY"then
+  for i=-2,2 do costumePart(character,torso,"Bandage"..i,Vector3.new(4.2,.52,2.15),Vector3.new(0,i*.62,0),i%2==0 and Color3.fromRGB(218,207,172)or Color3.fromRGB(190,180,149),Enum.Material.Fabric)end
+  costumePart(character,head,"MummyWrap",Vector3.new(2.3,.55,2.3),Vector3.new(0,.25,0),Color3.fromRGB(209,197,161),Enum.Material.Fabric)
+ elseif id=="GRIM_REAPER"then
+  costumePart(character,torso,"ReaperCloak",Vector3.new(5.3,6,2.6),Vector3.new(0,0,.3),Color3.fromRGB(24,21,31),Enum.Material.Fabric)
+  costumePart(character,head,"ReaperHood",Vector3.new(3.3,3.3,3.3),Vector3.new(0,.35,0),Color3.fromRGB(21,18,28),Enum.Material.Fabric,Enum.PartType.Ball)
+  costumePart(character,torso,"ScytheStaff",Vector3.new(.4,7,.4),Vector3.new(3,0,0),Color3.fromRGB(74,63,54),Enum.Material.Wood)
+  costumePart(character,torso,"ScytheBlade",Vector3.new(.5,3.2,2.3),Vector3.new(3,3,-1),Color3.fromRGB(189,195,202),Enum.Material.Metal)
+ end
 end
 local function applyRoleVisual(p,r)
  clearRoleVisual(p);local c=p.Character;if not c then return end
  local hi=Instance.new("Highlight");hi.Name="RoleHighlight";hi.FillTransparency=.67;hi.OutlineTransparency=.05;hi.Parent=c
  if r=="MONSTER"then
-  local mf=Style.Monsters[form(p).Id]or Style.Monsters.DRAK;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
+  local currentForm=form(p);local mf=Style.Monsters[currentForm.Id]or Style.Monsters.DRACULA;hi.FillColor=mf.Color;hi.OutlineColor=mf.Accent
+  applyClassicCostume(c,currentForm.Id)
   local head=c:FindFirstChild("Head")or root(p)
   if head then
    local g=Instance.new("BillboardGui");g.Name="RoleVisual";g.Size=UDim2.fromOffset(150,34);g.StudsOffset=Vector3.new(0,3.8,0);g.AlwaysOnTop=true;g.Parent=head
@@ -770,6 +847,7 @@ RunService.Heartbeat:Connect(function(dt)
  if state=="RUNNING"then
   local mp=monsterPos()
   for _,b in ipairs(bots)do
+   if b.visuals then for _,v in ipairs(b.visuals)do if v.part and v.part.Parent then v.part.CFrame=b.part.CFrame*CFrame.new(v.offset)end end end
    if not b.frozen then
     if b.role=="MONSTER"then
      local best,bd=nil,math.huge
