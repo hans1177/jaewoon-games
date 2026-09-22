@@ -28,8 +28,15 @@ export function hasVerifiedVibe2SourceHandoff(item={}){
 
 export function eligibleForRobloxSourceReconciliation(item={}){
   if(!clean(item.gameId))return false;
-  if(clean(item.currentStep).toUpperCase()!=='TARGET_PLATFORM_SOURCE_BIND')return false;
-  return platformDevelopmentEligible(item,'ROBLOX');
+  const step=clean(item.currentStep).toUpperCase();
+  if(step==='TARGET_PLATFORM_SOURCE_BIND')return platformDevelopmentEligible(item,'ROBLOX');
+  if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
+  if(!['ACTIVE','PENDING'].includes(clean(item.status).toUpperCase()))return false;
+  if(clean(item.canonicalState).toUpperCase()==='DEVELOPMENT_BLOCKED')return false;
+  if(!sha40(item.robloxSourceCommit))return false;
+  const explicitTargets=(Array.isArray(item.concurrentTargetPlatforms)?item.concurrentTargetPlatforms:[]).map(x=>clean(x).toUpperCase());
+  if(explicitTargets.length&&!explicitTargets.includes('ROBLOX'))return false;
+  return true;
 }
 
 export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
@@ -76,7 +83,43 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     if(!eligibleForRobloxSourceReconciliation(item))continue;
     const sourcePath=`roblox-games/${item.gameId}`;
     const root=path.join(repoRoot,sourcePath);
-    if(!fs.existsSync(root))continue;
+    const sourceBind=clean(item.currentStep).toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
+    const currentRevision=clean(sourceRevision);
+    if(!sourceBind){
+      const boundRevision=clean(item.robloxSourceCommit);
+      if(!sha40(currentRevision)||boundRevision===currentRevision)continue;
+      try{
+        execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',sourcePath],{cwd:repoRoot,stdio:'ignore'});
+        continue;
+      }catch(error){
+        if(Number(error?.status)!==1){
+          results.push({
+            gameId:item.gameId,
+            pass:false,
+            sourcePath,
+            sourceRevision:currentRevision,
+            sourceDrift:true,
+            saveRequired:false,
+            blockers:['SOURCE_DRIFT_DETECTION_UNAVAILABLE'],
+            failure:'source-drift-detection-unavailable',
+          });
+          continue;
+        }
+      }
+    }
+    if(!fs.existsSync(root)){
+      results.push({
+        gameId:item.gameId,
+        pass:false,
+        sourcePath,
+        sourceRevision:currentRevision,
+        sourceDrift:!sourceBind,
+        saveRequired:false,
+        blockers:['SOURCE_TREE_MISSING'],
+        failure:'existing-source-tree-missing',
+      });
+      continue;
+    }
     const handoffVerified=hasVerifiedVibe2SourceHandoff(item);
     if(handoffVerified){
       const expectedTree=clean(item.robloxVibe2VerifiedHandoff.sourceTreeSha);
@@ -87,6 +130,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
           pass:false,
           sourcePath,
           sourceRevision:clean(sourceRevision),
+          sourceDrift:!sourceBind,
           saveRequired:false,
           blockers:['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH'],
           failure:'verified-vibe2-source-handoff-mismatch',
@@ -98,6 +142,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:true,
         sourcePath,
         sourceRevision:clean(sourceRevision),
+        sourceDrift:!sourceBind,
         saveRequired:false,
         blockers:[],
         failure:null,
@@ -113,6 +158,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:verdict.pass,
         sourcePath,
         sourceRevision:clean(sourceRevision),
+        sourceDrift:!sourceBind,
         saveRequired:verdict.saveRequired,
         blockers:verdict.blockers,
         failure:verdict.pass?null:'existing-source-static-revalidation-failed',
@@ -123,6 +169,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         pass:false,
         sourcePath,
         sourceRevision:clean(sourceRevision),
+        sourceDrift:!sourceBind,
         saveRequired:false,
         blockers:['SOURCE_BASELINE_OR_VALIDATION_UNAVAILABLE'],
         failure:'existing-source-static-revalidation-unavailable',
