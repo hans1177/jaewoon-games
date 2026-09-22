@@ -19,7 +19,9 @@ test('owner rule1 forbids terminal done and defines verified completion as a con
   assert.equal(rule?.verifiedCompletionMeaning,'VERIFIED_CHECKPOINT_NOT_TERMINATION');
   assert.equal(rule?.verifiedCheckpointMustGenerateNextCausalInput,true);
   assert.equal(rule?.completionIsCheckpointNotStop,true);
-  assert.equal(rule?.ownerExplicitStopRequired,true);
+  assert.equal(rule?.ownerExplicitStopRequired,false);
+  assert.equal(rule?.global24hStopForbidden,true);
+  assert.equal(rule?.ownerMayStopGlobal24h,false);
   assert.equal(rule?.hourlyScheduleRole,'SAFETY_NET_ONLY_NOT_PRIMARY_CONTINUATION');
 });
 
@@ -36,8 +38,11 @@ test('verified task completion is stored as checkpoint evidence rather than done
   assert.ok(task.evidence.includes('signal-continuity:NEXT_CAUSAL_INPUT'));
 });
 
-test('empty queue game study success is a continuation trigger, not a terminal stop',()=>{
-  assert.match(runner,/needs\.game_study\.result == 'success'/);
+test('empty queue and failed subjobs still flow into unconditional next-cycle refill',()=>{
+  assert.match(runner,/refill:\s*\n\s*needs: \[plan, recovery_fast, continuous, learning_idle, game_study\]/);
+  assert.match(runner,/if: \$\{\{ always\(\) \}\}/);
+  assert.match(runner,/Dispatch next cycle unconditionally/);
   assert.match(runner,/actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
+  assert.match(runner,/VIBE2_24H_REFILL=DISPATCHED/);
   assert.doesNotMatch(runner,/VIBE2_24H_DONE/);
 });
