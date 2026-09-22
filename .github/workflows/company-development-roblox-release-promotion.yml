@@ -1,6 +1,6 @@
 # FAST_MVP_INTERNAL_GATE_V2: exact package -> shared preflight -> core headless QA -> private/restricted publish
 # MANUAL_RELEASE_TRIGGER: final primary-three design-art-title sync
-name: Company DEVELOPMENT_CONFIRMED Roblox Internal Release Promotion
+name: Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
 
 on:
   push:
@@ -27,7 +27,7 @@ env:
 
 jobs:
   release:
-    name: publish exact final-reviewed Roblox artifact for internal playtest
+    name: deploy exact F0-passed Roblox artifact as private runtime candidate
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify internal release promotion contract
+      - name: Verify runtime candidate deployment contract
         working-directory: main
         run: |
           set -euo pipefail
@@ -75,10 +75,9 @@ jobs:
           const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
           const pending=(q.items||[]).find(row=>
             row.releaseStrategy==='FAST_MVP'
-            &&row.robloxValidationMode==='HEADLESS_FAST_MVP'
-            &&row.robloxHeadlessFastMvpPassed===true
-            &&row.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
-            &&row.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING'
+            &&row.robloxFoundationF0Passed===true
+            &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+            &&row.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
             &&!(row.robloxInternalReleaseEvidence?.published===true
               &&row.robloxInternalReleaseEvidence?.sourceRevision===row.robloxSourceCommit
               &&row.robloxInternalReleaseEvidence?.artifactIdentity===row.robloxBuildArtifactIdentity)
@@ -91,7 +90,7 @@ jobs:
           const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
           const headlessMode=item.robloxValidationMode==='HEADLESS_FAST_MVP';
-          const artifactRunId=Number((headlessMode?item.robloxHeadlessFastMvpEvidence?.artifactRunId:item.robloxRuntimeEvidence?.artifactRunId)||0);
+          const artifactRunId=Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0);
           const currentRelease=item.robloxInternalReleaseReady===true
             &&item.robloxInternalReleaseEvidence?.published===true
             &&item.robloxInternalReleaseEvidence?.sourceRevision===revision
@@ -119,9 +118,11 @@ jobs:
             &&sourceRoot===`roblox-games/${gameId}`
             &&Number.isInteger(artifactRunId)&&artifactRunId>0;
           const headlessCanonical=headlessMode
-            &&item.robloxHeadlessFastMvpPassed===true
-            &&item.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
-            &&item.robloxFailureSignature==='ROBLOX_INTERNAL_RELEASE_PENDING';
+            &&item.robloxFoundationF0Passed===true
+            &&item.robloxFoundationF0Evidence?.sourcePreflightPassed===true
+            &&item.robloxFoundationF0Evidence?.runtimeFoundationPassed===false
+            &&item.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+            &&item.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
           const legacyCanonical=!headlessMode
             &&item.robloxFinalReviewPassed===true
             &&item.robloxFailureStage==='INTERNAL_PLATFORM_RELEASE'
@@ -233,7 +234,7 @@ jobs:
           grep -q '"state": "PASS"' /tmp/roblox-development-release-evidence.json
           echo 'ROBLOX_RELEASE_SOURCE_UNCHANGED_FROM_FINAL_REVIEW=YES'
           echo 'ROBLOX_RELEASE_CANONICAL_EVIDENCE=PASS'
-          echo 'ROBLOX_RUNTIME_RERUN=NO'
+          echo 'ROBLOX_RUNTIME_FOUNDATION_RERUN=REQUIRED'
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'
           echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
@@ -498,7 +499,7 @@ jobs:
             internalOnly:!preserveExistingVisibility,
             publicDiscoveryAllowed:preserveExistingVisibility?null:false,
           };
-          item.robloxInternalReleaseEvidence={
+          item.robloxRuntimeCandidateEvidence={
             version:1,
             gameId:item.gameId,
             platform:'ROBLOX',
@@ -507,50 +508,34 @@ jobs:
             artifactRunId,
             universeId,
             placeId,
-            finalReviewPassed:true,
-            validationMode:item.robloxValidationMode||'LEGACY_STUDIO',
-            headlessFastMvpPassed:item.robloxValidationMode==='HEADLESS_FAST_MVP'?item.robloxHeadlessFastMvpPassed===true:false,
+            foundationF0Passed:item.robloxFoundationF0Passed===true,
             published:true,
-            publicRelease:preserveExistingVisibility?null:false,
-            exposure:preserveExistingVisibility?'PRESERVE_EXISTING_TARGET_VISIBILITY':'PRIVATE_OR_RESTRICTED',
+            releaseClaim:false,
+            exposure:'PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE',
             visibilityIntent,
             versionNumber:version,
             workflowRunId:releaseRunId,
             publishedAt:stamp,
-            authority:'roblox-open-cloud-internal-release',
+            authority:'roblox-open-cloud-private-runtime-candidate',
           };
-          item.robloxReleaseEvidence={...item.robloxInternalReleaseEvidence,authority:preserveExistingVisibility?'roblox-open-cloud-fast-mvp-preserve-visibility':'roblox-open-cloud-internal-release-compatibility'};
           item.robloxReleaseVersionNumber=version;
-          if(preserveExistingVisibility){
-            item.robloxFastMvpPublished=true;
-            item.robloxFastMvpPublishedAt=stamp;
-            item.robloxFastMvpPublicationEvidence={...item.robloxInternalReleaseEvidence,authority:'roblox-open-cloud-fast-mvp-preserve-visibility'};
-            item.robloxInternalReleaseReady=false;
-            item.robloxPublicReleaseReady=false;
-            item.robloxPublicRelease=false;
-            item.robloxReleaseClaim=false;
-            item.robloxReleasePublishedAt=stamp;
-            item.currentStep='FAST_MVP_TARGET_PUBLISHED';
-            item.canonicalState='FAST_MVP_TARGET_PUBLISHED';
-            item.robloxLastSuccessfulStage='FAST_MVP_TARGET_PUBLISHED';
-          }else{
-            item.robloxInternalReleaseReady=true;
-            item.robloxInternalReleaseAt=stamp;
-            item.robloxPublicReleaseReady=false;
-            item.robloxPublicRelease=false;
-            item.robloxReleaseClaim=false;
-            item.robloxReleasePublishedAt=null;
-            item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-            item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-            item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
-          }
-          item.robloxFailureStage=null;
-          item.robloxFailureSignature=null;
-          item.routingBlockers=(item.routingBlockers||[]).filter(value=>value!=='roblox-internal-release-pending'&&value!=='roblox-release-promotion-pending');
+          item.robloxInternalReleaseReady=false;
+          item.robloxPublicReleaseReady=false;
+          item.robloxPublicRelease=false;
+          item.robloxReleaseClaim=false;
+          item.robloxReleasePublishedAt=null;
+          item.robloxRuntimePassed=false;
+          item.robloxRuntimeFoundationPassed=false;
+          item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+          item.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+          item.robloxLastSuccessfulStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+          item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+          item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+          item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
           if(item.executionEvidence){
-            item.executionEvidence.lastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
-            item.executionEvidence.failureStage=null;
-            item.executionEvidence.failureSignature=null;
+            item.executionEvidence.lastSuccessfulStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+            item.executionEvidence.failureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+            item.executionEvidence.failureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
           }
           item.updatedAt=stamp;
           q.updatedAt=stamp;
@@ -562,11 +547,11 @@ jobs:
             console.log(`ROBLOX_FAST_MVP_VERSION_NUMBER=${version}`);
             console.log('ROBLOX_NEXT_STAGE=FAST_MVP_PLAYTEST_AND_LINK_CHECK');
           }else{
-            console.log('ROBLOX_INTERNAL_RELEASE_READY=YES');
+            console.log('ROBLOX_RUNTIME_CANDIDATE_DEPLOYED=YES');
             console.log('ROBLOX_RELEASE_CLAIM=NO');
             console.log(`ROBLOX_INTERNAL_RELEASE_VERSION_NUMBER=${version}`);
             console.log('ROBLOX_PUBLIC_RELEASE=NO');
-            console.log('ROBLOX_NEXT_STAGE=INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+            console.log('ROBLOX_NEXT_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION');
           }
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
@@ -576,7 +561,7 @@ jobs:
           git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist proven Roblox internal release [skip ci]'
+            git commit -m 'runtime: persist Roblox private runtime candidate [skip ci]'
             pushed=0
             for attempt in 1 2 3; do
               if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
@@ -633,7 +618,7 @@ jobs:
           console.log('ROBLOX_EXPERIENCE_METADATA_UPDATE=PASS');
           NODE
 
-      - name: Internal release promotion summary
+      - name: Private runtime candidate deployment summary
         if: always()
         env:
           SKIP: ${{ steps.target.outputs.skip }}
@@ -650,17 +635,17 @@ jobs:
           if [ "$RETRY_DEFERRED" = 'true' ]; then
             echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY'
             echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=60'
-            echo 'ROBLOX_RUNTIME_RERUN=NO'
+            echo 'ROBLOX_RUNTIME_FOUNDATION_RERUN=REQUIRED'
             echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
             echo 'ROBLOX_REGRESSION_RERUN=NO'
             echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
             exit 0
           fi
           [ "$PUBLISH_OUTCOME" = 'success' ]
-          echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=PASS'
-          echo 'ROBLOX_INTERNAL_RELEASE_EXACT_ARTIFACT=YES'
-          echo 'ROBLOX_INTERNAL_RELEASE_SEPARATE_FINAL_REVIEW_REQUIRED=NO'
-          echo 'ROBLOX_RUNTIME_RERUN=NO'
+          echo 'ROBLOX_RUNTIME_CANDIDATE_DEPLOYMENT=PASS'
+          echo 'ROBLOX_RUNTIME_CANDIDATE_EXACT_ARTIFACT=YES'
+          echo 'ROBLOX_RUNTIME_FOUNDATION_REQUIRED=YES'
+          echo 'ROBLOX_RUNTIME_FOUNDATION_RERUN=REQUIRED'
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'
           echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
