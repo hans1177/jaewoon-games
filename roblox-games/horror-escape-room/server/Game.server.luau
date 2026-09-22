@@ -3,6 +3,7 @@ local RS=game:GetService("ReplicatedStorage")
 local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
+local AssetService=game:GetService("AssetService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -36,10 +37,13 @@ local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
 local survivorSpawns={
- Vector3.new(-55,3,-52),Vector3.new(55,3,-52),Vector3.new(-55,3,52),
- Vector3.new(55,3,52),Vector3.new(0,3,52),Vector3.new(0,3,-10)
+ Vector3.new(-126,3,-118),Vector3.new(126,3,-118),Vector3.new(-126,3,118),
+ Vector3.new(126,3,118),Vector3.new(0,3,126),Vector3.new(0,3,-96)
 }
-local monsterSpawn=Vector3.new(0,3,-62)
+local monsterSpawn=Vector3.new(0,3,-150)
+local assetCache={}
+local objectiveState={round=0,done=0,total=0}
+local escapedPlayers={}
 
 local function root(p)local c=p.Character;return c and c:FindFirstChild("HumanoidRootPart")end
 local function hum(p)local c=p.Character;return c and c:FindFirstChildOfClass("Humanoid")end
@@ -85,6 +89,101 @@ local function glow(part,color,range,brightness)
 end
 local function zoneFloor(f,name,size,pos,color,material)
  local x=arenaPart(f,name,size,pos,color,material);x.CanCollide=true;return x
+end
+
+local function stripLoadedAsset(root)
+ for _,d in ipairs(root:GetDescendants())do
+  if d:IsA("LuaSourceContainer")or d:IsA("Tool")or d:IsA("RemoteEvent")or d:IsA("RemoteFunction")then
+   d:Destroy()
+  elseif d:IsA("BasePart")then
+   d.Anchored=true;d.CanTouch=false
+  end
+ end
+ return root
+end
+local function loadOfficialAsset(id)
+ if assetCache[id]then return assetCache[id]end
+ local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
+ if not ok or not result then return nil end
+ stripLoadedAsset(result);result.Parent=nil;assetCache[id]=result
+ return result
+end
+local function matchingMesh(root,keywords,seed)
+ if not root then return nil end
+ local candidates={}
+ for _,d in ipairs(root:GetDescendants())do
+  if d:IsA("MeshPart")then
+   local name=string.lower(d.Name)
+   for _,key in ipairs(keywords)do
+    if string.find(name,string.lower(key),1,true)then table.insert(candidates,d);break end
+   end
+  end
+ end
+ if #candidates==0 then return nil end
+ return candidates[((seed or 1)-1)%#candidates+1]
+end
+local function spawnOfficialProp(assetId,keywords,parent,pos,scale,seed,collide)
+ local rootAsset=loadOfficialAsset(assetId);local template=matchingMesh(rootAsset,keywords,seed)
+ if not template then return nil end
+ local x=template:Clone();x.Name="Asset_"..template.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false
+ x.Size=x.Size*(scale or 1);x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*47)%360),0);x.Parent=parent
+ return x
+end
+local function cloneWholeAsset(assetId,parent,pos,scale)
+ local template=loadOfficialAsset(assetId);if not template then return nil end
+ local clone=template:Clone();clone.Name="OfficialAsset_"..assetId;stripLoadedAsset(clone);clone.Parent=parent
+ pcall(function()clone:ScaleTo(scale or 1)end);pcall(function()clone:PivotTo(CFrame.new(pos))end)
+ return clone
+end
+local function addObjectiveStation(f,name,pos,index)
+ local base=arenaPart(f,"Objective_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(70,79,87),Enum.Material.Metal)
+ local screen=arenaPart(f,"ObjectiveScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(91,201,176),Enum.Material.Neon);screen.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="ObjectivePrompt";prompt.ObjectText=name;prompt.ActionText="작동";prompt.HoldDuration=1.2;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ base:SetAttribute("ObjectiveIndex",index);base:SetAttribute("Completed",false)
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or p:GetAttribute("Frozen")==true or base:GetAttribute("Completed")==true then return end
+  base:SetAttribute("Completed",true);prompt.Enabled=false;screen.Color=Color3.fromRGB(98,235,125)
+  objectiveState.done+=1
+  for _,player in ipairs(Players:GetPlayers())do
+   player:SetAttribute("ObjectivesDone",objectiveState.done);player:SetAttribute("ObjectivesTotal",objectiveState.total)
+  end
+  if objectiveState.done>=C.EscapeUnlockObjectives then
+   workspace:SetAttribute("EscapeUnlocked",true)
+   for _,exit in ipairs(f:GetDescendants())do
+    if exit:IsA("ProximityPrompt")and exit.Name=="EscapePrompt"then exit.Enabled=true end
+   end
+  end
+ end)
+ return base
+end
+local function addEscapeGate(f,mapId,pos)
+ local gate=arenaPart(f,"EscapeGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,96,86),Enum.Material.Metal)
+ local sign=arenaPart(f,"EscapeSign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(100,230,156),Enum.Material.Neon);sign.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EscapePrompt";prompt.ObjectText="비상 탈출구";prompt.ActionText="탈출";prompt.HoldDuration=1.4;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Enabled=false;prompt.Parent=gate
+ prompt.Triggered:Connect(function(p)
+  if state=="RUNNING"and p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true and workspace:GetAttribute("EscapeUnlocked")==true then
+   escapedPlayers[p]=true;p:SetAttribute("Escaped",true);workspace:SetAttribute("SurvivorEscapeTriggered",true)
+  end
+ end)
+ return gate
+end
+local function decorateArenaWithOfficialAssets(f,map)
+ task.spawn(function()
+  task.wait(.1);if not f.Parent then return end
+  local city=C.OfficialAssets.CityPack;local dungeon=C.OfficialAssets.DungeonPack;local house=C.OfficialAssets.HouseProps
+  local pack=map.Id=="THEME_PARK"and city or map.Id=="HOSPITAL"and house or city
+  local keywords=map.Id=="SCHOOL"and{"bench","chair","table","cabinet","plant"}or map.Id=="HOSPITAL"and{"chair","table","cabinet","bed","plant"}or{"bench","lamp","trash","fence","sign"}
+  for i=1,18 do
+   if not f.Parent then return end
+   local angle=i/18*math.pi*2;local radius=105+(i%3)*24
+   spawnOfficialProp(pack,keywords,f,Vector3.new(math.cos(angle)*radius,2,math.sin(angle)*radius),.85+(i%3)*.12,i,false)
+  end
+  if map.Id=="HOSPITAL"then
+   for i=1,10 do spawnOfficialProp(dungeon,{"crate","barrel","rock","rune"},f,Vector3.new(-132+i*25,1.8,122+(i%2)*16),.75,i,false)end
+  elseif map.Id=="THEME_PARK"then
+   for i=1,10 do spawnOfficialProp(city,{"bench","lamp","trash","sign"},f,Vector3.new(-138+i*28,1.8,-118+(i%2)*18),.9,i,false)end
+  end
+ end)
 end
 local function applyMapEvent(f,map,event)
  workspace:SetAttribute("CurrentMapEvent",event.Id)
