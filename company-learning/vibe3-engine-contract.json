@@ -192,8 +192,8 @@
     ]
   },
   "unityWebFirstStage": {
-    "enabled": false,
-    "scope": "DISABLED",
+    "enabled": true,
+    "scope": "VALIDATION_SURFACE_ONLY",
     "canonicalSourceRoot": "unity-games/<gameId>/",
     "buildOutputRoot": "web-games/<gameId>/",
     "authoringStack": [
@@ -214,7 +214,7 @@
       "CAMERA"
     ],
     "legacyHtmlCanvasDirectAuthoringDefault": false,
-    "unityWebQaFeedsPortableLearning": true,
+    "unityWebQaFeedsPortableLearning": false,
     "postGatePlatformPipelineUnchanged": true,
     "unityTargetSameProjectContinuation": true,
     "robloxAndUefnRemainNative": true,
@@ -222,7 +222,7 @@
     "centralSyncDocument": "company-learning/UNITY_WEB_FIRST_STAGE.md",
     "cloudflareBuildOutputRequired": true,
     "mobileBrowserQaRequired": true,
-    "failureState": "REPAIR_REQUIRED",
+    "failureState": "UNAVAILABLE_NON_BLOCKING",
     "retryLimit": null,
     "runtimeQaContract": {
       "queryMode": "qa=1",
@@ -246,9 +246,14 @@
       "coreFunMarkerMayOnlyFollowRealStateProgression": true,
       "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     },
-    "status": "DISABLED_BY_OWNER_DIRECTIVE",
+    "status": "OWNER_DIRECT_LOCKED",
     "developmentAdmissionAuthority": false,
-    "legacyCompatibilityOnly": true
+    "legacyCompatibilityOnly": false,
+    "validationSurfaceOnly": true,
+    "nativeGateAuthority": false,
+    "homepageTestSurface": true,
+    "nativeDevelopmentMayRunWithoutWebBuild": true,
+    "nativeReleaseMayRunWithoutWebBuild": true
   },
   "directNativeDualPlatformDevelopment": {
     "enabled": true,
