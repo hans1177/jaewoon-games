@@ -32,6 +32,8 @@ const evidence={
   buildOrPackagePassed:true,
   artifactIdentity:'sha256:test-place-artifact',
   luauOrSourceValidationPassed:true,
+  actualRuntimeEvidence:true,
+  runtimeFoundationPassed:true,
   runtimePassed:true,
   serverClientBoundaryPassed:true,
   saveExists:false,
@@ -60,6 +62,9 @@ const assembled=assembleRobloxTechnicalEvidence({
     state:'PASS',
     sourceRevision:'abcdef1234567890',
     artifactIdentity:'sha256:test-place-artifact',
+    actualRuntimeEvidence:true,
+    actualPlatformRuntime:true,
+    runtimeFoundationPassed:true,
     runtimePassed:true,
     serverClientBoundaryPassed:true,
     saveExists:false,
@@ -91,7 +96,7 @@ assert.equal(validateRobloxReleaseEvidence(assembled,'abcdef1234567890').pass,tr
 
 const artifactMismatch=assembleRobloxTechnicalEvidence({
   build:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',luauOrSourceValidationPassed:true},
-  runtime:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-b',runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
+  runtime:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-b',actualRuntimeEvidence:true,runtimeFoundationPassed:true,runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
   independent:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',independentQaPassed:true},
   regression:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',regressionPassed:true,protectedStatePreserved:true,exactRevision:true},
 });
@@ -101,7 +106,7 @@ assert(artifactMismatch.blockedReasons.includes('exact-revision-unproven'));
 
 const revisionMismatch=assembleRobloxTechnicalEvidence({
   build:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',luauOrSourceValidationPassed:true},
-  runtime:{state:'PASS',sourceRevision:'deadbeef12345678',artifactIdentity:'artifact-a',runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
+  runtime:{state:'PASS',sourceRevision:'deadbeef12345678',artifactIdentity:'artifact-a',actualRuntimeEvidence:true,runtimeFoundationPassed:true,runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
   independent:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',independentQaPassed:true},
   regression:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',regressionPassed:true,protectedStatePreserved:true,exactRevision:true},
 });
@@ -312,4 +317,13 @@ test('Roblox runtime candidate publish plan rejects headless evidence that claim
   assert.equal(plan.executionReady,false);
   assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-evidence'));
   assert.ok(plan.blockedReasons.includes('f0-must-not-claim-runtime-foundation'));
+});
+
+
+test('Roblox release evidence rejects marker-only runtime claims even when all legacy booleans are true',()=>{
+  const markerOnly={...evidence,actualRuntimeEvidence:false,runtimeFoundationPassed:false};
+  const gate=validateRobloxReleaseEvidence(markerOnly,'abcdef1234567890');
+  assert.equal(gate.pass,false);
+  assert.ok(gate.blockedReasons.includes('actual-runtime-evidence-missing'));
+  assert.ok(gate.blockedReasons.includes('runtime-foundation-not-passed'));
 });
