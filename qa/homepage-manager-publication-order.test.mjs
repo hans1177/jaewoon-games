@@ -111,7 +111,9 @@ test('central development orchestrator dispatches Roblox and Unity directly from
   assert.match(development,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
   assert.match(development,/company-development-roblox-runtime\.yml/);
   assert.match(development,/company-development-unity-runtime\.yml/);
-  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
+  assert.match(development,/UNITY_WEB_RUNTIME_DISPATCH_COUNT/);
+  assert.match(development,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
+  assert.doesNotMatch(development,/UNITY_WEB_RUNTIME_DISPATCH=NO/);
   assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
   assert.doesNotMatch(development,/web-gate|WEB_PRESENTATION_HANDOFF_REJECTED|Unity Web gate/);
 });
@@ -147,8 +149,11 @@ test('PR creation failure remains a blocking publication failure inside Director
 test('native development admission is minimum dual-platform design, not Web score',()=>{
   const dual=roadmap.directNativeDualPlatformDevelopment||{};
   assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
-  assert.equal(dual.unityWebEnabled,false);
+  assert.equal(dual.unityWebEnabled,true);
+  assert.equal(dual.unityWebRequired,false);
   assert.equal(dual.unityWebGateRequired,false);
+  assert.equal(dual.unityWebMode,'VALIDATION_SURFACE_ONLY');
+  assert.equal(dual.unityWebValidationSurface?.requiredForDevelopmentAdmission,false);
   assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_CONTRACT_READY');
 });
@@ -226,7 +231,8 @@ test('homepage has one canonical runtime data renderer',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(index,/\nloadData\(\);/);
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
-  assert.match(runtime,/updateLiveSummary\(catalog,status\);buildFocus/);
+  assert.match(runtime,/const boundCatalog=await bindVerifiedUnityWebSurfaces\(catalog\)/);
+  assert.match(runtime,/updateLiveSummary\(boundCatalog,status\);buildFocus\(boundCatalog,status\)/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
 });
