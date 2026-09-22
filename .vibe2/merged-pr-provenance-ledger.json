@@ -17671,11 +17671,163 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_735c24eacb2fa9700ed7bee5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-2600",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2b0287b29410bcbfeeedba181b34509395ecfa26",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 2600,
+        "baseBranch": "main",
+        "headBranch": "policy/unity-web-validation-surface",
+        "baseSha": "2b0287b29410bcbfeeedba181b34509395ecfa26",
+        "headSha": "b20f6dd6ede1b1337bc3e499c6cbd70e069b4c47",
+        "mergeCommitSha": "89a7e7153c9e538782122ab73417a7644ac0fdb8",
+        "mergedAt": "2026-09-22T21:53:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "60429783b91b70321841bf97aa158941eb65f2aa85ab2d19c8915be5635c2100",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "policy/unity-web-validation-surface",
+        "candidateSha": "b20f6dd6ede1b1337bc3e499c6cbd70e069b4c47"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 320,
+        "deletedLineCount": 141,
+        "changedFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/unity-web-first-stage-build.yml",
+          ".github/workflows/vibe3-engine-contract.yml",
+          "assets/homepage-enhancements.js",
+          "company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md",
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/vibe3-engine-contract.json",
+          "company-learning/vibe3-task-playbooks.json",
+          "qa/company-central-pipeline-only.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-unity-web-worker.test.mjs",
+          "qa/company-direct-native-policy-contract.test.mjs",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "qa/company-machine-development-lifecycle.test.mjs",
+          "qa/company-unity-web-first-stage.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "tools/company-development-unity-web-worker.mjs",
+          "tools/company-unity-web-first-stage.mjs",
+          "tools/homepage-manager.mjs",
+          "unity-games/README.md"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/unity-web-first-stage-build.yml",
+          ".github/workflows/vibe3-engine-contract.yml",
+          "assets/homepage-enhancements.js",
+          "company-learning/platform-release-roadmap.json",
+          "company-learning/vibe3-engine-contract.json",
+          "company-learning/vibe3-task-playbooks.json",
+          "qa/company-central-pipeline-only.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-unity-web-worker.test.mjs",
+          "qa/company-direct-native-policy-contract.test.mjs",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "qa/company-machine-development-lifecycle.test.mjs",
+          "qa/company-unity-web-first-stage.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "tools/company-development-unity-web-worker.mjs",
+          "tools/company-unity-web-first-stage.mjs",
+          "tools/homepage-manager.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:2600",
+        "merge-commit:89a7e7153c9e538782122ab73417a7644ac0fdb8",
+        "base-main:2b0287b29410bcbfeeedba181b34509395ecfa26"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 144
+    "total": 145
   }
 }
