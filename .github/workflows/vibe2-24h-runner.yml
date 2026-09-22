@@ -25,7 +25,10 @@ on:
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
+      - 'tools/vibe3-roblox-distillation.mjs'
+      - 'tools/vibe3-roblox-learning-context.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
+      - 'qa/vibe3-roblox-distillation.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
       - 'qa/vibe2-auto-planner.test.mjs'
@@ -186,6 +189,8 @@ jobs:
               node --check tools/vibe2-asset-production-plan.mjs
               node --check tools/vibe2-source-worker.mjs
               node --check tools/vibe2-capability-distillation.mjs
+              node --check tools/vibe3-roblox-distillation.mjs
+              node --check tools/vibe3-roblox-learning-context.mjs
               node --check tools/vibe2-incremental-qa.mjs
               node --check tools/company-development-web-gameplay-validation.mjs
               node --check tools/vibe2-practice-distillation.mjs
@@ -195,6 +200,7 @@ jobs:
               node --test qa/vibe2-native-asset-production.test.mjs
               node --test qa/vibe2-source-worker.test.mjs
               node --test qa/vibe2-capability-distillation.test.mjs
+              node --test qa/vibe3-roblox-distillation.test.mjs
               node --test qa/vibe2-incremental-qa.test.mjs
               node --test qa/company-development-web-runtime.test.mjs
               node --test qa/vibe2-practice-distillation.test.mjs
@@ -230,6 +236,18 @@ jobs:
               printf '%s\n' '{"version":1,"recipes":[]}' > /tmp/vibe2-recombination-memory.json
               echo 'VIBE2_RECOMBINATION_MEMORY=EMPTY'
             fi
+
+            if git show origin/vibe2-learning-runtime:company-learning/vibe3-roblox-distillation-ledger.json > /tmp/vibe3-roblox-distillation-ledger.json 2>/dev/null; then
+              echo 'VIBE3_ROBLOX_DISTILLATION_MEMORY=LOADED'
+            else
+              printf '%s\n' '{"version":1,"kind":"vibe3-roblox-distillation-ledger","records":[]}' > /tmp/vibe3-roblox-distillation-ledger.json
+              echo 'VIBE3_ROBLOX_DISTILLATION_MEMORY=EMPTY'
+            fi
+            node /tmp/vibe2-main/tools/vibe3-roblox-distillation.mjs \
+              --existing=/tmp/vibe3-roblox-distillation-ledger.json \
+              --known-good=/tmp/vibe2-main/roblox-games/known-good-runtime-evidence.json \
+              --root=/tmp/vibe2-main \
+              --output=/tmp/vibe3-roblox-distillation-ledger.json | tee /tmp/vibe3-roblox-distillation.log
 
             git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
             node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
@@ -400,6 +418,7 @@ jobs:
               --control="$control_root/.vibe2/parallelism-control.json" \
               --experience="$control_root/.vibe2/experience.json" \
               --recombination=/tmp/vibe2-recombination-memory.json \
+              --roblox-distillation=/tmp/vibe3-roblox-distillation-ledger.json \
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
