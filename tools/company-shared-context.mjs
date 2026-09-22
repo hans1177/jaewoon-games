@@ -124,7 +124,10 @@ export function compileHomepageCentralPolicy(policy={}){
   if(clean(managerContract.mode)!=='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'||clean(managerContract.manager)!=='HOMEPAGE'||clean(managerContract.supervisor)!=='DIRECTOR')errors.push('HOMEPAGE_MANAGER_ROLE_CONTRACT');
   if(Number(managerContract.managerCount)!==1||Number(managerContract.supervisorCount)!==1||managerContract.secondHomepageManagerForbidden!==true||managerContract.secondHomepageSupervisorForbidden!==true)errors.push('HOMEPAGE_SINGLE_MANAGER_CONTRACT');
   if(managerContract.fixedFunctionProtection?.ownerLocked!==true)errors.push('HOMEPAGE_FIXED_FUNCTION_OWNER_LOCK');
-  if(Number(testingContract.minimumWebStrictScore)!==80||testingContract.hardGatesMustPass!==true||Number(testingContract.maxVisibleTestCandidates)!==30)errors.push('HOMEPAGE_TESTING_CONTRACT');
+  const developmentDisplay=managerContract.developmentProgressDisplay||{};
+  if(Number(testingContract.version)!==2||testingContract.top30Removed!==true||clean(testingContract.developmentWebExposureGate)!=='NONE'||testingContract.developmentWebRequiresScore!==false||testingContract.developmentWebRequiresQa!==false||testingContract.developmentWebRequiresArtbook!==false||testingContract.developmentWebRequiresPromotion!==false||testingContract.officialCardRequiresPromotion!==true)errors.push('HOMEPAGE_TESTING_CONTRACT');
+  if(source.showWebPlay!==true||source.showUnityWeb!==true)errors.push('HOMEPAGE_DEVELOPMENT_WEB_EXPOSURE');
+  if(developmentDisplay.webTestButtonEnabled!==true||clean(developmentDisplay.webTestButtonLabel)!=='Web 테스트'||clean(developmentDisplay.webTestEligibility)!=='CANONICAL_WEB_PATH_PRESENT_ONLY'||developmentDisplay.webTestRequiresScore!==false||developmentDisplay.webTestRequiresQa!==false||developmentDisplay.webTestRequiresArtbook!==false||developmentDisplay.webTestRequiresPromotion!==false||developmentDisplay.webTestRequiresRuntimePass!==false)errors.push('HOMEPAGE_DEVELOPMENT_WEB_BUTTON_CONTRACT');
   if(documentationSyncContract.centralPolicyFirst!==true||clean(documentationSyncContract.centralPolicyPath)!==DEFAULT_POLICY||documentationSyncContract.workDocumentsCannotOverrideCentralPolicy!==true)errors.push('HOMEPAGE_DOCUMENTATION_SYNC_CONTRACT');
   const contract={
     version:Number(source.version)||null,
