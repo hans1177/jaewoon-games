@@ -36,7 +36,7 @@ test('Roblox HEADLESS_FAST_MVP preserves multiplayer design semantics without St
   assert.match(robloxQa,/HEADLESS_FAST_MVP/);
   assert.match(robloxQa,/ROBLOX_STUDIO_QA=REMOVED/);
   assert.match(headlessQa,/function multiplayerRequired\(config\)/);
-  assert.match(headlessQa,/checks\.multiplayerSync=!multi\|\|\(\/FireAllClients/);
+  assert.match(headlessQa,/checks\.multiplayerSync=!multi\|\|\(\/Players:GetPlayers\\s\*\\\(\\\)\/\.test\(server\)&&\/FireAllClients/);
   assert.match(headlessQa,/multiplayerApplicable:multi/);
   assert.match(headlessQa,/multiplayerStateSyncPassed:checks\.multiplayerSync/);
 });
