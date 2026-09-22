@@ -62,7 +62,7 @@ test('homepage shows only Roblox and Unity app native release actions',()=>{
   assert.match(homepage,/getJson\('\/homepage-platform-exposure\.json'\)/);
   assert.match(homepage,/function internalReleaseRows\(catalog,status\)/);
   assert.match(homepage,/function internalReleaseLinks\(game\)/);
-  assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','게임 가능'/);
+  assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(homepage,/robloxAction/);
   assert.match(homepage,/unityAction/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
@@ -256,7 +256,7 @@ test('public homepage matches the approved sample structure without legacy mixin
   assert.match(index,/id="gameHub"/);
   assert.match(index,/id="recentUpdates"/);
   assert.doesNotMatch(index,/게임평 한마디|Developer 한재운|게임 & 지브리 음악|platformFilters|stateFilters|gameSearch|gameSort/);
-  assert.match(runtime,/buildShelf\(hub,'homePlatformAvailableGameCenter','게임 가능'/);
+  assert.match(runtime,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(runtime,/buildShelf\(hub,'homeDevelopmentGameCenter','개발 중'/);
   assert.match(runtime,/function buildRecentUpdates\(catalog\)/);
   assert.doesNotMatch(runtime,/buildShelf\(hub,'homeWebGameCenter'/);
