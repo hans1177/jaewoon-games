@@ -183,3 +183,13 @@ test('심야 환경 에셋은 로딩 후 스크립트를 제거하고 장식으�
   assert.match(server,/decorateArenaWithOfficialAssets/);
   assert.ok(launch.releaseGates.includes('asset scripts stripped before world decoration'));
 });
+
+test('심야 게임 룰 안내는 로비 3단계와 역할별 실시간 지시로 직관적이다',()=>{
+  for(const marker of ['RuleGuide','심야 술래잡기 · 게임 방법','패널 4개 작동','얼은 친구 구조','탈출구로 탈출','생존자를 터치해 얼리고 전부 얼리면 승리'])assert.match(client,new RegExp(marker));
+  assert.match(client,/ruleCard\.Visible=setupPanel\.Visible/);
+  assert.match(client,/괴물 목표 · 생존자를 찾아 모두 얼려라/);
+  assert.match(client,/얼음 상태 · 친구 구조를 기다려/);
+  assert.match(client,/3단계 · 비상 탈출구로 이동/);
+  assert.match(client,/1단계 · 패널 작동 %d\/%d/);
+  assert.match(client,/role=="MONSTER"and"괴물"or role=="SURVIVOR"and"생존자"/);
+});
