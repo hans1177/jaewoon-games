@@ -1,5 +1,5 @@
 {
-  "version": 94,
+  "version": 95,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2617,7 +2617,7 @@
       "unlimitedCausalRepair": true
     }
   },
-  "updatedAt": "2026-09-22T23:30:00+09:00",
+  "updatedAt": "2026-09-23T08:26:00+09:00",
   "centralDocumentationTopology": {
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -2708,5 +2708,83 @@
     "newDepartmentCreated": false,
     "executionOwner": "EXISTING_GAME_TESTER_AND_QA_CAPABILITY",
     "ticketState": "vibe2-unreal-core:.vibe2/tester-debug-tickets.json"
+  },
+  "systemAiEvolutionTopology": {
+    "version": 1,
+    "authority": "DERIVED_FROM_CENTRAL_POLICY",
+    "centralContract": "company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution",
+    "role": "STRUCTURAL_BINDING_ONLY_NO_POLICY_CREATION",
+    "components": {
+      "failureClassifier": {
+        "plannedBinding": "tools/company-system-ai-failure-classifier.mjs",
+        "inputs": [
+          "FAILURE_STAGE",
+          "FAILURE_SIGNATURE",
+          "WORKFLOW_STATUS",
+          "CENTRAL_POLICY",
+          "RESPONSIBLE_SOURCE"
+        ],
+        "outputs": [
+          "FAILURE_CLASS",
+          "ROUTE",
+          "EVIDENCE"
+        ]
+      },
+      "workerHandoff": {
+        "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+        "reservationOwner": "tools/company-system-ai-queue.mjs",
+        "dispatch": "tools/company-recovery-dispatch.mjs",
+        "workflow": ".github/workflows/company-system-ai-workers.yml",
+        "exactCheckpointResume": true
+      },
+      "bottleneckSensor": {
+        "plannedBinding": "tools/company-system-ai-bottleneck-sensor.mjs",
+        "queueSources": [
+          ".vibe2/system-ai-queue.json",
+          ".vibe2/queue.json"
+        ],
+        "telemetrySources": [
+          "GITHUB_ACTIONS",
+          "VIBE2_PARALLELISM_TELEMETRY"
+        ],
+        "schedulerBindings": [
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/company-system-ai-workers.yml"
+        ]
+      },
+      "caretaker": {
+        "feeder": "tools/vibe2-post-release-focus.mjs",
+        "queue": "vibe2-unreal-core:.vibe2/queue.json",
+        "scheduler": ".github/workflows/vibe2-continuous-core.yml",
+        "logicalOwnership": "PER_GAME_PERSISTENT"
+      },
+      "qaEvolution": {
+        "plannedBinding": "tools/company-system-ai-qa-contract-review.mjs",
+        "deterministicQaAuthorityPreserved": true,
+        "centralPolicyProjection": "tools/company-shared-context.mjs",
+        "currentImplementationEvidenceRequired": true
+      },
+      "primaryAiVibeCollaboration": {
+        "existingBinding": "company-learning/company-architecture-map.json#primaryAiInternalVibeCollaboration",
+        "recovery": "tools/company-recovery-dispatch.mjs",
+        "neuralDiagnosis": "tools/vibe2-neural-diagnosis.mjs",
+        "fanIn": "tools/vibe2-fan-in-review.mjs"
+      },
+      "verifiedLearningReuse": {
+        "retrieval": "tools/vibe2-learning-motor.mjs",
+        "systemAiAdapter": "tools/company-system-ai-learning-context.mjs",
+        "outcomeAttribution": "tools/vibe2-learning-motor.mjs::applyVerifiedKnowledgeOutcomes"
+      }
+    },
+    "invariants": {
+      "reserveSharedQueueMutationSerialized": true,
+      "disjointWorkersParallel": true,
+      "duplicateExecutionForbidden": true,
+      "directMainWrite": false,
+      "workerAuthorityExpansion": false,
+      "deterministicQaAuthorityPreserved": true,
+      "securityBoundaryPreserved": true,
+      "shadowPipelineForbidden": true
+    }
   }
 }
