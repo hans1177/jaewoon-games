@@ -66,15 +66,15 @@
       "homepageTestCandidate": false,
       "homepageOfficialCard": false,
       "enqueuedAt": "2026-09-22T00:45:00+09:00",
-      "updatedAt": "2026-09-22T06:05:40.331Z",
+      "updatedAt": "2026-09-22T06:18:47.278Z",
       "robloxSourceCommit": "e0d856f4ea4f9e990c078bf353a3a0da7cd64940",
       "robloxSourceBootstrapPassedAt": "2026-09-22T05:26:51.713Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-22T06:05:22.703Z",
+      "robloxSourceBootstrapFailedAt": "2026-09-22T06:18:47.278Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-source-bootstrap:source-generation-failed"
+        "roblox-source-drift:SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
       ],
       "vibeWebImplementationRequired": false,
       "vibeWebRequestedStage": null,
@@ -157,7 +157,7 @@
       "fastLaunchPriority": true,
       "robloxExactRevisionPassed": false,
       "robloxMultiplayerQaPassed": false,
-      "robloxInternalReleaseReady": true,
+      "robloxInternalReleaseReady": false,
       "robloxValidationMode": "HEADLESS_FAST_MVP",
       "robloxStudioExecutionAllowed": false,
       "robloxStudioEvidenceRequired": false,
@@ -3178,7 +3178,7 @@
       "ownerPrimaryRank": null
     }
   ],
-  "updatedAt": "2026-09-22T06:05:40.331Z",
+  "updatedAt": "2026-09-22T06:18:47.278Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
