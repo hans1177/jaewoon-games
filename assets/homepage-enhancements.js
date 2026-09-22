@@ -137,11 +137,16 @@ function canonicalWebHref(row){
 }
 async function bindVerifiedUnityWebSurfaces(catalog){
   if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
-  const candidates=catalog.games.filter(game=>Boolean(sourcesOf(game).unity?.projectPath)&&Boolean(canonicalWebHref(game)));
+  const candidates=catalog.games.filter(game=>{
+    const id=gameIdOf(game);
+    const unity=sourcesOf(game).unity||{};
+    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
+    return Boolean(id)&&projectPath===`unity-games/${id}`;
+  });
   const verified=new Map();
   await Promise.all(candidates.map(async game=>{
-    const id=gameIdOf(game),href=canonicalWebHref(game);
-    if(!id||!href)return;
+    const id=gameIdOf(game),href=`/web-games/${gameIdOf(game)}/`;
+    if(!id)return;
     const [build,qa]=await Promise.all([
       getJson(`${href}unity-web-build.json`),
       getJson(`${href}unity-web-gameplay-validation.json`)
