@@ -84,7 +84,12 @@ function platformTickets(item={},stamp=''){
         });
       }
     }
-    if(item.robloxRuntimePassed===false&&item.robloxRuntimeFoundationPassed!==false||rr.failure)add('TARGET_PLATFORM_RUNTIME',rr.failure||'ROBLOX_RUNTIME_FAILED',[JSON.stringify(rr)]);
+    const runtimePending=/PENDING|AWAITING|UNVERIFIED/.test(upper(item.robloxFailureSignature));
+    if(rr.failure||(
+      item.robloxRuntimePassed===false
+      &&item.robloxRuntimeFoundationPassed===true
+      &&runtimePending===false
+    ))add('TARGET_PLATFORM_RUNTIME',rr.failure||item.robloxFailureSignature||'ROBLOX_RUNTIME_FAILED',[JSON.stringify(rr)]);
     if(item.robloxRegressionPassed===false&&item.robloxRuntimePassed===true)add('REGRESSION','ROBLOX_REGRESSION_FAILED',[JSON.stringify(item.robloxPostRuntimeQaEvidence||{})]);
   }
   if(platform==='UNITY'){
